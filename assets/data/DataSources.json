@@ -1,0 +1,1775 @@
+[
+  {
+    "name": "AOC viticole - Aires parcellaires",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Agriculture",
+    "subTheme": "Zonages agricoles",
+    "sources": "INAO"
+ },
+  {
+    "name": "Ilot agricole déclaré à la PAC",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Agriculture",
+    "subTheme": "Parcellaire agricole",
+    "sources": "IGN"
+ },
+  {
+    "name": "Périmètres bâtiments agricoles",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Agriculture",
+    "subTheme": "",
+    "sources": "DRAAF"
+ },
+  {
+    "name": "Périmètre d’intervention délimité",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Agriculture",
+    "subTheme": "",
+    "sources": "DRAAF"
+ },
+  {
+    "name": "Réglementation des boisements",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Agriculture",
+    "subTheme": "",
+    "sources": "Conseil généraux"
+ },
+  {
+    "name": "protection des espaces naturels et agricoles périurbains",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Agriculture",
+    "subTheme": "Zonages agricoles",
+    "sources": "Conseil généraux"
+ },
+  {
+    "name": "Emprise des Plans de Protection de l'Atmosphère",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Air Climat",
+    "subTheme": "Qualité Pollution",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Procédure de Plan Climat Air Energie territorrial (PCAET)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Air Climat",
+    "subTheme": "Changement climatique",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Territoires à énergie positive pour la croissance verte TEPCV",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Air Climat",
+    "subTheme": "Changement climatique",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Territoires à énergie positive TEPOS",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Air Climat",
+    "subTheme": "Changement climatique",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Communes loi littoral",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Zonages Aménagement",
+    "sources": "INPN"
+ },
+  {
+    "name": "Etat des documents d'urbanisme",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Zonages Planification",
+    "sources": "Sudocuh"
+ },
+  {
+    "name": "Périmètre des Directives Territoriales d'Aménagement de Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Zonages Aménagement",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Périmètres des Schémas de Cohérence Territoriale (SCOT) approuvés",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Zonages Planification",
+    "sources": "Sudocuh"
+ },
+  {
+    "name": "Servitude T5 servitude aéronautique de dégagement",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "DGAC"
+ },
+  {
+    "name": "Servitudes d'Utilité Publique (SUP)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PLH en projet",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Politique",
+    "sources": "Sudocuh"
+ },
+  {
+    "name": "PLH approuvés",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Politique",
+    "sources": "Sudocuh"
+ },
+  {
+    "name": "Communes 2019 loi montagne",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Zonages Planification",
+    "sources": "ceremadata"
+ },
+  {
+    "name": "Abords des monuments historiques",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "DRAC"
+ },
+  {
+    "name": "Sites Patrimoniaux Remarquables",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "DRAC"
+ },
+  {
+    "name": "Schéma gens du voyage",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "",
+    "sources": "DDT"
+ },
+  {
+    "name": "Zone d’aménagement différé (ZAD)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "",
+    "sources": "GPU"
+ },
+  {
+    "name": "Zone d’aménagement concerté (ZAC)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "",
+    "sources": "GPU"
+ },
+  {
+    "name": "Scot en projet",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "",
+    "sources": "Sudocuh"
+ },
+  {
+    "name": "SRU : logements locatifs sociaux (art 55)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "",
+    "sources": "DDT"
+ },
+  {
+    "name": "Projet urbain partenariale (PUP) : périmètre",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "",
+    "sources": "Préfecture"
+ },
+  {
+    "name": "Plan d’eau Montagne (L111-6 CDU)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "",
+    "sources": "Geo-ide"
+ },
+  {
+    "name": "Règlement de publicité",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "",
+    "sources": "?"
+ },
+  {
+    "name": "Opérations Nationales d’intérêt (OIN)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "",
+    "sources": "?"
+ },
+  {
+    "name": "Plan de déplacements urbains",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "",
+    "sources": "DDT"
+ },
+  {
+    "name": "A7 : forêts",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "A9 : zone agricole protégée",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "AC1 monuments historiques",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "AC2 sites inscrits et classés",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "AC3 réserves naturelles",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "AC4 Sites Patrimoniaux Remarquables",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "AS1",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "EL10 cœurs de parc national",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "PM4 : zones de rétention d’eau",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "A2 : Passage des conduites d'irrigation",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "A3 : passage des engins mécaniques",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "A4 : Passage dans le lit ou sur les berges de cours d’eau non domaniaux",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "A5 : canalisations",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "A6",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "EL3 : Halage et de marchepied",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "EL4 : Développement et protection des montagnes",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "EL5 : Visibilité sur les voies publiques",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "EL7 : Alignement des voies publiques",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "I2",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "I3",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "I4",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "I5",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "I6 : Exploitation des mines et carrières",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "I7 ?",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "I8 ?",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "I9 : Canalisation de transport et de distribution de chaleur",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "PM5 : Ouvrages hydrauliques",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "PM6",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "PT1",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "PT2",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "PT3",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "T1",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "T2 : Survol au profit des téléphériques",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "T3 : Servitude en tréfonds",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "T4",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "T5 : servitudes aéronautiques de dégagement",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "T6",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "T7",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "T8",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "T9",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "AR1",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "AR2",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "AR3",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "AR4",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "AR5",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "AR6",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "Int1 : Voisinage des cimetières",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "I1",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "PM1 : PPRNP PPRM",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "PM2 : Installations classées",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "PM3 : PPRT",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "PM4 :",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "EL10 : coeur de parc",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Aménagement Urbanisme",
+    "subTheme": "Assiette de Servitude",
+    "sources": "GPU"
+ },
+  {
+    "name": "Données génériques",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Donnee Générique",
+    "subTheme": "Administratif",
+    "sources": "Service public / ANCT / INSEE"
+ },
+  {
+    "name": "Aire d’alimentation de captage",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Eau",
+    "subTheme": "Utilisation Autre",
+    "sources": "Sandre"
+ },
+  {
+    "name": "Masses d'eau - Plan d'eau",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Eau",
+    "subTheme": "Masse d’eau",
+    "sources": "Sandre"
+ },
+  {
+    "name": "Masses d'eau – Rivières",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Eau",
+    "subTheme": "Masse d’eau",
+    "sources": "Sandre"
+ },
+  {
+    "name": "Masses d'eau souterraines",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Eau",
+    "subTheme": "Masse d’eau",
+    "sources": "Sandre"
+ },
+  {
+    "name": "Schémas d'Aménagement et de Gestion des Eaux (SAGE)",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Eau",
+    "subTheme": "Zonage eau",
+    "sources": "Sandre"
+ },
+  {
+    "name": "Stations de traitement des eaux usées",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Eau",
+    "subTheme": "Assainissement",
+    "sources": "Sandre"
+ },
+  {
+    "name": "Zones sensibles",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Eau",
+    "subTheme": "Zonages eau",
+    "sources": "Sandre"
+ },
+  {
+    "name": "Zones vulnérables à la pollution aux nitrates agricoles",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Eau",
+    "subTheme": "Zonages eau",
+    "sources": "Sandre"
+ },
+  {
+    "name": "Contrat de milieux",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Eau",
+    "subTheme": "Zonages eau",
+    "sources": "Sandre"
+ },
+  {
+    "name": "Périmètre de protection de captage",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Eau",
+    "subTheme": "Zonages eau",
+    "sources": "presence à la commune + voir avec l’ARS"
+ },
+  {
+    "name": "Autorité organisatrice des services d'eau et d'assainissement",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Eau",
+    "subTheme": "Zonages eau",
+    "sources": "SISPEA services.eaufrance.fr\nappli national attente"
+ },
+  {
+    "name": "Forêts publiques relevant de la gestion de l'ONF",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Foncier Sol",
+    "subTheme": "Propriété Foncière",
+    "sources": "ONF"
+ },
+  {
+    "name": "Programme d'intérêt général (PIG) habitat",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Habitat",
+    "subTheme": "Politique",
+    "sources": "ANAH"
+ },
+  {
+    "name": "Opah supra communales",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Habitat Politique Ville",
+    "subTheme": "Politique",
+    "sources": "ANAH"
+ },
+  {
+    "name": "Opah infra communales",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Habitat Politique Ville",
+    "subTheme": "Politique",
+    "sources": "ANAH"
+ },
+  {
+    "name": "Arrêté de protection des habitats naturels",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "Arrêté Préfectoral de Protection de Biotope",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "Arrêtés de protection de géotope",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "Corridors écologiques linéaires - Trame verte et bleue – SRADDET",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "CRAIG"
+ },
+  {
+    "name": "Corridors écologiques surfaciques - Trame verte et bleue - SRADDET",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "CRAIG"
+ },
+  {
+    "name": "Espaces perméables relais linéaires de la trame bleue (cours d'eau) - Trame verte et bleue - SRADDET",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "CRAIG"
+ },
+  {
+    "name": "Grands espaces agricoles surfaciques - Trame verte et bleue – SRADDET",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "CRAIG"
+ },
+  {
+    "name": "Espaces perméables relais surfaciques de la trame verte et bleue - Trame verte et bleue - SRADDET Auvergne-Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "CRAIG"
+ },
+  {
+    "name": "Lacs naturels et espaces surfaciques liés au cours d'eau - Trame verte et bleue - SRADDET Auvergne-Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "CRAIG"
+ },
+  {
+    "name": "Zones humides régionales issues des inventaires départementaux - Trame verte et bleue - SRADDET Auvergne-Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "CRAIG"
+ },
+  {
+    "name": "Cours d’eau de la trame bleue régionale - Trame verte et bleue - SRADDET Auvergne-Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "CRAIG"
+ },
+  {
+    "name": "Réservoirs de biodiversité - Trame verte et bleue - SRADDET - Auvergne-Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "CRAIG"
+ },
+  {
+    "name": "Synthèse communale des zonages écologiques du Sraddet",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Familles et ensembles de paysage en Auvergne",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Inventaire Paysage",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Familles et ensembles de paysage en Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Nature Paysage Biodiversité",
+    "subTheme": "Inventaire Paysage",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Label grands sites de France",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "zonages paysage",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Mesures compensatoires prescrites des atteintes à la biodiversité",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "CEREMAdata"
+ },
+  {
+    "name": "Natura 2000 - directive habitats",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "Natura 2000 - directive oiseaux",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "Parc national",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "Parc naturel regional (PNR)",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "Parcs et jardins",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Paysage",
+    "sources": "DRAC"
+ },
+  {
+    "name": "Patrimoine mondial UNESCO - Emprise surfacique de la zone tampon des biens",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "zonages paysage",
+    "sources": "INPN"
+ },
+  {
+    "name": "Patrimoine mondial UNESCO - Emprise surfacique des biens",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "zonages paysage",
+    "sources": "INPN"
+ },
+  {
+    "name": "Réserve intégrale de parc national",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "Réserve naturelle nationale",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "Réserve naturelle Régionale",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "Secteurs sauvegardés de Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "zonages paysage",
+    "sources": "DRAC"
+ },
+  {
+    "name": "Sites classés en Auvergne-Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "zonages paysage",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Sites inscrits en Auvergne-Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "zonages paysage",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Sites ponctuels de l'inventaire géologique",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Sites surfaciques de l'inventaire géologique",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Tourbières inventoriées",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "ZICO - Zones Importantes pour la Conservation des Oiseaux",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "INPN"
+ },
+  {
+    "name": "ZNIEFF 1 - zones naturelles d'intérêt écologique faunistique et floristique - type 1 de Auvergne",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "ZNIEFF 2- zones naturelles d'intérêt écologique faunistique et floristique - type 2",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "Zone humide RAMSAR",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "Espace Naturel sensible",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "Region"
+ },
+  {
+    "name": "Droit de préemption sur espace naturel sensible",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "Region"
+ },
+  {
+    "name": "Zones de présomption de prescription archéologique (ZPPA)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "zonages paysage",
+    "sources": "DRAC"
+ },
+  {
+    "name": "Monuments Historiques",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "zonages paysage",
+    "sources": "DRAC"
+ },
+  {
+    "name": "Synthèse communale des zones humides inventoriées",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "réserve biologique de l'ONF",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "ONF"
+ },
+  {
+    "name": "Réserve biosphère",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "INPN"
+ },
+  {
+    "name": "SCAP",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Zonages Nature",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PNA : Aigle de bonelli",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PNA : Busard cendré",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PNA : Chiroptères (30 esp)",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PNA : Cistude d'Europe",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PNA : Gypaete barbu",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PNA : loutre d'europe",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PNA : Milan royal",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PNA : Moule perlière",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PNA : Oedicnème criard",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PNA : Pie grièche",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PNA : Sonneur à ventre jaune",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "nature Paysage Biodiversité",
+    "subTheme": "Inventaire Nature Biodiversité",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Plan d'Exposition au Bruit aéronautique. DGAC",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Nuisance",
+    "subTheme": "Bruit",
+    "sources": "DGAC"
+ },
+  {
+    "name": "Classement sonore infrastrucure de transport terrestre",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Nuisance",
+    "subTheme": "Bruit",
+    "sources": "Geo-ide"
+ },
+  {
+    "name": "Niveau de bruit Lden des grands axes routiers en France - Rapportage 2017",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Nuisance",
+    "subTheme": "Bruit",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Niveau de bruit Lden des axes ferroriaires en France - Rapportage 2017",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Nuisance",
+    "subTheme": "Bruit",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Aléa minier - Affaissement",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Risques",
+    "subTheme": "Risques miniers",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Aléa minier – Echauffement",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Risques",
+    "subTheme": "Risques miniers",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Aléa minier - Effondrement localisé",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Risques",
+    "subTheme": "Risques miniers",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Aléa sismicité à la commune",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Séisme",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Barrage : Commune soumise à un risque de rupture de barrage",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Risques techno",
+    "sources": "Georisques"
+ },
+  {
+    "name": "CLPA :les ouvrages linéaires",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Risques",
+    "subTheme": "Avalanches",
+    "sources": "INRAE"
+ },
+  {
+    "name": "CLPA :les ouvrages ponctuels",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Risques",
+    "subTheme": "Avalanches",
+    "sources": "INRAE"
+ },
+  {
+    "name": "CLPA :les ouvrages zonaux",
+    "BDT": {
+       "PacInno copy": "à retirer"
+    },
+    "theme": "Risques",
+    "subTheme": "Avalanches",
+    "sources": "INRAE"
+ },
+  {
+    "name": "Commune disposant d'un arrêté de SUP",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Risques techno",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Document d'information communal sur les risques majeurs",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Gestion Risque",
+    "sources": "Georisques"
+ },
+  {
+    "name": "PPRN : Plan de Prévention des Risques Naturels par commune",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Zonage risques naturels",
+    "sources": "Georisques"
+ },
+  {
+    "name": "PPRT : Commune soumise à un risque technologique",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Risques techno",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Synthèse communale des Aléas naturels connus",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Gestion Risque",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Zones réglementées par un PPRM en Auvergne-Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Risque Minier",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Communes soumises à un PPRM en Auvergne-Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Risque Minier",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Synthèse communale des phénomènes d'avalanches connus",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Avalanches",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Synthèse communale des Aléas naturels connus en Auvergne-Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Gestion Risque",
+    "sources": "Georisques"
+ },
+  {
+    "name": "zone inondable connue",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Aléas inondation",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Plan de gestion des risques inondations (PGRI)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "",
+    "sources": "DREAL"
+ },
+  {
+    "name": "PPRt en projet",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "",
+    "sources": "Georisques"
+ },
+  {
+    "name": "PPRn en projet",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Secteur d'information sur les sols (SIS)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "",
+    "sources": "Georisques"
+ },
+  {
+    "name": "PCS",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Gestion Risque",
+    "sources": "Georisques"
+ },
+  {
+    "name": "DICRIM",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Gestion Risque",
+    "sources": "Georisques"
+ },
+  {
+    "name": "PPI plan particulier d'intervention (relatif à une installation industriel à risque)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Risques",
+    "subTheme": "Gestion Risque",
+    "sources": "Préfecture"
+ },
+  {
+    "name": "ICPE - Entrées des établissements classés S, A, ou E",
+    "BDT": {
+       "PacInno copy": "BDT & PacInno"
+    },
+    "theme": "Site industriel Production",
+    "subTheme": "Site industriel",
+    "sources": "S3IC"
+ },
+  {
+    "name": "Inventaire historique de sites industriels et activités de service (BASIAS)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Site industriel Production",
+    "subTheme": "Site industriel",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Contour des sites et sols pollués validés de la base de données BASOL",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Site industriel Production",
+    "subTheme": "Site industriel",
+    "sources": "Georisques"
+ },
+  {
+    "name": "Transport et distribution d’énergie électrique RTE",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Site industriel Production",
+    "subTheme": "",
+    "sources": "RTE"
+ },
+  {
+    "name": "Transport et distribution d’énergie électrique ENEDIS",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Site industriel Production",
+    "subTheme": "",
+    "sources": "ENEDIS"
+ },
+  {
+    "name": "Périmètre de carrière",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Site industriel Production",
+    "subTheme": "Site industriel",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Périmètre minier",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Site industriel Production",
+    "subTheme": "Site industriel",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Concession de recherche ou d'exploitation minière",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Site industriel Production",
+    "subTheme": "Mine Carrière granulats",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Gisements de report de type granulats pour la région Auvergne-Rhône-Alpes",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Site industriel Production",
+    "subTheme": "Mine Carrière granulats",
+    "sources": "DREAL"
+ },
+  {
+    "name": "Route à grande circulation (continuité itineraires principaux)",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "Transport infrastructure",
+    "subTheme": "routier",
+    "sources": "?"
+ },
+  {
+    "name": "Zone réseau de chaleur",
+    "BDT": {
+       "PacInno copy": "PacInno"
+    },
+    "theme": "",
+    "subTheme": "",
+    "sources": "ceremadata"
+ }
+ ]
