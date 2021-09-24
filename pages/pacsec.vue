@@ -26,7 +26,7 @@
           {{ theme }}
         </h2>
       </v-col>
-      <v-col v-for="(source) in sources" :key="source.name" cols="4">
+      <v-col v-for="(source, i) in sources" :key="source.name" cols="4">
         <v-card flat color="g100">
           <v-card-title>
             {{ source.name }}
@@ -43,7 +43,7 @@
             </v-col>
             <v-col cols="2">
               <v-btn
-                :href="`https://www.data.gouv.fr/en/datasets/?q=${source.name}`"
+                :href="i ? `https://www.data.gouv.fr/en/datasets/?q=${source.name}` : 'https://www.datara.gouv.fr/accueil/base_territoriale/'"
                 target="_blank"
                 icon
               >
