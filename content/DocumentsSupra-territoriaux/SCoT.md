@@ -1,4 +1,5 @@
 ---
+ordre: 2
 title: SCoT du Beaujolais
 description: 'Le territoire de la commune de Légny est couvert par le SCoT du Beaujolais approuvé le 29 juin 2009, et modifié le 7 mars 2019. À ce titre, votre document d’urbanisme devra être compatible avec les orientations et les prescriptions de ce SCoT.'
 ---
