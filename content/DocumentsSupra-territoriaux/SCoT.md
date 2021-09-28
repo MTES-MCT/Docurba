@@ -1,23 +1,43 @@
 ---
-title: SCoT
-description: 'La loi du 13 décembre 2000 relative à la solidarité et au renouvellement urbain, appelée Loi SRU, est un texte complexe qui modifie en profondeur le droit de l’urbanisme et du logement en France. L’article 55 de cette loi impose à certaines communes de disposer d’un nombre minimum de logements sociaux.'
+title: SCoT du Beaujolais
+description: 'Le territoire de la commune de Légny est couvert par le SCoT du Beaujolais approuvé le 29 juin 2009, et modifié le 7 mars 2019. À ce titre, votre document d’urbanisme devra être compatible avec les orientations et les prescriptions de ce SCoT.'
 ---
 
-## Loi SRU
+## SCoT du Beaujolais
 
-La loi du 13 décembre 2000 relative à la solidarité et au renouvellement urbain, appelée Loi SRU, est un texte complexe qui modifie en profondeur le droit de l’urbanisme et du logement en France. L’article 55 de cette loi impose à certaines communes de disposer d’un nombre minimum de logements sociaux.
+Le territoire de la commune de Légny est couvert par le **SCoT du Beaujolais approuvé le 29 juin 2009**, et modifié le 7 mars 2019. À ce titre, votre document d’urbanisme **devra être compatible avec les orientations et les prescriptions de ce SCoT.**
 
-La loi a été élaborée autour de trois exigences :
-- une plus grande solidarité,
-- l’encouragement au développement durable,
-- le renforcement de la démocratie et de la décentralisation.
+Le document approuvé est consultable sur le site Internet du syndicat mixte du SCoT :
 
-En particulier en **matière d’urbanisme**, les schémas directeurs (SD) sont remplacés par les schémas de cohérence territoriale (SCOT). Les plans d’occupation des sols (POS) sont remplacés par les plans locaux d’urbanisme (PLU). **On passe alors d’un urbanisme de zones à un urbanisme de projet.** Les plans d’aménagement de zone (PAZ) sont supprimés.
+https://www.pays-beaujolais.com/scot/le-scot-cest-quoi/
 
-En ce qui concerne **le patrimoine et plus spécifiquement la protection des monuments historiques**,le périmètre de protection de 500 mètres peut à présent, “sur proposition de l'architecte des Bâtiments de France et après accord de la commune, être modifié de façon à désigner des ensembles d'immeubles et des espaces qui participent de l'environnement du monument pour en préserver le caractère ou contribuer à en améliorer la qualité”.
+**Une procédure de révision générale du SCoT du Beaujolais a été prescrite le 7 mars 2019.**
 
-Concernant **la production de logements sociaux, l’article 55** de la loi SRU oblige certaines communes appartenant à des territoires bien intégrés et de taille suffisante pour mener une politique locale de l’habitat dynamique et volontaire, à disposer d’un nombre minimum de logements sociaux, proportionnel à leur parc résidentiel avec une obligation de 25 % ou 20 % de logements sociaux pour certaines communes.
+Le syndicat mixte du Beaujolais (structure porteuse du SCoT du Beaujolais) est associé à l’élaboration de votre document d’urbanisme. Il vous communiquera directement les prescriptions qui s’imposent au territoire de votre commune.
 
-En ce qui concerne la commune de Crolles, soit “néant” soit renvoi vers la fiche thématique “Répondre 	aux besoins en matière de logements et en termes de mixité et de 	diversité”
+Vous trouverez ci-après quelques éléments qui ne constituent pas une liste exhaustive des dispositions du SCoT du Beaujolais s’appliquant au territoire de votre commune. L’appréciation de la compatibilité de votre document d’urbanisme avec le SCoT du Beaujolais ne se fera pas uniquement au regard de ces éléments.
 
-**Pour aller plus loin** : [https://www.cohesion-territoires.gouv.fr/loi-solidarite-et-renouvellement-urbain-sru](https://www.cohesion-territoires.gouv.fr/loi-solidarite-et-renouvellement-urbain-sru)
+Le SCoT du Beaujolais identifie la commune de Légny comme faisant partie des communes classées en polarité 3. A ce titre, **il fixe un objectif de production de 89 logements nouveaux pour la période 1999-2030**. Il sera nécessaire de définir les objectifs de production de logements sur la période du PLU à partir de la connaissance de l’objectif fixé par le SCoT du Beaujolais pour la période 1999-2030 et du calcul des logements déjà construits.
+
+Le SCoT du Beaujolais précise qu’une part importante des constructions nouvelles **(10%) devra être issue d’opération de démolition/reconstruction** et encourage à consacrer **15 % de la production de logements à du logement social ou abordable**.
+
+Il prévoit également des formes d’habitat variées et favorisant la densité de l'urbanisation **en retenant le principe d’un équilibre entre collectif, groupé et individuel sur les communes en polarité 3**.
+
+Le SCoT du Beaujolais impose un développement de l'urbanisation en dent creuse ou sous forme de greffes localisées au plus proche des bourgs.
+
+Il met en avant la nécessité de **maintenir une diversité des fonctions (commerces, services, loisirs...) pour renforcer le dynamisme des centre-bourgs des villages et limiter les déplacements**.
+
+Concernant le développement économique, le SCoT fixe les objectifs suivants :
+
+- accueillir des emplois en limitant les déplacements domicile-travail et en privilégiant les secteurs desservis en transport collectif,
+- renforcer les centralités en y développant les commerces et les services,
+- favoriser et consolider les activités tertiaires dans les pôles et à proximité des gares.
+
+Le SCoT du Beaujolais a retenu :
+
+- **4 pôles économiques majeurs** : Lybertec sur Belleville, Charentay et Saint-Georges de Reneins, L'Ile Porte sur Arnas et Villefranche, Tarare Est - Les Olmes sur Les Olmes et Saint-Romain de Popey pour la partie Beaujolaise (et une partie sur le SCoT Ouest Lyonnais) et le projet du Bordelan sur Anse ;
+- **26 zones d'activités secondaires** (sous forme d'une liste exhaustive des projets de zones d'activités secondaires exclusivement autorisés jusqu'à modification, révision du SCoT et/ou jusqu'à approbation de schémas de secteur).
+
+**La commune de Légny n’est pas concernée par ces zones.**
+
+Concernant **les petites zones d'activités**, le SCoT précise bien qu'elles devront **nécessairement être planifiées en lien avec les politiques d'aménagement des communauté de communes et qu'elles ne pourront dépasser 5 hectares**.
