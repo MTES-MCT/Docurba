@@ -1,4 +1,5 @@
 ---
+ordre: 3
 title: Loi ALUR
 description: 'La loi pour l’accès au logement et un urbanisme rénové, Alur, promulguée en mars 2014, permet de grandes avancées pour faciliter la régulation des marchés immobiliers et encadrer les pratiques abusives, favoriser l’accès au logement des ménages et développer l’innovation et la transparence.'
 ---

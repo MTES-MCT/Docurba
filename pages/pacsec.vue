@@ -44,30 +44,37 @@
         </template>
       </v-tab-item>
       <v-tab-item id="Documents supra-territoriaux">
-        <v-expansion-panels class="pa-4">
-          <v-expansion-panel
-            v-for="(item) in DocSupra"
-            :key="item.slug"
-          >
-            <v-expansion-panel-header>
-              <v-row>
-                <v-col cols="12">
-                  <h3 class="text-h3">
-                    {{ item.title }}
-                  </h3>
-                </v-col>
-                <v-col cols="8">
-                  <p>
-                    {{ item.description }}
-                  </p>
-                </v-col>
-              </v-row>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <nuxt-content :document="item" />
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-expansion-panels>
+        <template v-for="(item, i) in DocSupraContent">
+          <div :key="i" class="mt-4">
+            <template v-if="item.intro">
+              <nuxt-content :document="item.intro" />
+            </template>
+            <v-expansion-panels v-if="item.sections.length" class="pa-4">
+              <v-expansion-panel
+                v-for="(section) in item.sections"
+                :key="section.slug"
+              >
+                <v-expansion-panel-header>
+                  <v-row>
+                    <v-col cols="12">
+                      <h3 class="text-h3">
+                        {{ section.title }}
+                      </h3>
+                    </v-col>
+                    <v-col cols="8">
+                      <p>
+                        {{ section.description }}
+                      </p>
+                    </v-col>
+                  </v-row>
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                  <nuxt-content :document="section" />
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </div>
+        </template>
       </v-tab-item>
       <v-tab-item id="Jeux de données">
         <DataSourcesList />
@@ -83,7 +90,9 @@ export default {
     const CadreJuridique = await $content('CadreJuridique', {
       deep: true
     }).fetch()
-    const DocSupra = await $content('DocumentsSupra-territoriaux').fetch()
+    const DocSupra = await $content('DocumentsSupra-territoriaux', {
+      deep: true
+    }).fetch()
 
     return {
       CadreJuridique,
@@ -105,14 +114,20 @@ export default {
   computed: {
     CadreJuridiqueContent () {
       return this.parsePacContent(this.CadreJuridique)
+    },
+    DocSupraContent () {
+      return this.parsePacContent(this.DocSupra)
     }
   },
   methods: {
-    getOrder () {
-      return 1
+    getOrder (content) {
+      return content ? (content.ordre || 100) : 100
+    },
+    sortContent (a, b) {
+      return this.getOrder(a) - this.getOrder(b)
     },
     parsePacContent (contentRoot) {
-      const sections = {}
+      let sections = {}
 
       contentRoot.forEach((content) => {
         const contentKey = `${content.dir}-${content.depth}`
@@ -128,7 +143,17 @@ export default {
         }
       })
 
-      return Object.values(sections)
+      sections = Object.values(sections)
+
+      sections.forEach((item) => {
+        item.sections.sort((a, b) => {
+          return this.sortContent(a, b)
+        })
+      })
+
+      return sections.sort((a, b) => {
+        return this.sortContent(a.intro, b.intro)
+      })
     }
   }
 }
