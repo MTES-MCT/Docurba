@@ -1,23 +1,26 @@
 ---
 title: Loi ELAN
-description: 'La loi du 13 décembre 2000 relative à la solidarité et au renouvellement urbain, appelée Loi SRU, est un texte complexe qui modifie en profondeur le droit de l’urbanisme et du logement en France. L’article 55 de cette loi impose à certaines communes de disposer d’un nombre minimum de logements sociaux.'
+description : 'Construire plus de logements, simplifier les normes, protéger les plus fragiles et mettre les transitions énergétique et numérique au service des habitants : telle est l’ambition de la loi Elan (évolution du logement, de l’aménagement et du numérique), promulguée le 23 novembre 2018.'
 ---
 
-## Loi SRU
+## Loi ELAN
 
-La loi du 13 décembre 2000 relative à la solidarité et au renouvellement urbain, appelée Loi SRU, est un texte complexe qui modifie en profondeur le droit de l’urbanisme et du logement en France. L’article 55 de cette loi impose à certaines communes de disposer d’un nombre minimum de logements sociaux.
+Construire plus de logements, simplifier les normes, protéger les plus fragiles et mettre les transitions énergétique et numérique au service des habitants : telle est l’ambition de la loi Elan (évolution du logement, de l’aménagement et du numérique), promulguée le 23 novembre 2018.
 
-La loi a été élaborée autour de trois exigences :
-- une plus grande solidarité,
-- l’encouragement au développement durable,
-- le renforcement de la démocratie et de la décentralisation.
+**Les objectifs de la loi :**
 
-En particulier en **matière d’urbanisme**, les schémas directeurs (SD) sont remplacés par les schémas de cohérence territoriale (SCOT). Les plans d’occupation des sols (POS) sont remplacés par les plans locaux d’urbanisme (PLU). **On passe alors d’un urbanisme de zones à un urbanisme de projet.** Les plans d’aménagement de zone (PAZ) sont supprimés.
+- Construire plus, mieux et moins cher
+- Restructurer et renforcer le secteur du logement social
+- Répondre aux besoins de chacun et favoriser la mixité sociale
+- Améliorer le cadre de vie et renforcer la cohésion sociale
 
-En ce qui concerne **le patrimoine et plus spécifiquement la protection des monuments historiques**,le périmètre de protection de 500 mètres peut à présent, “sur proposition de l'architecte des Bâtiments de France et après accord de la commune, être modifié de façon à désigner des ensembles d'immeubles et des espaces qui participent de l'environnement du monument pour en préserver le caractère ou contribuer à en améliorer la qualité”.
 
-Concernant **la production de logements sociaux, l’article 55** de la loi SRU oblige certaines communes appartenant à des territoires bien intégrés et de taille suffisante pour mener une politique locale de l’habitat dynamique et volontaire, à disposer d’un nombre minimum de logements sociaux, proportionnel à leur parc résidentiel avec une obligation de 25 % ou 20 % de logements sociaux pour certaines communes.
+**En matière d’urbanisme**, deux ordonnances du 17 juin 2020 issues de la loi ELAN sont structurantes pour la planification, elles ont pour objectifs :
 
-En ce qui concerne la commune de Crolles, soit “néant” soit renvoi vers la fiche thématique “Répondre 	aux besoins en matière de logements et en termes de mixité et de 	diversité”
+- d’adapter l’objet, le périmètre et le contenu du schéma de cohérence territoriale afin de tirer les conséquence de la création du SRADDET et du développement des plans locaux d’urbanisme intercommunaux;
+- d’adopter toute mesure propre à simplifier et limiter les obligations de compatibilité et de prise en compte pour les documents d’urbanisme (cf paragraphe 1.2 spécifique à la hiérarchie des normes).
 
-**Pour aller plus loin** : [https://www.cohesion-territoires.gouv.fr/loi-solidarite-et-renouvellement-urbain-sru](https://www.cohesion-territoires.gouv.fr/loi-solidarite-et-renouvellement-urbain-sru)
+Par ailleurs, **la note d’enjeux** est rendue obligatoire lorsque l’auteur d’un SCoT ou d’un PLUi en fait la demande lors de l’élaboration ou la révision de son document. Cette demande doit être réalisée à l’occasion de la délibération de prescription du document. Dans les autres cas, il est toujours loisible aux services de l’Etat de réaliser ou non la note d’enjeux.
+
+**Pour aller plus loin** :
+https://www.cohesion-territoires.gouv.fr/loi-portant-evolution-du-logement-de-lamenagement-et-du-numerique-elan
