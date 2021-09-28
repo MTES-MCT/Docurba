@@ -23,4 +23,6 @@ For detailed explanation on how things work, check out [Nuxt.js docs](https://nu
 
 ```bash
 $ gcloud app deploy app.yaml --project docurba
+
+$ gcloud app deploy app_dev.yaml --project docurba
 ```
