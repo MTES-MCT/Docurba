@@ -1,23 +1,46 @@
 ---
+ordre: 1
 title: SRADDET
-description: 'La loi du 13 décembre 2000 relative à la solidarité et au renouvellement urbain, appelée Loi SRU, est un texte complexe qui modifie en profondeur le droit de l’urbanisme et du logement en France. L’article 55 de cette loi impose à certaines communes de disposer d’un nombre minimum de logements sociaux.'
+description: 'Le schéma régional d’aménagement, de développement durable et d’égalité des territoires (SRADDET) a été approuvé par arrêté du 10 avril 2020.'
 ---
 
-## Loi SRU
+## SRADDET
 
-La loi du 13 décembre 2000 relative à la solidarité et au renouvellement urbain, appelée Loi SRU, est un texte complexe qui modifie en profondeur le droit de l’urbanisme et du logement en France. L’article 55 de cette loi impose à certaines communes de disposer d’un nombre minimum de logements sociaux.
+Le schéma régional d’aménagement, de développement durable et d’égalité des territoires (SRADDET) a été approuvé par arrêté du 10 avril 2020.
 
-La loi a été élaborée autour de trois exigences :
-- une plus grande solidarité,
-- l’encouragement au développement durable,
-- le renforcement de la démocratie et de la décentralisation.
+Le schéma, dans **sa dimension transversale et intégratrice**, vient se substituer à certains schémas sectoriels régionaux préexistants : schémas régionaux climat-air-énergie (SRCAE), schémas régionaux de cohérence écologique (SRCE) et plan régional de prévention et de gestion des déchets (PRPGD).
 
-En particulier en **matière d’urbanisme**, les schémas directeurs (SD) sont remplacés par les schémas de cohérence territoriale (SCOT). Les plans d’occupation des sols (POS) sont remplacés par les plans locaux d’urbanisme (PLU). **On passe alors d’un urbanisme de zones à un urbanisme de projet.** Les plans d’aménagement de zone (PAZ) sont supprimés.
+L’ensemble des pièces du schéma, ainsi que les documents d’accompagnement et de mise en œuvre,  sont consultables au lien suivant :
 
-En ce qui concerne **le patrimoine et plus spécifiquement la protection des monuments historiques**,le périmètre de protection de 500 mètres peut à présent, “sur proposition de l'architecte des Bâtiments de France et après accord de la commune, être modifié de façon à désigner des ensembles d'immeubles et des espaces qui participent de l'environnement du monument pour en préserver le caractère ou contribuer à en améliorer la qualité”.
+https://www.civocracy.org/ambitionterritoires2030/sraddet-projet-definitif
 
-Concernant **la production de logements sociaux, l’article 55** de la loi SRU oblige certaines communes appartenant à des territoires bien intégrés et de taille suffisante pour mener une politique locale de l’habitat dynamique et volontaire, à disposer d’un nombre minimum de logements sociaux, proportionnel à leur parc résidentiel avec une obligation de 25 % ou 20 % de logements sociaux pour certaines communes.
+Le SRADDET fixe pour le territoire de la région Auvergne-Rhône-Alpes, 61 objectifs, regroupés dans le rapport d’objectif, sur les 11 thématiques suivantes (article L4251-1 du Code Général des Collectivités Territoriales) :
 
-En ce qui concerne la commune de Crolles, soit “néant” soit renvoi vers la fiche thématique “Répondre 	aux besoins en matière de logements et en termes de mixité et de 	diversité”
+- équilibre et égalité des territoires, 
+- implantation des différentes infrastructures d'intérêt régional, 
+- désenclavement des territoires ruraux, 
+- habitat,
+- gestion économe de l'espace, 
+- intermodalité, de logistique et de développement des transports de personnes et de marchandises,
+- maîtrise et valorisation de l'énergie, 
+- lutte contre le changement climatique, 
+- pollution de l'air, 
+- protection et restauration de la biodiversité, 
+- prévention et gestion des déchets.
 
-**Pour aller plus loin** : [https://www.cohesion-territoires.gouv.fr/loi-solidarite-et-renouvellement-urbain-sru](https://www.cohesion-territoires.gouv.fr/loi-solidarite-et-renouvellement-urbain-sru)
+Un fascicule de règles générales **composé de 43 règles** est adossée à ces objectifs. Un tome de règles spécifiques traite de la thématique de la prévention et de la gestion des déchets. 
+
+Plusieurs annexes complètent les objectifs et les règles : l’état des lieux du territoire, l’évaluation environnementale, l’annexe biodiversité et son atlas cartographique, ainsi que le plan régional de prévention et de gestion des déchets. 
+
+Le schéma est opposable aux documents d’urbanisme de rang inférieur. 
+
+**Le territoire de la commune de Légny étant couvert par un SCoT, c’est envers celui-ci que le SRADDET est opposable.**
+
+*Pour le ScoT, les articles L4251-3 du CGCT et L131-1 et 2 du code de l’urbanisme disposent que ce dernier doit :*
+
+*- prendre en compte les objectifs du SRADDET*
+
+*- être compatible avec les règles générales du SRADDET*
+      
+*Cette opposabilité s’applique à tous les SCoT prescrits depuis le 10 avril 2020 ainsi qu’aux SCoT prescrits antérieurement à cette date et dont l’approbation est prévue à une date ultérieure au 10 avril 2020.
+Les objectifs et les règles du SRADDET doivent être déclinés sur les champs de compétences du SCoT.*
