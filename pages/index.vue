@@ -22,7 +22,7 @@
           <v-select filled hide-details placeholder="Type de document" :items="documents" />
         </v-col>
         <v-col cols="3">
-          <v-text-field hide-details filled placeholder="Territoire" />
+          <VRegionAutocomplete v-model="selectedRegion" />
         </v-col>
         <v-col cols="auto">
           <v-btn color="primary" x-large to="/pacsec" nuxt>
@@ -160,7 +160,8 @@
 export default {
   data () {
     return {
-      documents: ['CC', 'PLU', 'PLUi', 'PLUi-H', 'PLUi-D', 'PLUi-HD', 'SCoT', 'SCot-AEC']
+      documents: ['CC', 'PLU', 'PLUi', 'PLUi-H', 'PLUi-D', 'PLUi-HD', 'SCoT', 'SCot-AEC'],
+      selectedRegion: null
     }
   }
 }
