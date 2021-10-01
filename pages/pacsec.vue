@@ -87,10 +87,10 @@
 
 export default {
   async asyncData ({ $content }) {
-    const CadreJuridique = await $content('CadreJuridique', {
+    const CadreJuridique = await $content('PAC/CadreJuridique', {
       deep: true
     }).fetch()
-    const DocSupra = await $content('DocumentsSupra-territoriaux', {
+    const DocSupra = await $content('PAC/DocumentsSupra-territoriaux', {
       deep: true
     }).fetch()
 

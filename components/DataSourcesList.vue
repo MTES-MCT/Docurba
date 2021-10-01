@@ -3,9 +3,8 @@
     <v-row>
       <v-col cols="12">
         <v-chip-group
-          v-model="selectedThemes"
+          v-model="selectedTheme"
           column
-          multiple
         >
           <v-chip
             v-for="themeKey in themesKeys"
@@ -26,10 +25,10 @@
           {{ theme }}
         </h2>
       </v-col>
-      <v-col v-for="(source, i) in sources" :key="source.name" cols="4">
+      <v-col v-for="(source, i) in sources" :key="source.title" cols="4">
         <v-card flat color="g100">
           <v-card-title>
-            {{ source.name }}
+            {{ source.title }}
           </v-card-title>
           <v-row v-if="source.subTheme">
             <v-col cols="10">
@@ -43,7 +42,7 @@
             </v-col>
             <v-col cols="2">
               <v-btn
-                :href="i ? `https://www.data.gouv.fr/en/datasets/?q=${source.name}` : 'https://www.datara.gouv.fr/accueil/base_territoriale/'"
+                :href="i ? `https://www.data.gouv.fr/en/datasets/?q=${source.title}` : 'https://www.datara.gouv.fr/accueil/base_territoriale/'"
                 target="_blank"
                 icon
               >
@@ -62,35 +61,40 @@
 <script>
 import { groupBy } from 'lodash'
 import { mdiOpenInNew } from '@mdi/js'
-import dataSources from '@/assets/data/DataSources.json'
+// import dataSources from '@/assets/data/DataSources.json'
 
 export default {
   data () {
     return {
-      dataSources,
-      selectedThemes: [],
+      dataSources: [],
+      selectedTheme: '',
       icons: {
         mdiOpenInNew
       }
     }
   },
+  async fetch () {
+    this.dataSources = await this.$content('Data', {
+      deep: true
+    }).fetch()
+  },
   computed: {
     themes () {
-      return groupBy(dataSources, source => source.theme)
+      return groupBy(this.dataSources, source => source.theme)
     },
     themesKeys () {
       return Object.keys(this.themes).filter(k => k)
     },
     filteredThemes () {
-      if (this.selectedThemes.length) {
-        const themes = {}
+      // console.log('themes', this.themes, this.themesKeys)
 
-        this.selectedThemes.forEach((themeIndex) => {
-          const selectedTheme = this.themesKeys[themeIndex]
-          themes[selectedTheme] = this.themes[selectedTheme]
-        })
+      if (this.selectedTheme) {
+        const theme = {}
+        const selectedKey = this.themesKeys[this.selectedTheme]
 
-        return themes
+        theme[selectedKey] = this.themes[selectedKey]
+
+        return theme
       } else {
         return this.themes
       }
