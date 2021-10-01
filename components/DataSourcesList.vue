@@ -97,10 +97,10 @@ export default {
     },
     filteredThemes () {
       // console.log('themes', this.themes, this.themesKeys)
+      const selectedKey = this.themesKeys[this.selectedTheme]
 
-      if (this.selectedTheme) {
+      if (selectedKey) {
         const theme = {}
-        const selectedKey = this.themesKeys[this.selectedTheme]
 
         theme[selectedKey] = this.themes[selectedKey]
 
