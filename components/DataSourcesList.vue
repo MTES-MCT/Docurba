@@ -25,13 +25,13 @@
           {{ theme }}
         </h2>
       </v-col>
-      <v-col v-for="(source, i) in sources" :key="source.title" cols="4">
+      <v-col v-for="(source) in sources" :key="source.title" cols="4">
         <v-card flat color="g100">
           <v-card-title>
             {{ source.title }}
           </v-card-title>
           <v-row v-if="source.subTheme">
-            <v-col cols="10">
+            <v-col cols="12">
               <v-chip
                 outlined
                 class="text-capitalize"
@@ -40,18 +40,28 @@
                 {{ source.subTheme }}
               </v-chip>
             </v-col>
-            <v-col cols="2">
-              <v-btn
-                :href="i ? `https://www.data.gouv.fr/en/datasets/?q=${source.title}` : 'https://www.datara.gouv.fr/accueil/base_territoriale/'"
-                target="_blank"
-                icon
-              >
-                <v-icon small>
-                  {{ icons.mdiOpenInNew }}
-                </v-icon>
-              </v-btn>
+            <v-col cols="12">
+              <v-card-text>
+                <nuxt-content :document="source" />
+              </v-card-text>
             </v-col>
           </v-row>
+          <v-card-actions v-if="source.sourceNational">
+            <v-row justify="end">
+              <v-col cols="auto">
+                <v-btn
+                  :href="source.sourceNational"
+                  target="_blank"
+                  color="primary"
+                >
+                  Source national
+                  <v-icon class="ml-2" small>
+                    {{ icons.mdiOpenInNew }}
+                  </v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
