@@ -28,7 +28,7 @@
             color="primary"
             outlined
           >
-            Source regional
+            Source regionale
             <v-icon class="ml-2" small>
               {{ icons.mdiOpenInNew }}
             </v-icon>
