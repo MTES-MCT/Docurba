@@ -77,7 +77,7 @@
         </template>
       </v-tab-item>
       <v-tab-item id="Jeux de données">
-        <DataSourcesList />
+        <DataSourcesList :region="currentRegion" />
       </v-tab-item>
     </v-tabs-items>
   </v-container>
@@ -117,6 +117,9 @@ export default {
     },
     DocSupraContent () {
       return this.parsePacContent(this.DocSupra)
+    },
+    currentRegion () {
+      return this.$route.query.region
     }
   },
   methods: {
