@@ -1,0 +1,55 @@
+[{
+  "iso": "FR-ARA",
+  "name": "Auvergne-Rhône-Alpes"
+}, {
+  "iso": "FR-BFC",
+  "name": "Bourgogne-Franche-Comté"
+},{
+  "iso": "FR-BRE",
+  "name": "Bretagne"
+},{
+  "iso": "FR-CVL",
+  "name": "Centre-Val de Loire"
+},{
+  "iso": "FR-COR",
+  "name": "Corse"
+},{
+  "iso": "FR-GES",
+  "name": "Grand Est"
+},{
+  "iso": "FR-HDF",
+  "name": "Hauts-de-France"
+},{
+  "iso": "FR-IDF",
+  "name": "Île-de-France"
+},{
+  "iso": "FR-NOR",
+  "name": "Normandie"
+},{
+  "iso": "FR-NAQ",
+  "name": "Nouvelle-Aquitaine"
+},{
+  "iso": "FR-OCC",
+  "name": "Occitanie"
+},{
+  "iso": "FR-PDL",
+  "name": "Pays de la Loire"
+},{
+  "iso": "FR-PAC",
+  "name": "Provence-Alpes-Côte d'Azur"
+},{
+  "iso": "FR-GUA",
+  "name": "Guadeloupe"
+},{
+  "iso": "FR-GUF",
+  "name": "Guyane"
+},{
+  "iso": "FR-MTQ",
+  "name": "Martinique"
+},{
+  "iso": "FR-LRE",
+  "name": "La Réunion"
+},{
+  "iso": "FR-MAY",
+  "name": "Mayotte"
+}]
