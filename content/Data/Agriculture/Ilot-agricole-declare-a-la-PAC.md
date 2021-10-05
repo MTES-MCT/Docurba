@@ -2,7 +2,6 @@
 title: "Ilot agricole déclaré à la PAC"
 theme: "Agriculture"
 subTheme: "Parcellaire agricole"
-sourceNational: "https://www.data.gouv.fr/en/datasets/?q=Ilot%20agricole%20d%C3%A9clar%C3%A9%20%C3%A0%20la%20PAC"
 regions:
 -
   iso: FR-BRE
