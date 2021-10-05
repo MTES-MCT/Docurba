@@ -19,13 +19,19 @@
           <!-- <v-btn color="primary">
           Rechercher
         </v-btn> -->
-          <v-select filled hide-details placeholder="Type de document" :items="documents" />
+          <v-select
+            v-model="searchQuery.document"
+            filled
+            hide-details
+            placeholder="Type de document"
+            :items="documents"
+          />
         </v-col>
         <v-col cols="3">
-          <VRegionAutocomplete v-model="selectedRegion" />
+          <VRegionAutocomplete v-model="searchQuery.region" />
         </v-col>
         <v-col cols="auto">
-          <v-btn color="primary" x-large to="/pacsec" nuxt>
+          <v-btn color="primary" x-large nuxt :to="searchLink">
             Rechercher
           </v-btn>
         </v-col>
@@ -41,7 +47,7 @@
         </v-col>
       </v-row>
       <v-row justify="space-around" align="center">
-        <v-col cols="12" md="3">
+        <v-col cols="12" sm="5" md="4" lg="3">
           <v-card flat height="390" color="g100">
             <v-row justify="center">
               <v-col cols="auto">
@@ -57,7 +63,7 @@
             </v-row>
           </v-card>
         </v-col>
-        <v-col cols="12" md="3">
+        <v-col cols="12" sm="5" md="4" lg="3">
           <v-card flat height="390" color="g100">
             <v-row justify="center">
               <v-col cols="auto">
@@ -73,7 +79,7 @@
             </v-row>
           </v-card>
         </v-col>
-        <v-col cols="12" md="3">
+        <v-col cols="12" sm="5" md="4" lg="3">
           <v-card flat height="390" color="g100">
             <v-row justify="center">
               <v-col cols="auto">
@@ -161,7 +167,28 @@ export default {
   data () {
     return {
       documents: ['CC', 'PLU', 'PLUi', 'PLUi-H', 'PLUi-D', 'PLUi-HD', 'SCoT', 'SCot-AEC'],
-      selectedRegion: null
+      searchQuery: {
+        region: null,
+        document: null
+      }
+    }
+  },
+  computed: {
+    searchLink () {
+      const query = {}
+
+      if (this.searchQuery.region) {
+        query.region = this.searchQuery.region.iso
+      }
+
+      if (this.searchQuery.document) {
+        query.document = this.searchQuery.document
+      }
+
+      return {
+        path: '/pacsec',
+        query
+      }
     }
   }
 }
