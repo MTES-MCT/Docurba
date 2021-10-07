@@ -40,7 +40,7 @@
             target="_blank"
             color="primary"
           >
-            Source national
+            Source nationale
             <v-icon class="ml-2" small>
               {{ icons.mdiOpenInNew }}
             </v-icon>
