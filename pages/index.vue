@@ -48,8 +48,8 @@
       </v-row>
       <v-row justify="space-around" align="center">
         <v-col cols="12" sm="5" md="4" lg="3">
-          <v-card flat height="390" color="g100">
-            <v-row justify="center" align="center">
+          <v-card flat height="340" color="g100">
+            <v-row justify="center">
               <v-col cols="10">
                 <v-img :src="require('@/assets/picto/undraw_data_processing.svg')" />
                 <!-- <v-sheet height="200" width="200" color="g300" /> -->
@@ -65,7 +65,7 @@
           </v-card>
         </v-col>
         <v-col cols="12" sm="5" md="4" lg="3">
-          <v-card flat height="390" color="g100">
+          <v-card flat height="340" color="g100">
             <v-row justify="center">
               <v-col cols="10">
                 <v-img :src="require('@/assets/picto/undraw_reviewed_docs.svg')" />
@@ -82,7 +82,7 @@
           </v-card>
         </v-col>
         <v-col cols="12" sm="5" md="4" lg="3">
-          <v-card flat height="390" color="g100">
+          <v-card flat height="340" color="g100">
             <v-row justify="center">
               <v-col cols="10">
                 <v-img :src="require('@/assets/picto/undraw_progress_indicator.svg')" />
