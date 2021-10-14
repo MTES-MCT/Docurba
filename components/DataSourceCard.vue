@@ -3,8 +3,8 @@
     <v-card-title>
       {{ source.title }}
     </v-card-title>
-    <v-row v-if="source.subTheme">
-      <v-col cols="12">
+    <v-row>
+      <v-col v-if="source.subTheme" cols="12">
         <v-chip
           outlined
           class="text-capitalize"
@@ -18,10 +18,26 @@
           <nuxt-content :document="source" />
         </v-card-text>
       </v-col>
+      <v-col v-if="regionSource && regionSource.charts" cols="12">
+        <client-only>
+          <ChartsLayout v-for="(chart, chartIndex) in regionSource.charts" :key="chartIndex">
+            <ChartsMap
+              :topology="require(`@/assets/data/${chart.data}`)"
+              color="black"
+              features-key="FRA"
+              projection="geoConicConformal"
+            >
+            <!-- <ChartsMap :topology="borders" color="black" featuresKey="FRA_country"></ChartsMap> -->
+            <!-- <v-points v-show="showCities" :points="cities" isMap v-on:hover="hoverPoint" pointer>
+              </v-points> -->
+            </ChartsMap>
+          </ChartsLayout>
+        </client-only>
+      </v-col>
     </v-row>
     <v-card-actions>
       <v-row justify="end">
-        <v-col v-if="regionSource" cols="auto">
+        <v-col v-if="regionSource && regionSource.source" cols="auto">
           <v-btn
             :href="regionSource.source"
             target="_blank"

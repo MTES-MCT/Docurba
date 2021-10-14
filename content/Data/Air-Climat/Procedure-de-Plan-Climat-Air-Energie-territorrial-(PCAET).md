@@ -9,6 +9,12 @@ regions:
 -
   iso: FR-BFC
   source: https://www.data.gouv.fr/fr/datasets/plans-climat-air-energie-territoriaux-pcaet-obliges-pour-les-plus-de-20000-habitants-1/
+-
+  iso: FR-ARA
+  charts:
+  -
+    type: map
+    data: GeoJSON/FRA.json
 ---
 
 Le plan climat-air énergie territorial (PCAET) issu de la loi relative à la transition énergétique pour la croissance verte d’août 2015, est un cadre d’engagement du territoire qu constitue la véritable déclinaison directe et opérationnelle de l’Accord de Paris.
