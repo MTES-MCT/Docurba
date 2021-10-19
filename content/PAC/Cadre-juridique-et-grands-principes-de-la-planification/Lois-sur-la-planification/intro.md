@@ -1,5 +1,5 @@
 ---
-# ordre: 1
+ordre: 1
 ---
 
 ### Lois sur la planification

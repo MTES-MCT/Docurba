@@ -1,5 +1,5 @@
 ---
-# ordre: 1
+ordre: 3
 ---
 
 ### Préserver le patrimoine naturel, historique et géologique, mettre en valeur les paysages

@@ -13,39 +13,6 @@
       <v-tab-item id="PAC sec">
         <PACContentSection v-for="(root, slug) in PACroots" :key="slug" :sections="root" />
       </v-tab-item>
-      <!-- <v-tab-item v-for="(section, i) in PAC" id="">
-        <template v-for="(item, i) in section">
-          <div :key="i" class="mt-4">
-            <template v-if="item.intro">
-              <nuxt-content :document="item.intro" />
-            </template>
-            <v-expansion-panels v-if="item.sections.length" class="pa-4">
-              <v-expansion-panel
-                v-for="(section) in item.sections"
-                :key="section.slug"
-              >
-                <v-expansion-panel-header>
-                  <v-row>
-                    <v-col cols="12">
-                      <h3 class="text-h3">
-                        {{ section.title }}
-                      </h3>
-                    </v-col>
-                    <v-col cols="8">
-                      <p>
-                        {{ section.description }}
-                      </p>
-                    </v-col>
-                  </v-row>
-                </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <nuxt-content :document="section" />
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
-          </div>
-        </template>
-      </v-tab-item> -->
       <v-tab-item id="Jeux de données">
         <DataSourcesList :region="currentRegion" />
       </v-tab-item>
@@ -113,41 +80,7 @@ export default {
     }
   },
   methods: {
-  //   getOrder (content) {
-  //     return content ? (content.ordre || 100) : 100
-  //   },
-  //   sortContent (a, b) {
-  //     return this.getOrder(a) - this.getOrder(b)
-  //   },
-  //   parsePacContent (contentRoot) {
-  //     let sections = {}
 
-    //     contentRoot.forEach((content) => {
-    //       const contentKey = `${content.dir}-${content.depth}`
-
-    //       if (!sections[contentKey]) {
-    //         sections[contentKey] = { sections: [] }
-    //       }
-
-    //       if (content.slug === 'intro') {
-    //         sections[contentKey].intro = content
-    //       } else {
-    //         sections[contentKey].sections.push(content)
-    //       }
-    //     })
-
-    //     sections = Object.values(sections)
-
-    //     sections.forEach((item) => {
-    //       item.sections.sort((a, b) => {
-    //         return this.sortContent(a, b)
-    //       })
-    //     })
-
-  //     return sections.sort((a, b) => {
-  //       return this.sortContent(a.intro, b.intro)
-  //     })
-  //   }
   }
 }
 </script>

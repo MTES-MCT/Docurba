@@ -1,5 +1,5 @@
 ---
-# ordre: 1
+ordre: 9
 ---
 
 ### Revitaliser les centre-bourgs
