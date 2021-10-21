@@ -1,7 +1,6 @@
 ---
 ordre: 4
-intro: Construire plus de logements, simplifier les normes, protéger les plus fragiles et mettre les transitions énergétique et numérique au service des habitants : telle est l’ambition de la loi Elan (évolution du logement, de l’aménagement et du numérique), promulguée le 23 novembre 2018.
-
+intro : Construire plus de logements simplifier les normes, protéger les plus fragiles et mettre les transitions énergétiques et numérique au service des habitants:telle est l'ambition de la loi Elan (évolution du logement, de l’aménagement et du numérique), promulguée le 23 novembre 2018.
 ---
 
 #### ELAN
