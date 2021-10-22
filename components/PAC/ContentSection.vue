@@ -1,12 +1,9 @@
 <template>
   <div>
-    <nuxt-content v-if="intro" :document="intro" />
-    <template v-for="(section, i) in otherSections">
-      <div :key="i" class="mt-4">
-        <nuxt-content :document="section" />
-      </div>
-    </template>
-    <PACContentSection v-if="intro.children" :sections="intro.children" />
+    <div v-for="(section, i) in sortedSections" :key="i">
+      <nuxt-content :document="section" />
+      <PACContentSection v-if="section.children" :sections="section.children" />
+    </div>
   </div>
 </template>
 
@@ -19,8 +16,13 @@ export default {
     }
   },
   computed: {
-    intro () {
-      return this.sections.find(s => s.slug === 'intro')
+    sortedSections () {
+      return this.sections.map(s => s).sort((sa, sb) => {
+        return sa.ordre - sb.ordre
+      })
+    },
+    intros () {
+      return this.sections.filter(s => s.slug === 'intro')
     },
     otherSections () {
       return this.sections.filter(s => s.slug !== 'intro')

@@ -23,8 +23,8 @@
 <script>
 import { groupBy } from 'lodash'
 
-function getDepth (dir) {
-  return (dir.match(/\//g) || []).length
+function getDepth (path) {
+  return (path.match(/\//g) || []).length
 }
 
 export default {
@@ -35,14 +35,15 @@ export default {
     }).fetch()
 
     PAC.forEach((section) => {
-      section.depth = getDepth(section.dir)
+      section.depth = getDepth(section.path)
 
       const parent = PAC.find((p) => {
-        const pDepth = p.depth || getDepth(section.dir)
+        const pDepth = p.depth || getDepth(p.path)
 
-        return p.slug === 'intro' &&
+        return p !== section &&
+          p.slug === 'intro' &&
           section.dir.includes(p.dir) &&
-          (pDepth + 1) === section.depth
+          (section.slug === 'intro' ? pDepth + 1 : pDepth) === section.depth
       })
 
       if (parent) {
