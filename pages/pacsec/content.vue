@@ -2,7 +2,20 @@
   <v-row>
     <v-col cols="4">
       <client-only>
-        <v-treeview class="sticky-tree mt-4" style="top: 80px" hoverable :items="PACroots" item-text="titre" />
+        <v-treeview
+          class="sticky-tree mt-4"
+          style="top: 80px"
+          hoverable
+          open-on-click
+          :items="PACroots"
+          item-text="titre"
+        >
+          <template #label="{item}">
+            <div @click="scrollTo(item)">
+              {{ item.titre }}
+            </div>
+          </template>
+        </v-treeview>
       </client-only>
     </v-col>
     <v-col cols="8">
@@ -76,6 +89,14 @@ export default {
 
     //   return groupBy(roots, r => r.dir)
     // }
+  },
+  methods: {
+    scrollTo (item) {
+      // console.log(item, item.slug, slugify(item.titre, { lower: true }))
+
+      const target = item.body.children.find(el => el.tag.indexOf('h') === 0).props.id
+      this.$vuetify.goTo(`#${target}`)
+    }
   }
 }
 </script>
@@ -84,6 +105,6 @@ export default {
 .sticky-tree {
   position: sticky;
   overflow: scroll;
-  max-height: 80vh;
+  max-height: calc(100vh - 80px);
 }
 </style>
