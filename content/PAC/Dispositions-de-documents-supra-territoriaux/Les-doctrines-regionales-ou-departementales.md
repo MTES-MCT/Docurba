@@ -1,4 +1,5 @@
 ---
+titre: La stratégie régionale Eau-Air-Sol
 ordre: 3
 intro : La stratégie régionale eau - air - sol de l’État projetée à 2040 vise à préserver Auvergne-Rhône-Alpes en tant que territoire vivant, attractif et accueillant:vivant par la biodiversité qui s’y épanouit, attractif par les activités et les hommes qui s’y implantent, accueillant par la qualité et la disponibilité des ressources et des milieux qu’il offre.
 

@@ -1,87 +1,30 @@
 <template>
-  <v-container>
-    <v-tabs v-model="activeTab" show-arrows>
+  <v-container fluid>
+    <v-tabs show-arrows>
       <v-tab
         v-for="tab in tabs"
-        :key="tab"
-        :to="`#${tab}`"
+        :key="tab.text"
+        :to="tab.to"
+        nuxt
       >
-        {{ tab }}
+        {{ tab.text }}
       </v-tab>
     </v-tabs>
-    <v-tabs-items v-model="activeTab">
-      <v-tab-item id="PAC sec">
-        <PACContentSection v-for="(root, slug) in PACroots" :key="slug" :sections="root" />
-      </v-tab-item>
-      <v-tab-item id="Jeux de données">
-        <DataSourcesList :region="currentRegion" />
-      </v-tab-item>
-    </v-tabs-items>
+    <NuxtChild />
   </v-container>
 </template>
 
 <script>
-import { groupBy } from 'lodash'
-
-function getDepth (path) {
-  return (path.match(/\//g) || []).length
-}
 
 export default {
   name: 'PACsec',
-  async asyncData ({ $content }) {
-    const PAC = await $content('PAC', {
-      deep: true
-    }).fetch()
-
-    PAC.forEach((section) => {
-      section.depth = getDepth(section.path)
-
-      const parent = PAC.find((p) => {
-        const pDepth = p.depth || getDepth(p.path)
-
-        return p !== section &&
-          p.slug === 'intro' &&
-          section.dir.includes(p.dir) &&
-          (section.slug === 'intro' ? pDepth + 1 : pDepth) === section.depth
-      })
-
-      if (parent) {
-        section.parent = parent
-
-        if (parent.children) {
-          parent.children.push(section)
-        } else {
-          parent.children = [section]
-        }
-      }
-    })
-
-    return {
-      PAC
-    }
-  },
   data () {
     return {
       tabs: [
-        'PAC sec',
-        'Jeux de données'
-      ],
-      activeTab: 'Jeux de données'
+        { text: 'PAC sec', to: '/pacsec/content' },
+        { text: 'Jeux de données', to: '/pacsec/data' }
+      ]
     }
-  },
-  computed: {
-    PACroots () {
-      const roots = this.PAC.filter(section => !section.parent)
-
-      return groupBy(roots, r => r.dir)
-    },
-    currentRegion () {
-      return this.$route.query.region
-    }
-  },
-  methods: {
-
   }
 }
 </script>

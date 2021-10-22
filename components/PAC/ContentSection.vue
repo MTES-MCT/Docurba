@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-4">
     <div v-for="(section, i) in sortedSections" :key="i">
       <nuxt-content :document="section" />
       <PACContentSection v-if="section.children" :sections="section.children" />

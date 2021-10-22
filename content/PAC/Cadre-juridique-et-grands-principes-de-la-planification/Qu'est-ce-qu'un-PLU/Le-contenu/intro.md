@@ -1,4 +1,5 @@
 ---
+titre: Le contenu
 ordre: 2
 ---
 
