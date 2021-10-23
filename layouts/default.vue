@@ -10,6 +10,11 @@
           Docurba
         </v-toolbar-title>
       </nuxt-link>
+      <v-spacer />
+      <v-btn text @click="openLogin = true">
+        Connexion
+      </v-btn>
+      <LoginDialog v-model="openLogin" />
     </v-app-bar>
     <v-main>
       <nuxt />
@@ -56,6 +61,11 @@ import '@gouvfr/dsfr/dist/css/footer.css'
 import '@gouvfr/dsfr/dist/css/logo.css'
 
 export default {
+  data () {
+    return {
+      openLogin: false
+    }
+  }
 }
 </script>
 
