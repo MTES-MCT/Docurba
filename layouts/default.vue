@@ -11,20 +11,24 @@
         </v-toolbar-title>
       </nuxt-link>
       <v-spacer />
-      <template v-if="!$user.id">
-        <v-btn text @click="openLogin = true">
+      <!-- This client only could be removed with proper user management server side -->
+      <client-only>
+        <!-- <template v-if="!$user.id"> -->
+        <v-btn v-if="!$user.id" text @click="openLogin = true">
           Connexion
         </v-btn>
         <LoginDialog v-model="openLogin" />
-      </template>
-      <template v-else>
-        <v-btn text>
+        <!-- </template> -->
+        <!-- <template v-if="$user.id"> -->
+        <v-btn v-if="$user.id" text @click="openDocs = true">
           Mes documents
         </v-btn>
-        <v-btn text @click="$supabase.auth.signOut()">
+        <v-btn v-if="$user.id" text @click="$supabase.auth.signOut()">
           Déconnexion
         </v-btn>
-      </template>
+        <DocumentsDialog v-if="$user.id" v-model="openDocs" />
+        <!-- </template> -->
+      </client-only>
     </v-app-bar>
     <v-main>
       <nuxt />
@@ -72,10 +76,9 @@ import '@gouvfr/dsfr/dist/css/logo.css'
 
 export default {
   data () {
-    console.log(this.$user)
-
     return {
-      openLogin: false
+      openLogin: false,
+      openDocs: false
     }
   }
 }

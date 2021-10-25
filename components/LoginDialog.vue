@@ -141,6 +141,7 @@ export default {
       })
 
       if (!error) {
+        // eslint-disable-next-line no-console
         console.log('success sign in', user, session)
       } else {
         this.error = error
@@ -158,6 +159,7 @@ export default {
       })
 
       if (!error) {
+        // eslint-disable-next-line no-console
         console.log('success sign up', user, session)
       } else {
         this.error = error
