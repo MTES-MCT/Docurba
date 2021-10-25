@@ -11,10 +11,20 @@
         </v-toolbar-title>
       </nuxt-link>
       <v-spacer />
-      <v-btn text @click="openLogin = true">
-        Connexion
-      </v-btn>
-      <LoginDialog v-model="openLogin" />
+      <template v-if="!$user.id">
+        <v-btn text @click="openLogin = true">
+          Connexion
+        </v-btn>
+        <LoginDialog v-model="openLogin" />
+      </template>
+      <template v-else>
+        <v-btn text>
+          Mes documents
+        </v-btn>
+        <v-btn text @click="$supabase.auth.signOut()">
+          Déconnexion
+        </v-btn>
+      </template>
     </v-app-bar>
     <v-main>
       <nuxt />
@@ -62,6 +72,8 @@ import '@gouvfr/dsfr/dist/css/logo.css'
 
 export default {
   data () {
+    console.log(this.$user)
+
     return {
       openLogin: false
     }

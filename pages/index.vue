@@ -189,7 +189,7 @@ export default {
       }
 
       return {
-        path: '/pacsec',
+        path: '/pacsec/content',
         query
       }
     }
