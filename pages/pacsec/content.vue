@@ -1,35 +1,10 @@
 <template>
-  <v-row>
-    <v-col cols="4">
-      <client-only>
-        <v-treeview
-          class="sticky-tree mt-4"
-          style="top: 80px"
-          hoverable
-          open-on-click
-          :items="PACroots"
-          item-text="titre"
-        >
-          <template #label="{item}">
-            <div @click="scrollTo(item)">
-              {{ item.titre }}
-            </div>
-          </template>
-        </v-treeview>
-      </client-only>
-    </v-col>
-    <v-col cols="8">
-      <PACContentSection v-for="(root, slug) in groupedRoots" :key="slug" :sections="root" />
-    </v-col>
-  </v-row>
+  <v-container fluid>
+    <PACTreeviewContent :pac-data="PAC" />
+  </v-container>
 </template>
 
 <script>
-import { groupBy } from 'lodash'
-
-function getDepth (path) {
-  return (path.match(/\//g) || []).length
-}
 
 export default {
   async asyncData ({ $content }) {
@@ -37,74 +12,11 @@ export default {
       deep: true
     }).fetch()
 
-    PAC.forEach((section) => {
-      section.depth = getDepth(section.path)
-
-      const parent = PAC.find((p) => {
-        const pDepth = p.depth || getDepth(p.path)
-
-        return p !== section &&
-          p.slug === 'intro' &&
-          section.dir.includes(p.dir) &&
-          (section.slug === 'intro' ? pDepth + 1 : pDepth) === section.depth
-      })
-
-      if (parent) {
-        section.parent = parent
-
-        if (parent.children) {
-          parent.children.push(section)
-        } else {
-          parent.children = [section]
-        }
-      }
-    })
-
-    PAC.forEach((section) => {
-      if (section.children) {
-        section.children.sort((sa, sb) => {
-          return sa.ordre - sb.ordre
-        })
-      }
-    })
-
-    const PACroots = PAC.filter(section => !section.parent)
-    const groupedRoots = groupBy(PACroots, r => r.dir)
+    console.log(PAC.length)
 
     return {
-      PAC,
-      PACroots,
-      groupedRoots
-    }
-  },
-  data () {
-    return {}
-  },
-  computed: {
-    // PACroots () {
-    //   return this.PAC.filter(section => !section.parent)
-    // },
-    // groupedRoots () {
-    //   const roots = this.PAC.filter(section => !section.parent)
-
-    //   return groupBy(roots, r => r.dir)
-    // }
-  },
-  methods: {
-    scrollTo (item) {
-      // console.log(item, item.slug, slugify(item.titre, { lower: true }))
-
-      const target = item.body.children.find(el => el.tag.indexOf('h') === 0).props.id
-      this.$vuetify.goTo(`#${target}`)
+      PAC
     }
   }
 }
 </script>
-
-<style scoped>
-.sticky-tree {
-  position: sticky;
-  overflow: scroll;
-  max-height: calc(100vh - 80px);
-}
-</style>

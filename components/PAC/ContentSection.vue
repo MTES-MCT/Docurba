@@ -20,12 +20,6 @@ export default {
       return this.sections.map(s => s).sort((sa, sb) => {
         return sa.ordre - sb.ordre
       })
-    },
-    intros () {
-      return this.sections.filter(s => s.slug === 'intro')
-    },
-    otherSections () {
-      return this.sections.filter(s => s.slug !== 'intro')
     }
   }
 }

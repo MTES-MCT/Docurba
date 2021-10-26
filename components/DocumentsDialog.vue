@@ -9,7 +9,7 @@
               <v-list-item
                 v-for="project in projects"
                 :key="project.id"
-                :to="`/projet/${project.id}`"
+                :to="`/projets/${project.id}`"
                 nuxt
                 @click="$emit('input', false)"
               >

@@ -84,7 +84,7 @@ export default {
   methods: {
     navToProject (project) {
       this.openDocs = false
-      this.$router.psuh(`/projet/${project.id}`)
+      this.$router.psuh(`/projets/${project.id}`)
     }
   }
 }
