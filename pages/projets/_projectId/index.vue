@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <PACTreeviewContent v-if="project" :pac-data="project.PAC" />
+    <PACTreeviewContent v-if="project" :pac-data="project.PAC" editable />
   </v-container>
 </template>
 

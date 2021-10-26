@@ -2,8 +2,18 @@
   <v-row>
     <v-col cols="4">
       <client-only>
+        <v-row>
+          <v-col v-show="editable" cols="12">
+            <v-progress-linear height="10" rounded />
+          </v-col>
+          <v-col v-show="!editable" cols="12">
+            <div class="text-caption text-center">
+              Ce PAC n'est pas un document officiel.
+            </div>
+          </v-col>
+        </v-row>
         <v-treeview
-          class="sticky-tree mt-4"
+          class="sticky-tree"
           style="top: 80px"
           hoverable
           open-on-click
@@ -11,7 +21,24 @@
           item-text="titre"
         >
           <template #label="{item}">
-            <div @click="scrollTo(item)">
+            <!-- <v-row v-if="!item.children" align="center"> -->
+            <!-- <v-col cols="auto"> -->
+            <v-checkbox
+              v-if="!item.children"
+              class="ml-1 mb-2"
+              :value="item.checked"
+              dense
+              hide-details
+            >
+              <template #label>
+                <div @click.prevent.stop="scrollTo(item)">
+                  {{ item.titre }}
+                </div>
+              </template>
+            </v-checkbox>
+            <!-- </v-col> -->
+            <!-- </v-row> -->
+            <div v-else @click="scrollTo(item)">
               {{ item.titre }}
             </div>
           </template>
@@ -36,10 +63,14 @@ export default {
     pacData: {
       type: Array,
       required: true
+    },
+    editable: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
-    const PAC = this.pacData.map(section => section)
+    const PAC = this.pacData.map(section => Object.assign({}, section))
 
     PAC.forEach((section) => {
       section.depth = getDepth(section.path)
