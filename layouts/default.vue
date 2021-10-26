@@ -26,7 +26,7 @@
         <v-btn v-if="$user.id" text @click="$supabase.auth.signOut()">
           Déconnexion
         </v-btn>
-        <DocumentsDialog v-if="$user.id" v-model="openDocs" />
+        <DocumentsDialog v-if="$user.id" v-model="openDocs" @created="navToProject" />
         <!-- </template> -->
       </client-only>
     </v-app-bar>
@@ -79,6 +79,12 @@ export default {
     return {
       openLogin: false,
       openDocs: false
+    }
+  },
+  methods: {
+    navToProject (project) {
+      this.openDocs = false
+      this.$router.psuh(`/projet/${project.id}`)
     }
   }
 }
