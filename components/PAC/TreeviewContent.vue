@@ -47,13 +47,13 @@
       </client-only>
     </v-col>
     <v-col cols="8">
-      <PACContentSection v-for="(root, slug) in groupedRoots" :key="slug" :sections="root" />
+      <PACContentSection v-for="(root) in PACroots" :key="root.path" :sections="[root]" />
     </v-col>
   </v-row>
 </template>
 
 <script>
-import { groupBy } from 'lodash'
+// import { groupBy } from 'lodash'
 
 function getDepth (path) {
   return (path.match(/\//g) || []).length
@@ -114,13 +114,14 @@ export default {
   },
   computed: {
     PACroots () {
-      return this.PAC.filter(section => !section.parent)
-    },
-    groupedRoots () {
-      const roots = this.PAC.filter(section => !section.parent)
-
-      return groupBy(roots, r => r.dir)
+      return this.PAC.filter(section => !section.parent).sort((sa, sb) => {
+        return sa.ordre - sb.ordre
+      })
     }
+    // groupedRoots () {
+    //   const roots = this.PAC.filter(section => !section.parent)
+    //   return groupBy(roots, r => r.dir)
+    // }
   },
   methods: {
     scrollTo (item) {
