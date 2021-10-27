@@ -24,11 +24,12 @@
             <!-- <v-row v-if="!item.children" align="center"> -->
             <!-- <v-col cols="auto"> -->
             <v-checkbox
-              v-if="!item.children"
+              v-if="!item.children && editable"
               class="ml-1 mb-2"
               :value="item.checked"
               dense
               hide-details
+              :disabled="!item.body.children.length"
             >
               <template #label>
                 <div @click.prevent.stop="scrollTo(item)">
@@ -124,9 +125,16 @@ export default {
   methods: {
     scrollTo (item) {
       // console.log(item, item.slug, slugify(item.titre, { lower: true }))
-
-      const target = item.body.children.find(el => el.tag.indexOf('h') === 0).props.id
-      this.$vuetify.goTo(`#${target}`)
+      const targetEl = item.body.children.find(el => el.tag.indexOf('h') === 0)
+      const targetId = targetEl ? targetEl.props.id : ''
+      if (targetId) {
+        if (item.children) {
+          // console.log('scroll to', item, target)
+          this.$vuetify.goTo(`#${targetId}`)
+        } else {
+          this.$vuetify.goTo(`#panel-${targetId}`)
+        }
+      }
     }
   }
 }
