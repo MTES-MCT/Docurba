@@ -115,9 +115,10 @@ export default {
         PAC
       }, this.projectData)
 
-      const { data: project, error } = await this.$supabase.from('projects').insert([newProject])
+      const { data, error } = await this.$supabase.from('projects').insert([newProject])
 
-      if (!error) {
+      if (!error && data && data[0]) {
+        const project = data[0]
         this.projects.push(project)
         this.$emit('created', project)
       } else {
