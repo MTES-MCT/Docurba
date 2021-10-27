@@ -46,7 +46,12 @@
             </a>
           </div>
         </v-col>
-        <v-col cols="12" md="7">
+        <v-col cols="12" md="3">
+          <div class="text-caption">
+            Docurba est un projet d'innovation pour faciliter l’élaboration des documents d’urbanisme en prenant en compte les informations et enjeux environnementaux.
+          </div>
+        </v-col>
+        <v-col cols="12" md="4">
           <div class="fr-footer__content">
             <ul class="fr-footer__content-list">
               <li class="fr-footer__content-item">
