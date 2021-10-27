@@ -4,7 +4,7 @@
       <client-only>
         <v-row>
           <v-col v-show="editable" cols="12">
-            <v-progress-linear height="10" rounded />
+            <v-progress-linear height="10" rounded :value="progressValue" />
           </v-col>
           <v-col v-show="!editable" cols="12">
             <div class="text-caption text-center">
@@ -25,8 +25,8 @@
             <!-- <v-col cols="auto"> -->
             <v-checkbox
               v-if="!item.children && editable"
+              v-model="item.checked"
               class="ml-1 mb-2"
-              :value="item.checked"
               dense
               hide-details
               :disabled="!item.body.children.length"
@@ -71,7 +71,7 @@ export default {
     }
   },
   data () {
-    const PAC = this.pacData.map(section => Object.assign({}, section))
+    const PAC = this.pacData.map(section => Object.assign({ checked: false }, section))
 
     PAC.forEach((section) => {
       section.depth = getDepth(section.path)
@@ -113,6 +113,13 @@ export default {
     }
   },
   computed: {
+    progressValue () {
+      const checkedItems = this.PAC.filter(item => item.checked).length
+
+      console.log('checkedItems', checkedItems, this.PAC.length, Math.round(checkedItems / this.PAC.length) * 100)
+
+      return Math.round((checkedItems / this.PAC.length) * 100)
+    },
     PACroots () {
       return this.PAC.filter(section => !section.parent).sort((sa, sb) => {
         return sa.ordre - sb.ordre
