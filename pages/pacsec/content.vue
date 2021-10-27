@@ -10,18 +10,20 @@ export default {
   async asyncData ({ $content }) {
     const PAC = await $content('PAC', {
       deep: true
-    }).where({
-      path: {
-        $not: {
-          $regex: /Politiques-publiques-specifiques-s'appliquant-sur-le-territoire/
-        }
-      }
     }).fetch()
+
+    // .where({
+    //   path: {
+    //     $not: {
+    //       $regex: /Politiques-publiques-specifiques-s'appliquant-sur-le-territoire/
+    //     }
+    //   }
+    // }).fetch()
 
     // console.log(PAC.length)
 
     return {
-      PAC
+      PAC: PAC.filter(s => !s.path.includes('olitiques-publiques-specifiques'))
     }
   }
 }

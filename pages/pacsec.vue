@@ -4,7 +4,7 @@
       <v-tab
         v-for="tab in tabs"
         :key="tab.text"
-        :to="tab.to"
+        :to="{path: tab.to, query: $route.query}"
         nuxt
       >
         {{ tab.text }}
@@ -22,7 +22,8 @@ export default {
     return {
       tabs: [
         { text: 'PAC sec', to: '/pacsec/content' },
-        { text: 'Jeux de données', to: '/pacsec/data' }
+        { text: 'Jeux de données', to: '/pacsec/data' },
+        { text: 'Ressources', to: '/pacsec/ressources' }
       ]
     }
   }
