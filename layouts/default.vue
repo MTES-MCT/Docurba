@@ -87,6 +87,7 @@ export default {
     }
   },
   methods: {
+    // This is duplicated in CtaByNeed
     navToProject (project) {
       this.openDocs = false
       this.$router.push(`/projets/${project.id}`)

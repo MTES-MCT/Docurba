@@ -25,7 +25,7 @@
           {{ theme }}
         </h2>
       </v-col>
-      <v-col v-for="(source) in sources" :key="`${theme}-${source.title}`" cols="12" sm="6" md="4">
+      <v-col v-for="(source, i) in sources" :key="`${theme}-${i}-${source.title}`" cols="12" sm="6" md="4">
         <DataSourceCard :source="source" :region="region" />
       </v-col>
     </v-row>
