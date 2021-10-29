@@ -10,9 +10,15 @@
             <v-progress-linear height="10" rounded :value="progressValue" />
           </v-col>
           <v-col v-show="!editable" cols="12">
-            <div class="text-caption text-center">
-              Ce PAC n'est pas un document officiel.
-            </div>
+            <v-tooltip right>
+              <template #activator="{on}">
+                <div class="text-caption text-center" v-on="on">
+                  Ce PAC n'est pas un document officiel.
+                </div>
+              </template>
+              <span>Pour obtenir un document spécifique à votre projet vous devez vous connecter et créer un projet.</span>
+              <!-- <InputsLoginOrDocs /> -->
+            </v-tooltip>
           </v-col>
           <v-treeview
             hoverable

@@ -9,13 +9,14 @@
         <v-card-text>
           <v-row justify="center">
             <v-col cols="12" md="8">
-              <v-text-field v-model="userData.email" label="Email" />
+              <v-text-field v-model="userData.email" filled label="Email" />
             </v-col>
           </v-row>
           <v-row justify="center">
             <v-col cols="12" md="8">
               <v-text-field
                 v-model="userData.password"
+                filled
                 label="Mot de passe"
                 :type="showPassword ? 'text' : 'password'"
                 :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
@@ -44,13 +45,14 @@
         <v-card-text>
           <v-row justify="center">
             <v-col cols="12" md="8">
-              <v-text-field v-model="userData.email" label="Email" />
+              <v-text-field v-model="userData.email" filled label="Email" />
             </v-col>
           </v-row>
           <v-row justify="center">
             <v-col cols="12" md="8">
               <v-text-field
                 v-model="userData.password"
+                filled
                 label="Mot de passe"
                 :type="showPassword ? 'text' : 'password'"
                 :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
@@ -60,12 +62,12 @@
           </v-row>
           <v-row justify="center">
             <v-col cols="12" md="8">
-              <v-text-field v-model="userData.firstname" label="Prénom" />
+              <v-text-field v-model="userData.firstname" filled label="Prénom" />
             </v-col>
           </v-row>
           <v-row justify="center">
             <v-col cols="12" md="8">
-              <v-text-field v-model="userData.lastname" label="Nom" />
+              <v-text-field v-model="userData.lastname" filled label="Nom" />
             </v-col>
           </v-row>
           <v-row justify="center">

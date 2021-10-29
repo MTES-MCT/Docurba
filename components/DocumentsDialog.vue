@@ -5,15 +5,19 @@
       <v-card-text>
         <v-tabs-items v-model="modalState">
           <v-tab-item id="list">
-            <v-list>
+            <v-list height="400px" class="overflow-auto">
               <v-list-item
                 v-for="project in projects"
                 :key="project.id"
                 :to="`/projets/${project.id}`"
                 nuxt
+                two-line
                 @click="$emit('input', false)"
               >
-                <v-list-item-title>{{ project.name }}</v-list-item-title>
+                <v-list-item-content>
+                  <v-list-item-title>{{ project.name }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ project.docType }}</v-list-item-subtitle>
+                </v-list-item-content>
               </v-list-item>
             </v-list>
           </v-tab-item>
@@ -90,7 +94,7 @@ export default {
     }
   },
   async mounted () {
-    const { data: projects, error } = await this.$supabase.from('projects').select('id, name, created_at').eq('owner', this.$user.id)
+    const { data: projects, error } = await this.$supabase.from('projects').select('id, name, docType, created_at').eq('owner', this.$user.id)
 
     if (!error) {
       this.projects = projects
