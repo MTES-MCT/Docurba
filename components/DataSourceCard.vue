@@ -1,6 +1,6 @@
 <template>
   <v-card flat color="g100">
-    <v-card-title>
+    <v-card-title class="break-word">
       {{ source.title }}
     </v-card-title>
     <v-row>

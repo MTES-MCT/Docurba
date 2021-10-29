@@ -13,7 +13,7 @@
           :href="ressource.link"
           target="_blank"
         >
-          <v-card-title>
+          <v-card-title class="break-word">
             {{ ressource.title }}
           </v-card-title>
         </v-card>
