@@ -2,7 +2,10 @@
   <v-row>
     <v-col cols="4">
       <client-only>
-        <v-row>
+        <v-row
+          class="sticky-tree"
+          style="top: 80px"
+        >
           <v-col v-show="editable" cols="12">
             <v-progress-linear height="10" rounded :value="progressValue" />
           </v-col>
@@ -11,39 +14,54 @@
               Ce PAC n'est pas un document officiel.
             </div>
           </v-col>
+          <v-treeview
+            hoverable
+            open-on-click
+            :items="PACroots"
+            item-text="titre"
+            class="d-block text-truncate"
+          >
+            <template #label="{item}">
+              <!-- <v-row v-if="!item.children" align="center"> -->
+              <!-- <v-col cols="auto"> -->
+              <v-tooltip right>
+                <template #activator="{on}">
+                  <v-checkbox
+                    v-if="!item.children && editable"
+                    v-model="item.checked"
+                    class="ml-1 mb-2 d-block text-truncate"
+                    dense
+                    hide-details
+                    :disabled="!item.body.children.length"
+                  >
+                    <template #label>
+                      <div
+                        class="d-block text-truncate"
+                        style="width: calc(33vw - 125px)"
+                        v-on="on"
+                        @click.prevent.stop="scrollTo(item)"
+                      >
+                        {{ item.titre }}
+                      </div>
+                    </template>
+                  </v-checkbox>
+                  <!-- </v-col> -->
+                  <!-- </v-row> -->
+                  <div
+                    v-else
+                    class="d-block text-truncate"
+                    style="width: 100%"
+                    v-on="on"
+                    @click="scrollTo(item)"
+                  >
+                    {{ item.titre }}
+                  </div>
+                </template>
+                <span>{{ item.titre }}</span>
+              </v-tooltip>
+            </template>
+          </v-treeview>
         </v-row>
-        <v-treeview
-          class="sticky-tree"
-          style="top: 80px"
-          hoverable
-          open-on-click
-          :items="PACroots"
-          item-text="titre"
-        >
-          <template #label="{item}">
-            <!-- <v-row v-if="!item.children" align="center"> -->
-            <!-- <v-col cols="auto"> -->
-            <v-checkbox
-              v-if="!item.children && editable"
-              v-model="item.checked"
-              class="ml-1 mb-2"
-              dense
-              hide-details
-              :disabled="!item.body.children.length"
-            >
-              <template #label>
-                <div @click.prevent.stop="scrollTo(item)">
-                  {{ item.titre }}
-                </div>
-              </template>
-            </v-checkbox>
-            <!-- </v-col> -->
-            <!-- </v-row> -->
-            <div v-else @click="scrollTo(item)">
-              {{ item.titre }}
-            </div>
-          </template>
-        </v-treeview>
       </client-only>
     </v-col>
     <v-col cols="8">
