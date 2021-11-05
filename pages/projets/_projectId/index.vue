@@ -1,11 +1,17 @@
 <template>
   <v-container fluid>
-    <PACTreeviewContent v-if="project" :pac-data="project.PAC" editable />
+    <PACTreeviewContent
+      v-if="project"
+      :pac-data="project.PAC"
+      editable
+      @read="savePacItem"
+    />
   </v-container>
 </template>
 
 <script>
 export default {
+  // TODO: Do server side login for this to work.
   // async asyncData ({ route, $supabase }) {
   //   const projectId = route.params.projectId
 
@@ -33,6 +39,17 @@ export default {
     const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
 
     this.project = projects ? projects[0] : null
+  },
+  methods: {
+    async savePacItem (pacItem) {
+      const { PAC } = this.project
+
+      const projectPacItem = PAC.find(item => item.path === pacItem.path)
+      projectPacItem.checked = pacItem.checked
+      // Object.assign(projectPacItem, pacItem)
+
+      await this.$supabase.from('projects').update({ PAC }).eq('id', this.project.id)
+    }
   }
 }
 </script>

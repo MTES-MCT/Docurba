@@ -39,6 +39,7 @@
                     dense
                     hide-details
                     :disabled="!item.body.children.length"
+                    @change="$emit('read', item)"
                   >
                     <template #label>
                       <div
@@ -77,8 +78,6 @@
 </template>
 
 <script>
-// import { groupBy } from 'lodash'
-
 function getDepth (path) {
   return (path.match(/\//g) || []).length
 }
@@ -140,8 +139,6 @@ export default {
     progressValue () {
       const checkedItems = this.PAC.filter(item => item.checked).length
 
-      console.log('checkedItems', checkedItems, this.PAC.length, Math.round(checkedItems / this.PAC.length) * 100)
-
       return Math.round((checkedItems / this.PAC.length) * 100)
     },
     PACroots () {
@@ -149,19 +146,13 @@ export default {
         return sa.ordre - sb.ordre
       })
     }
-    // groupedRoots () {
-    //   const roots = this.PAC.filter(section => !section.parent)
-    //   return groupBy(roots, r => r.dir)
-    // }
   },
   methods: {
     scrollTo (item) {
-      // console.log(item, item.slug, slugify(item.titre, { lower: true }))
       const targetEl = item.body.children.find(el => el.tag.indexOf('h') === 0)
       const targetId = targetEl ? targetEl.props.id : ''
       if (targetId) {
         if (item.children) {
-          // console.log('scroll to', item, target)
           this.$vuetify.goTo(`#${targetId}`)
         } else {
           this.$vuetify.goTo(`#panel-${targetId}`)
