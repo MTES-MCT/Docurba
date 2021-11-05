@@ -1,16 +1,35 @@
 <template>
-  <v-container fluid>
-    <PACTreeviewContent
-      v-if="project"
-      :pac-data="project.PAC"
-      editable
-      @read="savePacItem"
-    />
-  </v-container>
+  <LayoutsCustomApp extended-app-bar private>
+    <template #headerPageTitle>
+      - {{ project ? project.name : '' }}
+    </template>
+    <template #headerExtension>
+      <v-tabs show-arrows>
+        <v-tab
+          v-for="tab in tabs"
+          :key="tab.text"
+          :to="{path: tab.to, query: $route.query}"
+          nuxt
+        >
+          {{ tab.text }}
+        </v-tab>
+      </v-tabs>
+    </template>
+    <NuxtChild />
+    <!-- <v-container fluid>
+      <PACTreeviewContent
+        v-if="project"
+        :pac-data="project.PAC"
+        editable
+        @read="savePacItem"
+      />
+    </v-container> -->
+  </LayoutsCustomApp>
 </template>
 
 <script>
 export default {
+  layout: 'app',
   // TODO: Do server side login for this to work.
   // async asyncData ({ route, $supabase }) {
   //   const projectId = route.params.projectId
@@ -30,7 +49,12 @@ export default {
   // }
   data () {
     return {
-      project: null
+      project: null,
+      tabs: [
+        { text: 'PAC sec', to: `/projets/${this.$route.params.projectId}/content` },
+        { text: 'Jeux de données', to: `/projets/${this.$route.params.projectId}/data` },
+        { text: 'Ressources', to: `/projets/${this.$route.params.projectId}/ressources` }
+      ]
     }
   },
   async mounted () {

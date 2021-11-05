@@ -1,23 +1,26 @@
 <template>
-  <v-container fluid>
-    <v-tabs show-arrows>
-      <v-tab
-        v-for="tab in tabs"
-        :key="tab.text"
-        :to="{path: tab.to, query: $route.query}"
-        nuxt
-      >
-        {{ tab.text }}
-      </v-tab>
-    </v-tabs>
+  <LayoutsCustomApp extended-app-bar>
+    <template #headerExtension>
+      <v-tabs show-arrows>
+        <v-tab
+          v-for="tab in tabs"
+          :key="tab.text"
+          :to="{path: tab.to, query: $route.query}"
+          nuxt
+        >
+          {{ tab.text }}
+        </v-tab>
+      </v-tabs>
+    </template>
     <NuxtChild />
-  </v-container>
+  </LayoutsCustomApp>
 </template>
 
 <script>
 
 export default {
   name: 'PACsec',
+  layout: 'app',
   data () {
     return {
       tabs: [

@@ -1,9 +1,6 @@
 <template>
   <v-app>
-    <LayoutsAppBar />
-    <v-main>
-      <nuxt />
-    </v-main>
+    <nuxt />
     <v-footer class="footer-fr" color="white">
       <v-row align="center" class="mt-4 ml-1">
         <v-col cols="12" md="5">
