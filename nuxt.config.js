@@ -44,6 +44,10 @@ export default {
     '@nuxt/content'
   ],
 
+  serverMiddleware: [
+    { path: '/api/communes', handler: '~/server-middleware/communes.js' }
+  ],
+
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {},
 

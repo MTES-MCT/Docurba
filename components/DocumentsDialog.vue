@@ -35,7 +35,8 @@
                 <VDocumentSelect v-model="projectData.docType" label="Type de document" />
               </v-col>
               <v-col cols="12">
-                <VRegionAutocomplete v-model="projectData.region" label="Votre region" return-iso />
+                <VTownAutocomplete />
+                <!-- <VRegionAutocomplete v-model="projectData.region" label="Votre region" return-iso /> -->
               </v-col>
             </v-row>
           </v-tab-item>
