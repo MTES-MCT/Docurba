@@ -26,7 +26,7 @@
       <v-btn v-if="$user.id" text @click="$supabase.auth.signOut()">
         Déconnexion
       </v-btn>
-      <DocumentsDialog v-if="$user.id" v-model="openDocs" @created="navToProject" />
+      <DocumentsDialog v-if="$user.id" v-model="openDocs" />
       <!-- </template> -->
     </client-only>
     <template v-if="extended" #extension>
@@ -47,13 +47,6 @@ export default {
     return {
       openLogin: false,
       openDocs: false
-    }
-  },
-  methods: {
-    // This is duplicated in CtaByNeed
-    navToProject (project) {
-      this.openDocs = false
-      this.$router.push(`/projets/${project.id}`)
     }
   }
 }

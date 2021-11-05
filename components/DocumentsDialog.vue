@@ -9,7 +9,7 @@
               <v-list-item
                 v-for="project in projects"
                 :key="project.id"
-                :to="`/projets/${project.id}`"
+                :to="`/projets/${project.id}/content`"
                 nuxt
                 two-line
                 @click="$emit('input', false)"
@@ -124,7 +124,8 @@ export default {
       if (!error && data && data[0]) {
         const project = data[0]
         this.projects.push(project)
-        this.$emit('created', project)
+        this.dialog = false
+        this.$router.push(`/projets/${project.id}/content`)
       } else {
         // eslint-disable-next-line no-console
         console.log(error)

@@ -29,7 +29,7 @@
           </v-btn>
           <client-only>
             <LoginDialog v-model="openLogin" />
-            <DocumentsDialog v-if="$user.id" v-model="openDocs" @created="navToProject" />
+            <DocumentsDialog v-if="$user.id" v-model="openDocs" />
           </client-only>
         </div>
       </v-col>
@@ -52,11 +52,6 @@ export default {
       } else {
         this.openLogin = true
       }
-    },
-    // This is a duplicate from default layout
-    navToProject (project) {
-      this.openDocs = false
-      this.$router.push(`/projets/${project.id}`)
     }
   }
 }
