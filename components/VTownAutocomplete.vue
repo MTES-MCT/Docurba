@@ -4,7 +4,6 @@
       <v-autocomplete
         v-model="selectedDepartement"
         :items="departements"
-        item-text="nom_departement"
         label="Departement"
         hide-details
         filled
@@ -40,9 +39,13 @@ export default {
     }
   },
   data () {
+    const enrichedDepartements = departements.map(d => Object.assign({
+      text: `${d.nom_departement} - ${d.code_departement}`
+    }, d))
+
     return {
       selectedDepartement: null,
-      departements,
+      departements: enrichedDepartements,
       towns: []
     }
   },
