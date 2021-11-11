@@ -4,8 +4,11 @@
       <client-only>
         <v-row
           class="sticky-tree"
-          style="top: 80px"
+          style="top: 120px"
         >
+          <v-col cols="12">
+            <v-text-field v-model="contentSearch" filled hide-details label="Rechercher" />
+          </v-col>
           <v-col v-show="editable" cols="12">
             <v-progress-linear height="10" rounded :value="progressValue" />
           </v-col>
@@ -26,6 +29,7 @@
             :items="PACroots"
             item-text="titre"
             class="d-block text-truncate"
+            item-key="path"
           >
             <template #label="{item}">
               <!-- <v-row v-if="!item.children" align="center"> -->
@@ -72,7 +76,10 @@
       </client-only>
     </v-col>
     <v-col cols="8">
-      <PACContentSection v-for="(root) in PACroots" :key="root.path" :sections="[root]" />
+      <div v-for="(root) in PACroots" :key="root.path">
+        <PACContentSection :sections="[root]" />
+        <v-divider />
+      </div>
     </v-col>
   </v-row>
 </template>
@@ -94,7 +101,14 @@ export default {
     }
   },
   data () {
-    const PAC = this.pacData.map(section => Object.assign({ checked: false }, section))
+    const PAC = this.pacData.map((section) => {
+      const serachText = `${section.titre} ${section.slug}`.toLowerCase()
+
+      return Object.assign({
+        checked: false,
+        searchValue: serachText.normalize('NFD').replace(/\p{Diacritic}/gu, '')
+      }, section)
+    })
 
     PAC.forEach((section) => {
       section.depth = getDepth(section.path)
@@ -132,19 +146,48 @@ export default {
     })
 
     return {
-      PAC
+      PAC,
+      contentSearch: ''
     }
   },
   computed: {
+    filteredPAC () {
+      if (this.contentSearch.length) {
+        const searchedContent = this.PAC.map((section) => {
+          const searchedSection = { searched: section.searched }
+
+          if (!section.searched) {
+            const searchedValue = this.contentSearch.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+            const searched = section.searchValue.includes(searchedValue)
+
+            searchedSection.searched = searched
+          }
+
+          // console.log(searchedSection.searched, section.searchValue)
+
+          // if (searchedSection.searched && section.parent) {
+          //   section.parent.searched = true
+          // }
+
+          return Object.assign(searchedSection, section)
+        })
+
+        return searchedContent.filter(section => section.searched)
+      } else { return this.PAC }
+    },
     progressValue () {
       const checkedItems = this.PAC.filter(item => item.checked).length
 
       return Math.round((checkedItems / this.PAC.length) * 100)
     },
     PACroots () {
-      return this.PAC.filter(section => !section.parent).sort((sa, sb) => {
-        return sa.ordre - sb.ordre
-      })
+      if (!this.contentSearch.length) {
+        return this.PAC.filter(section => !section.parent).sort((sa, sb) => {
+          return sa.ordre - sb.ordre
+        })
+      } else {
+        return this.filteredPAC
+      }
     }
   },
   methods: {
