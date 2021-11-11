@@ -8,9 +8,28 @@
       <template v-else>
         <v-expansion-panels :id="`panel-${getFirstId(section)}`" flat>
           <v-expansion-panel>
-            <v-expansion-panel-header>
-              {{ section.titre }}
-            </v-expansion-panel-header>
+            <v-hover v-slot="{hover}">
+              <v-expansion-panel-header>
+                <v-row align="center">
+                  <v-col cols="auto">
+                    {{ section.titre }}
+                  </v-col>
+                  <v-spacer />
+                  <v-col cols="auto" class="py-0">
+                    <v-dialog>
+                      <template #activator="{on}">
+                        <v-btn v-show="hover" icon v-on="on">
+                          <v-icon color="secondary">
+                            {{ icons.mdiCommentOutline }}
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <PACCommentCard :section="section" />
+                    </v-dialog>
+                  </v-col>
+                </v-row>
+              </v-expansion-panel-header>
+            </v-hover>
             <v-expansion-panel-content eager>
               <nuxt-content :document="section" />
             </v-expansion-panel-content>
@@ -22,11 +41,18 @@
 </template>
 
 <script>
+import { mdiCommentOutline } from '@mdi/js'
+
 export default {
   props: {
     sections: {
       type: Array,
       required: true
+    }
+  },
+  data () {
+    return {
+      icons: { mdiCommentOutline }
     }
   },
   computed: {
