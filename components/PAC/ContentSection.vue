@@ -16,7 +16,7 @@
                   </v-col>
                   <v-spacer />
                   <v-col cols="auto" class="py-0">
-                    <v-dialog>
+                    <v-dialog max-width="1000">
                       <template #activator="{on}">
                         <v-btn v-show="hover" icon v-on="on">
                           <v-icon color="secondary">
