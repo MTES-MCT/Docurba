@@ -35,7 +35,7 @@
                 <VDocumentSelect v-model="projectData.docType" label="Type de document" />
               </v-col>
               <v-col cols="12">
-                <VTownAutocomplete />
+                <VTownAutocomplete v-model="selectedTown" />
                 <!-- <VRegionAutocomplete v-model="projectData.region" label="Votre region" return-iso /> -->
               </v-col>
             </v-row>
@@ -64,6 +64,8 @@
 </template>
 
 <script>
+import regions from '@/assets/data/Regions.json'
+
 export default {
   name: 'DocumentsDialog',
   props: {
@@ -80,11 +82,17 @@ export default {
         docType: '',
         region: ''
       },
+      selectedTown: {},
       projects: [],
       loading: false
     }
   },
   computed: {
+    selectedRegion () {
+      const region = regions.find(r => r.name === this.selectedTown.nom_region)
+
+      return region.iso
+    },
     dialog: {
       get () {
         return this.value || false
@@ -118,7 +126,9 @@ export default {
       const newProject = Object.assign({
         owner: this.$user.id,
         PAC
-      }, this.projectData)
+      }, this.projectData, {
+        region: this.selectedRegion
+      })
 
       const { data, error } = await this.$supabase.from('projects').insert([newProject])
 

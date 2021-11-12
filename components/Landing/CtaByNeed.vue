@@ -8,7 +8,7 @@
           </h2>
           <v-img contain :src="require('@/assets/images/landing/data_screen.png')" max-height="200px" class="my-5" />
           <p>
-            Vous pouvez consulter les modèles et guides sur l’élaboration d’un document d’urbanisme, et surtout accéder au cadre juridique national, aux éléments régionaux (SDRADDET & doctrine régionale) et aux données territorialisées.
+            Vous pouvez consulter les modèles et guides sur l’élaboration d’un document d’urbanisme, et surtout accéder au cadre juridique national, aux éléments régionaux (SRADDET & doctrine régionale) et aux données territorialisées.
           </p>
           <v-btn to="/pacsec/data" nuxt outlined class="mt-auto" color="primary">
             Accéder aux ressources disponibles et données territorialisées

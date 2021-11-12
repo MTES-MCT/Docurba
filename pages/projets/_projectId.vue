@@ -8,7 +8,7 @@
         <v-tab
           v-for="tab in tabs"
           :key="tab.text"
-          :to="{path: tab.to, query: $route.query}"
+          :to="{path: tab.to, query: {region: projectRegion}}"
           nuxt
         >
           {{ tab.text }}
@@ -55,6 +55,11 @@ export default {
         { text: 'Jeux de données', to: `/projets/${this.$route.params.projectId}/data` },
         { text: 'Ressources', to: `/projets/${this.$route.params.projectId}/ressources` }
       ]
+    }
+  },
+  computed: {
+    projectRegion () {
+      return this.project ? this.project.region : ''
     }
   },
   async mounted () {
