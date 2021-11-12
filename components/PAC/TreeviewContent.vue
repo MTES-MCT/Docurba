@@ -139,6 +139,12 @@ export default {
 
     PAC.forEach((section) => {
       if (section.children) {
+        // Temporary filter
+        section.children = section.children.filter((c) => {
+          return (c.children && c.children.length) ||
+            (c.body && c.body.children && c.body.children.length > 1)
+        })
+
         section.children.sort((sa, sb) => {
           return sa.ordre - sb.ordre
         })
@@ -182,9 +188,19 @@ export default {
     },
     PACroots () {
       if (!this.contentSearch.length) {
-        return this.PAC.filter(section => !section.parent).sort((sa, sb) => {
+        const roots = this.PAC.filter(section => !section.parent).sort((sa, sb) => {
           return sa.ordre - sb.ordre
         })
+
+        // Temporary filter
+        roots.forEach((root) => {
+          root.children = root.children.filter((c) => {
+            return (c.children && c.children.length) ||
+            (c.body && c.body.children && c.body.children.length > 1)
+          })
+        })
+
+        return roots
       } else {
         return this.filteredPAC
       }
