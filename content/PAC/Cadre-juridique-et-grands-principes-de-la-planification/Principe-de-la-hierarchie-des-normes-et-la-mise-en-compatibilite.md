@@ -4,6 +4,7 @@ ordre: 3
 ---
 
 ### Principe de la hiérarchie des normes et la mise en compatibilité
+![Hierarchie-des-normes.jpg](..%5C..%5C..%5Cstatic%5Cimages%5CHierarchie-des-normes.jpg)
 
 **Dans les territoires couverts par un SCoT**, les PLU et cartes communales auront **un an à compter de l'entrée en vigueur du SCoT** pour se prononcer sur leur mise en compatibilité avec ce dernier. Il convient de reproduire l’analyse que lorsque le SCoT est révisé ou, lui-même mis en compatibilité. 
 
