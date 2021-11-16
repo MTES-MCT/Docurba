@@ -23,7 +23,8 @@ export default {
     // console.log(PAC.length)
 
     return {
-      PAC: PAC.filter(s => !s.path.includes('olitiques-publiques-specifiques'))
+      // PAC: PAC.filter(s => !s.path.includes('olitiques-publiques-specifiques'))
+      PAC: PAC.filter(s => !s.path.includes('PP-du-territoire'))
     }
   }
 }

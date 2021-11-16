@@ -63,7 +63,7 @@ export default {
     getCommentDate (comment) {
       return dayjs(comment.timestamp).format('DD/MM/YY hh:mm')
     },
-    async saveNewComment () {
+    saveNewComment () {
       const savedSection = {
         comments: this.section.comments || [],
         path: this.section.path
@@ -72,8 +72,7 @@ export default {
       this.newComment.timestamp = Date.now()
       savedSection.comments.push(this.newComment)
 
-      await this.savePacItem(savedSection)
-
+      this.savePacItem(savedSection)
       this.newComment = this.defaultComment
     }
   }

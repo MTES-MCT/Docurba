@@ -68,6 +68,9 @@ export default {
     const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
 
     this.project = projects ? projects[0] : null
+    this.project.PAC.forEach((section) => {
+      section.comments = section.comments || []
+    })
   },
   methods: {
     async savePacItem (pacItem) {

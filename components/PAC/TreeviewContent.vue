@@ -77,7 +77,7 @@
     </v-col>
     <v-col cols="8">
       <div v-for="(root) in PACroots" :key="root.path">
-        <PACContentSection :sections="[root]" />
+        <PACContentSection :sections="[root]" :editable="editable" />
         <v-divider />
       </div>
     </v-col>
