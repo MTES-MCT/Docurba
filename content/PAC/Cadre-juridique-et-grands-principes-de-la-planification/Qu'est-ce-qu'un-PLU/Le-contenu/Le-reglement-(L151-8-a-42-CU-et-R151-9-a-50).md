@@ -4,6 +4,7 @@ ordre: 4
 ---
 
 ##### Le règlement ([L151-8 à 42 CU](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031211167/#LEGISCTA000031211908) et [R151-9 à 50 CU](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031719999/#LEGISCTA000031720639))
+[Guide_PLU_18_03_20_BD_WEB.pdf](..%5C..%5C..%5C..%5C..%5Cstatic%5CGuide_PLU_18_03_20_BD_WEB.pdf)
 
 Le règlement contient exclusivement les règles générales et servitudes d'utilisation des sols
 destinées à la mise en œuvre du projet d'aménagement et de développement durable, dans le respect de l'article L. 151-8, ainsi que la délimitation graphique des zones prévues à l'article L.151-9. (article R151-9).
