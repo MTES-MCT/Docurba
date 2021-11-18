@@ -15,10 +15,7 @@
         </v-col>
       </v-row>
       <v-row class="pb-16 g100" justify="center" align="center">
-        <v-col cols="auto">
-          <!-- <v-btn color="primary">
-          Rechercher
-        </v-btn> -->
+        <!-- <v-col cols="auto">
           <v-select
             v-model="searchQuery.document"
             filled
@@ -29,6 +26,9 @@
         </v-col>
         <v-col cols="3">
           <VRegionAutocomplete v-model="searchQuery.region" />
+        </v-col> -->
+        <v-col cols="6">
+          <VTownAutocomplete v-model="selectedTown" :cols-dep="4" :cols-town="8" />
         </v-col>
         <v-col cols="auto">
           <v-btn color="primary" x-large nuxt :to="searchLink">
@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import regions from '@/assets/data/Regions.json'
 
 export default {
   data () {
@@ -52,7 +53,8 @@ export default {
       searchQuery: {
         region: null,
         document: null
-      }
+      },
+      selectedTown: null
     }
   },
   computed: {
@@ -71,6 +73,11 @@ export default {
         path: '/pacsec/content',
         query
       }
+    }
+  },
+  watch: {
+    selectedTown () {
+      this.searchQuery.region = regions.find(r => r.name === this.selectedTown.nom_region)
     }
   }
 }

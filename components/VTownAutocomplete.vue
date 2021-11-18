@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="12">
+    <v-col :cols="colsDep">
       <v-autocomplete
         v-model="selectedDepartement"
         :items="departements"
@@ -10,7 +10,7 @@
         return-object
       />
     </v-col>
-    <v-col>
+    <v-col :cols="colsTown">
       <v-autocomplete
         no-data-text="Selectionnez un département"
         :items="towns"
@@ -36,6 +36,14 @@ export default {
       default () {
         return {}
       }
+    },
+    colsDep: {
+      type: Number,
+      default: 12
+    },
+    colsTown: {
+      type: Number,
+      default: 12
     }
   },
   data () {
