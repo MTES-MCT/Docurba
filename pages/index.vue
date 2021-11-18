@@ -27,7 +27,7 @@
         <v-col cols="3">
           <VRegionAutocomplete v-model="searchQuery.region" />
         </v-col> -->
-        <v-col cols="6">
+        <v-col cols="10" sm="6">
           <VTownAutocomplete v-model="selectedTown" :cols-dep="4" :cols-town="8" />
         </v-col>
         <v-col cols="auto">

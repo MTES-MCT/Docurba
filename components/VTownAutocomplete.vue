@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col :cols="colsDep">
+    <v-col cols="12" :sm="colsDep">
       <v-autocomplete
         v-model="selectedDepartement"
         :items="departements"
@@ -10,7 +10,7 @@
         return-object
       />
     </v-col>
-    <v-col :cols="colsTown">
+    <v-col cols="12" :sm="colsTown">
       <v-autocomplete
         no-data-text="Selectionnez un département"
         :items="towns"
