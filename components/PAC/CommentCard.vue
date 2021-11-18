@@ -73,7 +73,7 @@ export default {
       savedSection.comments.push(this.newComment)
 
       this.savePacItem(savedSection)
-      this.newComment = this.defaultComment
+      this.newComment = this.defaultComment()
     }
   }
 }

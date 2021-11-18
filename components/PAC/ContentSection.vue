@@ -18,11 +18,28 @@
                   <v-col v-if="editable" cols="auto" class="py-0">
                     <v-dialog max-width="1000">
                       <template #activator="{on}">
-                        <v-btn v-show="hover" icon v-on="on">
+                        <!-- <v-btn v-show="hover" icon v-on="on">
                           <v-icon color="secondary">
                             {{ icons.mdiCommentOutline }}
                           </v-icon>
-                        </v-btn>
+                        </v-btn> -->
+
+                        <v-badge
+                          :content="section.comments.length"
+                          :value="section.comments.length"
+                          offset-x="17"
+                          offset-y="17"
+                        >
+                          <v-btn
+                            v-show="hover || section.comments.length"
+                            icon
+                            v-on="on"
+                          >
+                            <v-icon color="secondary">
+                              {{ icons.mdiCommentOutline }}
+                            </v-icon>
+                          </v-btn>
+                        </v-badge>
                       </template>
                       <PACCommentCard :section="section" />
                     </v-dialog>

@@ -31,6 +31,9 @@ export default {
     // }).subscribe()
 
     this.project = projects ? projects[0] : null
+    this.project.PAC.forEach((section) => {
+      section.comments = section.comments || []
+    })
   },
   methods: {
     _project () {
