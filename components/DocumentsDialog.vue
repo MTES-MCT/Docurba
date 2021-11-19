@@ -6,19 +6,28 @@
         <v-tabs-items v-model="modalState">
           <v-tab-item id="list">
             <v-list height="400px" class="overflow-auto">
-              <v-list-item
-                v-for="project in projects"
-                :key="project.id"
-                :to="`/projets/${project.id}/content`"
-                nuxt
-                two-line
-                @click="$emit('input', false)"
-              >
-                <v-list-item-content>
-                  <v-list-item-title>{{ project.name }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ project.docType }}</v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
+              <v-hover v-for="project in projects" :key="project.id" v-slot="{hover}">
+                <v-list-item
+                  :to="`/projets/${project.id}/content`"
+                  nuxt
+                  two-line
+                  @click="$emit('input', false)"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title>{{ project.name }}</v-list-item-title>
+                    <v-list-item-subtitle>{{ project.docType }}</v-list-item-subtitle>
+                  </v-list-item-content>
+                  <v-list-item-action>
+                    <v-btn
+                      v-show="hover"
+                      icon
+                      @click.prevent.stop="shareProject(project)"
+                    >
+                      <v-icon>{{ icons.mdiShare }}</v-icon>
+                    </v-btn>
+                  </v-list-item-action>
+                </v-list-item>
+              </v-hover>
             </v-list>
           </v-tab-item>
           <v-tab-item id="create">
@@ -40,6 +49,9 @@
               </v-col>
             </v-row>
           </v-tab-item>
+          <v-tab-item id="share">
+            <ProjectsSharingForm :project="selectedProject" />
+          </v-tab-item>
         </v-tabs-items>
       </v-card-text>
       <v-card-actions>
@@ -47,7 +59,7 @@
         <v-btn v-show="modalState === 'list'" color="primary" @click="modalState = 'create'">
           Nouveau
         </v-btn>
-        <v-btn v-show="modalState === 'create'" color="primary" outlined @click="modalState = 'list'">
+        <v-btn v-show="modalState !== 'list'" color="primary" outlined @click="modalState = 'list'">
           Annuler
         </v-btn>
         <v-btn
@@ -64,6 +76,7 @@
 </template>
 
 <script>
+import { mdiShare } from '@mdi/js'
 import regions from '@/assets/data/Regions.json'
 
 export default {
@@ -82,9 +95,13 @@ export default {
         docType: '',
         region: ''
       },
+      icons: {
+        mdiShare
+      },
       selectedTown: {},
       projects: [],
-      loading: false
+      loading: false,
+      selectedProject: {}
     }
   },
   computed: {
@@ -113,6 +130,10 @@ export default {
     }
   },
   methods: {
+    shareProject (project) {
+      this.selectedProject = project
+      this.modalState = 'share'
+    },
     async createNewProject () {
       this.loading = true
 
