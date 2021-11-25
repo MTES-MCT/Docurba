@@ -15,8 +15,8 @@
         Partagé avec
       </h3>
       <v-list max-height="400px" class="overflow-auto">
-        <v-hover v-slot="{hover}">
-          <v-list-item v-for="share in sharings" :key="share.id">
+        <v-hover v-for="share in sharings" v-slot="{hover}" :key="share.id">
+          <v-list-item>
             <v-list-item-content>
               <v-list-item-title> {{ share.user_email }}</v-list-item-title>
             </v-list-item-content>
