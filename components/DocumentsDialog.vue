@@ -5,29 +5,23 @@
       <v-card-text>
         <v-tabs-items v-model="modalState">
           <v-tab-item id="list">
-            <v-list height="400px" class="overflow-auto">
-              <v-hover v-for="project in projects" :key="project.id" v-slot="{hover}">
-                <v-list-item
-                  :to="`/projets/${project.id}/content`"
-                  nuxt
-                  two-line
-                  @click="$emit('input', false)"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title>{{ project.name }}</v-list-item-title>
-                    <v-list-item-subtitle>{{ project.docType }}</v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-btn
-                      v-show="hover"
-                      icon
-                      @click.prevent.stop="shareProject(project)"
-                    >
-                      <v-icon>{{ icons.mdiShare }}</v-icon>
-                    </v-btn>
-                  </v-list-item-action>
-                </v-list-item>
-              </v-hover>
+            <v-list max-height="400px" class="overflow-auto">
+              <ProjectsProjectListItem
+                v-for="project in projects"
+                :key="project.id"
+                :project="project"
+                shareable
+                @share="shareProject(project)"
+              />
+            </v-list>
+            <v-card-subtitle>Documents partagés avec moi</v-card-subtitle>
+            <v-list>
+              <ProjectsProjectListItem
+                v-for="project in sharedProjects"
+                :key="project.id"
+                :project="project"
+                @share="shareProject(project)"
+              />
             </v-list>
           </v-tab-item>
           <v-tab-item id="create">
@@ -60,7 +54,7 @@
           Nouveau
         </v-btn>
         <v-btn v-show="modalState !== 'list'" color="primary" outlined @click="modalState = 'list'">
-          Annuler
+          Retour
         </v-btn>
         <v-btn
           v-show="modalState === 'create'"
@@ -76,7 +70,6 @@
 </template>
 
 <script>
-import { mdiShare } from '@mdi/js'
 import regions from '@/assets/data/Regions.json'
 
 export default {
@@ -95,11 +88,9 @@ export default {
         docType: '',
         region: ''
       },
-      icons: {
-        mdiShare
-      },
       selectedTown: {},
       projects: [],
+      sharedProjects: [],
       loading: false,
       selectedProject: {}
     }
@@ -119,17 +110,31 @@ export default {
       }
     }
   },
-  async mounted () {
-    const { data: projects, error } = await this.$supabase.from('projects').select('id, name, docType, created_at').eq('owner', this.$user.id)
-
-    if (!error) {
-      this.projects = projects
-    } else {
-      // eslint-disable-next-line no-console
-      console.log(error)
-    }
+  mounted () {
+    this.getProjects()
+    this.getSharedProjects()
   },
   methods: {
+    async getProjects () {
+      const { data: projects, error } = await this.$supabase.from('projects').select('id, name, docType, created_at').eq('owner', this.$user.id)
+
+      if (!error) {
+        this.projects = projects
+      } else {
+      // eslint-disable-next-line no-console
+        console.log(error)
+      }
+    },
+    async getSharedProjects () {
+      const { data: sharedProjects, error } = await this.$supabase.from('projectsSharing').select('project: project_id (id, name, docType, created_at)').eq('user_email', this.$user.email)
+
+      if (!error) {
+        this.sharedProjects = sharedProjects.map(p => p.project)
+      } else {
+      // eslint-disable-next-line no-console
+        console.log(error)
+      }
+    },
     shareProject (project) {
       this.selectedProject = project
       this.modalState = 'share'
