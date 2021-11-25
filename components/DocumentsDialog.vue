@@ -14,8 +14,10 @@
                 @share="shareProject(project)"
               />
             </v-list>
-            <v-card-subtitle>Documents partagés avec moi</v-card-subtitle>
-            <v-list>
+            <v-card-subtitle v-show="sharedProjects.length">
+              Documents partagés avec moi
+            </v-card-subtitle>
+            <v-list v-show="sharedProjects.length">
               <ProjectsProjectListItem
                 v-for="project in sharedProjects"
                 :key="project.id"

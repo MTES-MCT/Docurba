@@ -15,16 +15,25 @@
         Partagé avec
       </h3>
       <v-list max-height="400px" class="overflow-auto">
-        <v-list-item v-for="share in sharings" :key="share.id">
-          {{ share.user_email }}
-        </v-list-item>
+        <v-hover v-slot="{hover}">
+          <v-list-item v-for="share in sharings" :key="share.id">
+            <v-list-item-content>
+              <v-list-item-title> {{ share.user_email }}</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action class="my-0">
+              <v-btn v-show="hover" small icon @click="cancelShare(share.user_email)">
+                <v-icon>{{ icons.mdiCloseCircleOutline }}</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+        </v-hover>
       </v-list>
     </v-col>
   </v-row>
 </template>
 
 <script>
-import { mdiShare } from '@mdi/js'
+import { mdiShare, mdiCloseCircleOutline } from '@mdi/js'
 
 export default {
   props: {
@@ -36,7 +45,8 @@ export default {
   data () {
     return {
       icons: {
-        mdiShare
+        mdiShare,
+        mdiCloseCircleOutline
       },
       emailsInput: '',
       sharings: []
@@ -53,6 +63,10 @@ export default {
     }
   },
   methods: {
+    async cancelShare (email) {
+      this.sharings = this.sharings.filter(s => s.user_email !== email)
+      await this.$supabase.from('projectsSharing').delete().eq('user_email', email)
+    },
     async shareProject () {
       const newSharings = this.emailsInput.split(',').map((email) => {
         return {
