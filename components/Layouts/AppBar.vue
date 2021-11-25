@@ -13,21 +13,39 @@
     <v-spacer />
     <!-- This client only could be removed with proper user management server side -->
     <client-only>
-      <!-- <template v-if="!$user.id"> -->
       <v-btn v-if="!$user.id" text @click="openLogin = true">
         Connexion
       </v-btn>
       <LoginDialog v-model="openLogin" />
-      <!-- </template> -->
-      <!-- <template v-if="$user.id"> -->
       <v-btn v-if="$user.id" text @click="openDocs = true">
         Mes documents
       </v-btn>
-      <v-btn v-if="$user.id" text @click="$supabase.auth.signOut()">
+      <v-menu v-if="$user.id" offset-y>
+        <template #activator="{ on }">
+          <v-btn
+            icon
+            small
+            v-on="on"
+          >
+            <v-icon>{{ icons.mdiDotsVertical }}</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item link @click="openDDT = true">
+            <v-list-item-title>Accès DDT</v-list-item-title>
+          </v-list-item>
+          <v-list-item link @click="$supabase.auth.signOut()">
+            <v-list-item-title>
+              Déconnexion
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <!-- <v-btn v-if="$user.id" text @click="$supabase.auth.signOut()">
         Déconnexion
-      </v-btn>
+      </v-btn> -->
       <DocumentsDialog v-if="$user.id" v-model="openDocs" />
-      <!-- </template> -->
+      <AdminDdtRequestDialog v-model="openDDT" />
     </client-only>
     <template v-if="extended" #extension>
       <slot />
@@ -36,6 +54,8 @@
 </template>
 
 <script>
+import { mdiDotsVertical } from '@mdi/js'
+
 export default {
   props: {
     extended: {
@@ -45,8 +65,12 @@ export default {
   },
   data () {
     return {
+      icons: {
+        mdiDotsVertical
+      },
       openLogin: false,
-      openDocs: false
+      openDocs: false,
+      openDDT: false
     }
   }
 }
