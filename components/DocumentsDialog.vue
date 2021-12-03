@@ -74,8 +74,11 @@
 <script>
 import regions from '@/assets/data/Regions.json'
 
+import projectsList from '@/mixins/projectsList.js'
+
 export default {
   name: 'DocumentsDialog',
+  mixins: [projectsList],
   props: {
     value: {
       type: Boolean,
@@ -91,8 +94,6 @@ export default {
         region: ''
       },
       selectedTown: {},
-      projects: [],
-      sharedProjects: [],
       loading: false,
       selectedProject: {}
     }
@@ -112,31 +113,7 @@ export default {
       }
     }
   },
-  mounted () {
-    this.getProjects()
-    this.getSharedProjects()
-  },
   methods: {
-    async getProjects () {
-      const { data: projects, error } = await this.$supabase.from('projects').select('id, name, docType, created_at').eq('owner', this.$user.id)
-
-      if (!error) {
-        this.projects = projects
-      } else {
-      // eslint-disable-next-line no-console
-        console.log(error)
-      }
-    },
-    async getSharedProjects () {
-      const { data: sharedProjects, error } = await this.$supabase.from('projectsSharing').select('project: project_id (id, name, docType, created_at)').eq('user_email', this.$user.email)
-
-      if (!error) {
-        this.sharedProjects = sharedProjects.map(p => p.project)
-      } else {
-      // eslint-disable-next-line no-console
-        console.log(error)
-      }
-    },
     shareProject (project) {
       this.selectedProject = project
       this.modalState = 'share'
