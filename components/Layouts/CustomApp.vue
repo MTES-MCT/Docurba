@@ -1,15 +1,20 @@
 <template>
-  <div>
+  <v-app>
+    <v-navigation-drawer v-if="drawer" app clipped :permanent="drawer">
+      <slot name="drawer" />
+    </v-navigation-drawer>
+
     <LayoutsAppBar :extended="extendedAppBar">
       <template #pageTitle>
-        <slot name="headerPageTitle" /></slot>
+        <slot name="headerPageTitle" />
       </template>
       <slot name="headerExtension" />
     </LayoutsAppBar>
     <v-main>
       <slot />
     </v-main>
-  </div>
+    <!-- <LayoutsFooter /> -->
+  </v-app>
 </template>
 
 <script>
@@ -19,24 +24,13 @@ export default {
       type: Boolean,
       default: false
     },
+    drawer: {
+      type: Boolean,
+      default: false
+    },
     extendedAppBar: {
       type: Boolean,
       default: false
-    }
-  },
-  watch: {
-    '$user.id' () {
-      this.redirectUser()
-    }
-  },
-  mounted () {
-    this.redirectUser()
-  },
-  methods: {
-    redirectUser () {
-      if (process.client && this.private && !this.$user.id) {
-        this.$router.push('/')
-      }
     }
   }
 }

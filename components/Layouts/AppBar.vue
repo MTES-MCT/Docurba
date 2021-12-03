@@ -1,7 +1,7 @@
 <template>
   <v-app-bar
-    fixed
     app
+    clipped-left
     color="white"
   >
     <nuxt-link to="/" class="text-decoration-none g800--text">

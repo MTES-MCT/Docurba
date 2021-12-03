@@ -1,8 +1,23 @@
 <template>
-  <LayoutsCustomApp private>
-    <v-container>
+  <LayoutsCustomApp drawer private>
+    <template #drawer>
+      <v-list>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>Documents</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>PAC Templates</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </template>
+    <v-container fluid>
       <v-row>
-        <v-col cols="12">
+        <v-col cols="auto" class="pa-0" />
+        <v-col cols="">
           <v-list>
             <ProjectsProjectListItem
               v-for="project in projects"
@@ -12,10 +27,6 @@
               @share="shareProject(project)"
             />
           </v-list>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
           <v-list>
             <ProjectsProjectListItem
               v-for="project in sharedProjects"
