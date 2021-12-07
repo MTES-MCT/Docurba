@@ -1,6 +1,6 @@
 ---
 titre: Dispositions de documents supra-territoriaux
-ordre: 2
+ordre: 3
 ---
 
 ## Dispositions de documents supra-territoriaux

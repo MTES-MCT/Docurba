@@ -1,6 +1,6 @@
 ---
 titre: Principe de la hiérarchie des normes et la mise en compatibilité
-ordre: 3
+ordre: 4
 ---
 
 ### Principe de la hiérarchie des normes et la mise en compatibilité
