@@ -1,5 +1,5 @@
 ---
 ordre : 1
-titre : introduction
+titre : Introduction
 ---
 ## Introduction

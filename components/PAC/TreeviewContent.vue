@@ -193,7 +193,7 @@ export default {
         })
 
         // Temporary filter
-        roots.forEach((root) => {
+        roots.filter(r => !!r.children).forEach((root) => {
           root.children = root.children.filter((c) => {
             return (c.children && c.children.length) ||
             (c.body && c.body.children && c.body.children.length > 1)
@@ -211,11 +211,17 @@ export default {
       const targetEl = item.body.children.find(el => el.tag.indexOf('h') === 0)
       const targetId = targetEl ? targetEl.props.id : ''
       if (targetId) {
-        if (item.children) {
+        try {
           this.$vuetify.goTo(`#${targetId}`)
-        } else {
+        } catch (err) {
           this.$vuetify.goTo(`#panel-${targetId}`)
         }
+
+        // if (item.children) {
+        //   this.$vuetify.goTo(`#${targetId}`)
+        // } else {
+        //   this.$vuetify.goTo(`#panel-${targetId}`)
+        // }
       }
     }
   }
