@@ -3,8 +3,4 @@ title: "Cours d’eau de la trame bleue régionale - Trame verte et bleue - SRAD
 theme: "Nature Paysage Biodiversité"
 subTheme: "Zonages Nature"
 
-regions:
--
-  iso: FR-ARA
-  source: https://www.datara.gouv.fr/geonetwork/srv/fre/catalog.search#/search?resultType=details&sortBy=relevance&from=1&to=20&fast=index&_content_type=json&any=Cours d’eau de la trame bleue régionale - Trame verte et bleue - SRADDET Auvergne-Rhône-Alpes
 ---
