@@ -1,6 +1,6 @@
 ---
 title: "Secteurs sauvegardés de Rhône-Alpes"
-theme: "nature Paysage Biodiversité"
+theme: "Nature Paysage Biodiversité"
 subTheme: "zonages paysage"
 
 regions:

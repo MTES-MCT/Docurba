@@ -1,6 +1,6 @@
 ---
 title: "PNA : Chiroptères (30 esp)"
-theme: "nature Paysage Biodiversité"
+theme: "Nature Paysage Biodiversité"
 subTheme: "Inventaire Nature Biodiversité"
 
 regions:

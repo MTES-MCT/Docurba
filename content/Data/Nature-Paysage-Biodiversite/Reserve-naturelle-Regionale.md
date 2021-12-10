@@ -1,6 +1,6 @@
 ---
 title: "Réserve naturelle Régionale"
-theme: "nature Paysage Biodiversité"
+theme: "Nature Paysage Biodiversité"
 subTheme: "Zonages Nature"
 
 regions:

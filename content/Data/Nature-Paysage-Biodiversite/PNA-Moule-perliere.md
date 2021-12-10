@@ -1,6 +1,6 @@
 ---
 title: "PNA : Moule perlière"
-theme: "nature Paysage Biodiversité"
+theme: "Nature Paysage Biodiversité"
 subTheme: "Inventaire Nature Biodiversité"
 
 regions:

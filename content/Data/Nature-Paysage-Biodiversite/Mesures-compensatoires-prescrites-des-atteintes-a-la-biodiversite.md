@@ -1,6 +1,6 @@
 ---
 title: "Mesures compensatoires prescrites des atteintes à la biodiversité"
-theme: "nature Paysage Biodiversité"
+theme: "Nature Paysage Biodiversité"
 subTheme: "Zonages Nature"
 
 regions:

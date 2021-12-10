@@ -1,6 +1,6 @@
 ---
 title: "Espace Naturel sensible"
-theme: "nature Paysage Biodiversité"
+theme: "Nature Paysage Biodiversité"
 subTheme: "Zonages Nature"
 
 regions:

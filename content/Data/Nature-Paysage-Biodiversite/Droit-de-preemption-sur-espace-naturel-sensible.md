@@ -1,6 +1,6 @@
 ---
 title: "Droit de préemption sur espace naturel sensible"
-theme: "nature Paysage Biodiversité"
+theme: "Nature Paysage Biodiversité"
 subTheme: "Zonages Nature"
 
 regions:

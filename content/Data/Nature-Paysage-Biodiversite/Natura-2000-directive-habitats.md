@@ -1,6 +1,6 @@
 ---
 title: "Natura 2000 - directive habitats"
-theme: "nature Paysage Biodiversité"
+theme: "Nature Paysage Biodiversité"
 subTheme: "Zonages Nature"
 
 regions:

@@ -1,6 +1,6 @@
 ---
 title: "Monuments Historiques"
-theme: "nature Paysage Biodiversité"
+theme: "Nature Paysage Biodiversité"
 subTheme: "zonages paysage"
 
 regions:

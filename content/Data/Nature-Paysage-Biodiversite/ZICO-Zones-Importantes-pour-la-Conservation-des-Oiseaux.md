@@ -1,6 +1,6 @@
 ---
 title: "ZICO - Zones Importantes pour la Conservation des Oiseaux"
-theme: "nature Paysage Biodiversité"
+theme: "Nature Paysage Biodiversité"
 subTheme: "Inventaire Nature Biodiversité"
 
 regions:

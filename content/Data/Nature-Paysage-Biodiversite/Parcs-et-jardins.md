@@ -1,6 +1,6 @@
 ---
 title: "Parcs et jardins"
-theme: "nature Paysage Biodiversité"
+theme: "Nature Paysage Biodiversité"
 subTheme: "Inventaire Paysage"
 
 regions:
