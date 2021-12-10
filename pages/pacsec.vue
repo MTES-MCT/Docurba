@@ -26,7 +26,8 @@ export default {
       tabs: [
         { text: 'PAC sec', to: '/pacsec/content' },
         { text: 'Jeux de données', to: '/pacsec/data' },
-        { text: 'Ressources', to: '/pacsec/ressources' }
+        { text: 'Ressources', to: '/pacsec/ressources' },
+        { text: 'Glossaire', to: '/pacsec/glossaire' }
       ]
     }
   }

@@ -1,6 +1,8 @@
 <template>
   <v-container>
-    <RessourcesList :ressources="ressources" />
+    <v-row>
+      <RessourcesList :ressources="ressources" />
+    </v-row>
   </v-container>
 </template>
 
