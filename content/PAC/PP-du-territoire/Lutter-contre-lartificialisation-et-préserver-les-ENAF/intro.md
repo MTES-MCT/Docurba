@@ -1,6 +1,6 @@
 ---
-titre: Réduire la consommation d’espace
+titre: Lutter contre l'artificialisation et préserver les espaces naturels, agricoles et forestiers
 ordre: 1
 ---
 
-### Réduire la consommation d’espace
+### Lutter contre l'artificialisation et préserver les espaces naturels, agricoles et forestiers
