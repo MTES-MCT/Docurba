@@ -3,6 +3,10 @@ title: "AOC viticole - Aires parcellaires"
 theme: "Agriculture"
 subTheme: "Zonages agricoles"
 sourceNational: 'https://www.data.gouv.fr/fr/datasets/delimitation-parcellaire-des-aoc-viticoles-de-linao'
+regions:
+-
+  iso: FR-ARA
+  source: https://www.datara.gouv.fr/geonetwork/srv/fre/catalog.search#/search?resultType=details&sortBy=relevance&from=1&to=20&fast=index&_content_type=json&any=AOC%20viticole%20-%20Aires%20parcellaires
 ---
 
 Selon les règlements européens 510/2006 du 6 mars 2006 et 1234/2007, le cahier des charges des appellations définit l’aire géographique des produits enregistrés en AOP ou en IGP.
