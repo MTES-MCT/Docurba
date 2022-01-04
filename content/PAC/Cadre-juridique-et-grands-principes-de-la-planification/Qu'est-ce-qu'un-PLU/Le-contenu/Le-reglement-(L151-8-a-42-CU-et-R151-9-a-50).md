@@ -19,11 +19,16 @@ Le règlement :
     - en précisant l’affectation des sols selon les usages principaux qui peuvent être faits ou la nature des activités qui peuvent y être exercées, et prévoir l’interdiction de construire
     - en précisant les règles concernant les destinations et la nature des constructions autorisées
 - délimite les espaces faisant l’objet d’une réglementation spéciale : les espaces boisés classés (EBC), les éléments de patrimoine et paysage à protéger, les emplacements réservés, les secteurs à risque, etc.
+- définit, dans les secteurs qu’il délimite, une part minimale de surfaces non imperméabilisées ou éco-aménageables (dans les communes et agglomérations où existe un déséquilibre marqué entre l’offre et la demande de logements, et à l’exclusion des projets de rénovation, réhabilitation ou changement de destination de bâtiments existants). 
+
 
 Il peut :
 - Identifier et délimiter les quartiers, îlots et voies dans lesquels doit être préservée ou développée la diversité commerciale, notamment à travers les commerces de détail et de proximité, et définir, le cas échéant, les prescriptions de nature à assurer cet objectif ;
 - Fixer les conditions de desserte par les voies et réseaux des terrains susceptibles de recevoir des constructions ou de faire l'objet d'aménagements ;
 - Dans des secteurs situés à proximité des transports collectifs, existants ou programmés, imposer dans des secteurs qu'il délimite une densité minimale de constructions ;
 - Imposer aux constructions, travaux, installations et aménagements, notamment dans les secteurs qu'il ouvre à l'urbanisation, de respecter des performances énergétiques et environnementales renforcées qu'il définit ;
+- Imposer une part minimal de surfaces non imperméabilisées ou éco-aménageables, éventuellement pondérées en fonction de leur nature, afin de contribuer au maintien de la biodiversité et de la nature en ville ;
 - Dans les zones A et N, délimiter des secteurs de taille et de capacité d’accueil limitées (STECAL) dans lesquels des constructions peuvent être autorisés à la condition qu’elles ne portent pas atteinte, ni à la préservation des sols agricoles et forestiers, ni à la sauvegarde des sites, milieux naturels et paysagers ;
 - Imposer aux constructions, travaux, installations et aménagements dans les secteurs qu'il ouvre à l'urbanisation de respecter, en matière d'infrastructures et réseaux de communications électroniques, des critères de qualité renforcés, qu'il définit ;
+- Dans les zones d’aménagement concerté (ZAC), déterminer la surface de plancher dont la construction est autorisée dans chaque îlot, en fonction, le cas échéant, de la nature et de la destination des bâtiments. Dans ces zones, le règlement peut aussi déterminer une densité minimale de constructions, le cas échéant déclinée par secteur ;
+- Prévoir des secteurs à l’intérieurs desquels les règles de hauteur, de gabarit, ou du volume constructible peuvent être modulées ou majorées, selon les conditions énoncées à l’article L151-28 du code de l’urbanisme.

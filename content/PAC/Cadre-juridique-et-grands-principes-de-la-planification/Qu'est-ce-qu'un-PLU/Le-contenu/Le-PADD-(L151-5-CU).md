@@ -12,4 +12,4 @@ Le projet d'aménagement et de développement durables définit :
 paysage, de protection des espaces naturels, agricoles et forestiers, et de préservation ou de remise en bon état des continuités écologiques ;
 2° Les orientations générales concernant l'habitat, les transports et les déplacements, les réseaux d'énergie, le développement des communications numériques, l'équipement commercial, le développement économique et les loisirs, retenues pour l'ensemble de l'établissement public de coopération intercommunale ou de la commune.
 
-**Il fixe des objectifs chiffrés de modération de la consommation de l'espace et de lutte contre l'étalement urbain.**
+**Il fixe des objectifs chiffrés de modération de la consommation de l'espace et de lutte contre l'étalement urbain**, pour la réalisation des objectifs de réduction de l’artificialisation des sols fixés par le SCoT. A défaut de SCoT, ces objectifs doivent prendre en compte la trajectoire définie par le schéma régional d’aménagement, de développement durable et d’égalité des territoires (SRADDET), permettant d’aboutir, à terme, à l’absence de toute artificialisation nette des sols.  
