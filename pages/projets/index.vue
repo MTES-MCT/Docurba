@@ -7,7 +7,7 @@
             <v-list-item-title>Documents</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item>
+        <v-list-item href="/projets/trames">
           <v-list-item-content>
             <v-list-item-title>PAC Templates</v-list-item-title>
           </v-list-item-content>

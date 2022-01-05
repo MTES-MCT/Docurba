@@ -53,7 +53,7 @@ export default {
     }
   },
   async mounted () {
-    const { data: sharings, error } = await this.$supabase.from('projectsSharing').select('*').eq('project_id', this.project.id)
+    const { data: sharings, error } = await this.$supabase.from('projects_sharing').select('*').eq('project_id', this.project.id)
 
     if (!error) {
       this.sharings = sharings
@@ -65,7 +65,7 @@ export default {
   methods: {
     async cancelShare (email) {
       this.sharings = this.sharings.filter(s => s.user_email !== email)
-      await this.$supabase.from('projectsSharing').delete().eq('user_email', email)
+      await this.$supabase.from('projects_sharing').delete().eq('user_email', email)
     },
     async shareProject () {
       const newSharings = this.emailsInput.split(',').map((email) => {
@@ -76,7 +76,7 @@ export default {
         }
       })
 
-      await this.$supabase.from('projectsSharing').insert(newSharings)
+      await this.$supabase.from('projects_sharing').insert(newSharings)
 
       this.sharings.push(...newSharings)
       this.emailsInput = ''
