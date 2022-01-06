@@ -1,6 +1,6 @@
 ---
-titre: Préserver les espaces agricoles, naturels et forestiers
-ordre: 4
+titre: Préserver les milieux naturels, la biodiversité et les continuités écologiques
+ordre: 2
 ---
 
-### Préserver les espaces agricoles, naturels et forestiers
+### Préserver les milieux naturels, la biodiversité et les continuités écologiques

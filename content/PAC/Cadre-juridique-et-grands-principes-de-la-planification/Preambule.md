@@ -1,8 +1,8 @@
 ---
 ordre : 1
-titre : Préambule
+titre : Grands principes primordiaux
 ---
-## Préambule
+## Grands principes primordiaux
 De nombreuses lois ont jalonné l’histoire de la planification, le but ici n’est pas de rendre compte de cet historique **mais de donner à connaître les lois les plus structurantes et leur esprit.**
 
 Par ailleurs, ces différentes lois ont été traduites notamment dans le code de l'urbanisme qui est bien le code de référence pour l'élaboration des documents d'urbanisme. En particulier, il est important de citer en préambule les articles [L101-2 et L101-2-1](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210064/#LEGISCTA000031212667) qui sont sructurants et permettent d'énoncer clairement' **les objectifs ambitieux que doivent poursuivre les collectivités** lorsqu'elles élaborent leur document d'urbanisme.

@@ -19,3 +19,8 @@ Il justifie les objectifs chiffrés de modération de la consommation de l'espac
 
 Il établit un inventaire des capacités de stationnement de véhicules motorisés, de véhicules
 hybrides et électriques et de vélos des parcs ouverts au public et des possibilités de mutualisation de ces capacités.
+
+**Dans le cas d'un PLUi-H**, le rapport de présentation comprend le diagnostic sur le fonctionnement des marchés locaux du foncier et du logement, sur la situation de l'hébergement et sur les conditions d'habitat définies à l'article ([R. 302-1-1 du code de la construction et de l'habitation](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000036662013)).
+
+**Dans le cas d'un PLUi-D**,  le rapport de présentation expose les dispositions retenues en matière de transports et de déplacements dans le projet d'aménagement et de développement durables et dans les orientations d'aménagement et de programmation.
+

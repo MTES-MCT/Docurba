@@ -1,6 +1,6 @@
 ---
 titre: Revitaliser les centre-bourgs
-ordre: 9
+ordre: 8
 ---
 
 ### Revitaliser les centre-bourgs

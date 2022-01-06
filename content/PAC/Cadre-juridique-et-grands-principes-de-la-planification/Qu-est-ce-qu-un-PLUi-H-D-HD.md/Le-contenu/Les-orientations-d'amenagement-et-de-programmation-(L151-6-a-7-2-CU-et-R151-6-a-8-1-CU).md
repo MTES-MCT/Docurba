@@ -1,6 +1,6 @@
 ---
 titre: Les orientations d’aménagement et de programmation
-ordre: 3
+ordre: 4
 ---
 
 ##### Les orientations d’aménagement et de programmation ([L151-6 à 7-2 CU](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031211161/#LEGISCTA000031211912) et [R151-6 à 8-1 CU](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031719991/#LEGISCTA000031720647))

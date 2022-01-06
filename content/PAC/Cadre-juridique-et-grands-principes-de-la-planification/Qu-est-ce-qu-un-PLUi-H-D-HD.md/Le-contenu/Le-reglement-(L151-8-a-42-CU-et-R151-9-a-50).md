@@ -1,6 +1,6 @@
 ---
 titre: Le règlement
-ordre: 4
+ordre: 5
 ---
 
 ##### Le règlement ([L151-8 à 42 CU](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031211167/#LEGISCTA000031211908) et [R151-9 à 50 CU](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031719999/#LEGISCTA000031720639))

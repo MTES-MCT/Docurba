@@ -1,6 +1,6 @@
 ---
 titre: Le SCoT
-ordre: 2
+ordre: 4
 ---
 
 ### Le SCoT

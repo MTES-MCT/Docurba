@@ -1,6 +1,6 @@
 ---
-titre: Répondre aux besoins en matière de logements et en termes de mixité et de diversité
-ordre: 8
+titre: Répondre aux besoins en matière de logements, en termes de mixité et de diversité
+ordre: 7
 ---
 
-### Répondre aux besoins en matière de logements et en termes de mixité et de diversité
+### Répondre aux besoins en matière de logements, en termes de mixité et de diversité
