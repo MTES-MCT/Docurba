@@ -22,7 +22,7 @@
 
 <script>
 
-import { unified } from 'unified'
+import unified from 'unified'
 import remarkParse from 'remark-parse'
 
 export default {
@@ -36,9 +36,22 @@ export default {
     // TODO: Make dept eq dynamique with user data.
     const { data: deptSections } = await $supabase.from('pac_sections_dept').select('*').eq('dept', '10')
 
+    const mdParser = unified().use(remarkParse)
+
+    deptSections.forEach((section) => {
+      section.body = mdParser.parse(section.text)
+    })
+
+    PAC.forEach((section, i) => {
+      const deptSection = deptSections.find(s => s.path === section.path)
+
+      if (deptSection) {
+        PAC[i] = deptSection
+      }
+    })
+
     return {
-      PAC,
-      deptSections
+      PAC
     }
   },
   data () {
@@ -46,35 +59,36 @@ export default {
       selectedSection: null
     }
   },
-  mounted () {
-    const mdParser = unified().use(remarkParse)
-
-    this.deptSections.forEach((section) => {
-      section.body = mdParser.parse(section.text)
-
-      console.log(section.body)
-    })
-  },
   methods: {
     selectSection (section) {
-      const { text, titre, path } = section
+      const { text, titre, path, slug, dir } = section
 
       this.selectedSection = {
-        text, titre, path
+        text, titre, path, slug, dir
       }
     },
     async saveSection (editedSection) {
-      const { data, error } = await this.$supabase.from('pac_sections_dept').insert([Object.assign({
-        path: this.selectedSection.path,
-        dept: '10' // TODO: Make this dynamic from admin user data
-      }, editedSection)])
+      const { data: savedSection } = await this.$supabase.from('pac_sections_dept').select('id').match({
+        dept: '10', // This need to be dynamic.
+        path: this.selectedSection.path
+      })
 
-      if (!error && data) {
-        console.log(data)
-        // TODO: Replace PAC at path by the saved section using the content parser.
-      } else {
+      console.log(savedSection)
+
+      try {
+        if (savedSection[0]) {
+          await this.$supabase.from('pac_sections_dept').upsert(Object.assign({
+            id: savedSection[0].id,
+            dept: '10'
+          }, this.selectedSection, editedSection))
+        } else {
+          await this.$supabase.from('pac_sections_dept').insert([Object.assign({
+            dept: '10' // TODO: Make this dynamic from admin user data
+          }, this.selectedSection, editedSection)])
+        }
+      } catch (err) {
         // eslint-disable-next-line no-console
-        console.log('Error saving section', error, data)
+        console.log('Error saving data')
       }
     }
   }

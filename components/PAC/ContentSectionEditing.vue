@@ -24,7 +24,6 @@
   </v-row>
 </template>
 <script>
-import MarkdownIt from 'markdown-it'
 import { mdiContentSave } from '@mdi/js'
 
 export default {
@@ -39,12 +38,9 @@ export default {
     }
   },
   data () {
-    const md = new MarkdownIt()
-
     return {
-      md,
       editedSection: {
-        text: md.render(this.text),
+        text: this.text,
         titre: this.titre
       },
       modified: false,
@@ -55,7 +51,7 @@ export default {
   },
   watch: {
     text () {
-      this.editedSection.text = this.md.render(this.text)
+      this.editedSection.text = this.text
     },
     titre () {
       this.editedSection.titre = this.titre
@@ -63,7 +59,7 @@ export default {
     editedSection: {
       deep: true,
       handler () {
-        if (this.titre !== this.editedSection.titre || this.editedSection.text !== this.md.render(this.text)) {
+        if (this.titre !== this.editedSection.titre || this.editedSection.text !== this.text) {
           this.modified = true
         } else {
           this.modified = false
