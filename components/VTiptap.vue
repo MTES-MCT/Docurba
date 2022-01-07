@@ -28,7 +28,23 @@
             {{ icons.mdiRedo }}
           </v-icon>
         </v-btn>
-        <v-btn
+        <v-select
+          :value="typos[4]"
+          :items="typos"
+          hide-details
+          solo
+          flat
+          class="d-flex align-center typo-select"
+          @change="changeTypo"
+        >
+          <template #item="{item}">
+            <v-icon>{{ item.icon }}</v-icon>
+          </template>
+          <template #selection="{item}">
+            <v-icon>{{ item.icon }}</v-icon>
+          </template>
+        </v-select>
+        <!-- <v-btn
           icon
           @click="
             editor
@@ -39,7 +55,7 @@
           "
         >
           <v-icon>{{ icons.mdiFormatHeader1 }}</v-icon>
-        </v-btn>
+        </v-btn> -->
         <v-btn
           icon
           @click="
@@ -113,7 +129,8 @@ import StarterKit from '@tiptap/starter-kit'
 import { Underline } from '@tiptap/extension-underline'
 
 import {
-  mdiUndo, mdiRedo, mdiFormatHeader1,
+  mdiUndo, mdiRedo, mdiFormatHeader1, mdiFormatText,
+  mdiFormatHeader2, mdiFormatHeader3, mdiFormatHeader4,
   mdiFormatBold, mdiFormatUnderline, mdiFormatItalic,
   mdiFormatListBulleted, mdiFormatListNumbered
 } from '@mdi/js'
@@ -133,6 +150,22 @@ export default {
   },
   data () {
     return {
+      typos: [{
+        icon: mdiFormatHeader1,
+        value: 1
+      }, {
+        icon: mdiFormatHeader2,
+        value: 2
+      }, {
+        icon: mdiFormatHeader3,
+        value: 3
+      }, {
+        icon: mdiFormatHeader4,
+        value: 4
+      }, {
+        icon: mdiFormatText,
+        value: 0
+      }],
       editor: null,
       icons: {
         mdiUndo,
@@ -167,6 +200,14 @@ export default {
   },
   beforeUnmount () {
     this.editor.destroy()
+  },
+  methods: {
+    changeTypo (val) {
+      this.editor.chain()
+        .focus()
+        .toggleHeading({ level: val })
+        .run()
+    }
   }
 }
 </script>
@@ -179,5 +220,9 @@ export default {
   min-height: calc(100vh - 250px);
   max-height: calc(100vh - 250px);
   overflow: scroll;
+}
+
+.typo-select {
+  width: 72px;
 }
 </style>
