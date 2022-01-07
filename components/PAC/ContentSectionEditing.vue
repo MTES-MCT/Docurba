@@ -26,6 +26,13 @@
 <script>
 import { mdiContentSave } from '@mdi/js'
 
+import unified from 'unified'
+import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeRaw from 'rehype-raw'
+import rehypeSanitize from 'rehype-sanitize'
+import rehypeStringify from 'rehype-stringify'
+
 export default {
   props: {
     text: {
@@ -38,9 +45,17 @@ export default {
     }
   },
   data () {
+    const mdParser = unified()
+      .use(remarkParse)
+      .use(remarkRehype, { allowDangerousHtml: true })
+      .use(rehypeRaw)
+      .use(rehypeSanitize)
+      .use(rehypeStringify)
+
     return {
+      mdParser,
       editedSection: {
-        text: this.text,
+        text: mdParser.processSync(this.text).contents,
         titre: this.titre
       },
       modified: false,
@@ -51,7 +66,7 @@ export default {
   },
   watch: {
     text () {
-      this.editedSection.text = this.text
+      this.editedSection.text = this.getHTML()
     },
     titre () {
       this.editedSection.titre = this.titre
@@ -59,7 +74,7 @@ export default {
     editedSection: {
       deep: true,
       handler () {
-        if (this.titre !== this.editedSection.titre || this.editedSection.text !== this.text) {
+        if (this.titre !== this.editedSection.titre || this.editedSection.text !== this.getHTML()) {
           this.modified = true
         } else {
           this.modified = false
@@ -68,6 +83,9 @@ export default {
     }
   },
   methods: {
+    getHTML () {
+      return this.mdParser.processSync(this.text).contents
+    },
     saveSection () {
       this.$emit('save', this.editedSection)
       this.modified = false

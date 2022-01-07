@@ -1,6 +1,9 @@
 <template>
   <LayoutsCustomApp>
-    <v-container fluid>
+    <template #headerPageTitle>
+      - Trame du PAC {{ departement.nom_departement }}
+    </template>
+    <v-container v-if="!loading" fluid>
       <v-row>
         <v-col cols="4">
           <client-only>
@@ -17,6 +20,7 @@
         </v-col>
       </v-row>
     </v-container>
+    <VGlobalLoader v-else />
   </LayoutsCustomApp>
 </template>
 
@@ -24,6 +28,7 @@
 
 import unified from 'unified'
 import remarkParse from 'remark-parse'
+import departements from '@/assets/data/departements-france.json'
 
 export default {
   layout: 'app',
@@ -33,8 +38,35 @@ export default {
       text: true
     }).fetch()
 
-    // TODO: Make dept eq dynamique with user data.
-    const { data: deptSections } = await $supabase.from('pac_sections_dept').select('*').eq('dept', '10')
+    return {
+      PAC
+    }
+  },
+  data () {
+    return {
+      loading: true,
+      selectedSection: null,
+      departement: { code_departement: 0, nom_departement: '' }
+    }
+  },
+  computed: {
+    departementCode () {
+      return this.departement.code_departement.toString()
+    }
+  },
+  async mounted () {
+    const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('dept').match({
+      user_id: this.$user.id,
+      user_email: this.$user.email,
+      role: 'ddt'
+    })
+
+    if (!adminAccess || !adminAccess.length) { this.$router.push('/') }
+
+    // eslint-disable-next-line eqeqeq
+    this.departement = departements.find(d => d.code_departement == adminAccess[0].dept)
+
+    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.departementCode)
 
     const mdParser = unified().use(remarkParse)
 
@@ -42,22 +74,15 @@ export default {
       section.body = mdParser.parse(section.text)
     })
 
-    PAC.forEach((section, i) => {
+    this.PAC.forEach((section, i) => {
       const deptSection = deptSections.find(s => s.path === section.path)
 
       if (deptSection) {
-        PAC[i] = deptSection
+        this.PAC[i] = deptSection
       }
     })
 
-    return {
-      PAC
-    }
-  },
-  data () {
-    return {
-      selectedSection: null
-    }
+    this.loading = false
   },
   methods: {
     selectSection (section) {
@@ -69,21 +94,19 @@ export default {
     },
     async saveSection (editedSection) {
       const { data: savedSection } = await this.$supabase.from('pac_sections_dept').select('id').match({
-        dept: '10', // This need to be dynamic.
+        dept: this.departementCode, // This need to be dynamic.
         path: this.selectedSection.path
       })
-
-      console.log(savedSection)
 
       try {
         if (savedSection[0]) {
           await this.$supabase.from('pac_sections_dept').upsert(Object.assign({
             id: savedSection[0].id,
-            dept: '10'
+            dept: this.departementCode
           }, this.selectedSection, editedSection))
         } else {
           await this.$supabase.from('pac_sections_dept').insert([Object.assign({
-            dept: '10' // TODO: Make this dynamic from admin user data
+            dept: this.departementCode
           }, this.selectedSection, editedSection)])
         }
       } catch (err) {

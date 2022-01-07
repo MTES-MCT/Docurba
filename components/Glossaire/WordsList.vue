@@ -22,10 +22,10 @@
           {{ letter }}
         </h2>
       </v-col>
-      <v-col v-for="word in words" :key="word.title" cols="12" sm="6" md="4">
-        <v-card :id="word.title" :href="`#${word.title}`" :ripple="false">
+      <v-col v-for="word in words" :key="word.titre" cols="12" sm="6" md="4">
+        <v-card :id="word.titre" :href="`#${word.titre}`" :ripple="false">
           <v-card-title class="break-word">
-            {{ word.title }}
+            {{ word.titre }}
           </v-card-title>
           <v-col cols="12">
             <v-card-text>
@@ -48,14 +48,16 @@ export default {
     }
   },
   async fetch () {
-    this.wordsData = await this.$content('Glossaire', {
+    this.wordsData = await this.$content('Glossaire-et-acronymes', {
       deep: true
     }).fetch()
   },
   computed: {
     groupedWords () {
-      return groupBy(this.wordsData, (word) => {
-        return word.title[0]
+      return groupBy(this.wordsData.filter((word) => {
+        return word.titre
+      }), (word) => {
+        return word.titre[0]
       })
     }
   }
