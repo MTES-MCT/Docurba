@@ -24,17 +24,32 @@
           <span>{{ item.titre }}</span>
         </v-tooltip>
       </template>
+      <template #append="{item}">
+        <v-btn small icon @click="addSectionTo(item)">
+          <v-icon>{{ icons.mdiPlus }}</v-icon>
+        </v-btn>
+      </template>
     </v-treeview>
   </v-row>
 </template>
 <script>
+import { mdiPlus } from '@mdi/js'
 import pacContent from '@/mixins/pacContent.js'
 
 export default {
   mixins: [pacContent],
+  props: {
+    minFilter: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
-      contentSearch: ''
+      contentSearch: '',
+      icons: {
+        mdiPlus
+      }
     }
   },
   computed: {
@@ -71,6 +86,14 @@ export default {
   methods: {
     openSection (section) {
       this.$emit('open', section)
+    },
+    addSectionTo (section) {
+      console.log(section)
+      // const newSection = {
+
+      // }
+
+      // this.emit('add', )
     }
   }
 }

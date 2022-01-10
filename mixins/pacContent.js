@@ -8,6 +8,10 @@ export default {
     pacData: {
       type: Array,
       required: true
+    },
+    minFilter: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
@@ -50,10 +54,12 @@ export default {
     PAC.forEach((section) => {
       if (section.children) {
         // Temporary filter
-        section.children = section.children.filter((c) => {
-          return (c.children && c.children.length) ||
+        if (this.minFilter) {
+          section.children = section.children.filter((c) => {
+            return (c.children && c.children.length) ||
             (c.body && c.body.children && c.body.children.length > 1)
-        })
+          })
+        }
 
         section.children.sort((sa, sb) => {
           return sa.ordre - sb.ordre
