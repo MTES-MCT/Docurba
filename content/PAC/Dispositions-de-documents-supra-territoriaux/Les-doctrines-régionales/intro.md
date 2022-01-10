@@ -1,6 +1,6 @@
 ---
 titre: Les doctrines régionales
-ordre: 2
+ordre: 4
 ---
 
 ### Les doctrines régionales
