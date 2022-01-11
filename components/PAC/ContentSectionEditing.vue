@@ -33,6 +33,8 @@ import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
 
+import { defaultSchema } from '@/assets/sanitizeSchema.js'
+
 export default {
   props: {
     text: {
@@ -49,7 +51,7 @@ export default {
       .use(remarkParse)
       .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypeRaw)
-      .use(rehypeSanitize)
+      .use(rehypeSanitize, defaultSchema)
       .use(rehypeStringify)
 
     return {
