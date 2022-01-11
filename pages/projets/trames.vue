@@ -78,7 +78,9 @@ export default {
       const deptSection = deptSections.find(s => s.path === section.path)
 
       if (deptSection) {
-        this.PAC[i] = deptSection
+        // The Object Assign here is to keep the order since it's not saved. As could be other properties.
+        // Although it might create inconsistenties for versions that get Archived later on.
+        this.PAC[i] = Object.assign({}, section, deptSection)
       }
     })
 
@@ -86,7 +88,7 @@ export default {
   },
   methods: {
     selectSection (section) {
-      const { text, titre, path, slug, dir } = section
+      const { text, titre, path, slug, dir } = this.PAC.find(s => s.path === section.path)
 
       this.selectedSection = {
         text, titre, path, slug, dir
@@ -98,17 +100,22 @@ export default {
         path: this.selectedSection.path
       })
 
+      const newData = Object.assign({
+        dept: this.departementCode
+      }, this.selectedSection, editedSection)
+
+      if (savedSection[0]) { newData.id = savedSection[0].id }
+
       try {
         if (savedSection[0]) {
-          await this.$supabase.from('pac_sections_dept').upsert(Object.assign({
-            id: savedSection[0].id,
-            dept: this.departementCode
-          }, this.selectedSection, editedSection))
+          await this.$supabase.from('pac_sections_dept').upsert(newData)
         } else {
-          await this.$supabase.from('pac_sections_dept').insert([Object.assign({
-            dept: this.departementCode
-          }, this.selectedSection, editedSection)])
+          await this.$supabase.from('pac_sections_dept').insert([newData])
         }
+
+        const sectionIndex = this.PAC.findIndex(s => s.path === newData.path)
+
+        this.PAC[sectionIndex] = newData
       } catch (err) {
         // eslint-disable-next-line no-console
         console.log('Error saving data')

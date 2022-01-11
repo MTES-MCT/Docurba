@@ -24,8 +24,8 @@
           <span>{{ item.titre }}</span>
         </v-tooltip>
       </template>
-      <template #append="{item}">
-        <v-btn small icon @click="addSectionTo(item)">
+      <template #append="{item, leaf}">
+        <v-btn small icon @click="addSectionTo(item, leaf)">
           <v-icon>{{ icons.mdiPlus }}</v-icon>
         </v-btn>
       </template>
@@ -56,7 +56,7 @@ export default {
     PACroots () {
       if (!this.contentSearch.length) {
         const roots = this.PAC.filter(section => !section.parent).sort((sa, sb) => {
-          return sa.ordre - sb.ordre
+          return (sa.ordre || 100) - (sb.ordre || 100)
         })
 
         return roots
@@ -87,10 +87,12 @@ export default {
     openSection (section) {
       this.$emit('open', section)
     },
-    addSectionTo (section) {
+    addSectionTo (section, leaf) {
       console.log(section)
       // const newSection = {
-
+      //   slug: leaf ? 'intro' : 'new-section',
+      //   dir: leaf ? section.path : section.dir
+      //   titre:
       // }
 
       // this.emit('add', )

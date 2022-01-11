@@ -62,7 +62,7 @@ export default {
         }
 
         section.children.sort((sa, sb) => {
-          return sa.ordre - sb.ordre
+          return (sa.ordre || 100) - (sb.ordre || 100)
         })
       }
     })
