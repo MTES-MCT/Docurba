@@ -24,8 +24,8 @@
           <span>{{ item.titre }}</span>
         </v-tooltip>
       </template>
-      <template #append="{item, leaf}">
-        <v-btn small icon @click="addSectionTo(item, leaf)">
+      <template #append="{item}">
+        <v-btn small icon @click.stop="addSectionTo(item)">
           <v-icon>{{ icons.mdiPlus }}</v-icon>
         </v-btn>
       </template>
@@ -87,15 +87,18 @@ export default {
     openSection (section) {
       this.$emit('open', section)
     },
-    addSectionTo (section, leaf) {
-      console.log(section)
-      // const newSection = {
-      //   slug: leaf ? 'intro' : 'new-section',
-      //   dir: leaf ? section.path : section.dir
-      //   titre:
-      // }
+    addSectionTo (section) {
+      const dir = section.slug === 'intro' ? section.dir : section.path
 
-      // this.emit('add', )
+      const newSection = {
+        slug: 'new-section',
+        dir,
+        titre: 'Nouvelle section',
+        path: `${dir}/${Date.now()}`,
+        text: 'Nouvelle section'
+      }
+
+      this.$emit('add', newSection)
     }
   }
 }

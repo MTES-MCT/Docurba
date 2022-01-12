@@ -7,7 +7,7 @@
       <v-row>
         <v-col cols="4">
           <client-only>
-            <PACTreeviewEditing :pac-data="PAC" @open="selectSection" />
+            <PACTreeviewEditing :pac-data="PAC" @open="selectSection" @add="addNewSection" />
           </client-only>
         </v-col>
         <v-col v-if="selectedSection" cols="8">
@@ -69,19 +69,17 @@ export default {
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.departementCode)
 
     const mdParser = unified().use(remarkParse)
+    this.mdParser = mdParser
 
     deptSections.forEach((section) => {
       section.body = mdParser.parse(section.text)
-    })
+      const sectionIndex = this.PAC.findIndex(s => s.path === section.path)
 
-    this.PAC.forEach((section, i) => {
-      const deptSection = deptSections.find(s => s.path === section.path)
-
-      if (deptSection) {
+      if (sectionIndex >= 0) {
         // The Object Assign here is to keep the order since it's not saved. As could be other properties.
         // Although it might create inconsistenties for versions that get Archived later on.
-        this.PAC[i] = Object.assign({}, section, deptSection)
-      }
+        this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], section)
+      } else { this.PAC.push(section) }
     })
 
     this.loading = false
@@ -119,6 +117,20 @@ export default {
       } catch (err) {
         // eslint-disable-next-line no-console
         console.log('Error saving data')
+      }
+    },
+    async addNewSection (newSection) {
+      newSection.dept = this.departementCode
+      const { data: savedSection, err } = await this.$supabase.from('pac_sections_dept').insert([newSection])
+
+      if (savedSection && !err) {
+        // console.log(savedSection)
+        this.PAC.push(Object.assign({
+          body: this.mdParser.parse(savedSection.text)
+        }, savedSection[0]))
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('error adding new section', savedSection, err)
       }
     }
   }
