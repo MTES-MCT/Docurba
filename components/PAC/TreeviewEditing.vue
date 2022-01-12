@@ -55,7 +55,7 @@ export default {
   computed: {
     PACroots () {
       if (!this.contentSearch.length) {
-        const roots = this.PAC.filter(section => !section.parent).sort((sa, sb) => {
+        const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
           return (sa.ordre || 100) - (sb.ordre || 100)
         })
 
