@@ -113,7 +113,8 @@ export default {
 
         const sectionIndex = this.PAC.findIndex(s => s.path === newData.path)
 
-        this.PAC[sectionIndex] = newData
+        // this.PAC[sectionIndex] = newData
+        this.PAC.splice(sectionIndex, 1, newData)
       } catch (err) {
         // eslint-disable-next-line no-console
         console.log('Error saving data')

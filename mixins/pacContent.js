@@ -16,6 +16,8 @@ export default {
   },
   computed: {
     PAC () {
+      console.log('get pac')
+
       const parsedPAC = this.pacData.map((section) => {
         const serachText = `${section.titre} ${section.slug}`.toLowerCase()
 
