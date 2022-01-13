@@ -15,25 +15,51 @@
       item-key="path"
     >
       <template #label="{item}">
-        <v-tooltip right>
+        <v-tooltip right nudge-right="35">
           <template #activator="{on}">
-            <div class="d-block text-truncate" v-on="on" @click="openSection(item)">
+            <div class="d-block text-truncate" v-on="on" @click="openSection(item)" @mouseenter="selecItem(item)">
               {{ item.titre }}
             </div>
           </template>
           <span>{{ item.titre }}</span>
         </v-tooltip>
       </template>
-      <template #append="{item}">
-        <v-btn small icon @click.stop="addSectionTo(item)">
+      <template #append="{item, open}">
+        <v-btn v-show="overedItem === item.path" small icon @click="addSectionTo(item, open, $event)">
           <v-icon>{{ icons.mdiPlus }}</v-icon>
         </v-btn>
+        <v-dialog
+          width="500"
+        >
+          <template #activator="{on}">
+            <v-btn v-show="overedItem === item.path && item.dept" small icon v-on="on">
+              <v-icon>{{ icons.mdiDelete }}</v-icon>
+            </v-btn>
+          </template>
+          <template #default="dialog">
+            <v-card>
+              <v-card-title>Suprimer {{ item.titre }}</v-card-title>
+              <v-card-text>
+                Etes vous sur de vouloir suprimer cette section ? Attention, les sous-sections seront elles aussi suprimées.
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer />
+                <v-btn color="primary" @click="removeItem(item, dialog)">
+                  Suprimer
+                </v-btn>
+                <v-btn color="primary" outlined @click="dialog.value = false">
+                  Annuler
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </template>
+        </v-dialog>
       </template>
     </v-treeview>
   </v-row>
 </template>
 <script>
-import { mdiPlus } from '@mdi/js'
+import { mdiPlus, mdiDelete } from '@mdi/js'
 import pacContent from '@/mixins/pacContent.js'
 
 export default {
@@ -48,8 +74,10 @@ export default {
     return {
       contentSearch: '',
       icons: {
-        mdiPlus
-      }
+        mdiPlus,
+        mdiDelete
+      },
+      overedItem: ''
     }
   },
   computed: {
@@ -87,7 +115,11 @@ export default {
     openSection (section) {
       this.$emit('open', section)
     },
-    addSectionTo (section) {
+    addSectionTo (section, open, $event) {
+      if (open) {
+        $event.stopPropagation()
+      }
+
       const dir = section.slug === 'intro' ? section.dir : section.path
 
       const newSection = {
@@ -99,6 +131,13 @@ export default {
       }
 
       this.$emit('add', newSection)
+    },
+    selecItem (item) {
+      this.overedItem = item.path
+    },
+    removeItem (item, dialog) {
+      this.$emit('remove', item)
+      dialog.value = false
     }
   }
 }

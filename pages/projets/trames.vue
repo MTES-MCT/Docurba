@@ -7,7 +7,7 @@
       <v-row>
         <v-col cols="4">
           <client-only>
-            <PACTreeviewEditing :pac-data="PAC" @open="selectSection" @add="addNewSection" />
+            <PACTreeviewEditing :pac-data="PAC" @open="selectSection" @add="addNewSection" @remove="deleteSection" />
           </client-only>
         </v-col>
         <v-col v-if="selectedSection" cols="8">
@@ -79,7 +79,9 @@ export default {
         // The Object Assign here is to keep the order since it's not saved. As could be other properties.
         // Although it might create inconsistenties for versions that get Archived later on.
         this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], section)
-      } else { this.PAC.push(section) }
+      } else {
+        this.PAC.push(Object.assign({}, section))
+      }
     })
 
     this.loading = false
@@ -132,6 +134,26 @@ export default {
       } else {
         // eslint-disable-next-line no-console
         console.log('error adding new section', savedSection, err)
+      }
+    },
+    async deleteSection (deletedSection) {
+      console.log('delete section')
+      const { data, err } = await this.$supabase
+        .from('pac_sections_dept')
+        .delete()
+        .match({
+          dept: this.departementCode,
+          path: deletedSection.path
+        })
+
+      if (data && !err) {
+        const deletedSectionIndex = this.PAC.findIndex(s => s.path === deletedSection.path)
+
+        // this.PAC[deletedSectionIndex] = newData
+        this.PAC.splice(deletedSectionIndex, 1)
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('err deleting a section')
       }
     }
   }
