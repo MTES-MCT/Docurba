@@ -1,0 +1,5 @@
+---
+title : Centre de ressources pour l'adaptation au changement climatique 
+sourceNational : https://www.adaptation-changement-climatique.gouv.fr/
+---
+Conçu pour mieux faire connaître la réalité du changement climatique et donner des outils aux acteurs de l’adaptation, le centre de ressources pour l’adaptation au changement climatique vient d’être lancé par l’État. Il a été créé par le ministère de la Transition écologique et trois de ses établissements publics : **le Cerema** (Centre d’études et d’expertise sur les risques, l’environnement, la mobilité et l’aménagement), **l’Ademe** (Agence de la transition écologique) et **Météo France**.  Il s’adresse particulièrement aux collectivités locales, dans la mesure où elles ont un rôle majeur à jouer dans la politique d’adaptation qui relève pour beaucoup, de la politique d’aménagement du territoire
