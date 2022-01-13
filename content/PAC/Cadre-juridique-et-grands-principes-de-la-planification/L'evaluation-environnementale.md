@@ -36,7 +36,7 @@ mineure », elle est soumise à l’évaluation environnementale systématique. 
 
 **Aucune évaluation environnementale n’est requise** lorsque la modification du document d’urbanisme (SCoT ou PLU) a pour seul objet la rectification d’une erreur matérielle et lorsque la modification du PLU a pour seul objet de réduire la surface d’une zone urbaine ou à urbaniser.
 
-![EE-decret13102021.PNG](..%5C..%5C..%5Cstatic%5Cimages%5CEE-decret13102021.PNG)
+<img src="/images/EE-decret13102021.png" style="object-fit: cover; width: 100%" />
 
 
 **Pour les procédures soumises au cas par cas**, le décret est la créé un second dispositif, **dit cas par
