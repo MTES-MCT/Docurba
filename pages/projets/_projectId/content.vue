@@ -73,7 +73,6 @@ export default {
       }
     })
 
-    console.log(this.project.PAC)
     this.loaded = true
   },
   methods: {
