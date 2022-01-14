@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="12" :sm="colsDep">
+    <v-col v-show="!hideDept" cols="12" :sm="colsDep">
       <v-autocomplete
         v-model="selectedDepartement"
         :items="departements"
@@ -44,6 +44,14 @@ export default {
     colsTown: {
       type: Number,
       default: 12
+    },
+    defaultDepartementCode: {
+      type: [Number, String],
+      default: null
+    },
+    hideDept: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -51,14 +59,35 @@ export default {
       text: `${d.nom_departement} - ${d.code_departement}`
     }, d))
 
+    let defaultDepartement = null
+
+    if (this.defaultDepartementCode) {
+      defaultDepartement = enrichedDepartements.find((d) => {
+        // eslint-disable-next-line eqeqeq
+        return d.code_departement == this.defaultDepartementCode
+      })
+    }
+
     return {
-      selectedDepartement: null,
+      selectedDepartement: defaultDepartement,
       departements: enrichedDepartements,
       towns: []
     }
   },
   watch: {
-    async selectedDepartement () {
+    selectedDepartement () {
+      this.fetchTowns()
+    }
+  },
+  mounted () {
+    console.log('fetch towns', this.selectedDepartement)
+    this.fetchTowns()
+  },
+  methods: {
+    input (town) {
+      this.$emit('input', town)
+    },
+    async fetchTowns () {
       if (this.selectedDepartement) {
         this.towns = (await axios({
           url: `/api/communes/${this.selectedDepartement.code_departement}`,
@@ -66,11 +95,6 @@ export default {
           data: this.selectedDepartement
         })).data
       }
-    }
-  },
-  methods: {
-    input (town) {
-      this.$emit('input', town)
     }
   }
 }

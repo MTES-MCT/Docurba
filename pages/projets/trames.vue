@@ -55,6 +55,7 @@ export default {
     }
   },
   async mounted () {
+    // TODO: This part is the same in the page projects/index.vue and coul be made into a mixin.
     const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('dept').match({
       user_id: this.$user.id,
       user_email: this.$user.email,

@@ -3,7 +3,29 @@ export default {
   data () {
     return {
       projects: [],
-      sharedProjects: []
+      sharedProjects: [],
+      search: ''
+    }
+  },
+  computed: {
+    searchValue () {
+      return this.search.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+    },
+    filteredProjects () {
+      if (this.search) {
+        return this.projects.filter((project) => {
+          const normalizedTitle = project.name.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+          return normalizedTitle.includes(this.searchValue)
+        })
+      } else { return this.projects }
+    },
+    filteredSharedProjects () {
+      if (this.search) {
+        return this.sharedProjects.filter((project) => {
+          const normalizedTitle = project.name.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+          return normalizedTitle.includes(this.searchValue)
+        })
+      } else { return this.sharedProjects }
     }
   },
   mounted () {
