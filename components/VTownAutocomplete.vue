@@ -80,7 +80,6 @@ export default {
     }
   },
   mounted () {
-    console.log('fetch towns', this.selectedDepartement)
     this.fetchTowns()
   },
   methods: {

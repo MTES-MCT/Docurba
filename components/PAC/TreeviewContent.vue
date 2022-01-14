@@ -154,12 +154,6 @@ export default {
         } catch (err) {
           this.$vuetify.goTo(`#panel-${targetId}`)
         }
-
-        // if (item.children) {
-        //   this.$vuetify.goTo(`#${targetId}`)
-        // } else {
-        //   this.$vuetify.goTo(`#panel-${targetId}`)
-        // }
       }
     }
   }

@@ -32,7 +32,7 @@ import departements from '@/assets/data/departements-france.json'
 
 export default {
   layout: 'app',
-  async asyncData ({ $content, $supabase }) {
+  async asyncData ({ $content }) {
     const PAC = await $content('PAC', {
       deep: true,
       text: true
@@ -138,7 +138,6 @@ export default {
       }
     },
     async deleteSection (deletedSection) {
-      console.log('delete section')
       const { data, err } = await this.$supabase
         .from('pac_sections_dept')
         .delete()

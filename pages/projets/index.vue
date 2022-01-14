@@ -70,16 +70,16 @@
                 <VDocumentSelect v-model="newProject.docType" />
               </v-col>
               <v-col cols="12">
-                <VTownAutocomplete :default-departement-code="userDeptCode" hide-dept />
+                <VTownAutocomplete v-model="newProjectTown" :default-departement-code="userDeptCode" hide-dept />
               </v-col>
               <v-col cols="12" class="tree-view">
-                <PACTreeviewSelection v-model="newProject.sections" :pac-data="PAC" />
+                <PACTreeviewSelection v-model="newProject.PAC" :pac-data="PAC" />
               </v-col>
             </v-row>
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" @click="createProject">
+            <v-btn color="primary" :loading="loading" @click="createProject">
               Créer
             </v-btn>
             <v-btn color="primary" outlined @click="dialog.value = false">
@@ -95,6 +95,8 @@
 <script>
 import { mdiPlus } from '@mdi/js'
 import projectsList from '@/mixins/projectsList.js'
+
+import regions from '@/assets/data/Regions.json'
 
 export default {
   mixins: [projectsList],
@@ -115,7 +117,9 @@ export default {
         mdiPlus
       },
       newProject: this.getNewProject(),
-      userDeptCode: null
+      newProjectTown: null,
+      userDeptCode: null,
+      loading: false
     }
   },
   async mounted () {
@@ -147,13 +151,29 @@ export default {
     getNewProject () {
       return {
         name: '',
-        town: '',
         docType: '',
-        sections: []
+        PAC: [],
+        owner: this.$user.id
       }
     },
-    createProject () {
-      console.log('Create project', this.newProject)
+    async createProject () {
+      this.loading = true
+      // console.log('Create project', this.newProject, this.newProjectTown, [Object.assign({
+      //   town: this.newProjectTown,
+      //   region: regions.find(r => r.name === this.newProjectTown.nom_region).iso
+      // }, this.newProject)])
+
+      const { data, err } = await this.$supabase.from('projects').insert([Object.assign({
+        town: this.newProjectTown,
+        region: regions.find(r => r.name === this.newProjectTown.nom_region).iso
+      }, this.newProject)])
+
+      if (!err && data) {
+        this.$router.push(`/projets/${data[0].id}/content`)
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('err creating project', data, err)
+      }
     }
   }
 }
