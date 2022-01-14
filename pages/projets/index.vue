@@ -158,10 +158,8 @@ export default {
     },
     async createProject () {
       this.loading = true
-      // console.log('Create project', this.newProject, this.newProjectTown, [Object.assign({
-      //   town: this.newProjectTown,
-      //   region: regions.find(r => r.name === this.newProjectTown.nom_region).iso
-      // }, this.newProject)])
+
+      this.newProject.PAC = this.newProject.PAC.length ? this.newProject.PAC : this.PAC.map(s => s.path)
 
       const { data, err } = await this.$supabase.from('projects').insert([Object.assign({
         town: this.newProjectTown,

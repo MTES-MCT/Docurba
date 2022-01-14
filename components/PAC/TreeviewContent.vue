@@ -131,12 +131,12 @@ export default {
         })
 
         // Temporary filter
-        roots.filter(r => !!r.children).forEach((root) => {
-          root.children = root.children.filter((c) => {
-            return (c.children && c.children.length) ||
-            (c.body && c.body.children && c.body.children.length > 1)
-          })
-        })
+        // roots.filter(r => !!r.children).forEach((root) => {
+        //   root.children = root.children.filter((c) => {
+        //     return (c.children && c.children.length) ||
+        //     (c.body && c.body.children && c.body.children.length > 1)
+        //   })
+        // })
 
         return roots
       } else {
@@ -146,7 +146,7 @@ export default {
   },
   methods: {
     scrollTo (item) {
-      const targetEl = item.body.children.find(el => el.tag.indexOf('h') === 0)
+      const targetEl = item.body.children.find(el => el.tag && el.tag.indexOf('h') === 0)
       const targetId = targetEl ? targetEl.props.id : ''
       if (targetId) {
         try {

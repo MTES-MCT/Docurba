@@ -1,5 +1,5 @@
 function getDepth (path) {
-  console.log(path)
+  // console.log(path)
   return (path.replace(/\/intro$/, '').match(/\//g) || []).length
 }
 

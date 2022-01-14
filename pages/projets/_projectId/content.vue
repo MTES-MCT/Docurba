@@ -76,20 +76,6 @@ export default {
     console.log(this.project.PAC)
     this.loaded = true
   },
-  // async mounted () {
-  //   const projectId = this.$route.params.projectId
-
-  //   const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-
-  //   // this.$supabase.from(`projects:id=eq.${projectId}`).on('UPDATE', (project) => {
-  //   //   console.log('updated project', project)
-  //   // }).subscribe()
-
-  //   this.project = projects ? projects[0] : null
-  //   this.project.PAC.forEach((section) => {
-  //     section.comments = section.comments || []
-  //   })
-  // },
   methods: {
     _project () {
       return this.project
