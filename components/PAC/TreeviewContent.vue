@@ -34,13 +34,13 @@
               <v-tooltip right>
                 <template #activator="{on}">
                   <v-checkbox
-                    v-if="!item.children && editable"
+                    v-if="(!item.children || !item.children.length) && editable"
                     v-model="item.checked"
                     class="ml-1 mb-2 d-block text-truncate"
                     dense
                     hide-details
                     :disabled="!item.body.children.length"
-                    @change="$emit('read', item)"
+                    @change="checkItem(item)"
                   >
                     <template #label>
                       <div
@@ -92,7 +92,8 @@ export default {
   },
   data () {
     return {
-      contentSearch: ''
+      contentSearch: '',
+      checkedItems: 0
     }
   },
   computed: {
@@ -115,9 +116,9 @@ export default {
       } else { return this.PAC }
     },
     progressValue () {
-      const checkedItems = this.PAC.filter(item => item.checked).length
+      // const checkedItems = this.PAC.filter(item => item.checked).length
 
-      return Math.round((checkedItems / this.PAC.length) * 100)
+      return Math.round((this.checkedItems / this.PAC.length) * 100)
     },
     PACroots () {
       if (!this.contentSearch.length) {
@@ -139,7 +140,17 @@ export default {
       }
     }
   },
+  mounted () {
+    this.checkedItems = this.PAC.filter(item => item.checked).length
+  },
   methods: {
+    checkItem (section) {
+      if (section.checked) {
+        this.checkedItems += 1
+      } else { this.checkedItems -= 1 }
+
+      this.$emit('read', section)
+    },
     scrollTo (item) {
       if (item.body.children && item.body.children.length) {
         const targetId = item.body.children[0].props.id
@@ -159,6 +170,7 @@ export default {
 .sticky-tree {
   position: sticky;
   overflow: scroll;
-  max-height: calc(100vh - 80px);
+  /* 128 = 80 (from search row ) + 48 (one tree leaf) */
+  max-height: calc(100vh - 128px);
 }
 </style>
