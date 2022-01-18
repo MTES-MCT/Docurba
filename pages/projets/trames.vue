@@ -5,9 +5,16 @@
     </template>
     <v-container v-if="!loading" fluid>
       <v-row>
-        <v-col cols="4">
+        <v-col :cols="collapsedTree ? 1 : 4" class="collapse-transition">
           <client-only>
-            <PACTreeviewEditing :pac-data="PAC" @open="selectSection" @add="addNewSection" @remove="deleteSection" />
+            <PACTreeviewEditing
+              :pac-data="PAC"
+              :collapsed="collapsedTree"
+              @open="selectSection"
+              @add="addNewSection"
+              @remove="deleteSection"
+              @collapse="collapsedTree = !collapsedTree"
+            />
           </client-only>
         </v-col>
         <v-col v-if="selectedSection" cols="8">
@@ -45,6 +52,7 @@ export default {
   data () {
     return {
       loading: true,
+      collapsedTree: false,
       selectedSection: null,
       departement: { code_departement: 0, nom_departement: '' }
     }
@@ -159,3 +167,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.collapse-transition {
+  transition: max-width 200ms;
+}
+</style>

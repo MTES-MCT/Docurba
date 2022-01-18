@@ -3,8 +3,11 @@
     class="sticky-tree"
     style="top: 120px"
   >
-    <v-col cols="12">
+    <v-col cols="12" class="d-flex align-center pr-0">
       <v-text-field v-model="contentSearch" filled hide-details label="Rechercher" />
+      <v-btn icon class="mx-1" @click="$emit('collapse')">
+        <v-icon>{{ collapsed ? icons.mdiChevronRight : icons.mdiChevronLeft }}</v-icon>
+      </v-btn>
     </v-col>
     <v-treeview
       hoverable
@@ -59,12 +62,16 @@
   </v-row>
 </template>
 <script>
-import { mdiPlus, mdiDelete } from '@mdi/js'
+import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight } from '@mdi/js'
 import pacContent from '@/mixins/pacContent.js'
 
 export default {
   mixins: [pacContent],
   props: {
+    collapsed: {
+      type: Boolean,
+      default: false
+    },
     minFilter: {
       type: Boolean,
       default: false
@@ -75,7 +82,9 @@ export default {
       contentSearch: '',
       icons: {
         mdiPlus,
-        mdiDelete
+        mdiDelete,
+        mdiChevronLeft,
+        mdiChevronRight
       },
       overedItem: ''
     }
