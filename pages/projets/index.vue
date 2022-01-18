@@ -25,21 +25,22 @@
       <v-row class="mt-0">
         <v-col cols="">
           <v-list>
-            <ProjectsProjectListItem
+            <v-subheader>Mes projets</v-subheader>
+            <ProjectsDdtProjectListItem
               v-for="project in filteredProjects"
               :key="project.id"
               :project="project"
               shareable
               @share="shareProject(project)"
+              @edit="editProject(project)"
             />
           </v-list>
           <v-list>
-            <ProjectsProjectListItem
+            <v-subheader>Projets partagés avec moi</v-subheader>
+            <ProjectsDdtProjectListItem
               v-for="project in filteredSharedProjects"
               :key="project.id"
               :project="project"
-              shareable
-              @share="shareProject(project)"
             />
           </v-list>
         </v-col>
@@ -89,6 +90,14 @@
         </v-card>
       </template>
     </v-dialog>
+    <v-dialog v-model="sharingDialog">
+      <v-card>
+        <v-card-title>Partager le projet</v-card-title>
+        <v-card-text>
+          <ProjectsSharingForm v-if="sharedProject" :project="sharedProject" />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </LayoutsCustomApp>
 </template>
 
@@ -119,7 +128,9 @@ export default {
       newProject: this.getNewProject(),
       newProjectTown: null,
       userDeptCode: null,
-      loading: false
+      loading: false,
+      sharingDialog: false,
+      sharedProject: null
     }
   },
   async mounted () {
@@ -155,6 +166,10 @@ export default {
         PAC: [],
         owner: this.$user.id
       }
+    },
+    shareProject (project) {
+      this.sharingDialog = true
+      this.sharedProject = project
     },
     async createProject () {
       this.loading = true
