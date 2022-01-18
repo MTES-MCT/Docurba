@@ -146,8 +146,13 @@ export default {
   },
   methods: {
     scrollTo (item) {
-      const targetEl = item.body.children.find(el => el.tag && el.tag.indexOf('h') === 0)
-      const targetId = targetEl ? targetEl.props.id : ''
+      // const targetEl = item.body.children.find(el => {
+      //   return el.tag && el.tag.indexOf('h') === 0
+      // })
+
+      // const targetId = targetEl ? targetEl.props.id : ''
+      const targetId = item.body.children[0].props.id
+
       if (targetId) {
         try {
           this.$vuetify.goTo(`#${targetId}`)

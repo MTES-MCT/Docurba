@@ -12,6 +12,15 @@
 <script>
 import unified from 'unified'
 import remarkParse from 'remark-parse'
+import remarkRehype from 'remark-rehype'
+import rehypeRaw from 'rehype-raw'
+import rehypeSanitize from 'rehype-sanitize'
+import rehypeStringify from 'rehype-stringify'
+
+import jsonCompiler from '@nuxt/content/parsers/markdown/compilers/json.js'
+
+import slugify from 'slugify'
+import { defaultSchema } from '@/assets/sanitizeSchema.js'
 
 export default {
   provide () {
@@ -45,10 +54,25 @@ export default {
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.project.town.code_departement)
 
     const mdParser = unified().use(remarkParse)
-    this.mdParser = mdParser
+      .use(remarkRehype, { allowDangerousHtml: true })
+      .use(rehypeRaw)
+      .use(rehypeSanitize, defaultSchema)
+      .use(rehypeStringify)
+      .use(jsonCompiler)
+
+    // this.mdParser = mdParser
 
     deptSections.forEach((section) => {
-      section.body = mdParser.parse(section.text)
+      section.body = mdParser.processSync(section.text).result
+
+      if (section.body.children && section.body.children) {
+        const firstChild = section.body.children[0]
+
+        if (!firstChild.props.id) {
+          firstChild.props.id = slugify(section.titre)
+        }
+      }
+
       const sectionIndex = this.PAC.findIndex(s => s.path === section.path)
 
       if (sectionIndex >= 0) {
@@ -61,12 +85,19 @@ export default {
     })
 
     this.project.PAC = this.project.PAC.map((section) => {
+      // console.log(section)
+
       if (typeof (section) === 'object') {
         return Object.assign({
           comments: []
         }, section)
       } else {
         const rawSection = this.PAC.find(s => s.path === section)
+
+        // if (section.includes('SDAGE')) {
+        //   console.log(rawSection)
+        // }
+
         return Object.assign({
           comments: []
         }, rawSection)
