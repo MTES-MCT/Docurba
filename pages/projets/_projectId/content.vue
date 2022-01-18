@@ -19,7 +19,6 @@ import rehypeStringify from 'rehype-stringify'
 
 import jsonCompiler from '@nuxt/content/parsers/markdown/compilers/json.js'
 
-import slugify from 'slugify'
 import { defaultSchema } from '@/assets/sanitizeSchema.js'
 
 export default {
@@ -49,9 +48,9 @@ export default {
 
     const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
 
-    this.project = projects ? projects[0] : null
+    const project = projects ? projects[0] : null
 
-    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.project.town.code_departement)
+    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.town.code_departement)
 
     const mdParser = unified().use(remarkParse)
       .use(remarkRehype, { allowDangerousHtml: true })
@@ -60,8 +59,6 @@ export default {
       .use(rehypeStringify)
       .use(jsonCompiler)
 
-    // this.mdParser = mdParser
-
     deptSections.forEach((section) => {
       section.body = mdParser.processSync(section.text).result
 
@@ -69,7 +66,7 @@ export default {
         const firstChild = section.body.children[0]
 
         if (!firstChild.props.id) {
-          firstChild.props.id = slugify(section.titre)
+          firstChild.props.id = section.path
         }
       }
 
@@ -84,9 +81,7 @@ export default {
       }
     })
 
-    this.project.PAC = this.project.PAC.map((section) => {
-      // console.log(section)
-
+    project.PAC = project.PAC.map((section) => {
       if (typeof (section) === 'object') {
         return Object.assign({
           comments: []
@@ -94,15 +89,13 @@ export default {
       } else {
         const rawSection = this.PAC.find(s => s.path === section)
 
-        // if (section.includes('SDAGE')) {
-        //   console.log(rawSection)
-        // }
-
         return Object.assign({
           comments: []
         }, rawSection)
       }
     })
+
+    this.project = project
 
     this.loaded = true
   },

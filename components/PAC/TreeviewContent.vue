@@ -155,6 +155,8 @@ export default {
       if (item.body.children && item.body.children.length) {
         const targetId = item.body.children[0].props.id
 
+        console.log(item, targetId)
+
         try {
           this.$vuetify.goTo(`#${targetId}`)
         } catch (err) {
