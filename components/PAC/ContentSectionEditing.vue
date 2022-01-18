@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row class="fill-height">
     <v-col cols="12">
       <v-text-field v-model="editedSection.titre" label="titre" filled hide-details />
     </v-col>

@@ -151,9 +151,10 @@ export default {
       // })
 
       // const targetId = targetEl ? targetEl.props.id : ''
-      const targetId = item.body.children[0].props.id
 
-      if (targetId) {
+      if (item.body.children && item.body.children.length) {
+        const targetId = item.body.children[0].props.id
+
         try {
           this.$vuetify.goTo(`#${targetId}`)
         } catch (err) {

@@ -9,56 +9,58 @@
         <v-icon>{{ collapsed ? icons.mdiChevronRight : icons.mdiChevronLeft }}</v-icon>
       </v-btn>
     </v-col>
-    <v-treeview
-      hoverable
-      open-on-click
-      :items="PACroots"
-      item-text="titre"
-      class="d-block text-truncate"
-      item-key="path"
-    >
-      <template #label="{item}">
-        <v-tooltip right nudge-right="35">
-          <template #activator="{on}">
-            <div class="d-block text-truncate" v-on="on" @click="openSection(item)" @mouseenter="selecItem(item)">
-              {{ item.titre }}
-            </div>
-          </template>
-          <span>{{ item.titre }}</span>
-        </v-tooltip>
-      </template>
-      <template #append="{item, open}">
-        <v-btn v-show="overedItem === item.path" small icon @click="addSectionTo(item, open, $event)">
-          <v-icon>{{ icons.mdiPlus }}</v-icon>
-        </v-btn>
-        <v-dialog
-          width="500"
-        >
-          <template #activator="{on}">
-            <v-btn v-show="overedItem === item.path && item.dept" small icon v-on="on">
-              <v-icon>{{ icons.mdiDelete }}</v-icon>
-            </v-btn>
-          </template>
-          <template #default="dialog">
-            <v-card>
-              <v-card-title>Suprimer {{ item.titre }}</v-card-title>
-              <v-card-text>
-                Etes vous sur de vouloir suprimer cette section ? Attention, les sous-sections seront elles aussi suprimées.
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer />
-                <v-btn color="primary" @click="removeItem(item, dialog)">
-                  Suprimer
-                </v-btn>
-                <v-btn color="primary" outlined @click="dialog.value = false">
-                  Annuler
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </template>
-        </v-dialog>
-      </template>
-    </v-treeview>
+    <v-col cols="12" class="pa-0" @click="collapsed ? $emit('collapse') : ''">
+      <v-treeview
+        hoverable
+        open-on-click
+        :items="PACroots"
+        item-text="titre"
+        class="d-block text-truncate"
+        item-key="path"
+      >
+        <template #label="{item}">
+          <v-tooltip right nudge-right="35">
+            <template #activator="{on}">
+              <div class="d-block text-truncate" v-on="on" @click="openSection(item)" @mouseenter="selecItem(item)">
+                {{ item.titre }}
+              </div>
+            </template>
+            <span>{{ item.titre }}</span>
+          </v-tooltip>
+        </template>
+        <template #append="{item, open}">
+          <v-btn v-show="overedItem === item.path" small icon @click="addSectionTo(item, open, $event)">
+            <v-icon>{{ icons.mdiPlus }}</v-icon>
+          </v-btn>
+          <v-dialog
+            width="500"
+          >
+            <template #activator="{on}">
+              <v-btn v-show="overedItem === item.path && item.dept" small icon v-on="on">
+                <v-icon>{{ icons.mdiDelete }}</v-icon>
+              </v-btn>
+            </template>
+            <template #default="dialog">
+              <v-card>
+                <v-card-title>Suprimer {{ item.titre }}</v-card-title>
+                <v-card-text>
+                  Etes vous sur de vouloir suprimer cette section ? Attention, les sous-sections seront elles aussi suprimées.
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer />
+                  <v-btn color="primary" @click="removeItem(item, dialog)">
+                    Suprimer
+                  </v-btn>
+                  <v-btn color="primary" outlined @click="dialog.value = false">
+                    Annuler
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </template>
+          </v-dialog>
+        </template>
+      </v-treeview>
+    </v-col>
   </v-row>
 </template>
 <script>

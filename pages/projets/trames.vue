@@ -17,10 +17,10 @@
             />
           </client-only>
         </v-col>
-        <v-col v-if="selectedSection" cols="8">
+        <v-col v-if="selectedSection" cols="" class="fill-height">
           <PACContentSectionEditing :text="selectedSection.text" :titre="selectedSection.titre" @save="saveSection" />
         </v-col>
-        <v-col v-else cols="8">
+        <v-col v-else cols="">
           <v-card flat color="g100">
             <v-card-text>Selectionnez une section à éditer.</v-card-text>
           </v-card>
