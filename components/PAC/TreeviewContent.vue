@@ -20,7 +20,6 @@
                 </div>
               </template>
               <span>Pour obtenir un document spécifique à votre projet vous devez vous connecter et créer un projet.</span>
-              <!-- <InputsLoginOrDocs /> -->
             </v-tooltip>
           </v-col>
           <v-treeview
@@ -32,8 +31,6 @@
             item-key="path"
           >
             <template #label="{item}">
-              <!-- <v-row v-if="!item.children" align="center"> -->
-              <!-- <v-col cols="auto"> -->
               <v-tooltip right>
                 <template #activator="{on}">
                   <v-checkbox
@@ -56,8 +53,6 @@
                       </div>
                     </template>
                   </v-checkbox>
-                  <!-- </v-col> -->
-                  <!-- </v-row> -->
                   <div
                     v-else
                     class="d-block text-truncate"
@@ -146,12 +141,6 @@ export default {
   },
   methods: {
     scrollTo (item) {
-      // const targetEl = item.body.children.find(el => {
-      //   return el.tag && el.tag.indexOf('h') === 0
-      // })
-
-      // const targetId = targetEl ? targetEl.props.id : ''
-
       if (item.body.children && item.body.children.length) {
         const targetId = item.body.children[0].props.id
 

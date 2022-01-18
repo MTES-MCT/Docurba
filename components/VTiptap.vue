@@ -216,11 +216,6 @@ export default {
   outline: none;
 }
 
-/* .tiptap-content {
-  position: sticky;
-  top: 250px;
-} */
-
 .text-editor {
   min-height: calc(100vh - 250px);
   max-height: calc(100vh - 250px);
