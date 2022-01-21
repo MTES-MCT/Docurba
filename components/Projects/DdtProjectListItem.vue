@@ -12,20 +12,43 @@
       </v-list-item-content>
       <v-list-item-action>
         <div class="d-flex">
-          <v-btn
-            v-show="hover && shareable"
-            icon
-            @click.prevent.stop="$emit('edit', project)"
-          >
-            <v-icon>{{ icons.mdiPencil }}</v-icon>
-          </v-btn>
-          <v-btn
-            v-show="hover && shareable"
-            icon
-            @click.prevent.stop="$emit('share', project)"
-          >
-            <v-icon>{{ icons.mdiShare }}</v-icon>
-          </v-btn>
+          <v-dialog>
+            <template #activator="{on}" width="500px">
+              <v-btn
+                v-show="hover && shareable"
+                icon
+                v-on="on"
+                @click.prevent.stop
+              >
+                <v-icon>{{ icons.mdiPencil }}</v-icon>
+              </v-btn>
+            </template>
+            <template #default="dialog">
+              <ProjectsProjectCardForm :project="project" @cancel="dialog.value = false">
+                <template #title>
+                  Modifier le projet
+                </template>
+              </ProjectsProjectCardForm>
+            </template>
+          </v-dialog>
+          <v-dialog>
+            <template #activator="{on}">
+              <v-btn
+                v-show="hover && shareable"
+                icon
+                v-on="on"
+                @click.prevent.stop
+              >
+                <v-icon>{{ icons.mdiShare }}</v-icon>
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title>Partager le projet</v-card-title>
+              <v-card-text>
+                <ProjectsSharingForm :project="project" />
+              </v-card-text>
+            </v-card>
+          </v-dialog>
         </div>
       </v-list-item-action>
     </v-list-item>

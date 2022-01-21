@@ -34,7 +34,7 @@ export default {
   },
   methods: {
     async getProjects () {
-      const { data: projects, error } = await this.$supabase.from('projects').select('id, name, docType, created_at').eq('owner', this.$user.id)
+      const { data: projects, error } = await this.$supabase.from('projects').select('*').eq('owner', this.$user.id)
 
       if (!error) {
         this.projects = projects

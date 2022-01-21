@@ -12,6 +12,7 @@
     </v-col>
     <v-col cols="12" :sm="colsTown">
       <v-autocomplete
+        :value="selectedTown"
         no-data-text="Selectionnez un département"
         :items="towns"
         item-text="nom_commune"
@@ -70,8 +71,9 @@ export default {
 
     return {
       selectedDepartement: defaultDepartement,
+      selectedTown: Object.assign({}, this.value),
       departements: enrichedDepartements,
-      towns: []
+      towns: this.value.code_commune ? [Object.assign({}, this.value)] : []
     }
   },
   watch: {
