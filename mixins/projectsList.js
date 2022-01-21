@@ -4,7 +4,8 @@ export default {
     return {
       projects: [],
       sharedProjects: [],
-      search: ''
+      search: '',
+      subscription: null
     }
   },
   computed: {
@@ -31,6 +32,15 @@ export default {
   mounted () {
     this.getProjects()
     this.getSharedProjects()
+
+    this.subscription = this.$supabase
+      .from('projects')
+      // .on('INSERT', () => {console.log(insert)})
+      .on('UPDTAE', (update) => { console.log('data updated', update) })
+      .subscribe()
+  },
+  beforeDestroy () {
+    this.$supabase.removeSubscription(this.subscription)
   },
   methods: {
     async getProjects () {

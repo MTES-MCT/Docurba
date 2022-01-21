@@ -73,7 +73,7 @@ export default {
       selectedDepartement: defaultDepartement,
       selectedTown: Object.assign({}, this.value),
       departements: enrichedDepartements,
-      towns: this.value.code_commune ? [Object.assign({}, this.value)] : []
+      towns: (this.value && this.code_commune) ? [Object.assign({}, this.value)] : []
     }
   },
   watch: {

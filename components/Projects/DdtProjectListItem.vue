@@ -12,8 +12,8 @@
       </v-list-item-content>
       <v-list-item-action>
         <div class="d-flex">
-          <v-dialog>
-            <template #activator="{on}" width="500px">
+          <v-dialog width="500px">
+            <template #activator="{on}">
               <v-btn
                 v-show="hover && shareable"
                 icon

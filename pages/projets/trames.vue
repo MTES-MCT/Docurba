@@ -18,7 +18,7 @@
           </client-only>
         </v-col>
         <v-col v-if="selectedSection" cols="" class="fill-height">
-          <PACContentSectionEditing :text="selectedSection.text" :titre="selectedSection.titre" @save="saveSection" />
+          <PACContentSectionEditing :section="selectedSection" @save="saveSection" />
         </v-col>
         <v-col v-else cols="">
           <v-card flat color="g100">

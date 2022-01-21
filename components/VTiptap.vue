@@ -116,6 +116,7 @@
         >
           <v-icon>{{ icons.mdiFormatListNumbered }}</v-icon>
         </v-btn>
+        <slot />
       </v-toolbar-items>
     </v-toolbar>
     <v-card-text class="pb-1 pt-3 text-editor">
