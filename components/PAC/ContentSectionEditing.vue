@@ -5,38 +5,7 @@
     </v-col>
     <v-col cols="12">
       <VTiptap v-model="editedSection.text">
-        <v-dialog width="800px">
-          <template #activator="{on}">
-            <v-btn icon v-on="on">
-              <v-icon>{{ icons.mdiPaperclip }}</v-icon>
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              Ajouter une annexe
-            </v-card-title>
-            <v-tabs v-model="ressourcesTab" grow>
-              <v-tab>
-                Fichiers
-              </v-tab>
-              <v-tab>
-                Data
-              </v-tab>
-            </v-tabs>
-            <v-tabs-items v-model="ressourcesTab">
-              <v-tab-item>
-                <v-card-text>
-                  Fichiers
-                </v-card-text>
-              </v-tab-item>
-              <v-tab-item>
-                <v-card-text>
-                  Data
-                </v-card-text>
-              </v-tab-item>
-            </v-tabs-items>
-          </v-card>
-        </v-dialog>
+        <PACSectionsAttachementsDialog :section="section" />
       </VTiptap>
     </v-col>
     <v-fab-transition>
@@ -57,7 +26,7 @@
   </v-row>
 </template>
 <script>
-import { mdiContentSave, mdiPaperclip } from '@mdi/js'
+import { mdiContentSave } from '@mdi/js'
 
 import unified from 'unified'
 import remarkParse from 'remark-parse'
@@ -91,10 +60,8 @@ export default {
       },
       modified: false,
       icons: {
-        mdiContentSave,
-        mdiPaperclip
-      },
-      ressourcesTab: 0
+        mdiContentSave
+      }
     }
   },
   watch: {
