@@ -87,6 +87,11 @@ export default {
       dialog: false
     }
   },
+  computed: {
+    folder () {
+      return this.section.project_id || this.section.dept
+    }
+  },
   methods: {
     setFiles (files) {
       // console.log('change files', files)
@@ -108,7 +113,7 @@ export default {
 
           await this.$supabase.storage
             .from('project-annexes')
-            .upload(`/${this.section.dept}${this.section.path}/${file.name}`, file)
+            .upload(`/${this.folder}${this.section.path}/${file.name}`, file)
         }
       }
 

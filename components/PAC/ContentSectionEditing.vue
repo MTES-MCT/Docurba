@@ -115,10 +115,12 @@ export default {
     //     .download(`/${this.section.dept}${this.section.path}/${attachement.name}`)
     // },
     async fetchAttachements () {
+      const folder = this.section.project_id || this.section.dept
+
       const { data: attachements, err } = await this.$supabase
         .storage
         .from('project-annexes')
-        .list(`/${this.section.dept}${this.section.path}`, {
+        .list(`/${folder}${this.section.path}`, {
           limit: 100,
           offset: 0,
           sortBy: { column: 'name', order: 'asc' }
@@ -133,7 +135,7 @@ export default {
           const { data } = await this.$supabase
             .storage
             .from('project-annexes')
-            .createSignedUrl(`/${this.section.dept}${this.section.path}/${file.name}`, 60 * 60)
+            .createSignedUrl(`/${folder}${this.section.path}/${file.name}`, 60 * 60)
 
           file.url = data.signedURL
 
