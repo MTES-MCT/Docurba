@@ -10,6 +10,8 @@
   <VGlobalLoader v-else />
 </template>
 <script>
+import { unionBy } from 'lodash'
+
 import unified from 'unified'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
@@ -51,6 +53,11 @@ export default {
     const project = projects ? projects[0] : null
 
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.town.code_departement)
+    const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', project.id)
+
+    const editedSections = unionBy(projectSections, deptSections, (section) => {
+      return section.path
+    })
 
     const mdParser = unified().use(remarkParse)
       .use(remarkRehype, { allowDangerousHtml: true })
@@ -59,7 +66,7 @@ export default {
       .use(rehypeStringify)
       .use(jsonCompiler)
 
-    deptSections.forEach((section) => {
+    editedSections.forEach((section) => {
       section.body = mdParser.processSync(section.text).result
 
       if (section.body.children && section.body.children) {
