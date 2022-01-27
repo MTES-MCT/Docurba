@@ -1,5 +1,5 @@
 ---
-titre : loi littoral
+titre : Loi littoral
 ordre : 7
 ---
 #### La loi n° 86-2 du 3 janvier 1986 relative à l’aménagement, la protection et la mise en valeur du littoral, dite « loi littoral »
