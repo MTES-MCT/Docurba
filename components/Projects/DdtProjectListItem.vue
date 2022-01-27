@@ -12,6 +12,9 @@
       </v-list-item-content>
       <v-list-item-action>
         <div class="d-flex">
+          <v-btn v-show="hover && shareable" icon :to="`/ddt/${project.id}`" nuxt>
+            <v-icon>{{ icons.mdiFileDocumentEdit }}</v-icon>
+          </v-btn>
           <v-dialog width="500px">
             <template #activator="{on}">
               <v-btn
@@ -56,7 +59,7 @@
 </template>
 
 <script>
-import { mdiShare, mdiPencil } from '@mdi/js'
+import { mdiShare, mdiPencil, mdiFileDocumentEdit } from '@mdi/js'
 
 export default {
   props: {
@@ -73,7 +76,8 @@ export default {
     return {
       icons: {
         mdiShare,
-        mdiPencil
+        mdiPencil,
+        mdiFileDocumentEdit
       }
     }
   }

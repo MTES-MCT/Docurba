@@ -1,5 +1,5 @@
 <template>
-  <v-dialog width="800px">
+  <v-dialog v-model="dialog" width="800px">
     <template #activator="{on}">
       <v-btn icon v-on="on">
         <v-icon>{{ icons.mdiPaperclip }}</v-icon>
@@ -47,10 +47,10 @@
           </VFileDropzone>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary">
+            <v-btn color="primary" :loading="loading" @click="uploadFiles">
               Ajouter
             </v-btn>
-            <v-btn color="primary" outlined>
+            <v-btn color="primary" outlined @click="dialog.value = false">
               Annuler
             </v-btn>
           </v-card-actions>
@@ -82,13 +82,40 @@ export default {
         mdiPaperclip
       },
       ressourcesTab: 0,
-      files: []
+      files: [],
+      loading: false,
+      dialog: false
     }
   },
   methods: {
     setFiles (files) {
-      console.log('change files', files)
+      // console.log('change files', files)
       this.files = files
+    },
+    async uploadFiles () {
+      // console.log(this.files)
+      this.loading = true
+
+      if (this.files.length) {
+        // this.files.forEach((file) => {
+        //   console.log(file)
+        // })
+
+        // console.log(this.files[0], this.section)
+
+        for (let fileIndex = 0; fileIndex < this.files.length; fileIndex++) {
+          const file = this.files[fileIndex]
+
+          await this.$supabase.storage
+            .from('project-annexes')
+            .upload(`/${this.section.dept}${this.section.path}/${file.name}`, file)
+        }
+      }
+
+      this.$emit('upload')
+
+      this.loading = false
+      this.dialog = false
     }
   }
 }

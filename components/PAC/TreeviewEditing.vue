@@ -36,7 +36,7 @@
             width="500"
           >
             <template #activator="{on}">
-              <v-btn v-show="overedItem === item.path && item.dept" small icon v-on="on">
+              <v-btn v-show="overedItem === item.path && (item.dept || item.project_id)" small icon v-on="on">
                 <v-icon>{{ icons.mdiDelete }}</v-icon>
               </v-btn>
             </template>
