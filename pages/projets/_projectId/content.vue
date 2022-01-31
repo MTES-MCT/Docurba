@@ -69,7 +69,7 @@ export default {
     editedSections.forEach((section) => {
       section.body = mdParser.processSync(section.text).result
 
-      if (section.body.children && section.body.children) {
+      if (section.body.children) {
         const firstChild = section.body.children[0]
 
         if (!firstChild.props.id) {
@@ -84,6 +84,7 @@ export default {
         // Although it might create inconsistenties for versions that get Archived later on.
         this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], section)
       } else {
+        // console.log('section added', section)
         this.PAC.push(Object.assign({}, section))
       }
     })

@@ -73,10 +73,6 @@ export default {
     collapsed: {
       type: Boolean,
       default: false
-    },
-    minFilter: {
-      type: Boolean,
-      default: false
     }
   },
   data () {

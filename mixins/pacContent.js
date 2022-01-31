@@ -9,10 +9,6 @@ export default {
     pacData: {
       type: Array,
       required: true
-    },
-    minFilter: {
-      type: Boolean,
-      default: true
     }
   },
   computed: {
