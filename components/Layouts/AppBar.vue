@@ -31,7 +31,7 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item link @click="openDDT = true">
+          <v-list-item link @click="goToAdmin">
             <v-list-item-title>Accès DDT</v-list-item-title>
           </v-list-item>
           <v-list-item link @click="$supabase.auth.signOut()">
@@ -64,6 +64,8 @@ export default {
     }
   },
   data () {
+    // console.log(this.$user)
+
     return {
       icons: {
         mdiDotsVertical
@@ -71,6 +73,21 @@ export default {
       openLogin: false,
       openDocs: false,
       openDDT: false
+    }
+  },
+  methods: {
+    async goToAdmin () {
+      const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('role').match({
+        user_id: this.$user.id,
+        user_email: this.$user.email,
+        role: 'ddt'
+      })
+
+      if (adminAccess && adminAccess.length) {
+        this.$router.push('/projets')
+      } else {
+        this.openDDT = true
+      }
     }
   }
 }

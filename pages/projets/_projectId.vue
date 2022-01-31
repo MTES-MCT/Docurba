@@ -16,37 +16,12 @@
       </v-tabs>
     </template>
     <NuxtChild />
-    <!-- <v-container fluid>
-      <PACTreeviewContent
-        v-if="project"
-        :pac-data="project.PAC"
-        editable
-        @read="savePacItem"
-      />
-    </v-container> -->
   </LayoutsCustomApp>
 </template>
 
 <script>
 export default {
   layout: 'app',
-  // TODO: Do server side login for this to work.
-  // async asyncData ({ route, $supabase }) {
-  //   const projectId = route.params.projectId
-
-  //   console.log(projectId)
-
-  //   const { data: projects, error } = await $supabase.from('projects').select('*').eq('id', projectId)
-
-  //   const project = projects ? projects[0] : null
-
-  //   console.log(project, error, projects)
-
-  //   return {
-  //     project,
-  //     error
-  //   }
-  // }
   data () {
     return {
       project: null,
@@ -66,22 +41,7 @@ export default {
     const projectId = this.$route.params.projectId
 
     const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-
     this.project = projects ? projects[0] : null
-    this.project.PAC.forEach((section) => {
-      section.comments = section.comments || []
-    })
-  },
-  methods: {
-    async savePacItem (pacItem) {
-      const { PAC } = this.project
-
-      const projectPacItem = PAC.find(item => item.path === pacItem.path)
-      projectPacItem.checked = pacItem.checked
-      // Object.assign(projectPacItem, pacItem)
-
-      await this.$supabase.from('projects').update({ PAC }).eq('id', this.project.id)
-    }
   }
 }
 </script>

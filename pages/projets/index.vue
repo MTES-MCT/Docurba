@@ -4,49 +4,83 @@
       <v-list>
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title>Documents</v-list-item-title>
+            <v-list-item-title>Projets</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item>
+        <v-list-item href="/projets/trames">
           <v-list-item-content>
-            <v-list-item-title>PAC Templates</v-list-item-title>
+            <v-list-item-title>Trame du PAC</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
     </template>
     <v-container fluid>
       <v-row>
-        <v-col cols="auto" class="pa-0" />
+        <v-col cols="12">
+          <v-toolbar flat>
+            <v-text-field v-model="search" filled hide-details placeholder="Recherchez un projet" />
+          </v-toolbar>
+        </v-col>
+      </v-row>
+      <v-row class="mt-0">
         <v-col cols="">
           <v-list>
-            <ProjectsProjectListItem
-              v-for="project in projects"
+            <v-subheader>Mes projets</v-subheader>
+            <ProjectsDdtProjectListItem
+              v-for="project in filteredProjects"
               :key="project.id"
               :project="project"
               shareable
-              @share="shareProject(project)"
             />
           </v-list>
           <v-list>
-            <ProjectsProjectListItem
-              v-for="project in sharedProjects"
+            <v-subheader>Projets partagés avec moi</v-subheader>
+            <ProjectsDdtProjectListItem
+              v-for="project in filteredSharedProjects"
               :key="project.id"
               :project="project"
-              shareable
-              @share="shareProject(project)"
             />
           </v-list>
         </v-col>
       </v-row>
     </v-container>
+    <v-dialog width="500px">
+      <template #activator="{on}">
+        <v-btn
+          fixed
+          bottom
+          right
+          fab
+          color="primary"
+          v-on="on"
+        >
+          <v-icon>{{ icons.mdiPlus }}</v-icon>
+        </v-btn>
+      </template>
+      <template #default="dialog">
+        <ProjectsProjectCardForm @cancel="dialog.value = false">
+          <template #titre>
+            Creer un projet
+          </template>
+        </ProjectsProjectCardForm>
+      </template>
+    </v-dialog>
   </LayoutsCustomApp>
 </template>
 
 <script>
+import { mdiPlus } from '@mdi/js'
 import projectsList from '@/mixins/projectsList.js'
 
 export default {
   mixins: [projectsList],
-  layout: 'app'
+  layout: 'app',
+  data () {
+    return {
+      icons: {
+        mdiPlus
+      }
+    }
+  }
 }
 </script>
