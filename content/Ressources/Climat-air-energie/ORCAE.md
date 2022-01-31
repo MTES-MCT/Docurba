@@ -1,5 +1,7 @@
 ---
 title : l'Observatoire régional Climat Air Énergie
+regions:
+-
 iso : FR-ARA
 source : https://www.orcae-auvergne-rhone-alpes.fr/
 ---
