@@ -40,6 +40,14 @@ export default {
         }
       })
 
+      parsedPAC.forEach((section) => {
+        if (section.children && section.children.length) {
+          section.children.sort((sa, sb) => {
+            return (sa.ordre || 100) - (sb.ordre || 100)
+          })
+        }
+      })
+
       return parsedPAC
     }
   }

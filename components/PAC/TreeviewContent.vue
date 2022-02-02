@@ -142,10 +142,12 @@ export default {
       this.$emit('read', section)
     },
     scrollTo (item) {
-      if (item.children && item.children.length) {
-        this.$vuetify.goTo(`#${item.path.replaceAll('/', '__')}`)
-      } else {
-        this.$vuetify.goTo(`#panel__${item.path.replaceAll('/', '__')}`)
+      if (item.body.children && item.body.children.length) {
+        if (item.children && item.children.length) {
+          this.$vuetify.goTo(`#${item.path.replaceAll('/', '__')}`)
+        } else {
+          this.$vuetify.goTo(`#panel__${item.path.replaceAll('/', '__')}`)
+        }
       }
     }
   }
