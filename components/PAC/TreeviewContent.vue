@@ -142,14 +142,10 @@ export default {
       this.$emit('read', section)
     },
     scrollTo (item) {
-      if (item.body.children && item.body.children.length) {
-        const targetId = item.body.children[0].props.id
-
-        try {
-          this.$vuetify.goTo(`#${targetId}`)
-        } catch (err) {
-          this.$vuetify.goTo(`#panel-${targetId}`)
-        }
+      if (item.children && item.children.length) {
+        this.$vuetify.goTo(`#${item.path.replaceAll('/', '__')}`)
+      } else {
+        this.$vuetify.goTo(`#panel__${item.path.replaceAll('/', '__')}`)
       }
     }
   }

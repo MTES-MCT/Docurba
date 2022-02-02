@@ -69,14 +69,6 @@ export default {
     editedSections.forEach((section) => {
       section.body = mdParser.processSync(section.text).result
 
-      if (section.body.children) {
-        const firstChild = section.body.children[0]
-
-        if (!firstChild.props.id) {
-          firstChild.props.id = section.path
-        }
-      }
-
       const sectionIndex = this.PAC.findIndex(s => s.path === section.path)
 
       if (sectionIndex >= 0) {
@@ -90,17 +82,25 @@ export default {
     })
 
     project.PAC = project.PAC.map((section) => {
+      const enrichedSection = { comments: [] }
+
       if (typeof (section) === 'object') {
-        return Object.assign({
-          comments: []
-        }, section)
+        Object.assign(enrichedSection, section)
       } else {
         const rawSection = this.PAC.find(s => s.path === section)
 
-        return Object.assign({
-          comments: []
-        }, rawSection)
+        // rawSection simply is without comments and read status.
+        Object.assign(enrichedSection, rawSection)
       }
+
+      // We set the anchor manually so that it's esier to navigate the content.
+      const firstChild = enrichedSection.body.children[0]
+
+      if (firstChild) {
+        firstChild.props.id = enrichedSection.path.replaceAll('/', '__')
+      }
+
+      return enrichedSection
     })
 
     this.project = project
