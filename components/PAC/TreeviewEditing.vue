@@ -21,7 +21,7 @@
         <template #label="{item}">
           <v-tooltip right nudge-right="35">
             <template #activator="{on}">
-              <div class="d-block text-truncate" v-on="on" @click="openSection(item)" @mouseenter="selecItem(item)">
+              <div class="d-block text-truncate" :class="colorClass(item)" v-on="on" @click="openSection(item)" @mouseenter="selecItem(item)">
                 {{ item.titre }}
               </div>
             </template>
@@ -145,6 +145,17 @@ export default {
     removeItem (item, dialog) {
       this.$emit('remove', item)
       dialog.value = false
+    },
+    colorClass (section) {
+      if (section.project_id) {
+        return 'bf500--text'
+      }
+
+      if (section.dept) {
+        return 'bf300--text'
+      }
+
+      return ''
     }
   }
 }
