@@ -155,6 +155,14 @@ export default {
 </script>
 
 <style scoped>
+#pdf-wrapper {
+    width: 210mm;
+    /* height: 297mm; */
+    /* display: flex;
+    justify-content: center;
+    flex-direction: column; */
+}
+
 .sticky-tree {
   position: sticky;
   overflow: scroll;
