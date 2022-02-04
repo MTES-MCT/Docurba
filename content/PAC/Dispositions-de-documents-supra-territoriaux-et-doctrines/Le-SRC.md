@@ -2,6 +2,7 @@
 titre : Le schéma régional des carrières
 ordre : 3
 ---
+
 ### Gérer durablement la ressource minérale - le schéma régional des carrières
 
 Les matériaux de carrière **répondent à des besoins fondamentaux** comme se loger, se déplacer, aménager le territoire (voirie et modes doux, résilience au changement climatique, réseaux divers - eau potable, eaux usées, énergie, communication...), tant pour leur création, que pour leur entretien et rénovation. Certains minéraux, stratégiques à l’échelle nationale ou régionale, contribuent à alimenter les filières industrielles. 

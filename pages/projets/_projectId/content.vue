@@ -108,14 +108,16 @@ export default {
       }
 
       // We set the anchor manually so that it's esier to navigate the content.
-      const firstChild = enrichedSection.body.children[0]
+      if (enrichedSection.body) {
+        const firstChild = enrichedSection.body.children[0]
 
-      if (firstChild) {
-        firstChild.props.id = enrichedSection.path.replaceAll('/', '__')
+        if (firstChild) {
+          firstChild.props.id = enrichedSection.path.replaceAll('/', '__')
+        }
       }
 
       return enrichedSection
-    })
+    }).filter(s => !!s.body)
 
     this.project = project
 
