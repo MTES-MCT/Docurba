@@ -74,6 +74,21 @@ export default {
     })
 
     project.PAC = project.PAC.map((section) => {
+      return this.enrichSection(section)
+    }).filter(s => !!s.body)
+
+    const enrichedProjectSections = projectSections.map((section) => {
+      return this.enrichSection(section)
+    })
+
+    project.PAC = unionBy(project.PAC, enrichedProjectSections, (section) => {
+      return section.path
+    })
+
+    this.project = project
+  },
+  methods: {
+    enrichSection (section) {
       const enrichedSection = { comments: [] }
 
       if (typeof (section) === 'object') {
@@ -95,9 +110,7 @@ export default {
       }
 
       return enrichedSection
-    }).filter(s => !!s.body)
-
-    this.project = project
+    }
   }
 }
 </script>

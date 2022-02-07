@@ -91,7 +91,7 @@ export default {
     })
 
     this.PAC = this.PAC.filter((section) => {
-      return !!this.project.PAC.find(s => (s.path || s) === section.path)
+      return section.project_id === this.project.id || !!this.project.PAC.find(s => (s.path || s) === section.path)
     })
 
     this.loading = false

@@ -6,7 +6,7 @@
         <PACContentSection v-if="section.children && section.children.length" :sections="section.children" :editable="editable" />
       </template>
       <template v-else>
-        <v-expansion-panels :id="`panel__${section.path.replaceAll('/', '__')}`" flat>
+        <v-expansion-panels :id="`panel__${section.path.replaceAll(/[^A-Za-z0-9]/g, '__')}`" flat>
           <v-expansion-panel>
             <v-hover v-slot="{hover}">
               <v-expansion-panel-header>

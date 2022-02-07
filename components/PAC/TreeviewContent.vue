@@ -143,10 +143,10 @@ export default {
     },
     scrollTo (item) {
       if (item.body.children && item.body.children.length) {
-        if (item.children && item.children.length) {
-          this.$vuetify.goTo(`#${item.path.replaceAll('/', '__')}`)
+        if ((item.children && item.children.length) || item.slug === 'intro') {
+          this.$vuetify.goTo(`#${item.path.replaceAll(/[^A-Za-z0-9]/g, '__')}`)
         } else {
-          this.$vuetify.goTo(`#panel__${item.path.replaceAll('/', '__')}`)
+          this.$vuetify.goTo(`#panel__${item.path.replaceAll(/[^A-Za-z0-9]/g, '__')}`)
         }
       }
     }

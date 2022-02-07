@@ -96,28 +96,16 @@ export default {
     })
 
     project.PAC = project.PAC.map((section) => {
-      const enrichedSection = { comments: [] }
-
-      if (typeof (section) === 'object') {
-        Object.assign(enrichedSection, section)
-      } else {
-        const rawSection = this.PAC.find(s => s.path === section)
-
-        // rawSection simply is without comments and read status.
-        Object.assign(enrichedSection, rawSection)
-      }
-
-      // We set the anchor manually so that it's esier to navigate the content.
-      if (enrichedSection.body) {
-        const firstChild = enrichedSection.body.children[0]
-
-        if (firstChild) {
-          firstChild.props.id = enrichedSection.path.replaceAll('/', '__')
-        }
-      }
-
-      return enrichedSection
+      return this.enrichSection(section)
     }).filter(s => !!s.body)
+
+    const enrichedProjectSections = projectSections.map((section) => {
+      return this.enrichSection(section)
+    })
+
+    project.PAC = unionBy(project.PAC, enrichedProjectSections, (section) => {
+      return section.path
+    })
 
     this.project = project
 
@@ -136,9 +124,30 @@ export default {
 
       await this.$supabase.from('projects').update({ PAC }).eq('id', this.project.id)
     },
-    downloadPDF () {
-      console.log('Lets do it')
+    enrichSection (section) {
+      const enrichedSection = { comments: [] }
 
+      if (typeof (section) === 'object') {
+        Object.assign(enrichedSection, section)
+      } else {
+        const rawSection = this.PAC.find(s => s.path === section)
+
+        // rawSection simply is without comments and read status.
+        Object.assign(enrichedSection, rawSection)
+      }
+
+      // We set the anchor manually so that it's esier to navigate the content.
+      if (enrichedSection.body) {
+        const firstChild = enrichedSection.body.children[0]
+
+        if (firstChild) {
+          firstChild.props.id = enrichedSection.path.replaceAll(/[^A-Za-z0-9]/g, '__')
+        }
+      }
+
+      return enrichedSection
+    },
+    downloadPDF () {
       function closePrint () {
         document.body.removeChild(this.__container__)
       }

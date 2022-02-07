@@ -32,8 +32,8 @@
 </template>
 
 <script>
-
 import unified from 'unified'
+
 import remarkParse from 'remark-parse'
 import departements from '@/assets/data/departements-france.json'
 
