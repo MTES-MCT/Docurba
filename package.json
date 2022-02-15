@@ -17,6 +17,7 @@
     "@nuxtjs/axios": "^5.13.1",
     "@nuxtjs/pwa": "^3.3.5",
     "@supabase/supabase-js": "^1.25.0",
+    "@tiptap/extension-link": "^2.0.0-beta.36",
     "@tiptap/extension-underline": "^2.0.0-beta.22",
     "@tiptap/starter-kit": "^2.0.0-beta.163",
     "@tiptap/vue-2": "^2.0.0-beta.72",

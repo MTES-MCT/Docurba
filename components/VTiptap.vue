@@ -116,10 +116,35 @@
         >
           <v-icon>{{ icons.mdiFormatListNumbered }}</v-icon>
         </v-btn>
+        <v-btn
+          icon
+          @click="openLinkMenu"
+        >
+          <v-icon>{{ icons.mdiLink }}</v-icon>
+        </v-btn>
         <slot />
       </v-toolbar-items>
     </v-toolbar>
-    <v-card-text class="pb-1 pt-3 text-editor">
+    <v-card-text id="VTipTap-TextArea" class="pb-1 pt-3 text-editor">
+      <v-menu
+        v-if="selection && selectionMenu"
+        v-model="selectionMenu"
+        :position-x="selectionMenuPosition.x"
+        :position-y="selectionMenuPosition.y + 20"
+        :close-on-click="false"
+        :close-on-content-click="false"
+      >
+        <v-card>
+          <v-text-field
+            v-model="linkHref"
+            :append-icon="icons.mdiCheck"
+            hide-details=""
+            filled
+            label="ajouter un lien"
+            @click:append="addLink"
+          />
+        </v-card>
+      </v-menu>
       <editor-content :editor="editor" />
     </v-card-text>
   </v-card>
@@ -128,12 +153,14 @@
 import { Editor, EditorContent } from '@tiptap/vue-2'
 import StarterKit from '@tiptap/starter-kit'
 import { Underline } from '@tiptap/extension-underline'
+import { Link } from '@tiptap/extension-link'
 
 import {
   mdiUndo, mdiRedo, mdiFormatHeader1, mdiFormatText,
   mdiFormatHeader2, mdiFormatHeader3, mdiFormatHeader4,
   mdiFormatBold, mdiFormatUnderline, mdiFormatItalic,
-  mdiFormatListBulleted, mdiFormatListNumbered
+  mdiFormatListBulleted, mdiFormatListNumbered, mdiLink,
+  mdiCheck
 } from '@mdi/js'
 
 export default {
@@ -176,8 +203,17 @@ export default {
         mdiFormatUnderline,
         mdiFormatItalic,
         mdiFormatListBulleted,
-        mdiFormatListNumbered
-      }
+        mdiFormatListNumbered,
+        mdiLink,
+        mdiCheck
+      },
+      selection: null,
+      selectionMenu: false,
+      selectionMenuPosition: {
+        x: 0,
+        y: 0
+      },
+      linkHref: ''
     }
   },
   watch: {
@@ -192,7 +228,7 @@ export default {
   },
   mounted () {
     this.editor = new Editor({
-      extensions: [StarterKit, Underline],
+      extensions: [StarterKit, Underline, Link],
       content: this.value,
       onUpdate: () => {
         this.$emit('input', this.editor.getHTML())
@@ -208,6 +244,30 @@ export default {
         .focus()
         .toggleHeading({ level: val })
         .run()
+    },
+    openLinkMenu () {
+      this.selection = window.getSelection()
+
+      if (this.selectionMenu) {
+        this.selectionMenu = false
+      } else if (this.selection.type === 'Range') {
+        this.selectionMenu = true
+
+        this.linkHref = this.selection.anchorNode.parentElement.href
+
+        const range = this.selection.getRangeAt(0)
+        this.selectionMenuPosition = range.getBoundingClientRect()
+      }
+    },
+    addLink () {
+      if (this.linkHref) {
+        this.editor.commands.setLink({ href: this.linkHref, target: '_blank' })
+        this.linkHref = ''
+      } else {
+        this.editor.commands.unsetLink()
+      }
+
+      this.selectionMenu = false
     }
   }
 }
