@@ -125,7 +125,13 @@
         <slot />
       </v-toolbar-items>
     </v-toolbar>
-    <v-card-text id="VTipTap-TextArea" class="pb-1 pt-3 text-editor">
+    <v-card-text
+      id="VTipTap-TextArea"
+      class="pb-1 pt-3 text-editor"
+      @drop.prevent="dropImage"
+      @dragenter.prevent
+      @dragover.prevent
+    >
       <v-menu
         v-if="selection && selectionMenu"
         v-model="selectionMenu"
@@ -154,6 +160,9 @@ import { Editor, EditorContent } from '@tiptap/vue-2'
 import StarterKit from '@tiptap/starter-kit'
 import { Underline } from '@tiptap/extension-underline'
 import { Link } from '@tiptap/extension-link'
+import { Image } from '@tiptap/extension-image'
+
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   mdiUndo, mdiRedo, mdiFormatHeader1, mdiFormatText,
@@ -227,13 +236,19 @@ export default {
     }
   },
   mounted () {
+    Image.configure({
+      allowBase64: true
+    })
+
     this.editor = new Editor({
-      extensions: [StarterKit, Underline, Link],
+      extensions: [StarterKit, Underline, Link, Image],
       content: this.value,
       onUpdate: () => {
         this.$emit('input', this.editor.getHTML())
       }
     })
+
+    console.log(this.editor.schema)
   },
   beforeUnmount () {
     this.editor.destroy()
@@ -268,6 +283,20 @@ export default {
       }
 
       this.selectionMenu = false
+    },
+    async dropImage (dropEvent) {
+      const image = dropEvent.dataTransfer.files[0]
+
+      if (image && image.type.includes('image')) {
+        const { data } = await this.$supabase
+          .storage
+          .from('text-images')
+          .upload(`public/${uuidv4()}.${image.name.split('.').pop()}`, image)
+
+        this.editor.commands.setImage({
+          src: `https://ixxbyuandbmplfnqtxyw.supabase.in/storage/v1/object/public/${data.Key}`
+        })
+      }
     }
   }
 }
