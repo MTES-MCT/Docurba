@@ -11,6 +11,7 @@
     </v-col>
     <v-col cols="12" class="pa-0" @click="collapsed ? $emit('collapse') : ''">
       <v-treeview
+        ref="tree"
         hoverable
         open-on-click
         :items="PACroots"
@@ -29,6 +30,12 @@
           </v-tooltip>
         </template>
         <template #append="{item, open}">
+          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click="changeItemOrder(item, -1)">
+            <v-icon>{{ icons.mdiChevronUp }}</v-icon>
+          </v-btn>
+          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click="changeItemOrder(item, 1)">
+            <v-icon>{{ icons.mdiChevronDown }}</v-icon>
+          </v-btn>
           <v-btn v-show="overedItem === item.path" small icon @click="addSectionTo(item, open, $event)">
             <v-icon>{{ icons.mdiPlus }}</v-icon>
           </v-btn>
@@ -64,7 +71,7 @@
   </v-row>
 </template>
 <script>
-import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight } from '@mdi/js'
+import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDown } from '@mdi/js'
 import pacContent from '@/mixins/pacContent.js'
 
 export default {
@@ -82,7 +89,9 @@ export default {
         mdiPlus,
         mdiDelete,
         mdiChevronLeft,
-        mdiChevronRight
+        mdiChevronRight,
+        mdiChevronUp,
+        mdiChevronDown
       },
       overedItem: ''
     }
@@ -91,7 +100,7 @@ export default {
     PACroots () {
       if (!this.contentSearch.length) {
         const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
-          return (sa.ordre || 100) - (sb.ordre || 100)
+          return (sa.ordre ?? 100) - (sb.ordre ?? 100)
         })
 
         return roots
@@ -145,6 +154,35 @@ export default {
     removeItem (item, dialog) {
       this.$emit('remove', item)
       dialog.value = false
+    },
+    changeItemOrder (item, change) {
+      const parent = this.PAC.find((p) => {
+        return p !== item &&
+          item.dir.includes(p.path.replace(/\/intro$/, '')) &&
+            p.depth + 1 === item.depth
+      })
+
+      console.log(item, parent)
+
+      console.log(parent.children.map(c => c.titre))
+
+      const newIndex = item.ordre + change
+
+      if (newIndex >= 0 && newIndex < parent.children.length) {
+        [parent.children[item.ordre], parent.children[newIndex]] = [parent.children[newIndex], parent.children[item.ordre]]
+
+        parent.children.forEach((s, i) => {
+          s.ordre = i
+        })
+
+        this.$refs.tree.$forceUpdate()
+
+        // parent.children.sort((sa, sb) => {
+        //   return (sa.ordre ?? 100) - (sb.ordre ?? 100)
+        // })
+      }
+
+      console.log(parent.children.map(c => c.titre))
     },
     colorClass (section) {
       if (section.project_id) {

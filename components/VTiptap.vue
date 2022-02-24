@@ -247,8 +247,6 @@ export default {
         this.$emit('input', this.editor.getHTML())
       }
     })
-
-    console.log(this.editor.schema)
   },
   beforeUnmount () {
     this.editor.destroy()

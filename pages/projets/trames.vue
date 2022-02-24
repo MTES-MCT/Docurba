@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     selectSection (section) {
-      const { text, titre, path, slug, dir } = this.PAC.find(s => s.path === section.path)
+      const { text, titre, path, slug, dir, ordre } = this.PAC.find(s => s.path === section.path)
 
       this.selectedSection = {
         text,
@@ -105,6 +105,7 @@ export default {
         path,
         slug,
         dir,
+        ordre,
         dept: this.departementCode
       }
     },

@@ -82,7 +82,6 @@ export default {
     },
     'section.text' () {
       this.editedSection.text = this.getHTML()
-      console.log(this.editedSection.text)
     },
     'section.titre' () {
       this.editedSection.titre = this.section.titre
