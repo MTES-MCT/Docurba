@@ -72,6 +72,7 @@
 </template>
 <script>
 import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDown } from '@mdi/js'
+import { v4 as uuidv4 } from 'uuid'
 import pacContent from '@/mixins/pacContent.js'
 
 export default {
@@ -83,6 +84,16 @@ export default {
     },
     // This is used for hierarchie update
     table: {
+      type: String,
+      default () {
+        return this.projectId ? 'pac_sections_project' : 'pac_sections_dept'
+      }
+    },
+    projectId: {
+      type: String,
+      default: ''
+    },
+    dept: {
       type: String,
       default: ''
     }
@@ -160,7 +171,7 @@ export default {
       this.$emit('remove', item)
       dialog.value = false
     },
-    changeItemOrder (item, change) {
+    async changeItemOrder (item, change) {
       const parent = this.PAC.find((p) => {
         return p !== item &&
           item.dir.includes(p.path.replace(/\/intro$/, '')) &&
@@ -173,9 +184,28 @@ export default {
         [parent.children[item.ordre], parent.children[newIndex]] = [parent.children[newIndex], parent.children[item.ordre]]
 
         if (this.table) {
-          parent.children.forEach(async (s, i) => {
-            await this.$supabase.from(this.table).update({ ordre: i }).eq('id', s.id)
+          // parent.children.forEach(async (s, i) => {
+          //   await this.$supabase.from(this.table).update({ ordre: i }).eq('id', s.id)
+          // })
+
+          const updatedSections = parent.children.map((s, i) => {
+            const section = {
+              id: s.id || uuidv4(),
+              path: s.path,
+              dir: s.dir,
+              ordre: i
+            }
+
+            if (this.projectId) {
+              section.projectId = this.projectId
+            } else {
+              section.dept = this.dept
+            }
+
+            return section
           })
+
+          await this.$supabase.from(this.table).upsert(updatedSections)
         }
       }
     },

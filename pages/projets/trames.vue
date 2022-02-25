@@ -11,6 +11,7 @@
               :pac-data="PAC"
               :collapsed="collapsedTree"
               table="pac_sections_dept"
+              :dept="departementCode"
               @open="selectSection"
               @add="addNewSection"
               @remove="deleteSection"
@@ -36,6 +37,7 @@
 import unified from 'unified'
 
 import remarkParse from 'remark-parse'
+import { omitBy, isNil } from 'lodash'
 import departements from '@/assets/data/departements-france.json'
 
 export default {
@@ -46,8 +48,13 @@ export default {
       text: true
     }).fetch()
 
+    const originalPAC = PAC.map((section) => {
+      return Object.assign({}, section)
+    })
+
     return {
-      PAC
+      PAC,
+      originalPAC // This is a clone of the row data so we can perform delete on PAC.
     }
   },
   data () {
@@ -77,13 +84,11 @@ export default {
     // eslint-disable-next-line eqeqeq
     this.departement = departements.find(d => d.code_departement == adminAccess[0].dept)
 
-    // this.deptSectionsSub = this.$supabase.from('pac_sections_dept').on('*', (data) => {
-    //   console.log('update on sections', data)
-    // }).subscribe()
-
-    this.deptSectionsSub = this.$supabase.from(`pac_sections_dept:dept=eq.${this.departementCode}`).on('UPDATE', (update) => {
+    this.deptSectionsSub = this.$supabase.from(`pac_sections_dept:dept=eq.${this.departementCode}`).on('*', (update) => {
       const sectionIndex = this.PAC.findIndex(s => s.path === update.new.path)
-      this.PAC.splice(sectionIndex, 1, update.new)
+      if (sectionIndex >= 0) {
+        this.PAC.splice(sectionIndex, 1, Object.assign({}, this.PAC[sectionIndex], omitBy(update.new, isNil)))
+      }
     }).subscribe()
 
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.departementCode)
@@ -98,7 +103,7 @@ export default {
       if (sectionIndex >= 0) {
         // The Object Assign here is to keep the order since it's not saved. As could be other properties.
         // Although it might create inconsistenties for versions that get Archived later on.
-        this.PAC[sectionIndex] = Object.assign({ dept: this.departementCode }, this.PAC[sectionIndex], section)
+        this.PAC[sectionIndex] = Object.assign({ dept: this.departementCode }, this.PAC[sectionIndex], omitBy(section, isNil))
       } else {
         this.PAC.push(Object.assign({ dept: this.departementCode }, section))
       }
@@ -176,9 +181,11 @@ export default {
 
       if (data && !err) {
         const deletedSectionIndex = this.PAC.findIndex(s => s.path === deletedSection.path)
+        const originalSection = this.originalPAC.find(s => s.path === deletedSection.path)
 
-        // this.PAC[deletedSectionIndex] = newData
-        this.PAC.splice(deletedSectionIndex, 1)
+        if (originalSection) {
+          this.PAC.splice(deletedSectionIndex, 1, originalSection)
+        } else { this.PAC.splice(deletedSectionIndex, 1) }
       } else {
         // eslint-disable-next-line no-console
         console.log('err deleting a section')
