@@ -80,6 +80,11 @@ export default {
     collapsed: {
       type: Boolean,
       default: false
+    },
+    // This is used for hierarchie update
+    table: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -162,27 +167,17 @@ export default {
             p.depth + 1 === item.depth
       })
 
-      console.log(item, parent)
-
-      console.log(parent.children.map(c => c.titre))
-
       const newIndex = item.ordre + change
 
       if (newIndex >= 0 && newIndex < parent.children.length) {
         [parent.children[item.ordre], parent.children[newIndex]] = [parent.children[newIndex], parent.children[item.ordre]]
 
-        parent.children.forEach((s, i) => {
-          s.ordre = i
-        })
-
-        this.$refs.tree.$forceUpdate()
-
-        // parent.children.sort((sa, sb) => {
-        //   return (sa.ordre ?? 100) - (sb.ordre ?? 100)
-        // })
+        if (this.table) {
+          parent.children.forEach(async (s, i) => {
+            await this.$supabase.from(this.table).update({ ordre: i }).eq('id', s.id)
+          })
+        }
       }
-
-      console.log(parent.children.map(c => c.titre))
     },
     colorClass (section) {
       if (section.project_id) {

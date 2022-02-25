@@ -10,6 +10,7 @@
             <PACTreeviewEditing
               :pac-data="PAC"
               :collapsed="collapsedTree"
+              table="pac_sections_dept"
               @open="selectSection"
               @add="addNewSection"
               @remove="deleteSection"
@@ -54,7 +55,8 @@ export default {
       loading: true,
       collapsedTree: false,
       selectedSection: null,
-      departement: { code_departement: 0, nom_departement: '' }
+      departement: { code_departement: 0, nom_departement: '' },
+      deptSectionsSub: null
     }
   },
   computed: {
@@ -75,6 +77,15 @@ export default {
     // eslint-disable-next-line eqeqeq
     this.departement = departements.find(d => d.code_departement == adminAccess[0].dept)
 
+    // this.deptSectionsSub = this.$supabase.from('pac_sections_dept').on('*', (data) => {
+    //   console.log('update on sections', data)
+    // }).subscribe()
+
+    this.deptSectionsSub = this.$supabase.from(`pac_sections_dept:dept=eq.${this.departementCode}`).on('UPDATE', (update) => {
+      const sectionIndex = this.PAC.findIndex(s => s.path === update.new.path)
+      this.PAC.splice(sectionIndex, 1, update.new)
+    }).subscribe()
+
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.departementCode)
 
     const mdParser = unified().use(remarkParse)
@@ -94,6 +105,9 @@ export default {
     })
 
     this.loading = false
+  },
+  beforeDestroy () {
+    this.$supabase.removeSubscription(this.deptSectionsSub)
   },
   methods: {
     selectSection (section) {

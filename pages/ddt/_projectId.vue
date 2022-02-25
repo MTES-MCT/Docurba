@@ -10,6 +10,7 @@
             <PACTreeviewEditing
               :pac-data="PAC"
               :collapsed="collapsedTree"
+              table="pac_sections_project"
               @open="selectSection"
               @add="addNewSection"
               @remove="deleteSection"
