@@ -197,7 +197,7 @@ export default {
             }
 
             if (this.projectId) {
-              section.projectId = this.projectId
+              section.project_id = this.projectId
             } else {
               section.dept = this.dept
             }
