@@ -1,4 +1,4 @@
-export default (inject) => {
+export default (_, inject) => {
   // Default tracking code.
   const _paq = window._paq = window._paq || []
   /* tracker methods like "setCustomDimension" should be called before "trackPageView" */

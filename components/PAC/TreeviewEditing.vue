@@ -1,7 +1,7 @@
 <template>
   <v-row
     class="sticky-tree"
-    style="top: 120px"
+    style="top: 128px"
   >
     <v-col cols="12" class="d-flex align-center pr-0">
       <v-text-field v-model="contentSearch" filled hide-details label="Rechercher" />
@@ -223,3 +223,12 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.sticky-tree {
+  position: sticky;
+  overflow: scroll;
+  /* 128 = 80 (from search row ) + 48 (one tree leaf) */
+  max-height: calc(100vh - 128px);
+}
+</style>

@@ -3,8 +3,28 @@
     app
     clipped-left
     color="white"
+    class="fr-header"
+    prominent
   >
-    <nuxt-link to="/" class="text-decoration-none g800--text">
+    <div class="fr-header__body">
+      <div class="fr-container">
+        <div class="fr-header__body-row">
+          <div class="fr-header__brand fr-enlarge-link">
+            <div class="fr-header__brand-top">
+              <div class="fr-header__logo">
+                <a href="/" title="Accueil - Docurba">
+                  <p class="fr-logo">
+                    république
+                    <br>française
+                  </p>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <nuxt-link to="/" title="Accueil - Docurba" class="text-decoration-none g800--text align-self-center ml-10">
       <v-toolbar-title>
         Docurba
         <slot name="pageTitle" />
@@ -13,39 +33,41 @@
     <v-spacer />
     <!-- This client only could be removed with proper user management server side -->
     <client-only>
-      <v-btn v-if="!$user.id" text @click="openLogin = true">
-        Connexion
-      </v-btn>
-      <LoginDialog v-model="openLogin" />
-      <v-btn v-if="$user.id" text @click="openDocs = true">
-        Mes documents
-      </v-btn>
-      <v-menu v-if="$user.id" offset-y>
-        <template #activator="{ on }">
-          <v-btn
-            icon
-            small
-            v-on="on"
-          >
-            <v-icon>{{ icons.mdiDotsVertical }}</v-icon>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item link @click="goToAdmin">
-            <v-list-item-title>Accès DDT</v-list-item-title>
-          </v-list-item>
-          <v-list-item link @click="$supabase.auth.signOut()">
-            <v-list-item-title>
-              Déconnexion
-            </v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <!-- <v-btn v-if="$user.id" text @click="$supabase.auth.signOut()">
+      <div class="align-self-center">
+        <v-btn v-if="!$user.id" text @click="openLogin = true">
+          Connexion
+        </v-btn>
+        <LoginDialog v-model="openLogin" />
+        <v-btn v-if="$user.id" text @click="openDocs = true">
+          Mes documents
+        </v-btn>
+        <v-menu v-if="$user.id" offset-y>
+          <template #activator="{ on }">
+            <v-btn
+              icon
+              small
+              v-on="on"
+            >
+              <v-icon>{{ icons.mdiDotsVertical }}</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item link @click="goToAdmin">
+              <v-list-item-title>Accès DDT</v-list-item-title>
+            </v-list-item>
+            <v-list-item link @click="$supabase.auth.signOut()">
+              <v-list-item-title>
+                Déconnexion
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <!-- <v-btn v-if="$user.id" text @click="$supabase.auth.signOut()">
         Déconnexion
       </v-btn> -->
-      <DocumentsDialog v-if="$user.id" v-model="openDocs" />
-      <AdminDdtRequestDialog v-model="openDDT" />
+        <DocumentsDialog v-if="$user.id" v-model="openDocs" />
+        <AdminDdtRequestDialog v-model="openDDT" />
+      </div>
     </client-only>
     <template v-if="extended" #extension>
       <slot />
@@ -55,6 +77,9 @@
 
 <script>
 import { mdiDotsVertical } from '@mdi/js'
+
+import '@gouvfr/dsfr/dist/css/header.css'
+import '@gouvfr/dsfr/dist/css/logo.css'
 
 export default {
   props: {
@@ -92,3 +117,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.fr-header a {
+    color: #1e1e1e;
+    text-decoration: none;
+  }
+</style>

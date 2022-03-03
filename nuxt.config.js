@@ -9,7 +9,7 @@ export default {
       { hid: 'description', name: 'description', content: '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/png', href: '/favicon.png' }
     ],
     script: [
       // { src: 'https://stats.data.gouv.fr/piwik.js', async: true }
