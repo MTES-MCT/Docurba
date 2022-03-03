@@ -20,7 +20,7 @@
   <VGlobalLoader v-else />
 </template>
 <script>
-import { unionBy } from 'lodash'
+import { unionBy, omitBy, isNil } from 'lodash'
 
 import unified from 'unified'
 import remarkParse from 'remark-parse'
@@ -88,13 +88,14 @@ export default {
       if (sectionIndex >= 0) {
         // The Object Assign here is to keep the order since it's not saved. As could be other properties.
         // Although it might create inconsistenties for versions that get Archived later on.
-        this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], section)
+        this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], omitBy(section, isNil))
       } else {
         // console.log('section added', section)
         this.PAC.push(Object.assign({}, section))
       }
     })
 
+    // The next two enrich and the union should be refactored because there is some useless steps here.
     project.PAC = project.PAC.map((section) => {
       return this.enrichSection(section)
     }).filter(s => !!s.body)
@@ -103,7 +104,7 @@ export default {
       return this.enrichSection(section)
     })
 
-    project.PAC = unionBy(project.PAC, enrichedProjectSections, (section) => {
+    project.PAC = unionBy(enrichedProjectSections, project.PAC, (section) => {
       return section.path
     })
 
@@ -127,11 +128,11 @@ export default {
     enrichSection (section) {
       const enrichedSection = { comments: [] }
 
-      if (typeof (section) === 'object') {
-        Object.assign(enrichedSection, section)
-      } else {
-        const rawSection = this.PAC.find(s => s.path === section)
+      const rawSection = this.PAC.find(s => s.path === section)
 
+      if (typeof (section) === 'object') {
+        Object.assign(enrichedSection, section, omitBy(rawSection, isNil))
+      } else {
         // rawSection simply is without comments and read status.
         Object.assign(enrichedSection, rawSection)
       }
