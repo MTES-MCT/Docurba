@@ -122,12 +122,20 @@
         >
           <v-icon>{{ icons.mdiLink }}</v-icon>
         </v-btn>
+        <v-btn
+          icon
+          @click="$refs['imageFileInput'].click()"
+        >
+          <v-icon>{{ icons.mdiFileImage }}</v-icon>
+        </v-btn>
+        <input :ref="'imageFileInput'" class="d-none" type="file" @change="inputImage">
         <slot />
       </v-toolbar-items>
     </v-toolbar>
     <v-card-text
       id="VTipTap-TextArea"
       class="pb-1 pt-3 text-editor"
+      @click="editor.chain().focus()"
       @drop.prevent="dropImage"
       @dragenter.prevent
       @dragover.prevent
@@ -169,7 +177,7 @@ import {
   mdiFormatHeader2, mdiFormatHeader3, mdiFormatHeader4,
   mdiFormatBold, mdiFormatUnderline, mdiFormatItalic,
   mdiFormatListBulleted, mdiFormatListNumbered, mdiLink,
-  mdiCheck
+  mdiCheck, mdiFileImage
 } from '@mdi/js'
 
 export default {
@@ -214,7 +222,8 @@ export default {
         mdiFormatListBulleted,
         mdiFormatListNumbered,
         mdiLink,
-        mdiCheck
+        mdiCheck,
+        mdiFileImage
       },
       selection: null,
       selectionMenu: false,
@@ -282,9 +291,13 @@ export default {
 
       this.selectionMenu = false
     },
-    async dropImage (dropEvent) {
-      const image = dropEvent.dataTransfer.files[0]
-
+    dropImage (dropEvent) {
+      this.uploadImage(dropEvent.dataTransfer.files[0])
+    },
+    inputImage () {
+      this.uploadImage(this.$refs.imageFileInput.files[0])
+    },
+    async  uploadImage (image) {
       if (image && image.type.includes('image')) {
         const { data } = await this.$supabase
           .storage
