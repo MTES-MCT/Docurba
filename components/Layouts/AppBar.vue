@@ -38,7 +38,7 @@
           Connexion
         </v-btn>
         <LoginDialog v-model="openLogin" />
-        <v-btn v-if="$user.id" text @click="openDocs = true">
+        <v-btn v-if="$user.id" text @click="clickMyDocs">
           Mes documents
         </v-btn>
         <v-menu v-if="$user.id" offset-y>
@@ -97,10 +97,24 @@ export default {
       },
       openLogin: false,
       openDocs: false,
-      openDDT: false
+      openDDT: false,
+      adminAccess: null
     }
   },
   methods: {
+    async getAdminAccess () {
+      if (!this.adminAccess) {
+        const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('role').match({
+          user_id: this.$user.id,
+          user_email: this.$user.email,
+          role: 'ddt'
+        })
+
+        this.adminAccess = adminAccess
+      }
+
+      return this.adminAccess
+    },
     async goToAdmin () {
       const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('role').match({
         user_id: this.$user.id,
@@ -112,6 +126,15 @@ export default {
         this.$router.push('/projets')
       } else {
         this.openDDT = true
+      }
+    },
+    async clickMyDocs () {
+      await this.getAdminAccess()
+
+      if (this.adminAccess) {
+        this.$router.push('/projets')
+      } else {
+        this.openDocs = true
       }
     }
   }

@@ -48,7 +48,7 @@ export default {
   methods: {
     getSource (ressource) {
       if (ressource.regions) {
-        const region = ressource.regions.find(s => s.iso === this.selectedRegion)
+        const region = ressource.regions.find(s => (s ? s.iso : '') === this.selectedRegion)
 
         return region ? region.source : ressource.sourceNational
       } else { return ressource.sourceNational }

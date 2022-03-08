@@ -6,16 +6,18 @@
       editable
       @read="savePacItem"
     />
-    <v-btn
-      fab
-      fixed
-      bottom
-      right
-      color="primary"
-      @click="downloadPDF"
-    >
-      <v-icon>{{ icons.mdiDownload }}</v-icon>
-    </v-btn>
+    <client-only>
+      <v-btn
+        fab
+        fixed
+        bottom
+        right
+        color="primary"
+        @click="$print(`/print/${project.id}`)"
+      >
+        <v-icon>{{ icons.mdiDownload }}</v-icon>
+      </v-btn>
+    </client-only>
   </v-container>
   <VGlobalLoader v-else />
 </template>
@@ -147,32 +149,6 @@ export default {
       }
 
       return enrichedSection
-    },
-    downloadPDF () {
-      function closePrint () {
-        document.body.removeChild(this.__container__)
-      }
-
-      function setPrint () {
-        setTimeout(() => {
-          this.contentWindow.__container__ = this
-          this.contentWindow.onbeforeunload = closePrint
-          this.contentWindow.onafterprint = closePrint
-          this.contentWindow.focus() // Required for IE
-          this.contentWindow.print()
-        }, 2000)
-      }
-
-      const iframe = document.createElement('iframe')
-      iframe.onload = setPrint
-      iframe.src = `${window.location.origin}/print/${this.$route.params.projectId}`
-      iframe.style.position = 'fixed'
-      iframe.style.right = '0'
-      iframe.style.bottom = '0'
-      iframe.style.width = '0'
-      iframe.style.height = '0'
-      iframe.style.border = '0'
-      document.body.appendChild(iframe)
     }
   }
 }

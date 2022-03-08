@@ -2,14 +2,25 @@
   <LayoutsCustomApp drawer private>
     <template #drawer>
       <v-list>
-        <v-list-item>
+        <!-- <v-list-item>
           <v-list-item-content>
             <v-list-item-title>Projets</v-list-item-title>
           </v-list-item-content>
-        </v-list-item>
-        <v-list-item href="/projets/trames">
+        </v-list-item> -->
+        <v-list-item href="/projets/trames" nuxt>
+          <v-list-item-icon>
+            <v-icon>{{ icons.mdiFileDocumentEdit }}</v-icon>
+          </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title>Trame du PAC</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item href="https://docs.google.com/document/d/1DMVFON6OUSaOomhoUnvHY5uHNkiVMTJlJ_dMpu9auv8/edit" target="_blank">
+          <v-list-item-icon>
+            <v-icon>{{ icons.mdiHelp }}</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Guide d'utilisation</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -69,7 +80,7 @@
 </template>
 
 <script>
-import { mdiPlus } from '@mdi/js'
+import { mdiPlus, mdiFileDocumentEdit, mdiHelp } from '@mdi/js'
 import projectsList from '@/mixins/projectsList.js'
 
 export default {
@@ -78,7 +89,9 @@ export default {
   data () {
     return {
       icons: {
-        mdiPlus
+        mdiPlus,
+        mdiFileDocumentEdit,
+        mdiHelp
       }
     }
   }

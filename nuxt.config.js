@@ -24,7 +24,8 @@ export default {
     { src: '~/plugins/composition.js' },
     { src: '~/plugins/supabase.js' },
     { src: '~/plugins/user.js' },
-    { src: '~/plugins/matomo.js', mode: 'client' }
+    { src: '~/plugins/matomo.js', mode: 'client' },
+    { src: '~/plugins/print.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

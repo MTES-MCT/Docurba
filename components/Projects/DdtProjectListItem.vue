@@ -1,20 +1,17 @@
 <template>
   <v-hover v-slot="{hover}">
     <v-list-item
-      :to="`/projets/${project.id}/content`"
+      :to="shareable ? `/ddt/${project.id}` : `/projets/${project.id}/content`"
       nuxt
       two-line
       @click="$emit('input', false)"
     >
       <v-list-item-content>
         <v-list-item-title>{{ project.name }}</v-list-item-title>
-        <v-list-item-subtitle>{{ project.docType }}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{ project.docType }} - {{ project.town.nom_commune }}</v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
         <div class="d-flex">
-          <v-btn v-show="hover && shareable" icon :to="`/ddt/${project.id}`" nuxt>
-            <v-icon>{{ icons.mdiFileDocumentEdit }}</v-icon>
-          </v-btn>
           <v-dialog width="500px">
             <template #activator="{on}">
               <v-btn
@@ -34,6 +31,14 @@
               </ProjectsProjectCardForm>
             </template>
           </v-dialog>
+          <v-btn v-show="hover && shareable" icon :to="`/projets/${project.id}/content`" nuxt>
+            <v-icon>{{ icons.mdiEye }}</v-icon>
+          </v-btn>
+          <client-only>
+            <v-btn v-show="hover" icon @click.prevent.stop="$print(`/print/${project.id}`)">
+              <v-icon>{{ icons.mdiDownload }}</v-icon>
+            </v-btn>
+          </client-only>
           <v-dialog>
             <template #activator="{on}">
               <v-btn
@@ -59,7 +64,10 @@
 </template>
 
 <script>
-import { mdiShare, mdiPencil, mdiFileDocumentEdit } from '@mdi/js'
+import {
+  mdiShare, mdiPencil,
+  mdiEye, mdiDownload
+} from '@mdi/js'
 
 export default {
   props: {
@@ -77,7 +85,8 @@ export default {
       icons: {
         mdiShare,
         mdiPencil,
-        mdiFileDocumentEdit
+        mdiEye,
+        mdiDownload
       }
     }
   }
