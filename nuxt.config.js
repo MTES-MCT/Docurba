@@ -9,10 +9,12 @@ export default {
       { hid: 'description', name: 'description', content: '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/png', href: '/favicon.png' }
+    ],
+    script: [
+      // { src: 'https://stats.data.gouv.fr/piwik.js', async: true }
     ]
   },
-
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
   ],
@@ -21,7 +23,8 @@ export default {
   plugins: [
     { src: '~/plugins/composition.js' },
     { src: '~/plugins/supabase.js' },
-    { src: '~/plugins/user.js' }
+    { src: '~/plugins/user.js' },
+    { src: '~/plugins/matomo.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -57,6 +60,11 @@ export default {
     manifest: {
       lang: 'fr'
     }
+  },
+
+  // Vue router
+  router: {
+    middleware: ['matomo']
   },
 
   // Content module configuration: https://go.nuxtjs.dev/config-content

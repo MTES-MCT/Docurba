@@ -10,6 +10,8 @@
             <PACTreeviewEditing
               :pac-data="PAC"
               :collapsed="collapsedTree"
+              table="pac_sections_project"
+              :project-id="$route.params.projectId"
               @open="selectSection"
               @add="addNewSection"
               @remove="deleteSection"
@@ -35,7 +37,7 @@
 
 import unified from 'unified'
 import remarkParse from 'remark-parse'
-import { unionBy } from 'lodash'
+import { unionBy, omitBy, isNil } from 'lodash'
 
 export default {
   layout: 'app',
@@ -45,8 +47,13 @@ export default {
       text: true
     }).fetch()
 
+    const originalPAC = PAC.map((section) => {
+      return Object.assign({}, section)
+    })
+
     return {
-      PAC
+      PAC,
+      originalPAC
     }
   },
   data () {
@@ -55,7 +62,7 @@ export default {
       loading: true,
       collapsedTree: false,
       selectedSection: null,
-      deptSections: []
+      projectSectionsSub: null
     }
   },
   async mounted () {
@@ -64,11 +71,23 @@ export default {
     const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
     this.project = projects ? projects[0] : null
 
+    this.projectSectionsSub = this.$supabase.from(`pac_sections_project:project_id=eq.${projectId}`).on('*', (update) => {
+      const sectionIndex = this.PAC.findIndex(s => s.path === update.new.path)
+      if (sectionIndex >= 0) {
+        this.PAC.splice(sectionIndex, 1, Object.assign({}, this.PAC[sectionIndex], omitBy(update.new, isNil)))
+      }
+    }).subscribe()
+
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.project.town.code_departement)
     const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', this.project.id)
 
     // We save them to replace a projectSection by a deptSection if needed.
-    this.deptSections = deptSections
+    deptSections.forEach((section) => {
+      const originalSection = this.originalPAC.find(s => s.path === section.path)
+      if (originalSection) {
+        Object.assign(originalSection, section)
+      } else { this.originalPAC.push(section) }
+    })
 
     const editedSections = unionBy(projectSections, deptSections, (section) => {
       return section.path
@@ -84,17 +103,22 @@ export default {
       if (sectionIndex >= 0) {
         // The Object Assign here is to keep the order since it's not saved. As could be other properties.
         // Although it might create inconsistenties for versions that get Archived later on.
-        this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], section)
+        this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], omitBy(section, isNil))
       } else {
         this.PAC.push(Object.assign({}, section))
       }
     })
 
     this.PAC = this.PAC.filter((section) => {
-      return !!this.project.PAC.find(s => (s.path || s) === section.path)
+      return section.project_id === this.project.id || !!this.project.PAC.find(s => (s.path || s) === section.path)
     })
 
     this.loading = false
+  },
+  beforeDestroy () {
+    if (this.projectSectionsSub) {
+      this.$supabase.removeSubscription(this.projectSectionsSub)
+    }
   },
   methods: {
     // This is duplicate from /projects/trame.vue
@@ -169,9 +193,11 @@ export default {
       // Still the splice here should inject by a dept/trame section if it exist.
       if (data && !err) {
         const deletedSectionIndex = this.PAC.findIndex(s => s.path === deletedSection.path)
+        const originalSection = this.originalPAC.find(s => s.path === deletedSection.path)
 
-        // this.PAC[deletedSectionIndex] = newData
-        this.PAC.splice(deletedSectionIndex, 1)
+        if (originalSection) {
+          this.PAC.splice(deletedSectionIndex, 1, originalSection)
+        } else { this.PAC.splice(deletedSectionIndex, 1) }
       } else {
         // eslint-disable-next-line no-console
         console.log('err deleting a section')

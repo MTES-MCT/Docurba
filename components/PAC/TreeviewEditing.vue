@@ -1,7 +1,7 @@
 <template>
   <v-row
     class="sticky-tree"
-    style="top: 120px"
+    style="top: 128px"
   >
     <v-col cols="12" class="d-flex align-center pr-0">
       <v-text-field v-model="contentSearch" filled hide-details label="Rechercher" />
@@ -11,6 +11,7 @@
     </v-col>
     <v-col cols="12" class="pa-0" @click="collapsed ? $emit('collapse') : ''">
       <v-treeview
+        ref="tree"
         hoverable
         open-on-click
         :items="PACroots"
@@ -21,7 +22,7 @@
         <template #label="{item}">
           <v-tooltip right nudge-right="35">
             <template #activator="{on}">
-              <div class="d-block text-truncate" v-on="on" @click="openSection(item)" @mouseenter="selecItem(item)">
+              <div class="d-block text-truncate" :class="colorClass(item)" v-on="on" @click="openSection(item)" @mouseenter="selecItem(item)">
                 {{ item.titre }}
               </div>
             </template>
@@ -29,6 +30,12 @@
           </v-tooltip>
         </template>
         <template #append="{item, open}">
+          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click="changeItemOrder(item, -1)">
+            <v-icon>{{ icons.mdiChevronUp }}</v-icon>
+          </v-btn>
+          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click="changeItemOrder(item, 1)">
+            <v-icon>{{ icons.mdiChevronDown }}</v-icon>
+          </v-btn>
           <v-btn v-show="overedItem === item.path" small icon @click="addSectionTo(item, open, $event)">
             <v-icon>{{ icons.mdiPlus }}</v-icon>
           </v-btn>
@@ -64,7 +71,8 @@
   </v-row>
 </template>
 <script>
-import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight } from '@mdi/js'
+import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDown } from '@mdi/js'
+import { v4 as uuidv4 } from 'uuid'
 import pacContent from '@/mixins/pacContent.js'
 
 export default {
@@ -74,9 +82,20 @@ export default {
       type: Boolean,
       default: false
     },
-    minFilter: {
-      type: Boolean,
-      default: false
+    // This is used for hierarchie update
+    table: {
+      type: String,
+      default () {
+        return this.projectId ? 'pac_sections_project' : 'pac_sections_dept'
+      }
+    },
+    projectId: {
+      type: String,
+      default: ''
+    },
+    dept: {
+      type: String,
+      default: ''
     }
   },
   data () {
@@ -86,7 +105,9 @@ export default {
         mdiPlus,
         mdiDelete,
         mdiChevronLeft,
-        mdiChevronRight
+        mdiChevronRight,
+        mdiChevronUp,
+        mdiChevronDown
       },
       overedItem: ''
     }
@@ -95,7 +116,7 @@ export default {
     PACroots () {
       if (!this.contentSearch.length) {
         const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
-          return (sa.ordre || 100) - (sb.ordre || 100)
+          return (sa.ordre ?? 100) - (sb.ordre ?? 100)
         })
 
         return roots
@@ -149,7 +170,65 @@ export default {
     removeItem (item, dialog) {
       this.$emit('remove', item)
       dialog.value = false
+    },
+    async changeItemOrder (item, change) {
+      const parent = this.PAC.find((p) => {
+        return p !== item &&
+          item.dir.includes(p.path.replace(/\/intro$/, '')) &&
+            p.depth + 1 === item.depth
+      })
+
+      const newIndex = item.ordre + change
+
+      if (newIndex >= 0 && newIndex < parent.children.length) {
+        [parent.children[item.ordre], parent.children[newIndex]] = [parent.children[newIndex], parent.children[item.ordre]]
+
+        if (this.table) {
+          // parent.children.forEach(async (s, i) => {
+          //   await this.$supabase.from(this.table).update({ ordre: i }).eq('id', s.id)
+          // })
+
+          const updatedSections = parent.children.map((s, i) => {
+            const section = {
+              id: s.id || uuidv4(),
+              path: s.path,
+              dir: s.dir,
+              ordre: i
+            }
+
+            if (this.projectId) {
+              section.project_id = this.projectId
+            } else {
+              section.dept = this.dept
+            }
+
+            return section
+          })
+
+          await this.$supabase.from(this.table).upsert(updatedSections)
+        }
+      }
+    },
+    colorClass (section) {
+      if (section.project_id) {
+        return 'bf500--text'
+      }
+
+      if (section.dept) {
+        return 'bf300--text'
+      }
+
+      return ''
     }
   }
 }
 </script>
+
+<style scoped>
+.sticky-tree {
+  position: sticky;
+  overflow: scroll;
+  /* 128 = 80 (from search row ) + 48 (one tree leaf) */
+  max-height: calc(100vh - 128px);
+}
+</style>

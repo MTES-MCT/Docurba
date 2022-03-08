@@ -3,10 +3,10 @@
     <div v-for="(section, i) in sortedSections" :key="i">
       <template v-if="(section.children && section.children.length) || section.slug === 'intro'">
         <nuxt-content :document="section" />
-        <PACContentSection v-if="section.children &&section.children.length" :sections="section.children" :editable="editable" />
+        <PACContentSection v-if="section.children && section.children.length" :sections="section.children" :editable="editable" />
       </template>
       <template v-else>
-        <v-expansion-panels :id="`panel-${getFirstId(section)}`" flat>
+        <v-expansion-panels :id="`panel__${section.path.replaceAll(/[^A-Za-z0-9]/g, '__')}`" flat>
           <v-expansion-panel>
             <v-hover v-slot="{hover}">
               <v-expansion-panel-header>
@@ -75,18 +75,6 @@ export default {
       return this.sections.map(s => s).sort((sa, sb) => {
         return sa.ordre - sb.ordre
       })
-    }
-  },
-  methods: {
-    getFirstId (section) {
-      // const targetEl = section.body.children.find(el => el.tag?.indexOf('h') === 0)
-      // const targetId = targetEl ? targetEl.props.id : section.path
-
-      const targetId = section.body.children[0] ? section.body.children[0].props.id : section.path
-
-      // console.log(section, targetId)
-
-      return targetId
     }
   }
 }

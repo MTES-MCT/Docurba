@@ -51,6 +51,7 @@ export default {
   },
   data () {
     return {
+      PAC: [],
       newProjectTown: this.project.town,
       newProject: Object.assign({}, this.project),
       userDeptCode: null,
@@ -75,7 +76,7 @@ export default {
 
     this.userDeptCode = adminAccess[0].dept
 
-    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.departementCode)
+    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.userDeptCode)
 
     deptSections.forEach((section) => {
       const sectionIndex = this.PAC.findIndex(s => s.path === section.path)

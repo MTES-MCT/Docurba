@@ -13,7 +13,7 @@ export const defaultSchema = {
   protocols: {
     href: ['http', 'https', 'mailto', 'xmpp', 'irc', 'ircs'],
     cite: ['http', 'https'],
-    src: ['http', 'https'],
+    src: ['http', 'https', 'data'],
     longDesc: ['http', 'https']
   },
   tagNames: [

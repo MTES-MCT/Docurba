@@ -9,10 +9,6 @@ export default {
     pacData: {
       type: Array,
       required: true
-    },
-    minFilter: {
-      type: Boolean,
-      default: true
     }
   },
   computed: {
@@ -41,6 +37,19 @@ export default {
 
         if (parent && !parent.children.includes(section)) {
           parent.children.push(section)
+        }
+      })
+
+      parsedPAC.forEach((section) => {
+        if (section.children && section.children.length) {
+          section.children.sort((sa, sb) => {
+            return (sa.ordre ?? 100) - (sb.ordre ?? 100)
+          })
+
+          // We update the ordre on front to upsert it later.
+          section.children.forEach((s, i) => {
+            s.ordre = i
+          })
         }
       })
 

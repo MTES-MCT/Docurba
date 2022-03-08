@@ -4,7 +4,7 @@
       <client-only>
         <v-row
           class="sticky-tree"
-          style="top: 120px"
+          style="top: 176px"
         >
           <v-col cols="12">
             <v-text-field v-model="contentSearch" filled hide-details label="Rechercher" />
@@ -116,8 +116,6 @@ export default {
       } else { return this.PAC }
     },
     progressValue () {
-      // const checkedItems = this.PAC.filter(item => item.checked).length
-
       return Math.round((this.checkedItems / this.PAC.length) * 100)
     },
     PACroots () {
@@ -125,14 +123,6 @@ export default {
         const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
           return sa.ordre - sb.ordre
         })
-
-        // Temporary filter
-        // roots.filter(r => !!r.children).forEach((root) => {
-        //   root.children = root.children.filter((c) => {
-        //     return (c.children && c.children.length) ||
-        //     (c.body && c.body.children && c.body.children.length > 1)
-        //   })
-        // })
 
         return roots
       } else {
@@ -153,14 +143,10 @@ export default {
     },
     scrollTo (item) {
       if (item.body.children && item.body.children.length) {
-        const targetId = item.body.children[0].props.id
-
-        console.log(item, targetId)
-
-        try {
-          this.$vuetify.goTo(`#${targetId}`)
-        } catch (err) {
-          this.$vuetify.goTo(`#panel-${targetId}`)
+        if ((item.children && item.children.length) || item.slug === 'intro') {
+          this.$vuetify.goTo(`#${item.path.replaceAll(/[^A-Za-z0-9]/g, '__')}`)
+        } else {
+          this.$vuetify.goTo(`#panel__${item.path.replaceAll(/[^A-Za-z0-9]/g, '__')}`)
         }
       }
     }
@@ -173,6 +159,6 @@ export default {
   position: sticky;
   overflow: scroll;
   /* 128 = 80 (from search row ) + 48 (one tree leaf) */
-  max-height: calc(100vh - 128px);
+  max-height: calc(100vh - 176px);
 }
 </style>
