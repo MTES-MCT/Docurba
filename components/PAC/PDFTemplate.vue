@@ -1,6 +1,11 @@
 <template>
-  <div ref="pdfTemplate">
-    <PACSectionsPDFTemplateSection v-for="root in PACroots" :key="root.path" :section="root" />
+  <div class="root-container text-justify">
+    <PACSectionsPDFTemplateSection
+      v-for="root in PACroots"
+      :key="root.path"
+      :section="root"
+      class="print-root"
+    />
   </div>
 </template>
 
@@ -20,3 +25,17 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+ /* .print-root {
+   page-break-after: always;
+ } */
+
+/* tr {
+  page-break-after: always;
+} */
+
+ .root-container {
+   padding-right: 0mm;
+ }
+</style>

@@ -1,11 +1,35 @@
 <template>
-  <div ref="pdfTemplate">
-    <PACPDFTemplate v-if="project" :pac-data="project.PAC" />
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <td>
+          <div class="header-space">
+            &nbsp;
+          </div>
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <PACPDFTemplate v-if="project" :pac-data="project.PAC" />
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td>
+          <div class="footer-space">
+            &nbsp;
+          </div>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
 </template>
 
 <script>
-import { unionBy } from 'lodash'
+import { unionBy, omitBy, isNil } from 'lodash'
 
 import unified from 'unified'
 import remarkParse from 'remark-parse'
@@ -59,14 +83,14 @@ export default {
       .use(jsonCompiler)
 
     editedSections.forEach((section) => {
-      section.body = mdParser.processSync(section.text).result
+      if (section.text) { section.body = mdParser.processSync(section.text).result }
 
       const sectionIndex = this.PAC.findIndex(s => s.path === section.path)
 
       if (sectionIndex >= 0) {
         // The Object Assign here is to keep the order since it's not saved. As could be other properties.
         // Although it might create inconsistenties for versions that get Archived later on.
-        this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], section)
+        this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], omitBy(section, isNil))
       } else {
         // console.log('section added', section)
         this.PAC.push(Object.assign({}, section))
@@ -81,7 +105,7 @@ export default {
       return this.enrichSection(section)
     })
 
-    project.PAC = unionBy(project.PAC, enrichedProjectSections, (section) => {
+    project.PAC = unionBy(enrichedProjectSections, project.PAC, (section) => {
       return section.path
     })
 
@@ -90,12 +114,11 @@ export default {
   methods: {
     enrichSection (section) {
       const enrichedSection = { comments: [] }
+      const rawSection = this.PAC.find(s => s.path === section)
 
       if (typeof (section) === 'object') {
-        Object.assign(enrichedSection, section)
+        Object.assign(enrichedSection, section, omitBy(rawSection, isNil))
       } else {
-        const rawSection = this.PAC.find(s => s.path === section)
-
         // rawSection simply is without comments and read status.
         Object.assign(enrichedSection, rawSection)
       }
@@ -105,7 +128,7 @@ export default {
         const firstChild = enrichedSection.body.children[0]
 
         if (firstChild) {
-          firstChild.props.id = enrichedSection.path.replaceAll('/', '__')
+          firstChild.props.id = enrichedSection.path.replaceAll(/[^A-Za-z0-9]/g, '__')
         }
       }
 
@@ -114,3 +137,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+ .header-space {
+   height: calc(68px + 8.5mm);
+ }
+
+ .footer-space {
+   height: calc(68px + 8.5mm);
+ }
+</style>

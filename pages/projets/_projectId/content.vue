@@ -62,6 +62,13 @@ export default {
     }
   },
   async mounted () {
+    const mdParser = unified().use(remarkParse)
+      .use(remarkRehype, { allowDangerousHtml: true })
+      .use(rehypeRaw)
+      .use(rehypeSanitize, defaultSchema)
+      .use(rehypeStringify)
+      .use(jsonCompiler)
+
     const projectId = this.$route.params.projectId
 
     const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
@@ -71,19 +78,12 @@ export default {
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.town.code_departement)
     const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', project.id)
 
-    const editedSections = unionBy(projectSections, deptSections, (section) => {
+    // For each edited section.
+    unionBy(projectSections, deptSections, (section) => {
       return section.path
-    })
-
-    const mdParser = unified().use(remarkParse)
-      .use(remarkRehype, { allowDangerousHtml: true })
-      .use(rehypeRaw)
-      .use(rehypeSanitize, defaultSchema)
-      .use(rehypeStringify)
-      .use(jsonCompiler)
-
-    editedSections.forEach((section) => {
-      section.body = mdParser.processSync(section.text).result
+    }).forEach((section) => {
+      // Parse the body only if text was edited.
+      if (section.text) { section.body = mdParser.processSync(section.text).result }
 
       const sectionIndex = this.PAC.findIndex(s => s.path === section.path)
 
@@ -129,7 +129,6 @@ export default {
     },
     enrichSection (section) {
       const enrichedSection = { comments: [] }
-
       const rawSection = this.PAC.find(s => s.path === section)
 
       if (typeof (section) === 'object') {

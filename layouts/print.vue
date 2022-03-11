@@ -1,7 +1,6 @@
 <template>
   <v-app class="print-container">
     <v-app-bar
-      app
       elevation="0"
       color="white"
       class="fr-header"
@@ -48,9 +47,9 @@ export default {
     padding: 0mm !important;
   }
 
-  .print-container .v-main__wrap {
-    margin: 8.5mm 0mm
-  }
+  /* .print-container {
+    width: 210mm;
+  } */
 </style>
 
 <style scoped>
