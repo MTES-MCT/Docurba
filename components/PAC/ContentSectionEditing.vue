@@ -4,7 +4,7 @@
       <v-text-field v-model="editedSection.titre" label="titre" filled hide-details />
     </v-col>
     <v-col cols="12">
-      <VTiptap v-model="editedSection.text" :links="PACroots">
+      <VTiptap v-model="editedSection.text" :links="PACroots" :depth="sectionDepth">
         <PACSectionsAttachementsDialog
           :section="section"
           @upload="fetchAttachements"
@@ -83,6 +83,9 @@ export default {
     }
   },
   computed: {
+    sectionDepth () {
+      return this.PAC.find(s => s.path === this.section.path).depth - 2
+    },
     PACroots () {
       const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
         return sa.ordre - sb.ordre

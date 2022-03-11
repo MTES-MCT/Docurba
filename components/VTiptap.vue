@@ -29,7 +29,7 @@
           </v-icon>
         </v-btn>
         <v-select
-          :value="typos[4]"
+          :value="typos[typos.length-1]"
           :items="typos"
           hide-details
           solo
@@ -211,26 +211,14 @@ export default {
     links: {
       type: Array,
       default () { return [] }
+    },
+    depth: {
+      type: Number,
+      default: 4
     }
   },
   data () {
     return {
-      typos: [{
-        icon: mdiFormatHeader1,
-        value: 1
-      }, {
-        icon: mdiFormatHeader2,
-        value: 2
-      }, {
-        icon: mdiFormatHeader3,
-        value: 3
-      }, {
-        icon: mdiFormatHeader4,
-        value: 4
-      }, {
-        icon: mdiFormatText,
-        value: 0
-      }],
       editor: null,
       icons: {
         mdiUndo,
@@ -252,6 +240,28 @@ export default {
         y: 0
       },
       linkHref: ''
+    }
+  },
+  computed: {
+    typos () {
+      const defaultTypos = [{
+        icon: mdiFormatHeader4,
+        value: 4
+      }, {
+        icon: mdiFormatText,
+        value: 0
+      }]
+
+      return [{
+        icon: mdiFormatHeader1,
+        value: 1
+      }, {
+        icon: mdiFormatHeader2,
+        value: 2
+      }, {
+        icon: mdiFormatHeader3,
+        value: 3
+      }].filter(t => t.value > this.depth).concat(defaultTypos)
     }
   },
   watch: {
