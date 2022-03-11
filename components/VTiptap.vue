@@ -157,6 +157,22 @@
             label="ajouter un lien"
             @click:append="addLink"
           />
+          <v-card-text v-if="links.length">
+            <v-treeview
+              hoverable
+              open-on-click
+              :items="links"
+              item-text="titre"
+              class="d-block text-truncate"
+              item-key="path"
+            >
+              <template #label="{item}">
+                <div class="d-block text-truncate" @click="addInternalLink(item)">
+                  {{ item.titre }}
+                </div>
+              </template>
+            </v-treeview>
+          </v-card-text>
         </v-card>
       </v-menu>
       <editor-content :editor="editor" />
@@ -191,6 +207,10 @@ export default {
       // See: https://tiptap.dev/api/commands/set-content
       type: [String, Object],
       default: ''
+    },
+    links: {
+      type: Array,
+      default () { return [] }
     }
   },
   data () {
@@ -280,6 +300,14 @@ export default {
         const range = this.selection.getRangeAt(0)
         this.selectionMenuPosition = range.getBoundingClientRect()
       }
+    },
+    addInternalLink (link) {
+      if (link && link.path) {
+        const projectPath = `/projets/${this.$route.params.projectId}/content`
+        this.editor.commands.setLink({ href: `${projectPath}#${this.$PAC.pathToAnchor(link.path)}`, target: '_self' })
+      }
+
+      this.selectionMenu = false
     },
     addLink () {
       if (this.linkHref) {

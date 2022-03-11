@@ -4,8 +4,11 @@
       <v-text-field v-model="editedSection.titre" label="titre" filled hide-details />
     </v-col>
     <v-col cols="12">
-      <VTiptap v-model="editedSection.text">
-        <PACSectionsAttachementsDialog :section="section" @upload="fetchAttachements" />
+      <VTiptap v-model="editedSection.text" :links="PACroots">
+        <PACSectionsAttachementsDialog
+          :section="section"
+          @upload="fetchAttachements"
+        />
       </VTiptap>
     </v-col>
     <v-col cols="12">
@@ -48,7 +51,10 @@ import rehypeStringify from 'rehype-stringify'
 
 import { defaultSchema } from '@/assets/sanitizeSchema.js'
 
+import pacContent from '@/mixins/pacContent.js'
+
 export default {
+  mixins: [pacContent],
   props: {
     section: {
       type: Object,
@@ -74,6 +80,15 @@ export default {
         mdiContentSave
       },
       attachements: []
+    }
+  },
+  computed: {
+    PACroots () {
+      const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
+        return sa.ordre - sb.ordre
+      })
+
+      return roots
     }
   },
   watch: {

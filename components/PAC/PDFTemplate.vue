@@ -27,9 +27,10 @@ export default {
 </script>
 
 <style scoped>
- /* .print-root {
-   page-break-after: always;
- } */
+ .print-root {
+   /* page-break-after: always; */
+   page-break-inside: avoid;
+ }
 
 /* tr {
   page-break-after: always;
@@ -37,5 +38,6 @@ export default {
 
  .root-container {
    padding-right: 0mm;
+   page-break-inside: avoid;
  }
 </style>

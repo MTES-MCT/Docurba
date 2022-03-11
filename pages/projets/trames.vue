@@ -20,7 +20,11 @@
           </client-only>
         </v-col>
         <v-col v-if="selectedSection" :cols="collapsedTree ? 11 : 8" class="fill-height collapse-transition">
-          <PACContentSectionEditing :section="selectedSection" @save="saveSection" />
+          <PACContentSectionEditing
+            :section="selectedSection"
+            :pac-data="PAC"
+            @save="saveSection"
+          />
         </v-col>
         <v-col v-else cols="">
           <v-card flat color="g100">

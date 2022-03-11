@@ -3,9 +3,7 @@
     <thead>
       <tr>
         <td>
-          <div class="header-space">
-            &nbsp;
-          </div>
+          <div class="header-space" />
         </td>
       </tr>
     </thead>
@@ -19,9 +17,7 @@
     <tfoot>
       <tr>
         <td>
-          <div class="footer-space">
-            &nbsp;
-          </div>
+          <div class="footer-space" />
         </td>
       </tr>
     </tfoot>
@@ -139,6 +135,10 @@ export default {
 </script>
 
 <style scoped>
+  table, tr, td {
+    page-break-inside: avoid;
+  }
+
  .header-space {
    height: calc(68px + 8.5mm);
  }

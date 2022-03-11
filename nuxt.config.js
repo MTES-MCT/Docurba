@@ -24,6 +24,7 @@ export default {
     { src: '~/plugins/composition.js' },
     { src: '~/plugins/supabase.js' },
     { src: '~/plugins/user.js' },
+    { src: '~/plugins/pac.js' },
     { src: '~/plugins/matomo.js', mode: 'client' },
     { src: '~/plugins/print.js', mode: 'client' }
   ],
