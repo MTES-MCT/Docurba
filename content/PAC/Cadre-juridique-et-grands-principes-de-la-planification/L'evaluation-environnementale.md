@@ -58,6 +58,9 @@ L’autorité environnementale rend son avis sur la décision
 de la personne publique de ne pas réaliser une évaluation environnementale **dans un délai de deux mois** . Il s’agit d’un avis conforme : il s’impose
 donc à la personne publique responsable. L’absence de réponse dans le délai de deux mois vaut avis favorable.
 
+Dans le cadre d'une procédure de révision générale ou d'une élaboration de PLU, l'évaluation environnementale étant systématique, vous saisirez, en amont de la phase d'arrêt du projet, la DREAL AuRA (Pôle autorité environnementale) **par voie électronique à l'adresse suivante : ae-dreal-aura@developpement-durable.gouv.fr**
+Celle-ci lui adressera un accusé de réception spécifique sous un mois maximum. Sans retour de la DREAL AuRA dans ce délai, je vous invite à relancer ce service à l'adresse mail indiquée.
+
 
 **Pour aller plus loin :** 
 
