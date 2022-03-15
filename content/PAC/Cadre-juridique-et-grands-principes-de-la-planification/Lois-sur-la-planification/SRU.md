@@ -22,5 +22,6 @@ Enfin, concernant **la production de logements sociaux, l’article 55 de la loi
 
 **Pour aller plus loin :**
 
-https://www.cohesion-territoires.gouv.fr/loi-solidarite-et-renouvellement-urbain-sru
+- https://www.cohesion-territoires.gouv.fr/loi-solidarite-et-renouvellement-urbain-sru
+- https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000207538/
 

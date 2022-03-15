@@ -6,7 +6,7 @@ intro : La loi portant engagement national pour l’environnement, dite "Grenell
 
 #### ENE
 
-La loi portant engagement national pour l’environnement, dite "Grenelle 2", est promulguée le 12 juillet 2010. Ce texte permet de "décliner de manière concrète les orientations du "Grenelle 1" qui a déterminé les objectifs du gouvernement dans le domaine environnemental". Comportant plus de 100 articles, ce texte définit six grands chantiers :
+La loi portant engagement national pour l’environnement, dite "Grenelle 2", est promulguée le 12 juillet 2010. Ce texte décline les orientations de la loi "Grenelle 1" ayant fixé les objectifs du gouvernement dans le domaine environnemental". Comportant plus de 100 articles, ce texte définit six grands chantiers :
 
 - bâtiments et urbanisme avec un double objectif : diviser par cinq la consommation d’énergie dans les constructions neuves en 2012 et modifier le code de l’urbanisme afin de favoriser les énergies 	renouvelables ;
  	
@@ -29,5 +29,6 @@ La loi portant engagement national pour l’environnement, dite "Grenelle 2", es
 
 **Pour aller plus loin :**
 
-https://www.vie-publique.fr/eclairage/268502-environnement-lessentiel-de-la-loi-grenelle-2
-https://www.rhone.gouv.fr/content/download/4944/29096/file/101028_PACC-G2_cle563677-1.pdf
+- https://www.vie-publique.fr/eclairage/268502-environnement-lessentiel-de-la-loi-grenelle-2
+- https://www.rhone.gouv.fr/content/download/4944/29096/file/101028_PACC-G2_cle563677-1.pdf
+- https://www.legifrance.gouv.fr/loda/id/JORFTEXT000022470434/
