@@ -4,17 +4,11 @@ ordre : 7
 ---
 #### La loi n° 86-2 du 3 janvier 1986 relative à l’aménagement, la protection et la mise en valeur du littoral, dite « loi littoral »
 
-La loi littoral concerne plus de 1 200 communes
-riveraines de la mer, mais aussi de grands lacs,
-d’estuaires ou de deltas. Face à la pression urbaine, aux
-phénomènes d’érosion ou de submersion marine subis
-par ces territoires, elle tente de concilier préservation et
-développement du littoral.
+La loi n° 86-2 du 3 janvier 1986 relative à l’aménagement, la protection et la mise en valeur du littoral, dite « loi littoral », concilie préservation et développement du littoral face à la pression urbaine et aux phénomène d’érosion ou de submersion marine que subissent ces territoires. 
+Face à l’occupation croissante du littoral au cours du 20ème siècle, la mise en place d’une politique spécifique d’aménagement, de protection et de mise en valeur du littoral fut nécessaire
+La loi littoral concerne plus de 1 200 communes riveraines de la mer, mais aussi de grands lacs, d’estuaires ou de deltas.
 
-Face à l’occupation croissante du littoral au cours du
-20ème siècle, la nécessité s’est faite jour de mettre
-en place une politique spécifique d’aménagement, de
-protection et de mise en valeur du littoral.
+**En Auvergne-Rhône-Alpes, les communes en bordure des lacs du Bourget, d'Annecy et du lac Léman sont concernées par la loi littoral.**
 
 Plusieurs objectifs sont assignés à cette politique
 d’aménagement du littoral ([article L. 321-1 du code de
@@ -36,7 +30,7 @@ littorale, des activités agricoles ou sylvicoles, des
 activités aquacoles, de l'industrie, de l'artisanat et
 du tourisme.
 
-**En matière d'urbanisme**, la loi littoral est codifiée aux articles [L. 121-1 à L. 121-51](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210405/#LEGISCTA000031212431) du code de l’urbanisme et pour la déclinaison réglementaire de cette loi, les articles [R. 121-1 à R. 121-43](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031719600/#LEGISCTA000031721039) de ce code.
+**En matière d'urbanisme**, la loi littoral est codifiée aux articles [L. 121-1 à L. 121-51](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210405/#LEGISCTA000031212431) du code de l’urbanisme et pour la déclinaison réglementaire de cette loi, aux articles [R. 121-1 à R. 121-43](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031719600/#LEGISCTA000031721039) de ce code.
 
 La loi littoral s’applique sur l’intégralité du territoire de la
 commune littorale. La loi opère toutefois une protection
@@ -73,7 +67,7 @@ porter atteinte à l'environnement ou aux paysages.
 
 Pour favoriser le maintien et le développement de
 certaines activités, **la loi comporte plusieurs dérogations
-au principe de continuité** lorsques certaines conditions
+au principe de continuité** lorsque certaines conditions
 énoncées par la loi sont remplies. Sont notamment
 concernés **les éoliennes** lorsqu'elles sont incompatibles
 avec le voisinage des zones habitées ([article L. 121-12
@@ -118,3 +112,7 @@ aménagements légers est en outre étroitement encadrée
 (absence d’atteinte au caractère remarquable du site,
 consultation préalable du public, avis de la commission
 départementale de la nature, des paysages et des sites).
+
+**Pour aller plus loin :**
+- https://www.ecologie.gouv.fr/sites/default/files/UI_JUIN_JUILLET_04.pdf
+- https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000317531/
