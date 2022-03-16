@@ -21,13 +21,6 @@ Depuis le  1er janvier 2020,
 
 La documentation technique et méthodologique disponible en ligne est régulièrement mise à jour sur le site du GPU.
 
-
-La dématérialisation permet de :
-- Favoriser l’appropriation des documents d’urbanisme s’appliquant sur le territoire de la collectivité locale en permettant leur consultation en ligne ;
-- Réaliser des économies budgétaires : par exemple sur les frais de reprographie en remplaçant les envois papier par des documents sous forme dématérialisée ;
-- Participer à l’efficacité et à la modernisation des services publics, notamment des services d’urbanisme et d’aménagement en élaborant et modifiant le document d’urbanisme numériquement tout au long de la procédure.
-- Faciliter le travail des services instructeurs des permis de construire en mettant à leur disposition sous format numérique l’ensemble des pièces du document d’urbanisme
-
 Des points de vigilance à observer pour la publication des documents d’urbanisme sur le GPU :
     
 - Intégrer la numérisation au standard CNIG dans les marchés d’élaboration des documents d’urbanisme pour éviter les surcoûts d’une numérisation à posteriori.

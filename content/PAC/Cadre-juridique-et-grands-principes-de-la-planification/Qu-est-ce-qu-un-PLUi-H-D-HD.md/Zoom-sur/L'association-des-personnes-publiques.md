@@ -29,3 +29,9 @@ vigilance de l’État.
 
 
 Enfin, **les avis des personnes publiques associées** (cf point 3° ci-dessus) doivent impérativement être sollicités à l'arrêt du projet de PLU afin que les PPA puissent rendre leur avis et que ceux-ci soient publiés à l'enquête publique. Le PLU ne sera approuvé qu'une fois ces avis rendus ou réputés favorables.
+
+**Dans le cas d'un PLUi-H,**en vertu des dispositions de l’article L.153-16 du code de l’urbanisme, le projet de plan arrêté est soumis pour avis, entre autres, au Comité Régional de l'Habitat et de l'Hébergement (CRHH) prévu à l'article L.364-1 du code de la construction et de l'habitation lorsque le projet de PLUi-H tient lieu de PLH.
+Cette consultation intervient simultanément avec celles des personnes publiques associées, et avant l’enquête publique. L’avis du CRHH sera donc communiqué au public dans le cadre de cette enquête.
+Il est à noter que c’est à la collectivité de saisir le CRHH pour solliciter son avis, et non au préfet de département comme c’est le cas pour les PLH. Comme l’indique l’article R.153-4 du code de l’urbanisme, le CRHH dispose d’un délai de trois mois pour rendre son avis. Passé ce délai, son avis est réputé favorable.
+
+**Dans le cas d'un PLUi-M,** l'article L.132-13 précise que pour l'élaboration des plans locaux d'urbanisme, sont, en outre, consultés à leur demande les représentants des professions des usagers des voies et modes de transport ainsi que les associations de personnes handicapées ou à mobilité.

@@ -18,3 +18,6 @@ Enfin, l'analyse des résultats peut inclure le rapport relatif à l'artificiali
 
 L'analyse de l'ensemble de ces résultats donne lieu à une délibération du conseil municipal sur l'opportunité de réviser ce plan.
 
+**Dans le cas d'un PLUi-H**, l’article L.153-28 du code de l’urbanisme indique que l'évaluation porte également sur les résultats de l'application du volet PLH du PLUi au regard des objectifs prévus à l'article L.302-1 du code de la construction et de l’habitation.
+Conformément à l'article L.153-29 du code de l'urbanisme, trois ans au plus tard à compter de la délibération portant approbation ou révision de ce plan, un bilan de l'application des dispositions de ce plan relatives à l'habitat au regard des objectifs prévus à l'article L.302-1 du code de la construction et de l’habitation est fourni par l'EPCI. Ce bilan est transmis à l'autorité administrative compétente de l'Etat. Il est organisé tous les trois ans dès lors que le plan n'a pas été mis en révision. 
+
