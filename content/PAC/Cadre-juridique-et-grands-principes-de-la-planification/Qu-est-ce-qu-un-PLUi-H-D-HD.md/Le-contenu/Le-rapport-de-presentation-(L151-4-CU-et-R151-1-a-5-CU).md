@@ -20,7 +20,8 @@ Il justifie les objectifs chiffrés de modération de la consommation de l'espac
 Il établit un inventaire des capacités de stationnement de véhicules motorisés, de véhicules
 hybrides et électriques et de vélos des parcs ouverts au public et des possibilités de mutualisation de ces capacités.
 
-**Dans le cas d'un PLUi-H**, le rapport de présentation comprend le diagnostic sur le fonctionnement des marchés locaux du foncier et du logement, sur la situation de l'hébergement et sur les conditions d'habitat définies à l'article ([R. 302-1-1 du code de la construction et de l'habitation](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000036662013)).
+**Dans le cas d'un PLUi-H**, le rapport de présentation comprend le diagnostic sur le fonctionnement des marchés locaux du foncier et du logement, sur la situation de l'hébergement et sur les conditions d'habitat définies à l'article [L302-1](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031219850/2016-01-01) et [R. 302-1-1 du code de la construction et de l'habitation](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000036662013). (article [R151-54 du code de l'urbanisme](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000036662045/#:~:text=Lorsque%20le%20plan%20local%20d,d%C3%A9finies%20%C3%A0%20l'article%20L.))
 
-**Dans le cas d'un PLUi-D**,  le rapport de présentation expose les dispositions retenues en matière de transports et de déplacements dans le projet d'aménagement et de développement durables et dans les orientations d'aménagement et de programmation.
+**Dans le cas d'un PLUi-M**,  le rapport de présentation expose les dispositions retenues en matière de transports et de déplacements dans le projet d'aménagement et de développement durables et dans les orientations d'aménagement et de programmation.
 
+Le rapport de présentation explique par ailleurs les choix retenus par le programme d’orientations et d’actions (POA) (art L.151-45 du CU). Il permet également de comprendre les éléments du diagnostic du PLUi-H valant Programme Local de l’Habitat (PLH)  et du PLUi-M valant Plan De Mobilité.

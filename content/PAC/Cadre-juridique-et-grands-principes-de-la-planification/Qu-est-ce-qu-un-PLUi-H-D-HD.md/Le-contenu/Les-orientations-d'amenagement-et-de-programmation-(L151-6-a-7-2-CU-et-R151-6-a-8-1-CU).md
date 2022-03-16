@@ -7,7 +7,7 @@ ordre: 4
 
 **Opposables aux demandes d’autorisation du droit des sols selon un principe de compatibilité**, elles revêtent aujourd’hui plusieurs formes :
 
-- Elles peuvent être définies par quartiers ou par secteurs (ce sont celles qui sont le plus fréquemment déployées). Dans ce cas, elle définissent les conditions d'aménagement garantissant la prise en compte des qualités architecturales, urbaines et paysagères des espaces dans la continuité desquels s'inscrit la zone, notamment en entrée de ville. Le périmètre des quartiers ou secteurs auxquels ces orientations sont applicables est délimité dans le règlement graphique.
+- Elles peuvent être définies par quartiers ou par secteurs (ce sont celles qui sont le plus fréquemment déployées). Dans ce cas, elles définissent les conditions d'aménagement garantissant la prise en compte des qualités architecturales, urbaines et paysagères des espaces dans la continuité desquels s'inscrit la zone, notamment en entrée de ville. Le périmètre des quartiers ou secteurs auxquels ces orientations sont applicables est délimité dans le règlement graphique.
 - Une deuxième catégorie d’OAP peut être spécifiquement déployée pour la conservation, la mise en valeur ou la requalification d’éléments du patrimoine (paysager, bâti, espaces publics, monuments, sites et secteurs) identifiés et localisés.
 - Par ailleurs, le code de l’urbanisme prévoit que certaines OAP peuvent être élaborées à l’échelle de secteurs d’aménagement, en zone urbaine ou à urbaniser, en portant leurs propres dispositions réglementaires, définies par l’article R.151-8 du code de l’urbanisme. 
 - Enfin, dans les PLU portés par des collectivités compétentes en matière de zone d'aménagement concerté (ZAC), il est possible de créer des OAP de secteur d'aménagement valant création d'une ZAC. Leur contenu est réglementé par l’article R.151-8-1 du code de l’urbanisme.
@@ -42,3 +42,8 @@ Les orientations d'aménagement et de programmation peuvent notamment :
 2° Définir la localisation prévue pour les principaux ouvrages publics, les installations d'intérêt général et les espaces verts.
 
 L'exécution par toute personne publique ou privée de tous travaux, constructions, aménagements, plantations, affouillements ou exhaussements des sols, et ouverture d'installations classées doit être compatible, lorsqu'elles existent, avec les orientations d'aménagement et de programmation.
+
+**En termes d’habitat, lorsque le PLUi-H tient lieu de PLH**, et conformément à l’article L.302-1 du code de la construction et de l’habitation, les OAP définissent les objectifs et les principes d’une politique visant à répondre aux besoins en logements et en hébergements, à favoriser le renouvellement urbain et la mixité sociale et à améliorer l’accessibilité du cadre bâti aux personnes handicapées en assurant entre les communes et entre les quartiers d’une même commune une répartition équilibrée et diversifiée de l’offre de logements. Les OAP précisent les actions et opérations d'aménagement visant à poursuivre ces objectifs (article L.151-46 du code de l’urbanisme).
+
+**En termes de mobilité, lorsque le PLUi tient lieu de PDM**, les OAP précisent les actions et opérations d'aménagement visant à poursuivre les principes et les objectifs énoncés aux articles L. 1214-1 et L. 1214-2 du code des transports. (article L.151-47 du code de l’urbanisme).
+Les actions et opérations opposables au droit de l’urbanisme doivent figurer dans les OAP (sectorielles et/ou thématiques).
