@@ -11,6 +11,8 @@
           {{ tab.text }}
         </v-tab>
       </v-tabs>
+      <v-spacer />
+      <OnboardingPacDialog />
     </template>
     <NuxtChild />
   </LayoutsCustomApp>
