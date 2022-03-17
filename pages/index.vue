@@ -5,7 +5,7 @@
       <v-row justify="center" align="center" class="pt-16 g100">
         <v-col cols="12" sm="10" md="10">
           <h1 class="text-h1 text-center">
-            Docurba, la plateforme qui centralise les ressources utiles pour élaborer votre document d’urbanisme
+            Docurba centralise les ressources utiles pour élaborer votre document d'urbanisme
           </h1>
         </v-col>
         <v-col cols="12" sm="8" md="8">
@@ -37,8 +37,8 @@
         </v-col>
       </v-row>
     </v-container>
-    <LandingCtaByNeed />
     <LandingUserStory />
+    <LandingCtaByNeed />
     <LandingKeyFeatures />
   </div>
 </template>
