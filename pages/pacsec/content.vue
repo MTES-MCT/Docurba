@@ -12,15 +12,8 @@ export default {
       deep: true
     }).fetch()
 
-    // .where({
-    //   path: {
-    //     $not: {
-    //       $regex: /Politiques-publiques-specifiques-s'appliquant-sur-le-territoire/
-    //     }
-    //   }
-    // }).fetch()
-
-    // console.log(PAC.length)
+    // remove unwanted intros
+    PAC.splice(PAC.findIndex(s => s.path === '/PAC/Introduction/introcution-PAC-valide'), 1)
 
     return {
       // PAC: PAC.filter(s => !s.path.includes('olitiques-publiques-specifiques'))
