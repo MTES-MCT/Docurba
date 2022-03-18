@@ -1,27 +1,60 @@
 <template>
-  <table>
-    <thead>
-      <tr>
-        <td>
-          <div class="header-space" />
-        </td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>
-          <PACPDFTemplate v-if="project" :pac-data="project.PAC" />
-        </td>
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr>
-        <td>
-          <div class="footer-space" />
-        </td>
-      </tr>
-    </tfoot>
-  </table>
+  <div>
+    <v-app-bar
+      elevation="0"
+      color="white"
+      class="fr-header"
+      height="68px"
+      fixed
+    >
+      <div class="fr-header__body">
+        <div class="fr-container">
+          <div class="fr-header__body-row">
+            <div class="fr-header__brand fr-enlarge-link">
+              <div class="fr-header__brand-top">
+                <div class="fr-header__logo">
+                  <a href="/" title="Accueil - Docurba">
+                    <p class="fr-logo">
+                      république
+                      <br>française
+                    </p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <v-spacer />
+      <div v-if="project" class="ddt-text text-right">
+        Direction départementale des territoires <br>
+        {{ project.town.nom_departement }}
+      </div>
+    </v-app-bar>
+    <table>
+      <thead>
+        <tr>
+          <td>
+            <div class="header-space" />
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <PACPDFTemplate v-if="project" :pac-data="project.PAC" />
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>
+            <div class="footer-space" />
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -135,8 +168,19 @@ export default {
 </script>
 
 <style scoped>
+  table {
+    max-width: 100%;
+    width: 100%;
+    table-layout: fixed;
+  }
+
   table, tr, td {
     page-break-inside: avoid;
+  }
+
+  .ddt-text {
+    font-size: 14pt;
+    font-weight: 700;
   }
 
  .header-space {
@@ -146,4 +190,14 @@ export default {
  .footer-space {
    height: calc(68px + 8.5mm);
  }
+
+.fr-header .fr-header__body-row, .fr-header .fr-header__logo, .fr-header .fr-logo {
+  padding: 0mm !important;
+  margin: 0mm !important
+}
+
+.fr-header a {
+  color: #1e1e1e;
+  text-decoration: none;
+}
 </style>
