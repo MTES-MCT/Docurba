@@ -1,5 +1,5 @@
 ---
-titre : Introduction PAC sec
+titre : Socle de PAC
 ordre : 1
 ---
 Le présent document ne constitue pas le porter à connaissance (PAC) réglementaire de l'Etat. Il s'agit de premiers éléments d'information constitutifs de celui-ci qui vous sont communiqués à ce stade. 
