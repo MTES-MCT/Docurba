@@ -11,6 +11,8 @@
           {{ tab.text }}
         </v-tab>
       </v-tabs>
+      <v-spacer />
+      <OnboardingPacDialog />
     </template>
     <NuxtChild />
   </LayoutsCustomApp>
@@ -24,7 +26,7 @@ export default {
   data () {
     return {
       tabs: [
-        { text: 'PAC sec', to: '/pacsec/content' },
+        { text: 'Socle du PAC', to: '/pacsec/content' },
         { text: 'Jeux de données', to: '/pacsec/data' },
         { text: 'Ressources', to: '/pacsec/ressources' },
         { text: 'Glossaire', to: '/pacsec/glossaire' }

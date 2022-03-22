@@ -16,7 +16,7 @@
             <v-tooltip right>
               <template #activator="{on}">
                 <div class="text-caption text-center" v-on="on">
-                  Ce PAC n'est pas un document officiel.
+                  Ce document n'est pas le PAC complet officiel
                 </div>
               </template>
               <span>Pour obtenir un document spécifique à votre projet vous devez vous connecter et créer un projet.</span>

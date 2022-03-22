@@ -45,29 +45,7 @@
         <v-card-text>
           <v-row justify="center">
             <v-col cols="12" md="8">
-              <v-text-field v-model="userData.email" filled label="Email" />
-            </v-col>
-          </v-row>
-          <v-row justify="center">
-            <v-col cols="12" md="8">
-              <v-text-field
-                v-model="userData.password"
-                filled
-                label="Mot de passe"
-                :type="showPassword ? 'text' : 'password'"
-                :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
-                @click:append="showPassword = !showPassword"
-              />
-            </v-col>
-          </v-row>
-          <v-row justify="center">
-            <v-col cols="12" md="8">
-              <v-text-field v-model="userData.firstname" filled label="Prénom" />
-            </v-col>
-          </v-row>
-          <v-row justify="center">
-            <v-col cols="12" md="8">
-              <v-text-field v-model="userData.lastname" filled label="Nom" />
+              <OnboardingSignupForm v-model="userData" />
             </v-col>
           </v-row>
           <v-row justify="center">
@@ -137,10 +115,7 @@ export default {
     },
     async signIn () {
       // console.log('signIn', this.$supabase)
-      const { user, session, error } = await this.$supabase.auth.signIn({
-        email: this.userData.email,
-        password: this.userData.password
-      })
+      const { user, session, error } = await this.$auth.signIn(this.userData)
 
       if (!error) {
         // eslint-disable-next-line no-console
@@ -152,15 +127,7 @@ export default {
       }
     },
     async signUp () {
-      const { user, session, error } = await this.$supabase.auth.signUp({
-        email: this.userData.email,
-        password: this.userData.password
-      }, {
-        data: {
-          firstname: this.userData.firstname,
-          lastname: this.userData.lastname
-        }
-      })
+      const { user, session, error } = await this.$auth.signUp(this.userData)
 
       if (!error) {
         // eslint-disable-next-line no-console

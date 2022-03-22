@@ -37,7 +37,6 @@ export default {
 } */
 
  .root-container {
-   padding-right: 0mm;
    page-break-inside: avoid;
  }
 </style>

@@ -1,31 +1,5 @@
 <template>
   <v-app class="print-container">
-    <v-app-bar
-      elevation="0"
-      color="white"
-      class="fr-header"
-      height="68px"
-      fixed
-    >
-      <div class="fr-header__body">
-        <div class="fr-container">
-          <div class="fr-header__body-row">
-            <div class="fr-header__brand fr-enlarge-link">
-              <div class="fr-header__brand-top">
-                <div class="fr-header__logo">
-                  <a href="/" title="Accueil - Docurba">
-                    <p class="fr-logo">
-                      république
-                      <br>française
-                    </p>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </v-app-bar>
     <v-main>
       <nuxt />
     </v-main>
@@ -47,14 +21,15 @@ export default {
     padding: 0mm !important;
   }
 
-  /* .print-container {
-    width: 210mm;
-  } */
+  .print-container img {
+    max-width: 100%;
+    display: block;
+  }
 </style>
 
 <style scoped>
 @page {
-  margin: 17mm;
+  margin: 17mm 17mm 17mm 17mm;
   -webkit-print-color-adjust: exact !important;   /* Chrome, Safari, Edge */
   color-adjust: exact !important;                 /*Firefox*/
 }
@@ -62,16 +37,6 @@ export default {
 /* .fr-header {
   padding: 17mm;
 } */
-
-.fr-header .fr-header__body-row, .fr-header .fr-header__logo, .fr-header .fr-logo {
-  padding: 0mm !important;
-  margin: 0mm !important
-}
-
-.fr-header a {
-  color: #1e1e1e;
-  text-decoration: none;
-}
 
 .print-container {
   /* padding: 17mm; */
