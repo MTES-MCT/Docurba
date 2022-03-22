@@ -51,7 +51,6 @@ import '@gouvfr/dsfr/dist/css/footer.css'
 import '@gouvfr/dsfr/dist/css/logo.css'
 
 export default {
-
 }
 </script>
 
