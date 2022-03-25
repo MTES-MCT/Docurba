@@ -159,7 +159,21 @@ export default {
   },
   watch: {
     selectedSections () {
-      this.$emit('input', this.selectedSections)
+      const selection = []
+
+      this.PAC.forEach((section) => {
+        if (section.children) {
+          const selectedChildren = section.children.find((c) => {
+            return this.selectedSections.includes(c.path)
+          })
+
+          if (selectedChildren) {
+            selection.push(section.path)
+          }
+        }
+      })
+
+      this.$emit('input', selection.concat(this.selectedSections))
     }
   },
   methods: {
