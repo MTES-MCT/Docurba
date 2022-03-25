@@ -82,6 +82,7 @@
 <script>
 import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDown } from '@mdi/js'
 import { v4 as uuidv4 } from 'uuid'
+import { uniq } from 'lodash'
 import pacContent from '@/mixins/pacContent.js'
 
 export default {
@@ -112,6 +113,16 @@ export default {
     }
   },
   data () {
+    const children = this.value.filter((s) => {
+      const path = (s.path || s).replace(/\/intro$/, '')
+
+      const child = this.value.find((section) => {
+        return s !== section && (section.path || section).includes(path)
+      })
+
+      return !child
+    })
+
     return {
       contentSearch: '',
       icons: {
@@ -123,7 +134,7 @@ export default {
         mdiChevronDown
       },
       overedItem: '',
-      selectedSections: this.value.map(s => s.path ? s.path : s)
+      selectedSections: children
     }
   },
   computed: {
@@ -163,8 +174,13 @@ export default {
 
       this.PAC.forEach((section) => {
         if (section.children) {
-          const selectedChildren = section.children.find((c) => {
-            return this.selectedSections.includes(c.path)
+          // const selectedChildren = section.children.find((c) => {
+          //   return this.selectedSections.includes(c.path)
+          // })
+
+          const selectedChildren = this.selectedSections.find((s) => {
+            const path = section.path.replace(/\/intro$/, '')
+            return s !== section.path && s.includes(path)
           })
 
           if (selectedChildren) {
@@ -173,7 +189,7 @@ export default {
         }
       })
 
-      this.$emit('input', selection.concat(this.selectedSections))
+      this.$emit('input', uniq(selection.concat(this.selectedSections)))
     }
   },
   methods: {
