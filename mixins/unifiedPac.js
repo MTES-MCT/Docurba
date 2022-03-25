@@ -20,7 +20,7 @@ export default {
       return paths.map((path) => {
         return Object.assign({}, ...this.getSectionsFromPACs(PACs, path).map((section) => {
           return omitBy(section, isNil)
-        }))
+        }).reverse())
       })
     }
   }

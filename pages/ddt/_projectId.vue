@@ -99,7 +99,9 @@ export default {
     this.PAC = this.unifyPacs([projectSections, deptSections, this.PAC])
 
     this.PAC.forEach((section) => {
-      if (section.text) { section.body = mdParser.parse(section.text) }
+      if (section.text) {
+        section.body = mdParser.parse(section.text)
+      }
     })
 
     this.loading = false
@@ -112,7 +114,7 @@ export default {
   methods: {
     // This is duplicate from /projects/trame.vue
     selectSection (section) {
-      const { text, titre, path, slug, dir } = this.PAC.find(s => s.path === section.path)
+      const { text, titre, path, slug, dir, ordre } = this.PAC.find(s => s.path === section.path)
 
       this.selectedSection = {
         text,
@@ -120,6 +122,7 @@ export default {
         path,
         slug,
         dir,
+        ordre,
         project_id: this.project.id
       }
     },
