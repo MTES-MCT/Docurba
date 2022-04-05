@@ -37,3 +37,5 @@ Cette mise en compatibilité devra, dans tous les cas, être réalisée **par le
 ##### PLU(i) non couverts par un SCoT
 
 En l’absence de SCoT, les auteurs de PLU, documents en tenant lieu et cartes communales devront examiner **tous les trois ans** la nécessité de mettre en compatibilité leurs documents d’urbanisme avec l’ensemble des documents de rang supérieur qui ont évolué dans ce laps de temps. A l’issue de cet examen, ils doivent délibérer sur le maintien en vigueur ou sur leur mise en compatibilité. **Celle-ci se fait par le biais de la procédure de modification simplifiée**. C’est bien cette délibération qui doit intervenir avant l’expiration du délai de trois ans, ce qui signifie que l’analyse sur la compatibilité doit être lancée dans l’année qui précède l’expiration de ce délai.
+
+ <img src="/images/Hierarchie-des-normes.jpg"/>
