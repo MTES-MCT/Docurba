@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" width="500">
+  <v-dialog v-model="dialog" width="400">
     <v-card>
       <v-card-title>
         Connexion
@@ -7,34 +7,17 @@
       <!-- SIGNIN -->
       <template v-if="loginTemplate === 'Connexion'">
         <v-card-text>
-          <v-row justify="center">
-            <v-col cols="12" md="8">
-              <v-text-field v-model="userData.email" filled label="Email" />
+          <v-row justify="end">
+            <v-col cols="12">
+              <v-text-field v-model="userData.email" hide-details filled label="Email" />
             </v-col>
-          </v-row>
-          <v-row justify="center">
-            <v-col cols="12" md="8">
-              <v-text-field
-                v-model="userData.password"
-                filled
-                label="Mot de passe"
-                :type="showPassword ? 'text' : 'password'"
-                :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
-                @click:append="showPassword = !showPassword"
-              />
+            <v-col cols="12">
+              <InputsPasswordTextField v-model="userData.password" />
             </v-col>
-          </v-row>
-          <v-row justify="center">
+            <v-spacer />
             <v-col cols="auto">
-              <v-btn color="primary" @click="signIn">
-                Connexion
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-row justify="center">
-            <v-col cols="auto">
-              <v-btn color="primary" outlined @click="toggleTemplate">
-                Inscription
+              <v-btn text small @click="sendResetPassword">
+                Mot de passe oublier ?
               </v-btn>
             </v-col>
           </v-row>
@@ -44,27 +27,28 @@
       <template v-if="loginTemplate === 'Inscription'">
         <v-card-text>
           <v-row justify="center">
-            <v-col cols="12" md="8">
+            <v-col cols="12">
               <OnboardingSignupForm v-model="userData" />
-            </v-col>
-          </v-row>
-          <v-row justify="center">
-            <v-col cols="auto">
-              <v-btn color="primary" @click="signUp">
-                Inscription
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-row justify="center">
-            <v-col cols="auto">
-              <v-btn color="primary" outlined @click="toggleTemplate">
-                Connexion
-              </v-btn>
             </v-col>
           </v-row>
         </v-card-text>
       </template>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn color="primary" @click="loginTemplate === 'Inscription' ? signUp() : signIn()">
+          {{ loginTemplate }}
+        </v-btn>
+        <v-btn color="primary" outlined @click="toggleTemplate">
+          {{ loginTemplate === 'Inscription' ? 'Connexion' : 'Inscription' }}
+        </v-btn>
+      </v-card-actions>
     </v-card>
+    <v-snackbar
+      v-model="snackbar.val"
+      :timeout="4000"
+    >
+      {{ snackbar.text }}
+    </v-snackbar>
   </v-dialog>
 </template>
 
@@ -92,6 +76,10 @@ export default {
         email: '',
         password: ''
       },
+      snackbar: {
+        text: '',
+        val: false
+      },
       loginTemplate: 'Connexion',
       error: null
     }
@@ -117,6 +105,8 @@ export default {
       // console.log('signIn', this.$supabase)
       const { user, session, error } = await this.$auth.signIn(this.userData)
 
+      console.log('login', user, session, error)
+
       if (!error) {
         // eslint-disable-next-line no-console
         console.log('success sign in', user, session)
@@ -137,6 +127,15 @@ export default {
       } else {
         this.error = error
       }
+    },
+    sendResetPassword () {
+      this.$supabase.auth.api
+        .resetPasswordForEmail(this.userData.email, {
+          redirectTo: window.location.origin
+        })
+
+      this.snackbar.text = `Un email de changement de mot de passe à été envoyé à ${this.userData.email}`
+      this.snackbar.val = true
     }
   }
 }

@@ -8,6 +8,7 @@
         <v-col :cols="collapsedTree ? 1 : 4" class="collapse-transition">
           <client-only>
             <PACTreeviewEditing
+              :value="project.PAC"
               :pac-data="PAC"
               :collapsed="collapsedTree"
               table="pac_sections_project"
@@ -16,6 +17,7 @@
               @add="addNewSection"
               @remove="deleteSection"
               @collapse="collapsedTree = !collapsedTree"
+              @input="changeSelectedSections"
             />
           </client-only>
         </v-col>
@@ -41,9 +43,12 @@
 
 import unified from 'unified'
 import remarkParse from 'remark-parse'
-import { unionBy, omitBy, isNil } from 'lodash'
+import { omitBy, isNil } from 'lodash'
+
+import unifiedPAC from '@/mixins/unifiedPac.js'
 
 export default {
+  mixins: [unifiedPAC],
   layout: 'app',
   async asyncData ({ $content }) {
     const PAC = await $content('PAC', {
@@ -70,11 +75,15 @@ export default {
     }
   },
   async mounted () {
+    const mdParser = unified().use(remarkParse)
+    this.mdParser = mdParser
+
     const projectId = this.$route.params.projectId
 
     const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
     this.project = projects ? projects[0] : null
 
+    // Subscribe to project changes for easy flux update
     this.projectSectionsSub = this.$supabase.from(`pac_sections_project:project_id=eq.${projectId}`).on('*', (update) => {
       const sectionIndex = this.PAC.findIndex(s => s.path === update.new.path)
       if (sectionIndex >= 0) {
@@ -82,39 +91,17 @@ export default {
       }
     }).subscribe()
 
+    // Get the data from DB for each level of PAC for this project.
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.project.town.code_departement)
     const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', this.project.id)
 
-    // We save them to replace a projectSection by a deptSection if needed.
-    deptSections.forEach((section) => {
-      const originalSection = this.originalPAC.find(s => s.path === section.path)
-      if (originalSection) {
-        Object.assign(originalSection, section)
-      } else { this.originalPAC.push(section) }
-    })
+    // Merge data of multiple PACs using unifiedPac.js mixin.
+    this.PAC = this.unifyPacs([projectSections, deptSections, this.PAC])
 
-    const editedSections = unionBy(projectSections, deptSections, (section) => {
-      return section.path
-    })
-
-    const mdParser = unified().use(remarkParse)
-    this.mdParser = mdParser
-
-    editedSections.forEach((section) => {
-      section.body = mdParser.parse(section.text)
-      const sectionIndex = this.PAC.findIndex(s => s.path === section.path)
-
-      if (sectionIndex >= 0) {
-        // The Object Assign here is to keep the order since it's not saved. As could be other properties.
-        // Although it might create inconsistenties for versions that get Archived later on.
-        this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], omitBy(section, isNil))
-      } else {
-        this.PAC.push(Object.assign({}, section))
+    this.PAC.forEach((section) => {
+      if (section.text) {
+        section.body = mdParser.parse(section.text)
       }
-    })
-
-    this.PAC = this.PAC.filter((section) => {
-      return section.project_id === this.project.id || !!this.project.PAC.find(s => (s.path || s) === section.path)
     })
 
     this.loading = false
@@ -127,7 +114,7 @@ export default {
   methods: {
     // This is duplicate from /projects/trame.vue
     selectSection (section) {
-      const { text, titre, path, slug, dir } = this.PAC.find(s => s.path === section.path)
+      const { text, titre, path, slug, dir, ordre } = this.PAC.find(s => s.path === section.path)
 
       this.selectedSection = {
         text,
@@ -135,6 +122,7 @@ export default {
         path,
         slug,
         dir,
+        ordre,
         project_id: this.project.id
       }
     },
@@ -206,6 +194,12 @@ export default {
         // eslint-disable-next-line no-console
         console.log('err deleting a section')
       }
+    },
+    async changeSelectedSections (selectedSections) {
+      // This make it so we can't save sections as objects in reading mode for comments and checked features.
+      await this.$supabase.from('projects').update({
+        PAC: selectedSections
+      }).eq('id', this.project.id)
     }
   }
 }

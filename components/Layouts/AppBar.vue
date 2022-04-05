@@ -37,7 +37,7 @@
         <v-btn v-if="!$user.id" text @click="openLogin = true">
           Connexion
         </v-btn>
-        <LoginDialog v-model="openLogin" />
+        <AuthLoginDialog v-model="openLogin" />
         <v-btn v-if="$user.id" text @click="clickMyDocs">
           Mes documents
         </v-btn>
@@ -67,6 +67,7 @@
       </v-btn> -->
         <DocumentsDialog v-if="$user.id" v-model="openDocs" />
         <AdminDdtRequestDialog v-model="openDDT" />
+        <AuthResetPasswordDialog />
       </div>
     </client-only>
     <template v-if="extended" #extension>

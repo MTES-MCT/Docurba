@@ -28,7 +28,7 @@
             Créer mon compte pour obtenir le PAC de mon territoire
           </v-btn>
           <client-only>
-            <LoginDialog v-model="openLogin" />
+            <AuthLoginDialog v-model="openLogin" />
             <DocumentsDialog v-if="$user.id" v-model="openDocs" />
           </client-only>
         </div>

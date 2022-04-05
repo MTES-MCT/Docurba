@@ -12,17 +12,26 @@
     <v-col cols="12" class="pa-0" @click="collapsed ? $emit('collapse') : ''">
       <v-treeview
         ref="tree"
+        v-model="selectedSections"
         hoverable
         open-on-click
+        selectable
         :items="PACroots"
         item-text="titre"
         class="d-block text-truncate"
         item-key="path"
+        selected-color="primary"
       >
         <template #label="{item}">
           <v-tooltip right nudge-right="35">
             <template #activator="{on}">
-              <div class="d-block text-truncate" :class="colorClass(item)" v-on="on" @click="openSection(item)" @mouseenter="selecItem(item)">
+              <div
+                class="d-block text-truncate"
+                :class="colorClass(item)"
+                v-on="on"
+                @click="openSection(item)"
+                @mouseenter="selecItem(item)"
+              >
                 {{ item.titre }}
               </div>
             </template>
@@ -30,10 +39,10 @@
           </v-tooltip>
         </template>
         <template #append="{item, open}">
-          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click="changeItemOrder(item, -1)">
+          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click.stop="changeItemOrder(item, -1)">
             <v-icon>{{ icons.mdiChevronUp }}</v-icon>
           </v-btn>
-          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click="changeItemOrder(item, 1)">
+          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click.stop="changeItemOrder(item, 1)">
             <v-icon>{{ icons.mdiChevronDown }}</v-icon>
           </v-btn>
           <v-btn v-show="overedItem === item.path" small icon @click="addSectionTo(item, open, $event)">
@@ -73,11 +82,16 @@
 <script>
 import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDown } from '@mdi/js'
 import { v4 as uuidv4 } from 'uuid'
+import { uniq } from 'lodash'
 import pacContent from '@/mixins/pacContent.js'
 
 export default {
   mixins: [pacContent],
   props: {
+    value: {
+      type: Array,
+      required: true
+    },
     collapsed: {
       type: Boolean,
       default: false
@@ -99,6 +113,16 @@ export default {
     }
   },
   data () {
+    const children = this.value.filter((s) => {
+      const path = (s.path || s).replace(/\/intro$/, '')
+
+      const child = this.value.find((section) => {
+        return s !== section && (section.path || section).includes(path)
+      })
+
+      return !child
+    })
+
     return {
       contentSearch: '',
       icons: {
@@ -109,7 +133,8 @@ export default {
         mdiChevronUp,
         mdiChevronDown
       },
-      overedItem: ''
+      overedItem: '',
+      selectedSections: children
     }
   },
   computed: {
@@ -141,6 +166,30 @@ export default {
 
         return searchedContent.filter(section => section.searched)
       } else { return this.PAC }
+    }
+  },
+  watch: {
+    selectedSections () {
+      const selection = []
+
+      this.PAC.forEach((section) => {
+        if (section.children) {
+          // const selectedChildren = section.children.find((c) => {
+          //   return this.selectedSections.includes(c.path)
+          // })
+
+          const selectedChildren = this.selectedSections.find((s) => {
+            const path = section.path.replace(/\/intro$/, '')
+            return s !== section.path && s.includes(path)
+          })
+
+          if (selectedChildren) {
+            selection.push(section.path)
+          }
+        }
+      })
+
+      this.$emit('input', uniq(selection.concat(this.selectedSections)))
     }
   },
   methods: {
