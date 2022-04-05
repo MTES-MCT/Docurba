@@ -13,6 +13,7 @@
               :collapsed="collapsedTree"
               table="pac_sections_project"
               :project-id="$route.params.projectId"
+              selectable
               @open="selectSection"
               @add="addNewSection"
               @remove="deleteSection"

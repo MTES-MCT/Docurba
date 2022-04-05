@@ -15,7 +15,7 @@
         v-model="selectedSections"
         hoverable
         open-on-click
-        selectable
+        :selectable="selectable"
         :items="PACroots"
         item-text="titre"
         class="d-block text-truncate"
@@ -90,7 +90,7 @@ export default {
   props: {
     value: {
       type: Array,
-      required: true
+      default () { return [] }
     },
     collapsed: {
       type: Boolean,
@@ -110,6 +110,10 @@ export default {
     dept: {
       type: String,
       default: ''
+    },
+    selectable: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
