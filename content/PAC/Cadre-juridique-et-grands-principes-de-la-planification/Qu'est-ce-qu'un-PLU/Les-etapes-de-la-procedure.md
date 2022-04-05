@@ -8,6 +8,7 @@ ordre: 3
 <img src="/images/Feuille_de_route_1_2.png" style="object-fit: cover; width: 100%" />
 <img src="/images/Feuille_de_route_2_2.png" style="object-fit: cover; width: 100%" />
 
+ 
 **L'évaluation environnementale** doit être réalisée tout au long de la procédure. L'autorité environnementale doit être consulté sur le projet de docuemnt arrêté et son avis, rendu sous trois mois, doit être joint à l'enquête publique (cf fiche sur l'évaluation envrionnementale).
 
 **L’avis obligatoire de la CDPENAF** est notamment requis pour les projets de plan local d’urbanisme (PLU, PLUi) non concernés par un SCoT approuvé, et prévoyant une réduction des surfaces des espaces naturels, agricoles et forestiers.**  La Commission départementale de préservation des espaces naturels, agricoles et forestiers (CDPENAF) vise à préserver les espaces naturels, agricoles et forestiers et à réduire l’impact des documents de planification et de l’aménagement opérationnel sur ces espaces. Elle donne un avis au plus tard **trois mois** après transmission du projet de plan. A défaut de réponse dans ce délai, l’avis est réputé favorable. 
