@@ -117,11 +117,19 @@
           <v-icon>{{ icons.mdiFormatListNumbered }}</v-icon>
         </v-btn>
         <v-btn
+          class="linkBtn"
           icon
           @click="openLinkMenu"
         >
           <v-icon>{{ icons.mdiLink }}</v-icon>
         </v-btn>
+        <v-tooltip
+          :value="!selecitionValid"
+          attach=".linkBtn"
+          close-delay="3000"
+        >
+          Selectionnez du text pour ajouter un lien
+        </v-tooltip>
         <v-btn
           icon
           @click="$refs['imageFileInput'].click()"
@@ -233,6 +241,7 @@ export default {
         mdiCheck,
         mdiFileImage
       },
+      selecitionValid: true,
       selection: null,
       selectionMenu: false,
       selectionMenuPosition: {
@@ -299,6 +308,14 @@ export default {
     },
     openLinkMenu () {
       this.selection = window.getSelection()
+
+      if (!this.selection.anchorNode) {
+        this.selecitionValid = false
+
+        setTimeout(() => {
+          this.selecitionValid = true
+        }, 2500)
+      }
 
       if (this.selectionMenu) {
         this.selectionMenu = false
