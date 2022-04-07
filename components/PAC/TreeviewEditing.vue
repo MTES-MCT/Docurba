@@ -159,7 +159,7 @@ export default {
           const searchedSection = { searched: section.searched }
 
           if (!section.searched) {
-            const searchedValue = this.contentSearch.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+            const searchedValue = this.contentSearch.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
             const searched = section.searchValue.includes(searchedValue)
 
             searchedSection.searched = searched

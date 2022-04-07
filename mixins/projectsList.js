@@ -10,12 +10,12 @@ export default {
   },
   computed: {
     searchValue () {
-      return this.search.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+      return this.search.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
     },
     filteredProjects () {
       if (this.search) {
         return this.projects.filter((project) => {
-          const normalizedTitle = project.name.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+          const normalizedTitle = project.name.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
           return normalizedTitle.includes(this.searchValue)
         })
       } else { return this.projects }
@@ -23,7 +23,7 @@ export default {
     filteredSharedProjects () {
       if (this.search) {
         return this.sharedProjects.filter((project) => {
-          const normalizedTitle = project.name.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+          const normalizedTitle = project.name.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
           return normalizedTitle.includes(this.searchValue)
         })
       } else { return this.sharedProjects }

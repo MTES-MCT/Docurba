@@ -19,7 +19,7 @@ export default {
         const enrichedSection = Object.assign({
           checked: false,
           depth: getDepth(section.path),
-          searchValue: serachText.normalize('NFD').replace(/\p{Diacritic}/gu, ''),
+          searchValue: serachText.normalize('NFD').replace(/[À-ÿ]/gu, ''),
           children: []
         }, section)
 
