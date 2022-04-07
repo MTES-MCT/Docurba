@@ -263,12 +263,15 @@ export default {
       }
     },
     colorClass (section) {
-      if (section.project_id) {
-        return 'bf500--text'
-      }
+      // textEdited is setup in unifiedPac.js
+      if (section.textEdited) {
+        if (section.project_id) {
+          return 'bf500--text'
+        }
 
-      if (section.dept) {
-        return 'bf300--text'
+        if (section.dept) {
+          return 'bf300--text'
+        }
       }
 
       return ''

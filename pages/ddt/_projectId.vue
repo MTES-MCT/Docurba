@@ -41,10 +41,8 @@
 </template>
 
 <script>
-
 import unified from 'unified'
 import remarkParse from 'remark-parse'
-import { omitBy, isNil } from 'lodash'
 
 import unifiedPAC from '@/mixins/unifiedPac.js'
 
@@ -86,10 +84,7 @@ export default {
 
     // Subscribe to project changes for easy flux update
     this.projectSectionsSub = this.$supabase.from(`pac_sections_project:project_id=eq.${projectId}`).on('*', (update) => {
-      const sectionIndex = this.PAC.findIndex(s => s.path === update.new.path)
-      if (sectionIndex >= 0) {
-        this.PAC.splice(sectionIndex, 1, Object.assign({}, this.PAC[sectionIndex], omitBy(update.new, isNil)))
-      }
+      this.spliceSection(this.PAC, update.new)
     }).subscribe()
 
     // Get the data from DB for each level of PAC for this project.

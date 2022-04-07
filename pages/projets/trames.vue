@@ -41,10 +41,12 @@
 import unified from 'unified'
 
 import remarkParse from 'remark-parse'
-import { omitBy, isNil } from 'lodash'
 import departements from '@/assets/data/departements-france.json'
 
+import unifiedPAC from '@/mixins/unifiedPac.js'
+
 export default {
+  mixins: [unifiedPAC],
   layout: 'app',
   async asyncData ({ $content }) {
     const PAC = await $content('PAC', {
@@ -76,7 +78,9 @@ export default {
     }
   },
   async mounted () {
-    // TODO: This part is the same in the page projects/index.vue and coul be made into a mixin.
+    const mdParser = unified().use(remarkParse)
+    this.mdParser = mdParser
+
     const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('dept').match({
       user_id: this.$user.id,
       user_email: this.$user.email,
@@ -89,29 +93,13 @@ export default {
     this.departement = departements.find(d => d.code_departement == adminAccess[0].dept)
 
     this.deptSectionsSub = this.$supabase.from(`pac_sections_dept:dept=eq.${this.departementCode}`).on('*', (update) => {
-      const sectionIndex = this.PAC.findIndex(s => s.path === update.new.path)
-      if (sectionIndex >= 0) {
-        this.PAC.splice(sectionIndex, 1, Object.assign({}, this.PAC[sectionIndex], omitBy(update.new, isNil)))
-      }
+      this.spliceSection(this.PAC, update.new)
     }).subscribe()
 
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.departementCode)
 
-    const mdParser = unified().use(remarkParse)
-    this.mdParser = mdParser
-
-    deptSections.forEach((section) => {
-      section.body = mdParser.parse(section.text)
-      const sectionIndex = this.PAC.findIndex(s => s.path === section.path)
-
-      if (sectionIndex >= 0) {
-        // The Object Assign here is to keep the order since it's not saved. As could be other properties.
-        // Although it might create inconsistenties for versions that get Archived later on.
-        this.PAC[sectionIndex] = Object.assign({ dept: this.departementCode }, this.PAC[sectionIndex], omitBy(section, isNil))
-      } else {
-        this.PAC.push(Object.assign({ dept: this.departementCode }, section))
-      }
-    })
+    // Merge data of multiple PACs using unifiedPac.js mixin.
+    this.PAC = this.unifyPacs([deptSections, this.PAC])
 
     this.loading = false
   },
