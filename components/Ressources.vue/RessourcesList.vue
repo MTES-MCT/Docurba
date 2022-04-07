@@ -15,13 +15,9 @@
         <v-card-title class="break-word">
           {{ ressource.title }}
         </v-card-title>
-        <v-row v-if="ressource.body.children.length">
-          <v-col cols="12">
-            <v-card-text>
-              <nuxt-content :document="ressource" />
-            </v-card-text>
-          </v-col>
-        </v-row>
+        <v-card-text v-if="ressource.body.children && ressource.body.children.length">
+          <nuxt-content :document="ressource" />
+        </v-card-text>
       </v-card>
     </v-col>
   </v-row>
