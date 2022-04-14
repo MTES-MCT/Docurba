@@ -12,10 +12,10 @@
     <v-col cols="12" class="pa-0" @click="collapsed ? $emit('collapse') : ''">
       <v-treeview
         ref="tree"
-        v-model="selectedSections"
+        v-model="treeViewSelectedSections"
         hoverable
         open-on-click
-        :selectable="selectable"
+        :selectable="selectable && !contentSearch"
         :items="PACroots"
         item-text="titre"
         class="d-block text-truncate"
@@ -39,10 +39,10 @@
           </v-tooltip>
         </template>
         <template #append="{item, open}">
-          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click.stop="changeItemOrder(item, -1)">
+          <v-btn v-show="!contentSearch && overedItem === item.path && item.depth > 2" small icon @click.stop="changeItemOrder(item, -1)">
             <v-icon>{{ icons.mdiChevronUp }}</v-icon>
           </v-btn>
-          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click.stop="changeItemOrder(item, 1)">
+          <v-btn v-show="!contentSearch && overedItem === item.path && item.depth > 2" small icon @click.stop="changeItemOrder(item, 1)">
             <v-icon>{{ icons.mdiChevronDown }}</v-icon>
           </v-btn>
           <v-btn v-show="overedItem === item.path" small icon @click="addSectionTo(item, open, $event)">
@@ -170,30 +170,38 @@ export default {
 
         return searchedContent.filter(section => section.searched)
       } else { return this.PAC }
+    },
+    treeViewSelectedSections: {
+      get () {
+        return this.selectedSections
+      },
+      set (selectedItems) {
+        if (!this.contentSearch.length) {
+          this.selectedSections = selectedItems
+        }
+      }
     }
   },
   watch: {
     selectedSections () {
-      const selection = []
+      if (!this.contentSearch.length) {
+        const selection = []
 
-      this.PAC.forEach((section) => {
-        if (section.children) {
-          // const selectedChildren = section.children.find((c) => {
-          //   return this.selectedSections.includes(c.path)
-          // })
+        this.PAC.forEach((section) => {
+          if (section.children) {
+            const selectedChildren = this.selectedSections.find((s) => {
+              const path = section.path.replace(/\/intro$/, '')
+              return s !== section.path && s.includes(path)
+            })
 
-          const selectedChildren = this.selectedSections.find((s) => {
-            const path = section.path.replace(/\/intro$/, '')
-            return s !== section.path && s.includes(path)
-          })
-
-          if (selectedChildren) {
-            selection.push(section.path)
+            if (selectedChildren) {
+              selection.push(section.path)
+            }
           }
-        }
-      })
+        })
 
-      this.$emit('input', uniq(selection.concat(this.selectedSections)))
+        this.$emit('input', uniq(selection.concat(this.selectedSections)))
+      }
     }
   },
   methods: {
