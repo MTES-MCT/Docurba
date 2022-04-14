@@ -20,16 +20,10 @@ const sourceMap = {
 }
 
 export default {
-  data () {
-    return {
-      dataset: [],
-      themes: []
-    }
-  },
-  async fetch () {
-    const currentRegion = this.$route.query.region
+  async asyncData (route) {
+    const currentRegion = route.query.region
     const source = sourceMap[currentRegion]
-    let insee = this.$route.query.insee.toString()
+    let insee = route.query.insee.toString()
 
     if (insee.length < 5) { insee = '0' + insee }
 
@@ -42,19 +36,36 @@ export default {
         }, source.data)
       })).data
 
-      this.themes = (await axios({
+      const themes = (await axios({
         url: source.themesUrl,
         method: 'get'
       })).data
 
-      console.log(this.themes)
-
       dataset.forEach((data) => {
-        console.log(data.theme)
-        data.theme = this.themes.find(t => t.id === data.theme)
+        // console.log(data.theme)
+        data.theme = themes.find((theme) => {
+          const dataTheme = theme.children.find((subTheme) => {
+            return subTheme.id === data.theme
+          })
+
+          if (dataTheme) {
+            data.subTheme = dataTheme
+          }
+
+          return !!dataTheme
+        })
       })
 
-      this.dataset = dataset
+      return {
+        themes,
+        dataset
+      }
+    }
+  },
+  data () {
+    return {
+      dataset: [],
+      themes: []
     }
   },
   computed: {
