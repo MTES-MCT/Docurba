@@ -133,34 +133,6 @@ export default {
         dept: this.departementCode
       }
     },
-    // async saveSection (editedSection) {
-    //   const { data: savedSection } = await this.$supabase.from('pac_sections_dept').select('id').match({
-    //     dept: this.departementCode,
-    //     path: this.selectedSection.path
-    //   })
-
-    //   const newData = Object.assign({
-    //     dept: this.departementCode
-    //   }, this.selectedSection, editedSection)
-
-    //   if (savedSection[0]) { newData.id = savedSection[0].id }
-
-    //   try {
-    //     if (savedSection[0]) {
-    //       await this.$supabase.from('pac_sections_dept').upsert(newData)
-    //     } else {
-    //       await this.$supabase.from('pac_sections_dept').insert([newData])
-    //     }
-
-    //     const sectionIndex = this.PAC.findIndex(s => s.path === newData.path)
-
-    //     // this.PAC[sectionIndex] = newData
-    //     this.PAC.splice(sectionIndex, 1, newData)
-    //   } catch (err) {
-    //     // eslint-disable-next-line no-console
-    //     console.log('Error saving data')
-    //   }
-    // },
     async addNewSection (newSection) {
       newSection.dept = this.departementCode
       const { data: savedSection, err } = await this.$supabase.from('pac_sections_dept').insert([newSection])
