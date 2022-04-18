@@ -83,9 +83,10 @@ export default {
     this.project = projects ? projects[0] : null
 
     // Subscribe to project changes for easy flux update
-    this.projectSectionsSub = this.$supabase.from(`pac_sections_project:project_id=eq.${projectId}`).on('*', (update) => {
-      this.spliceSection(this.PAC, update.new)
-    }).subscribe()
+    this.subscribeToBdd(projectId)
+    window.addEventListener('focus', () => {
+      this.subscribeToBdd(projectId)
+    })
 
     // Get the data from DB for each level of PAC for this project.
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.project.town.code_departement)
@@ -108,6 +109,15 @@ export default {
     }
   },
   methods: {
+    subscribeToBdd (projectId) {
+      if (this.projectSectionsSub) {
+        this.$supabase.removeSubscription(this.projectSectionsSub)
+      }
+
+      this.projectSectionsSub = this.$supabase.from(`pac_sections_project:project_id=eq.${projectId}`).on('*', (update) => {
+        this.spliceSection(this.PAC, update.new)
+      }).subscribe()
+    },
     // This is duplicate from /projects/trame.vue
     selectSection (section) {
       const { text, titre, path, slug, dir, ordre } = this.PAC.find(s => s.path === section.path)

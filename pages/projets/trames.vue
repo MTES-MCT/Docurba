@@ -92,9 +92,10 @@ export default {
     // eslint-disable-next-line eqeqeq
     this.departement = departements.find(d => d.code_departement == adminAccess[0].dept)
 
-    this.deptSectionsSub = this.$supabase.from(`pac_sections_dept:dept=eq.${this.departementCode}`).on('*', (update) => {
-      this.spliceSection(this.PAC, update.new)
-    }).subscribe()
+    this.subscribeToBdd()
+    window.addEventListener('focus', () => {
+      this.subscribeToBdd()
+    })
 
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.departementCode)
 
@@ -107,6 +108,15 @@ export default {
     this.$supabase.removeSubscription(this.deptSectionsSub)
   },
   methods: {
+    subscribeToBdd () {
+      if (this.projectSectionsSub) {
+        this.$supabase.removeSubscription(this.projectSectionsSub)
+      }
+
+      this.deptSectionsSub = this.$supabase.from(`pac_sections_dept:dept=eq.${this.departementCode}`).on('*', (update) => {
+        this.spliceSection(this.PAC, update.new)
+      }).subscribe()
+    },
     selectSection (section) {
       const { text, titre, path, slug, dir, ordre } = this.PAC.find(s => s.path === section.path)
 

@@ -12,15 +12,16 @@
     <v-col cols="12" class="pa-0" @click="collapsed ? $emit('collapse') : ''">
       <v-treeview
         ref="tree"
-        v-model="treeViewSelectedSections"
+        v-model="selectedSections"
         hoverable
         open-on-click
-        :selectable="selectable && !contentSearch"
+        :selectable="selectable"
         :items="PACroots"
         item-text="titre"
         class="d-block text-truncate"
         item-key="path"
         selected-color="primary"
+        :search="contentSearch"
       >
         <template #label="{item}">
           <v-tooltip right nudge-right="35">
@@ -39,10 +40,10 @@
           </v-tooltip>
         </template>
         <template #append="{item, open}">
-          <v-btn v-show="!contentSearch && overedItem === item.path && item.depth > 2" small icon @click.stop="changeItemOrder(item, -1)">
+          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click.stop="changeItemOrder(item, -1)">
             <v-icon>{{ icons.mdiChevronUp }}</v-icon>
           </v-btn>
-          <v-btn v-show="!contentSearch && overedItem === item.path && item.depth > 2" small icon @click.stop="changeItemOrder(item, 1)">
+          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click.stop="changeItemOrder(item, 1)">
             <v-icon>{{ icons.mdiChevronDown }}</v-icon>
           </v-btn>
           <v-btn v-show="overedItem === item.path" small icon @click="addSectionTo(item, open, $event)">
@@ -143,65 +144,65 @@ export default {
   },
   computed: {
     PACroots () {
-      if (!this.contentSearch.length) {
-        const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
-          return (sa.ordre ?? 100) - (sb.ordre ?? 100)
-        })
+      // if (!this.contentSearch.length) {
+      const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
+        return (sa.ordre ?? 100) - (sb.ordre ?? 100)
+      })
 
-        return roots
-      } else {
-        return this.filteredPAC
-      }
-    },
-    filteredPAC () {
-      if (this.contentSearch.length) {
-        const searchedContent = this.PAC.map((section) => {
-          const searchedSection = { searched: section.searched }
-
-          if (!section.searched) {
-            const searchedValue = this.contentSearch.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
-            const searched = section.searchValue.includes(searchedValue)
-
-            searchedSection.searched = searched
-          }
-
-          return Object.assign(searchedSection, section)
-        })
-
-        return searchedContent.filter(section => section.searched)
-      } else { return this.PAC }
-    },
-    treeViewSelectedSections: {
-      get () {
-        return this.selectedSections
-      },
-      set (selectedItems) {
-        if (!this.contentSearch.length) {
-          this.selectedSections = selectedItems
-        }
-      }
+      return roots
+      // } else {
+      //   return this.filteredPAC
+      // }
     }
+    // filteredPAC () {
+    //   if (this.contentSearch.length) {
+    //     const searchedContent = this.PAC.map((section) => {
+    //       const searchedSection = { searched: section.searched }
+
+    //       if (!section.searched) {
+    //         const searchedValue = this.contentSearch.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
+    //         const searched = section.searchValue.includes(searchedValue)
+
+    //         searchedSection.searched = searched
+    //       }
+
+    //       return Object.assign(searchedSection, section)
+    //     })
+
+    //     return searchedContent.filter(section => section.searched)
+    //   } else { return this.PAC }
+    // },
+    // treeViewSelectedSections: {
+    //   get () {
+    //     return this.selectedSections
+    //   },
+    //   set (selectedItems) {
+    //     if (!this.contentSearch.length) {
+    //       this.selectedSections = selectedItems
+    //     }
+    //   }
+    // }
   },
   watch: {
     selectedSections () {
-      if (!this.contentSearch.length) {
-        const selection = []
+      // if (!this.contentSearch.length) {
+      const selection = []
 
-        this.PAC.forEach((section) => {
-          if (section.children) {
-            const selectedChildren = this.selectedSections.find((s) => {
-              const path = section.path.replace(/\/intro$/, '')
-              return s !== section.path && s.includes(path)
-            })
+      this.PAC.forEach((section) => {
+        if (section.children) {
+          const selectedChildren = this.selectedSections.find((s) => {
+            const path = section.path.replace(/\/intro$/, '')
+            return s !== section.path && s.includes(path)
+          })
 
-            if (selectedChildren) {
-              selection.push(section.path)
-            }
+          if (selectedChildren) {
+            selection.push(section.path)
           }
-        })
+        }
+      })
 
-        this.$emit('input', uniq(selection.concat(this.selectedSections)))
-      }
+      this.$emit('input', uniq(selection.concat(this.selectedSections)))
+      // }
     }
   },
   methods: {

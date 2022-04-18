@@ -33,14 +33,14 @@ export default {
     this.getProjects()
     this.getSharedProjects()
 
-    this.subscription = this.$supabase
-      .from('projects')
-      // .on('INSERT', () => {console.log(insert)})
-      .on('UPDTAE', (update) => { console.log('data updated', update) })
-      .subscribe()
+    // this.subscription = this.$supabase
+    //   .from('projects')
+    //   // .on('INSERT', () => {console.log(insert)})
+    //   .on('UPDTAE', (update) => { console.log('data updated', update) })
+    //   .subscribe()
   },
   beforeDestroy () {
-    this.$supabase.removeSubscription(this.subscription)
+    // this.$supabase.removeSubscription(this.subscription)
   },
   methods: {
     async getProjects () {
