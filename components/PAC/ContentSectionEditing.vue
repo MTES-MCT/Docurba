@@ -30,13 +30,32 @@
         right
         fab
         color="primary"
-        @click="saveSection"
+        @click="saveSection(editedSection)"
       >
         <v-icon color="white">
           {{ icons.mdiContentSave }}
         </v-icon>
       </v-btn>
     </v-fab-transition>
+    <v-dialog v-model="saveDialog" persistent max-width="300px">
+      <v-card>
+        <v-card-title>
+          Sauvegarder ?
+        </v-card-title>
+        <v-card-text>
+          Voulez-vous sauvegarder vos changements ?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="primary" @click="saveSection(previousSection)">
+            Oui
+          </v-btn>
+          <v-btn color="primary" outlined @click="saveDialog = false">
+            Non
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-row>
 </template>
 <script>
@@ -59,6 +78,14 @@ export default {
     section: {
       type: Object,
       required: true
+    },
+    table: {
+      type: String,
+      required: true
+    },
+    matchKeys: {
+      type: Object,
+      required: true
     }
   },
   data () {
@@ -75,11 +102,13 @@ export default {
         text: mdParser.processSync(this.section.text).contents,
         titre: this.section.titre
       },
+      previousSection: {},
       modified: false,
       icons: {
         mdiContentSave
       },
-      attachements: []
+      attachements: [],
+      saveDialog: false
     }
   },
   computed: {
@@ -97,17 +126,22 @@ export default {
   watch: {
     'section.path' () {
       this.fetchAttachements()
-    },
-    'section.text' () {
-      this.editedSection.text = this.getHTML()
-    },
-    'section.titre' () {
-      this.editedSection.titre = this.section.titre
+
+      if (this.modified) {
+        this.previousSection = Object.assign({}, this.editedSection)
+        this.saveDialog = true
+      }
+
+      this.editedSection = Object.assign({}, this.section, {
+        text: this.getHTML()
+      })
+
+      this.modified = false
     },
     editedSection: {
       deep: true,
       handler () {
-        if (this.titre !== this.editedSection.titre || this.editedSection.text !== this.getHTML()) {
+        if (this.section.titre !== this.editedSection.titre || this.editedSection.text !== this.getHTML()) {
           this.modified = true
         } else {
           this.modified = false
@@ -122,16 +156,30 @@ export default {
     getHTML () {
       return this.mdParser.processSync(this.section.text).contents
     },
-    saveSection () {
-      this.$emit('save', this.editedSection)
+    async saveSection (newData) {
+      const sectionMatchKeys = Object.assign({
+        path: newData.path
+      }, this.matchKeys)
+
+      const { data: savedSection } = await this.$supabase.from(this.table)
+        .select('id').match(sectionMatchKeys)
+
+      // const newData = Object.assign({}, this.section, this.editedSection)
+
+      try {
+        if (savedSection[0]) {
+          await this.$supabase.from(this.table).update(newData).match(sectionMatchKeys)
+        } else {
+          await this.$supabase.from(this.table).insert([newData])
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.log('Error saving data')
+      }
+
       this.modified = false
+      this.saveDialog = false
     },
-    // async downloadAttachement (attachement) {
-    //   const { data: file, err } = await this.$supabase
-    //     .storage
-    //     .from('project-annexes')
-    //     .download(`/${this.section.dept}${this.section.path}/${attachement.name}`)
-    // },
     async fetchAttachements () {
       const folder = this.section.project_id || this.section.dept
 
