@@ -16,13 +16,19 @@ En effet la prévention des inondations doit être pensée et **planifiée à lo
 
 **La région Auvergne-Rhône-Alpes est concernée par le bassin Rhône-Méditerranée, le bassin Loire-Bretagne et le bassin Adour-Garonne.**
 
-Un SDAGE est mis en œuvre sur chacun de ces territoires.
 
-- le SDAGE Rhône-Méditerranée : https://www.eaurmc.fr/jcms/vmr_6425/fr/le-sdage-rhone-mediterranee?cid=gbr_5494&portal=ppi_5780
 
-- le SDAGE Loire-Bretagne : https://sdage-sage.eau-loire-bretagne.fr/home.html
+- Rhône-Méditerranée : 
+  - SDAGE : https://www.eaurmc.fr/jcms/vmr_6425/fr/le-sdage-rhone-mediterranee?cid=gbr_5494&portal=ppi_5780
+  - PGRI : https://www.rhone-mediterranee.eaufrance.fr/gestion/inondations/pgri-2022-2027
 
-- le SDAGE Adour-Garonne : http://www.eau-adour-garonne.fr/fr/sdage-et-programme-d-intervention-de-l-agence/un-cadre-le-sdage.html
+- Loire-Bretagne : les documents pour les période 2022-2027 sont en cours d'élaboration.
+  - SDAGE : https://sdage-sage.eau-loire-bretagne.fr/home.html
+  - PGRI : https://www.centre-val-de-loire.developpement-durable.gouv.fr/consultation-pgri-a3715.html
+
+- Adour-Garonne : les documents pour les période 2022-2027 sont en cours d'élaboration.
+  - SDAGE : http://www.eau-adour-garonne.fr/fr/sdage-et-programme-d-intervention-de-l-agence/un-cadre-le-sdage.html
+  - PGRI : https://www.occitanie.developpement-durable.gouv.fr/-a25334.html
 
 **Pour aller plus loin :**
 
