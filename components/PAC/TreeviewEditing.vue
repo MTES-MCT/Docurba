@@ -21,6 +21,7 @@
         class="d-block text-truncate"
         item-key="path"
         selected-color="primary"
+        :search="contentSearch"
       >
         <template #label="{item}">
           <v-tooltip right nudge-right="35">
@@ -143,45 +144,52 @@ export default {
   },
   computed: {
     PACroots () {
-      if (!this.contentSearch.length) {
-        const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
-          return (sa.ordre ?? 100) - (sb.ordre ?? 100)
-        })
+      // if (!this.contentSearch.length) {
+      const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
+        return (sa.ordre ?? 100) - (sb.ordre ?? 100)
+      })
 
-        return roots
-      } else {
-        return this.filteredPAC
-      }
-    },
-    filteredPAC () {
-      if (this.contentSearch.length) {
-        const searchedContent = this.PAC.map((section) => {
-          const searchedSection = { searched: section.searched }
-
-          if (!section.searched) {
-            const searchedValue = this.contentSearch.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
-            const searched = section.searchValue.includes(searchedValue)
-
-            searchedSection.searched = searched
-          }
-
-          return Object.assign(searchedSection, section)
-        })
-
-        return searchedContent.filter(section => section.searched)
-      } else { return this.PAC }
+      return roots
+      // } else {
+      //   return this.filteredPAC
+      // }
     }
+    // filteredPAC () {
+    //   if (this.contentSearch.length) {
+    //     const searchedContent = this.PAC.map((section) => {
+    //       const searchedSection = { searched: section.searched }
+
+    //       if (!section.searched) {
+    //         const searchedValue = this.contentSearch.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
+    //         const searched = section.searchValue.includes(searchedValue)
+
+    //         searchedSection.searched = searched
+    //       }
+
+    //       return Object.assign(searchedSection, section)
+    //     })
+
+    //     return searchedContent.filter(section => section.searched)
+    //   } else { return this.PAC }
+    // },
+    // treeViewSelectedSections: {
+    //   get () {
+    //     return this.selectedSections
+    //   },
+    //   set (selectedItems) {
+    //     if (!this.contentSearch.length) {
+    //       this.selectedSections = selectedItems
+    //     }
+    //   }
+    // }
   },
   watch: {
     selectedSections () {
+      // if (!this.contentSearch.length) {
       const selection = []
 
       this.PAC.forEach((section) => {
         if (section.children) {
-          // const selectedChildren = section.children.find((c) => {
-          //   return this.selectedSections.includes(c.path)
-          // })
-
           const selectedChildren = this.selectedSections.find((s) => {
             const path = section.path.replace(/\/intro$/, '')
             return s !== section.path && s.includes(path)
@@ -194,6 +202,7 @@ export default {
       })
 
       this.$emit('input', uniq(selection.concat(this.selectedSections)))
+      // }
     }
   },
   methods: {

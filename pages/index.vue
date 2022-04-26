@@ -59,7 +59,9 @@ export default {
   },
   computed: {
     searchLink () {
-      const query = {}
+      const query = {
+        insee: [this.selectedTown ? this.selectedTown.code_commune_INSEE : '']
+      }
 
       if (this.searchQuery.region) {
         query.region = this.searchQuery.region.iso

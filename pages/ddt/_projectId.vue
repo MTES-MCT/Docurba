@@ -26,7 +26,10 @@
           <PACContentSectionEditing
             :section="selectedSection"
             :pac-data="PAC"
-            @save="saveSection"
+            table="pac_sections_project"
+            :match-keys="{
+              project_id: project.id,
+            }"
           />
         </v-col>
         <v-col v-else cols="">
@@ -83,9 +86,10 @@ export default {
     this.project = projects ? projects[0] : null
 
     // Subscribe to project changes for easy flux update
-    this.projectSectionsSub = this.$supabase.from(`pac_sections_project:project_id=eq.${projectId}`).on('*', (update) => {
-      this.spliceSection(this.PAC, update.new)
-    }).subscribe()
+    this.subscribeToBdd(projectId)
+    window.addEventListener('focus', () => {
+      this.subscribeToBdd(projectId)
+    })
 
     // Get the data from DB for each level of PAC for this project.
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.project.town.code_departement)
@@ -108,6 +112,15 @@ export default {
     }
   },
   methods: {
+    subscribeToBdd (projectId) {
+      if (this.projectSectionsSub) {
+        this.$supabase.removeSubscription(this.projectSectionsSub)
+      }
+
+      this.projectSectionsSub = this.$supabase.from(`pac_sections_project:project_id=eq.${projectId}`).on('*', (update) => {
+        this.spliceSection(this.PAC, update.new)
+      }).subscribe()
+    },
     // This is duplicate from /projects/trame.vue
     selectSection (section) {
       const { text, titre, path, slug, dir, ordre } = this.PAC.find(s => s.path === section.path)
@@ -120,34 +133,6 @@ export default {
         dir,
         ordre,
         project_id: this.project.id
-      }
-    },
-    async saveSection (editedSection) {
-      const { data: savedSection } = await this.$supabase.from('pac_sections_project').select('id').match({
-        project_id: this.project.id, // This need to be dynamic.
-        path: this.selectedSection.path
-      })
-
-      const newData = Object.assign({
-        // dept: this.departementCode
-      }, this.selectedSection, editedSection)
-
-      if (savedSection[0]) { newData.id = savedSection[0].id }
-
-      try {
-        if (savedSection[0]) {
-          await this.$supabase.from('pac_sections_project').upsert(newData)
-        } else {
-          await this.$supabase.from('pac_sections_project').insert([newData])
-        }
-
-        const sectionIndex = this.PAC.findIndex(s => s.path === newData.path)
-
-        // this.PAC[sectionIndex] = newData
-        this.PAC.splice(sectionIndex, 1, newData)
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.log('Error saving data')
       }
     },
     async addNewSection (newSection) {

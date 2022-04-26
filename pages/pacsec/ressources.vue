@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import RessourcesList from '@/components/Ressources.vue/RessourcesList.vue'
+import RessourcesList from '@/components/Ressources/RessourcesList.vue'
 
 export default {
   components: {

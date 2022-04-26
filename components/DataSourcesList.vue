@@ -7,14 +7,15 @@
           column
         >
           <v-chip
-            v-for="themeKey in themesKeys"
-            :key="themeKey"
+            v-for="theme in themes"
+            :key="theme.id"
             class="text-capitalize"
+            :value="theme.id"
             filter
             outlined
             color="bf500"
           >
-            {{ themeKey }}
+            {{ theme.text }}
           </v-chip>
         </v-chip-group>
       </v-col>
@@ -25,8 +26,17 @@
           {{ theme }}
         </h2>
       </v-col>
-      <v-col v-for="(source, i) in sources" :key="`${theme}-${i}-${source.title}`" cols="12" sm="6" md="4">
-        <DataSourceCard :source="source" :region="region" />
+      <v-col v-for="(source, i) in sources" :key="`${theme}-${i}-${source.nom_couche}`" cols="12">
+        <v-row>
+          <v-col cols="12">
+            <h3 class="text-h3">
+              {{ source.nom_couche }}
+            </h3>
+          </v-col>
+          <v-col v-for="obj in source.objets" :key="`${source.nom_couche}-${obj.nom_couche}`" cols="12" sm="6" md="4">
+            <DataSourceCard :sub-theme="source.subTheme" :source="obj" />
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
   </v-container>
@@ -40,38 +50,30 @@ export default {
     region: {
       type: String,
       default: ''
+    },
+    dataSources: {
+      type: Array,
+      default () { return [] }
+    },
+    themes: {
+      type: Array,
+      default () { return [] }
     }
   },
   data () {
     return {
-      dataSources: [],
       selectedTheme: ''
     }
   },
-  async fetch () {
-    this.dataSources = await this.$content('Data', {
-      deep: true
-    }).fetch()
-  },
   computed: {
-    themes () {
-      return groupBy(this.dataSources, source => source.theme)
-    },
-    themesKeys () {
-      return Object.keys(this.themes).filter(k => k)
-    },
     filteredThemes () {
-      const selectedKey = this.themesKeys[this.selectedTheme]
+      const filterredSources = this.dataSources.filter((source) => {
+        return this.selectedTheme ? (source.theme.id === this.selectedTheme) : true
+      })
 
-      if (selectedKey) {
-        const theme = {}
-
-        theme[selectedKey] = this.themes[selectedKey]
-
-        return theme
-      } else {
-        return this.themes
-      }
+      return groupBy(filterredSources, (source) => {
+        return source.theme.text
+      })
     }
   }
 }
