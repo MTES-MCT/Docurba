@@ -32,5 +32,8 @@ En effet la prévention des inondations doit être pensée et **planifiée à lo
 
 **Pour aller plus loin :**
 
-https://www.rhone-mediterranee.eaufrance.fr/sites/sierm/files/content/2020-06/20191125-PUB-SDAGE-PGRI-RM-Urbanisme_BasseDef_2.pdf
+- https://www.rhone-mediterranee.eaufrance.fr/sites/sierm/files/content/2020-06/20191125-PUB-SDAGE-PGRI-RM-Urbanisme_BasseDef_2.pdf
+- http://outil2amenagement.cerema.fr/le-schema-directeur-d-amenagement-et-de-gestion-r430.html
+- http://outil2amenagement.cerema.fr/le-plan-de-gestion-des-risques-d-inondation-pgri-r632.html
+
 
