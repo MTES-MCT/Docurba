@@ -38,7 +38,8 @@
       </v-row>
     </v-container>
     <LandingUserStory />
-    <LandingCtaByNeed />
+    <LandingCitations />
+    <!-- <LandingCtaByNeed /> -->
     <LandingKeyFeatures />
   </div>
 </template>
