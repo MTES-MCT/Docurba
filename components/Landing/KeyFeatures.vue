@@ -21,7 +21,7 @@
                 Direct
               </v-list-item-title>
               <b>Ressources disponibles immédiatement.</b>
-              Les documents types et guides, ainsi que les données concernant votre territoire sont mis à votre disposition par les services de l’Etat et téléchargeables aux formats .csv ou .shp.
+              Les éléments nationaux et régionaux, ainsi que les données concernant votre territoire sont mis à votre disposition par les services de l’Etat et téléchargeables aux formats .csv ou .shp.
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -37,7 +37,7 @@
                 Lisible
               </v-list-item-title>
               <b>Navigation optimisée dans votre porter-à-connaissance.</b>
-              Les données et informations du PAC sont mises en forme et faciles à consulter grâce à différents niveaux d’informations, des graphes et des cartes.
+              Les données et informations du PAC sont mises en forme et faciles à consulter grâce à différents niveaux d’informations, et des fonctionnalités de commentaires ou partages au sein de l’équipe.
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -53,7 +53,7 @@
                 Collaboratif
               </v-list-item-title>
               <b>Accompagnement des services de l’Etat.</b>
-              La plateforme propose une FAQ dédiée, et l’option feuille de route partagée avec la possibilité d’associer des documents aux étapes clés de la procédure. Vous pouvez ainsi offrir de la visibilité aux Services de l’Etat, et aux parties prenantes associées lors de l’élaboration du document d’urbanisme.
+              La plateforme propose une FAQ dédiée, et l’option feuille de route partagée avec la possibilité de suivre les étapes clés de la procédure. Vous pouvez ainsi offrir de la visibilité aux Services de l’Etat, et aux parties prenantes associées lors de l’élaboration du document d’urbanisme.
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
@@ -69,7 +69,7 @@
                 Complet
               </v-list-item-title>
               <b>Un maximum d’informations centralisées au même endroit.</b>
-              Le cadre juridique, les documents supra-territoriaux (SRADDET, SCoT…), les données et le porter à connaissance préparé par la DDT et validé par le préfet disponibles sur une même plateforme.
+              supra-territoriaux (SRADDET, SCoT…), les données et le porter à connaissance préparé par la DGALN (Direction Générale de l’Aménagement du Territoire) en partenariat avec les DREAL et DDT (Direction Départementale du Territoire)
             </v-list-item-content>
           </v-list-item>
         </v-list>
