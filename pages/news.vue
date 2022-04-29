@@ -1,24 +1,22 @@
 <template>
   <v-container class="py-0">
     <v-timeline dense align-top>
-      <v-timeline-item>
+      <v-timeline-item v-for="(newsItem, i) in news" :key="`news-item-${i}`">
         <v-row class="pt-1">
           <v-col cosl="12" sm="3" md="2">
-            11/06/1993
+            {{ newsItem.date }}
           </v-col>
           <v-col cols="12" sm="9" md="10">
             <v-card>
               <v-card-title>
-                Titre de la news
+                {{ newsItem.titre }}
               </v-card-title>
               <v-card-text>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos, totam consequatur facilis aliquid voluptas omnis laborum sint eius ullam atque distinctio earum voluptates minus architecto magni deleniti nihil quae tempore?
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Animi, porro quod? Voluptatum possimus veritatis nostrum distinctio voluptas tenetur, saepe laborum quaerat quibusdam ipsum quae inventore culpa dolor animi architecto consectetur.
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates fugiat soluta incidunt. Sit iusto adipisci ratione doloremque quos, perferendis exercitationem quis maxime quasi? Maxime harum voluptas nesciunt dolores ex possimus.
+                <nuxt-content :document="newsItem" />
               </v-card-text>
-              <v-card-actions>
-                <v-btn block color="primary" href="/news/item" nuxt>
-                  Voir plus
+              <v-card-actions v-if="newsItem.link">
+                <v-btn block color="primary" :href="newsItem.link.href" target="_blank">
+                  {{ newsItem.link.text }}
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -30,14 +28,20 @@
 </template>
 
 <script>
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+dayjs.extend(customParseFormat)
+
 export default {
   async asyncData ({ $content }) {
-    const FAQ = await $content('FAQ', {
+    const news = await $content('News', {
       deep: true
     }).fetch()
 
     return {
-      FAQ: FAQ.filter(q => q.visible)
+      news: news.filter(q => q.visible).sort((a, b) => {
+        return +dayjs(b.date, 'DD/MM/YYYY') - +dayjs(a.date, 'DD/MM/YYYY')
+      })
     }
   }
 }

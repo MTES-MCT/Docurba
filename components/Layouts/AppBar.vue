@@ -34,6 +34,9 @@
     <!-- This client only could be removed with proper user management server side -->
     <client-only>
       <div class="align-self-center">
+        <v-btn text href="/news" nuxt>
+          News
+        </v-btn>
         <v-btn v-if="!$user.id" text @click="openLogin = true">
           Connexion
         </v-btn>
