@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-container fluid>
+    <v-container fluid class="g100 pb-16">
       <!-- Hero -->
-      <v-row justify="center" align="center" class="pt-16 g100">
+      <v-row justify="center" align="center" class="pt-16">
         <v-col cols="12" sm="10" md="10">
           <h1 class="text-h1 text-center">
             Docurba centralise les ressources utiles pour élaborer votre document d'urbanisme
@@ -14,8 +14,8 @@
           </p>
         </v-col>
       </v-row>
-      <v-row class="pb-16 g100" justify="center" align="center">
-        <!-- <v-col cols="auto">
+      <v-row justify="center" align="center">
+        <v-col cols="2">
           <v-select
             v-model="searchQuery.document"
             filled
@@ -24,12 +24,14 @@
             :items="documents"
           />
         </v-col>
-        <v-col cols="3">
+        <!-- <v-col cols="3">
           <VRegionAutocomplete v-model="searchQuery.region" />
         </v-col> -->
-        <v-col cols="10" sm="6">
+        <v-col cols="8" sm="6">
           <VTownAutocomplete v-model="selectedTown" :cols-dep="4" :cols-town="8" />
         </v-col>
+      </v-row>
+      <v-row justify="center">
         <v-col cols="auto">
           <v-btn color="primary" x-large nuxt :to="searchLink">
             Rechercher
@@ -41,6 +43,9 @@
     <LandingCitations />
     <!-- <LandingCtaByNeed /> -->
     <LandingKeyFeatures />
+    <v-row class="g100 py-16">
+      <LandingNewsLetterForm />
+    </v-row>
   </div>
 </template>
 

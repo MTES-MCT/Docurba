@@ -1,7 +1,7 @@
 <template>
   <v-container class="mt-10">
-    <v-row v-for="(c, i) in citations" :key="`citation-${i}`" align="center">
-      <v-spacer v-if="i%2 === 1" />
+    <v-row justify="center">
+      <!-- <v-spacer v-if="i%2 === 1" /> -->
       <!-- <v-col v-if="i%2 === 1" cols="7">
         <v-card flat>
           <v-card-title class="d-block text-right">
@@ -9,7 +9,7 @@
           </v-card-title>
         </v-card>
       </v-col> -->
-      <v-col cols="12" sm="6">
+      <v-col v-for="(c, i) in citations" :key="`citation-${i}`" cols="12" sm="6">
         <!-- <v-card flat color="rm300" dark> -->
         <v-card flat>
           <!-- <v-card flat color="bf300" dark> -->
