@@ -39,6 +39,16 @@
         </v-col>
       </v-row>
     </v-container>
+    <v-container>
+      <!-- User stories -->
+      <v-row class="py-16">
+        <v-col cols="12">
+          <h2 class="text-h2">
+            Comment ça marche?
+          </h2>
+        </v-col>
+      </v-row>
+    </v-container>
     <LandingUserStory />
     <LandingCitations />
     <!-- <LandingCtaByNeed /> -->
