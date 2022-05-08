@@ -15,7 +15,10 @@
         <v-card-title class="break-word">
           {{ ressource.title }}
         </v-card-title>
-        <v-card-text v-if="ressource.body.children && ressource.body.children.length">
+        <v-card-text
+          v-if="ressource.body.children && ressource.body.children.length"
+          class="overflow-auto ressource-text"
+        >
           <nuxt-content :document="ressource" />
         </v-card-text>
       </v-card>
@@ -52,3 +55,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.ressource-text {
+  max-height: 250px;
+}
+</style>

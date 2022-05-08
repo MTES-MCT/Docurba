@@ -65,7 +65,7 @@ import regions from '@/assets/data/Regions.json'
 export default {
   data () {
     return {
-      documents: ['CC', 'PLU', 'PLUi', 'PLUi-H', 'PLUi-D', 'PLUi-HD', 'SCoT', 'SCot-AEC'],
+      documents: ['CC', 'PLU'], // 'PLUi', 'PLUi-H', 'PLUi-D', 'PLUi-HD', 'SCoT', 'SCot-AEC'],
       searchQuery: {
         region: null,
         document: null
