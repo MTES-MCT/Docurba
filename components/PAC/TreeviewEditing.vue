@@ -86,6 +86,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { uniq } from 'lodash'
 import pacContent from '@/mixins/pacContent.js'
 
+function getDepth (path) {
+  // console.log(path)
+  return (path.replace(/\/intro$/, '').match(/\//g) || []).length
+}
+
 export default {
   mixins: [pacContent],
   props: {
@@ -120,9 +125,14 @@ export default {
   data () {
     const children = this.value.filter((s) => {
       const path = (s.path || s).replace(/\/intro$/, '')
+      const depth = getDepth(path)
 
       const child = this.value.find((section) => {
-        return s !== section && (section.path || section).includes(path)
+        // console.log((section.path || section), path)
+
+        return s !== section &&
+        (section.path || section).includes(path) &&
+          depth < getDepth(section)
       })
 
       return !child
@@ -154,34 +164,6 @@ export default {
       //   return this.filteredPAC
       // }
     }
-    // filteredPAC () {
-    //   if (this.contentSearch.length) {
-    //     const searchedContent = this.PAC.map((section) => {
-    //       const searchedSection = { searched: section.searched }
-
-    //       if (!section.searched) {
-    //         const searchedValue = this.contentSearch.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
-    //         const searched = section.searchValue.includes(searchedValue)
-
-    //         searchedSection.searched = searched
-    //       }
-
-    //       return Object.assign(searchedSection, section)
-    //     })
-
-    //     return searchedContent.filter(section => section.searched)
-    //   } else { return this.PAC }
-    // },
-    // treeViewSelectedSections: {
-    //   get () {
-    //     return this.selectedSections
-    //   },
-    //   set (selectedItems) {
-    //     if (!this.contentSearch.length) {
-    //       this.selectedSections = selectedItems
-    //     }
-    //   }
-    // }
   },
   watch: {
     selectedSections () {

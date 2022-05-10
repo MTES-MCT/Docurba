@@ -81,26 +81,8 @@ export default {
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.town.code_departement)
     const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', project.id)
 
-    // For each edited section.
-    // unionBy(projectSections, deptSections, (section) => {
-    //   return section.path
-    // }).forEach((section) => {
-    //   // Parse the body only if text was edited.
-    //   if (section.text) { section.body = mdParser.processSync(section.text).result }
-
-    //   const sectionIndex = this.PAC.findIndex(s => s.path === section.path)
-
-    //   if (sectionIndex >= 0) {
-    //     // The Object Assign here is to keep the order since it's not saved. As could be other properties.
-    //     // Although it might create inconsistenties for versions that get Archived later on.
-    //     this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], omitBy(section, isNil))
-    //   } else {
-    //     // console.log('section added', section)
-    //     this.PAC.push(Object.assign({}, section))
-    //   }
-    // })
-
-    project.PAC = this.unifyPacs([project.PAC, projectSections, deptSections, this.PAC], project.PAC.map((s) => {
+    // TODO: Need to add the reading and unify of comments and checked markers here.
+    project.PAC = this.unifyPacs([projectSections, deptSections, this.PAC], project.PAC.map((s) => {
       return s.path || s
     }))
 
@@ -114,14 +96,6 @@ export default {
       return this.enrichSection(section)
     }).filter(s => !!s.body)
 
-    // const enrichedProjectSections = projectSections.map((section) => {
-    //   return this.enrichSection(section)
-    // })
-
-    // project.PAC = unionBy(enrichedProjectSections, project.PAC, (section) => {
-    //   return section.path
-    // })
-
     this.project = project
 
     this.loaded = true
@@ -130,14 +104,18 @@ export default {
     _project () {
       return this.project
     },
-    async savePacItem (pacItem) {
+    savePacItem (pacItem) {
+      // TODO: This need to be changed into its own table.
+
       const { PAC } = this.project
 
       const projectPacItem = PAC.find(item => item.path === pacItem.path)
       projectPacItem.checked = pacItem.checked
       // Object.assign(projectPacItem, pacItem)
 
-      await this.$supabase.from('projects').update({ PAC }).eq('id', this.project.id)
+      // console.log(pacItem, projectPacItem)
+
+      // await this.$supabase.from('projects').update({ PAC }).eq('id', this.project.id)
     },
     enrichSection (section) {
       const enrichedSection = Object.assign({ comments: [] }, section)

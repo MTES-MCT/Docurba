@@ -179,7 +179,7 @@ export default {
     async changeSelectedSections (selectedSections) {
       // This make it so we can't save sections as objects in reading mode for comments and checked features.
       await this.$supabase.from('projects').update({
-        PAC: selectedSections
+        PAC: selectedSections.map(s => s || s.path)
       }).eq('id', this.project.id)
     }
   }
