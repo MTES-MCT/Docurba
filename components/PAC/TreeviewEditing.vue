@@ -131,8 +131,8 @@ export default {
         // console.log((section.path || section), path)
 
         return s !== section &&
-        (section.path || section).includes(path) &&
-          depth < getDepth(section)
+          (section.path || section).includes(path) &&
+          depth < getDepth(section.path || section)
       })
 
       return !child

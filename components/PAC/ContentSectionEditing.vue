@@ -99,6 +99,7 @@ export default {
     return {
       mdParser,
       editedSection: {
+        path: this.section.path,
         text: mdParser.processSync(this.section.text).contents,
         titre: this.section.titre
       },
