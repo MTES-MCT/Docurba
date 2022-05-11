@@ -15,6 +15,9 @@
         <!-- <v-col cols="12" class="tree-view">
           <PACTreeviewSelection v-model="newProject.PAC" :pac-data="PAC" />
         </v-col> -->
+        <v-col v-if="error" cols="12">
+          <span class="error--text">Echec de sauvegarde, veuillz réessayer ultérieurement.</span>
+        </v-col>
       </v-row>
     </v-card-text>
     <v-card-actions>
@@ -55,7 +58,8 @@ export default {
       newProjectTown: this.project.town,
       newProject: Object.assign({}, this.project),
       userDeptCode: null,
-      loading: false
+      loading: false,
+      error: null
     }
   },
   async mounted () {
@@ -119,6 +123,7 @@ export default {
       } else {
         // eslint-disable-next-line no-console
         console.log('err creating project', data, err)
+        this.error = err
       }
 
       this.loading = false

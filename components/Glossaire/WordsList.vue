@@ -9,21 +9,24 @@
         <v-btn
           elevation="2"
           icon
-          :href="`#${letter}`"
           :disabled="!groupedWords[letter]"
+          @click="scrollTo(`${letter}-anchor`)"
         >
           <b>{{ letter }}</b>
         </v-btn>
       </v-col>
     </v-row>
-    <v-row v-for="(words, letter) in groupedWords" :key="letter">
+    <v-row v-for="(group) in sortedGroups" :key="group.letter">
       <v-col cols="12">
-        <h2 :id="letter" class="text-h2">
-          {{ letter }}
+        <h2 :id="`${group.letter}-anchor`" class="text-h2">
+          {{ group.letter }}
         </h2>
       </v-col>
-      <v-col v-for="word in words" :key="word.titre" cols="12" sm="6" md="4">
-        <v-card :id="word.titre" :href="`#${word.titre}`" :ripple="false">
+      <v-col v-for="word in group.words" :key="word.titre" cols="12" sm="6" md="4">
+        <v-card
+          :id="word.titre"
+          :ripple="false"
+        >
           <v-card-title class="break-word">
             {{ word.titre }}
           </v-card-title>
@@ -59,6 +62,19 @@ export default {
       }), (word) => {
         return word.titre[0]
       })
+    },
+    sortedGroups () {
+      return Object.keys(this.groupedWords).sort().map((letter) => {
+        return {
+          letter,
+          words: this.groupedWords[letter]
+        }
+      })
+    }
+  },
+  methods: {
+    scrollTo (targetId) {
+      this.$vuetify.goTo(`#${targetId}`)
     }
   }
 }
