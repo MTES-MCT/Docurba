@@ -14,10 +14,13 @@
             <v-col cols="12">
               <InputsPasswordTextField v-model="userData.password" />
             </v-col>
+            <v-col v-if="error && error.status === 400" cols="12">
+              <span class="error--text">Email ou mot de passe incorrecte.</span>
+            </v-col>
             <v-spacer />
             <v-col cols="auto">
               <v-btn text small @click="sendResetPassword">
-                Mot de passe oublier ?
+                Mot de passe oublié ?
               </v-btn>
             </v-col>
           </v-row>
@@ -104,8 +107,6 @@ export default {
     async signIn () {
       // console.log('signIn', this.$supabase)
       const { user, session, error } = await this.$auth.signIn(this.userData)
-
-      console.log('login', user, session, error)
 
       if (!error) {
         // eslint-disable-next-line no-console
