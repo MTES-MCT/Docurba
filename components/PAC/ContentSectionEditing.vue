@@ -18,6 +18,7 @@
         class="mr-1 mb-1"
         color="primary"
         :href="file.url"
+        target="_blank"
       >
         {{ file.name }}
       </v-chip>

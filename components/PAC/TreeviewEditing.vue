@@ -131,9 +131,14 @@ export default {
         // console.log((section.path || section), path)
 
         return s !== section &&
-          (section.path || section).includes(path) &&
-          depth < getDepth(section.path || section)
+          (section.path || section).includes(path + '/') &&
+          depth + 1 === getDepth(section.path || section)
       })
+
+      if (path.includes('montagne')) {
+        console.log('parent', path)
+        console.log('child', child)
+      }
 
       return !child
     })
