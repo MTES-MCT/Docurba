@@ -27,6 +27,9 @@
             :section="selectedSection"
             :pac-data="PAC"
             table="pac_sections_project"
+            :attachements-folders="[
+              project.town.code_departement
+            ]"
             :match-keys="{
               project_id: project.id,
             }"

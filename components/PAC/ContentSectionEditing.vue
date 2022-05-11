@@ -61,6 +61,7 @@
 </template>
 <script>
 import { mdiContentSave } from '@mdi/js'
+import { uniq } from 'lodash'
 
 import unified from 'unified'
 import remarkParse from 'remark-parse'
@@ -87,6 +88,10 @@ export default {
     matchKeys: {
       type: Object,
       required: true
+    },
+    attachementsFolders: {
+      type: Array,
+      default () { return [] }
     }
   },
   data () {
@@ -182,8 +187,19 @@ export default {
       this.modified = false
       this.saveDialog = false
     },
-    async fetchAttachements () {
-      const folder = this.section.project_id || this.section.dept
+    fetchAttachements () {
+      this.attachements = []
+
+      const folders = uniq(this.attachementsFolders.concat([
+        this.section.project_id || this.section.dept
+      ]))
+
+      folders.forEach((folder) => {
+        this.fetchFolderFiles(folder)
+      })
+    },
+    async fetchFolderFiles (folder) {
+      // const folder = this.section.project_id || this.section.dept
 
       const { data: attachements, err } = await this.$supabase
         .storage
@@ -195,8 +211,6 @@ export default {
         })
 
       if (!err) {
-        this.attachements = []
-
         for (let i = 0; i < attachements.length; i++) {
           const file = attachements[i]
 

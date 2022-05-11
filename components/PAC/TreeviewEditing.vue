@@ -135,11 +135,6 @@ export default {
           depth + 1 === getDepth(section.path || section)
       })
 
-      if (path.includes('montagne')) {
-        console.log('parent', path)
-        console.log('child', child)
-      }
-
       return !child
     })
 
