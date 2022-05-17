@@ -105,6 +105,8 @@ export default {
     return {
       mdParser,
       editedSection: {
+        project_id: this.section.project_id,
+        dir: this.section.dir,
         path: this.section.path,
         text: mdParser.processSync(this.section.text).contents,
         titre: this.section.titre
