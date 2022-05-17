@@ -75,7 +75,6 @@ export default {
     const projectId = this.$route.params.projectId
 
     const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-
     const project = projects ? projects[0] : null
 
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.town.code_departement)

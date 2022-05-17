@@ -26,6 +26,7 @@ export default {
     { src: '~/plugins/user.js' },
     { src: '~/plugins/auth.js' },
     { src: '~/plugins/pac.js' },
+    { src: '~/plugins/daturba.js' },
     { src: '~/plugins/matomo.js', mode: 'client' },
     { src: '~/plugins/print.js', mode: 'client' }
   ],

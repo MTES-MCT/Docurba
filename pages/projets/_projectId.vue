@@ -26,7 +26,7 @@ export default {
     return {
       project: null,
       tabs: [
-        { text: 'PAC sec', to: `/projets/${this.$route.params.projectId}/content` },
+        { text: 'PAC', to: `/projets/${this.$route.params.projectId}/content` },
         { text: 'Jeux de données', to: `/projets/${this.$route.params.projectId}/data` },
         { text: 'Ressources', to: `/projets/${this.$route.params.projectId}/ressources` }
       ]
