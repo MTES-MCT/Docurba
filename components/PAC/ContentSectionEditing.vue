@@ -12,16 +12,7 @@
       </VTiptap>
     </v-col>
     <v-col cols="12">
-      <v-chip
-        v-for="file in attachements"
-        :key="file.name"
-        class="mr-1 mb-1"
-        color="primary"
-        :href="file.url"
-        target="_blank"
-      >
-        {{ file.name }}
-      </v-chip>
+      <PACSectionsAttachementsChips :files="attachements" />
     </v-col>
     <v-fab-transition>
       <v-btn
