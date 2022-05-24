@@ -53,7 +53,8 @@ export default {
   ],
 
   serverMiddleware: [
-    { path: '/api/communes', handler: '~/server-middleware/communes.js' }
+    { path: '/api/communes', handler: '~/server-middleware/communes.js' },
+    { path: '/api/communes', handler: '~/server-middleware/EPCI.js' }
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios

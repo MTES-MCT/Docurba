@@ -3,7 +3,6 @@ const app = express()
 app.use(express.json())
 
 const communes = require('./Data/communes-france.json')
-
 const cache = {}
 
 function getCommunesByDepartements (code) {
