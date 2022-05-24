@@ -27,13 +27,16 @@
         <!-- <v-col cols="3">
           <VRegionAutocomplete v-model="searchQuery.region" />
         </v-col> -->
-        <v-col cols="8" sm="6">
+        <v-col v-if="searchQuery.document && searchQuery.document.includes('i')" cols="8" sm="6">
+          <VEpciAutocomplete v-model="selectedEpci" />
+        </v-col>
+        <v-col v-else cols="8" sm="6">
           <VTownAutocomplete v-model="selectedTown" :cols-dep="4" :cols-town="8" />
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="auto">
-          <v-btn color="primary" x-large nuxt :to="searchLink">
+          <v-btn color="primary" x-large :loading="searchLoading" @click="searchCTA">
             Rechercher
           </v-btn>
         </v-col>
@@ -60,17 +63,20 @@
 </template>
 
 <script>
+import axios from 'axios'
 import regions from '@/assets/data/Regions.json'
 
 export default {
   data () {
     return {
-      documents: ['CC', 'PLU'], // 'PLUi', 'PLUi-H', 'PLUi-D', 'PLUi-HD', 'SCoT', 'SCot-AEC'],
+      documents: ['CC', 'PLU', 'PLUi', 'PLUi-H', 'PLUi-D', 'PLUi-HD'], // 'SCoT', 'SCot-AEC'],
       searchQuery: {
         region: null,
         document: null
       },
-      selectedTown: null
+      selectedEpci: null,
+      selectedTown: null,
+      searchLoading: false
     }
   },
   computed: {
@@ -96,6 +102,31 @@ export default {
   watch: {
     selectedTown () {
       this.searchQuery.region = regions.find(r => r.name === this.selectedTown.nom_region)
+    }
+  },
+  methods: {
+    async searchCTA () {
+      console.log('searchCTA', this.selectedEpci)
+
+      if (this.searchQuery.document && this.searchQuery.document.includes('i')) {
+        this.searchLoading = true
+
+        const EPCI = (await axios({
+          method: 'get',
+          url: `/api/epci/${this.selectedEpci.id}`
+        })).data
+
+        this.$router.push({
+          path: '/pacsec/content',
+          query: Object.assign({}, this.searchLink.query, {
+            insee: EPCI.towns.map(t => t.code_commune_INSEE)
+          })
+        })
+
+        this.searchLoading = false
+      } else {
+        this.$router.push(this.searchLink)
+      }
     }
   }
 }

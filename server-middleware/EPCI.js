@@ -5,7 +5,8 @@ app.use(express.json())
 const EPCI = require('./Data/EPCI.json')
 
 app.get('/:id', (req, res) => {
-  const epciById = EPCI.find(e => e.EPCI === req.params.id)
+  // eslint-disable-next-line eqeqeq
+  const epciById = EPCI.find(e => e.EPCI == req.params.id)
   res.status(epciById ? 200 : 404).send(epciById)
 })
 
