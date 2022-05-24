@@ -106,8 +106,6 @@ export default {
   },
   methods: {
     async searchCTA () {
-      console.log('searchCTA', this.selectedEpci)
-
       if (this.searchQuery.document && this.searchQuery.document.includes('i')) {
         this.searchLoading = true
 
@@ -116,10 +114,15 @@ export default {
           url: `/api/epci/${this.selectedEpci.id}`
         })).data
 
+        const regionCode = EPCI.towns[0].code_region
+        // eslint-disable-next-line eqeqeq
+        const region = regions.find(r => r.code == regionCode)
+
         this.$router.push({
           path: '/pacsec/content',
           query: Object.assign({}, this.searchLink.query, {
-            insee: EPCI.towns.map(t => t.code_commune_INSEE)
+            insee: EPCI.towns.map(t => t.code_commune_INSEE),
+            region: region.iso
           })
         })
 

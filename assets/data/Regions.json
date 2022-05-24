@@ -1,55 +1,73 @@
 [{
   "iso": "FR-ARA",
-  "name": "Auvergne-Rhône-Alpes"
-}, {
+  "name": "Auvergne-Rhône-Alpes",
+  "code" : "84"
+  }, {
   "iso": "FR-BFC",
-  "name": "Bourgogne-Franche-Comté"
-},{
+  "name": "Bourgogne-Franche-Comté",
+  "code" : "27"
+  },{
   "iso": "FR-BRE",
-  "name": "Bretagne"
-},{
+  "name": "Bretagne",
+  "code" : "53"
+  },{
   "iso": "FR-CVL",
-  "name": "Centre-Val de Loire"
-},{
+  "name": "Centre-Val de Loire",
+  "code" : "24"
+  },{
   "iso": "FR-COR",
-  "name": "Corse"
-},{
+  "name": "Corse",
+  "code" : "94"
+  },{
   "iso": "FR-GES",
-  "name": "Grand Est"
-},{
+  "name": "Grand Est",
+  "code" : "44"
+  },{
   "iso": "FR-HDF",
-  "name": "Hauts-de-France"
-},{
+  "name": "Hauts-de-France",
+  "code" : "32"
+  },{
   "iso": "FR-IDF",
-  "name": "Île-de-France"
-},{
+  "name": "Île-de-France",
+  "code" : "11"
+  },{
   "iso": "FR-NOR",
-  "name": "Normandie"
-},{
+  "name": "Normandie",
+  "code" : "28"
+  },{
   "iso": "FR-NAQ",
-  "name": "Nouvelle-Aquitaine"
-},{
+  "name": "Nouvelle-Aquitaine",
+  "code" : "75"
+  },{
   "iso": "FR-OCC",
-  "name": "Occitanie"
-},{
+  "name": "Occitanie",
+  "code" : "76"
+  },{
   "iso": "FR-PDL",
-  "name": "Pays de la Loire"
-},{
+  "name": "Pays de la Loire",
+  "code" : "52"
+  },{
   "iso": "FR-PAC",
-  "name": "Provence-Alpes-Côte d'Azur"
-},{
+  "name": "Provence-Alpes-Côte d'Azur",
+  "code" : "93"
+  },{
   "iso": "FR-GUA",
-  "name": "Guadeloupe"
-},{
+  "name": "Guadeloupe",
+  "code" : "1"
+  },{
   "iso": "FR-GUF",
-  "name": "Guyane"
-},{
+  "name": "Guyane",
+  "code" : "3"
+  },{
   "iso": "FR-MTQ",
-  "name": "Martinique"
-},{
+  "name": "Martinique",
+  "code" : "2"
+  },{
   "iso": "FR-LRE",
-  "name": "La Réunion"
-},{
+  "name": "La Réunion",
+  "code" : "4"
+  },{
   "iso": "FR-MAY",
-  "name": "Mayotte"
-}]
+  "name": "Mayotte",
+  "code" : "6"
+  }]
