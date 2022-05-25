@@ -27,19 +27,29 @@ export default {
       default () {
         return {}
       }
+    },
+    epciList: {
+      type: Array,
+      default () {
+        return []
+      }
     }
   },
   data () {
-    const currentEPCI = EPCIs.find(e => e.id === this.value ? this.value.id : '')
+    const items = this.epciList.length ? this.epciList : EPCIs
+    const currentEPCI = items.find(e => e.id === this.value ? this.value.id : '')
 
     return {
-      selectedEpci: currentEPCI || null,
-      items: EPCIs
+      selectedEpci: currentEPCI || null
+    }
+  },
+  computed: {
+    items () {
+      return this.epciList.length ? this.epciList : EPCIs
     }
   },
   methods: {
     input () {
-      console.log(this.selectedEpci)
       this.$emit('input', this.selectedEpci)
     }
   }

@@ -9,7 +9,10 @@
         <v-col cols="12">
           <VDocumentSelect v-model="newProject.docType" />
         </v-col>
-        <v-col cols="12">
+        <v-col v-if="newProject.docType.includes('i') && EPCIs.length" cols="12">
+          <VEpciAutocomplete :epci-list="EPCIs" />
+        </v-col>
+        <v-col v-else cols="12">
           <VTownAutocomplete v-model="newProjectTown" :default-departement-code="userDeptCode" hide-dept />
         </v-col>
         <!-- <v-col cols="12" class="tree-view">
@@ -36,6 +39,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import regions from '@/assets/data/Regions.json'
 
 export default {
@@ -58,6 +62,7 @@ export default {
       newProjectTown: this.project.town,
       newProject: Object.assign({}, this.project),
       userDeptCode: null,
+      EPCIs: [],
       loading: false,
       error: null
     }
@@ -93,6 +98,13 @@ export default {
         this.PAC.push(Object.assign({}, section))
       }
     })
+
+    const EPCIs = (await axios({
+      method: 'get',
+      url: `/api/epci?departement=${this.userDeptCode}`
+    })).data
+
+    this.EPCIs = EPCIs
   },
   methods: {
     createOrUpdate (savedProject) {
