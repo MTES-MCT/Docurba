@@ -67,6 +67,7 @@
 
 <script>
 import { mdiPlus, mdiPaperclip } from '@mdi/js'
+import slugify from 'slugify'
 
 export default {
   props: {
@@ -113,7 +114,7 @@ export default {
 
           await this.$supabase.storage
             .from('project-annexes')
-            .upload(`/${this.folder}${this.section.path}/${file.name}`, file)
+            .upload(`/${this.folder}${this.section.path}/${slugify(file.name, '_')}`, file)
         }
       }
 
