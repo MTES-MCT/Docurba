@@ -8,7 +8,7 @@
     >
       <v-list-item-content>
         <v-list-item-title>{{ project.name }}</v-list-item-title>
-        <v-list-item-subtitle>{{ project.docType }} - {{ project.town.nom_commune }}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{ project.docType }} - {{ placeName }}</v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
         <div class="d-flex">
@@ -88,6 +88,11 @@ export default {
         mdiEye,
         mdiDownload
       }
+    }
+  },
+  computed: {
+    placeName () {
+      return this.project.epci ? this.project.epci.label : this.project.towns[0].nom_commune
     }
   }
 }

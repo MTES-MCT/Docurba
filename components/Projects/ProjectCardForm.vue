@@ -10,7 +10,7 @@
           <VDocumentSelect v-model="newProject.docType" />
         </v-col>
         <v-col v-if="newProject.docType.includes('i') && EPCIs.length" cols="12">
-          <VEpciAutocomplete :epci-list="EPCIs" />
+          <VEpciAutocomplete v-model="newProjectEpci" :epci-list="EPCIs" />
         </v-col>
         <v-col v-else cols="12">
           <VTownAutocomplete v-model="newProjectTown" :default-departement-code="userDeptCode" hide-dept />
@@ -59,6 +59,7 @@ export default {
   data () {
     return {
       PAC: [],
+      newProjectEpci: this.project.epci,
       newProjectTown: this.project.town,
       newProject: Object.assign({}, this.project),
       userDeptCode: null,
@@ -119,10 +120,13 @@ export default {
 
       this.newProject.PAC = this.newProject.PAC.length ? this.newProject.PAC : this.PAC.map(s => s.path)
 
-      const savedProject = Object.assign({
-        town: this.newProjectTown,
-        region: regions.find(r => r.name === this.newProjectTown.nom_region).iso
-      }, this.newProject)
+      const isEpci = this.newProject.docType.includes('i')
+
+      const savedProject = Object.assign({}, this.newProject, {
+        epci: isEpci ? this.newProjectEpci : null,
+        towns: isEpci ? this.newProjectEpci.towns : [this.newProjectTown],
+        region: this.getRegion(isEpci)
+      })
 
       const { data, err } = await this.createOrUpdate(savedProject)
 
@@ -139,6 +143,15 @@ export default {
       }
 
       this.loading = false
+    },
+    getRegion (isEpci) {
+      if (isEpci) {
+        const regionCode = this.newProjectEpci.towns[0].code_region
+        // eslint-disable-next-line eqeqeq
+        return regions.find(r => r.code == regionCode).iso
+      } else {
+        return regions.find(r => r.name === this.newProjectTown.nom_region).iso
+      }
     }
   }
 }

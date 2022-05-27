@@ -54,7 +54,7 @@ export default {
       }
     },
     async getSharedProjects () {
-      const { data: sharedProjects, error } = await this.$supabase.from('projects_sharing').select('project: project_id (id, name, docType, created_at, town)').eq('user_email', this.$user.email)
+      const { data: sharedProjects, error } = await this.$supabase.from('projects_sharing').select('project: project_id (id, name, docType, created_at, towns)').eq('user_email', this.$user.email)
 
       if (!error) {
         this.sharedProjects = sharedProjects.map(p => p.project)
