@@ -12,7 +12,7 @@
       </VTiptap>
     </v-col>
     <v-col cols="12">
-      <PACSectionsAttachementsChips :files="attachements" />
+      <PACSectionsAttachementsChips :files="attachements" editable @removed="removeFile" />
     </v-col>
     <v-fab-transition>
       <v-btn
@@ -206,17 +206,24 @@ export default {
       if (!err) {
         for (let i = 0; i < attachements.length; i++) {
           const file = attachements[i]
+          const filePath = `/${folder}${this.section.path}/${file.name}`
 
           const { data } = await this.$supabase
             .storage
             .from('project-annexes')
-            .createSignedUrl(`/${folder}${this.section.path}/${file.name}`, 60 * 60)
+            .createSignedUrl(filePath, 60 * 60)
 
           file.url = data.signedURL
+          file.path = filePath
+          file.editable = this.section.project_id ? (folder === this.section.project_id) : true
 
           this.attachements.push(file)
         }
       }
+    },
+    removeFile (file) {
+      const fileIndex = this.attachements.findIndex(f => f.path === file.path)
+      this.attachements.splice(fileIndex, 1)
     }
   }
 }
