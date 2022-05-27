@@ -77,7 +77,7 @@ export default {
     const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
     const project = projects ? projects[0] : null
 
-    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.town.code_departement)
+    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.towns[0].code_departement)
     const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', project.id)
 
     // TODO: Need to add the reading and unify of comments and checked markers here.

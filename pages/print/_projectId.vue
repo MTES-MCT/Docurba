@@ -28,7 +28,7 @@
       <v-spacer />
       <div v-if="project" class="ddt-text text-right">
         Direction départementale des territoires <br>
-        {{ project.town.nom_departement }}
+        {{ project.towns[0].nom_departement }}
       </div>
     </v-app-bar>
     <table>
@@ -97,7 +97,7 @@ export default {
 
     const project = projects ? projects[0] : null
 
-    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.town.code_departement)
+    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.towns[0].code_departement)
     const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', project.id)
 
     const editedSections = unionBy(projectSections, deptSections, (section) => {

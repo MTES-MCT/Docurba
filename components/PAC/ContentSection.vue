@@ -106,7 +106,7 @@ export default {
   methods: {
     fetchAttachements () {
       const folders = [
-        this.project.town.code_departement,
+        this.project.towns[0].code_departement,
         this.prjectId
       ]
 

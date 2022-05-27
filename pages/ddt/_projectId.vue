@@ -28,7 +28,7 @@
             :pac-data="PAC"
             table="pac_sections_project"
             :attachements-folders="[
-              project.town.code_departement
+              project.towns[0].code_departement
             ]"
             :match-keys="{
               project_id: project.id,
@@ -95,7 +95,7 @@ export default {
     })
 
     // Get the data from DB for each level of PAC for this project.
-    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.project.town.code_departement)
+    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.project.towns[0].code_departement)
     const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', this.project.id)
 
     // Merge data of multiple PACs using unifiedPac.js mixin.

@@ -60,7 +60,7 @@ export default {
     return {
       PAC: [],
       newProjectEpci: this.project.epci,
-      newProjectTown: this.project.town,
+      newProjectTown: this.project.town ? this.project.town[0] : null,
       newProject: Object.assign({}, this.project),
       userDeptCode: null,
       EPCIs: [],

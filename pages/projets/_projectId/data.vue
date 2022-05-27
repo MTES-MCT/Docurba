@@ -25,7 +25,7 @@ export default {
     this.project = projects ? projects[0] : null
 
     if (this.project) {
-      const { dataset, themes } = await this.$daturba.getData(this.currentRegion, [this.project.town.code_commune_INSEE])
+      const { dataset, themes } = await this.$daturba.getData(this.currentRegion, this.project.towns.map(t => t.code_commune_INSEE))
 
       this.dataset = dataset
       this.themes = themes
