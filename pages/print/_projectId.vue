@@ -90,6 +90,12 @@ export default {
       PACroots: []
     }
   },
+  head () {
+    return {
+      title: this.project ? this.project.name : 'PAC',
+      titleTemplate: ''
+    }
+  },
   async mounted () {
     const projectId = this.$route.params.projectId
 
