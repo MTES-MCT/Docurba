@@ -172,6 +172,8 @@ export default {
         } else {
           await this.$supabase.from(this.table).insert([newData])
         }
+
+        this.$notifications.notifyUpdate(this.section.project_id)
       } catch (err) {
         // eslint-disable-next-line no-console
         console.log('Error saving data')
