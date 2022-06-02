@@ -149,6 +149,8 @@ export default {
         this.PAC.push(Object.assign({
           body: this.mdParser.parse(savedSection.text)
         }, savedSection[0]))
+
+        this.$notifications.notifyUpdate(this.project.id)
       } else {
         // eslint-disable-next-line no-console
         console.log('error adding new section', savedSection, err)
@@ -184,6 +186,8 @@ export default {
       await this.$supabase.from('projects').update({
         PAC: selectedSections.map(s => s || s.path)
       }).eq('id', this.project.id)
+
+      this.$notifications.notifyUpdate(this.project.id)
     }
   }
 }
