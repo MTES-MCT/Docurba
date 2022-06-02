@@ -104,6 +104,9 @@ export default {
       this.searchQuery.region = regions.find(r => r.name === this.selectedTown.nom_region)
     }
   },
+  mounted () {
+    console.log(process.env)
+  },
   methods: {
     async searchCTA () {
       if (this.searchQuery.document && this.searchQuery.document.includes('i')) {

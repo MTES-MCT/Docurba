@@ -34,6 +34,7 @@
 
 <script>
 import { mdiShare, mdiCloseCircleOutline } from '@mdi/js'
+import axios from 'axios'
 
 export default {
   props: {
@@ -74,7 +75,10 @@ export default {
     },
     async cancelShare (email) {
       this.sharings = this.sharings.filter(s => s.user_email !== email)
-      await this.$supabase.from('projects_sharing').delete().eq('user_email', email)
+      await this.$supabase.from('projects_sharing').delete().match({
+        user_email: email,
+        project_id: this.project.id
+      })
     },
     async shareProject () {
       const newSharings = this.emailsInput.split(',').map((email) => {
@@ -86,6 +90,14 @@ export default {
       })
 
       await this.$supabase.from('projects_sharing').insert(newSharings)
+
+      axios({
+        url: '/api/projects/notify/shared',
+        method: 'post',
+        data: {
+          sharings: newSharings
+        }
+      })
 
       this.sharings.push(...newSharings)
       this.emailsInput = ''
