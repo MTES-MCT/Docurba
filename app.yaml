@@ -20,6 +20,8 @@ handlers:
 env_variables:
   HOST: '0.0.0.0'
   NODE_ENV: 'production'
+  SENDGRID_API_KEY: 'xxxx'
+  SUPABASE_ADMIN_KEY: 'xxxx'
 
 automatic_scaling:
   max_concurrent_requests: 80

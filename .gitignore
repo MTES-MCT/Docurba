@@ -91,4 +91,6 @@ sw.*
 
 # Manual scripts
 scripts/
-sendgrid.env
+
+# Deploy file with env variables
+deploy.yaml
