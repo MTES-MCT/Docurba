@@ -58,6 +58,8 @@
 <script>
 import { mdiEye, mdiEyeOff } from '@mdi/js'
 
+import axios from 'axios'
+
 export default {
   name: 'LoginDialog',
   props: {
@@ -130,10 +132,19 @@ export default {
       }
     },
     sendResetPassword () {
-      this.$supabase.auth.api
-        .resetPasswordForEmail(this.userData.email, {
+      // this.$supabase.auth.api
+      //   .resetPasswordForEmail(this.userData.email, {
+      //     redirectTo: window.location.origin
+      //   })
+
+      axios({
+        method: 'post',
+        url: '/api/auth/password',
+        data: {
+          email: this.userData.email,
           redirectTo: window.location.origin
-        })
+        }
+      })
 
       this.snackbar.text = `Un email de changement de mot de passe à été envoyé à ${this.userData.email}`
       this.snackbar.val = true
