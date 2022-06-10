@@ -39,8 +39,6 @@ export default {
       if (event === 'PASSWORD_RECOVERY') {
         const params = new URLSearchParams(this.$route.hash.split('#')[1])
 
-        // console.log(params.get('access_token'))
-
         this.resetToken = params.get('access_token')
         this.dialog = true
       }
