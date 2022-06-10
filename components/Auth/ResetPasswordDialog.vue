@@ -41,6 +41,8 @@ export default {
 
         this.resetToken = params.get('access_token')
         this.dialog = true
+      } else {
+        // console.log('other event', event)
       }
     })
   },

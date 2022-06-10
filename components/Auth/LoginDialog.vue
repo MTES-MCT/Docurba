@@ -126,6 +126,15 @@ export default {
         // eslint-disable-next-line no-console
         console.log('success sign up', user, session)
 
+        axios({
+          method: 'post',
+          url: '/api/auth/signup',
+          data: {
+            email: this.userData.email,
+            redirectTo: window.location.origin
+          }
+        })
+
         this.$emit('input', false)
       } else {
         this.error = error

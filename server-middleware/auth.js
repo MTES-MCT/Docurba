@@ -22,9 +22,34 @@ app.post('/password', async (req, res) => {
       to: req.body.email,
       template_id: 'd-06e865fdc30d42a398fdc6bc532deb82',
       dynamic_template_data: {
-        redirectURL: user.action_link.replace('https://docurba.beta.gouv.fr/', req.body.redirectTo)
+        redirectURL: user.action_link
       }
     })
+  }
+
+  res.status(200).send('OK')
+})
+
+app.post('/signup', async (req, res) => {
+  const { data: user, error } = await supabase.auth.api.generateLink(
+    'signup',
+    req.body.email,
+    {
+      redirectTo: req.body.redirectTo
+    }
+  )
+
+  if (!error && user && user.action_link) {
+    sendgrid.sendEmail({
+      to: req.body.email,
+      template_id: 'd-766d017b51124a108cabc985d0dbf451',
+      dynamic_template_data: {
+        redirectURL: user.action_link
+      }
+    })
+  } else {
+    // eslint-disable-next-line no-console
+    console.log('error sending recovery email', error, user)
   }
 
   res.status(200).send('OK')
