@@ -68,6 +68,9 @@ export default {
   pwa: {
     manifest: {
       lang: 'fr'
+    },
+    workbox: {
+      cleanupOutdatedCaches: true
     }
   },
 
