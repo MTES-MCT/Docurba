@@ -199,27 +199,36 @@ export default {
       const { data: attachements, err } = await this.$supabase
         .storage
         .from('project-annexes')
-        .list(`/${folder}${this.section.path}`, {
+        .list(`${folder}${this.section.path}`, {
           limit: 100,
           offset: 0,
           sortBy: { column: 'name', order: 'asc' }
         })
 
+      // console.log('attachements', attachements)
+
       if (!err) {
         for (let i = 0; i < attachements.length; i++) {
           const file = attachements[i]
-          const filePath = `/${folder}${this.section.path}/${file.name}`
+          const filePath = `${folder}${this.section.path}/${file.name}`
 
-          const { data } = await this.$supabase
+          const { data, fileError } = await this.$supabase
             .storage
             .from('project-annexes')
             .createSignedUrl(filePath, 60 * 60)
 
-          file.url = data.signedURL
-          file.path = filePath
-          file.editable = this.section.project_id ? (folder === this.section.project_id) : true
+          if (data && !fileError) {
+            // console.log(data)
 
-          this.attachements.push(file)
+            file.url = data.signedURL
+            file.path = filePath
+            file.editable = this.section.project_id ? (folder === this.section.project_id) : true
+
+            this.attachements.push(file)
+          } else {
+            // console.log('fileError', filePath)
+            // console.log(data, fileError)
+          }
         }
       }
     },

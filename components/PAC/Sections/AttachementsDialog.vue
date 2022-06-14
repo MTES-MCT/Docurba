@@ -114,7 +114,7 @@ export default {
 
           await this.$supabase.storage
             .from('project-annexes')
-            .upload(`/${this.folder}${this.section.path}/${slugify(file.name, '_')}`, file)
+            .upload(`${this.folder}${this.section.path}/${slugify(file.name, '_')}`, file)
         }
       }
 
