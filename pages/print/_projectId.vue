@@ -5,7 +5,7 @@
       color="white"
       class="fr-header"
       height="68px"
-      fixed
+      absolute
     >
       <div class="fr-header__body">
         <div class="fr-container">
@@ -42,7 +42,17 @@
       <tbody>
         <tr>
           <td>
-            <PACPDFTemplate v-if="project" :pac-data="project.PAC" />
+            <PACPDFGardeTemplate v-if="project" :project="project" />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <PACPDFTableOfContent v-if="project" :project="project" />
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <PACPDFPagesTemplate v-if="project" :pac-data="project.PAC" />
           </td>
         </tr>
       </tbody>
