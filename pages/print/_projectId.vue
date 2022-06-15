@@ -50,6 +50,10 @@
             <PACPDFTableOfContent v-if="project" :project="project" />
           </td>
         </tr>
+      </tbody>
+    </table>
+    <table>
+      <tbody>
         <tr>
           <td>
             <PACPDFPagesTemplate v-if="project" :pac-data="project.PAC" />
@@ -204,7 +208,8 @@ export default {
  }
 
  .footer-space {
-   height: calc(68px + 8.5mm);
+   /* height: calc(68px + 8.5mm); */
+   height: 8.5mm;
  }
 
 .fr-header .fr-header__body-row, .fr-header .fr-header__logo, .fr-header .fr-logo {
