@@ -52,7 +52,7 @@ Le classement entraîne des prescriptions particulières en termes d’urbanisme
 - protéger le patrimoine naturel et culturel montagnard,
 - assurer l'urbanisation en continuité avec les bourgs, villages, hameaux, groupes de constructions traditionnelles et groupes d’habitations existantes, afin d’éviter le mitage de l’espace,
 - maîtriser le développement touristique en respectant la qualité des sites,
-- protéger les parties naturelles des rives des plans d’eau d’une superficie inférieure à 1 000 ha,
+- protéger les parties naturelles des rives des plans d’eau d’une superficie inférieure à 1000 ha,
 -  interdire la création de routes nouvelles au-dessus de la limite forestière.
 
 En termes de développement, le principe d’urbanisation en continuité reste la règle de base ; ce développement doit par ailleurs prendre en compte les caractéristiques traditionnelles de l’habitat, les constructions implantées et l’existence de voies et de réseaux.

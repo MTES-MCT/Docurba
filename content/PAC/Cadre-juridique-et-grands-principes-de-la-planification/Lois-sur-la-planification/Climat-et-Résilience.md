@@ -25,9 +25,9 @@ Composée de 305 articles, elle est structurée en 8 chapitres :
 -  Nota : les modalités d’application de ces évolutions, la nomenclature des sols artificialisés, ainsi que l’échelle d’appréciation de l’artificialisation des sols, seront précisés par décret début 2022.  
 
 D’ores et déjà, la loi prévoit un calendrier d’adaptation des documents de planification pour traduire les objectifs de la loi : **2024 pour les SRADDET, 2026 pour les SCoT et 2027 pour les PLU**. A défaut du respect de ce calendrier, les conséquences seront les suivantes :  
-    • Les SCoT devront intégrer une réduction uniforme de 50% de la consommation foncière pour la 1ère tranche 2021-2031, puisqu'elle n'aura pas été modulée par le document régional (SRADDET) ; 
-    • En cas de carence du SCOT au 22 août 2026, les zones à urbaniser qui n’auront pas été ouvertes à l’urbanisation ne pourront plus l’être ; 
-    • En cas de carence du PLU(i) et de la carte communale au 22 août 2027,aucune autorisation d’urbanisme ne pourra être accordée dans les zones à urbaniser des PLU(i) et aucune construction ne sera permise dans les secteurs constructibles déterminés par une carte communale.
+- Les SCoT devront intégrer une réduction uniforme de 50% de la consommation foncière pour la 1ère tranche 2021-2031, puisqu'elle n'aura pas été modulée par le document régional (SRADDET) ; 
+- En cas de carence du SCOT au 22 août 2026, les zones à urbaniser qui n’auront pas été ouvertes à l’urbanisation ne pourront plus l’être ; 
+- En cas de carence du PLU(i) et de la carte communale au 22 août 2027,aucune autorisation d’urbanisme ne pourra être accordée dans les zones à urbaniser des PLU(i) et aucune construction ne sera permise dans les secteurs constructibles déterminés par une carte communale.
 
 **A l’échelle régionale :** le SRADDET doit définir une trajectoire permettant d’atteindre zéro artificialisation nette des sols. Par tranche de 10 ans, il définit un objectif chiffré de réduction de l’artificialisation des sols sur son territoire et précise les modalités de répartition des enveloppes de consommation foncière par territoire.
 
