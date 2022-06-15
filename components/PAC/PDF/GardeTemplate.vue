@@ -21,7 +21,7 @@ export default {
 
 <style scoped>
 .page-container {
-  min-height: calc(293mm - 50mm - 135px);
+  min-height: calc(293mm - 50mm - 68px);
   /* min-height: calc(250mm - 140px); */
   /* min-height: 297mm; */
   /* page-break-inside: avoid; */

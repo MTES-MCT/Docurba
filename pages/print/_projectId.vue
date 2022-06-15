@@ -45,9 +45,13 @@
             <PACPDFGardeTemplate v-if="project" :project="project" />
           </td>
         </tr>
+      </tbody>
+    </table>
+    <table>
+      <tbody>
         <tr>
           <td>
-            <PACPDFTableOfContent v-if="project" :project="project" />
+            <PACPDFTableOfContent v-if="project" :pac-data="project.PAC" />
           </td>
         </tr>
       </tbody>
@@ -72,7 +76,7 @@
 </template>
 
 <script>
-import { unionBy, omitBy, isNil } from 'lodash'
+// import { unionBy, omitBy, isNil } from 'lodash'
 
 import unified from 'unified'
 import remarkParse from 'remark-parse'
@@ -85,7 +89,10 @@ import jsonCompiler from '@nuxt/content/parsers/markdown/compilers/json.js'
 
 import { defaultSchema } from '@/assets/sanitizeSchema.js'
 
+import unifiedPAC from '@/mixins/unifiedPac.js'
+
 export default {
+  mixins: [unifiedPAC],
   layout: 'print',
   async asyncData ({ $content }) {
     const PAC = await $content('PAC', {
@@ -111,19 +118,6 @@ export default {
     }
   },
   async mounted () {
-    const projectId = this.$route.params.projectId
-
-    const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-
-    const project = projects ? projects[0] : null
-
-    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.towns[0].code_departement)
-    const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', project.id)
-
-    const editedSections = unionBy(projectSections, deptSections, (section) => {
-      return section.path
-    })
-
     const mdParser = unified().use(remarkParse)
       .use(remarkRehype, { allowDangerousHtml: true })
       .use(rehypeRaw)
@@ -131,58 +125,27 @@ export default {
       .use(rehypeStringify)
       .use(jsonCompiler)
 
-    editedSections.forEach((section) => {
+    const projectId = this.$route.params.projectId
+
+    const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
+    const project = projects ? projects[0] : null
+
+    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.towns[0].code_departement)
+    const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', project.id)
+
+    project.PAC = this.unifyPacs([projectSections, deptSections, this.PAC], project.PAC.map((s) => {
+      return s.path || s
+    }))
+
+    project.PAC.forEach((section) => {
+      // Parse the body only if text was edited.
       if (section.text) { section.body = mdParser.processSync(section.text).result }
-
-      const sectionIndex = this.PAC.findIndex(s => s.path === section.path)
-
-      if (sectionIndex >= 0) {
-        // The Object Assign here is to keep the order since it's not saved. As could be other properties.
-        // Although it might create inconsistenties for versions that get Archived later on.
-        this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], omitBy(section, isNil))
-      } else {
-        // console.log('section added', section)
-        this.PAC.push(Object.assign({}, section))
-      }
     })
 
-    project.PAC = project.PAC.map((section) => {
-      return this.enrichSection(section)
-    }).filter(s => !!s.body)
-
-    const enrichedProjectSections = projectSections.map((section) => {
-      return this.enrichSection(section)
-    })
-
-    project.PAC = unionBy(enrichedProjectSections, project.PAC, (section) => {
-      return section.path
-    })
+    // Filter empty sections
+    project.PAC = project.PAC.filter(s => !!s.body)
 
     this.project = project
-  },
-  methods: {
-    enrichSection (section) {
-      const enrichedSection = { comments: [] }
-      const rawSection = this.PAC.find(s => s.path === section)
-
-      if (typeof (section) === 'object') {
-        Object.assign(enrichedSection, section, omitBy(rawSection, isNil))
-      } else {
-        // rawSection simply is without comments and read status.
-        Object.assign(enrichedSection, rawSection)
-      }
-
-      // We set the anchor manually so that it's esier to navigate the content.
-      if (enrichedSection.body) {
-        const firstChild = enrichedSection.body.children[0]
-
-        if (firstChild) {
-          firstChild.props.id = enrichedSection.path.replaceAll(/[^A-Za-z0-9]/g, '__')
-        }
-      }
-
-      return enrichedSection
-    }
   }
 }
 </script>

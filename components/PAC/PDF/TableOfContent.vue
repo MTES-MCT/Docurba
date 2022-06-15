@@ -7,6 +7,7 @@
           open-all
           item-text="titre"
           item-key="path"
+          expand-icon=""
         />
       </v-col>
     </v-row>
@@ -14,17 +15,14 @@
 </template>
 
 <script>
+import pacContent from '@/mixins/pacContent.js'
+
 export default {
-  props: {
-    project: {
-      type: Object,
-      required: true
-    }
-  },
+  mixins: [pacContent],
   computed: {
     PACroots () {
-      const roots = this.project.PAC.filter(section => section.toc && section.toc[0] && section.toc[0].depth === 2).sort((sa, sb) => {
-        return sa.ordre - sb.ordre
+      const roots = this.PAC.filter((section) => {
+        return section.depth === 2
       })
 
       return roots
