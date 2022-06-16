@@ -157,6 +157,15 @@ export default {
     table-layout: fixed;
   }
 
+  tfoot {
+    counter-increment: page;
+    content: counter(page);
+  }
+/*
+  tfoot::after {
+    content: counter(page);
+  } */
+
   table, tr, td {
     page-break-inside: avoid;
   }

@@ -32,6 +32,17 @@ export default {
   margin: 17mm 17mm 17mm 17mm;
   -webkit-print-color-adjust: exact !important;   /* Chrome, Safari, Edge */
   color-adjust: exact !important;                 /*Firefox*/
+  size: A4;
+
+  /* @bottom-right {
+    content: counter(page)
+  } */
+}
+
+@page :right {
+  @bottom-right {
+    content: counter(page)
+  }
 }
 
 /* .fr-header {
