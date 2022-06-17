@@ -31,6 +31,7 @@
         {{ project.towns[0].nom_departement }}
       </div>
     </v-app-bar>
+    <div ref="page" class="page-sizer" />
     <table>
       <thead>
         <tr>
@@ -152,19 +153,10 @@ export default {
 
 <style scoped>
   table {
-    max-width: 100%;
+    max-width: 176mm;
     width: 100%;
     table-layout: fixed;
   }
-
-  tfoot {
-    counter-increment: page;
-    content: counter(page);
-  }
-/*
-  tfoot::after {
-    content: counter(page);
-  } */
 
   table, tr, td {
     page-break-inside: avoid;
@@ -181,7 +173,7 @@ export default {
 
  .footer-space {
    /* height: calc(68px + 8.5mm); */
-   height: 8.5mm;
+   height: calc(10mm);
  }
 
 .fr-header .fr-header__body-row, .fr-header .fr-header__logo, .fr-header .fr-logo {

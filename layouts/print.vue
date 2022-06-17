@@ -39,12 +39,6 @@ export default {
   } */
 }
 
-@page :right {
-  @bottom-right {
-    content: counter(page)
-  }
-}
-
 /* .fr-header {
   padding: 17mm;
 } */

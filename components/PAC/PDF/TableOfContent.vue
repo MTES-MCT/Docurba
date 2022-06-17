@@ -11,6 +11,8 @@
         />
       </v-col>
     </v-row>
+    <div ref="content" class="content-sizer" />
+    <div ref="page" class="page-sizer" />
   </v-container>
 </template>
 
@@ -30,3 +32,19 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.page-sizer {
+    min-height: 297mm;
+    height: 297mm;
+    position: absolute;
+  }
+
+.content-sizer {
+  /* min-height: 297mm;
+  height: 297mm; */
+  min-height: 254.5mm;
+  height: 254.5mm;
+  position: absolute;
+}
+</style>
