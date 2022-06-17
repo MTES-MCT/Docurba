@@ -10,7 +10,6 @@
     <div
       v-for="(counter, i) in pageCounters"
       :key="i"
-      :data-top="counter.style.top"
       :style="counter.style"
       class="page-counter"
     >
@@ -83,10 +82,6 @@ export default {
  .page-counter {
   position: absolute;
   right: 0px;
- }
-
- .page-counter[data-top] {
-  top: attr(data-top)
  }
 
 .page-sizer {

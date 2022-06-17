@@ -57,7 +57,7 @@
         </tr>
       </tbody>
     </table>
-    <table>
+    <table id="pac-content-pdf">
       <tbody>
         <tr>
           <td>
