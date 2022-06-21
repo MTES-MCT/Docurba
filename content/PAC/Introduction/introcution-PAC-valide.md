@@ -15,6 +15,6 @@ Le PAC constitue un document de référence qui comprend notamment les dispositi
 - de répartition équilibrée des différents types de logements ;
 - de renouvellement du parc immobilier et d'accroissement du nombre de 	logements et de places d'hébergement, nécessaires pour l'application du second alinéa du II de l'article L302-1 du code de la construction et de l’habitation.
 
-L’Etat peut également transmettre, sur demande des présidents d’EPCI compétents en matière de PLH, la liste des immeubles situés sur leur territoire et appartenant à l’Etat et à ses établissements publics ([article L. 132-4 du code de l’urbanisme](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031210800). 
+L’Etat peut également transmettre, sur demande des présidents d’EPCI compétents en matière de PLH, la liste des immeubles situés sur leur territoire et appartenant à l’Etat et à ses établissements publics ([article L. 132-4 du code de l’urbanisme](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031210800)). 
 
 **Le PAC est tenu à la disposition du public et peut être en tout ou partie annexé au dossier d’enquête publique.**
