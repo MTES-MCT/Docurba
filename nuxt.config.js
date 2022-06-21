@@ -58,7 +58,8 @@ export default {
     { path: '/api/auth', handler: '~/server-middleware/auth.js' },
     { path: '/api/communes', handler: '~/server-middleware/communes.js' },
     { path: '/api/epci', handler: '~/server-middleware/EPCI.js' },
-    { path: '/api/projects', handler: '~/server-middleware/projects.js' }
+    { path: '/api/projects', handler: '~/server-middleware/projects.js' },
+    { path: '/api/stats', handler: '~/server-middleware/stats.js' }
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios

@@ -20,15 +20,15 @@ app.get('/:departement', (req, res) => {
   res.status(200).send(getCommunesByDepartements(req.params.departement))
 })
 
-function getCommunesByRegion (code) {
-  const filterredCommunes = communes.filter((c) => {
-    // eslint-disable-next-line eqeqeq
-    return c.code_region == code
-  })
+// function getCommunesByRegion (code) {
+//   const filterredCommunes = communes.filter((c) => {
+//     // eslint-disable-next-line eqeqeq
+//     return c.code_region == code
+//   })
 
-  console.log(filterredCommunes.length)
-}
+//   console.log(filterredCommunes.length)
+// }
 
-getCommunesByRegion(84)
+// getCommunesByRegion(84)
 
 module.exports = app

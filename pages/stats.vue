@@ -16,10 +16,8 @@
               line-width="2"
               smooth
             >
-              <template #label>
-                <tspan>
-                  06/22
-                </tspan>
+              <template #label="item">
+                {{ edits[item.index].month }}
               </template>
             </v-sparkline>
           </v-card-text>
@@ -75,7 +73,7 @@
           </v-card-text>
           <v-card-subtitle class="text-center">
             <a href="https://stats.data.gouv.fr/index.php?module=CoreHome&action=index&idSite=235&period=range&date=previous30#?period=range&date=previous30&category=Dashboard_Dashboard&subcategory=1&idSite=235" target="_blank">
-              Plus d'info sur notre page matomo
+              Plus d'informations sur notre page matomo
             </a>
           </v-card-subtitle>
         </v-card>
@@ -104,7 +102,7 @@
           </v-card-text>
           <v-card-subtitle class="text-center">
             <a href="https://stats.data.gouv.fr/index.php?module=CoreHome&action=index&idSite=235&period=range&date=previous30#?period=range&date=previous30&category=Dashboard_Dashboard&subcategory=1&idSite=235" target="_blank">
-              Plus d'info sur notre page matomo
+              Plus d'informations sur notre page matomo
             </a>
           </v-card-subtitle>
         </v-card>
@@ -122,17 +120,17 @@ dayjs.extend(customParseFormat)
 export default {
   data () {
     return {
-      nbEdits: [
-        423,
-        446,
-        675,
-        510,
-        590,
-        610,
-        760
-      ],
+      edits: [],
       nbVisits: [],
-      nbVisitors: []
+      nbVisitors: [],
+      weekLabels: []
+    }
+  },
+  computed: {
+    nbEdits () {
+      return this.edits.map((month) => {
+        return month.value
+      })
     }
   },
   async mounted () {
@@ -157,9 +155,21 @@ export default {
 
       this.nbVisits = days.map(day => visits[day].nb_visits)
       this.nbVisitors = days.map(day => visits[day].nb_uniq_visitors)
+
+      this.getEdits()
     }
   },
   methods: {
+    async getEdits () {
+      const { data: edits, err } = await axios({
+        url: '/api/stats/edits',
+        method: 'get'
+      })
+
+      if (!err) {
+        this.edits = edits
+      }
+    },
     sum (values) {
       return values.reduce((total, val) => {
         return total + val
