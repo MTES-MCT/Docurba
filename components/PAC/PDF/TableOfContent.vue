@@ -38,6 +38,8 @@ export default {
     PACroots () {
       const roots = this.PAC.filter((section) => {
         return section.depth === 2
+      }).sort((sa, sb) => {
+        return sa.ordre - sb.ordre
       })
 
       return roots
