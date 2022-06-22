@@ -4,7 +4,7 @@
     <v-main>
       <nuxt />
     </v-main>
-    <v-footer class="footer-fr" color="white">
+    <!-- <v-footer class="footer-fr" color="white">
       <v-row align="center" class="mt-4 ml-1">
         <v-col cols="12" md="5">
           <div class="fr-footer__brand">
@@ -41,7 +41,8 @@
           </div>
         </v-col>
       </v-row>
-    </v-footer>
+    </v-footer> -->
+    <LayoutsFooter />
   </v-app>
 </template>
 

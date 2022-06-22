@@ -36,6 +36,26 @@
         </div>
       </v-col>
     </v-row>
+    <v-row no-gutters justify="center" class="px-0 mx-0 mt-4">
+      <v-col cols="12" class="px-0 mx-0">
+        <v-divider />
+      </v-col>
+      <v-col cols="auto">
+        <v-btn text small to="/accessibilite" nuxt>
+          Accessibilité
+        </v-btn>
+      </v-col>
+      <v-col cols="auto">
+        <v-btn text small href="https://beta.gouv.fr/suivi/" target="_blank">
+          Politique de confidentialité
+        </v-btn>
+      </v-col>
+      <v-col cols="auto">
+        <v-btn text small to="/stats" nuxt>
+          Statistiques
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-footer>
 </template>
 <script>
