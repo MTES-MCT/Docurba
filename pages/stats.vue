@@ -1,25 +1,32 @@
 <template>
   <v-container class="my-8">
-    <v-row class="">
+    <v-row justify="center" align="center">
       <v-col cols="12">
-        <v-card>
-          <v-card-title class="break-word">
-            Un total de {{ sum(nbEdits) }} editions de PAC on été faites sur Docurba
-          </v-card-title>
-          <v-card-text>
-            <v-sparkline
-              :value="nbEdits"
-              color="primary"
-              height="100"
-              padding="24"
-              stroke-linecap="round"
-              line-width="2"
-              smooth
-            >
-              <template #label="item">
-                {{ edits[item.index].month }}
-              </template>
-            </v-sparkline>
+        <v-card min-height="200px">
+          <template v-if="nbEdits && nbEdits.length">
+            <v-card-title class="break-word">
+              Un total de {{ sum(nbEdits) }} editions de PAC on été faites sur Docurba
+            </v-card-title>
+            <v-card-text>
+              <v-sparkline
+                :value="nbEdits"
+                color="primary"
+                height="100"
+                padding="24"
+                stroke-linecap="round"
+                line-width="2"
+                smooth
+              >
+                <template #label="item">
+                  {{ edits[item.index].month }}
+                </template>
+              </v-sparkline>
+            </v-card-text>
+          </template>
+          <v-card-text v-else>
+            <v-row class="card-loader" justify="center" align="center">
+              <v-progress-circular color="primary" indeterminate />
+            </v-row>
           </v-card-text>
         </v-card>
       </v-col>
@@ -179,7 +186,11 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.card-loader {
+  min-height: 200px;
+}
+
 .big-number {
   font-size: 64px;
 }
