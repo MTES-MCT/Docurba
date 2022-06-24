@@ -11,7 +11,7 @@ export default (_, inject) => {
         this.contentWindow.__container__ = this
         this.contentWindow.onbeforeunload = closePrint
         this.contentWindow.onafterprint = closePrint
-        this.contentWindow.focus() // Required for IE
+        // this.contentWindow.focus() // Required for IE
         this.contentWindow.print()
       }, 2000)
     }

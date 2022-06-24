@@ -44,7 +44,7 @@ export default {
       // console.log(this.$refs.rootsEl)
       // const pageHeight = this.$refs.page.offsetHeight
       const contentHeight = this.$refs.content.offsetHeight
-      const nbPages = (this.$el.offsetHeight / contentHeight) + this.PACroots.length - 1
+      const nbPages = (this.$el.offsetHeight / contentHeight) + this.PACroots.length
 
       const elRect = this.$el.getBoundingClientRect()
       const topPosition = elRect.top

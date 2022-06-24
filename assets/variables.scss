@@ -7,16 +7,16 @@
 
 // Typo and fonts
 @font-face {
-    font-family: 'Marianne';
-    src: url('~/assets/fonts/Marianne/fontes_desktop/Marianne-Regular.otf');
-    src: url('~/assets/fonts/Marianne/fontes_web/Marianne-Regular.woff') format('woff'),
-      url('~/assets/fonts/Marianne/fontes_web/Marianne-Regular.woff2') format('woff2');
-  }
+  font-family: 'Marianne';
+  src: url('~/assets/fonts/Marianne/fontes_desktop/Marianne-Regular.otf');
+  src: url('~/assets/fonts/Marianne/fontes_web/Marianne-Regular.woff') format('woff'),
+    url('~/assets/fonts/Marianne/fontes_web/Marianne-Regular.woff2') format('woff2');
+}
 
-  @font-face {
-    font-family: 'Spectral';
-    src: url('~/assets/fonts/Spectral/Spectral-Regular.ttf');
-  }
+@font-face {
+  font-family: 'Spectral';
+  src: url('~/assets/fonts/Spectral/Spectral-Regular.ttf');
+}
 
   $heading-font-family: 'Marianne', 'Arial', sans-serif !default;
   $body-font-family: 'Marianne', 'Arial', sans-serif !default;
