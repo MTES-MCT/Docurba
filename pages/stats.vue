@@ -5,7 +5,7 @@
         <v-card min-height="200px">
           <template v-if="nbEdits && nbEdits.length">
             <v-card-title class="break-word">
-              Un total de {{ sum(nbEdits) }} editions de PAC on été faites sur Docurba
+              Un total de {{ sum(nbEdits) }} editions de PAC ont été faites sur Docurba
             </v-card-title>
             <v-card-text>
               <v-sparkline
@@ -35,7 +35,7 @@
       <v-col cols="6">
         <v-card>
           <v-card-title class="break-word">
-            Nombre d'agents de DDT ayant rejoins Docurba
+            Nombre d'agents de DDT ayant rejoint Docurba
           </v-card-title>
           <v-card-text class="text-center primary--text py-16">
             <span class="big-number">
