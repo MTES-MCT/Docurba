@@ -9,6 +9,23 @@
             <v-card-subtitle class="text-h6 text--primary">
               Porté à connaissance
             </v-card-subtitle>
+            <v-card-text>
+              <v-switch :value="true" :label="'Utiliser la trame'" />
+              <v-btn
+                depressed
+                color="primary"
+                tile
+                text
+                small
+                :loading="loadingPrint"
+                @click.prevent.stop="printPAC"
+              >
+                Télécharger
+                <v-icon small class="ml-2">
+                  {{ icons.mdiDownload }}
+                </v-icon>
+              </v-btn>
+            </v-card-text>
             <v-card-actions>
               <v-btn
                 depressed
@@ -49,6 +66,10 @@
             <v-card-subtitle class="text-h6 text--primary">
               Jeux de données
             </v-card-subtitle>
+            <v-card-text>
+              42 jeux de données disponibles <br>
+              11 pièces jointes
+            </v-card-text>
             <v-card-actions>
               <v-btn
                 depressed
@@ -72,7 +93,7 @@
               Partage
             </v-card-subtitle>
             <v-card-text>
-              List de partage
+              5 emails ont accès à ce projet
             </v-card-text>
             <v-card-actions>
               <v-dialog max-width="500px">
