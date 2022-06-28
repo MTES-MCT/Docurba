@@ -24,7 +24,7 @@
         Guide d'utilisation
       </v-btn>
     </template>
-    <v-container fluid>
+    <v-container>
       <v-row>
         <v-col cols="12">
           <v-toolbar flat>
