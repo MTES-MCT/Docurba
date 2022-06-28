@@ -34,8 +34,13 @@
         </v-col>
       </v-row>
       <v-row class="mt-0">
-        <v-col cols="">
-          <v-list>
+        <v-col
+          v-for="project in filteredProjects"
+          :key="project.id"
+          cols="12"
+        >
+          <ProjectsDashboardCard :project="project" />
+          <!-- <v-list>
             <v-subheader>Mes projets</v-subheader>
             <ProjectsDdtProjectListItem
               v-for="project in filteredProjects"
@@ -51,7 +56,7 @@
               :key="project.id"
               :project="project"
             />
-          </v-list>
+          </v-list> -->
         </v-col>
       </v-row>
     </v-container>
