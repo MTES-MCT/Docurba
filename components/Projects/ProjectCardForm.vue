@@ -1,6 +1,8 @@
 <template>
   <v-card>
-    <v-card-title><slot name="titre" /></v-card-title>
+    <v-card-title>
+      <slot name="title" />
+    </v-card-title>
     <v-card-text v-if="userDeptCode">
       <v-row>
         <v-col cols="12">
@@ -41,8 +43,10 @@
 <script>
 import axios from 'axios'
 import regions from '@/assets/data/Regions.json'
+import unifiedPac from '@/mixins/unifiedPac.js'
 
 export default {
+  mixins: [unifiedPac],
   props: {
     project: {
       type: Object,
@@ -60,7 +64,7 @@ export default {
     return {
       PAC: [],
       newProjectEpci: this.project.epci,
-      newProjectTown: this.project.town ? this.project.town[0] : null,
+      newProjectTown: this.project.towns ? this.project.towns[0] : null,
       newProject: Object.assign({}, this.project),
       userDeptCode: null,
       EPCIs: [],
@@ -88,17 +92,7 @@ export default {
 
     const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.userDeptCode)
 
-    deptSections.forEach((section) => {
-      const sectionIndex = this.PAC.findIndex(s => s.path === section.path)
-
-      if (sectionIndex >= 0) {
-        // The Object Assign here is to keep the order since it's not saved. As could be other properties.
-        // Although it might create inconsistenties for versions that get Archived later on.
-        this.PAC[sectionIndex] = Object.assign({}, this.PAC[sectionIndex], section)
-      } else {
-        this.PAC.push(Object.assign({}, section))
-      }
-    })
+    this.PAC = this.unifyPacs([deptSections, this.PAC])
 
     const EPCIs = (await axios({
       method: 'get',

@@ -1,34 +1,43 @@
 <template>
   <v-card outlined tile color="g200" class="project-card">
-    <v-card-title>{{ project.name }}</v-card-title>
+    <v-card-title>
+      {{ project.name }}
+      <v-spacer />
+      <v-dialog width="500px">
+        <template #activator="{on}">
+          <v-btn
+            icon
+            color="primary"
+            v-on="on"
+            @click.prevent.stop
+          >
+            <v-icon>
+              {{ icons.mdiPencil }}
+            </v-icon>
+          </v-btn>
+        </template>
+        <template #default="dialog">
+          <ProjectsProjectCardForm :project="project" @cancel="dialog.value = false">
+            <template #title>
+              Modifier le projet
+            </template>
+          </ProjectsProjectCardForm>
+        </template>
+      </v-dialog>
+    </v-card-title>
     <v-card-subtitle>{{ project.docType }} - {{ placeName }}</v-card-subtitle>
     <v-card-text>
       <v-row>
         <v-col cols="4">
           <v-card flat tile>
             <v-card-subtitle class="text-h6 text--primary">
-              Porté à connaissance
+              Porter à connaissance
             </v-card-subtitle>
-            <v-card-text>
-              <v-switch :value="true" :label="'Utiliser la trame'" />
-              <v-btn
-                depressed
-                color="primary"
-                tile
-                text
-                small
-                :loading="loadingPrint"
-                @click.prevent.stop="printPAC"
-              >
-                Télécharger
-                <v-icon small class="ml-2">
-                  {{ icons.mdiDownload }}
-                </v-icon>
-              </v-btn>
-            </v-card-text>
+            <!-- <v-card-text /> -->
             <v-card-actions>
               <v-btn
                 depressed
+                outlined
                 color="primary"
                 tile
                 :to="`/projets/${project.id}/content`"
@@ -37,19 +46,6 @@
                 Consulter
                 <v-icon class="ml-2">
                   {{ icons.mdiEye }}
-                </v-icon>
-              </v-btn>
-              <v-btn
-                depressed
-                outlined
-                color="primary"
-                tile
-                :loading="loadingPrint"
-                @click.prevent.stop="printPAC"
-              >
-                Télécharger
-                <v-icon class="ml-2">
-                  {{ icons.mdiDownload }}
                 </v-icon>
               </v-btn>
               <!-- <v-btn depressed outlined color="primary" tile>
@@ -66,10 +62,10 @@
             <v-card-subtitle class="text-h6 text--primary">
               Jeux de données
             </v-card-subtitle>
-            <v-card-text>
+            <!-- <v-card-text>
               42 jeux de données disponibles <br>
               11 pièces jointes
-            </v-card-text>
+            </v-card-text> -->
             <v-card-actions>
               <v-btn
                 depressed
@@ -92,8 +88,8 @@
             <v-card-subtitle class="text-h6 text--primary">
               Partage
             </v-card-subtitle>
-            <v-card-text>
-              5 emails ont accès à ce projet
+            <v-card-text v-if="nbSharings">
+              {{ nbSharings }} email{{ nbSharings > 1 ? 's ont' : ' a' }} accès à ce projet
             </v-card-text>
             <v-card-actions>
               <v-dialog max-width="500px">
@@ -128,7 +124,7 @@
 </template>
 
 <script>
-import { mdiDownload, mdiEye, mdiUpload, mdiShare } from '@mdi/js'
+import { mdiDownload, mdiEye, mdiUpload, mdiShare, mdiPencil } from '@mdi/js'
 
 export default {
   props: {
@@ -139,13 +135,24 @@ export default {
   },
   data () {
     return {
-      icons: { mdiDownload, mdiEye, mdiUpload, mdiShare },
-      loadingPrint: false
+      icons: { mdiDownload, mdiEye, mdiUpload, mdiShare, mdiPencil },
+      loadingPrint: false,
+      nbSharings: 0
     }
   },
   computed: {
     placeName () {
       return this.project.epci ? this.project.epci.label : this.project.towns[0].nom_commune
+    }
+  },
+  async mounted () {
+    const { count: sharings, error } = await this.$supabase.from('projects_sharing').select('id', {
+      count: 'exact',
+      head: true
+    }).eq('project_id', this.project.id)
+
+    if (!error) {
+      this.nbSharings = sharings
     }
   },
   methods: {

@@ -37,7 +37,7 @@ export default {
   },
   data () {
     const items = this.epciList.length ? this.epciList : EPCIs
-    const currentEPCI = items.find(e => e.id === this.value ? this.value.id : '')
+    const currentEPCI = items.find(e => e.EPCI === (this.value ? this.value.EPCI : null))
 
     return {
       selectedEpci: currentEPCI || null
