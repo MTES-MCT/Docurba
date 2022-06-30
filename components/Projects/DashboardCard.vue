@@ -37,7 +37,6 @@
             <v-card-actions>
               <v-btn
                 depressed
-                outlined
                 color="primary"
                 tile
                 :to="`/projets/${project.id}/content`"
@@ -46,6 +45,19 @@
                 Consulter
                 <v-icon class="ml-2">
                   {{ icons.mdiEye }}
+                </v-icon>
+              </v-btn>
+              <v-btn
+                depressed
+                outlined
+                color="primary"
+                tile
+                :to="`/ddt/${project.id}`"
+                nuxt
+              >
+                Modifier
+                <v-icon class="ml-2">
+                  {{ icons.mdiPencil }}
                 </v-icon>
               </v-btn>
               <!-- <v-btn depressed outlined color="primary" tile>

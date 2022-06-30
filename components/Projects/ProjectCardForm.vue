@@ -12,13 +12,13 @@
           <VDocumentSelect v-model="newProject.docType" />
         </v-col>
         <v-col v-if="newProject.docType.includes('i') && EPCIs.length" cols="12">
-          <VEpciAutocomplete v-model="newProjectEpci" :epci-list="EPCIs" />
+          <VEpciAutocomplete v-model="projectForm.epci" :epci-list="EPCIs" />
         </v-col>
         <v-col v-else cols="12">
-          <VTownAutocomplete v-model="newProjectTown" :default-departement-code="userDeptCode" hide-dept />
+          <VTownAutocomplete v-model="projectForm.town" :default-departement-code="userDeptCode" hide-dept />
         </v-col>
         <v-col cols="12">
-          <v-switch />
+          <v-switch v-model="newProject.useTrame" :label="`Utiliser la trame de PAC du ${userDeptCode}`" />
         </v-col>
         <!-- <v-col cols="12" class="tree-view">
           <PACTreeviewSelection v-model="newProject.PAC" :pac-data="PAC" />
@@ -66,8 +66,11 @@ export default {
   data () {
     return {
       PAC: [],
-      newProjectEpci: this.project.epci,
-      newProjectTown: this.project.towns ? this.project.towns[0] : null,
+      projectForm: {
+        useTrame: this.project.id ? !!this.project.trame : true,
+        epci: this.project.epci,
+        town: this.project.towns ? this.project.towns[0] : null
+      },
       newProject: Object.assign({}, this.project),
       userDeptCode: null,
       EPCIs: [],
@@ -76,26 +79,7 @@ export default {
     }
   },
   async mounted () {
-    const PAC = await this.$content('PAC', {
-      deep: true,
-      text: true
-    }).fetch()
-
-    this.PAC = PAC
-
-    // TODO: This part is the same in the page trames.vue and coul be made into a mixin.
-    // The only change is that this this page does not need to parse a body to be rendered.
-    const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('dept').match({
-      user_id: this.$user.id,
-      user_email: this.$user.email,
-      role: 'ddt'
-    })
-
-    this.userDeptCode = adminAccess[0].dept
-
-    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.userDeptCode)
-
-    this.PAC = this.unifyPacs([deptSections, this.PAC])
+    await this.initPAC()
 
     const EPCIs = (await axios({
       method: 'get',
@@ -105,6 +89,25 @@ export default {
     this.EPCIs = EPCIs
   },
   methods: {
+    async initPAC () {
+      const PAC = await this.$content('PAC', {
+        deep: true,
+        text: true
+      }).fetch()
+
+      this.PAC = PAC
+
+      const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('dept').match({
+        user_id: this.$user.id,
+        user_email: this.$user.email,
+        role: 'ddt'
+      })
+
+      this.userDeptCode = adminAccess[0].dept
+
+      const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.userDeptCode)
+      this.PAC = this.unifyPacs([deptSections, this.PAC])
+    },
     createOrUpdate (savedProject) {
       if (savedProject.id) {
         return this.$supabase.from('projects').upsert(savedProject)
@@ -120,9 +123,10 @@ export default {
       const isEpci = this.newProject.docType.includes('i')
 
       const savedProject = Object.assign({}, this.newProject, {
-        epci: isEpci ? this.newProjectEpci : null,
-        towns: isEpci ? this.newProjectEpci.towns : [this.newProjectTown],
-        region: this.getRegion(isEpci)
+        epci: isEpci ? this.projectForm.epci : null,
+        towns: isEpci ? this.projectForm.epci.towns : [this.projectForm.town],
+        region: this.getRegion(isEpci),
+        trame: this.projectForm.useTrame ? (this.project.trame || this.userDeptCode) : ''
       })
 
       const { data, err } = await this.createOrUpdate(savedProject)
@@ -143,11 +147,11 @@ export default {
     },
     getRegion (isEpci) {
       if (isEpci) {
-        const regionCode = this.newProjectEpci.towns[0].code_region
+        const regionCode = this.projectForm.epci.towns[0].code_region
         // eslint-disable-next-line eqeqeq
         return regions.find(r => r.code == regionCode).iso
       } else {
-        return regions.find(r => r.name === this.newProjectTown.nom_region).iso
+        return regions.find(r => r.name === this.projectForm.town.nom_region).iso
       }
     }
   }
