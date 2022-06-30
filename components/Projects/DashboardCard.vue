@@ -33,7 +33,6 @@
             <v-card-subtitle class="text-h6 text--primary">
               Porter à connaissance
             </v-card-subtitle>
-            <!-- <v-card-text /> -->
             <v-card-actions>
               <v-btn
                 depressed
@@ -48,6 +47,7 @@
                 </v-icon>
               </v-btn>
               <v-btn
+                v-if="project.trame"
                 depressed
                 outlined
                 color="primary"
@@ -60,12 +60,21 @@
                   {{ icons.mdiPencil }}
                 </v-icon>
               </v-btn>
-              <!-- <v-btn depressed outlined color="primary" tile>
+              <v-btn
+                v-else
+                depressed
+                outlined
+                color="primary"
+                tile
+                :loading="loadingUpload"
+                @click="$refs['pacInput'].click()"
+              >
                 Charger
                 <v-icon class="ml-2">
                   {{ icons.mdiUpload }}
                 </v-icon>
-              </v-btn> -->
+              </v-btn>
+              <input ref="pacInput" class="d-none" type="file" accept=".pdf" @change="uploadPAC">
             </v-card-actions>
           </v-card>
         </v-col>
@@ -74,10 +83,6 @@
             <v-card-subtitle class="text-h6 text--primary">
               Jeux de données
             </v-card-subtitle>
-            <!-- <v-card-text>
-              42 jeux de données disponibles <br>
-              11 pièces jointes
-            </v-card-text> -->
             <v-card-actions>
               <v-btn
                 depressed
@@ -149,6 +154,7 @@ export default {
     return {
       icons: { mdiDownload, mdiEye, mdiUpload, mdiShare, mdiPencil },
       loadingPrint: false,
+      loadingUpload: false,
       nbSharings: 0
     }
   },
@@ -172,6 +178,21 @@ export default {
       this.loadingPrint = true
       await this.$print(`/print/${this.project.id}`)
       this.loadingPrint = false
+    },
+    async uploadPAC () {
+      console.log(this.$refs.pacInput.files)
+
+      const pac = this.$refs.pacInput.files[0]
+
+      this.loadingUpload = true
+
+      if (pac) {
+        await this.$supabase.storage
+          .from('projects-pac')
+          .upload(`${this.project.id}/pac.pdf`, pac)
+      }
+
+      this.loadingUpload = false
     }
   }
 }
