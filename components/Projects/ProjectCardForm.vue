@@ -17,6 +17,9 @@
         <v-col v-else cols="12">
           <VTownAutocomplete v-model="newProjectTown" :default-departement-code="userDeptCode" hide-dept />
         </v-col>
+        <v-col cols="12">
+          <v-switch />
+        </v-col>
         <!-- <v-col cols="12" class="tree-view">
           <PACTreeviewSelection v-model="newProject.PAC" :pac-data="PAC" />
         </v-col> -->
