@@ -1,13 +1,15 @@
 <template>
   <v-container v-if="loaded" fluid>
+    <iframe v-if="pdfUrl" :src="pdfUrl" style="width: 100%;height: calc(100vh - 200px);border: none;" />
     <PACTreeviewContent
-      v-if="project"
+      v-if="project && !pdfUrl"
       :pac-data="project.PAC"
       editable
       @read="savePacItem"
     />
     <client-only>
       <v-btn
+        v-if="!pdfUrl"
         fab
         fixed
         bottom
@@ -58,6 +60,7 @@ export default {
   data () {
     return {
       project: null,
+      pdfUrl: null,
       loaded: false,
       icons: {
         mdiDownload
@@ -65,37 +68,20 @@ export default {
     }
   },
   async mounted () {
-    const mdParser = unified().use(remarkParse)
-      .use(remarkRehype, { allowDangerousHtml: true })
-      .use(rehypeRaw)
-      .use(rehypeSanitize, defaultSchema)
-      .use(rehypeStringify)
-      .use(jsonCompiler)
-
     const projectId = this.$route.params.projectId
 
     const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
     const project = projects ? projects[0] : null
 
-    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.towns[0].code_departement)
-    const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', project.id)
-
-    // TODO: Need to add the reading and unify of comments and checked markers here.
-    project.PAC = this.unifyPacs([projectSections, deptSections, this.PAC], project.PAC.map((s) => {
-      return s.path || s
-    }))
-
-    project.PAC.forEach((section) => {
-      // Parse the body only if text was edited.
-      if (section.text) { section.body = mdParser.processSync(section.text).result }
-    })
-
-    // The next two enrich and the union should be refactored because there is some useless steps here.
-    project.PAC = project.PAC.map((section) => {
-      return this.enrichSection(section)
-    }).filter(s => !!s.body)
-
     this.project = project
+
+    console.log('trame', !!this.project.trame)
+
+    if (this.project.trame) {
+      await this.setPACFromTrame()
+    } else {
+      await this.loadPACFile()
+    }
 
     this.loaded = true
   },
@@ -103,9 +89,55 @@ export default {
     _project () {
       return this.project
     },
+    async setPACFromTrame () {
+      const PAC = await this.$content('PAC', {
+        deep: true,
+        text: true
+      }).fetch()
+
+      this.PAC = PAC
+
+      const mdParser = unified().use(remarkParse)
+        .use(remarkRehype, { allowDangerousHtml: true })
+        .use(rehypeRaw)
+        .use(rehypeSanitize, defaultSchema)
+        .use(rehypeStringify)
+        .use(jsonCompiler)
+
+      const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.project.towns[0].code_departement)
+      const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', this.project.id)
+
+      // TODO: Need to add the reading and unify of comments and checked markers here.
+      this.project.PAC = this.unifyPacs([projectSections, deptSections, this.PAC], this.project.PAC.map((s) => {
+        return s.path || s
+      }))
+
+      this.project.PAC.forEach((section) => {
+      // Parse the body only if text was edited.
+        if (section.text) { section.body = mdParser.processSync(section.text).result }
+      })
+
+      // The next two enrich and the union should be refactored because there is some useless steps here.
+      this.project.PAC = this.project.PAC.map((section) => {
+        return this.enrichSection(section)
+      }).filter(s => !!s.body)
+    },
+    async loadPACFile () {
+      const { signedURL: pdfUrl, err } = await this.$supabase.storage
+        .from('projects-pac')
+        .createSignedUrl(`${this.project.id}/pac.pdf`, 60 * 60)
+
+      console.log('pdfUrl', pdfUrl)
+
+      if (!err) {
+        this.pdfUrl = pdfUrl
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('err loading pdf', err)
+      }
+    },
     savePacItem (pacItem) {
       // TODO: This need to be changed into its own table.
-
       const { PAC } = this.project
 
       const projectPacItem = PAC.find(item => item.path === pacItem.path)
