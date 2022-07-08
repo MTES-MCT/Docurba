@@ -3,6 +3,7 @@
     <v-row>
       <v-col>
         <v-treeview
+          ref="toc"
           :items="PACroots"
           open-all
           item-text="titre"
@@ -11,13 +12,13 @@
         >
           <template #label="{item}">
             <a :href="`#${slugify(item.path.replace(/\//g, '_'))}`">
-              {{ item.titre }}
+              {{ getTitle(item) }}
             </a>
           </template>
           <template #append="{item}">
             <a :href="`#${slugify(item.path.replace(/\//g, '_'))}`" class="d-flex">
               <v-spacer />
-              {{ getPage(item) }}
+              {{ item.page }}
             </a>
           </template>
         </v-treeview>
@@ -59,17 +60,50 @@ export default {
       return topPosition
     }
   },
+  mounted () {
+    // this.$nextTick(() => {
+    this.PACroots.forEach((root, index) => {
+      this.addCounter(root, [index + 1])
+    })
+    // })
+
+    this.PAC.forEach((section) => {
+      this.getPage(section)
+    })
+
+    this.$nextTick(() => {
+      this.$forceUpdate()
+    })
+  },
   methods: {
     slugify (str) {
       return slugify(str)
     },
+    addCounter (section, depths) {
+      // section.titre = `${depths.join('.')} ${section.titre}`
+      section.tocCounter = depths
+
+      if (section.children) {
+        section.children.forEach((child, index) => {
+          this.addCounter(child, depths.concat([index + 1]))
+        })
+      }
+    },
+    getTitle (item) {
+      return `${item.tocCounter ? item.tocCounter.join('.') : ''} ${item.titre}`
+    },
     getPage (item) {
       // const contentHeight = this.$refs.content.offsetHeight
       // const nbPages = (this.$el.offsetHeight / contentHeight) + this.PACroots.length
-
       const itemEl = document.getElementById(slugify(item.path.replace(/\//g, '_')))
 
+      // if (item.depth === 2) {
+      //   console.log(item.titre, item.path, slugify(item.path.replace(/\//g, '_')), itemEl)
+      // }
+
       if (itemEl) {
+        // console.log(itemEl.innerHTML)
+        itemEl.innerHTML = `${item.tocCounter.join('.')} ${itemEl.innerHTML}`
         const itemRect = itemEl.getBoundingClientRect()
         const top = itemRect.top - this.topPosition
 
@@ -83,8 +117,8 @@ export default {
           return rootTop <= top
         }).length - 1
 
-        return Math.ceil(top / this.contentHeight) + nbRootsBefore
-      } else { return '' }
+        item.page = Math.ceil(top / this.contentHeight) + nbRootsBefore
+      } else { item.page = '' }
 
       // const pageHeight = this.$refs.page.offsetHeight
 

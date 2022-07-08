@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="print-section">
     <nuxt-content :document="enrichedSection" />
     <PACPDFSectionTemplate v-for="s in section.children" :key="s.path" :section="s" />
   </div>
@@ -32,8 +32,9 @@ export default {
 }
 </script>
 
-<style scoped>
-.nuxt-content p {
+<style>
+.print-section .nuxt-content p {
   text-align: justify !important;
+  overflow-wrap: break-word;
 }
 </style>

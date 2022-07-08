@@ -3,6 +3,7 @@ export default {
   data () {
     return {
       projects: [],
+      sharings: [],
       sharedProjects: [],
       search: '',
       subscription: null
@@ -20,27 +21,22 @@ export default {
         })
       } else { return this.projects }
     },
-    filteredSharedProjects () {
+    filteredSharings () {
       if (this.search) {
-        return this.sharedProjects.filter((project) => {
+        return this.sharings.filter((sharing) => {
+          const project = sharing.project
           const normalizedTitle = project.name.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
           return normalizedTitle.includes(this.searchValue)
         })
-      } else { return this.sharedProjects }
+      } else { return this.sharings }
+    },
+    filteredSharedProjects () {
+      return this.filteredSharings.map(sharing => sharing.project)
     }
   },
   mounted () {
     this.getProjects()
     this.getSharedProjects()
-
-    // this.subscription = this.$supabase
-    //   .from('projects')
-    //   // .on('INSERT', () => {console.log(insert)})
-    //   .on('UPDTAE', (update) => { console.log('data updated', update) })
-    //   .subscribe()
-  },
-  beforeDestroy () {
-    // this.$supabase.removeSubscription(this.subscription)
   },
   methods: {
     async getProjects () {
@@ -54,10 +50,11 @@ export default {
       }
     },
     async getSharedProjects () {
-      const { data: sharedProjects, error } = await this.$supabase.from('projects_sharing').select('project: project_id (id, name, docType, created_at, towns)').eq('user_email', this.$user.email)
+      const { data: sharings, error } = await this.$supabase.from('projects_sharing').select('project: project_id (id, name, docType, created_at, towns, trame)').eq('user_email', this.$user.email)
 
       if (!error) {
-        this.sharedProjects = sharedProjects.map(p => p.project)
+        this.sharings = sharings
+        this.sharedProjects = sharings.map(p => p.project)
       } else {
       // eslint-disable-next-line no-console
         console.log(error)

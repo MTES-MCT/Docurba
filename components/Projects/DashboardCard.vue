@@ -2,8 +2,9 @@
   <v-card outlined tile color="g200" class="project-card">
     <v-card-title>
       {{ project.name }}
+      <span />
       <v-spacer />
-      <v-dialog width="500px">
+      <v-dialog v-if="!shared" width="500px">
         <template #activator="{on}">
           <v-btn
             icon
@@ -47,7 +48,7 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-if="project.trame"
+                v-if="project.trame && !shared"
                 depressed
                 outlined
                 color="primary"
@@ -61,7 +62,7 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-else
+                v-if="!project.trame && !shared"
                 depressed
                 outlined
                 color="primary"
@@ -112,6 +113,7 @@
               <v-dialog max-width="500px">
                 <template #activator="{on}">
                   <v-btn
+                    v-if="!shared"
                     depressed
                     outlined
                     color="primary"
@@ -148,6 +150,12 @@ export default {
     project: {
       type: Object,
       required: true
+    },
+    sharing: {
+      type: Object,
+      default () {
+        return {}
+      }
     }
   },
   data () {
@@ -161,6 +169,9 @@ export default {
   computed: {
     placeName () {
       return this.project.epci ? this.project.epci.label : this.project.towns[0].nom_commune
+    },
+    shared () {
+      return this.project.owner !== this.$user.id
     }
   },
   async mounted () {

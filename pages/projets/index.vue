@@ -35,10 +35,17 @@
       <v-row class="mt-0">
         <v-col
           v-for="project in filteredProjects"
-          :key="project.id"
+          :key="`${project.id}-owned`"
           cols="12"
         >
           <ProjectsDashboardCard :project="project" />
+        </v-col>
+        <v-col
+          v-for="sharing in filteredSharings"
+          :key="`${sharing.project.id}-shared`"
+          cols="12"
+        >
+          <ProjectsDashboardCard :project="sharing.project" :sharing="sharing" />
         </v-col>
       </v-row>
     </v-container>
