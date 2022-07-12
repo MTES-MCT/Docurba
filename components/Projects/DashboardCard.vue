@@ -4,7 +4,7 @@
       {{ project.name }}
       <span />
       <v-spacer />
-      <v-dialog v-if="!shared" width="500px">
+      <v-dialog v-if="editor" width="500px">
         <template #activator="{on}">
           <v-btn
             icon
@@ -48,7 +48,7 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-if="project.trame && !shared"
+                v-if="project.trame && editor"
                 depressed
                 outlined
                 color="primary"
@@ -62,7 +62,7 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-if="!project.trame && !shared"
+                v-if="!project.trame && editor"
                 depressed
                 outlined
                 color="primary"
@@ -110,7 +110,7 @@
               {{ nbSharings }} email{{ nbSharings > 1 ? 's ont' : ' a' }} accès à ce projet
             </v-card-text>
             <v-card-actions>
-              <v-dialog max-width="500px">
+              <v-dialog max-width="600px">
                 <template #activator="{on}">
                   <v-btn
                     v-if="!shared"
@@ -172,6 +172,9 @@ export default {
     },
     shared () {
       return this.project.owner !== this.$user.id
+    },
+    editor () {
+      return !this.shared || (this.sharing ? this.sharing.role === 'write' : false)
     }
   },
   async mounted () {
@@ -191,8 +194,6 @@ export default {
       this.loadingPrint = false
     },
     async uploadPAC () {
-      console.log(this.$refs.pacInput.files)
-
       const pac = this.$refs.pacInput.files[0]
 
       this.loadingUpload = true

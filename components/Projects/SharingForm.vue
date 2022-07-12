@@ -15,13 +15,24 @@
         Partagé avec
       </h3>
       <v-list max-height="400px" class="overflow-auto">
-        <v-hover v-for="share in sharings" v-slot="{hover}" :key="share.id">
+        <v-hover v-for="sharing in sharings" v-slot="{hover}" :key="sharing.id">
           <v-list-item>
             <v-list-item-content>
-              <v-list-item-title> {{ share.user_email }}</v-list-item-title>
+              <v-list-item-title> {{ sharing.user_email }}</v-list-item-title>
             </v-list-item-content>
+            <v-list-item-action>
+              <v-select
+                v-model="sharing.role"
+                hide-details
+                dense
+                filled
+                class="role-select"
+                :items="roles"
+                @change="updateRole(sharing)"
+              />
+            </v-list-item-action>
             <v-list-item-action class="my-0">
-              <v-btn v-show="hover" small icon @click="cancelShare(share.user_email)">
+              <v-btn v-show="hover" small icon @click="cancelSharing(sharing.user_email)">
                 <v-icon>{{ icons.mdiCloseCircleOutline }}</v-icon>
               </v-btn>
             </v-list-item-action>
@@ -49,6 +60,13 @@ export default {
         mdiShare,
         mdiCloseCircleOutline
       },
+      roles: [{
+        text: 'Lecture',
+        value: 'read'
+      }, {
+        text: 'Edition',
+        value: 'write'
+      }],
       emailsInput: '',
       sharings: []
     }
@@ -73,7 +91,7 @@ export default {
         console.log(error)
       }
     },
-    async cancelShare (email) {
+    async cancelSharing (email) {
       this.sharings = this.sharings.filter(s => s.user_email !== email)
       await this.$supabase.from('projects_sharing').delete().match({
         user_email: email,
@@ -101,7 +119,27 @@ export default {
 
       this.sharings.push(...newSharings)
       this.emailsInput = ''
+    },
+    async updateRole (sharing) {
+      const { data: updatedSharing, error } = await this.$supabase.from('projects_sharing').update({
+        role: sharing.role
+      }).eq('id', sharing.id)
+
+      if (!error) {
+        // TODO: Add a feedback here that the change is good.
+
+        // eslint-disable-next-line no-console
+        console.log(updatedSharing)
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(error)
+      }
     }
   }
 }
 </script>
+<style scoped>
+.role-select {
+  max-width: 150px;
+}
+</style>
