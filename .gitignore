@@ -94,3 +94,4 @@ scripts/
 
 # Deploy file with env variables
 deploy.yaml
+deploy_dev.yaml

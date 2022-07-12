@@ -4,7 +4,7 @@
       {{ project.name }}
       <span />
       <v-spacer />
-      <v-dialog v-if="editor" width="500px">
+      <v-dialog v-if="!shared" width="500px">
         <template #activator="{on}">
           <v-btn
             icon
