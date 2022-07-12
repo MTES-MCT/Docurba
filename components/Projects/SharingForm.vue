@@ -103,11 +103,12 @@ export default {
         return {
           user_email: email.toLowerCase().trim(),
           project_id: this.project.id,
-          shared_by: this.$user.id
+          shared_by: this.$user.id,
+          role: 'read'
         }
       })
 
-      await this.$supabase.from('projects_sharing').insert(newSharings)
+      const { data: savedSharings } = await this.$supabase.from('projects_sharing').insert(newSharings)
 
       axios({
         url: '/api/projects/notify/shared',
@@ -117,7 +118,9 @@ export default {
         }
       })
 
-      this.sharings.push(...newSharings)
+      console.log(savedSharings)
+
+      this.sharings.push(...savedSharings)
       this.emailsInput = ''
     },
     async updateRole (sharing) {
