@@ -20,7 +20,7 @@ défavorisés aux conditions climatiques difficiles.
 dispositions spécifiques en matière d’urbanisme** que l'on peut retrouver aux articles [L122-1 à 27 du code de l'urbanisme.](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210568/#LEGISCTA000031212320)
 
 **Les grands principes de la loi sont :**
-- **réaliser l'urbanisation en continuité** ([L. 122-5 à 7](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210586/#LEGISCTA000031212306)) ;
+- **a) réaliser l'urbanisation en continuité** ([L. 122-5 à 7](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210586/#LEGISCTA000031212306)) ;
 
 L’urbanisation doit se réaliser en continuité des bourgs, villages, hameaux et groupes de constructions traditionnelles ou d'habitations existants. 
 
@@ -42,9 +42,9 @@ Cette compatibilité doit être justifiée « *en fonction des spécificités lo
 
 En l'absence d'une telle étude, le plan local d'urbanisme peut délimiter des hameaux et des groupes d'habitations nouveaux intégrés à l'environnement ou, à titre exceptionnel après accord de la chambre d'agriculture et de la commission départementale de la nature, des paysages et des sites, des zones d'urbanisation future de taille et de capacité d'accueil limitées, si le respect des dispositions prévues aux articles L. 122-9 et L. 122-10 ou la protection contre les risques naturels imposent une urbanisation qui n'est pas située en continuité de l'urbanisation existante.
 
-- **préserver les espaces naturels, paysages et milieux caractéristiques** ([Articles L122-9 à L122-14](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210603/#LEGISCTA000031212294)) avec par exemple la protection des parties naturelles des rives des plans d'eau naturels ou artificiels d'une superficie inférieure à 1000 hectares. Les abords des plans d'eau sont protégés sur une distance de 300 mètres à compter de la rive; y sont interdits toutes constructions, installations et routes nouvelles ainsi que toutes extractions et tous affouillements.
+- **b) préserver les espaces naturels, paysages et milieux caractéristiques** ([Articles L122-9 à L122-14](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210603/#LEGISCTA000031212294)) avec par exemple la protection des parties naturelles des rives des plans d'eau naturels ou artificiels d'une superficie inférieure à 1000 hectares. Les abords des plans d'eau sont protégés sur une distance de 300 mètres à compter de la rive; y sont interdits toutes constructions, installations et routes nouvelles ainsi que toutes extractions et tous affouillements.
 
-- **réglementer le développement touristique** ([Articles L122-15 à 25](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210623/#LEGISCTA000031212279)) avec le principe d'unité touristique nouvelle (UTN). La création de ces UTN doit prendre en compte les communautés d'intérêt des collectivités locales concernées et contribuer à l'équilibre des activités économiques et de loisirs, notamment en favorisant l'utilisation rationnelle du patrimoine bâti existant et des formules de gestion locative pour les constructions nouvelles. 
+- **c) réglementer le développement touristique** ([Articles L122-15 à 25](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210623/#LEGISCTA000031212279)) avec le principe d'unité touristique nouvelle (UTN). La création de ces UTN doit prendre en compte les communautés d'intérêt des collectivités locales concernées et contribuer à l'équilibre des activités économiques et de loisirs, notamment en favorisant l'utilisation rationnelle du patrimoine bâti existant et des formules de gestion locative pour les constructions nouvelles. 
 Leur localisation, leur conception et leur réalisation doivent respecter la qualité des sites et les grands équilibres naturels.
 
 Le classement entraîne des prescriptions particulières en termes d’urbanisme consistant notamment à :
