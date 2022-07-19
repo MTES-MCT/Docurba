@@ -19,7 +19,7 @@ export default ({ route }, inject) => {
     async getData (region = route.query.region, inseeCodes = route.query.insee) {
       const source = sourceMap[region]
       const parsedInseeCode = inseeCodes.map((code) => {
-        return code.length < 5 ? '0' + code : code
+        return code.toString.length < 5 ? '0' + code : code
       })
 
       if (source) {
