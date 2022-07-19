@@ -25,9 +25,13 @@ app.post('/password', async (req, res) => {
         redirectURL: user.action_link
       }
     })
-  }
 
-  res.status(200).send('OK')
+    res.status(200).send('OK')
+  } else {
+    // eslint-disable-next-line no-console
+    console.log('Error reset password')
+    res.status(400).send(error)
+  }
 })
 
 app.post('/signup', async (req, res) => {

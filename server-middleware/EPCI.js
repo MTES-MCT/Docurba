@@ -9,7 +9,7 @@ app.get('/', (req, res) => {
 
   const epciByDep = EPCI.filter((e) => {
     // eslint-disable-next-line eqeqeq
-    return !!e.towns.find(t => t.code_departement == dep)
+    return !!e.towns.find(t => +t.code_departement == dep)
   }) || []
 
   res.status(epciByDep.length ? 200 : 404).send(epciByDep)
