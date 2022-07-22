@@ -34,9 +34,13 @@
     <!-- This client only could be removed with proper user management server side -->
     <client-only>
       <div class="align-self-center">
-        <v-btn text href="/news" nuxt>
+        <!-- <v-btn text href="/news" nuxt>
           News
-        </v-btn>
+        </v-btn> -->
+        <AdminHelpDialog v-model="helpDialog" @helpSent="helpSnackbar = true; helpDialog = false" />
+        <v-snackbar v-model="helpSnackbar" absolute>
+          Votre message à été envoyé !
+        </v-snackbar>
         <v-btn v-if="!$user.id" text @click="openLogin = true">
           Connexion
         </v-btn>
@@ -99,6 +103,8 @@ export default {
       icons: {
         mdiDotsVertical
       },
+      helpDialog: false,
+      helpSnackbar: false,
       openLogin: false,
       openDocs: false,
       openDDT: false,
