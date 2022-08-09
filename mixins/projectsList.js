@@ -5,8 +5,7 @@ export default {
       projects: [],
       sharings: [],
       sharedProjects: [],
-      search: '',
-      subscription: null
+      search: ''
     }
   },
   computed: {

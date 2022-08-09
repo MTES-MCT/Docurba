@@ -87,7 +87,27 @@ export default {
         mdiFileDocumentEdit,
         mdiHelp
       }
+      // projectsSubscription: null
     }
   }
+  // computed: {
+  //   allProjectsIds () {
+  //     const projectsIds = this.projects.map(p => p.id)
+  //     const sharedProjectsIds = this.sharedProjects.map(p => p.id)
+
+  //     return projectsIds.concat(sharedProjectsIds)
+  //   }
+  // },
+  // mounted () {
+  //   this.projectsSubscription = this.$supabase
+  //     .from(`projects:id=in.(${this.allProjectsIds})`)
+  //     .on('UPDATE', (payload) => {
+  //       console.log('Change received!', payload)
+  //     })
+  //     .subscribe()
+  // },
+  // beforeDestroy () {
+  //   this.$supabase.removeSubscription(this.projectsSubscription)
+  // }
 }
 </script>

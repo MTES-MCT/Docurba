@@ -1,7 +1,7 @@
 <template>
   <v-card outlined tile color="g200" class="project-card">
     <v-card-title>
-      {{ project.name }}
+      {{ projectData.name }}
       <span />
       <v-spacer />
       <v-dialog v-if="!shared" width="500px">
@@ -18,7 +18,7 @@
           </v-btn>
         </template>
         <template #default="dialog">
-          <ProjectsProjectCardForm :project="project" @cancel="dialog.value = false">
+          <ProjectsProjectCardForm :project="projectData" @cancel="dialog.value = false">
             <template #title>
               Modifier le projet
             </template>
@@ -26,7 +26,7 @@
         </template>
       </v-dialog>
     </v-card-title>
-    <v-card-subtitle>{{ project.docType }} - {{ placeName }}</v-card-subtitle>
+    <v-card-subtitle>{{ projectData.docType }} - {{ placeName }}</v-card-subtitle>
     <v-card-text>
       <v-row>
         <v-col cols="4">
@@ -39,7 +39,7 @@
                 depressed
                 color="primary"
                 tile
-                :to="`/projets/${project.id}/content`"
+                :to="`/projets/${projectData.id}/content`"
                 nuxt
               >
                 Consulter
@@ -48,12 +48,12 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-if="project.trame && editor"
+                v-if="projectData.trame && editor"
                 depressed
                 outlined
                 color="primary"
                 tile
-                :to="`/ddt/${project.id}`"
+                :to="`/ddt/${projectData.id}`"
                 nuxt
               >
                 Modifier
@@ -62,7 +62,7 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-if="!project.trame && editor"
+                v-if="!projectData.trame && editor"
                 depressed
                 outlined
                 color="primary"
@@ -90,7 +90,7 @@
                 outlined
                 color="primary"
                 tile
-                :to="`/projets/${project.id}/data?region=${project.region}`"
+                :to="`/projets/${projectData.id}/data?region=${projectData.region}`"
                 nuxt
               >
                 Consulter
@@ -130,7 +130,7 @@
                 <v-card>
                   <v-card-title>Partager le projet</v-card-title>
                   <v-card-text>
-                    <ProjectsSharingForm :project="project" />
+                    <ProjectsSharingForm :project="projectData" />
                   </v-card-text>
                 </v-card>
               </v-dialog>
@@ -160,6 +160,7 @@ export default {
   },
   data () {
     return {
+      projectData: Object.assign({}, this.project),
       icons: { mdiDownload, mdiEye, mdiUpload, mdiShare, mdiPencil },
       loadingPrint: false,
       loadingUpload: false,
@@ -182,6 +183,14 @@ export default {
       count: 'exact',
       head: true
     }).eq('project_id', this.project.id)
+
+    this.projectSubscription = this.$supabase
+      .from(`projects:id=eq.${this.project.id}`)
+      .on('UPDATE', (payload) => {
+        // console.log('Change received on project', payload)
+        Object.assign(this.projectData, payload.new)
+      })
+      .subscribe()
 
     if (!error) {
       this.nbSharings = sharings
