@@ -1,3 +1,5 @@
+import { sortBy } from 'lodash'
+
 // @vue/component
 export default {
   data () {
@@ -14,20 +16,24 @@ export default {
     },
     filteredProjects () {
       if (this.search) {
-        return this.projects.filter((project) => {
+        const filteredProjects = this.projects.filter((project) => {
           const normalizedTitle = project.name.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
           return normalizedTitle.includes(this.searchValue)
         })
-      } else { return this.projects }
+
+        return sortBy(filteredProjects, p => p.name)
+      } else { return sortBy(this.projects, p => p.name) }
     },
     filteredSharings () {
       if (this.search) {
-        return this.sharings.filter((sharing) => {
+        const filteredSharedProjects = this.sharings.filter((sharing) => {
           const project = sharing.project
           const normalizedTitle = project.name.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
           return normalizedTitle.includes(this.searchValue)
         })
-      } else { return this.sharings }
+
+        return sortBy(filteredSharedProjects, s => s.project.name)
+      } else { return sortBy(this.sharings, s => s.project.name) }
     },
     filteredSharedProjects () {
       return this.filteredSharings.map(sharing => sharing.project)

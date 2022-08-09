@@ -27,18 +27,28 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <v-toolbar flat>
-            <v-text-field v-model="search" filled hide-details placeholder="Recherchez un projet" />
-          </v-toolbar>
+          <!-- <v-toolbar flat> -->
+          <v-text-field v-model="search" filled hide-details placeholder="Recherchez un projet" />
+          <!-- </v-toolbar> -->
         </v-col>
       </v-row>
       <v-row class="mt-0">
+        <v-col>
+          <h3 class="text-h3">
+            Vos projets
+          </h3>
+        </v-col>
         <v-col
           v-for="project in filteredProjects"
           :key="`${project.id}-owned`"
           cols="12"
         >
           <ProjectsDashboardCard :project="project" />
+        </v-col>
+        <v-col>
+          <h3 class="text-h3">
+            Projets partagés avec vous
+          </h3>
         </v-col>
         <v-col
           v-for="sharing in filteredSharings"
