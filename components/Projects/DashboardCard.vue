@@ -161,6 +161,7 @@ export default {
   data () {
     return {
       projectData: Object.assign({}, this.project),
+      projectSubscription: null,
       icons: { mdiDownload, mdiEye, mdiUpload, mdiShare, mdiPencil },
       loadingPrint: false,
       loadingUpload: false,
@@ -195,6 +196,9 @@ export default {
     if (!error) {
       this.nbSharings = sharings
     }
+  },
+  beforeDestroy () {
+    this.$supabase.removeSubscription(this.projectSubscription)
   },
   methods: {
     async printPAC () {
