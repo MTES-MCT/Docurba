@@ -97,10 +97,10 @@ export default {
         mdiPlus,
         mdiFileDocumentEdit,
         mdiHelp
-      }
-      // projectsSubscription: null
+      },
+      projectsSubscription: null
     }
-  }
+  },
   // computed: {
   //   allProjectsIds () {
   //     const projectsIds = this.projects.map(p => p.id)
@@ -109,16 +109,26 @@ export default {
   //     return projectsIds.concat(sharedProjectsIds)
   //   }
   // },
-  // mounted () {
-  //   this.projectsSubscription = this.$supabase
-  //     .from(`projects:id=in.(${this.allProjectsIds})`)
-  //     .on('UPDATE', (payload) => {
-  //       console.log('Change received!', payload)
-  //     })
-  //     .subscribe()
-  // },
-  // beforeDestroy () {
-  //   this.$supabase.removeSubscription(this.projectsSubscription)
-  // }
+  watch: {
+    projectListLoaded () {
+      if (this.projectListLoaded) {
+        const projectsIds = this.projects.map(p => p.id)
+
+        console.log('init subscription on projects:', projectsIds)
+
+        this.projectsSubscription = this.$supabase
+          .from(`projects:id=in.(${projectsIds.join(', ')})`)
+          .on('UPDATE', (payload) => {
+            console.log('Change received in projects list', payload)
+          })
+          .subscribe()
+      }
+    }
+  },
+  beforeDestroy () {
+    if (this.projectsSubscription) {
+      this.$supabase.removeSubscription(this.projectsSubscription)
+    }
+  }
 }
 </script>

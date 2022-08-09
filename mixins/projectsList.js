@@ -50,7 +50,11 @@ export default {
   },
   methods: {
     async getProjects () {
-      const { data: projects, error } = await this.$supabase.from('projects').select('*').eq('owner', this.$user.id)
+      const { data: projects, error } = await this.$supabase.from('projects')
+        .select('*').match({
+          owner: this.$user.id,
+          archived: false
+        })
 
       if (!error) {
         this.projects = projects
@@ -60,7 +64,12 @@ export default {
       }
     },
     async getSharedProjects () {
-      const { data: sharings, error } = await this.$supabase.from('projects_sharing').select('id, role, project: project_id (id, name, docType, created_at, towns, trame)').eq('user_email', this.$user.email)
+      const { data: sharings, error } = await this.$supabase.from('projects_sharing')
+        .select('id, role, project: project_id (id, name, docType, created_at, towns, trame)')
+        .match({
+          user_email: this.$user.email,
+          archived: false
+        })
 
       if (!error) {
         this.sharings = sharings

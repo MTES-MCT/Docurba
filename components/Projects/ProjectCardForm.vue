@@ -29,6 +29,9 @@
       </v-row>
     </v-card-text>
     <v-card-actions>
+      <v-btn outlined color="secondary" @click="archiveProject">
+        Archiver
+      </v-btn>
       <v-spacer />
       <v-btn v-if="!project.id" color="primary" :loading="loading" @click="upsertProject">
         Créer
@@ -144,6 +147,11 @@ export default {
       }
 
       this.loading = false
+    },
+    async archiveProject () {
+      await this.$supabase.from('projects').update({ archived: true }).eq('id', this.project.id)
+      await this.$supabase.from('projects_sharing').update({ archived: true }).eq('project_id', this.project.id)
+      this.$emit('cancel')
     },
     getRegion (isEpci) {
       if (isEpci) {
