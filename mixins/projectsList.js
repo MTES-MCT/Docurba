@@ -7,7 +7,8 @@ export default {
       projects: [],
       sharings: [],
       sharedProjects: [],
-      search: ''
+      search: '',
+      projectListLoaded: false
     }
   },
   computed: {
@@ -39,9 +40,13 @@ export default {
       return this.filteredSharings.map(sharing => sharing.project)
     }
   },
-  mounted () {
-    this.getProjects()
-    this.getSharedProjects()
+  async mounted () {
+    await Promise.all([
+      this.getProjects(),
+      this.getSharedProjects()
+    ])
+
+    this.projectListLoaded = true
   },
   methods: {
     async getProjects () {

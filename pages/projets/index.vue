@@ -24,7 +24,7 @@
         Guide d'utilisation
       </v-btn>
     </template>
-    <v-container>
+    <v-container v-if="projectListLoaded">
       <v-row>
         <v-col cols="12">
           <!-- <v-toolbar flat> -->
@@ -59,6 +59,7 @@
         </v-col>
       </v-row>
     </v-container>
+    <VGlobalLoader v-else />
     <v-dialog width="500px">
       <template #activator="{on}">
         <v-btn
