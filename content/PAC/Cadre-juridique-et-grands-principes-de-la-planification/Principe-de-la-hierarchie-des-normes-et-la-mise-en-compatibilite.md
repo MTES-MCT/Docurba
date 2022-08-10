@@ -13,7 +13,7 @@ La hiérarchie des normes est construite autour de deux rapports d’opposabilit
 
 **La prise en compte**, régime plus souple que le rapport de compatibilité, implique que le document de rang inférieur ne s’écarte pas des orientations essentielles définies par le document de rang supérieur. Le Conseil d’Etat considère que la prise en compte impose au document infra de « *ne pas s’écarter des orientations fondamentales [du document supra] sauf, sous le contrôle du juge, pour un motif tiré de l’intérêt de l’opération envisagée et dans la mesure où ce motif le justifie*» (Conseil d’Etat, 28 juillet 2004, Assoc. Défense de l’environnement, n°256511).
 
-#### Documents dont l’évolution est engagée avant le 1er avril 2021 (entrée en vigueur de l’ordonnance relative à la rationalisation de la hiérarchie des normes applicable aux documents d’urbanisme)
+#### a) Documents dont l’évolution est engagée avant le 1er avril 2021 (entrée en vigueur de l’ordonnance relative à la rationalisation de la hiérarchie des normes applicable aux documents d’urbanisme)
 
 ##### PLU(i) couverts par un SCoT
 
@@ -25,7 +25,7 @@ Dans les territoires couverts par un SCoT, lorsqu’un des documents énumérés
 
 Dans les territoires non couverts par un SCoT, lorsqu’un des documents supra est approuvé après l’approbation du PLU, ce dernier doit être rendu compatible ou le prendre en compte, si nécessaire, dans un délai de 3 ans. Si un SRADDET est approuvé après l’approbation du PLU, ce dernier se met en compatibilité lors de sa première révision qui suit l’approbation du schéma régional.
 
-#### Documents dont l’évolution est engagée après le 1er avril 2021 (entrée en vigueur de l’ordonnance relative à la rationalisation de la hiérarchie des normes applicable aux documents d’urbanisme)
+#### b) Documents dont l’évolution est engagée après le 1er avril 2021 (entrée en vigueur de l’ordonnance relative à la rationalisation de la hiérarchie des normes applicable aux documents d’urbanisme)
 
 #### PLU(i) couverts par un SCoT
 

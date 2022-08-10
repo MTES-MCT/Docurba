@@ -5,9 +5,9 @@ titre : Grands principes primordiaux
 ## Grands principes primordiaux
 L’urbanisme est aujourd’hui une compétence décentralisée. L’Etat demeure garant des **grands équilibres et de la bonne prise en compte des enjeux nationaux** dans les projets communaux et intercommunaux. La définition d’une politique de développement du territoire implique également de préserver **une cohérence et une synergie** entre les différentes politiques et stratégies définies à l’échelle du territoire.
 
-De nombreuses lois ont jalonné l’histoire de la planification. Sans représenter une liste exhaustive, voici une présentation des** lois les plus structurantes** et de leur esprit.
+De nombreuses lois ont jalonné l’histoire de la planification. Sans représenter une liste exhaustive, voici une présentation des **lois les plus structurantes** et de leur esprit.
 
-Ces différentes lois ont été traduites notamment dans le code de l'urbanisme, le code de référence pour l'élaboration des documents d'urbanisme. En particulier, il est important de citer en préambule les articles [L101-2 et L101-2-1](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210064/#LEGISCTA000031212667)  à la base du code, qui énoncent clairement **les objectifs générauxque doivent poursuivre les collectivités lorsqu'elles élaborent leur document d'urbanisme. Tous les documents de planification et d’urbanisme doivent respecter ces objectifs.**
+Ces différentes lois ont été traduites notamment dans le code de l'urbanisme, le code de référence pour l'élaboration des documents d'urbanisme. En particulier, il est important de citer en préambule les articles [L101-2 et L101-2-1](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210064/#LEGISCTA000031212667)  à la base du code, qui énoncent clairement **les objectifs généraux que doivent poursuivre les collectivités lorsqu'elles élaborent leur document d'urbanisme. Tous les documents de planification et d’urbanisme doivent respecter ces objectifs.**
 
 "*Dans le respect des objectifs du développement durable, l'action des collectivités publiques en matière d'urbanisme vise à atteindre les objectifs suivants :*
 
