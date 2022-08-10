@@ -22,11 +22,12 @@
       <v-text-field v-model="userData.lastname" hide-details filled label="Nom" />
     </v-col>
     <template v-if="userData.email.includes('gouv.fr')">
+      <!-- <template> -->
       <v-col cols="">
-        <VDeptAutocomplete v-model="ddtData.dept" />
+        <VDeptAutocomplete v-model="userData.dept" />
       </v-col>
       <v-col cols="auto">
-        <v-checkbox v-model="isDDT" label="Agent de DDT" />
+        <v-checkbox v-model="userData.isDDT" label="Agent de DDT" />
       </v-col>
     </template>
   </v-row>
@@ -51,10 +52,6 @@ export default {
         mdiEye,
         mdiEyeOff
       },
-      ddtData: {
-        dept: null
-      },
-      isDDT: false,
       userData: Object.assign(this.defaultUserData(), this.value)
     }
   },
@@ -72,7 +69,9 @@ export default {
         email: '',
         firstname: '',
         lastname: '',
-        password: ''
+        password: '',
+        dept: null,
+        isDDT: false
       }
     }
   }

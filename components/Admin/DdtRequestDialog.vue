@@ -59,7 +59,7 @@ export default {
   methods: {
     async makeDDTRequest () {
       if (this.selectedDepartement) {
-        const { data, error } = await this.$supabase.from('admin_users_dept').insert([{
+        await this.$supabase.from('admin_users_dept').insert([{
           role: 'user',
           dept: this.selectedDepartement.code_departement,
           user_id: this.$user.id,

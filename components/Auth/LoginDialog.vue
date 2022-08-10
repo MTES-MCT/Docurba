@@ -79,7 +79,9 @@ export default {
         firstname: '',
         lastname: '',
         email: '',
-        password: ''
+        password: '',
+        dept: null,
+        isDDT: false
       },
       snackbar: {
         text: '',
@@ -125,6 +127,15 @@ export default {
       if (!error) {
         // eslint-disable-next-line no-console
         console.log('success sign up', user, session)
+
+        if (this.userData.isDDT && this.userData.dept) {
+          await this.$supabase.from('admin_users_dept').insert([{
+            role: 'user',
+            dept: this.userData.dept.code_departement,
+            user_id: this.$user.id,
+            user_email: this.$user.email
+          }])
+        }
 
         axios({
           method: 'post',
