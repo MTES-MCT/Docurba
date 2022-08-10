@@ -112,14 +112,17 @@ export default {
   watch: {
     projectListLoaded () {
       if (this.projectListLoaded) {
-        const projectsIds = this.projects.map(p => p.id)
-
-        console.log('init subscription on projects:', projectsIds)
+        // const projectsIds = this.projects.map(p => p.id)
 
         this.projectsSubscription = this.$supabase
-          .from(`projects:id=in.(${projectsIds.join(', ')})`)
+          .from(`projects:owner=eq.${this.$user.id}`)
           .on('UPDATE', (payload) => {
-            console.log('Change received in projects list', payload)
+            const updatedProject = payload.new
+
+            if (updatedProject.archived) {
+              const projectIndex = this.projects.findIndex(p => p.id === updatedProject.id)
+              this.projects.splice(projectIndex, 1)
+            }
           })
           .subscribe()
       }
