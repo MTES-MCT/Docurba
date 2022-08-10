@@ -21,8 +21,8 @@
     <v-col cols="6">
       <v-text-field v-model="userData.lastname" hide-details filled label="Nom" />
     </v-col>
-    <template v-if="userData.email.includes('gouv.fr')">
-      <!-- <template> -->
+    <!-- <template v-if="userData.email.includes('gouv.fr')"> -->
+    <template>
       <v-col cols="">
         <VDeptAutocomplete v-model="userData.dept" />
       </v-col>

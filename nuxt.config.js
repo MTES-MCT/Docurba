@@ -60,6 +60,7 @@ export default {
     { path: '/api/communes', handler: '~/server-middleware/communes.js' },
     { path: '/api/epci', handler: '~/server-middleware/EPCI.js' },
     { path: '/api/projects', handler: '~/server-middleware/projects.js' },
+    { path: '/api/slack', handler: '~/server-middleware/slack.js' },
     { path: '/api/stats', handler: '~/server-middleware/stats.js' }
   ],
 

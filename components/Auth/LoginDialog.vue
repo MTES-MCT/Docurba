@@ -122,11 +122,15 @@ export default {
       }
     },
     async signUp () {
-      const { user, session, error } = await this.$auth.signUp(this.userData)
+      const {
+        // user,
+        // session,
+        error
+      } = await this.$auth.signUp(this.userData)
 
       if (!error) {
         // eslint-disable-next-line no-console
-        console.log('success sign up', user, session)
+        // console.log('success sign up', user, session)
 
         if (this.userData.isDDT && this.userData.dept) {
           await this.$supabase.from('admin_users_dept').insert([{
@@ -135,6 +139,14 @@ export default {
             user_id: this.$user.id,
             user_email: this.$user.email
           }])
+
+          await axios({
+            url: '/api/slack/notify/admin',
+            method: 'post',
+            data: {
+              userData: this.userData
+            }
+          })
         }
 
         axios({

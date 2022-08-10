@@ -27,6 +27,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import departements from '@/assets/data/departements-france.json'
 
 export default {
@@ -65,6 +66,21 @@ export default {
           user_id: this.$user.id,
           user_email: this.$user.email
         }])
+
+        console.log(this.$user)
+
+        await axios({
+          url: '/api/slack/notify/admin',
+          method: 'post',
+          data: {
+            userData: {
+              email: this.$user.email,
+              firstname: this.$user.user_metadata.firstname,
+              lastname: this.$user.user_metadata.lastname,
+              dept: this.selectedDepartement
+            }
+          }
+        })
       }
 
       this.dialog = false
