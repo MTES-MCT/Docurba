@@ -62,7 +62,7 @@
             <v-list-item link @click="goToAdmin">
               <v-list-item-title>Accès DDT</v-list-item-title>
             </v-list-item>
-            <v-list-item link @click="$supabase.auth.signOut()">
+            <v-list-item link @click="signOut">
               <v-list-item-title>
                 Déconnexion
               </v-list-item-title>
@@ -146,6 +146,10 @@ export default {
       } else {
         this.openDocs = true
       }
+    },
+    signOut () {
+      this.$supabase.auth.signOut()
+      this.$router.push('/')
     }
   }
 }

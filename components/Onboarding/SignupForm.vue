@@ -4,7 +4,7 @@
       <v-text-field v-model="userData.email" hide-details filled label="Email" />
     </v-col>
     <v-col cols="12">
-      <v-text-field
+      <!-- <v-text-field
         v-model="userData.password"
         hide-details
         filled
@@ -12,14 +12,23 @@
         :type="showPassword ? 'text' : 'password'"
         :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
         @click:append="showPassword = !showPassword"
-      />
+      /> -->
+      <InputsPasswordTextField v-model="userData.password" />
     </v-col>
-    <v-col cols="12">
+    <v-col cols="6">
       <v-text-field v-model="userData.firstname" hide-details filled label="Prénom" />
     </v-col>
-    <v-col cols="12">
+    <v-col cols="6">
       <v-text-field v-model="userData.lastname" hide-details filled label="Nom" />
     </v-col>
+    <template v-if="userData.email.includes('gouv.fr')">
+      <v-col cols="">
+        <VDeptAutocomplete v-model="ddtData.dept" />
+      </v-col>
+      <v-col cols="auto">
+        <v-checkbox v-model="isDDT" label="Agent de DDT" />
+      </v-col>
+    </template>
   </v-row>
 </template>
 
@@ -42,7 +51,10 @@ export default {
         mdiEye,
         mdiEyeOff
       },
-      showPassword: false,
+      ddtData: {
+        dept: null
+      },
+      isDDT: false,
       userData: Object.assign(this.defaultUserData(), this.value)
     }
   },
