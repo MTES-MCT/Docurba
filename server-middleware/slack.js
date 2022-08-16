@@ -30,6 +30,21 @@ app.post('/notify/admin', (req, res) => {
           }
         },
         {
+          type: 'actions',
+          block_id: 'actions1',
+          elements: [
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: `Valider ${userData.email}`
+              },
+              value: 'cancel',
+              action_id: 'button_1'
+            }
+          ]
+        },
+        {
           type: 'divider'
         }
       ]
@@ -42,6 +57,11 @@ app.post('/notify/admin', (req, res) => {
   // } catch (err) {
   //   console.log(err)
   // }
+})
+
+// Webhook  from slack
+app.post('/webhook/interactivity', (req, res) => {
+  console.log(req.body)
 })
 
 module.exports = app
