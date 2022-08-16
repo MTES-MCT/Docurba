@@ -39,8 +39,8 @@ app.post('/notify/admin', (req, res) => {
                 type: 'plain_text',
                 text: `Valider ${userData.email}`
               },
-              value: 'cancel',
-              action_id: 'button_1'
+              value: JSON.stringify(userData),
+              action_id: 'ddt_validation'
             }
           ]
         },
@@ -61,7 +61,7 @@ app.post('/notify/admin', (req, res) => {
 
 // Webhook  from slack
 app.post('/webhook/interactivity', (req, res) => {
-  console.log(req.body)
+  console.log('webhook from slack', req.body)
 })
 
 module.exports = app
