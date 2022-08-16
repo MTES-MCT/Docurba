@@ -61,7 +61,7 @@ app.post('/notify/admin', (req, res) => {
 
 // Webhook  from slack
 app.post('/webhook/interactivity', (req, res) => {
-  console.log('webhook from slack', req.body)
+  console.log('webhook from slack req keys:', Object.keys(req))
 })
 
 module.exports = app
