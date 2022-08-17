@@ -9,6 +9,7 @@ const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', proces
 const axios = require('axios')
 
 app.post('/notify/admin', (req, res) => {
+  // eslint-disable-next-line no-console
   console.log('Notify team in slack')
   const { userData } = req.body
 
@@ -54,8 +55,10 @@ app.post('/notify/admin', (req, res) => {
       ]
     }
   }).then((res) => {
+    // eslint-disable-next-line no-console
     console.log('then: ', res.data)
   }).catch((err) => {
+    // eslint-disable-next-line no-console
     console.log('catch', err.response.data)
   })
   // } catch (err) {
@@ -67,6 +70,7 @@ app.post('/notify/admin', (req, res) => {
 app.post('/webhook/interactivity', async (req, res) => {
   const payload = JSON.parse(req.body.payload)
 
+  // eslint-disable-next-line no-console
   console.log('slack payload: ', payload)
 
   const responseUrl = payload.response_url
@@ -74,17 +78,21 @@ app.post('/webhook/interactivity', async (req, res) => {
   if (payload.actions && payload.actions.length) {
     const action = payload.actions[0]
 
-    console.log(action)
+    // eslint-disable-next-line no-console
+    console.log('slack action: ', action)
 
     if (action.action_id === 'ddt_validation') {
       const userData = JSON.parse(action.value)
 
-      const {data, error} = await supabase.from('admin_user_dept').update({role: 'ddt'}).match({
+      // eslint-disable-next-line no-console
+      console.log('userData:', userData)
+
+      const { data, error } = await supabase.from('admin_users_dept').update({ role: 'ddt' }).match({
         user_email: userData.email,
         dept: userData.dept.code_departement
       })
 
-      if(data && !error) {
+      if (data && !error) {
         res.status(200).send('OK')
         axios({
           url: responseUrl,
@@ -92,6 +100,10 @@ app.post('/webhook/interactivity', async (req, res) => {
           data: {
             text: `Role DDT validé pour ${userData.email}`
           }
+        })
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('err updating role', error)
       }
     }
   }
