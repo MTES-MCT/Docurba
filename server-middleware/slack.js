@@ -1,6 +1,10 @@
 const express = require('express')
 const app = express()
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+const { createClient } = require('@supabase/supabase-js')
+const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 const axios = require('axios')
 
@@ -60,8 +64,37 @@ app.post('/notify/admin', (req, res) => {
 })
 
 // Webhook  from slack
-app.post('/webhook/interactivity', (req, res) => {
-  console.log('webhook from slack req keys:', Object.keys(req))
+app.post('/webhook/interactivity', async (req, res) => {
+  const payload = JSON.parse(req.body.payload)
+
+  console.log('slack payload: ', payload)
+
+  const responseUrl = payload.response_url
+
+  if (payload.actions && payload.actions.length) {
+    const action = payload.actions[0]
+
+    console.log(action)
+
+    if (action.action_id === 'ddt_validation') {
+      const userData = JSON.parse(action.value)
+
+      const {data, error} = await supabase.from('admin_user_dept').update({role: 'ddt'}).match({
+        user_email: userData.email,
+        dept: userData.dept.code_departement
+      })
+
+      if(data && !error) {
+        res.status(200).send('OK')
+        axios({
+          url: responseUrl,
+          method: 'post',
+          data: {
+            text: `Role DDT validé pour ${userData.email}`
+          }
+      }
+    }
+  }
 })
 
 module.exports = app
