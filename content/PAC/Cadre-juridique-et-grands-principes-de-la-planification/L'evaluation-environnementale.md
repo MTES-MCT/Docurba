@@ -51,11 +51,13 @@ de nécessité de réaliser l’évaluation qu’elle devra saisir
 l’autorité environnementale qui rendra alors un avis
 confirmant ou infirmant sa décision de ne pas réaliser
 une évaluation.
-La saisine de l’autorité environnementale, dans l’hypothèse où la collectivité conclut à l’absence de nécessité de réaliser une évaluation, **est accompagnée d’un dossier comprenant une description du document transmis et d’un exposé dont la liste détaillée des informations est définie dans un formulaire** dont le contenu est précisé par arrêté (*arrêté en attente*, article [R. 104-34]).
+La saisine de l’autorité environnementale, dans l’hypothèse où la collectivité conclut à l’absence de nécessité de réaliser une évaluation, **est accompagnée d’un dossier comprenant une description du document transmis et d’un exposé dont la liste détaillée des informations est définie dans un formulaire** dont le contenu est précisé par [arrêté du 26 avril 2022](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000045797776).
 
 L’autorité environnementale rend son avis sur la décision
 de la personne publique de ne pas réaliser une évaluation environnementale **dans un délai de deux mois** . Il s’agit d’un avis conforme : il s’impose
 donc à la personne publique responsable. L’absence de réponse dans le délai de deux mois vaut avis favorable.
+
+Pour en savoir plus et télécharger le formulaire : https://www.ecologie.gouv.fr/saisine-lautorite-environnementale-avis-sur-decision-ne-pas-realiser-evaluation-environnementale
 
 Dans le cadre d'une procédure de révision générale ou d'une élaboration de PLU, l'évaluation environnementale étant systématique, vous saisirez, en amont de la phase d'arrêt du projet, la DREAL AuRA (Pôle autorité environnementale) **par voie électronique à l'adresse suivante : ae-dreal-aura@developpement-durable.gouv.fr**
 Celle-ci lui adressera un accusé de réception spécifique sous un mois maximum. Sans retour de la DREAL AuRA dans ce délai, je vous invite à relancer ce service à l'adresse mail indiquée.
