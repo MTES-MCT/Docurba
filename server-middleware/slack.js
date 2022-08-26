@@ -8,6 +8,9 @@ const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', proces
 
 const axios = require('axios')
 
+// modules
+const admin = require('./modules/admin.js')
+
 // This should probably be moved to a module.
 // And it should be called in auth service when signup.
 app.post('/notify/admin', (req, res) => {
@@ -89,10 +92,12 @@ app.post('/webhook/interactivity', async (req, res) => {
       // eslint-disable-next-line no-console
       console.log('userData:', userData)
 
-      const { data, error } = await supabase.from('admin_users_dept').update({ role: 'ddt' }).match({
-        user_email: userData.email,
-        dept: userData.dept.code_departement
-      })
+      // const { data, error } = await supabase.from('admin_users_dept').update({ role: 'ddt' }).match({
+      //   user_email: userData.email,
+      //   dept: userData.dept.code_departement
+      // })
+
+      const { data, error } = await admin.updateUserRole(userData, 'ddt')
 
       if (data && !error) {
         res.status(200).send('OK')
