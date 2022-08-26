@@ -92,11 +92,6 @@ app.post('/webhook/interactivity', async (req, res) => {
       // eslint-disable-next-line no-console
       console.log('userData:', userData)
 
-      // const { data, error } = await supabase.from('admin_users_dept').update({ role: 'ddt' }).match({
-      //   user_email: userData.email,
-      //   dept: userData.dept.code_departement
-      // })
-
       const { data, error } = await admin.updateUserRole(userData, 'ddt')
 
       if (data && !error) {

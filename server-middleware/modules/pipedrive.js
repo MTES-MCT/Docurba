@@ -11,6 +11,7 @@ const personsApi = new pipedrive.PersonsApi()
 const organizationsApi = new pipedrive.OrganizationsApi()
 const dealsApi = new pipedrive.DealsApi()
 
+// Uncomment this to fetch all status.
 // const stageApi = new pipedrive.StagesApi()
 
 // stageApi.getStages().then((stages) => {
