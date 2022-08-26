@@ -48,12 +48,14 @@ export default {
     contentHeight () {
       return this.$refs.content.offsetHeight
     },
-    nbPages () {
-      const contentEl = document.getElementById('pac-content-pdf')
-      const nbPages = (contentEl.offsetHeight / this.contentHeight) + this.PACroots.length
+    // nbPages () {
+    //   const contentEl = document.getElementById('pac-content-pdf')
+    //   const nbPages = (contentEl.offsetHeight / this.contentHeight) + this.PACroots.length
 
-      return nbPages
-    },
+    //   console.log('nbPages toc', nbPages)
+
+    //   return nbPages
+    // },
     topPosition () {
       const elRect = this.$el.getBoundingClientRect()
       const topPosition = elRect.bottom
@@ -113,7 +115,7 @@ export default {
             const rootRect = rootEl.getBoundingClientRect()
             return rootRect.top - this.topPosition
           } catch (err) {
-            console.log('err toc', r.path, slugify(r.path.replace(/\//g, '_')))
+            // console.log('err toc', r.path, slugify(r.path.replace(/\//g, '_')))
           }
           return 0
         })
