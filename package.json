@@ -33,6 +33,7 @@
     "jspdf": "^2.5.1",
     "lodash": "^4.17.21",
     "nuxt": "^2.15.3",
+    "pipedrive": "^16.1.0",
     "rehype": "^12.0.0",
     "rehype-sanitize": "^5.0.1",
     "remark-parse": "^9.0.0",

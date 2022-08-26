@@ -4,15 +4,6 @@
       <v-text-field v-model="userData.email" hide-details filled label="Email" />
     </v-col>
     <v-col cols="12">
-      <!-- <v-text-field
-        v-model="userData.password"
-        hide-details
-        filled
-        label="Mot de passe"
-        :type="showPassword ? 'text' : 'password'"
-        :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
-        @click:append="showPassword = !showPassword"
-      /> -->
       <InputsPasswordTextField v-model="userData.password" />
     </v-col>
     <v-col cols="6">
@@ -21,8 +12,8 @@
     <v-col cols="6">
       <v-text-field v-model="userData.lastname" hide-details filled label="Nom" />
     </v-col>
-    <!-- <template v-if="userData.email.includes('gouv.fr')"> -->
-    <template>
+    <template v-if="userData.email.includes('gouv.fr')">
+      <!-- <template> -->
       <v-col cols="">
         <VDeptAutocomplete v-model="userData.dept" />
       </v-col>
