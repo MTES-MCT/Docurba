@@ -13,8 +13,22 @@
 import '@gouvfr/dsfr/dist/css/footer.css'
 import '@gouvfr/dsfr/dist/css/logo.css'
 
+import axios from 'axios'
+
 export default {
-  name: 'DefaultLayout'
+  name: 'DefaultLayout',
+  mounted () {
+    // console.log(this.$route.query)
+    if (this.$route.query.contact) {
+      axios({
+        url: '/api/pipedrive/contacted',
+        method: 'post',
+        data: {
+          email: this.$route.query.contact
+        }
+      })
+    }
+  }
 }
 </script>
 
