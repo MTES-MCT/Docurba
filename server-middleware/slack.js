@@ -3,9 +3,6 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-const { createClient } = require('@supabase/supabase-js')
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
-
 const axios = require('axios')
 
 // modules
