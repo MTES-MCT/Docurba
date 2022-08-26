@@ -154,6 +154,7 @@ export default {
           url: '/api/auth/signup',
           data: {
             email: this.userData.email,
+            userData: this.userData,
             redirectTo: window.location.origin
           }
         })
