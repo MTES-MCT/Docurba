@@ -8,6 +8,8 @@ const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', proces
 
 const axios = require('axios')
 
+// This should probably be moved to a module.
+// And it should be called in auth service when signup.
 app.post('/notify/admin', (req, res) => {
   // eslint-disable-next-line no-console
   console.log('Notify team in slack')
