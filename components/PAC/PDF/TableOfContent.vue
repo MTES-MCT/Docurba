@@ -109,8 +109,13 @@ export default {
 
         const rootsPositions = this.PACroots.map((r) => {
           const rootEl = document.getElementById(slugify(r.path.replace(/\//g, '_')))
-          const rootRect = rootEl.getBoundingClientRect()
-          return rootRect.top - this.topPosition
+          try {
+            const rootRect = rootEl.getBoundingClientRect()
+            return rootRect.top - this.topPosition
+          } catch (err) {
+            console.log('err toc', r.path, slugify(r.path.replace(/\//g, '_')))
+          }
+          return 0
         })
 
         const nbRootsBefore = rootsPositions.filter((rootTop) => {
