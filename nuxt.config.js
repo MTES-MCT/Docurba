@@ -59,9 +59,7 @@ export default {
     { path: '/api/auth', handler: '~/server-middleware/auth.js' },
     { path: '/api/communes', handler: '~/server-middleware/communes.js' },
     { path: '/api/epci', handler: '~/server-middleware/EPCI.js' },
-    // No need for a service yet. Module should be called in other services.
-    // Service can still be used for test.
-    // { path: '/api/pipedrive', handler: '~/server-middleware/pipedrive.js' },
+    { path: '/api/pipedrive', handler: '~/server-middleware/pipedrive.js' },
     { path: '/api/projects', handler: '~/server-middleware/projects.js' },
     { path: '/api/slack', handler: '~/server-middleware/slack.js' },
     { path: '/api/stats', handler: '~/server-middleware/stats.js' }

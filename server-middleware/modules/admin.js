@@ -1,7 +1,7 @@
 const { createClient } = require('@supabase/supabase-js')
 const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
-const pipedrive = require('./modules/pipedrive.js')
+const pipedrive = require('./pipedrive.js')
 
 module.exports = {
   async updateUserRole (userData, role) {

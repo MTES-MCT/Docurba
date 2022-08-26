@@ -3,44 +3,40 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 
-// const pipedrive = require('./modules/pipedrive.js')
-// console.log(pipedrive)
+const pipedrive = require('./modules/pipedrive.js')
 
-// pipedrive.signup({
-//   email: 'docurba_2@quantedsquare.com',
-//   firstname: 'John',
-//   lastname: 'Doe',
-//   dept: {
-//     code_departement: 'TEST_2',
-//     nom_departement: 'TEST',
-//     code_region: 84,
-//     nom_region: 'Auvergne-Rhône-Alpes'
-//   }
-// })
+app.post('/contacted', async (req, res) => {
+  const email = req.body.email
+  const isGouv = email.indexOf('gouv.fr') > email.indexOf('@')
 
-// pipedrive.findPerson('sandrine.belloeil@puy-de-dome.gouv.fr')
-// pipedrive.findOrganization(63)
+  // eslint-disable-next-line prefer-const
+  let { person, deals } = await pipedrive.findPerson(email)
 
-// console.log('TEST')
+  if (!person) {
+    person = await pipedrive.addPerson({
+      email,
+      firstname: '',
+      lastname: ''
+    })
+  }
 
-// const pipedrive = require('pipedrive')
+  if (deals && deals.lenth) {
+    const deal = deals.find(d => d.stage_id === 10)
 
-// const defaultClient = pipedrive.ApiClient.instance
+    pipedrive.updateDeal(deal.id, {
+      stage_id: 11
+    })
+  } else {
+    pipedrive.addDeal({
+      title: `New User ${email}`,
+      personId: person.id,
+      // 11 is stageId for contacted in DDT pipeline
+      // 7 is stageId contacted in Collectivity pipeline
+      stageId: isGouv ? 11 : 7
+    })
+  }
 
-// // Configure API key authorization: apiToken
-// const apiToken = defaultClient.authentications.api_key
-// apiToken.apiKey = '0dbcadd138e23efe28575e5ae98dbbdc8c194594'
-
-// const DealsApi = new pipedrive.DealsApi()
-
-// DealsApi.getDeals().then((deals) => {
-//   console.log('Pipedrive Deals', deals)
-// }).catch(err => console.log(err))
-
-// const dealFieldsApi = new pipedrive.DealFieldsApi()
-
-// dealFieldsApi.getDealFields().then((fields) => {
-//   console.log(fields)
-// }).catch(err => console.log(err))
+  res.status(200).send('OK')
+})
 
 module.exports = app
