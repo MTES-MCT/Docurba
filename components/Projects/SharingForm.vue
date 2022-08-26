@@ -118,7 +118,7 @@ export default {
         }
       })
 
-      console.log(savedSharings)
+      // console.log(savedSharings)
 
       this.sharings.push(...savedSharings)
       this.emailsInput = ''
