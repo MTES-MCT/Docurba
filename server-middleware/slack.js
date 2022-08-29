@@ -58,14 +58,16 @@ app.post('/notify/admin', (req, res) => {
     }
   }).then((res) => {
     // eslint-disable-next-line no-console
-    console.log('then: ', res.data)
+    console.log('Slack then: ', res.data)
   }).catch((err) => {
     // eslint-disable-next-line no-console
-    console.log('catch', err.response.data)
+    console.log('Slack catch', err.response.data)
   })
   // } catch (err) {
   //   console.log(err)
   // }
+
+  res.status(200).send('OK')
 })
 
 // Webhook  from slack

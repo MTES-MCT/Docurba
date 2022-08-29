@@ -128,6 +128,8 @@ export default {
         error
       } = await this.$auth.signUp(this.userData)
 
+      console.log('signup', error)
+
       if (!error) {
         // eslint-disable-next-line no-console
         // console.log('success sign up', user, session)
@@ -140,7 +142,7 @@ export default {
             user_email: this.$user.email
           }])
 
-          await axios({
+          axios({
             url: '/api/slack/notify/admin',
             method: 'post',
             data: {

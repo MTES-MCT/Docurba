@@ -30,6 +30,8 @@ import {
   mdiEyeOff
 } from '@mdi/js'
 
+import dayjs from 'dayjs'
+
 export default {
   props: {
     value: {
@@ -43,7 +45,7 @@ export default {
         mdiEye,
         mdiEyeOff
       },
-      userData: Object.assign(this.defaultUserData(), this.value)
+      userData: Object.assign(this.defaultUserData(), this.$isDev ? {} : this.value)
     }
   },
   watch: {
@@ -57,10 +59,10 @@ export default {
   methods: {
     defaultUserData () {
       return {
-        email: '',
-        firstname: '',
-        lastname: '',
-        password: '',
+        email: this.$isDev ? `test_${dayjs().format('DD-MM-YY+hhmm')}@docurba.beta.gouv.fr` : '',
+        firstname: this.$isDev ? 'Test' : '',
+        lastname: this.$isDev ? 'Test' : '',
+        password: this.$isDev ? 'docurba12345' : '',
         dept: null,
         isDDT: false
       }

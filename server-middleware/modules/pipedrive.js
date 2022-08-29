@@ -23,7 +23,7 @@ module.exports = {
     const {
       data: organizationsData,
       success: successOrg
-    } = await organizationsApi.searchOrganization(departementNumber.toString(), {
+    } = await organizationsApi.searchOrganization(`DDT ${departementNumber.toString()}`, {
       fields: 'name'
     })
 
@@ -113,8 +113,8 @@ module.exports = {
   },
   async addDeal (dealData) {
     const newDealData = pipedrive.NewDeal.constructFromObject(dealData)
-    const { data } = await dealsApi.addDeal(newDealData)
-    return data
+    const { success, data } = await dealsApi.addDeal(newDealData)
+    return { data, success }
   },
   updateDeal (dealId, data) {
     const newDealData = pipedrive.UpdateDealRequest.constructFromObject(data)
@@ -134,14 +134,12 @@ module.exports = {
         let { organization, deals: organizationDeals } = await this.findOrganization(userData.dept.code_departement)
 
         if (!organization) {
-          organization = this.addOrganzation(userData.dept.code_departement)
+          organization = await this.addOrganzation(userData.dept.code_departement)
         }
 
         this.updatePerson(person.id, {
           orgId: organization.id
         })
-
-        // console.log(person, (organizationDeals ? organizationDeals.length : 0))
 
         // Deal in prospect or Contacted goes to Inscrits
         if (organizationDeals && organizationDeals.length) {
@@ -150,7 +148,7 @@ module.exports = {
           })
 
           if (deal) {
-            const { data } = this.updateDeal(deal.id, {
+            const { data } = await this.updateDeal(deal.id, {
               stage_id: 12
             })
 

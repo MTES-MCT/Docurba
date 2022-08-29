@@ -62,6 +62,7 @@ app.post('/signup', async (req, res) => {
   // }
 
   const { userData } = req.body
+
   await pipedrive.signup(userData)
 
   res.status(200).send('OK')
