@@ -5,7 +5,7 @@ const defaultClient = pipedrive.ApiClient.instance
 
 // Configure API key authorization: apiToken
 const apiToken = defaultClient.authentications.api_key
-apiToken.apiKey = '0dbcadd138e23efe28575e5ae98dbbdc8c194594'
+apiToken.apiKey = process.env.PIPEDRIVE_API_KEY
 
 const personsApi = new pipedrive.PersonsApi()
 const organizationsApi = new pipedrive.OrganizationsApi()

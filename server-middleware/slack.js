@@ -17,7 +17,7 @@ app.post('/notify/admin', (req, res) => {
 
   // try {
   axios({
-    url: 'https://hooks.slack.com/services/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',
+    url: process.env.SLACK_WEBHOOK,
     method: 'post',
     data: {
       text: `Demande d'accès DDT de ${userData.firstname} ${userData.lastname}`,

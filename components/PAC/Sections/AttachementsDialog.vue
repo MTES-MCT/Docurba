@@ -50,7 +50,7 @@
             <v-btn color="primary" :loading="loading" @click="uploadFiles">
               Ajouter
             </v-btn>
-            <v-btn color="primary" outlined @click="dialog.value = false">
+            <v-btn color="primary" outlined @click="dialog = false">
               Annuler
             </v-btn>
           </v-card-actions>
