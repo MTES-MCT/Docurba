@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="4">
+    <!-- <v-col cols="4">
       <client-only>
         <v-row
           class="sticky-tree"
@@ -69,12 +69,9 @@
           </v-treeview>
         </v-row>
       </client-only>
-    </v-col>
-    <v-col cols="8">
-      <div v-for="(root) in PACroots" :key="root.path">
-        <PACContentSection :sections="[root]" :editable="editable" />
-        <v-divider />
-      </div>
+    </v-col> -->
+    <v-col cols="12">
+      <PACContentSection :sections="PACroots" :editable="editable" />
     </v-col>
   </v-row>
 </template>
@@ -132,6 +129,10 @@ export default {
   },
   mounted () {
     this.checkedItems = this.PAC.filter(item => item.checked).length
+
+    this.PACroots.forEach((root, index) => {
+      this.addCounter(root, [index + 1])
+    })
   },
   methods: {
     checkItem (section) {

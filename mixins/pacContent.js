@@ -55,5 +55,17 @@ export default {
 
       return parsedPAC
     }
+  },
+  methods: {
+    addCounter (section, depths) {
+      // section.titre = `${depths.join('.')} ${section.titre}`
+      section.tocCounter = depths
+
+      if (section.children) {
+        section.children.forEach((child, index) => {
+          this.addCounter(child, depths.concat([index + 1]))
+        })
+      }
+    }
   }
 }

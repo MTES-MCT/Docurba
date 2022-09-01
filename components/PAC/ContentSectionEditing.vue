@@ -205,8 +205,6 @@ export default {
           sortBy: { column: 'name', order: 'asc' }
         })
 
-      // console.log('attachements', attachements)
-
       if (!err) {
         for (let i = 0; i < attachements.length; i++) {
           const file = attachements[i]

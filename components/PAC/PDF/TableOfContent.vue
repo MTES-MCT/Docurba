@@ -81,16 +81,6 @@ export default {
     slugify (str) {
       return slugify(str)
     },
-    addCounter (section, depths) {
-      // section.titre = `${depths.join('.')} ${section.titre}`
-      section.tocCounter = depths
-
-      if (section.children) {
-        section.children.forEach((child, index) => {
-          this.addCounter(child, depths.concat([index + 1]))
-        })
-      }
-    },
     getTitle (item) {
       return `${item.tocCounter ? item.tocCounter.join('.') : ''} ${item.titre}`
     },
