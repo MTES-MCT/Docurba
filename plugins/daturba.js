@@ -15,7 +15,41 @@ export default ({ route }, inject) => {
     }
   }
 
+  const parsers = {
+    'FR-ARA' (data, themes) {
+      data.objets.forEach((obj) => {
+        obj.nom_table = data.nom_table
+      })
+
+      data.theme = themes.find((theme) => {
+        const dataTheme = theme.children.find((subTheme) => {
+          return subTheme.id === data.theme
+        })
+
+        if (dataTheme) {
+          data.subTheme = dataTheme
+        }
+
+        return !!dataTheme
+      })
+    }
+  }
+
+  const cardSourceMap = {
+    async 'FR-ARA' (cardData) {
+      const { data } = await axios({
+        url: `https://catalogue.datara.gouv.fr/base_territoriale/fiche?_format=json&id=${cardData.id}&nom_table=${cardData.nom_table}`,
+        method: 'get'
+      })
+
+      return data
+    }
+  }
+
   inject('daturba', {
+    getCardData (region = route.query.region, data) {
+      return cardSourceMap[region](data)
+    },
     async getData (region = route.query.region, inseeCodes = route.query.insee) {
       const source = sourceMap[region]
       const parsedInseeCode = inseeCodes.map((code) => {
@@ -36,19 +70,10 @@ export default ({ route }, inject) => {
           method: 'get'
         })).data
 
+        // console.log(dataset.length)
+
         dataset.forEach((data) => {
-        // console.log(data.theme)
-          data.theme = themes.find((theme) => {
-            const dataTheme = theme.children.find((subTheme) => {
-              return subTheme.id === data.theme
-            })
-
-            if (dataTheme) {
-              data.subTheme = dataTheme
-            }
-
-            return !!dataTheme
-          })
+          parsers[region](data, themes)
         })
 
         return {

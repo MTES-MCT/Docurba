@@ -5,7 +5,7 @@
         <v-expansion-panel-header>
           <v-row align="center">
             <v-col cols="auto">
-              {{ section.tocCounter.join('.') }} - {{ section.titre }}
+              {{ section.tocCounter ? section.tocCounter.join('.') : '' }} - {{ section.titre }}
             </v-col>
             <v-spacer />
             <v-col v-if="editable" cols="auto" class="py-0">
