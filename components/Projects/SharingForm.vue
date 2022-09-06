@@ -114,7 +114,8 @@ export default {
         url: '/api/projects/notify/shared',
         method: 'post',
         data: {
-          sharings: newSharings
+          sharings: newSharings,
+          sharedByData: this.$user.user_metadata
         }
       })
 

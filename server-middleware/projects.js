@@ -13,18 +13,27 @@ const hour = 1000 * 60 * 60
 const day = hour * 24
 
 app.post('/notify/shared', (req, res) => {
-  const sharings = req.body.sharings
+  const { sharings, sharedByData } = req.body
 
   sharings.forEach(async (sharing) => {
-    const { data: notifications, error } = await supabase.from('projects_sharing').select('notified').match({
+    const { data: notifications, error } = await supabase.from('projects_sharing').select('notified, shared_by').match({
       user_email: sharing.user_email,
       project_id: sharing.project_id
     })
 
     if (!error) {
-      const notified = !!notifications.find(n => n.notified)
+      // Find a sharing that was not notified.
+      const notification = notifications.find(n => !n.notified)
 
-      if (!notified) {
+      console.log('notifaction', notification)
+
+      const { data: admin, error: adminError } = await supabase.from('admin_users_dept')
+        .select('dept, role').eq('user_id', notification.shared_by)
+
+      console.log('admin', admin, adminError)
+      console.log('sharedByData', sharedByData)
+
+      if (notification) {
         sendgrid.sendEmail({
           to: sharing.user_email,
           template_id: 'd-daf95559ce09481ca8d42d6e026fb9f3',

@@ -19,7 +19,7 @@
         <v-row v-if="filteredChamps.length" dense>
           <v-col v-for="(champ, i) in filteredChamps" :key="`${i}-${champ.alias}`" cols="12">
             <a v-if="champ.type === 'url'" :href="champ.valeur" target="_blank">{{ champ.alias || champ.nom }}</a>
-            <span v-else>{{ champ.alias || champ.nom }}: {{ champ.valeur }}</span>
+            <span v-else><b>{{ champ.alias || champ.nom }}:</b> {{ champ.valeur }}</span>
           </v-col>
         </v-row>
         <v-row class="py-4">

@@ -4,7 +4,8 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 module.exports = {
   sendEmail (message) {
     return sgMail.send(Object.assign({
-      from: 'fabien.ungerer@beta.gouv.fr' // This need to be a verified sender
+      // from: 'fabien.ungerer@beta.gouv.fr' // This need to be a verified sender
+      from: 'ne-pas-repondre@docurba.beta.gouv.fr'
     }, message))
   }
 }

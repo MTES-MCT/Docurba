@@ -42,8 +42,6 @@ export default ({ route }, inject) => {
         method: 'get'
       })
 
-      console.log(data)
-
       return data
     }
   }
