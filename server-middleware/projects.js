@@ -25,20 +25,20 @@ app.post('/notify/shared', (req, res) => {
       // Find a sharing that was not notified.
       const notification = notifications.find(n => !n.notified)
 
-      console.log('notifaction', notification)
-
-      const { data: admin, error: adminError } = await supabase.from('admin_users_dept')
+      const { data: admins } = await supabase.from('admin_users_dept')
         .select('dept, role').eq('user_id', notification.shared_by)
 
-      console.log('admin', admin, adminError)
-      console.log('sharedByData', sharedByData)
+      const admin = admins[0]
 
       if (notification) {
         sendgrid.sendEmail({
           to: sharing.user_email,
-          template_id: 'd-daf95559ce09481ca8d42d6e026fb9f3',
+          template_id: (admin && admin.role === 'ddt') ? 'd-bdd5ef31891546bcb6401fb6cdf2d391' : 'd-daf95559ce09481ca8d42d6e026fb9f3',
           dynamic_template_data: {
-            project_id: sharing.project_id
+            project_id: sharing.project_id,
+            firstname: sharedByData.firstname,
+            lastname: sharedByData.lastname,
+            dept: admin ? admin.dept : '00'
           }
         }).then(async () => {
           await supabase.from('projects_sharing').update({
