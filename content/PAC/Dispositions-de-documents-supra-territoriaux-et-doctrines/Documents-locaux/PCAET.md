@@ -9,4 +9,3 @@ Les Plans Climat Air Energie Territoriaux (PCAET) permettent aux collectivités 
 
 Ils sont désormais rendus obligatoires pour les établissements publics de coopération intercommunale (EPCI) à fiscalité propre de plus de 20 000 habitants par la loi du 8 novembre 2019 relative à l’énergie et au climat.
 
-**Application locale :**
