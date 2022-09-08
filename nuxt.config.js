@@ -29,6 +29,7 @@ export default {
     { src: '~/plugins/pac.js' },
     { src: '~/plugins/daturba.js' },
     { src: '~/plugins/matomo.js', mode: 'client' },
+    { src: '~/plugins/mdParser.js', mode: 'client' },
     { src: '~/plugins/print.js', mode: 'client' },
     { src: '~/plugins/notifications.js', mode: 'client' }
   ],
