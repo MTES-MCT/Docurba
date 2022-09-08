@@ -18,7 +18,6 @@
       <v-btn
         v-show="modified"
         depressed
-        tile
         fixed
         bottom
         right

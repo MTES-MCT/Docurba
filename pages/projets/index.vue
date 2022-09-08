@@ -40,33 +40,44 @@
             Vos projets
           </h3>
         </v-col>
-        <v-col
-          v-for="project in filteredProjects"
-          :key="`${project.id}-owned`"
-          cols="12"
-        >
-          <ProjectsDashboardCard :project="project" />
-        </v-col>
-        <v-col>
-          <h3 class="text-h3">
-            Projets partagés avec vous
+        <template v-if="projects.length">
+          <v-col
+            v-for="project in filteredProjects"
+            :key="`${project.id}-owned`"
+            cols="12"
+          >
+            <ProjectsDashboardCard :project="project" />
+          </v-col>
+        </template>
+        <v-col v-else cols="12" class="text-center">
+          <h3 class="text-h3 text--secondary mb-4">
+            Vous n'avez pas encore de projet
           </h3>
+          <v-btn color="primary" depressed tile @click="projectDialog = true">
+            Créer un projet
+          </v-btn>
         </v-col>
-        <v-col
-          v-for="sharing in filteredSharings"
-          :key="`${sharing.project.id}-shared`"
-          cols="12"
-        >
-          <ProjectsDashboardCard :project="sharing.project" :sharing="sharing" />
-        </v-col>
+        <template v-if="sharedProjects.length">
+          <v-col>
+            <h3 class="text-h3">
+              Projets partagés avec vous
+            </h3>
+          </v-col>
+          <v-col
+            v-for="sharing in filteredSharings"
+            :key="`${sharing.project.id}-shared`"
+            cols="12"
+          >
+            <ProjectsDashboardCard :project="sharing.project" :sharing="sharing" />
+          </v-col>
+        </template>
       </v-row>
     </v-container>
     <VGlobalLoader v-else />
-    <v-dialog width="500px">
+    <v-dialog v-model="projectDialog" width="500px">
       <template #activator="{on}">
         <v-btn
           depressed
-          tile
           fixed
           bottom
           right
@@ -102,7 +113,8 @@ export default {
         mdiFileDocumentEdit,
         mdiHelp
       },
-      projectsSubscription: null
+      projectsSubscription: null,
+      projectDialog: false
     }
   },
   // computed: {
