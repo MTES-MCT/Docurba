@@ -116,6 +116,10 @@ export default {
         // eslint-disable-next-line no-console
         console.log('success sign in', user, session)
 
+        if (this.$route.path === '/') {
+          this.$router.push('/projets')
+        }
+
         this.$emit('input', false)
       } else {
         this.error = error
@@ -127,8 +131,6 @@ export default {
         // session,
         error
       } = await this.$auth.signUp(this.userData)
-
-      console.log('signup', error)
 
       if (!error) {
         // eslint-disable-next-line no-console
