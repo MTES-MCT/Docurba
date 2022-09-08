@@ -24,7 +24,14 @@
         </v-row>
         <v-row class="py-4">
           <v-col v-for="(ressource, i) in source.ressources" :key="i" cols="12" class="py-0">
-            <v-btn text color="primary" :href="ressource.valeur" target="_blank">
+            <v-btn
+              depressed
+              tile
+              text
+              color="primary"
+              :href="ressource.valeur"
+              target="_blank"
+            >
               <v-icon small class="mr-2">
                 {{ icons.mdiOpenInNew }}
               </v-icon>
@@ -36,7 +43,13 @@
       <v-card-actions>
         <v-dialog height="600px" width="900px">
           <template #activator="{on}">
-            <v-btn block depressed color="primary" v-on="on">
+            <v-btn
+              depressed
+              tile
+              block
+              color="primary"
+              v-on="on"
+            >
               <v-icon class="pr-2">
                 {{ icons.mdiMap }}
               </v-icon>

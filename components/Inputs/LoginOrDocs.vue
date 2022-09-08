@@ -1,5 +1,12 @@
 <template>
-  <v-btn outlined class="mt-auto" color="primary" @click="openDialog">
+  <v-btn
+    depressed
+    tile
+    outlined
+    class="mt-auto"
+    color="primary"
+    @click="openDialog"
+  >
     {{ text }}
     <client-only>
       <LoginDialog v-model="openLogin" />

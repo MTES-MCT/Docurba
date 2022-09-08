@@ -23,10 +23,10 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn color="primary" @click="removeFile(selectedFile)">
+          <v-btn depressed tile color="primary" @click="removeFile(selectedFile)">
             Supprimer
           </v-btn>
-          <v-btn text color="primary" @click="dialog = false">
+          <v-btn depressed tile text color="primary" @click="dialog = false">
             Annuler
           </v-btn>
         </v-card-actions>

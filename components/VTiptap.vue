@@ -2,7 +2,7 @@
   <v-card class="tvwysiwyg-editor tiptap-content" style="width: 100%;">
     <v-toolbar v-if="editor">
       <v-toolbar-items>
-        <v-btn icon>
+        <v-btn depressed tile icon>
           <v-icon
             @click="
               editor
@@ -15,7 +15,7 @@
             {{ icons.mdiUndo }}
           </v-icon>
         </v-btn>
-        <v-btn icon>
+        <v-btn depressed tile icon>
           <v-icon
             @click="
               editor
@@ -44,7 +44,7 @@
             <v-icon>{{ item.icon }}</v-icon>
           </template>
         </v-select>
-        <!-- <v-btn
+        <!-- <v-btn depressed tile
           icon
           @click="
             editor
@@ -57,6 +57,8 @@
           <v-icon>{{ icons.mdiFormatHeader1 }}</v-icon>
         </v-btn> -->
         <v-btn
+          depressed
+          tile
           icon
           @click="
             editor
@@ -69,6 +71,8 @@
           <v-icon>{{ icons.mdiFormatBold }}</v-icon>
         </v-btn>
         <v-btn
+          depressed
+          tile
           icon
           @click="
             editor
@@ -81,6 +85,8 @@
           <v-icon>{{ icons.mdiFormatItalic }}</v-icon>
         </v-btn>
         <v-btn
+          depressed
+          tile
           icon
           @click="
             editor
@@ -93,6 +99,8 @@
           <v-icon>{{ icons.mdiFormatUnderline }}</v-icon>
         </v-btn>
         <v-btn
+          depressed
+          tile
           icon
           @click="
             editor
@@ -105,6 +113,8 @@
           <v-icon>{{ icons.mdiFormatListBulleted }}</v-icon>
         </v-btn>
         <v-btn
+          depressed
+          tile
           icon
           @click="
             editor
@@ -117,6 +127,8 @@
           <v-icon>{{ icons.mdiFormatListNumbered }}</v-icon>
         </v-btn>
         <v-btn
+          depressed
+          tile
           class="linkBtn"
           icon
           @click="openLinkMenu"
@@ -131,6 +143,8 @@
           Selectionnez du text pour ajouter un lien
         </v-tooltip>
         <v-btn
+          depressed
+          tile
           icon
           @click="$refs['imageFileInput'].click()"
         >

@@ -13,10 +13,10 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn :loading="loading" color="primary" @click="resetPassword">
+        <v-btn depressed tile :loading="loading" color="primary" @click="resetPassword">
           Valider
         </v-btn>
-        <v-btn text @click="dialog = false">
+        <v-btn depressed tile text @click="dialog = false">
           Annuler
         </v-btn>
       </v-card-actions>

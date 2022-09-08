@@ -26,7 +26,9 @@
         <v-col cols="1" />
         <v-spacer />
         <v-col cols="auto" @click="saveNewComment">
-          <v-btn>envoyer</v-btn>
+          <v-btn depressed tile>
+            envoyer
+          </v-btn>
         </v-col>
       </v-row>
     </v-card-actions>

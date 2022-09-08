@@ -16,6 +16,8 @@
             <template #activator="{on}">
               <v-btn
                 v-show="hover && shareable"
+                depressed
+                tile
                 icon
                 v-on="on"
                 @click.prevent.stop
@@ -31,11 +33,18 @@
               </ProjectsProjectCardForm>
             </template>
           </v-dialog>
-          <v-btn v-show="hover && shareable" icon :to="`/projets/${project.id}/content`" nuxt>
+          <v-btn
+            v-show="hover && shareable"
+            depressed
+            tile
+            icon
+            :to="`/projets/${project.id}/content`"
+            nuxt
+          >
             <v-icon>{{ icons.mdiEye }}</v-icon>
           </v-btn>
           <client-only>
-            <v-btn v-show="hover" icon @click.prevent.stop="$print(`/print/${project.id}`)">
+            <v-btn v-show="hover" depressed tile icon @click.prevent.stop="$print(`/print/${project.id}`)">
               <v-icon>{{ icons.mdiDownload }}</v-icon>
             </v-btn>
           </client-only>
@@ -43,6 +52,8 @@
             <template #activator="{on}">
               <v-btn
                 v-show="hover && shareable"
+                depressed
+                tile
                 icon
                 v-on="on"
                 @click.prevent.stop

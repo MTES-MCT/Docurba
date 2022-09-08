@@ -19,6 +19,8 @@
                   >
                     <v-btn
                       v-show="hover || section.comments.length"
+                      depressed
+                      tile
                       icon
                       v-on="on"
                     >

@@ -52,14 +52,23 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn v-show="modalState === 'list'" color="primary" @click="modalState = 'create'">
+        <v-btn v-show="modalState === 'list'" depressed tile color="primary" @click="modalState = 'create'">
           Nouveau
         </v-btn>
-        <v-btn v-show="modalState !== 'list'" color="primary" outlined @click="modalState = 'list'">
+        <v-btn
+          v-show="modalState !== 'list'"
+          depressed
+          tile
+          color="primary"
+          outlined
+          @click="modalState = 'list'"
+        >
           Retour
         </v-btn>
         <v-btn
           v-show="modalState === 'create'"
+          depressed
+          tile
           :loading="loading"
           color="primary"
           @click="createNewProject"

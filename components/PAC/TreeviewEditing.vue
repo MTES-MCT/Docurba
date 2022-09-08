@@ -5,7 +5,7 @@
   >
     <v-col cols="12" class="d-flex align-center pr-0">
       <v-text-field v-model="contentSearch" filled hide-details label="Rechercher" />
-      <v-btn icon class="mx-1" @click="$emit('collapse')">
+      <v-btn depressed tile icon class="mx-1" @click="$emit('collapse')">
         <v-icon>{{ collapsed ? icons.mdiChevronRight : icons.mdiChevronLeft }}</v-icon>
       </v-btn>
     </v-col>
@@ -40,20 +40,48 @@
           </v-tooltip>
         </template>
         <template #append="{item, open}">
-          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click.stop="changeItemOrder(item, -1)">
+          <v-btn
+            v-show="overedItem === item.path && item.depth > 2"
+            depressed
+            tile
+            small
+            icon
+            @click.stop="changeItemOrder(item, -1)"
+          >
             <v-icon>{{ icons.mdiChevronUp }}</v-icon>
           </v-btn>
-          <v-btn v-show="overedItem === item.path && item.depth > 2" small icon @click.stop="changeItemOrder(item, 1)">
+          <v-btn
+            v-show="overedItem === item.path && item.depth > 2"
+            depressed
+            tile
+            small
+            icon
+            @click.stop="changeItemOrder(item, 1)"
+          >
             <v-icon>{{ icons.mdiChevronDown }}</v-icon>
           </v-btn>
-          <v-btn v-show="overedItem === item.path" small icon @click="addSectionTo(item, open, $event)">
+          <v-btn
+            v-show="overedItem === item.path"
+            depressed
+            tile
+            small
+            icon
+            @click="addSectionTo(item, open, $event)"
+          >
             <v-icon>{{ icons.mdiPlus }}</v-icon>
           </v-btn>
           <v-dialog
             width="500"
           >
             <template #activator="{on}">
-              <v-btn v-show="overedItem === item.path && (item.dept || item.project_id)" small icon v-on="on">
+              <v-btn
+                v-show="overedItem === item.path && (item.dept || item.project_id)"
+                depressed
+                tile
+                small
+                icon
+                v-on="on"
+              >
                 <v-icon>{{ icons.mdiDelete }}</v-icon>
               </v-btn>
             </template>
@@ -65,10 +93,10 @@
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer />
-                  <v-btn color="primary" @click="removeItem(item, dialog)">
+                  <v-btn depressed tile color="primary" @click="removeItem(item, dialog)">
                     Suprimer
                   </v-btn>
-                  <v-btn color="primary" outlined @click="dialog.value = false">
+                  <v-btn depressed tile color="primary" outlined @click="dialog.value = false">
                     Annuler
                   </v-btn>
                 </v-card-actions>

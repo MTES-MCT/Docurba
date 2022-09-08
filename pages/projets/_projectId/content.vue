@@ -10,6 +10,8 @@
     <client-only>
       <v-btn
         v-if="!pdfUrl"
+        depressed
+        tile
         fab
         fixed
         bottom

@@ -17,6 +17,8 @@
       </v-tabs>
       <v-spacer />
       <v-btn
+        depressed
+        tile
         href="https://docs.google.com/document/d/1DMVFON6OUSaOomhoUnvHY5uHNkiVMTJlJ_dMpu9auv8/edit"
         target="_blank"
         text
@@ -63,6 +65,8 @@
     <v-dialog width="500px">
       <template #activator="{on}">
         <v-btn
+          depressed
+          tile
           fixed
           bottom
           right

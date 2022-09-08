@@ -32,7 +32,14 @@
               />
             </v-list-item-action>
             <v-list-item-action class="my-0">
-              <v-btn v-show="hover" small icon @click="cancelSharing(sharing.user_email)">
+              <v-btn
+                v-show="hover"
+                depressed
+                tile
+                small
+                icon
+                @click="cancelSharing(sharing.user_email)"
+              >
                 <v-icon>{{ icons.mdiCloseCircleOutline }}</v-icon>
               </v-btn>
             </v-list-item-action>

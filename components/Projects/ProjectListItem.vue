@@ -13,6 +13,8 @@
       <v-list-item-action>
         <v-btn
           v-show="hover && shareable"
+          depressed
+          tile
           icon
           @click.prevent.stop="$emit('share', project)"
         >

@@ -36,7 +36,14 @@
       </v-row>
       <v-row justify="center">
         <v-col cols="auto">
-          <v-btn color="primary" x-large :loading="searchLoading" @click="searchCTA">
+          <v-btn
+            depressed
+            tile
+            color="primary"
+            x-large
+            :loading="searchLoading"
+            @click="searchCTA"
+          >
             Rechercher
           </v-btn>
         </v-col>
@@ -56,7 +63,7 @@
     <LandingCitations />
     <!-- <LandingCtaByNeed /> -->
     <LandingKeyFeatures />
-    <v-row class="g100 py-16">
+    <v-row class="g100 mt-16 py-16">
       <LandingNewsLetterForm />
     </v-row>
   </div>

@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" min-width="600px" max-width="600px">
     <template #activator="{ on }">
       <slot>
-        <v-btn text v-on="on">
+        <v-btn depressed tile text v-on="on">
           Besoins d'aide ?
         </v-btn>
       </slot>
@@ -26,10 +26,10 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn text color="primary" @click="dialog = false">
+        <v-btn depressed tile text color="primary" @click="dialog = false">
           Annuler
         </v-btn>
-        <v-btn color="primary" @click="sendRequest">
+        <v-btn depressed tile color="primary" @click="sendRequest">
           Envoyer
         </v-btn>
       </v-card-actions>

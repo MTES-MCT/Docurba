@@ -17,6 +17,8 @@
     <v-fab-transition>
       <v-btn
         v-show="modified"
+        depressed
+        tile
         fixed
         bottom
         right
@@ -39,10 +41,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="primary" @click="saveSection(previousSection)">
+          <v-btn depressed tile color="primary" @click="saveSection(previousSection)">
             Oui
           </v-btn>
-          <v-btn color="primary" outlined @click="saveDialog = false">
+          <v-btn depressed tile color="primary" outlined @click="saveDialog = false">
             Non
           </v-btn>
         </v-card-actions>

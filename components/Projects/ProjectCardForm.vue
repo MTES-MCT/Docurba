@@ -29,17 +29,31 @@
       </v-row>
     </v-card-text>
     <v-card-actions>
-      <v-btn outlined color="secondary" @click="archiveProject">
+      <v-btn depressed tile outlined color="secondary" @click="archiveProject">
         Archiver
       </v-btn>
       <v-spacer />
-      <v-btn v-if="!project.id" color="primary" :loading="loading" @click="upsertProject">
+      <v-btn
+        v-if="!project.id"
+        depressed
+        tile
+        color="primary"
+        :loading="loading"
+        @click="upsertProject"
+      >
         Créer
       </v-btn>
-      <v-btn v-else color="primary" :loading="loading" @click="upsertProject">
+      <v-btn
+        v-else
+        depressed
+        tile
+        color="primary"
+        :loading="loading"
+        @click="upsertProject"
+      >
         Modifier
       </v-btn>
-      <v-btn color="primary" outlined @click="$emit('cancel')">
+      <v-btn depressed tile color="primary" outlined @click="$emit('cancel')">
         Annuler
       </v-btn>
     </v-card-actions>

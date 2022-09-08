@@ -1,7 +1,7 @@
 <template>
   <v-dialog max-width="1000px">
     <template #activator="{on}">
-      <v-btn color="primary" v-on="on">
+      <v-btn depressed tile color="primary" v-on="on">
         Obtenir mon PAC
       </v-btn>
     </template>
@@ -35,7 +35,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="primary" :loading="loading" @click="loginAndcreateProject">
+        <v-btn depressed tile color="primary" :loading="loading" @click="loginAndcreateProject">
           Transmettre ma demande
         </v-btn>
       </v-card-actions>
