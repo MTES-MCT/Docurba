@@ -20,4 +20,4 @@ Parmi les objectifs du PLH, il convient de rappeler les orientations qui sont d�
 
 Le PLH fixe des objectifs de production de logements à l’échelle de _(à préciser si nécessaire)._ Ces objectifs sont déclinés par communes en fonction des besoins estimés et des nécessités liées au rééquilibrage de certaines catégories de logements, notamment les logements locatifs aidés.
 
-**Application locale :**
+
