@@ -3,7 +3,7 @@
     <template #activator="{ on }">
       <slot>
         <v-btn depressed tile text v-on="on">
-          Besoins d'aide ?
+          Besoin d'aide ?
         </v-btn>
       </slot>
     </template>

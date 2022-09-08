@@ -51,6 +51,8 @@ export default ({ route }, inject) => {
       return cardSourceMap[region](data)
     },
     async getData (region = route.query.region, inseeCodes = route.query.insee) {
+      if (!region || !inseeCodes || !inseeCodes.length) { return {} }
+
       const source = sourceMap[region]
       const parsedInseeCode = inseeCodes.map((code) => {
         return code.toString().length < 5 ? '0' + code : code
