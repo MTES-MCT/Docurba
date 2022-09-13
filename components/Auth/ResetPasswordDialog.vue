@@ -35,16 +35,16 @@ export default {
     }
   },
   mounted () {
-    this.$supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        const params = new URLSearchParams(this.$route.hash.split('#')[1])
+    // this.$supabase.auth.onAuthStateChange((event) => {
+    //   if (event === 'PASSWORD_RECOVERY') {
+    //     const params = new URLSearchParams(this.$route.hash.split('#')[1])
 
-        this.resetToken = params.get('access_token')
-        this.dialog = true
-      } else {
-        // console.log('other event', event)
-      }
-    })
+    //     this.resetToken = params.get('access_token')
+    //     this.dialog = true
+    //   } else {
+    //     // console.log('other event', event)
+    //   }
+    // })
   },
   methods: {
     async resetPassword () {

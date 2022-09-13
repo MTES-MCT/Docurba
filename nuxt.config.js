@@ -81,7 +81,7 @@ export default {
 
   // Vue router
   router: {
-    middleware: ['matomo']
+    middleware: ['matomo', 'passwordRecovery']
   },
 
   // Content module configuration: https://go.nuxtjs.dev/config-content

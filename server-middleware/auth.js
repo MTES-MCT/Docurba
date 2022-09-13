@@ -9,15 +9,23 @@ const sendgrid = require('./modules/sendgrid.js')
 const pipedrive = require('./modules/pipedrive.js')
 
 app.post('/password', async (req, res) => {
+  console.log('/password body', req.body)
+
   const { data: user, error } = await supabase.auth.api.generateLink(
     'recovery',
     req.body.email,
     {
+      // This does not work. According to the doc it should.
       redirectTo: req.body.redirectTo
     }
   )
 
-  // console.log(user, error, req.body.redirectTo)
+  // The user will be redirected to this url in case of password recovery.
+  // https://docurba.beta.gouv.fr/#access_token=XXX&expires_in=3600&refresh_token=XXX&token_type=bearer&type=recovery
+
+  // https://ixxbyuandbmplfnqtxyw.supabase.co/auth/v1/verify?token=XXX&type=recovery&redirect_to=https://docurba.beta.gouv.fr/
+  // console.log('user.action_link', user.action_link)
+
   if (!error && user && user.action_link) {
     sendgrid.sendEmail({
       to: req.body.email,
