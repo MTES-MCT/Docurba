@@ -197,7 +197,8 @@
           </v-card-text>
         </v-card>
       </v-menu>
-      <editor-content :editor="editor" />
+      <editor-content v-if="!readonly" :editor="editor" />
+      <nuxt-content v-else :document="readonlyBody" />
     </v-card-text>
   </v-card>
 </template>
@@ -237,6 +238,10 @@ export default {
     depth: {
       type: Number,
       default: 4
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -285,6 +290,11 @@ export default {
         icon: mdiFormatHeader3,
         value: 3
       }].filter(t => t.value > this.depth).concat(defaultTypos)
+    },
+    readonlyBody () {
+      return {
+        body: this.$mdParse(this.value)
+      }
     }
   },
   watch: {

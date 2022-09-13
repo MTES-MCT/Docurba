@@ -4,7 +4,7 @@
       <v-text-field v-model="editedSection.titre" label="titre" filled hide-details />
     </v-col>
     <v-col cols="12">
-      <VTiptap v-model="editedSection.text" :links="PACroots" :depth="sectionDepth">
+      <VTiptap v-model="editedSection.text" :links="PACroots" :depth="sectionDepth" :readonly="isReadonly">
         <PACSectionsAttachementsDialog
           :section="section"
           @upload="fetchAttachements"
@@ -95,6 +95,9 @@ export default {
       .use(rehypeStringify)
 
     return {
+      readonlyDirs: [
+        '/PAC/Cadre-juridique-et-grands-principes-de-la-planification'
+      ],
       mdParser,
       editedSection: {
         project_id: this.section.project_id,
@@ -122,6 +125,11 @@ export default {
       })
 
       return roots
+    },
+    isReadonly () {
+      return !!this.readonlyDirs.find((dir) => {
+        return this.editedSection.dir.includes(dir)
+      })
     }
   },
   watch: {
