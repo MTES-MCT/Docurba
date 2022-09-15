@@ -14,6 +14,7 @@
             filter
             outlined
             color="bf500"
+            @click="clickCateg"
           >
             {{ theme.text }}
           </v-chip>
@@ -83,6 +84,12 @@ export default {
       return groupBy(filterredSources, (source) => {
         return source.theme.text
       })
+    }
+  },
+  methods: {
+    clickCateg (categ) {
+      console.log(this.selectedTheme, categ)
+      // this.$matomo.trackEvent('Data', 'Click Categ', this.selectedTheme)
     }
   }
 }

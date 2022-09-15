@@ -117,14 +117,6 @@ export default {
       projectDialog: false
     }
   },
-  // computed: {
-  //   allProjectsIds () {
-  //     const projectsIds = this.projects.map(p => p.id)
-  //     const sharedProjectsIds = this.sharedProjects.map(p => p.id)
-
-  //     return projectsIds.concat(sharedProjectsIds)
-  //   }
-  // },
   watch: {
     projectListLoaded () {
       if (this.projectListLoaded) {
@@ -144,6 +136,14 @@ export default {
       }
     }
   },
+  // computed: {
+  //   allProjectsIds () {
+  //     const projectsIds = this.projects.map(p => p.id)
+  //     const sharedProjectsIds = this.sharedProjects.map(p => p.id)
+
+  //     return projectsIds.concat(sharedProjectsIds)
+  //   }
+  // },
   beforeDestroy () {
     if (this.projectsSubscription) {
       this.$supabase.removeSubscription(this.projectsSubscription)

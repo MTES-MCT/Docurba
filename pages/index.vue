@@ -111,9 +111,6 @@ export default {
       this.searchQuery.region = regions.find(r => r.name === this.selectedTown.nom_region)
     }
   },
-  mounted () {
-    // console.log(process.env)
-  },
   methods: {
     async searchCTA () {
       if (this.searchQuery.document && this.searchQuery.document.includes('i')) {
@@ -128,6 +125,8 @@ export default {
         // eslint-disable-next-line eqeqeq
         const region = regions.find(r => r.code == regionCode)
 
+        this.$matomo.trackEvent('Socle de PAC', 'Recherche', `${region.iso} - ${this.selectedEpci.label}`)
+
         this.$router.push({
           path: '/pacsec/content',
           query: Object.assign({}, this.searchLink.query, {
@@ -138,6 +137,7 @@ export default {
 
         this.searchLoading = false
       } else {
+        this.$matomo.trackEvent('Socle de PAC', 'Recherche', `${this.selectedTown.code_departement} - ${this.selectedTown.nom_commune}`)
         this.$router.push(this.searchLink)
       }
     }

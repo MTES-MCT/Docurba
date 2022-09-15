@@ -19,6 +19,13 @@ export default {
     return {
       ressources
     }
+  },
+  mounted () {
+    if (this.$route.query.insee) {
+      this.$route.query.insee.forEach((code) => {
+        this.$matomo.trackEvent('Socle de PAC', 'Ressources', `${this.$route.query.document} - ${code}`)
+      })
+    }
   }
 }
 </script>

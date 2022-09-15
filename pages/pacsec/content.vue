@@ -19,6 +19,13 @@ export default {
       // PAC: PAC.filter(s => !s.path.includes('olitiques-publiques-specifiques'))
       PAC: PAC.filter(s => !s.path.includes('PP-du-territoire'))
     }
+  },
+  mounted () {
+    if (this.$route.query.insee) {
+      this.$route.query.insee.forEach((code) => {
+        this.$matomo.trackEvent('Socle de PAC', 'Content', `${this.$route.query.document} - ${code}`)
+      })
+    }
   }
 }
 </script>
