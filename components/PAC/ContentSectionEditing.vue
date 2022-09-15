@@ -128,7 +128,7 @@ export default {
     },
     isReadonly () {
       return !!this.readonlyDirs.find((dir) => {
-        return this.editedSection.dir.includes(dir)
+        return this.editedSection.path.includes(dir)
       })
     }
   },
