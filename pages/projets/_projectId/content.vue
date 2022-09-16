@@ -70,6 +70,13 @@ export default {
       await this.loadPACFile()
     }
 
+    // Start Analytics
+    this.$matomo([
+      'trackEvent', 'Projet PAC', 'Content',
+          `${this.project.doc_type} - ${this.project.epci ? this.project.epci.label : this.project.towns[0].nom_commune}`
+    ])
+    // End Analytics
+
     this.loaded = true
   },
   methods: {
