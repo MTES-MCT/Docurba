@@ -11,15 +11,11 @@ export default (_, inject) => {
     const d = document; const g = d.createElement('script'); const s = d.getElementsByTagName('script')[0]
     g.async = true; g.src = u + 'piwik.js'; s.parentNode.insertBefore(g, s)
 
-    const tracker = {}
-
-    g.onload = () => {
-      const _tracker = window.Matomo.getTracker('https://stats.data.gouv.fr/piwik.php', '235')
-      Object.assign(tracker, _tracker)
-    }
-
     // This part is specific to nuxt.
-    // It should allow the use of this.$matomo in components.
-    inject('matomo', tracker)
+    // It should allow the use of this.$matomo in components instead of _paq.push(arr)
+    // Exemple: this.$matomo(['trackEvent', 'Contact', 'Email Link Click', 'name@example.com'])
+    inject('matomo', (argsArr) => {
+      _paq.push(argsArr)
+    })
   })()
 }

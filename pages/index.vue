@@ -125,7 +125,10 @@ export default {
         // eslint-disable-next-line eqeqeq
         const region = regions.find(r => r.code == regionCode)
 
-        this.$matomo.trackEvent('Socle de PAC', 'Recherche', `${region.iso} - ${this.selectedEpci.label}`)
+        this.$matomo([
+          'trackEvent', 'Socle de PAC', 'Recherche',
+          `${region.iso} - ${this.selectedEpci.label}`
+        ])
 
         this.$router.push({
           path: '/pacsec/content',
@@ -137,7 +140,11 @@ export default {
 
         this.searchLoading = false
       } else {
-        this.$matomo.trackEvent('Socle de PAC', 'Recherche', `${this.selectedTown.code_departement} - ${this.selectedTown.nom_commune}`)
+        this.$matomo([
+          'trackEvent', 'Socle de PAC', 'Recherche',
+          `${this.selectedTown.code_departement} - ${this.selectedTown.nom_commune}`
+        ])
+
         this.$router.push(this.searchLink)
       }
     }

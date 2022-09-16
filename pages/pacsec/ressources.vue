@@ -23,7 +23,10 @@ export default {
   mounted () {
     if (this.$route.query.insee) {
       this.$route.query.insee.forEach((code) => {
-        this.$matomo.trackEvent('Socle de PAC', 'Ressources', `${this.$route.query.document} - ${code}`)
+        this.$matomo([
+          'trackEvent', 'Socle de PAC', 'Ressources',
+          `${this.$route.query.document} - ${code}`
+        ])
       })
     }
   }
