@@ -2,7 +2,7 @@
   <v-expansion-panels :value="open" multiple focusable flat>
     <v-expansion-panel v-for="(section, i) in sortedSections" :id="`panel__${section.path.replaceAll(/[^A-Za-z0-9]/g, '__')}`" :key="i">
       <v-hover v-slot="{hover}">
-        <v-expansion-panel-header>
+        <v-expansion-panel-header @click="openSection(section)">
           <v-row align="center">
             <v-col cols="auto">
               {{ section.tocCounter ? section.tocCounter.join('.') : '' }} - {{ section.titre }}
@@ -106,6 +106,11 @@ export default {
     }
   },
   methods: {
+    openSection (section) {
+      // Start Analytics
+      this.$matomo(['trackEvent', 'PAC Content', 'Open Section', section.titre])
+      // End Analytics
+    },
     fetchAttachements () {
       const folders = [
         this.project.towns[0].code_departement,

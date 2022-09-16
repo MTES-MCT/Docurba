@@ -88,51 +88,60 @@ export default {
     }
   },
   data () {
+    const PACroots = this.parsePAC().filter(section => section.depth === 2).sort((sa, sb) => {
+      return sa.ordre - sb.ordre
+    })
+
+    PACroots.forEach((root, index) => {
+      this.addCounter(root, [index + 1])
+    })
+
     return {
       contentSearch: '',
-      checkedItems: 0
+      checkedItems: 0,
+      PACroots
     }
   },
   computed: {
-    filteredPAC () {
-      if (this.contentSearch.length) {
-        const searchedContent = this.PAC.map((section) => {
-          const searchedSection = { searched: section.searched }
+    // filteredPAC () {
+    //   if (this.contentSearch.length) {
+    //     const searchedContent = this.PAC.map((section) => {
+    //       const searchedSection = { searched: section.searched }
 
-          if (!section.searched) {
-            const searchedValue = this.contentSearch.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
-            const searched = section.searchValue.includes(searchedValue)
+    //       if (!section.searched) {
+    //         const searchedValue = this.contentSearch.toLowerCase().normalize('NFD').replace(/[À-ÿ]/gu, '')
+    //         const searched = section.searchValue.includes(searchedValue)
 
-            searchedSection.searched = searched
-          }
+    //         searchedSection.searched = searched
+    //       }
 
-          return Object.assign(searchedSection, section)
-        })
+    //       return Object.assign(searchedSection, section)
+    //     })
 
-        return searchedContent.filter(section => section.searched)
-      } else { return this.PAC }
-    },
-    progressValue () {
-      return Math.round((this.checkedItems / this.PAC.length) * 100)
-    },
-    PACroots () {
-      if (!this.contentSearch.length) {
-        const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
-          return sa.ordre - sb.ordre
-        })
+    //     return searchedContent.filter(section => section.searched)
+    //   } else { return this.PAC }
+    // },
+    // progressValue () {
+    //   return Math.round((this.checkedItems / this.PAC.length) * 100)
+    // }
+    // PACroots () {
+    //   if (!this.contentSearch.length) {
+    //     const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
+    //       return sa.ordre - sb.ordre
+    //     })
 
-        return roots
-      } else {
-        return this.filteredPAC
-      }
-    }
+    //     return roots
+    //   } else {
+    //     return this.filteredPAC
+    //   }
+    // }
   },
   mounted () {
     this.checkedItems = this.PAC.filter(item => item.checked).length
 
-    this.PACroots.forEach((root, index) => {
-      this.addCounter(root, [index + 1])
-    })
+    // this.PACroots.forEach((root, index) => {
+    //   this.addCounter(root, [index + 1])
+    // })
   },
   methods: {
     checkItem (section) {
