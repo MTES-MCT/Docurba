@@ -8,7 +8,7 @@
     >
       <v-list-item-content>
         <v-list-item-title>{{ project.name }}</v-list-item-title>
-        <v-list-item-subtitle>{{ project.docType }} - {{ placeName }}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{ project.doc_type }} - {{ placeName }}</v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
         <div class="d-flex">

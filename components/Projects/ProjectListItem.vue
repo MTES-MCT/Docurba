@@ -8,7 +8,7 @@
     >
       <v-list-item-content>
         <v-list-item-title>{{ project.name }}</v-list-item-title>
-        <v-list-item-subtitle>{{ project.docType }}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{ project.doc_type }}</v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
         <v-btn

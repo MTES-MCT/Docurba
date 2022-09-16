@@ -28,7 +28,7 @@
         </template>
       </v-dialog>
     </v-card-title>
-    <v-card-subtitle>{{ projectData.docType }} - {{ placeName }}</v-card-subtitle>
+    <v-card-subtitle>{{ projectData.doc_type }} - {{ placeName }}</v-card-subtitle>
     <v-card-text>
       <v-row>
         <v-col cols="4">

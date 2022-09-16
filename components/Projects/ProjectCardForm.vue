@@ -9,9 +9,9 @@
           <v-text-field v-model="newProject.name" filled hide-details placeholder="Nom du projet" />
         </v-col>
         <v-col cols="12">
-          <VDocumentSelect v-model="newProject.docType" />
+          <VDocumentSelect v-model="newProject.doc_type" />
         </v-col>
-        <v-col v-if="newProject.docType.includes('i') && EPCIs.length" cols="12">
+        <v-col v-if="newProject.doc_type.includes('i') && EPCIs.length" cols="12">
           <VEpciAutocomplete v-model="projectForm.epci" :epci-list="EPCIs" />
         </v-col>
         <v-col v-else cols="12">
@@ -73,7 +73,7 @@ export default {
       default () {
         return {
           name: '',
-          docType: '',
+          doc_type: '',
           PAC: [],
           owner: this.$user.id
         }
@@ -137,7 +137,7 @@ export default {
 
       this.newProject.PAC = this.newProject.PAC.length ? this.newProject.PAC : this.PAC.map(s => s.path)
 
-      const isEpci = this.newProject.docType.includes('i')
+      const isEpci = this.newProject.doc_type.includes('i')
 
       const savedProject = Object.assign({}, this.newProject, {
         epci: isEpci ? this.projectForm.epci : null,

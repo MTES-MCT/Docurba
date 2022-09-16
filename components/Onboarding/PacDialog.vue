@@ -23,7 +23,7 @@
                 />
               </v-col>
               <v-col cols="12">
-                <VDocumentSelect v-model="projectData.docType" label="Type de document" />
+                <VDocumentSelect v-model="projectData.doc_type" label="Type de document" />
               </v-col>
               <v-col cols="12">
                 <VTownAutocomplete v-model="selectedTown" />
@@ -52,7 +52,7 @@ export default {
       userData: {},
       projectData: {
         name: '',
-        docType: ''
+        doc_type: ''
       },
       selectedTown: {},
       loading: false

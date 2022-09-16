@@ -64,8 +64,6 @@ export default {
 
     this.project = project
 
-    // console.log('trame', !!this.project.trame)
-
     if (this.project.trame) {
       await this.setPACFromTrame()
     } else {
