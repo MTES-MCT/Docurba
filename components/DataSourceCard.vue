@@ -49,6 +49,7 @@
               block
               color="primary"
               v-on="on"
+              @click="showMap"
             >
               <v-icon class="pr-2">
                 {{ icons.mdiMap }}
@@ -118,6 +119,16 @@ export default {
         const { champs } = await this.$daturba.getCardData(this.region, this.source)
         this.champs = champs
       }
+    }
+  },
+  methods: {
+    showMap () {
+      // Start Analytics
+      this.$matomo([
+        'trackEvent', 'Data Source', 'Carte',
+        this.source.nom
+      ])
+      // End Analytics
     }
   }
 }
