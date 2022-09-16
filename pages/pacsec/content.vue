@@ -33,7 +33,7 @@ export default {
         ])
       })
     }
+    // End Analytics
   }
-  // End Analytics
 }
 </script>

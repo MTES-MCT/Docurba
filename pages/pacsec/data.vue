@@ -28,7 +28,7 @@ export default {
     if (codes) {
       codes.forEach((code) => {
         this.$matomo([
-          'trackEvent', 'Socle de PAC', 'Content',
+          'trackEvent', 'Socle de PAC', 'Data',
           `${this.$route.query.document} - ${code}`
         ])
       })

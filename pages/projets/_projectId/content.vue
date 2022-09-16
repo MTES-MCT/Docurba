@@ -25,19 +25,7 @@
   <VGlobalLoader v-else />
 </template>
 <script>
-// import { unionBy, omitBy, isNil } from 'lodash'
-
-import unified from 'unified'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import rehypeRaw from 'rehype-raw'
-import rehypeSanitize from 'rehype-sanitize'
-import rehypeStringify from 'rehype-stringify'
-
-import jsonCompiler from '@nuxt/content/parsers/markdown/compilers/json.js'
-
 import { mdiDownload } from '@mdi/js'
-import { defaultSchema } from '@/assets/sanitizeSchema.js'
 
 import unifiedPAC from '@/mixins/unifiedPac.js'
 
@@ -98,13 +86,6 @@ export default {
 
       this.PAC = PAC
 
-      const mdParser = unified().use(remarkParse)
-        .use(remarkRehype, { allowDangerousHtml: true })
-        .use(rehypeRaw)
-        .use(rehypeSanitize, defaultSchema)
-        .use(rehypeStringify)
-        .use(jsonCompiler)
-
       const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.project.towns[0].code_departement)
       const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', this.project.id)
 
@@ -115,7 +96,7 @@ export default {
 
       this.project.PAC.forEach((section) => {
       // Parse the body only if text was edited.
-        if (section.text) { section.body = mdParser.processSync(section.text).result }
+        if (section.text) { section.body = this.$mdParse(section.text) }
       })
 
       // The next two enrich and the union should be refactored because there is some useless steps here.
@@ -127,8 +108,6 @@ export default {
       const { signedURL: pdfUrl, err } = await this.$supabase.storage
         .from('projects-pac')
         .createSignedUrl(`${this.project.id}/pac.pdf`, 60 * 60)
-
-      console.log('pdfUrl', pdfUrl)
 
       if (!err) {
         this.pdfUrl = pdfUrl

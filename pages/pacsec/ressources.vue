@@ -21,14 +21,19 @@ export default {
     }
   },
   mounted () {
-    if (this.$route.query.insee) {
-      this.$route.query.insee.forEach((code) => {
+    // Start Analytics
+    const inseeQuery = this.$route.query.insee
+    const codes = typeof (inseeQuery) === 'object' ? inseeQuery : [inseeQuery]
+
+    if (codes) {
+      codes.forEach((code) => {
         this.$matomo([
           'trackEvent', 'Socle de PAC', 'Ressources',
           `${this.$route.query.document} - ${code}`
         ])
       })
     }
+    // End Analytics
   }
 }
 </script>
