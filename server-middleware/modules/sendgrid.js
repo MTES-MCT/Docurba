@@ -5,7 +5,14 @@ module.exports = {
   sendEmail (message) {
     return sgMail.send(Object.assign({
       // from: 'fabien.ungerer@beta.gouv.fr' // This need to be a verified sender
-      from: 'ne-pas-repondre@docurba.beta.gouv.fr'
+      from: {
+        email: 'equipe@docurba.beta.gouv.fr',
+        name: 'L‘équipe docurba'
+      },
+      replyTo: {
+        email: 'celia.vermicelli@beta.gouv.fr',
+        name: 'Celia Vermicelli'
+      }
     }, message))
   }
 }

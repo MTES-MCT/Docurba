@@ -9,7 +9,7 @@ const sendgrid = require('./modules/sendgrid.js')
 const pipedrive = require('./modules/pipedrive.js')
 
 app.post('/password', async (req, res) => {
-  console.log('/password body', req.body)
+  // console.log('/password body', req.body)
 
   const { data: user, error } = await supabase.auth.api.generateLink(
     'recovery',
