@@ -5,10 +5,9 @@ ordre : 7
 #### La loi n° 86-2 du 3 janvier 1986 relative à l’aménagement, la protection et la mise en valeur du littoral, dite « loi littoral »
 
 La loi n° 86-2 du 3 janvier 1986 relative à l’aménagement, la protection et la mise en valeur du littoral, dite « loi littoral », concilie préservation et développement du littoral face à la pression urbaine et aux phénomène d’érosion ou de submersion marine que subissent ces territoires. 
-Face à l’occupation croissante du littoral au cours du 20ème siècle, la mise en place d’une politique spécifique d’aménagement, de protection et de mise en valeur du littoral fut nécessaire
+Face à l’occupation croissante du littoral au cours du 20ème siècle, la mise en place d’une politique spécifique d’aménagement, de protection et de mise en valeur du littoral fut nécessaire.
 La loi littoral concerne plus de 1 200 communes riveraines de la mer, mais aussi de grands lacs, d’estuaires ou de deltas.
 
-**En Auvergne-Rhône-Alpes, les communes en bordure des lacs du Bourget, d'Annecy et du lac Léman sont concernées par la loi littoral.**
 
 Plusieurs objectifs sont assignés à cette politique
 d’aménagement du littoral ([article L. 321-1 du code de
