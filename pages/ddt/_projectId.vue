@@ -7,7 +7,7 @@
       <v-row>
         <v-col :cols="collapsedTree ? 1 : 4" class="collapse-transition">
           <client-only>
-            <PACTreeviewEditing
+            <PACEditingTreeview
               :value="project.PAC"
               :pac-data="PAC"
               :collapsed="collapsedTree"
@@ -23,7 +23,7 @@
           </client-only>
         </v-col>
         <v-col v-if="selectedSection" :cols="collapsedTree ? 11 : 8" class="fill-height collapse-transition">
-          <PACContentSectionEditing
+          <PACEditingContentSection
             :section="selectedSection"
             :pac-data="PAC"
             table="pac_sections_project"
