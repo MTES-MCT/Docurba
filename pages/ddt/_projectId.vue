@@ -12,10 +12,12 @@
               :pac-data="PAC"
               :collapsed="collapsedTree"
               table="pac_sections_project"
+              :table-keys="{
+                project_id: project.id
+              }"
               :project-id="$route.params.projectId"
               selectable
               @open="selectSection"
-              @add="addNewSection"
               @remove="deleteSection"
               @collapse="collapsedTree = !collapsedTree"
               @input="changeSelectedSections"
@@ -136,24 +138,6 @@ export default {
         dir,
         ordre,
         project_id: this.project.id
-      }
-    },
-    async addNewSection (newSection) {
-      // newSection.dept = this.departementCode
-      const { data: savedSection, err } = await this.$supabase.from('pac_sections_project').insert([Object.assign({
-        project_id: this.project.id
-      }, newSection)])
-
-      if (savedSection && !err) {
-        // console.log(savedSection)
-        this.PAC.push(Object.assign({
-          body: this.mdParser.parse(savedSection.text)
-        }, savedSection[0]))
-
-        this.$notifications.notifyUpdate(this.project.id)
-      } else {
-        // eslint-disable-next-line no-console
-        console.log('error adding new section', savedSection, err)
       }
     },
     async deleteSection (deletedSection) {

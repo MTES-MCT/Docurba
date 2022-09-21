@@ -113,6 +113,7 @@ import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiC
 import { v4 as uuidv4 } from 'uuid'
 import { uniq } from 'lodash'
 import pacContent from '@/mixins/pacContent.js'
+import pacEditing from '@/mixins/pacEditing.js'
 
 function getDepth (path) {
   // console.log(path)
@@ -120,7 +121,7 @@ function getDepth (path) {
 }
 
 export default {
-  mixins: [pacContent],
+  mixins: [pacContent, pacEditing],
   props: {
     value: {
       type: Array,
@@ -129,13 +130,6 @@ export default {
     collapsed: {
       type: Boolean,
       default: false
-    },
-    // This is used for hierarchie update
-    table: {
-      type: String,
-      default () {
-        return this.projectId ? 'pac_sections_project' : 'pac_sections_dept'
-      }
     },
     projectId: {
       type: String,
@@ -219,22 +213,12 @@ export default {
     openSection (section) {
       this.$emit('open', section)
     },
-    addSectionTo (section, open, $event) {
+    addSectionTo (parentSection, open, $event) {
       if (open) {
         $event.stopPropagation()
       }
 
-      const dir = section.slug === 'intro' ? section.dir : section.path
-
-      const newSection = {
-        slug: 'new-section',
-        dir,
-        titre: 'Nouvelle section',
-        path: `${dir}/${Date.now()}`,
-        text: 'Nouvelle section'
-      }
-
-      this.$emit('add', newSection)
+      this.addNewSection(parentSection)
     },
     selectItem (item) {
       this.overedItem = item.path
