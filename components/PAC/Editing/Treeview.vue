@@ -31,7 +31,7 @@
                 :class="colorClass(item)"
                 v-on="on"
                 @click="openSection(item)"
-                @mouseenter="selecItem(item)"
+                @mouseenter="selectItem(item)"
               >
                 {{ item.titre }}
               </div>
@@ -236,7 +236,7 @@ export default {
 
       this.$emit('add', newSection)
     },
-    selecItem (item) {
+    selectItem (item) {
       this.overedItem = item.path
     },
     removeItem (item, dialog) {
