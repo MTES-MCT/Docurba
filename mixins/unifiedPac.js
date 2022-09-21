@@ -35,6 +35,8 @@ export default {
         const cleanSection = omitBy(section, isNil)
         const textEdited = !!cleanSection.text
         PAC.splice(sectionIndex, 1, Object.assign({ textEdited }, PAC[sectionIndex], cleanSection))
+      } else if (section.id) {
+        PAC.push(section)
       }
     }
   }

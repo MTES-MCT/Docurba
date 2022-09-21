@@ -11,6 +11,9 @@
               :pac-data="PAC"
               :collapsed="collapsedTree"
               table="pac_sections_dept"
+              :table-keys="{
+                dept: departementCode
+              }"
               :dept="departementCode"
               @open="selectSection"
               @add="addNewSection"
