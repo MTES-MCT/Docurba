@@ -118,7 +118,7 @@ export default {
       }
 
       this.deptSectionsSub = this.$supabase.from(`pac_sections_dept:dept=eq.${this.departementCode}`).on('*', (update) => {
-        this.spliceSection(this.PAC, update.new)
+        this.spliceSection(this.PAC, update)
       }).subscribe()
     },
     selectSection (section) {
