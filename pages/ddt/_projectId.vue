@@ -18,7 +18,6 @@
               :project-id="$route.params.projectId"
               selectable
               @open="selectSection"
-              @remove="deleteSection"
               @collapse="collapsedTree = !collapsedTree"
               @input="changeSelectedSections"
             />
@@ -123,6 +122,7 @@ export default {
       }
 
       this.projectSectionsSub = this.$supabase.from(`pac_sections_project:project_id=eq.${projectId}`).on('*', (update) => {
+        console.log('bdd subscription', update)
         this.spliceSection(this.PAC, update.new)
       }).subscribe()
     },
@@ -140,31 +140,31 @@ export default {
         project_id: this.project.id
       }
     },
-    async deleteSection (deletedSection) {
-      const { data, err } = await this.$supabase
-        .from('pac_sections_project')
-        .delete()
-        .match({
-          project_id: this.project.id,
-          path: deletedSection.path
-        })
+    // async deleteSection (deletedSection) {
+    //   const { data, err } = await this.$supabase
+    //     .from('pac_sections_project')
+    //     .delete()
+    //     .match({
+    //       project_id: this.project.id,
+    //       path: deletedSection.path
+    //     })
 
-      // TODO: this will not work if section was added in trame AND project.
-      // Maybe in edit mode of project, you can only delete projectSection, not trame section.
-      // Like in trame you can not delete global sections.
-      // Still the splice here should inject by a dept/trame section if it exist.
-      if (data && !err) {
-        const deletedSectionIndex = this.PAC.findIndex(s => s.path === deletedSection.path)
-        const originalSection = this.originalPAC.find(s => s.path === deletedSection.path)
+    //   // TODO: this will not work if section was added in trame AND project.
+    //   // Maybe in edit mode of project, you can only delete projectSection, not trame section.
+    //   // Like in trame you can not delete global sections.
+    //   // Still the splice here should inject by a dept/trame section if it exist.
+    //   if (data && !err) {
+    //     const deletedSectionIndex = this.PAC.findIndex(s => s.path === deletedSection.path)
+    //     const originalSection = this.originalPAC.find(s => s.path === deletedSection.path)
 
-        if (originalSection) {
-          this.PAC.splice(deletedSectionIndex, 1, originalSection)
-        } else { this.PAC.splice(deletedSectionIndex, 1) }
-      } else {
-        // eslint-disable-next-line no-console
-        console.log('err deleting a section')
-      }
-    },
+    //     if (originalSection) {
+    //       this.PAC.splice(deletedSectionIndex, 1, originalSection)
+    //     } else { this.PAC.splice(deletedSectionIndex, 1) }
+    //   } else {
+    //     // eslint-disable-next-line no-console
+    //     console.log('err deleting a section')
+    //   }
+    // },
     async changeSelectedSections (selectedSections) {
       // This make it so we can't save sections as objects in reading mode for comments and checked features.
       await this.$supabase.from('projects').update({

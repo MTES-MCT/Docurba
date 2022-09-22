@@ -20,6 +20,8 @@ export default {
       type: String,
       required: true
     },
+    // This should be the section identifiers in the table.
+    // For exemple: {project_id: 'XXX'} for table pac_sections_project
     tableKeys: {
       type: Object,
       required: true
@@ -53,6 +55,24 @@ export default {
         // eslint-disable-next-line no-console
         console.log('error adding new section', savedSection, err)
       }
+    },
+    async deleteSection (matchKeys) {
+      return await this.$supabase
+        .from(this.table)
+        .delete()
+        .match(matchKeys)
+
+      // if (data && !err) {
+      //   const deletedSectionIndex = this.PAC.findIndex(s => s.path === deletedSection.path)
+      //   const originalSection = this.originalPAC.find(s => s.path === deletedSection.path)
+
+      //   if (originalSection) {
+      //     this.PAC.splice(deletedSectionIndex, 1, originalSection)
+      //   } else { this.PAC.splice(deletedSectionIndex, 1) }
+      // } else {
+      //   // eslint-disable-next-line no-console
+      //   console.log('err deleting a section')
+      // }
     }
   }
 }

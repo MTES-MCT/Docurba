@@ -224,7 +224,9 @@ export default {
       this.overedItem = item.path
     },
     removeItem (item, dialog) {
-      this.$emit('remove', item)
+      this.deleteSection(Object.assign({
+        path: item.path
+      }, this.tableKey))
       dialog.value = false
     },
     async changeItemOrder (item, change) {
