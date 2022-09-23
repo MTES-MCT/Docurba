@@ -134,41 +134,6 @@ export default {
         dept: this.departementCode
       }
     }
-    // async addNewSection (newSection) {
-    //   newSection.dept = this.departementCode
-    //   const { data: savedSection, err } = await this.$supabase.from('pac_sections_dept').insert([newSection])
-
-    //   if (savedSection && !err) {
-    //     // console.log(savedSection)
-    //     this.PAC.push(Object.assign({
-    //       body: this.mdParser.parse(savedSection.text)
-    //     }, savedSection[0]))
-    //   } else {
-    //     // eslint-disable-next-line no-console
-    //     console.log('error adding new section', savedSection, err)
-    //   }
-    // },
-    // async deleteSection (deletedSection) {
-    //   const { data, err } = await this.$supabase
-    //     .from('pac_sections_dept')
-    //     .delete()
-    //     .match({
-    //       dept: this.departementCode,
-    //       path: deletedSection.path
-    //     })
-
-    //   // if (data && !err) {
-    //   //   const deletedSectionIndex = this.PAC.findIndex(s => s.path === deletedSection.path)
-    //   //   const originalSection = this.originalPAC.find(s => s.path === deletedSection.path)
-
-    //   //   if (originalSection) {
-    //   //     this.PAC.splice(deletedSectionIndex, 1, originalSection)
-    //   //   } else { this.PAC.splice(deletedSectionIndex, 1) }
-    //   // } else {
-    //   //   // eslint-disable-next-line no-console
-    //   //   console.log('err deleting a section')
-    //   // }
-    // }
   }
 }
 </script>
