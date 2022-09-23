@@ -122,7 +122,6 @@ export default {
       }
 
       this.projectSectionsSub = this.$supabase.from(`pac_sections_project:project_id=eq.${projectId}`).on('*', (update) => {
-        console.log('bdd subscription', update)
         this.spliceSection(this.PAC, update)
       }).subscribe()
     },

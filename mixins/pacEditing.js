@@ -13,6 +13,8 @@
 //   }
 // }
 
+import { v4 as uuidv4 } from 'uuid'
+
 // @vue/component
 export default {
   props: {
@@ -25,6 +27,22 @@ export default {
     tableKeys: {
       type: Object,
       required: true
+    },
+    // eslint-disable-next-line vue/prop-name-casing
+    PAC: {
+      type: Array,
+      required: true
+    }
+  },
+  data () {
+    let projectId = null
+
+    if (this.table === 'pac_sections_project' && this.tableKeys.project_id) {
+      projectId = this.tableKeys.project_id
+    }
+
+    return {
+      projectId
     }
   },
   methods: {
@@ -39,15 +57,9 @@ export default {
         text: 'Nouvelle section'
       }, this.tableKeys)
 
-      // newSection.dept = this.departementCode
       const { data: savedSection, err } = await this.$supabase.from(this.table).insert([newSection])
 
       if (savedSection && !err) {
-        // console.log(savedSection)
-        // this.PAC.push(Object.assign({
-        //   body: this.mdParser.parse(savedSection.text)
-        // }, savedSection[0]))
-
         if (this.table === 'pac_sections_project') {
           this.$notifications.notifyUpdate(this.tableKeys.project_id)
         }
@@ -56,23 +68,45 @@ export default {
         console.log('error adding new section', savedSection, err)
       }
     },
+    // Change should be +1 or -1
+    async changeSectionOrder (section, change) {
+      const parent = this.PAC.find((p) => {
+        return p !== section &&
+          section.dir.includes(p.path.replace(/\/intro$/, '')) &&
+            p.depth + 1 === section.depth
+      })
+
+      const newIndex = section.ordre + change
+
+      if (newIndex >= 0 && newIndex < parent.children.length) {
+        // This interchange position of items in array in one operation.
+        [
+          parent.children[section.ordre],
+          parent.children[newIndex]
+        ] = [
+          parent.children[newIndex],
+          parent.children[section.ordre]
+        ]
+
+        if (this.table) {
+          const updatedSections = parent.children.map((s, i) => {
+            return Object.assign({
+              id: s.id || uuidv4(), // if a section from a lower level was never changed it need an id to be upsert.
+              path: s.path,
+              dir: s.dir,
+              ordre: i
+            }, this.tableKeys)
+          })
+
+          await this.$supabase.from(this.table).upsert(updatedSections)
+        }
+      }
+    },
     async deleteSection (matchKeys) {
       return await this.$supabase
         .from(this.table)
         .delete()
         .match(matchKeys)
-
-      // if (data && !err) {
-      //   const deletedSectionIndex = this.PAC.findIndex(s => s.path === deletedSection.path)
-      //   const originalSection = this.originalPAC.find(s => s.path === deletedSection.path)
-
-      //   if (originalSection) {
-      //     this.PAC.splice(deletedSectionIndex, 1, originalSection)
-      //   } else { this.PAC.splice(deletedSectionIndex, 1) }
-      // } else {
-      //   // eslint-disable-next-line no-console
-      //   console.log('err deleting a section')
-      // }
     }
   }
 }
