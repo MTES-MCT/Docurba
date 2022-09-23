@@ -79,7 +79,7 @@ export default {
     },
     attachementsFolders () {
       // Beware, this could be unreactive to project changes.
-      if (this.project) {
+      if (this.project && this.project.id && this.project.towns) {
         return [this.project.towns[0].code_departement]
       } else { return [] }
     }

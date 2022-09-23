@@ -91,7 +91,6 @@ export default {
       ],
       mdParser,
       editedSection: {
-        project_id: this.section.project_id,
         dir: this.section.dir,
         path: this.section.path,
         text: mdParser.processSync(this.section.text).contents,
@@ -164,13 +163,13 @@ export default {
       const { data: savedSection } = await this.$supabase.from(this.table)
         .select('id').match(sectionMatchKeys)
 
-      // const newData = Object.assign({}, this.section, this.editedSection)
+      const savedData = Object.assign({}, newData, this.tableKeys)
 
       try {
         if (savedSection[0]) {
-          await this.$supabase.from(this.table).update(newData).match(sectionMatchKeys)
+          await this.$supabase.from(this.table).update(savedData).match(sectionMatchKeys)
         } else {
-          await this.$supabase.from(this.table).insert([newData])
+          await this.$supabase.from(this.table).insert([savedData])
         }
 
         if (this.tableKeys.project_id) {

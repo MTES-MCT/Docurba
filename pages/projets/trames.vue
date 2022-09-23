@@ -3,40 +3,14 @@
     <template #headerPageTitle>
       - Trame du PAC {{ departement.nom_departement }}
     </template>
-    <v-container v-if="!loading" fluid>
-      <v-row>
-        <v-col :cols="collapsedTree ? 1 : 4" class="collapse-transition">
-          <client-only>
-            <PACEditingTreeview
-              :pac-data="PAC"
-              :collapsed="collapsedTree"
-              table="pac_sections_dept"
-              :table-keys="{
-                dept: departementCode
-              }"
-              :dept="departementCode"
-              @open="selectSection"
-              @collapse="collapsedTree = !collapsedTree"
-            />
-          </client-only>
-        </v-col>
-        <v-col v-if="selectedSection" :cols="collapsedTree ? 11 : 8" class="fill-height collapse-transition">
-          <PACEditingContentSection
-            :section="selectedSection"
-            :pac-data="PAC"
-            table="pac_sections_dept"
-            :match-keys="{
-              dept: departementCode,
-            }"
-          />
-        </v-col>
-        <v-col v-else cols="">
-          <v-card flat color="g100">
-            <v-card-text>Selectionnez une section à éditer.</v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+    <PACEditingTrame
+      v-if="!loading"
+      :pac-data="PAC"
+      table="pac_sections_dept"
+      :table-keys="{
+        dept: departementCode
+      }"
+    />
     <VGlobalLoader v-else />
   </LayoutsCustomApp>
 </template>
