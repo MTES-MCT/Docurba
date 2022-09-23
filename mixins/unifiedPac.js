@@ -32,7 +32,6 @@ export default {
     // Update should be a BDD update from supabase realtime event.
     spliceSection (PAC, update) {
       // This should be able to handle Create, Update and Delete from a PAC.
-      // TODO: This all events should be tested again.
       if (update.eventType === 'DELETE' && update.old) {
         const deleteIndex = PAC.findIndex(s => s.id === update.old.id)
         PAC.splice(deleteIndex, 1)
@@ -50,15 +49,6 @@ export default {
           PAC.push(cleanSection)
         }
       }
-
-      // const sectionIndex = PAC.findIndex(s => s.path === section.path)
-      // if (sectionIndex >= 0) {
-      //   const cleanSection = omitBy(section, isNil)
-      //   const textEdited = !!cleanSection.text
-      //   PAC.splice(sectionIndex, 1, Object.assign({ textEdited }, PAC[sectionIndex], cleanSection))
-      // } else if (section.id) {
-      //   PAC.push(section)
-      // }
     }
   }
 }
