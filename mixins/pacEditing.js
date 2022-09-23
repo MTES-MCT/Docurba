@@ -1,18 +1,3 @@
-// function communKeys (section) {
-//   const { text, titre, path, slug, dir, ordre } = section
-//   return { text, titre, path, slug, dir, ordre }
-// }
-
-// This are functions to decompose and recompose sections data model based on their table.
-// const tablesMap = {
-//   'pac_sections_project' (section) {
-//     // eslint-disable-next-line camelcase
-//     const { project_id } = section
-
-//     return Object.assign(communKeys(section), { project_id })
-//   }
-// }
-
 import { v4 as uuidv4 } from 'uuid'
 
 // @vue/component

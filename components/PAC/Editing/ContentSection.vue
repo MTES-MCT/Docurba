@@ -61,23 +61,14 @@ import remarkRehype from 'remark-rehype'
 import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
+import pacEditing from '@/mixins/pacEditing.js'
 
 import { defaultSchema } from '@/assets/sanitizeSchema.js'
 
-import pacContent from '@/mixins/pacContent.js'
-
 export default {
-  mixins: [pacContent],
+  mixins: [pacEditing],
   props: {
     section: {
-      type: Object,
-      required: true
-    },
-    table: {
-      type: String,
-      required: true
-    },
-    matchKeys: {
       type: Object,
       required: true
     },
@@ -168,7 +159,7 @@ export default {
     async saveSection (newData) {
       const sectionMatchKeys = Object.assign({
         path: newData.path
-      }, this.matchKeys)
+      }, this.tableKeys)
 
       const { data: savedSection } = await this.$supabase.from(this.table)
         .select('id').match(sectionMatchKeys)
@@ -182,7 +173,9 @@ export default {
           await this.$supabase.from(this.table).insert([newData])
         }
 
-        this.$notifications.notifyUpdate(this.section.project_id)
+        if (this.tableKeys.project_id) {
+          this.$notifications.notifyUpdate(this.tableKeys.project_id)
+        }
       } catch (err) {
         // eslint-disable-next-line no-console
         console.log('Error saving data')

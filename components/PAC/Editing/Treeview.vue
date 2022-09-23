@@ -46,7 +46,7 @@
             tile
             small
             icon
-            @click.stop="changeItemOrder(item, -1)"
+            @click.stop="changeSectionOrder(item, -1)"
           >
             <v-icon>{{ icons.mdiChevronUp }}</v-icon>
           </v-btn>
@@ -56,7 +56,7 @@
             tile
             small
             icon
-            @click.stop="changeItemOrder(item, 1)"
+            @click.stop="changeSectionOrder(item, 1)"
           >
             <v-icon>{{ icons.mdiChevronDown }}</v-icon>
           </v-btn>
@@ -112,7 +112,6 @@
 import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDown } from '@mdi/js'
 // import { v4 as uuidv4 } from 'uuid'
 import { uniq } from 'lodash'
-import pacContent from '@/mixins/pacContent.js'
 import pacEditing from '@/mixins/pacEditing.js'
 
 function getDepth (path) {
@@ -121,7 +120,7 @@ function getDepth (path) {
 }
 
 export default {
-  mixins: [pacContent, pacEditing],
+  mixins: [pacEditing],
   props: {
     value: {
       type: Array,
@@ -130,14 +129,6 @@ export default {
     collapsed: {
       type: Boolean,
       default: false
-    },
-    projectId: {
-      type: String,
-      default: ''
-    },
-    dept: {
-      type: String,
-      default: ''
     },
     selectable: {
       type: Boolean,
@@ -229,44 +220,6 @@ export default {
       }, this.tableKey))
       dialog.value = false
     },
-    // async changeItemOrder (item, change) {
-    //   const parent = this.PAC.find((p) => {
-    //     return p !== item &&
-    //       item.dir.includes(p.path.replace(/\/intro$/, '')) &&
-    //         p.depth + 1 === item.depth
-    //   })
-
-    //   const newIndex = item.ordre + change
-
-    //   if (newIndex >= 0 && newIndex < parent.children.length) {
-    //     [parent.children[item.ordre], parent.children[newIndex]] = [parent.children[newIndex], parent.children[item.ordre]]
-
-    //     if (this.table) {
-    //       // parent.children.forEach(async (s, i) => {
-    //       //   await this.$supabase.from(this.table).update({ ordre: i }).eq('id', s.id)
-    //       // })
-
-    //       const updatedSections = parent.children.map((s, i) => {
-    //         const section = {
-    //           id: s.id || uuidv4(),
-    //           path: s.path,
-    //           dir: s.dir,
-    //           ordre: i
-    //         }
-
-    //         if (this.projectId) {
-    //           section.project_id = this.projectId
-    //         } else {
-    //           section.dept = this.dept
-    //         }
-
-    //         return section
-    //       })
-
-    //       await this.$supabase.from(this.table).upsert(updatedSections)
-    //     }
-    //   }
-    // },
     colorClass (section) {
       // textEdited is setup in unifiedPac.js
       if (section.textEdited) {

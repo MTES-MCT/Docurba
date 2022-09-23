@@ -3,46 +3,16 @@
     <template #headerPageTitle>
       - {{ project ? project.name : '' }}
     </template>
-    <v-container v-if="!loading" fluid>
-      <v-row>
-        <v-col :cols="collapsedTree ? 1 : 4" class="collapse-transition">
-          <client-only>
-            <PACEditingTreeview
-              :value="project.PAC"
-              :pac-data="PAC"
-              :collapsed="collapsedTree"
-              table="pac_sections_project"
-              :table-keys="{
-                project_id: project.id
-              }"
-              :project-id="$route.params.projectId"
-              selectable
-              @open="selectSection"
-              @collapse="collapsedTree = !collapsedTree"
-              @input="changeSelectedSections"
-            />
-          </client-only>
-        </v-col>
-        <v-col v-if="selectedSection" :cols="collapsedTree ? 11 : 8" class="fill-height collapse-transition">
-          <PACEditingContentSection
-            :section="selectedSection"
-            :pac-data="PAC"
-            table="pac_sections_project"
-            :attachements-folders="[
-              project.towns[0].code_departement
-            ]"
-            :match-keys="{
-              project_id: project.id,
-            }"
-          />
-        </v-col>
-        <v-col v-else cols="">
-          <v-card flat color="g100">
-            <v-card-text>Selectionnez une section à éditer.</v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+    <PACEditingTrame
+      v-if="!loading"
+      :pac-data="PAC"
+      table="pac_sections_project"
+      :table-keys="{
+        project_id: project.id
+      }"
+      :sections-list="project.PAC"
+      :project="project"
+    />
     <VGlobalLoader v-else />
   </LayoutsCustomApp>
 </template>
@@ -124,29 +94,29 @@ export default {
       this.projectSectionsSub = this.$supabase.from(`pac_sections_project:project_id=eq.${projectId}`).on('*', (update) => {
         this.spliceSection(this.PAC, update)
       }).subscribe()
-    },
-    // This is duplicate from /projects/trame.vue
-    selectSection (section) {
-      const { text, titre, path, slug, dir, ordre } = this.PAC.find(s => s.path === section.path)
-
-      this.selectedSection = {
-        text,
-        titre,
-        path,
-        slug,
-        dir,
-        ordre,
-        project_id: this.project.id
-      }
-    },
-    async changeSelectedSections (selectedSections) {
-      // This make it so we can't save sections as objects in reading mode for comments and checked features.
-      await this.$supabase.from('projects').update({
-        PAC: selectedSections.map(s => s || s.path)
-      }).eq('id', this.project.id)
-
-      this.$notifications.notifyUpdate(this.project.id)
     }
+    // This is duplicate from /projects/trame.vue
+    // selectSection (section) {
+    //   const { text, titre, path, slug, dir, ordre } = this.PAC.find(s => s.path === section.path)
+
+    //   this.selectedSection = {
+    //     text,
+    //     titre,
+    //     path,
+    //     slug,
+    //     dir,
+    //     ordre,
+    //     project_id: this.project.id
+    //   }
+    // },
+    // async changeSelectedSections (selectedSections) {
+    //   // This make it so we can't save sections as objects in reading mode for comments and checked features.
+    //   await this.$supabase.from('projects').update({
+    //     PAC: selectedSections.map(s => s || s.path)
+    //   }).eq('id', this.project.id)
+
+    //   this.$notifications.notifyUpdate(this.project.id)
+    // }
   }
 }
 </script>
