@@ -1,7 +1,7 @@
 <template>
   <LayoutsCustomApp>
     <template #headerPageTitle>
-      - Trame du PAC {{ departement.nom_departement }}
+      - {{ region.name }}
     </template>
     <PACEditingTrame
       v-if="!loading"
@@ -20,6 +20,7 @@ import unifiedPAC from '@/mixins/unifiedPac.js'
 
 export default {
   mixins: [unifiedPAC],
+  layout: 'app',
   async asyncData ({ $content }) {
     const PAC = await $content('PAC', {
       deep: true,
@@ -37,7 +38,7 @@ export default {
   },
   data () {
     return {
-      region: null,
+      region: { name: '' },
       regionSectionsSub: null,
       loading: true
     }
