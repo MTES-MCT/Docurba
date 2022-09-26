@@ -1,7 +1,7 @@
 <template>
   <LayoutsCustomApp private extended-app-bar>
     <template #headerExtension>
-      <v-tabs show-arrows>
+      <v-tabs v-if="!loadingAccess" show-arrows>
         <v-tab
           :to="{path: '/projets'}"
           nuxt
@@ -9,10 +9,13 @@
           Projets
         </v-tab>
         <v-tab
-          :to="{path: '/projets/trames'}"
+          :to="{path: '/projets/trames/departement'}"
           nuxt
         >
-          Trame du PAC
+          Trame du {{ deptAccess.dept }}
+        </v-tab>
+        <v-tab :to="{path: '/projets/trames/region'}">
+          Trame {{ region.iso }}
         </v-tab>
       </v-tabs>
       <v-spacer />
@@ -103,6 +106,8 @@
 import { mdiPlus, mdiFileDocumentEdit, mdiHelp } from '@mdi/js'
 import projectsList from '@/mixins/projectsList.js'
 
+import regions from '@/assets/data/Regions.json'
+
 export default {
   mixins: [projectsList],
   layout: 'app',
@@ -114,7 +119,14 @@ export default {
         mdiHelp
       },
       projectsSubscription: null,
-      projectDialog: false
+      projectDialog: false,
+      loadingAccess: true
+    }
+  },
+  computed: {
+    region () {
+      // eslint-disable-next-line eqeqeq
+      return regions.find(r => r.code == this.regionAccess.region)
     }
   },
   watch: {
@@ -136,14 +148,16 @@ export default {
       }
     }
   },
-  // computed: {
-  //   allProjectsIds () {
-  //     const projectsIds = this.projects.map(p => p.id)
-  //     const sharedProjectsIds = this.sharedProjects.map(p => p.id)
+  async mounted () {
+    const [regionAccess, deptAccess] = await Promise.all([
+      this.$auth.getRegionAccess(),
+      this.$auth.getDeptAccess()
+    ])
 
-  //     return projectsIds.concat(sharedProjectsIds)
-  //   }
-  // },
+    this.regionAccess = regionAccess
+    this.deptAccess = deptAccess
+    this.loadingAccess = false
+  },
   beforeDestroy () {
     if (this.projectsSubscription) {
       this.$supabase.removeSubscription(this.projectsSubscription)
