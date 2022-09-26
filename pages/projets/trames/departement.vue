@@ -16,11 +16,7 @@
 </template>
 
 <script>
-import unified from 'unified'
-
-import remarkParse from 'remark-parse'
 import departements from '@/assets/data/departements-france.json'
-
 import unifiedPAC from '@/mixins/unifiedPac.js'
 
 export default {
@@ -44,8 +40,6 @@ export default {
   data () {
     return {
       loading: true,
-      collapsedTree: false,
-      selectedSection: null,
       departement: { code_departement: 0, nom_departement: '' },
       deptSectionsSub: null
     }
@@ -56,19 +50,12 @@ export default {
     }
   },
   async mounted () {
-    const mdParser = unified().use(remarkParse)
-    this.mdParser = mdParser
+    const adminAccess = await this.$auth.getDeptAccess()
 
-    const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('dept').match({
-      user_id: this.$user.id,
-      user_email: this.$user.email,
-      role: 'ddt'
-    })
-
-    if (!adminAccess || !adminAccess.length) { this.$router.push('/') }
+    if (!adminAccess) { this.$router.push('/') }
 
     // eslint-disable-next-line eqeqeq
-    this.departement = departements.find(d => d.code_departement == adminAccess[0].dept)
+    this.departement = departements.find(d => d.code_departement == adminAccess.dept)
 
     this.subscribeToBdd()
     window.addEventListener('focus', () => {
@@ -94,19 +81,6 @@ export default {
       this.deptSectionsSub = this.$supabase.from(`pac_sections_dept:dept=eq.${this.departementCode}`).on('*', (update) => {
         this.spliceSection(this.PAC, update)
       }).subscribe()
-    },
-    selectSection (section) {
-      const { text, titre, path, slug, dir, ordre } = this.PAC.find(s => s.path === section.path)
-
-      this.selectedSection = {
-        text,
-        titre,
-        path,
-        slug,
-        dir,
-        ordre,
-        dept: this.departementCode
-      }
     }
   }
 }
