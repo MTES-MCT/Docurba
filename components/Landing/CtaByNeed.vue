@@ -10,7 +10,15 @@
           <p>
             Vous pouvez consulter les modèles et guides sur l’élaboration d’un document d’urbanisme, et surtout accéder au cadre juridique national, aux éléments régionaux (SRADDET & doctrine régionale) et aux données territorialisées.
           </p>
-          <v-btn to="/pacsec/data" nuxt outlined class="mt-auto" color="primary">
+          <v-btn
+            depressed
+            tile
+            to="/pacsec/data"
+            nuxt
+            outlined
+            class="mt-auto"
+            color="primary"
+          >
             Accéder aux ressources disponibles et données territorialisées
           </v-btn>
         </div>
@@ -24,7 +32,14 @@
           <p>
             Vous pouvez accéder à votre porter à connaissance (PAC) en ligne, à votre note d'enjeux le cas échéant, et à l'espace partagé avec une feuille de route et des documents liés aux étapes de votre projet.
           </p>
-          <v-btn outlined class="mt-auto" color="primary" @click="openDialog">
+          <v-btn
+            depressed
+            tile
+            outlined
+            class="mt-auto"
+            color="primary"
+            @click="openDialog"
+          >
             Créer mon compte pour obtenir le PAC de mon territoire
           </v-btn>
           <client-only>

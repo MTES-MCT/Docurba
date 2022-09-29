@@ -31,7 +31,7 @@
         {{ project.towns[0].nom_departement }}
       </div>
     </v-app-bar>
-    <div ref="page" class="page-sizer" />
+    <PACPDFPagesCounters v-if="project" :pac-data="project.PAC" content-id="pac-content-pdf" />
     <table>
       <thead>
         <tr>
@@ -57,7 +57,7 @@
         </tr>
       </tbody>
     </table>
-    <table id="pac-content-pdf">
+    <table id="pac-content-pdf" ref="contentPages">
       <tbody>
         <tr>
           <td>
@@ -160,6 +160,7 @@ export default {
 
   table, tr, td {
     page-break-inside: avoid;
+    /* vertical-align: middle; */
   }
 
   .ddt-text {

@@ -34,23 +34,25 @@
     <!-- This client only could be removed with proper user management server side -->
     <client-only>
       <div class="align-self-center">
-        <!-- <v-btn text href="/news" nuxt>
+        <!-- <v-btn depressed tile text href="/news" nuxt>
           News
         </v-btn> -->
         <AdminHelpDialog v-model="helpDialog" @helpSent="helpSnackbar = true; helpDialog = false" />
         <v-snackbar v-model="helpSnackbar" absolute>
           Votre message à été envoyé !
         </v-snackbar>
-        <v-btn v-if="!$user.id" text @click="openLogin = true">
+        <v-btn v-if="!$user.id" depressed tile text @click="openLogin = true">
           Connexion
         </v-btn>
         <AuthLoginDialog v-model="openLogin" />
-        <v-btn v-if="$user.id" text @click="clickMyDocs">
+        <v-btn v-if="$user.id" depressed tile text @click="clickMyDocs">
           Mes documents
         </v-btn>
         <v-menu v-if="$user.id" offset-y>
           <template #activator="{ on }">
             <v-btn
+              depressed
+              tile
               icon
               small
               v-on="on"
@@ -69,7 +71,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <!-- <v-btn v-if="$user.id" text @click="$supabase.auth.signOut()">
+        <!-- <v-btn depressed tile v-if="$user.id" text @click="$supabase.auth.signOut()">
         Déconnexion
       </v-btn> -->
         <DocumentsDialog v-if="$user.id" v-model="openDocs" />

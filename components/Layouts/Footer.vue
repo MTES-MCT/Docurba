@@ -41,17 +41,38 @@
         <v-divider />
       </v-col>
       <v-col cols="auto">
-        <v-btn text small to="/accessibilite" nuxt>
+        <v-btn
+          depressed
+          tile
+          text
+          small
+          to="/accessibilite"
+          nuxt
+        >
           Accessibilité
         </v-btn>
       </v-col>
       <v-col cols="auto">
-        <v-btn text small href="https://beta.gouv.fr/suivi/" target="_blank">
+        <v-btn
+          depressed
+          tile
+          text
+          small
+          href="https://beta.gouv.fr/suivi/"
+          target="_blank"
+        >
           Politique de confidentialité
         </v-btn>
       </v-col>
       <v-col cols="auto">
-        <v-btn text small to="/stats" nuxt>
+        <v-btn
+          depressed
+          tile
+          text
+          small
+          to="/stats"
+          nuxt
+        >
           Statistiques
         </v-btn>
       </v-col>

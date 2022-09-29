@@ -9,6 +9,7 @@ De nombreuses lois ont jalonné l’histoire de la planification. Sans représen
 
 Ces différentes lois ont été traduites notamment dans le code de l'urbanisme, le code de référence pour l'élaboration des documents d'urbanisme. En particulier, il est important de citer en préambule les articles [L101-2 et L101-2-1](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210064/#LEGISCTA000031212667)  à la base du code, qui énoncent clairement **les objectifs généraux que doivent poursuivre les collectivités lorsqu'elles élaborent leur document d'urbanisme. Tous les documents de planification et d’urbanisme doivent respecter ces objectifs.**
 
+**L101-2 :**
 "*Dans le respect des objectifs du développement durable, l'action des collectivités publiques en matière d'urbanisme vise à atteindre les objectifs suivants :*
 
 *1° L'équilibre entre :*
@@ -40,7 +41,7 @@ Ces différentes lois ont été traduites notamment dans le code de l'urbanisme,
 *8° La promotion du principe de conception universelle pour une société inclusive vis-à-vis des personnes en situation de handicap ou en perte d'autonomie dans les zones urbaines et rurales.*
 
 
-*L'atteinte des objectifs mentionnés au 6° bis de l'article L. 101-2 résulte de l'équilibre entre :*
+**L101-2-1 :** *L'atteinte des objectifs mentionnés au 6° bis de l'article L. 101-2 résulte de l'équilibre entre :*
 
 *1° La maîtrise de l'étalement urbain ;*
 

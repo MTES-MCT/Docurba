@@ -32,7 +32,14 @@
               />
             </v-list-item-action>
             <v-list-item-action class="my-0">
-              <v-btn v-show="hover" small icon @click="cancelSharing(sharing.user_email)">
+              <v-btn
+                v-show="hover"
+                depressed
+                tile
+                small
+                icon
+                @click="cancelSharing(sharing.user_email)"
+              >
                 <v-icon>{{ icons.mdiCloseCircleOutline }}</v-icon>
               </v-btn>
             </v-list-item-action>
@@ -114,11 +121,12 @@ export default {
         url: '/api/projects/notify/shared',
         method: 'post',
         data: {
-          sharings: newSharings
+          sharings: newSharings,
+          sharedByData: this.$user.user_metadata
         }
       })
 
-      console.log(savedSharings)
+      // console.log(savedSharings)
 
       this.sharings.push(...savedSharings)
       this.emailsInput = ''

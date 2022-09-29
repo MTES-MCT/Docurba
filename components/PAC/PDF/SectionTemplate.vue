@@ -33,7 +33,9 @@ export default {
 </script>
 
 <style>
-.print-section .nuxt-content p {
+.print-section .nuxt-content p,
+.print-section .nuxt-content ul,
+.print-section .nuxt-content li {
   text-align: justify !important;
   overflow-wrap: break-word;
 }

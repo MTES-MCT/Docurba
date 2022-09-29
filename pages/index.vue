@@ -36,7 +36,14 @@
       </v-row>
       <v-row justify="center">
         <v-col cols="auto">
-          <v-btn color="primary" x-large :loading="searchLoading" @click="searchCTA">
+          <v-btn
+            depressed
+            tile
+            color="primary"
+            x-large
+            :loading="searchLoading"
+            @click="searchCTA"
+          >
             Rechercher
           </v-btn>
         </v-col>
@@ -56,7 +63,7 @@
     <LandingCitations />
     <!-- <LandingCtaByNeed /> -->
     <LandingKeyFeatures />
-    <v-row class="g100 py-16">
+    <v-row class="g100 mt-16 py-16">
       <LandingNewsLetterForm />
     </v-row>
   </div>
@@ -104,9 +111,6 @@ export default {
       this.searchQuery.region = regions.find(r => r.name === this.selectedTown.nom_region)
     }
   },
-  mounted () {
-    // console.log(process.env)
-  },
   methods: {
     async searchCTA () {
       if (this.searchQuery.document && this.searchQuery.document.includes('i')) {
@@ -121,6 +125,11 @@ export default {
         // eslint-disable-next-line eqeqeq
         const region = regions.find(r => r.code == regionCode)
 
+        this.$matomo([
+          'trackEvent', 'Socle de PAC', 'Recherche',
+          `${region.iso} - ${this.selectedEpci.label}`
+        ])
+
         this.$router.push({
           path: '/pacsec/content',
           query: Object.assign({}, this.searchLink.query, {
@@ -131,6 +140,11 @@ export default {
 
         this.searchLoading = false
       } else {
+        this.$matomo([
+          'trackEvent', 'Socle de PAC', 'Recherche',
+          `${this.selectedTown.code_departement} - ${this.selectedTown.nom_commune}`
+        ])
+
         this.$router.push(this.searchLink)
       }
     }

@@ -18,7 +18,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="primary" @click="makeDDTRequest">
+        <v-btn depressed tile color="primary" @click="makeDDTRequest">
           Envoyer
         </v-btn>
       </v-card-actions>

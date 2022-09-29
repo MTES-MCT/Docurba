@@ -21,6 +21,20 @@ export default {
     }
   },
   async mounted () {
+    // Start Analytics
+    const inseeQuery = this.$route.query.insee
+    const codes = typeof (inseeQuery) === 'object' ? inseeQuery : [inseeQuery]
+
+    if (codes) {
+      codes.forEach((code) => {
+        this.$matomo([
+          'trackEvent', 'Socle de PAC', 'Data',
+          `${this.$route.query.document} - ${code}`
+        ])
+      })
+    }
+    // End Analytics
+
     const { dataset, themes } = await this.$daturba.getData(this.$route.query.region, this.$route.query.insee)
 
     this.dataset = dataset

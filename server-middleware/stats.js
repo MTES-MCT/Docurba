@@ -36,4 +36,28 @@ app.get('/edits', async (req, res) => {
   res.status(200).send(agregate)
 })
 
+app.get('/projects', async (req, res) => {
+  // eslint-disable-next-line prefer-const
+  let { data: projects } = await supabase.from('projects').select('id, name, created_at')
+  // eslint-disable-next-line prefer-const
+  let { data: projectsEdits } = await supabase.from('pac_sections_project').select('created_at, project_id')
+
+  projects = projects.filter(p => !p.name.toLowerCase().includes('test'))
+  projects = projects.filter((p) => {
+    const edits = projectsEdits.filter(e => e.project_id === p.id)
+
+    return edits.length > 4
+  })
+
+  res.status(200).send({ nbProjects: projects.length })
+})
+
+app.get('/ddt', async (req, res) => {
+  const { data: admins } = await supabase.from('admin_users_dept').select('user_email, created_at').eq('role', 'ddt')
+
+  const nbAgents = _.uniqBy(admins, admin => admin.user_email).length - 5
+
+  res.status(200).send({ nbAgents })
+})
+
 module.exports = app

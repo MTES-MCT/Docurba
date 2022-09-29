@@ -21,6 +21,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '~/plugins/isDev.js' },
     { src: '~/plugins/composition.js' },
     { src: '~/plugins/supabase.js' },
     { src: '~/plugins/user.js' },
@@ -28,6 +29,7 @@ export default {
     { src: '~/plugins/pac.js' },
     { src: '~/plugins/daturba.js' },
     { src: '~/plugins/matomo.js', mode: 'client' },
+    { src: '~/plugins/mdParser.js', mode: 'client' },
     { src: '~/plugins/print.js', mode: 'client' },
     { src: '~/plugins/notifications.js', mode: 'client' }
   ],
@@ -59,6 +61,7 @@ export default {
     { path: '/api/auth', handler: '~/server-middleware/auth.js' },
     { path: '/api/communes', handler: '~/server-middleware/communes.js' },
     { path: '/api/epci', handler: '~/server-middleware/EPCI.js' },
+    { path: '/api/pipedrive', handler: '~/server-middleware/pipedrive.js' },
     { path: '/api/projects', handler: '~/server-middleware/projects.js' },
     { path: '/api/slack', handler: '~/server-middleware/slack.js' },
     { path: '/api/stats', handler: '~/server-middleware/stats.js' }
