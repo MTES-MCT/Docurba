@@ -86,7 +86,7 @@ export default {
     },
     displayedThemes () {
       return this.themes.filter((t) => {
-        return !!this.dataSources.find(s => s.theme.id === t)
+        return !!this.dataSources.find(s => s.theme.id === t.id)
       })
     }
   },
