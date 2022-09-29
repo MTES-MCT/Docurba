@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="dataSources.length">
     <v-row>
       <v-col cols="12">
         <v-chip-group
@@ -34,9 +34,18 @@
             </h3>
           </v-col>
           <v-col v-for="(obj, j) in source.objets" :key="`${source.nom_couche}-${j}-${obj.nom_couche}`" cols="12" sm="6" md="4">
-            <DataSourceCard :sub-theme="source.subTheme" :source="obj" />
+            <DataSourceCard :sub-theme="source.subTheme" :source="obj" :region="region" />
           </v-col>
         </v-row>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-container v-else class="fill-height">
+    <v-row class="fill-height" justify="center" align="center">
+      <v-col cols="auto">
+        <h2 class="text-h2 text-center">
+          Aucune donnée n'est disponible pour le moment.
+        </h2>
       </v-col>
     </v-row>
   </v-container>
@@ -54,6 +63,10 @@ export default {
     themes: {
       type: Array,
       default () { return [] }
+    },
+    region: {
+      type: String,
+      default () { return this.$route.query.region }
     }
   },
   data () {
@@ -70,6 +83,14 @@ export default {
       return groupBy(filterredSources, (source) => {
         return source.theme.text
       })
+    }
+  },
+  watch: {
+    selectedTheme () {
+      // Start Analytics
+      const theme = this.themes.find(t => t.id === this.selectedTheme).text
+      this.$matomo(['trackEvent', 'Data Source', 'Theme', theme])
+      // End Analytics
     }
   }
 }

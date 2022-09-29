@@ -1,7 +1,7 @@
 <template>
   <v-dialog max-width="1000px">
     <template #activator="{on}">
-      <v-btn color="primary" v-on="on">
+      <v-btn depressed tile color="primary" v-on="on">
         Obtenir mon PAC
       </v-btn>
     </template>
@@ -23,7 +23,7 @@
                 />
               </v-col>
               <v-col cols="12">
-                <VDocumentSelect v-model="projectData.docType" label="Type de document" />
+                <VDocumentSelect v-model="projectData.doc_type" label="Type de document" />
               </v-col>
               <v-col cols="12">
                 <VTownAutocomplete v-model="selectedTown" />
@@ -35,7 +35,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="primary" :loading="loading" @click="loginAndcreateProject">
+        <v-btn depressed tile color="primary" :loading="loading" @click="loginAndcreateProject">
           Transmettre ma demande
         </v-btn>
       </v-card-actions>
@@ -52,7 +52,7 @@ export default {
       userData: {},
       projectData: {
         name: '',
-        docType: ''
+        doc_type: ''
       },
       selectedTown: {},
       loading: false

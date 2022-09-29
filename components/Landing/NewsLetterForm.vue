@@ -21,7 +21,7 @@
         />
       </v-col>
       <!-- <v-col cols="auto">
-        <v-btn>S'inscrire à la news letter</v-btn>
+        <v-btn depressed tile>S'inscrire à la news letter</v-btn>
       </v-col> -->
     </v-row>
   </v-container>

@@ -1,56 +1,52 @@
 <template>
-  <div class="mt-4">
-    <div v-for="(section, i) in sortedSections" :key="i">
-      <template v-if="(section.children && section.children.length) || section.slug === 'intro'">
+  <v-expansion-panels :value="open" multiple focusable flat>
+    <v-expansion-panel v-for="(section, i) in sortedSections" :id="`panel__${section.path.replaceAll(/[^A-Za-z0-9]/g, '__')}`" :key="i">
+      <v-hover v-slot="{hover}">
+        <v-expansion-panel-header @click="openSection(section)">
+          <v-row align="center">
+            <v-col cols="auto">
+              {{ section.tocCounter ? section.tocCounter.join('.') : '' }} - {{ section.titre }}
+            </v-col>
+            <v-spacer />
+            <v-col v-if="editable" cols="auto" class="py-0">
+              <v-dialog max-width="1000">
+                <template #activator="{on}">
+                  <v-badge
+                    :content="section.comments.length"
+                    :value="section.comments.length"
+                    offset-x="17"
+                    offset-y="17"
+                  >
+                    <v-btn
+                      v-show="hover || section.comments.length"
+                      depressed
+                      tile
+                      icon
+                      v-on="on"
+                    >
+                      <v-icon color="secondary">
+                        {{ icons.mdiCommentOutline }}
+                      </v-icon>
+                    </v-btn>
+                  </v-badge>
+                </template>
+                <PACCommentCard :section="section" />
+              </v-dialog>
+            </v-col>
+          </v-row>
+        </v-expansion-panel-header>
+      </v-hover>
+      <v-expansion-panel-content eager>
         <nuxt-content :document="section" />
         <PACSectionsAttachementsChips v-if="files[section.path]" small :files="files[section.path]" />
-        <PACContentSection v-if="section.children && section.children.length" :sections="section.children" :editable="editable" />
-      </template>
-      <template v-else>
-        <v-expansion-panels :id="`panel__${section.path.replaceAll(/[^A-Za-z0-9]/g, '__')}`" flat>
-          <v-expansion-panel>
-            <v-hover v-slot="{hover}">
-              <v-expansion-panel-header>
-                <v-row align="center">
-                  <v-col cols="auto">
-                    {{ section.titre }}
-                  </v-col>
-                  <v-spacer />
-                  <v-col v-if="editable" cols="auto" class="py-0">
-                    <v-dialog max-width="1000">
-                      <template #activator="{on}">
-                        <v-badge
-                          :content="section.comments.length"
-                          :value="section.comments.length"
-                          offset-x="17"
-                          offset-y="17"
-                        >
-                          <v-btn
-                            v-show="hover || section.comments.length"
-                            icon
-                            v-on="on"
-                          >
-                            <v-icon color="secondary">
-                              {{ icons.mdiCommentOutline }}
-                            </v-icon>
-                          </v-btn>
-                        </v-badge>
-                      </template>
-                      <PACCommentCard :section="section" />
-                    </v-dialog>
-                  </v-col>
-                </v-row>
-              </v-expansion-panel-header>
-            </v-hover>
-            <v-expansion-panel-content eager>
-              <nuxt-content :document="section" />
-              <PACSectionsAttachementsChips v-if="files[section.path]" small :files="files[section.path]" />
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-expansion-panels>
-      </template>
-    </div>
-  </div>
+        <PACContentSection
+          v-if="section.children && section.children.length"
+          :sections="section.children"
+          :editable="editable"
+        />
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+  </v-expansion-panels>
 </template>
 
 <script>
@@ -70,6 +66,12 @@ export default {
       type: String,
       default () {
         return this.$route.params.projectId
+      }
+    },
+    open: {
+      type: Array,
+      default () {
+        return []
       }
     }
   },
@@ -104,10 +106,15 @@ export default {
     }
   },
   methods: {
+    openSection (section) {
+      // Start Analytics
+      this.$matomo(['trackEvent', 'PAC Content', 'Open Section', section.titre])
+      // End Analytics
+    },
     fetchAttachements () {
       const folders = [
         this.project.towns[0].code_departement,
-        this.prjectId
+        this.projectId
       ]
 
       this.sections.forEach((section) => {
@@ -122,7 +129,7 @@ export default {
       const { data: attachements, err } = await this.$supabase
         .storage
         .from('project-annexes')
-        .list(`/${folder}${section.path}`, {
+        .list(`${folder}${section.path}`, {
           limit: 100,
           offset: 0,
           sortBy: { column: 'name', order: 'asc' }
@@ -137,11 +144,14 @@ export default {
           const { data } = await this.$supabase
             .storage
             .from('project-annexes')
-            .createSignedUrl(`/${folder}${section.path}/${file.name}`, 60 * 60)
+            .createSignedUrl(`${folder}${section.path}/${file.name}`, 60 * 60)
 
           file.url = data.signedURL
+
           this.files[section.path].push(file)
         }
+      } else {
+        console.log('err fetching attachements', err)
       }
     }
   }

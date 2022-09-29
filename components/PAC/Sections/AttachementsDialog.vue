@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" width="800px">
     <template #activator="{on}">
-      <v-btn icon v-on="on">
+      <v-btn depressed tile icon v-on="on">
         <v-icon>{{ icons.mdiPaperclip }}</v-icon>
       </v-btn>
     </template>
@@ -47,10 +47,10 @@
           </VFileDropzone>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" :loading="loading" @click="uploadFiles">
+            <v-btn depressed tile color="primary" :loading="loading" @click="uploadFiles">
               Ajouter
             </v-btn>
-            <v-btn color="primary" outlined @click="dialog.value = false">
+            <v-btn depressed tile color="primary" outlined @click="dialog = false">
               Annuler
             </v-btn>
           </v-card-actions>

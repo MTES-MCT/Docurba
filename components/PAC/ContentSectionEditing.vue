@@ -4,7 +4,7 @@
       <v-text-field v-model="editedSection.titre" label="titre" filled hide-details />
     </v-col>
     <v-col cols="12">
-      <VTiptap v-model="editedSection.text" :links="PACroots" :depth="sectionDepth">
+      <VTiptap v-model="editedSection.text" :links="PACroots" :depth="sectionDepth" :readonly="isReadonly">
         <PACSectionsAttachementsDialog
           :section="section"
           @upload="fetchAttachements"
@@ -17,6 +17,7 @@
     <v-fab-transition>
       <v-btn
         v-show="modified"
+        depressed
         fixed
         bottom
         right
@@ -39,10 +40,10 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="primary" @click="saveSection(previousSection)">
+          <v-btn depressed tile color="primary" @click="saveSection(previousSection)">
             Oui
           </v-btn>
-          <v-btn color="primary" outlined @click="saveDialog = false">
+          <v-btn depressed tile color="primary" outlined @click="saveDialog = false">
             Non
           </v-btn>
         </v-card-actions>
@@ -94,6 +95,9 @@ export default {
       .use(rehypeStringify)
 
     return {
+      readonlyDirs: [
+        '/PAC/Cadre-juridique-et-grands-principes-de-la-planification'
+      ],
       mdParser,
       editedSection: {
         project_id: this.section.project_id,
@@ -121,6 +125,11 @@ export default {
       })
 
       return roots
+    },
+    isReadonly () {
+      return !!this.readonlyDirs.find((dir) => {
+        return this.editedSection.path.includes(dir)
+      })
     }
   },
   watch: {
@@ -204,8 +213,6 @@ export default {
           offset: 0,
           sortBy: { column: 'name', order: 'asc' }
         })
-
-      // console.log('attachements', attachements)
 
       if (!err) {
         for (let i = 0; i < attachements.length; i++) {

@@ -40,4 +40,4 @@ Le schéma est opposable aux documents d’urbanisme de rang inférieur.
       
 Cette opposabilité s’applique à tous les SCoT prescrits depuis le 10 avril 2020 ainsi qu’aux SCoT prescrits antérieurement à cette date et dont l’approbation est prévue à une date ultérieure au 10 avril 2020.
 
-Les objectifs et les règles du SRADDET doivent être déclinés sur les champs de compétences du SCoT.
+**Les objectifs et les règles du SRADDET doivent être déclinés sur les champs de compétences du SCoT, et en l'absence de SCOT dans  les PLU dans un rapport de compatibilité**.

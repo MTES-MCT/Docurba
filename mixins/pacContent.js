@@ -13,6 +13,11 @@ export default {
   },
   computed: {
     PAC () {
+      return this.parsePAC()
+    }
+  },
+  methods: {
+    parsePAC () {
       const parsedPAC = this.pacData.map((section) => {
         const serachText = `${section.titre} ${section.slug}`.toLowerCase()
 
@@ -54,6 +59,16 @@ export default {
       })
 
       return parsedPAC
+    },
+    addCounter (section, depths) {
+      // section.titre = `${depths.join('.')} ${section.titre}`
+      section.tocCounter = depths
+
+      if (section.children) {
+        section.children.forEach((child, index) => {
+          this.addCounter(child, depths.concat([index + 1]))
+        })
+      }
     }
   }
 }

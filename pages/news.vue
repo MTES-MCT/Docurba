@@ -15,7 +15,14 @@
                 <nuxt-content :document="newsItem" />
               </v-card-text>
               <v-card-actions v-if="newsItem.link">
-                <v-btn block color="primary" :href="newsItem.link.href" target="_blank">
+                <v-btn
+                  depressed
+                  tile
+                  block
+                  color="primary"
+                  :href="newsItem.link.href"
+                  target="_blank"
+                >
                   {{ newsItem.link.text }}
                 </v-btn>
               </v-card-actions>

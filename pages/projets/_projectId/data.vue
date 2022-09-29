@@ -29,6 +29,13 @@ export default {
 
       this.dataset = dataset
       this.themes = themes
+
+      // Start Analytics
+      this.$matomo([
+        'trackEvent', 'Projet PAC', 'Data',
+          `${this.project.doc_type} - ${this.project.epci ? this.project.epci.label : this.project.towns[0].nom_commune}`
+      ])
+      // End Analytics
     }
 
     this.loading = false
