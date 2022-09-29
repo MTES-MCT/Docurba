@@ -5,7 +5,7 @@
         <v-expansion-panel-header @click="openSection(section)">
           <v-row align="center">
             <v-col cols="auto">
-              {{ section.tocCounter ? section.tocCounter.join('.') : '' }} - {{ section.titre }}
+              {{ section.tocCounter ? `${section.tocCounter.join('.')} - ` : '' }} {{ section.titre }}
             </v-col>
             <v-spacer />
             <v-col v-if="editable" cols="auto" class="py-0">
@@ -71,7 +71,7 @@ export default {
     open: {
       type: Array,
       default () {
-        return []
+        return [0]
       }
     }
   },

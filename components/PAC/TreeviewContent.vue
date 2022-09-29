@@ -93,7 +93,9 @@ export default {
     })
 
     PACroots.forEach((root, index) => {
-      this.addCounter(root, [index + 1])
+      if (index) {
+        this.addCounter(root, [index])
+      }
     })
 
     return {
