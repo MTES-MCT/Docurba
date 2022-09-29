@@ -1,7 +1,7 @@
 <template>
   <v-row class="fill-height">
     <v-col cols="12">
-      <v-text-field v-model="editedSection.titre" label="titre" filled hide-details />
+      <v-text-field v-model="editedSection.titre" label="Titre dans le sommaire" filled hide-details />
     </v-col>
     <v-col cols="12">
       <VTiptap v-model="editedSection.text" :links="PACroots" :depth="sectionDepth" :readonly="isReadonly">
