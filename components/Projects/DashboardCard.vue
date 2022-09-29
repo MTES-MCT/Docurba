@@ -7,6 +7,8 @@
       <v-dialog v-if="!shared" width="500px">
         <template #activator="{on}">
           <v-btn
+            depressed
+            tile
             icon
             color="primary"
             v-on="on"
@@ -26,7 +28,7 @@
         </template>
       </v-dialog>
     </v-card-title>
-    <v-card-subtitle>{{ projectData.docType }} - {{ placeName }}</v-card-subtitle>
+    <v-card-subtitle>{{ projectData.doc_type }} - {{ placeName }}</v-card-subtitle>
     <v-card-text>
       <v-row>
         <v-col cols="4">
@@ -37,8 +39,8 @@
             <v-card-actions>
               <v-btn
                 depressed
-                color="primary"
                 tile
+                color="primary"
                 :to="`/projets/${projectData.id}/content`"
                 nuxt
               >
@@ -50,9 +52,9 @@
               <v-btn
                 v-if="projectData.trame && editor"
                 depressed
+                tile
                 outlined
                 color="primary"
-                tile
                 :to="`/ddt/${projectData.id}`"
                 nuxt
               >
@@ -64,9 +66,9 @@
               <v-btn
                 v-if="!projectData.trame && editor"
                 depressed
+                tile
                 outlined
                 color="primary"
-                tile
                 :loading="loadingUpload"
                 @click="$refs['pacInput'].click()"
               >
@@ -87,9 +89,9 @@
             <v-card-actions>
               <v-btn
                 depressed
+                tile
                 outlined
                 color="primary"
-                tile
                 :to="`/projets/${projectData.id}/data?region=${projectData.region}`"
                 nuxt
               >
@@ -115,9 +117,9 @@
                   <v-btn
                     v-if="!shared"
                     depressed
+                    tile
                     outlined
                     color="primary"
-                    tile
                     v-on="on"
                     @click.prevent.stop
                   >

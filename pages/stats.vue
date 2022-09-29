@@ -38,9 +38,10 @@
             Nombre d'agents de DDT ayant rejoint Docurba
           </v-card-title>
           <v-card-text class="text-center primary--text py-16">
-            <span class="big-number">
-              15
+            <span v-if="nbAgents" class="big-number">
+              {{ nbAgents }}
             </span>
+            <v-progress-circular v-else color="primary" indeterminate />
           </v-card-text>
         </v-card>
       </v-col>
@@ -130,7 +131,8 @@ export default {
       edits: [],
       nbVisits: [],
       nbVisitors: [],
-      weekLabels: []
+      weekLabels: [],
+      nbAgents: null
     }
   },
   computed: {
@@ -164,6 +166,8 @@ export default {
       this.nbVisitors = days.map(day => visits[day].nb_uniq_visitors)
 
       this.getEdits()
+      this.getNbAdmins()
+      // this.getNbProjects()
     }
   },
   methods: {
@@ -177,6 +181,20 @@ export default {
         this.edits = edits
       }
     },
+    async getNbAdmins () {
+      const { data } = await axios({
+        url: '/api/stats/ddt',
+        method: 'get'
+      })
+
+      this.nbAgents = data.nbAgents
+    },
+    // async getNbProjects () {
+    //   const { data: nbProjects } = await axios({
+    //     url: '/api/stats/projects',
+    //     method: 'get'
+    //   })
+    // },
     sum (values) {
       return values.reduce((total, val) => {
         return total + val

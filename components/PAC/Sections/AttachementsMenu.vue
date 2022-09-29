@@ -2,7 +2,7 @@
   <v-menu>
     <template #activoator="{on}">
       <v-badge :content="files.length">
-        <v-btn icon v-on="on">
+        <v-btn depressed tile icon v-on="on">
           <v-icon>{{ icons.mdiFile }}</v-icon>
         </v-btn>
       </v-badge>

@@ -37,7 +37,7 @@
                 />
               </v-col>
               <v-col cols="12">
-                <VDocumentSelect v-model="projectData.docType" label="Type de document" />
+                <VDocumentSelect v-model="projectData.doc_type" label="Type de document" />
               </v-col>
               <v-col cols="12">
                 <VTownAutocomplete v-model="selectedTown" />
@@ -52,14 +52,23 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn v-show="modalState === 'list'" color="primary" @click="modalState = 'create'">
+        <v-btn v-show="modalState === 'list'" depressed tile color="primary" @click="modalState = 'create'">
           Nouveau
         </v-btn>
-        <v-btn v-show="modalState !== 'list'" color="primary" outlined @click="modalState = 'list'">
+        <v-btn
+          v-show="modalState !== 'list'"
+          depressed
+          tile
+          color="primary"
+          outlined
+          @click="modalState = 'list'"
+        >
           Retour
         </v-btn>
         <v-btn
           v-show="modalState === 'create'"
+          depressed
+          tile
           :loading="loading"
           color="primary"
           @click="createNewProject"
@@ -90,7 +99,7 @@ export default {
       modalState: 'list',
       projectData: {
         name: '',
-        docType: '',
+        doc_type: '',
         region: ''
       },
       selectedTown: {},

@@ -7,6 +7,8 @@
         cols="auto"
       >
         <v-btn
+          depressed
+          tile
           elevation="2"
           icon
           :disabled="!groupedWords[letter]"

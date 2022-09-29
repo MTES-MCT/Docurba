@@ -7,7 +7,7 @@ const defaultUser = {
   user_metadata: {}
 }
 
-export default ({ $supabase }, inject) => {
+export default ({ $supabase, route }, inject) => {
   // This is null if user is not logged
   const authUser = $supabase.auth.user()
 

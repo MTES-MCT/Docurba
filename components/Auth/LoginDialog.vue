@@ -19,7 +19,7 @@
             </v-col>
             <v-spacer />
             <v-col cols="auto">
-              <v-btn text small @click="sendResetPassword">
+              <v-btn depressed tile text small @click="sendResetPassword">
                 Mot de passe oublié ?
               </v-btn>
             </v-col>
@@ -38,10 +38,10 @@
       </template>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="primary" @click="loginTemplate === 'Inscription' ? signUp() : signIn()">
+        <v-btn depressed tile color="primary" @click="loginTemplate === 'Inscription' ? signUp() : signIn()">
           {{ loginTemplate }}
         </v-btn>
-        <v-btn color="primary" outlined @click="toggleTemplate">
+        <v-btn depressed tile color="primary" outlined @click="toggleTemplate">
           {{ loginTemplate === 'Inscription' ? 'Connexion' : 'Inscription' }}
         </v-btn>
       </v-card-actions>
@@ -116,6 +116,10 @@ export default {
         // eslint-disable-next-line no-console
         console.log('success sign in', user, session)
 
+        if (this.$route.path === '/') {
+          this.$router.push('/projets')
+        }
+
         this.$emit('input', false)
       } else {
         this.error = error
@@ -140,7 +144,7 @@ export default {
             user_email: this.$user.email
           }])
 
-          await axios({
+          axios({
             url: '/api/slack/notify/admin',
             method: 'post',
             data: {
@@ -154,6 +158,7 @@ export default {
           url: '/api/auth/signup',
           data: {
             email: this.userData.email,
+            userData: this.userData,
             redirectTo: window.location.origin
           }
         })

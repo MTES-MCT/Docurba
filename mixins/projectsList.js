@@ -65,7 +65,7 @@ export default {
     },
     async getSharedProjects () {
       const { data: sharings, error } = await this.$supabase.from('projects_sharing')
-        .select('id, role, project: project_id (id, name, docType, created_at, towns, trame)')
+        .select('id, role, project: project_id (id, name, doc_type, created_at, towns, trame)')
         .match({
           user_email: this.$user.email,
           archived: false

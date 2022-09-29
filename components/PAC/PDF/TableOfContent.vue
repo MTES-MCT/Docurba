@@ -48,12 +48,14 @@ export default {
     contentHeight () {
       return this.$refs.content.offsetHeight
     },
-    nbPages () {
-      const contentEl = document.getElementById('pac-content-pdf')
-      const nbPages = (contentEl.offsetHeight / this.contentHeight) + this.PACroots.length
+    // nbPages () {
+    //   const contentEl = document.getElementById('pac-content-pdf')
+    //   const nbPages = (contentEl.offsetHeight / this.contentHeight) + this.PACroots.length
 
-      return nbPages
-    },
+    //   console.log('nbPages toc', nbPages)
+
+    //   return nbPages
+    // },
     topPosition () {
       const elRect = this.$el.getBoundingClientRect()
       const topPosition = elRect.bottom
@@ -79,16 +81,6 @@ export default {
     slugify (str) {
       return slugify(str)
     },
-    addCounter (section, depths) {
-      // section.titre = `${depths.join('.')} ${section.titre}`
-      section.tocCounter = depths
-
-      if (section.children) {
-        section.children.forEach((child, index) => {
-          this.addCounter(child, depths.concat([index + 1]))
-        })
-      }
-    },
     getTitle (item) {
       return `${item.tocCounter ? item.tocCounter.join('.') : ''} ${item.titre}`
     },
@@ -109,8 +101,13 @@ export default {
 
         const rootsPositions = this.PACroots.map((r) => {
           const rootEl = document.getElementById(slugify(r.path.replace(/\//g, '_')))
-          const rootRect = rootEl.getBoundingClientRect()
-          return rootRect.top - this.topPosition
+          try {
+            const rootRect = rootEl.getBoundingClientRect()
+            return rootRect.top - this.topPosition
+          } catch (err) {
+            // console.log('err toc', r.path, slugify(r.path.replace(/\//g, '_')))
+          }
+          return 0
         })
 
         const nbRootsBefore = rootsPositions.filter((rootTop) => {
