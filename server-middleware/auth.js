@@ -5,8 +5,10 @@ app.use(express.json())
 const { createClient } = require('@supabase/supabase-js')
 const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
+// modules
 const sendgrid = require('./modules/sendgrid.js')
 const pipedrive = require('./modules/pipedrive.js')
+const slack = require('./modules/slack.js')
 
 app.post('/password', async (req, res) => {
   // console.log('/password body', req.body)
@@ -70,6 +72,10 @@ app.post('/signup', async (req, res) => {
   // }
 
   const { userData } = req.body
+
+  if (userData.isDDT) {
+    await slack.requestDepartementAccess(userData)
+  }
 
   await pipedrive.signup(userData)
 

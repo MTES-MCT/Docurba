@@ -67,8 +67,6 @@ export default {
           user_email: this.$user.email
         }])
 
-        console.log(this.$user)
-
         await axios({
           url: '/api/slack/notify/admin',
           method: 'post',
