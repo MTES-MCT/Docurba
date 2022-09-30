@@ -58,7 +58,7 @@ app.post('/webhook/interactivity', async (req, res) => {
           url: responseUrl,
           method: 'post',
           data: {
-            text: `Role DDT validé pour ${userData.email}`
+            text: `Role DDT/DEAL validé pour ${userData.email}`
           }
         })
       } else {

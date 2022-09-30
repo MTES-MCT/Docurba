@@ -62,7 +62,7 @@
           </template>
           <v-list>
             <v-list-item link @click="goToAdmin">
-              <v-list-item-title>Accès DDT</v-list-item-title>
+              <v-list-item-title>Accès DDT/DEAL</v-list-item-title>
             </v-list-item>
             <v-list-item link @click="signOut">
               <v-list-item-title>

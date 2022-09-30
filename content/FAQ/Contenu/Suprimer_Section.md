@@ -3,4 +3,4 @@ question: J'aurais souhaité supprimer une des fiches thématiques, étant donn�
 visible: true
 ---
 
-Il n’est pas possible de supprimer une section commune à toutes les DDT. En revanche, vous n’êtes pas obligé de les sélectionner au moment de la création de votre projet.
+Il n’est pas possible de supprimer une section commune à toutes les DDT/DEAL. En revanche, vous n’êtes pas obligé de les sélectionner au moment de la création de votre projet.

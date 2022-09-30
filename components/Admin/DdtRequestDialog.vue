@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" width="500">
     <v-card>
-      <v-card-title>Demande d'accès DDT</v-card-title>
+      <v-card-title>Demande d'accès DDT/DEAL</v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12">

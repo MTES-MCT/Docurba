@@ -35,7 +35,7 @@
       <v-col cols="6">
         <v-card>
           <v-card-title class="break-word">
-            Nombre d'agents de DDT ayant rejoint Docurba
+            Nombre d'agents de DDT/DEAL ayant rejoint Docurba
           </v-card-title>
           <v-card-text class="text-center primary--text py-16">
             <span v-if="nbAgents" class="big-number">
