@@ -42,6 +42,7 @@
         <PACContentSection
           v-if="section.children && section.children.length"
           :sections="section.children"
+          :open="section.titre === 'Introduction' ? [0] : []"
           :editable="editable"
         />
       </v-expansion-panel-content>
@@ -71,7 +72,7 @@ export default {
     open: {
       type: Array,
       default () {
-        return [0]
+        return []
       }
     }
   },

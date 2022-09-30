@@ -71,7 +71,7 @@
       </client-only>
     </v-col> -->
     <v-col cols="12">
-      <PACContentSection :sections="PACroots" :editable="editable" />
+      <PACContentSection :sections="PACroots" :editable="editable" :open="[0]" />
     </v-col>
   </v-row>
 </template>
