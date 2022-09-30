@@ -66,12 +66,27 @@ export default {
     })
 
     // Get the data from DB for each level of PAC for this project.
-    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.project.towns[0].code_departement)
-    const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', this.project.id)
+    const [regionSections, deptSections, projectSections] = await Promise.all([
+      this.fetchSections('pac_sections_region', {
+        region: this.project.towns[0].code_region
+      }),
+      this.fetchSections('pac_sections_dept', {
+        dept: this.project.towns[0].code_departement
+      }),
+      this.fetchSections('pac_sections_project', {
+        project_id: this.project.id
+      })
+    ])
 
     // Merge data of multiple PACs using unifiedPac.js mixin.
-    this.PAC = this.unifyPacs([projectSections, deptSections, this.PAC])
+    this.PAC = this.unifyPacs([
+      projectSections,
+      deptSections,
+      regionSections,
+      this.PAC
+    ])
 
+    // TODO: This is duplicated in all section read
     this.PAC.forEach((section) => {
       if (section.text) {
         section.body = mdParser.parse(section.text)

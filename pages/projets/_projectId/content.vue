@@ -91,14 +91,29 @@ export default {
 
       this.PAC = PAC
 
-      const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.project.towns[0].code_departement)
-      const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', this.project.id)
+      const [regionSections, deptSections, projectSections] = await Promise.all([
+        this.fetchSections('pac_sections_region', {
+          region: this.project.towns[0].code_region
+        }),
+        this.fetchSections('pac_sections_dept', {
+          dept: this.project.towns[0].code_departement
+        }),
+        this.fetchSections('pac_sections_project', {
+          project_id: this.project.id
+        })
+      ])
 
       // TODO: Need to add the reading and unify of comments and checked markers here.
-      this.project.PAC = this.unifyPacs([projectSections, deptSections, this.PAC], this.project.PAC.map((s) => {
+      this.project.PAC = this.unifyPacs([
+        projectSections,
+        deptSections,
+        regionSections,
+        this.PAC
+      ], this.project.PAC.map((s) => {
         return s.path || s
       }))
 
+      // TODO: // This is duplicated in all read sections
       this.project.PAC.forEach((section) => {
       // Parse the body only if text was edited.
         if (section.text) { section.body = this.$mdParse(section.text) }

@@ -56,6 +56,7 @@ export default {
 
     this.PAC = this.unifyPacs([regionSections, this.PAC])
 
+    // TODO: This is duplicated in all read sections
     this.PAC.forEach((section) => {
       // Parse the body only if text was edited.
       if (section.text) { section.body = this.$mdParse(section.text) }
