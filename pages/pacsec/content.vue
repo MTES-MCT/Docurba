@@ -1,12 +1,17 @@
 <template>
-  <v-container fluid>
+  <v-container v-if="loaded" fluid>
     <PACTreeviewContent :pac-data="PAC" />
   </v-container>
+  <VGlobalLoader v-else />
 </template>
 
 <script>
+import regions from '@/assets/data/Regions.json'
+
+import unifiedPAc from '@/mixins/unifiedPac.js'
 
 export default {
+  mixins: [unifiedPAc],
   async asyncData ({ $content, route }) {
     let PAC = await $content('PAC', {
       deep: true
@@ -36,7 +41,28 @@ export default {
       PAC
     }
   },
-  mounted () {
+  data () {
+    const region = regions.find(r => r.iso === this.$route.query.region)
+
+    return {
+      region,
+      loaded: false
+    }
+  },
+  async mounted () {
+    const regionSections = await this.fetchSections('pac_sections_region', {
+      region: this.region.code
+    })
+
+    this.PAC = this.unifyPacs([regionSections, this.PAC])
+
+    this.PAC.forEach((section) => {
+      // Parse the body only if text was edited.
+      if (section.text) { section.body = this.$mdParse(section.text) }
+    })
+
+    this.loaded = true
+
     // Start Analytics
     const inseeQuery = this.$route.query.insee
     const codes = typeof (inseeQuery) === 'object' ? inseeQuery : [inseeQuery]

@@ -3,6 +3,11 @@ import { uniq, flatten, omitBy, isNil } from 'lodash'
 // @vue/component
 export default {
   methods: {
+    async fetchSections (table, match) {
+      const { data: sections } = await this.$supabase.from(table).select('*').match(match)
+
+      return sections
+    },
     getSectionsFromPACs (PACs, path) {
       const sections = []
 
