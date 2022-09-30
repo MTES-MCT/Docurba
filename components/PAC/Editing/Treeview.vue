@@ -75,7 +75,7 @@
           >
             <template #activator="{on}">
               <v-btn
-                v-show="overedItem === item.path && (item.dept || item.project_id)"
+                v-show="overedItem === item.path && (item.dept || item.project_id || item.region)"
                 depressed
                 tile
                 small
