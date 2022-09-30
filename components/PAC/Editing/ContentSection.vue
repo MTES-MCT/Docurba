@@ -78,6 +78,12 @@ export default {
     attachementsFolders: {
       type: Array,
       default () { return [] }
+    },
+    readonlyDirs: {
+      type: Array,
+      default () {
+        return []
+      }
     }
   },
   data () {
@@ -89,9 +95,6 @@ export default {
       .use(rehypeStringify)
 
     return {
-      readonlyDirs: [
-        '/PAC/Cadre-juridique-et-grands-principes-de-la-planification'
-      ],
       mdParser,
       editedSection: {
         dir: this.section.dir,

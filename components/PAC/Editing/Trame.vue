@@ -19,6 +19,7 @@
       </v-col>
       <v-col v-if="selectedSection" :cols="collapsedTree ? 11 : 8" class="fill-height collapse-transition">
         <PACEditingContentSection
+          :readonly-dirs="readonlyDirs"
           :section="selectedSection"
           :p-a-c="PAC"
           :table="table"
@@ -64,6 +65,14 @@ export default {
     project: {
       type: Object,
       default () { return {} }
+    },
+    readonlyDirs: {
+      type: Array,
+      default () {
+        return [
+          '/PAC/Cadre-juridique-et-grands-principes-de-la-planification'
+        ]
+      }
     }
   },
   data () {

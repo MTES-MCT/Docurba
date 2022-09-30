@@ -10,6 +10,7 @@
       :table-keys="{
         region: region.code
       }"
+      :readonly-dirs="[]"
     />
     <VGlobalLoader v-else />
   </LayoutsCustomApp>
@@ -37,18 +38,21 @@ export default {
     }
   },
   data () {
+    const region = regions.find(r => r.code === this.$route.params.regionCode)
+
     return {
-      region: { name: '' },
+      region,
       regionSectionsSub: null,
       loading: true
     }
   },
   async mounted () {
-    const adminAccess = await this.$auth.getRegionAccess()
+    const adminAccess = await this.$auth.getRegionAccess(true)
+    const currentRegionAccess = adminAccess.find(access => access.region === this.region.code)
 
-    if (!adminAccess) { this.$router.push('/') }
+    if (!adminAccess.length || !currentRegionAccess) { this.$router.push('/') }
 
-    this.region = regions.find(r => r.code === adminAccess.region)
+    // this.region = regions.find(r => r.code === adminAccess.region)
 
     this.subscribeToBdd()
     window.addEventListener('focus', () => {

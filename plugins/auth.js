@@ -1,22 +1,27 @@
 export default ({ $supabase, $user }, inject) => {
   inject('auth', {
-    async getDeptAccess () {
+    // multiple allow you to get all region access instead of the first
+    async getDeptAccess (multiple) {
       const { data: adminAccess } = await $supabase.from('admin_users_dept').select('role, dept').match({
         user_id: $user.id,
         user_email: $user.email,
         role: 'ddt'
       })
 
-      return adminAccess[0] || null
+      if (multiple) {
+        return adminAccess
+      } else { return adminAccess[0] || null }
     },
-    async getRegionAccess () {
+    async getRegionAccess (multiple) {
       const { data: adminAccess } = await $supabase.from('admin_users_region').select('role, region').match({
         user_id: $user.id,
         user_email: $user.email,
         role: 'admin'
       })
 
-      return adminAccess[0] || null
+      if (multiple) {
+        return adminAccess
+      } else { return adminAccess[0] || null }
     },
     signUp (userData) {
       return $supabase.auth.signUp({

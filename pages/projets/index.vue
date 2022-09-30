@@ -14,7 +14,11 @@
         >
           Trame du {{ deptAccess.dept }}
         </v-tab>
-        <v-tab :to="{path: '/projets/trames/region'}">
+        <v-tab
+          v-for="region in regions"
+          :key="region.iso"
+          :to="{path: `/projets/trames/regions/${region.code}`}"
+        >
           Trame {{ region.iso }}
         </v-tab>
       </v-tabs>
@@ -124,9 +128,12 @@ export default {
     }
   },
   computed: {
-    region () {
-      // eslint-disable-next-line eqeqeq
-      return regions.find(r => r.code == this.regionAccess.region)
+    regions () {
+      console.log(this.regionAccess)
+      return this.regionAccess.map((access) => {
+        // eslint-disable-next-line eqeqeq
+        return regions.find(r => r.code == access.region)
+      })
     }
   },
   watch: {
@@ -150,7 +157,7 @@ export default {
   },
   async mounted () {
     const [regionAccess, deptAccess] = await Promise.all([
-      this.$auth.getRegionAccess(),
+      this.$auth.getRegionAccess(true),
       this.$auth.getDeptAccess()
     ])
 
