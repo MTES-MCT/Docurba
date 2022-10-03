@@ -33,10 +33,10 @@
                 @click="openSection(item)"
                 @mouseenter="selectItem(item)"
               >
-                {{ item.titre }}
+                {{ item.titre || '[Titre Manquant]' }}
               </div>
             </template>
-            <span>{{ item.titre }}</span>
+            <span>{{ item.titre || '[Titre Manquant]' }}</span>
           </v-tooltip>
         </template>
         <template #append="{item, open}">
