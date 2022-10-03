@@ -93,8 +93,10 @@ export default {
   watch: {
     selectedTheme () {
       // Start Analytics
-      const theme = this.themes.find(t => t.id === this.selectedTheme).text
-      this.$matomo(['trackEvent', 'Data Source', 'Theme', theme])
+      if (this.selectedTheme) {
+        const theme = this.themes.find(t => t.id === this.selectedTheme).text
+        this.$matomo(['trackEvent', 'Data Source', 'Theme', theme])
+      }
       // End Analytics
     }
   }
