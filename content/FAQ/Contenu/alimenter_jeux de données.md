@@ -1,5 +1,5 @@
 ---
-question: "Comment sont alimentés les jeux de données, est-ce de la responsabilité des DDT de les mettre à jour?"
+question: "Comment sont alimentés les jeux de données, est-ce de la responsabilité des DDT/DEAL de les mettre à jour?"
 visible: true
 ---
 

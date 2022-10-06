@@ -1,6 +1,10 @@
 <template>
-  <v-dialog max-width="1000px">
+  <v-dialog v-model="dialog" max-width="1000px">
     <template #activator="{on}">
+      <v-snackbar v-model="snackbar" absolute>
+        Votre demande à été transmise.
+      </v-snackbar>
+
       <v-btn depressed tile color="primary" v-on="on">
         Obtenir mon PAC
       </v-btn>
@@ -44,6 +48,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import regions from '@/assets/data/Regions.json'
 
 export default {
@@ -55,7 +60,9 @@ export default {
         doc_type: ''
       },
       selectedTown: {},
-      loading: false
+      dialog: false,
+      loading: false,
+      snackbar: false
     }
   },
   methods: {
@@ -68,23 +75,41 @@ export default {
         await this.$auth.signUp(this.userData)
       }
 
-      const PAC = await this.$content('PAC', {
-        deep: true
-        // text: true
-      }).fetch()
+      axios({
+        url: '/api/admin/pac',
+        method: 'post',
+        data: {
+          userData: this.$user,
+          pacData: Object.assign({
+            town: this.selectedTown,
+            region: regions.find(r => r.name === this.selectedTown.nom_region).iso
+          }, this.projectData)
+        }
+      })
 
-      // console.log(PAC)
+      this.snackbar = true
+      this.loading = false
+      this.dialog = false
 
-      const newProject = Object.assign({
-        owner: this.$user.id,
-        PAC,
-        town: this.selectedTown,
-        region: regions.find(r => r.name === this.selectedTown.nom_region).iso
-      }, this.projectData)
+      // This form use to create a project.
+      // Now it should send us a notification and the requester a confirmation email.
+      // const PAC = await this.$content('PAC', {
+      //   deep: true
+      //   // text: true
+      // }).fetch()
 
-      const { data: projects } = await this.$supabase.from('projects').insert([newProject])
+      // // console.log(PAC)
 
-      this.$router.push(`/projets/${projects[0].id}/content`)
+      // const newProject = Object.assign({
+      //   owner: this.$user.id,
+      //   PAC,
+      //   town: this.selectedTown,
+      //   region: regions.find(r => r.name === this.selectedTown.nom_region).iso
+      // }, this.projectData)
+
+      // const { data: projects } = await this.$supabase.from('projects').insert([newProject])
+
+      // this.$router.push(`/projets/${projects[0].id}/content`)
     }
   }
 }

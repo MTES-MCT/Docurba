@@ -7,7 +7,7 @@
           column
         >
           <v-chip
-            v-for="theme in themes"
+            v-for="theme in displayedThemes"
             :key="theme.id"
             class="text-capitalize"
             :value="theme.id"
@@ -83,13 +83,20 @@ export default {
       return groupBy(filterredSources, (source) => {
         return source.theme.text
       })
+    },
+    displayedThemes () {
+      return this.themes.filter((t) => {
+        return !!this.dataSources.find(s => s.theme.id === t.id)
+      })
     }
   },
   watch: {
     selectedTheme () {
       // Start Analytics
-      const theme = this.themes.find(t => t.id === this.selectedTheme).text
-      this.$matomo(['trackEvent', 'Data Source', 'Theme', theme])
+      if (this.selectedTheme) {
+        const theme = this.themes.find(t => t.id === this.selectedTheme).text
+        this.$matomo(['trackEvent', 'Data Source', 'Theme', theme])
+      }
       // End Analytics
     }
   }

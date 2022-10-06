@@ -69,7 +69,7 @@
                 <v-card-text>
                   <b>Je crée un compte</b>
                   et demande mon
-                  <LandingPACTooltip /> à ma DDT
+                  <LandingPACTooltip /> à ma DDT/DEAL
                   (Direction Départementale des Territoires)
                 </v-card-text>
                 <v-card-text v-show="card3" class="collapse-transition">

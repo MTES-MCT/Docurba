@@ -3,6 +3,11 @@ import { uniq, flatten, omitBy, isNil } from 'lodash'
 // @vue/component
 export default {
   methods: {
+    async fetchSections (table, match) {
+      const { data: sections } = await this.$supabase.from(table).select('*').match(match)
+
+      return sections
+    },
     getSectionsFromPACs (PACs, path) {
       const sections = []
 
@@ -29,12 +34,25 @@ export default {
         return Object.assign({ textEdited: textEdited > 1 }, ...sections)
       })
     },
-    spliceSection (PAC, section) {
-      const sectionIndex = PAC.findIndex(s => s.path === section.path)
-      if (sectionIndex >= 0) {
-        const cleanSection = omitBy(section, isNil)
-        const textEdited = !!cleanSection.text
-        PAC.splice(sectionIndex, 1, Object.assign({ textEdited }, PAC[sectionIndex], cleanSection))
+    // Update should be a BDD update from supabase realtime event.
+    spliceSection (PAC, update) {
+      // This should be able to handle Create, Update and Delete from a PAC.
+      if (update.eventType === 'DELETE' && update.old) {
+        const deleteIndex = PAC.findIndex(s => s.id === update.old.id)
+        PAC.splice(deleteIndex, 1)
+      } else if (update.new) {
+        const section = update.new
+        const newIndex = PAC.findIndex(s => s.path === section.path)
+
+        const cleanSection = Object.assign({
+          textEdited: !!section.text
+        }, omitBy(section, isNil))
+
+        if (newIndex >= 0) {
+          PAC.splice(newIndex, 1, Object.assign({}, PAC[newIndex], cleanSection))
+        } else {
+          PAC.push(cleanSection)
+        }
       }
     }
   }

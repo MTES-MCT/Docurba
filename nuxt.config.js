@@ -24,8 +24,8 @@ export default {
     { src: '~/plugins/isDev.js' },
     { src: '~/plugins/composition.js' },
     { src: '~/plugins/supabase.js' },
-    { src: '~/plugins/user.js' },
-    { src: '~/plugins/auth.js' },
+    { src: '~/plugins/user.js' }, // Need to be after supabase plugin
+    { src: '~/plugins/auth.js' }, // Need to be after user plugin
     { src: '~/plugins/pac.js' },
     { src: '~/plugins/daturba.js' },
     { src: '~/plugins/matomo.js', mode: 'client' },
