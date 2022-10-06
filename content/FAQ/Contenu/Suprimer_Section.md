@@ -1,6 +1,6 @@
 ---
-question: J'aurais souhaité supprimer une des fiches thématiques, étant donné qu'un paragraphe spécifique lui est consacré plus haut dans l'arborescence. Or, lorsqu'on se met sur ce paragraphe dans l'arborescence, il n'y a pas de "petite poubelle" pour le supprimer.
+question: Est-il possible de supprimer des sections (ou des fiches thématiques) dans le cas où l'information est déjà précisée dans une autre partie du PAC?
 visible: true
 ---
 
-Il n’est pas possible de supprimer une section commune à toutes les DDT/DEAL. En revanche, vous n’êtes pas obligé de les sélectionner au moment de la création de votre projet.
+Il n’est pas possible de supprimer une section (ou des fiches thématiques) commune à toutes les DDT/DEAL. En revanche, vous pouvez choisir de ne pas les faire apparaître lors de l'élaboration du document. Il vous faut alors simplement décocher les sections en question. 
