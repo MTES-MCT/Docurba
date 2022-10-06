@@ -87,14 +87,14 @@
             </template>
             <template #default="dialog">
               <v-card>
-                <v-card-title>Suprimer {{ item.titre }}</v-card-title>
+                <v-card-title>Supprimer {{ item.titre }}</v-card-title>
                 <v-card-text>
-                  Etes vous sur de vouloir suprimer cette section ? Attention, les sous-sections seront elles aussi suprimées.
+                  Etes vous sur de vouloir supprimer cette section ? Attention, les sous-sections seront elles aussi suprimées.
                 </v-card-text>
                 <v-card-actions>
                   <v-spacer />
                   <v-btn depressed tile color="primary" @click="removeItem(item, dialog)">
-                    Suprimer
+                    Supprimer
                   </v-btn>
                   <v-btn depressed tile color="primary" outlined @click="dialog.value = false">
                     Annuler

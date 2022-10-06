@@ -19,8 +19,11 @@ export default {
 
     // remove unwanted intros
     PAC.splice(PAC.findIndex(s => s.path === '/PAC/Introduction/introcution-PAC-valide'), 1)
-    // Filter PP du territoire in socle
-    PAC = PAC.filter(s => !s.path.includes('PP-du-territoire'))
+    // Filter sections in socle
+    PAC = PAC.filter((s) => {
+      // No PP
+      return !s.path.includes('PP-du-territoire')
+    })
     // Filter PLUi/PLU depending on doc type.
     const docType = route.query.document
     PAC = PAC.filter((s) => {
@@ -34,6 +37,10 @@ export default {
         // In CC remove all PLU/PLUi sections
         return !s.titre.includes('PLU')
       }
+    })
+
+    PAC = PAC.filter((s) => {
+      return !s.dir.includes('/PAC/Annexes')
     })
 
     return {
@@ -50,9 +57,11 @@ export default {
     }
   },
   async mounted () {
-    const regionSections = await this.fetchSections('pac_sections_region', {
+    let regionSections = await this.fetchSections('pac_sections_region', {
       region: this.region.code
     })
+
+    regionSections = regionSections.filter(s => !s.dir.includes('/PAC/Annexes'))
 
     this.PAC = this.unifyPacs([regionSections, this.PAC])
 
