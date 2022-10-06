@@ -18,7 +18,7 @@
         <VDeptAutocomplete v-model="userData.dept" />
       </v-col>
       <v-col cols="auto">
-        <v-checkbox v-model="userData.isDDT" label="Agent de DDT" />
+        <v-checkbox v-model="userData.isDDT" label="Agent de DDT/DEAL" />
       </v-col>
     </template>
   </v-row>

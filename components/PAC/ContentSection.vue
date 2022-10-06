@@ -5,7 +5,7 @@
         <v-expansion-panel-header @click="openSection(section)">
           <v-row align="center">
             <v-col cols="auto">
-              {{ section.tocCounter ? section.tocCounter.join('.') : '' }} - {{ section.titre }}
+              {{ section.tocCounter ? `${section.tocCounter.join('.')} - ` : '' }} {{ section.titre }}
             </v-col>
             <v-spacer />
             <v-col v-if="editable" cols="auto" class="py-0">
@@ -42,6 +42,7 @@
         <PACContentSection
           v-if="section.children && section.children.length"
           :sections="section.children"
+          :open="section.titre === 'Introduction' ? [0] : []"
           :editable="editable"
         />
       </v-expansion-panel-content>

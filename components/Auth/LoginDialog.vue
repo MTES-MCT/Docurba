@@ -143,14 +143,6 @@ export default {
             user_id: this.$user.id,
             user_email: this.$user.email
           }])
-
-          axios({
-            url: '/api/slack/notify/admin',
-            method: 'post',
-            data: {
-              userData: this.userData
-            }
-          })
         }
 
         axios({

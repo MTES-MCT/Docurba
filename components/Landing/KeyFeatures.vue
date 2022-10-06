@@ -69,7 +69,7 @@
                 Complet
               </v-list-item-title>
               <b>Un maximum d’informations centralisées au même endroit.</b>
-              supra-territoriaux (SRADDET, SCoT…), les données et le porter à connaissance préparé par la DGALN (Direction Générale de l’Aménagement du Territoire) en partenariat avec les DREAL et DDT (Direction Départementale du Territoire)
+              supra-territoriaux (SRADDET, SCoT…), les données et le porter à connaissance préparé par la DGALN (Direction Générale de l’Aménagement du Territoire) en partenariat avec les DREAL et DDT/DEAL (Direction Départementale du Territoire)
             </v-list-item-content>
           </v-list-item>
         </v-list>

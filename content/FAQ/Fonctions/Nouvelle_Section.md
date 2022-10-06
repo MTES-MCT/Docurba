@@ -1,5 +1,5 @@
 ---
-question: "Peut-on créer des sous-parties? 
+question: "Peut-on créer des sous-parties?"
 visible: true
 ---
 Oui, il est possible de créer une nouvelle section et des "sous-sections". Vous pouvez ensuite selectionner les sections que vous voulez voir apparaître pour votre projet.

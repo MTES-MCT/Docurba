@@ -62,7 +62,7 @@
           </template>
           <v-list>
             <v-list-item link @click="goToAdmin">
-              <v-list-item-title>Accès DDT</v-list-item-title>
+              <v-list-item-title>Accès DDT/DEAL</v-list-item-title>
             </v-list-item>
             <v-list-item link @click="signOut">
               <v-list-item-title>
@@ -114,6 +114,8 @@ export default {
     }
   },
   methods: {
+    // There is a lot of dupliaceted code here.
+    // This component should be using the auth.js plugin to get admin access.
     async getAdminAccess () {
       if (!this.adminAccess) {
         const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('role').match({
