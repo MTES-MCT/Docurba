@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" width="800px">
+  <v-dialog v-model="dialog" fullscreen hide-overlay>
     <template #activator="{on}">
       <v-btn depressed tile icon v-on="on">
         <v-icon>{{ icons.mdiPaperclip }}</v-icon>
@@ -7,13 +7,17 @@
     </template>
     <v-card>
       <v-card-title>
-        Ajouter une annexe
+        <span>Ajouter une annexe à la section: {{ section.titre }}</span>
+        <v-spacer />
+        <v-btn icon @click="dialog = false">
+          <v-icon>{{ icons.mdiClose }}</v-icon>
+        </v-btn>
       </v-card-title>
       <v-tabs v-model="ressourcesTab" grow>
         <v-tab>
           Fichiers
         </v-tab>
-        <v-tab disabled>
+        <v-tab :disabled="!isProject">
           Data
         </v-tab>
       </v-tabs>
@@ -57,7 +61,8 @@
         </v-tab-item>
         <v-tab-item>
           <v-card-text>
-            Data
+            <DataSourcesList v-if="!loadingData" :region="currentRegion" :data-sources="dataset" :themes="themes" />
+            <VGlobalLoader v-else />
           </v-card-text>
         </v-tab-item>
       </v-tabs-items>
@@ -66,7 +71,7 @@
 </template>
 
 <script>
-import { mdiPlus, mdiPaperclip } from '@mdi/js'
+import { mdiPlus, mdiPaperclip, mdiClose } from '@mdi/js'
 import slugify from 'slugify'
 
 export default {
@@ -80,18 +85,49 @@ export default {
     return {
       icons: {
         mdiPlus,
-        mdiPaperclip
+        mdiPaperclip,
+        mdiClose
       },
       ressourcesTab: 0,
       files: [],
       loading: false,
-      dialog: false
+      dialog: false,
+      loadingData: true,
+      project: null,
+      dataset: null,
+      themes: null
     }
   },
   computed: {
     folder () {
       return this.section.project_id || this.section.dept
+    },
+    isProject () {
+      return !!this.section.project_id
+    },
+    currentRegion () {
+      return this.project.region
     }
+  },
+  async mounted () {
+    // This should be log only once as the edit composant should only be used once.
+    // console.log('fetch project data')
+
+    if (this.isProject) {
+      const projectId = this.section.project_id
+
+      const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
+      this.project = projects ? projects[0] : null
+
+      if (this.project) {
+        const { dataset, themes } = await this.$daturba.getData(this.currentRegion, this.project.towns.map(t => t.code_commune_INSEE))
+
+        this.dataset = dataset
+        this.themes = themes
+      }
+    }
+
+    this.loadingData = false
   },
   methods: {
     setFiles (files) {

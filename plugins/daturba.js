@@ -110,7 +110,7 @@ export default ({ route }, inject) => {
           method: 'get'
         })).data
 
-        console.log('getData', region, dataset, themes)
+        // console.log('getData', region, dataset, themes)
 
         dataset.forEach((data) => {
           parsers[region](data, themes)
