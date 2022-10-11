@@ -7,6 +7,7 @@ Le présent document ne constitue pas l'intégralité du porter à connaissance 
 - des **éléments généraux sur les documents supra-territoriaux** qui peuvent concerner votre territoire;
 - lorsque les informations ont été complétées, des **informations plus spécifiques concernant les documents d'échelle régionale**.
 
+
 Pour bénéficier du PAC réglementaire sur Docurba, vous devez **créer un compte en cliquant sur "Obtenir mon PAC"**. Ensuite deux cas de figure peuvent se présenter :
 - Soit le PAC a d'ores et déjà était complété par votre DDT/DEAL et vous accèderez à ces éléments. 
 - Soit votre PAC complet n'est pas encore réalisé et la demande est envoyée via Docurba.
