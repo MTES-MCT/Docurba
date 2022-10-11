@@ -36,7 +36,7 @@ https://www.ecologie.gouv.fr/accueil-et-habitat-des-gens-du-voyage#e2
 - **Les communes ou établissements publics de coopération intercommunale dénommés touristiques**
 
 
-#### Les différentes parties du PLU
+##### Les différentes parties du PLU
 - Le rapport de présentation qui s’appuie sur un diagnostic établi notamment au regard des prévisions démographiques et du besoin d’équilibre social de l’habitat [2ᵉ alinéa de l’art. L. 151-4 du code de l’urbanisme (CU)].
 Concernant **la définition des besoins en logement**, le PLU(i) aura à prendre en considération : les besoins nécessaires au maintien de la population, les besoins globaux, le desserrement des ménages, le renouvellement du parc de logements (au sein du parc, certains logements sont démolis, certains locaux se transforment en logements et inversement), l’évolution du nombre des résidences secondaires, des logements vacants et des logements occasionnels (si le nombre de résidences secondaires augmente par exemple, il sera nécessaire de créer autant de résidences principales).
  	
@@ -51,7 +51,7 @@ Les OAP précisent quant à elles, les actions et opérations d’aménagement v
   - Des résidences démontables constituant l’habitat permanent de leurs utilisateurs.
 (art. L. 151-13 du CU)
 
-#### Outils et levier à la mise en œuvre de la politique en faveur du logement
+##### Outils et levier à la mise en œuvre de la politique en faveur du logement
 - Investissements/études en faveur du logement
 - Opération programmée d’amélioration de l’habitat (Opah)
 La liste des Opah est disponible sur le site internet de l’Anah :
