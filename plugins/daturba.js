@@ -63,10 +63,19 @@ export default ({ route }, inject) => {
     'FR-PDL': prodigeParser
   }
 
+  const cardSourceUrl = {
+    'FR-ARA' (cardData) {
+      return `https://catalogue.datara.gouv.fr/base_territoriale/fiche?_format=json&id=${cardData.id}&nom_table=${cardData.nom_table}`
+    },
+    'FR-PDL' (cardData) {
+      return `https://catalogue.sigloire.fr/base_territoriale/fiche?_format=json&id=${cardData.id}&nom_table=${cardData.nom_table}`
+    }
+  }
+
   const cardSourceMap = {
     async 'FR-ARA' (cardData) {
       const { data } = await axios({
-        url: `https://catalogue.datara.gouv.fr/base_territoriale/fiche?_format=json&id=${cardData.id}&nom_table=${cardData.nom_table}`,
+        url: cardSourceUrl['FR-ARA'](cardData),
         method: 'get'
       })
 
@@ -74,7 +83,7 @@ export default ({ route }, inject) => {
     },
     async 'FR-PDL' (cardData) {
       const { data } = await axios({
-        url: `https://catalogue.sigloire.fr/base_territoriale/fiche?_format=json&id=${cardData.id}&nom_table=${cardData.nom_table}`,
+        url: cardSourceUrl['FR-PDL'](cardData),
         method: 'get'
       })
 
@@ -83,6 +92,9 @@ export default ({ route }, inject) => {
   }
 
   inject('daturba', {
+    getCardDataUrl (region = route.query.region, data) {
+      return cardSourceUrl[region](data)
+    },
     getCardData (region = route.query.region, data) {
       return cardSourceMap[region](data)
     },

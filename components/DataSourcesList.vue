@@ -34,7 +34,7 @@
             </h3>
           </v-col>
           <v-col v-for="(obj, j) in source.objets" :key="`${source.nom_couche}-${j}-${obj.nom_couche}`" cols="12" sm="6" md="4">
-            <DataSourceCard :sub-theme="source.subTheme" :source="obj" :region="region" />
+            <DataSourceCard :selected="isSelected(obj)" :sub-theme="source.subTheme" :source="obj" :region="region" :selectable="selectable" />
           </v-col>
         </v-row>
       </v-col>
@@ -67,6 +67,15 @@ export default {
     region: {
       type: String,
       default () { return this.$route.query.region }
+    },
+    selectable: {
+      type: Boolean,
+      default: false
+    },
+    selection: {
+      type: Array,
+      // This should be an array of cardData url created using $daturba
+      default () { return [] }
     }
   },
   data () {
@@ -98,6 +107,11 @@ export default {
         this.$matomo(['trackEvent', 'Data Source', 'Theme', theme])
       }
       // End Analytics
+    }
+  },
+  methods: {
+    isSelected (sourceObj) {
+      return this.selection.includes(this.$daturba.getCardDataUrl(this.region, sourceObj))
     }
   }
 }

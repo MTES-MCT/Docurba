@@ -3,6 +3,18 @@
     <v-card flat color="g100">
       <v-card-title class="break-word">
         {{ source.nom }}
+        <v-btn
+          v-if="selectable"
+          color="primary"
+          dark
+          absolute
+          top
+          right
+          fab
+          small
+        >
+          <v-icon>{{ selected ? icons.mdiCheck : icons.mdiPlus }}</v-icon>
+        </v-btn>
       </v-card-title>
       <v-card-text>
         <v-row>
@@ -67,11 +79,15 @@
 </template>
 
 <script>
-import { mdiOpenInNew, mdiMap } from '@mdi/js'
+import { mdiOpenInNew, mdiMap, mdiPlus, mdiCheck } from '@mdi/js'
 
 // import axios from 'axios'
 
 export default {
+  model: {
+    prop: 'selected',
+    event: 'input'
+  },
   props: {
     source: {
       type: Object,
@@ -84,6 +100,14 @@ export default {
     region: {
       type: String,
       default () { return this.$route.query.region }
+    },
+    selectable: {
+      type: Boolean,
+      default: false
+    },
+    selected: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -92,7 +116,9 @@ export default {
     return {
       icons: {
         mdiOpenInNew,
-        mdiMap
+        mdiMap,
+        mdiPlus,
+        mdiCheck
       },
       iframeLoading: true,
       isActive: false,
