@@ -31,11 +31,11 @@ Dans le calendrier d’atteinte de l’objectif zéro artificialisation nette, u
 - Mesures d’application immédiate loi Climat et Résilience en lien avec le ZAN (étude de densification, densité minimale dans les ZAC…pour la rédaction de la fiche voir flash DGALN : http://intra.dgaln.e2.rie.gouv.fr/IMG/pdf/flash_01-2022_cle0f6112-1.pdf)
 - Ajouter compatibilité avec le SCoT en termes de consommation de foncier à destination de l’habitat, de l’économie et du tourisme.
 
-#### Les différentes parties du PLU
-#### Cas des communes en loi montagne et loi littoral : prescriptions particulières en termes d’urbanisme
+##### Les différentes parties du PLU
+##### Cas des communes en loi montagne et loi littoral : prescriptions particulières en termes d’urbanisme
 Renvoi aux sections “Loi montagne 1” et/ou “Loi littoral”.
 et insister sur la bonne prise en compte de ces lois en termes de consommation d'espaces et des procédures qui y sont liées pour les dérogations permettant la réalisation de projets (notamment touristiques).
-#### Outils et leviers foncier/espaces urbanisés
+##### Outils et leviers foncier/espaces urbanisés
 - EPF
 - Droit de préemption urbain (DPU)
 - Zone d’aménagement différé (ZAD)
@@ -44,7 +44,7 @@ et insister sur la bonne prise en compte de ces lois en termes de consommation d
 - Nature en ville, renaturation
 - Friches : fond friche, [Urbanvitaliz](https://urbanvitaliz.fr/), [UrbanSimul](https://urbansimul.cerema.fr/)
 
-#### Préservation des zones agricoles
+##### Préservation des zones agricoles
 - AOP/AOC
 - Diagnostic agricole 
 - Règle d’éloignement pour la construction des bâtiments d’élevage
@@ -54,7 +54,7 @@ et insister sur la bonne prise en compte de ces lois en termes de consommation d
 - Périmètres d’intervention pour la protection et la mise en valeur des espaces agricoles et naturels péri-urbains (PAEN)
 - Particularités des domaines skiables et espaces pressentis pour accueillir des activités estivales
 
-#### Préservation des zones forestières
+##### Préservation des zones forestières
 - Obligation d’autorisation de défrichement
 - Coupes de bois et autorisation préfectorale
 - Périmètres d’intervention pour la protection et la mise en valeur des espaces agricoles et naturels péri-urbains (PAEN)
