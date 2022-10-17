@@ -12,6 +12,7 @@
           right
           fab
           small
+          @click="$emit('input', !selected)"
         >
           <v-icon>{{ selected ? icons.mdiCheck : icons.mdiPlus }}</v-icon>
         </v-btn>

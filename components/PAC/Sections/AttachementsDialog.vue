@@ -61,7 +61,16 @@
         </v-tab-item>
         <v-tab-item>
           <v-card-text>
-            <DataSourcesList v-if="!loadingData" :region="currentRegion" :data-sources="dataset" :themes="themes" />
+            <DataSourcesList
+              v-if="!loadingData"
+              :region="currentRegion"
+              :data-sources="dataset"
+              :themes="themes"
+              selectable
+              :selection="selectedDataSources"
+              @add="addDatasourceToSection"
+              @remove="removeDatasourceToSection"
+            />
             <VGlobalLoader v-else />
           </v-card-text>
         </v-tab-item>
@@ -95,7 +104,8 @@ export default {
       loadingData: true,
       project: null,
       dataset: null,
-      themes: null
+      themes: null,
+      selectedDataSources: []
     }
   },
   computed: {
@@ -107,6 +117,13 @@ export default {
     },
     currentRegion () {
       return this.project.region
+    }
+  },
+  watch: {
+    'section.path' () {
+      if (this.isProject) {
+        this.getSectionDataSources()
+      }
     }
   },
   async mounted () {
@@ -125,11 +142,21 @@ export default {
         this.dataset = dataset
         this.themes = themes
       }
+
+      this.getSectionDataSources()
     }
 
     this.loadingData = false
   },
   methods: {
+    async getSectionDataSources () {
+      const { data: sources } = await this.$supabase.from('sections_data_sources').select('*').match({
+        project_id: this.section.project_id,
+        section_path: this.section.path
+      })
+
+      this.selectedDataSources = sources
+    },
     setFiles (files) {
       // console.log('change files', files)
       this.files = files
@@ -158,6 +185,33 @@ export default {
 
       this.loading = false
       this.dialog = false
+    },
+    async addDatasourceToSection (source) {
+      const sourceUrl = this.$daturba.getCardDataUrl(this.currentRegion, source)
+
+      // console.log('Source url', sourceUrl)
+      const { data: savedSource } = await this.$supabase.from('sections_data_sources').insert([{
+        project_id: this.section.project_id,
+        url: sourceUrl,
+        section_path: this.section.path
+      }])
+
+      // console.log(savedSource)
+
+      this.selectedDataSources = this.selectedDataSources.concat(savedSource)
+    },
+    async removeDatasourceToSection (source) {
+      const sourceUrl = this.$daturba.getCardDataUrl(this.currentRegion, source)
+
+      this.selectedDataSources = this.selectedDataSources.filter((s) => {
+        return s.url !== sourceUrl
+      })
+
+      await this.$supabase.from('sections_data_sources').delete().match({
+        project_id: this.section.project_id,
+        url: sourceUrl,
+        section_path: this.section.path
+      })
     }
   }
 }

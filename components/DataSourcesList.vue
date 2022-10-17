@@ -34,7 +34,14 @@
             </h3>
           </v-col>
           <v-col v-for="(obj, j) in source.objets" :key="`${source.nom_couche}-${j}-${obj.nom_couche}`" cols="12" sm="6" md="4">
-            <DataSourceCard :selected="isSelected(obj)" :sub-theme="source.subTheme" :source="obj" :region="region" :selectable="selectable" />
+            <DataSourceCard
+              :selected="isSelected(obj)"
+              :sub-theme="source.subTheme"
+              :source="obj"
+              :region="region"
+              :selectable="selectable"
+              @input="changeSelection(obj, $event)"
+            />
           </v-col>
         </v-row>
       </v-col>
@@ -110,8 +117,16 @@ export default {
     }
   },
   methods: {
+    changeSelection (sourceObj, selected) {
+      if (selected) {
+        this.$emit('add', sourceObj)
+      } else {
+        this.$emit('remove', sourceObj)
+      }
+    },
     isSelected (sourceObj) {
-      return this.selection.includes(this.$daturba.getCardDataUrl(this.region, sourceObj))
+      const sourceUrl = this.$daturba.getCardDataUrl(this.region, sourceObj)
+      return !!this.selection.find(s => s.url === sourceUrl)
     }
   }
 }
