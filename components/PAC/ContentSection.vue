@@ -108,7 +108,6 @@ export default {
   },
   methods: {
     openSection (section) {
-      console.log('Test')
       // Start Analytics
       this.$matomo(['trackEvent', 'PAC Content', 'Open Section', section.titre])
       // End Analytics

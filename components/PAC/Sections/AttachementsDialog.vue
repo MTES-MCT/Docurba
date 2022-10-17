@@ -59,7 +59,7 @@
             </v-btn>
           </v-card-actions>
         </v-tab-item>
-        <v-tab-item>
+        <v-tab-item v-if="isProject">
           <v-card-text>
             <DataSourcesList
               v-if="!loadingData"
