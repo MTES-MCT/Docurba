@@ -15,7 +15,7 @@ export default (_, inject) => {
     // It should allow the use of this.$matomo in components instead of _paq.push(arr)
     // Exemple: this.$matomo(['trackEvent', 'Contact', 'Email Link Click', 'name@example.com'])
     inject('matomo', (argsArr) => {
-      _paq.push(argsArr)
+      window._paq.push(argsArr)
     })
   })()
 }
