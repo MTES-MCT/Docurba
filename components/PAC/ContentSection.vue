@@ -45,6 +45,12 @@
           :open="section.titre === 'Introduction' ? [0] : []"
           :editable="editable"
         />
+        <!-- TODO: This need to be a component that fetch a list of crad from the DB -->
+        <!-- <v-row>
+          <v-col v-for="source in selectedDataSources" :key="source.id" cols="12" sm="6" md="4">
+            <DataSourceCard :source="source" />
+          </v-col>
+        </v-row> -->
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-expansion-panels>
@@ -52,6 +58,7 @@
 
 <script>
 import { mdiCommentOutline } from '@mdi/js'
+import axios from 'axios'
 
 export default {
   props: {
@@ -85,6 +92,7 @@ export default {
 
     return {
       icons: { mdiCommentOutline },
+      selectedDataSources: [],
       project: null,
       files: filesMap
     }
@@ -104,6 +112,23 @@ export default {
       if (this.project) {
         this.fetchAttachements()
       }
+
+      // TODO: This goes in the component of card from DB
+      // const { data: sources } = await this.$supabase.from('sections_data_sources').select('*').match({
+      //   project_id: this.projectId,
+      //   section_path: this.section.path
+      // })
+
+      // const sourcesCardsData = await Promise.all(sources.map(async (source) => {
+      //   const { data } = await axios({
+      //     url: source.url,
+      //     meyhod: 'get'
+      //   })
+
+      //   return Object.assign(data, { sourceId: source.id })
+      // }))
+
+      // this.selectedDataSources = sourcesCardsData
     }
   },
   methods: {
