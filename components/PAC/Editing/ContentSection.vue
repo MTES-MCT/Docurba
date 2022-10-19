@@ -17,6 +17,13 @@
     <v-col cols="12">
       <PACSectionsAttachementsChips :files="attachements" editable @removed="removeFile" />
     </v-col>
+    <v-col cols="12">
+      <v-row>
+        <v-col v-for="source in selectedDataSources" :key="source.id" cols="6">
+          <DataSourceCard :source="source" />
+        </v-col>
+      </v-row>
+    </v-col>
     <v-fab-transition>
       <v-btn
         v-show="modified"
@@ -58,12 +65,15 @@
 import { mdiContentSave } from '@mdi/js'
 import { uniq } from 'lodash'
 
+// TODO: this should be using the plugin to parse md and html.
 import unified from 'unified'
 import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
+import axios from 'axios'
+
 import pacEditing from '@/mixins/pacEditing.js'
 
 import { defaultSchema } from '@/assets/sanitizeSchema.js'
@@ -107,7 +117,9 @@ export default {
       icons: {
         mdiContentSave
       },
+      selectedDataSources: [],
       attachements: [],
+      dataSourcesSubscription: null,
       saveDialog: false
     }
   },
@@ -141,6 +153,10 @@ export default {
         text: this.getHTML()
       })
 
+      if (this.section.project_id) {
+        this.getSectionDataSources()
+      }
+
       this.modified = false
     },
     editedSection: {
@@ -156,8 +172,57 @@ export default {
   },
   mounted () {
     this.fetchAttachements()
+
+    if (this.section.project_id) {
+      this.getSectionDataSources()
+
+      // console.log('subscribe to changes')
+      this.dataSourcesSubscription = this.$supabase.from(`sections_data_sources:project_id=eq.${this.section.project_id}`)
+        .on('INSERT', async (event) => {
+          const source = event.new
+          // console.log('INSERT TRIGGER')
+
+          if (source.section_path === this.section.path) {
+            const { data: cardData } = await axios({
+              url: source.url,
+              meyhod: 'get'
+            })
+
+            // console.log('insert', cardData)
+            this.selectedDataSources.push(Object.assign(cardData, {
+              sourceId: source.id
+            }))
+          }
+        })
+        .on('DELETE', (event) => {
+          // console.log('remove', event.old.id)
+          this.selectedDataSources = this.selectedDataSources.filter(source => source.sourceId !== event.old.id)
+        }).subscribe()
+    }
+  },
+  beforeDestroy () {
+    if (this.dataSourcesSubscription) {
+      this.$supabase.removeSubscription(this.dataSourcesSubscription)
+    }
   },
   methods: {
+    async getSectionDataSources () {
+      const { data: sources } = await this.$supabase.from('sections_data_sources').select('*').match({
+        project_id: this.section.project_id,
+        section_path: this.section.path
+      })
+
+      const sourcesCardsData = await Promise.all(sources.map(async (source) => {
+        const { data } = await axios({
+          url: source.url,
+          meyhod: 'get'
+        })
+
+        return Object.assign(data, { sourceId: source.id })
+      }))
+
+      this.selectedDataSources = sourcesCardsData
+    },
     getHTML () {
       return this.mdParser.processSync(this.section.text).contents
     },

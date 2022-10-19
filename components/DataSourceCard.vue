@@ -19,8 +19,9 @@
       </v-card-title>
       <v-card-text>
         <v-row>
-          <v-col v-if="subTheme" cols="12">
+          <v-col cols="12">
             <v-chip
+              v-if="subTheme && subTheme.text"
               outlined
               class="text-capitalize"
               color="bf300"
@@ -123,7 +124,7 @@ export default {
       },
       iframeLoading: true,
       isActive: false,
-      champs: []
+      champs: this.source.champs || []
     }
   },
   computed: {
@@ -142,7 +143,7 @@ export default {
   watch: {
     // This can be used to fetch more data when element is visible only.
     async isActive () {
-      if (this.isActive) {
+      if (this.isActive && !this.champs.length) {
         const { champs } = await this.$daturba.getCardData(this.region, this.source)
         this.champs = champs
       }
