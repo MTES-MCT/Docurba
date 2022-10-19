@@ -2,6 +2,7 @@
 titre : Outils et leviers foncier/espaces urbanisés
 ordre : 3
 ---
+##### Outils et leviers foncier/espaces urbanisés
 - EPF
 - Droit de préemption urbain (DPU)
 - Zone d’aménagement différé (ZAD)
