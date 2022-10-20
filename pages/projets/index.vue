@@ -129,7 +129,6 @@ export default {
   },
   computed: {
     regions () {
-      console.log(this.regionAccess)
       return this.regionAccess.map((access) => {
         // eslint-disable-next-line eqeqeq
         return regions.find(r => r.code == access.region)
