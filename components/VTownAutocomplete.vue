@@ -4,10 +4,11 @@
       <v-autocomplete
         v-model="selectedDepartement"
         :items="departements"
-        label="Departement"
+        placeholder="Departement"
         hide-details
         filled
         return-object
+        dense
         @change="fetchTowns"
       />
     </v-col>
@@ -20,8 +21,9 @@
         return-object
         hide-details
         filled
-        label="Commune"
+        placeholder="Commune"
         :loading="loading"
+        dense
         @change="input"
       />
     </v-col>

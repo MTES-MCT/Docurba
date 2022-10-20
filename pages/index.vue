@@ -1,7 +1,61 @@
 <template>
   <div>
-    <v-container fluid class="g100 pb-16">
-      <!-- Hero -->
+    <!-- START HERO v2 -->
+    <v-container fluid class="pa-8">
+      <v-row class="beige rounded-lg py-16">
+        <v-col>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-card rounded="lg" class="pa-6">
+                  <v-card-title class="">
+                    <h2 class="text-h2 black--text">
+                      Ressources utiles pour votre <span class="focus--text">document d'urbanisme.</span>
+                    </h2>
+                  </v-card-title>
+                  <v-card-text class="mt-2">
+                    <v-row justify="center" align="center">
+                      <v-col cols="2">
+                        <v-select
+                          v-model="searchQuery.document"
+                          filled
+                          hide-details
+                          dense
+                          placeholder="Type de document"
+                          :items="documents"
+                        />
+                      </v-col>
+                      <v-col v-if="searchQuery.document && searchQuery.document.includes('i')" cols="">
+                        <VEpciAutocomplete v-model="selectedEpci" />
+                      </v-col>
+                      <v-col v-else cols="">
+                        <VTownAutocomplete v-model="selectedTown" :cols-dep="4" :cols-town="8" />
+                      </v-col>
+                      <v-col cols="auto">
+                        <v-btn
+                          depressed
+                          color="primary"
+                          :loading="searchLoading"
+                          @click="searchCTA"
+                        >
+                          <v-icon class="mr-2" small>
+                            {{ icons.mdiMagnify }}
+                          </v-icon>
+                          Rechercher
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+            <LandingUserStory />
+          </v-container>
+        </v-col>
+      </v-row>
+    </v-container>
+    <!-- END HERO v2 -->
+    <!-- <v-container fluid class="g100 pb-16">
       <v-row justify="center" align="center" class="pt-16">
         <v-col cols="12" sm="10" md="10">
           <h1 class="text-h1 text-center">
@@ -24,9 +78,6 @@
             :items="documents"
           />
         </v-col>
-        <!-- <v-col cols="3">
-          <VRegionAutocomplete v-model="searchQuery.region" />
-        </v-col> -->
         <v-col v-if="searchQuery.document && searchQuery.document.includes('i')" cols="8" sm="6">
           <VEpciAutocomplete v-model="selectedEpci" />
         </v-col>
@@ -48,7 +99,7 @@
           </v-btn>
         </v-col>
       </v-row>
-    </v-container>
+    </v-container> -->
     <v-container>
       <!-- User stories -->
       <v-row class="py-16">
@@ -71,6 +122,7 @@
 
 <script>
 import axios from 'axios'
+import { mdiMagnify } from '@mdi/js'
 import regions from '@/assets/data/Regions.json'
 
 export default {
@@ -83,7 +135,10 @@ export default {
       },
       selectedEpci: null,
       selectedTown: null,
-      searchLoading: false
+      searchLoading: false,
+      icons: {
+        mdiMagnify
+      }
     }
   },
   computed: {

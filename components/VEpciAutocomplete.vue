@@ -9,7 +9,8 @@
         return-object
         hide-details
         filled
-        label="EPCI"
+        dense
+        placeholder="EPCI"
         @change="input"
       />
     </v-col>
