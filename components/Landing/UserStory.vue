@@ -1,6 +1,6 @@
 <template>
-  <v-row justify="space-around py-5" align="center">
-    <v-col cols="12" sm="6" md="3" class="collapse-transition" :class="cardSizeClass(card1)">
+  <v-row justify="space-around" class="py-5" align="center">
+    <v-col cols="12" sm="6" md="3" class="collapse-transition">
       <v-row justify="center">
         <v-col cols="10">
           <v-img height="150px" contain :src="require('@/assets/picto/undraw_search.svg')" />
@@ -17,7 +17,7 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col cols="12" sm="6" md="3" class="collapse-transition" :class="cardSizeClass(card2)">
+    <v-col cols="12" sm="6" md="3" class="collapse-transition">
       <v-row justify="center">
         <v-col cols="10">
           <v-img height="150px" contain :src="require('@/assets/picto/undraw_file_analysis.svg')" />
@@ -34,7 +34,7 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col cols="12" sm="6" md="3" class="collapse-transition" :class="cardSizeClass(card3)">
+    <v-col cols="12" sm="6" md="3" class="collapse-transition">
       <v-row justify="center">
         <v-col cols="10">
           <v-img height="150px" contain :src="require('@/assets/picto/undraw_profile.svg')" />
@@ -51,7 +51,7 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col cols="12" sm="6" md="3" class="collapse-transition" :class="cardSizeClass(card4)">
+    <v-col cols="12" sm="6" md="3" class="collapse-transition">
       <v-row justify="center">
         <v-col cols="10">
           <v-img height="150px" contain :src="require('@/assets/picto/undraw_message_sent.svg')" />
