@@ -58,6 +58,9 @@
       <LandingDemarche />
       <LandingKeyFeatures class="mt-12" />
     </v-container>
+    <v-container>
+      <LandingRegionsCard class="mt-12" />
+    </v-container>
     <!-- <LandingCtaByNeed /> -->
     <LandingCitations />
     <v-row class="g100 mt-16 py-16">
