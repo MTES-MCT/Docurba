@@ -56,10 +56,10 @@
     </v-container>
     <v-container>
       <LandingDemarche />
+      <LandingKeyFeatures class="mt-12" />
     </v-container>
-    <LandingCitations />
     <!-- <LandingCtaByNeed /> -->
-    <LandingKeyFeatures />
+    <LandingCitations />
     <v-row class="g100 mt-16 py-16">
       <LandingNewsLetterForm />
     </v-row>

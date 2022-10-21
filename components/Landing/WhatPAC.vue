@@ -8,7 +8,7 @@
           </v-icon>
         </v-col>
         <v-col>
-          Qu'est ce qu'un PAC ?
+          <b>Qu'est ce qu'un PAC ?</b>
         </v-col>
       </v-row>
     </v-card-title>
