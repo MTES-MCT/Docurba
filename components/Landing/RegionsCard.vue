@@ -1,5 +1,6 @@
 <template>
-  <v-card color="beige" flat>
+  <v-card color="beige" flat class="position-relative">
+    <VFloatingShape src="/images/landing/ellipse_blue.svg" :size="72" :right="15" :top="-50" />
     <v-card-title>
       <b>Consultez les socles de PAC déjà disponibles</b>
     </v-card-title>

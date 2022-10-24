@@ -1,7 +1,17 @@
 <template>
   <v-row>
-    <v-col cols="2">
+    <v-col cols="2" class="position-relative">
       <!-- DECORAtION GOES HERE -->
+      <VFloatingShape src="/images/landing/ellipse_half_blue_left.svg" :size="60" :left="15" :top="-45" />
+
+      <VFloatingShape src="/images/landing/line_left.svg" :width="30" :height="50" :right="1" :top="30" />
+      <VFloatingShape src="/images/landing/undraw_completed_tasks.svg" :size="100" :right="30" :top="0" />
+
+      <VFloatingShape src="/images/landing/circle_light_grey.svg" :size="56" :right="50" :top="250" />
+
+      <VFloatingShape src="/images/landing/ellipse_yellow.svg" :size="123" :left="25" :bottom="250" />
+      <VFloatingShape src="/images/landing/undraw_completed_tasks.svg" :size="100" :left="50" :bottom="230" />
+      <VFloatingShape src="/images/landing/line_left_2.svg" :width="280" :height="200" :right="-10" :bottom="100" />
     </v-col>
     <v-col cols="8">
       <v-row>
@@ -10,8 +20,13 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col cols="2">
+    <v-col cols="2" class="position-relative">
       <!-- DECORATION GOES HERE -->
+      <VFloatingShape src="/images/landing/line_right_1.svg" :width="140" :height="150" :left="-20" :top="50" />
+      <VFloatingShape src="/images/landing/undraw_completed_tasks.svg" :size="100" :left="50" :top="200" />
+      <VFloatingShape src="/images/landing/line_right_2.svg" :width="240" :height="200" :left="-20" :top="300" />
+
+      <VFloatingShape src="/images/landing/circle_light_red.svg" :size="56" :left="-30" :top="360" />
     </v-col>
   </v-row>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="space-around" class="py-5" align="center">
+  <v-row justify="space-around" class="py-5 mt-10" align="center">
     <v-col cols="12" sm="6" md="3" class="collapse-transition">
       <v-row justify="center">
         <v-col cols="10">
