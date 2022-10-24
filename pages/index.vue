@@ -9,7 +9,7 @@
               <v-col cols="12">
                 <v-card rounded="lg" class="pa-6">
                   <v-card-title class="">
-                    <h2 class="text-h2 black--text">
+                    <h2 class="text-h2 black--text break-word">
                       Ressources utiles pour votre <span class="focus--text">document d'urbanisme.</span>
                     </h2>
                   </v-card-title>
@@ -63,9 +63,11 @@
     </v-container>
     <!-- <LandingCtaByNeed /> -->
     <LandingCitations />
-    <v-row class="bf100-g750 mt-16 py-16">
-      <LandingNewsLetterForm />
-    </v-row>
+    <v-container fluid>
+      <v-row class="bf100-g750 mt-16 py-8">
+        <LandingNewsLetterForm />
+      </v-row>
+    </v-container>
   </div>
 </template>
 

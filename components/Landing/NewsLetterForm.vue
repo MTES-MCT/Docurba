@@ -25,7 +25,6 @@
           <v-col cols="auto">
             <v-btn
               color="primary"
-              flat
               depressed
               height="41px"
               tile
