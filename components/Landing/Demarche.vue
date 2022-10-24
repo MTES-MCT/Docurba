@@ -2,7 +2,7 @@
   <v-row>
     <v-col cols="12">
       <h1 class="text-h1 text-no-wrap">
-        Docurba vous aides dans vos démarches
+        Docurba vous aide dans vos démarches
       </h1>
     </v-col>
     <v-col cols="8">

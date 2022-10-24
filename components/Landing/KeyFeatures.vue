@@ -5,7 +5,7 @@
     </v-col>
     <v-col cols="8">
       <v-row>
-        <v-col v-for="(feature, i) in keyFeatures" :key="i" cols="12">
+        <v-col v-for="(feature, i) in keyFeatures" :key="i" cols="12" class="mb-6">
           <LandingKeyFeatureCard v-bind="feature" />
         </v-col>
       </v-row>
