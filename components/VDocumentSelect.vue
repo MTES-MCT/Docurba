@@ -3,6 +3,7 @@
     v-model="selectedDoc"
     filled
     hide-details
+    dense
     placeholder="Type de document"
     :label="label"
     :items="documents"

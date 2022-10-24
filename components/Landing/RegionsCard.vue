@@ -9,7 +9,7 @@
         <v-col v-for="(regionsList, i) in regionsLists" :key="i" cols="4">
           <v-list color="beige">
             <template v-for="region in regionsList">
-              <v-list-item :key="region.iso">
+              <v-list-item :key="region.iso + '-item'">
                 <v-list-item-content>
                   <v-list-item-title>
                     {{ region.name }}
@@ -21,7 +21,7 @@
                   </v-icon>
                 </v-list-item-action>
               </v-list-item>
-              <v-divider :key="region.iso" />
+              <v-divider :key="region.iso + '-divider'" />
             </template>
           </v-list>
         </v-col>

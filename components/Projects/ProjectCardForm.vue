@@ -6,7 +6,13 @@
     <v-card-text v-if="userDeptCode">
       <v-row>
         <v-col cols="12">
-          <v-text-field v-model="newProject.name" filled hide-details placeholder="Nom du projet" />
+          <v-text-field
+            v-model="newProject.name"
+            filled
+            hide-details
+            placeholder="Nom du projet"
+            dense
+          />
         </v-col>
         <v-col cols="12">
           <VDocumentSelect v-model="newProject.doc_type" />
