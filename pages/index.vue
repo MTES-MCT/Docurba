@@ -63,7 +63,7 @@
     </v-container>
     <!-- <LandingCtaByNeed /> -->
     <LandingCitations />
-    <v-row class="g100 mt-16 py-16">
+    <v-row class="bf100-g750 mt-16 py-16">
       <LandingNewsLetterForm />
     </v-row>
   </div>
