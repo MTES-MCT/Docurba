@@ -3,7 +3,7 @@ titre: La numérisation et publication du PLU
 ordre: 3
 ---
 
-##### La numérisation et publication du PLU
+##### La numérisation et publication du PLUi
 
 Le géoportail de l’urbanisme (GPU) accueille  l’ensemble des documents d’urbanisme et les servitudes d’utilité publique applicables sur le territoire national afin de les rendre accessibles au grand public. Il permet à la société civile de consulter et télécharger sur une même plateforme tous les documents d’urbanisme du territoire national.
 Depuis le  1er janvier 2020,

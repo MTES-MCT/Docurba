@@ -3,7 +3,7 @@ titre: L’évaluation du PLU au bout de 6 ans
 ordre: 4
 ---
 
-##### L’évaluation du PLU au bout de 6 ans
+##### L’évaluation du PLUi au bout de 6 ans
 
 Six ans au plus après soit :
 - la délibération portant approbation du plan local d'urbanisme

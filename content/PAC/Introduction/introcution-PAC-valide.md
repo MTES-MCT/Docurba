@@ -1,5 +1,5 @@
 ---
-titre : introduction PAC validé
+titre : PAC validé
 ordre : 1
 ---
 Le présent document constitue le porter à connaissance (PAC) réglementaire de l’État dans le cadre de l’élaboration du PLU de la commune de ***XXX***. Il est élaboré en référence au code de l’urbanisme ([L132-2](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031210796/) et [R132-1](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031719829/#LEGISCTA000031720809)) et constitue l’acte obligatoire par lequel le Préfet porte à la connaissance de la collectivité les informations nécessaires à l’exercice de ses compétences en matière d’urbanisme.

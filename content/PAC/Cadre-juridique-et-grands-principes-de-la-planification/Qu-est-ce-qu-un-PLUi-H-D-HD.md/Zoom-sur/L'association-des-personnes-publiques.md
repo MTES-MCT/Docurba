@@ -5,14 +5,14 @@ ordre: 2
 
 ##### L’association des personnes publiques
 
-Le code de l’urbanisme prévoit l'association des personnes publiques à l'élaboration et à la révision du PLU. **Les personnes publiques associées sont listées aux articles [L.132-7 et L.132-9 du code de l’urbanisme](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210810/#LEGISCTA000031212151).**
+Le code de l’urbanisme prévoit l'association des personnes publiques à l'élaboration et à la révision du PLUi. **Les personnes publiques associées sont listées aux articles [L.132-7 et L.132-9 du code de l’urbanisme](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210810/#LEGISCTA000031212151).**
 
 “*Les personnes publiques associées :*
 - *1° Reçoivent notification de la délibération prescrivant l'élaboration du schéma de cohérence territoriale ou du plan local d'urbanisme ;*
 - *2° Peuvent, tout au long de cette élaboration, demander à être consultées sur le projet de schéma de cohérence territoriale ou de plan local d'urbanisme ;*
 - *3° Emettent un avis, qui est joint au dossier d'enquête publique, sur le projet de schéma ou de plan arrêté.*”
 
-De même, toute personne publique peut demander à être consultée lors de l'élaboration du PLU.
+De même, toute personne publique peut demander à être consultée lors de l'élaboration du PLUi.
 
 **En ce qui concerne la place de l’Etat**, son inclusion tout au long de la procédure d’évolution du document constitue un cadre privilégié pour partager ses attentes et objectifs, qui résultent des politiques nationales et de ses réflexions stratégiques. Permettre la consultation de l’Etat dans la procédure d’évolution du document  favorise alors l’émergence d’une vision partagée et intégrée du territoire par des échanges et le débat.
 
