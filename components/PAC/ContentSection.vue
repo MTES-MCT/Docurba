@@ -45,7 +45,7 @@
           :open="section.titre === 'Introduction' ? [0] : []"
           :editable="editable"
         />
-        <PACSectionsAttachementsCardList :section-path="section.path" :project-id="projectId" />
+        <PACSectionsAttachementsCardList v-if="projectId" :section-path="section.path" :project-id="projectId" />
       </v-expansion-panel-content>
     </v-expansion-panel>
   </v-expansion-panels>
