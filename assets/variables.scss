@@ -22,14 +22,22 @@
   $body-font-family: 'Marianne', 'Arial', sans-serif !default;
   $alter-font-family: 'Spectral', 'Georgia', sans-serif !default;
 
+  // Normaly this should be in rem.
+  // Need more testing.
+  $border-radius-root: 4px;
+
+  $rounded: (
+    'lg': $border-radius-root * 4
+  );
+
   $headings: (
         'h1': (
           'size': 40px,//200px,
-          'weight': 900,
+          'weight': 700,
           'line-height': 48px,
           'letter-spacing': 0em,
           'font-family': $heading-font-family,
-          'text-transform': uppercase,
+          // 'text-transform': uppercase,
         ),
         'h2': (
           'size': 32px,//100px,
@@ -37,7 +45,7 @@
           'line-height': 40px,
           'letter-spacing': 0em,
           'font-family': $heading-font-family,
-          'text-transform': uppercase
+          // 'text-transform': none
         ),
         'h3': (
           'size': 28px,
@@ -61,7 +69,7 @@
           'line-height': 28px,
           'letter-spacing': normal,
           'font-family': $heading-font-family,
-          'text-transform': uppercase
+          // 'text-transform': uppercase
         ),
         'h6': (
           'size': 20px,

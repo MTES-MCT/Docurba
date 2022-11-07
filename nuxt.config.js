@@ -124,7 +124,7 @@ export default {
           'g400-t': '#cecece',
           'g100-g800': '#f8f8f8',
           'w-g750': '#fff',
-          focus: '#2a7ffe',
+          focus: '#6A6AF4',
           info: '#0762c8',
           success: '#008941',
           error: '#e10600',
