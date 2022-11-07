@@ -167,7 +167,7 @@ export default {
 
       this.getEdits()
       this.getNbAdmins()
-      // this.getNbProjects()
+      this.getNbProjects()
     }
   },
   methods: {
@@ -189,12 +189,12 @@ export default {
 
       this.nbAgents = data.nbAgents
     },
-    // async getNbProjects () {
-    //   const { data: nbProjects } = await axios({
-    //     url: '/api/stats/projects',
-    //     method: 'get'
-    //   })
-    // },
+    async getNbProjects () {
+      const { data: nbProjects } = await axios({
+        url: '/api/stats/projects',
+        method: 'get'
+      })
+    },
     sum (values) {
       return values.reduce((total, val) => {
         return total + val
