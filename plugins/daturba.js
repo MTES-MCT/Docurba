@@ -1,5 +1,15 @@
 import axios from 'axios'
 
+const geoIde = axios.create({
+  baseURL: 'http://catalogue.geo-ide.developpement-durable.gouv.fr'
+})
+
+const geoIdeParams = {
+  _content_type: 'json',
+  resultType: 'details',
+  fast: 'index'
+}
+
 export default ({ route }, inject) => {
   const sourceMap = {
     'FR-ARA': {
@@ -39,8 +49,6 @@ export default ({ route }, inject) => {
   }
 
   function prodigeParser (data, themes) {
-    // console.log('prodigeParser', data, themes)
-
     data.objets.forEach((obj) => {
       obj.nom_table = data.nom_table
     })
@@ -56,6 +64,16 @@ export default ({ route }, inject) => {
 
       return !!dataTheme
     })
+
+    // data.cards = data.objets.map((obj) => {
+    //   return {
+    //     title: obj.nom,
+    //     tags: [data.subTheme.text],
+    //     links: obj.ressources,
+    //     mainLink: obj.carto_url,
+    //     mainLinkType: 'iframe'
+    //   }
+    // })
   }
 
   const parsers = {
@@ -92,6 +110,38 @@ export default ({ route }, inject) => {
   }
 
   inject('daturba', {
+    // search arg should be `commune/${codeInsee}` or `departement/${codeDepartement}` or `region/${codeRegion}`
+    async getGeoIDE (search) {
+      const { data } = await geoIde({
+        method: 'get',
+        url: '/catalogue/srv/eng/q',
+        params: Object.assign({ any: search }, geoIdeParams)
+      })
+
+      const { metadata, summary } = data
+
+      const cards = metadata.map((dataset) => {
+        const rawLinks = typeof (dataset.link) === 'object' ? dataset.link : [dataset.link]
+        const links = rawLinks.map((link) => {
+          const vals = link.split('||')
+          return {
+            text: vals[0],
+            url: vals[1]
+          }
+        })
+
+        return {
+          title: dataset.defaultTitle,
+          tags: ['GeoIDE'],
+          text: dataset.abstract,
+          links,
+          mainLink: `http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue/srv/eng/catalog.search#/metadata/${dataset.identifier}`,
+          mainLinkType: 'link'
+        }
+      })
+
+      return { cards, themes: summary }
+    },
     getCardDataUrl (region = route.query.region, data) {
       return cardSourceUrl[region](data)
     },
@@ -109,18 +159,18 @@ export default ({ route }, inject) => {
       })
 
       if (source) {
-        const dataset = (await axios({
+        const { data: dataset } = await axios({
           url: source.url,
           method: 'post',
           data: Object.assign({
             'insee[]': parsedInseeCode
           }, source.data)
-        })).data
+        })
 
-        const themes = (await axios({
+        const { data: themes } = await axios({
           url: source.themesUrl,
           method: 'get'
-        })).data
+        })
 
         // console.log('getData', region, dataset, themes)
 

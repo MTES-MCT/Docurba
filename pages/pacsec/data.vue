@@ -39,6 +39,7 @@ export default {
 
     this.dataset = dataset
     this.themes = themes
+
     this.loading = false
   }
 }
