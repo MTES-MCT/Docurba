@@ -37,7 +37,7 @@
             <DataSourceCard
               :selected="isSelected(obj)"
               :sub-theme="source.subTheme"
-              :source="obj"
+              :source="obj.card"
               :region="region"
               :selectable="selectable"
               load-on-active

@@ -49,10 +49,6 @@ export default ({ route }, inject) => {
   }
 
   function prodigeParser (data, themes) {
-    data.objets.forEach((obj) => {
-      obj.nom_table = data.nom_table
-    })
-
     data.theme = themes.find((theme) => {
       const dataTheme = theme.children.find((subTheme) => {
         return subTheme.id === data.theme
@@ -65,15 +61,24 @@ export default ({ route }, inject) => {
       return !!dataTheme
     })
 
-    // data.cards = data.objets.map((obj) => {
-    //   return {
-    //     title: obj.nom,
-    //     tags: [data.subTheme.text],
-    //     links: obj.ressources,
-    //     mainLink: obj.carto_url,
-    //     mainLinkType: 'iframe'
-    //   }
-    // })
+    data.objets.forEach((obj) => {
+      obj.nom_table = data.nom_table
+
+      console.log(obj)
+
+      obj.card = {
+        title: obj.nom,
+        tags: data.subTheme ? [data.subTheme.text] : [],
+        links: obj.ressources.map((l) => {
+          return {
+            text: l.alias || l[0].alias,
+            url: l.valeur || l[0].valeur
+          }
+        }),
+        mainLink: obj.carto_url,
+        mainLinkType: 'iframe'
+      }
+    })
   }
 
   const parsers = {
