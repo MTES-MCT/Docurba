@@ -27,7 +27,8 @@ export default {
     return {
       tabs: [
         { text: 'Socle du PAC', to: '/pacsec/content' },
-        { text: 'Jeux de données', to: '/pacsec/data' },
+        { text: 'Base territoriale', to: '/pacsec/data' },
+        { text: 'Géo-IDE', to: '/pacsec/geoide' },
         { text: 'Ressources', to: '/pacsec/ressources' },
         { text: 'Glossaire', to: '/pacsec/glossaire' }
       ]

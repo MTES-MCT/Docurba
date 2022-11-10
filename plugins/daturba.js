@@ -120,6 +120,8 @@ export default ({ route }, inject) => {
 
       const { metadata, summary } = data
 
+      // console.log(data, summary)
+
       const cards = metadata.map((dataset) => {
         const rawLinks = typeof (dataset.link) === 'object' ? dataset.link : [dataset.link]
         const links = rawLinks.map((link) => {
