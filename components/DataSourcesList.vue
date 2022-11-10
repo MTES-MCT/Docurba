@@ -40,6 +40,7 @@
               :source="obj"
               :region="region"
               :selectable="selectable"
+              load-on-active
               @input="changeSelection(obj, $event)"
             />
           </v-col>

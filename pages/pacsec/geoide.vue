@@ -1,5 +1,5 @@
 <template>
-  <DataSourcesList v-if="!loading" :region="currentRegion" :data-sources="dataset" :themes="themes" />
+  <GeoIDECardList v-if="!loading" :region="currentRegion" :cards="dataset" :themes="themes" />
   <VGlobalLoader v-else />
 </template>
 
@@ -41,23 +41,16 @@ export default {
 
     const { cards, themes } = await this.$daturba.getGeoIDE(parsedInseeCode.join(' or '))
 
-    // this.dataset = dataset
-    // this.themes = themes
-
-    console.log(cards, themes)
-
-    this.dataset = [{
-
-    }]
+    this.dataset = cards
 
     this.themes = themes.dimension.find(d => d['@label'] === 'inspireThemes').category.map((c) => {
       return {
-        text: `${c['@label']} ${c['@count']}`,
+        text: `${c['@label']} (${c['@count']})`,
         id: c['@value']
       }
     })
 
-    // this.loading = false
+    this.loading = false
   }
 }
 </script>

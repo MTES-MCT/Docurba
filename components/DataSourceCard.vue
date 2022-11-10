@@ -2,7 +2,7 @@
   <v-lazy v-model="isActive" :min-height="228">
     <v-card flat color="g100">
       <v-card-title class="break-word">
-        {{ source.nom }}
+        {{ source.title }}
         <v-btn
           v-if="selectable"
           color="primary"
@@ -21,14 +21,18 @@
         <v-row>
           <v-col cols="12">
             <v-chip
-              v-if="subTheme && subTheme.text"
+              v-for="tag in source.tags"
+              :key="tag"
               outlined
               class="text-capitalize"
               color="bf300"
             >
-              {{ subTheme.text }}
+              {{ tag }}
             </v-chip>
           </v-col>
+        </v-row>
+        <v-row v-if="source.text" class="source-text">
+          <v-col>{{ source.text }}</v-col>
         </v-row>
         <v-row v-if="filteredChamps.length" dense>
           <v-col v-for="(champ, i) in filteredChamps" :key="`${i}-${champ.alias}`" cols="12">
@@ -37,25 +41,27 @@
           </v-col>
         </v-row>
         <v-row class="py-4">
-          <v-col v-for="(ressource, i) in source.ressources" :key="i" cols="12" class="py-0">
+          <v-col v-for="(link, i) in source.links" :key="i" cols="12" class="py-0">
             <v-btn
+              max-width="100%"
               depressed
               tile
               text
               color="primary"
-              :href="ressource.valeur"
+              :href="link.url"
               target="_blank"
+              class="source-link"
             >
               <v-icon small class="mr-2">
                 {{ icons.mdiOpenInNew }}
               </v-icon>
-              {{ ressource.alias }}
+              {{ link.text }}
             </v-btn>
           </v-col>
         </v-row>
       </v-card-text>
       <v-card-actions>
-        <v-dialog height="600px" width="900px">
+        <v-dialog v-if="source.mainLinkType === 'iframe'" height="600px" width="900px">
           <template #activator="{on}">
             <v-btn
               depressed
@@ -75,6 +81,17 @@
             <iframe width="900" height="600" :src="source.carto_url" />
           </v-card>
         </v-dialog>
+        <v-btn
+          v-else
+          depressed
+          tile
+          block
+          color="primary"
+          :href="source.mainLink"
+          target="_blank"
+        >
+          Voir la ressource
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-lazy>
@@ -110,6 +127,10 @@ export default {
     selected: {
       type: Boolean,
       default: false
+    },
+    loadOnActive: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -143,7 +164,7 @@ export default {
   watch: {
     // This can be used to fetch more data when element is visible only.
     async isActive () {
-      if (this.isActive && !this.champs.length) {
+      if (this.isActive && this.loadOnActive && !this.champs.length) {
         const { champs } = await this.$daturba.getCardData(this.region, this.source)
         this.champs = champs
       }
@@ -161,3 +182,23 @@ export default {
   }
 }
 </script>
+
+<style>
+.source-text {
+  max-height: 200px;
+  overflow: scroll;
+}
+
+.link-text {
+  max-width: 100%;
+  display: inline-block;
+}
+
+.source-link .v-btn__content {
+  max-width: 100%;
+  display: block;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+</style>

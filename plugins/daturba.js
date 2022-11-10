@@ -132,12 +132,15 @@ export default ({ route }, inject) => {
           }
         })
 
+        const datasetId = dataset['geonet:info'].uuid
+
         return {
           title: dataset.defaultTitle,
           tags: ['GeoIDE'],
           text: dataset.abstract,
           links,
-          mainLink: `http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue/srv/eng/catalog.search#/metadata/${dataset.identifier}`,
+          mainLink: `http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue/srv/fre/catalog.search#/metadata/${datasetId}`,
+          // mainLink: `http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue/srv/eng/catalog.search#/metadata/${dataset.identifier}`,
           mainLinkType: 'link'
         }
       })
