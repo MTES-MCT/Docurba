@@ -101,37 +101,15 @@ export default {
     }
   },
   methods: {
-    subscribeToBdd (projectId) {
+    async subscribeToBdd (projectId) {
       if (this.projectSectionsSub) {
-        this.$supabase.removeSubscription(this.projectSectionsSub)
+        await this.$supabase.removeSubscription(this.projectSectionsSub)
       }
 
       this.projectSectionsSub = this.$supabase.from(`pac_sections_project:project_id=eq.${projectId}`).on('*', (update) => {
         this.spliceSection(this.PAC, update)
       }).subscribe()
     }
-    // This is duplicate from /projects/trame.vue
-    // selectSection (section) {
-    //   const { text, titre, path, slug, dir, ordre } = this.PAC.find(s => s.path === section.path)
-
-    //   this.selectedSection = {
-    //     text,
-    //     titre,
-    //     path,
-    //     slug,
-    //     dir,
-    //     ordre,
-    //     project_id: this.project.id
-    //   }
-    // },
-    // async changeSelectedSections (selectedSections) {
-    //   // This make it so we can't save sections as objects in reading mode for comments and checked features.
-    //   await this.$supabase.from('projects').update({
-    //     PAC: selectedSections.map(s => s || s.path)
-    //   }).eq('id', this.project.id)
-
-    //   this.$notifications.notifyUpdate(this.project.id)
-    // }
   }
 }
 </script>

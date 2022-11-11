@@ -34,7 +34,7 @@ export default {
         return Object.assign({ textEdited: textEdited > 1 }, ...sections)
       })
     },
-    // Update should be a BDD update from supabase realtime event.
+    // update arg should be a BDD update from supabase realtime event.
     spliceSection (PAC, update) {
       // This should be able to handle Create, Update and Delete from a PAC.
       if (update.eventType === 'DELETE' && update.old) {
