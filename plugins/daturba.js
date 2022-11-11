@@ -122,8 +122,6 @@ export default ({ route }, inject) => {
       })
 
       const { metadata, summary } = data
-      console.log(metadata, summary)
-
       let cards = []
 
       if (metadata) {
