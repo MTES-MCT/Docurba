@@ -64,8 +64,6 @@ export default ({ route }, inject) => {
     data.objets.forEach((obj) => {
       obj.nom_table = data.nom_table
 
-      console.log(obj)
-
       obj.card = {
         title: obj.nom,
         tags: data.subTheme ? [data.subTheme.text] : [],
@@ -141,12 +139,12 @@ export default ({ route }, inject) => {
 
         return {
           title: dataset.defaultTitle,
-          tags: ['GeoIDE'],
+          tags: ['Géo-IDE'],
           text: dataset.abstract,
           links,
           mainLink: `http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue/srv/fre/catalog.search#/metadata/${datasetId}`,
-          // mainLink: `http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue/srv/eng/catalog.search#/metadata/${dataset.identifier}`,
-          mainLinkType: 'link'
+          mainLinkType: 'link',
+          categs: typeof (dataset.inspirethemewithac) === 'object' ? dataset.inspirethemewithac : [dataset.inspirethemewithac]
         }
       })
 

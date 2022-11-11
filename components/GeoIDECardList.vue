@@ -21,7 +21,15 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col v-for="(card, i) in filterredCards" :key="`${card.title}-${i}`" cols="12" sm="6" md="4">
+      <v-col
+        v-for="(card, i) in filterredCards"
+        :key="`${card.title}-${i}`"
+        cols="12"
+        sm="6"
+        md="6"
+        lg="6"
+        xl="4"
+      >
         <DataSourceCard
           :source="card"
           :region="region"
@@ -54,7 +62,11 @@ export default {
   },
   computed: {
     filterredCards () {
-      return this.cards
+      if (this.selectedTheme) {
+        return this.cards.filter((card) => {
+          return !!card.categs.find(categ => categ.includes(this.selectedTheme))
+        })
+      } else { return this.cards }
     }
   }
 }
