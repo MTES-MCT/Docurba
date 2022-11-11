@@ -43,12 +43,18 @@ export default {
 
     this.dataset = cards
 
-    this.themes = themes.dimension.find(d => d['@label'] === 'inspireThemes').category.map((c) => {
-      return {
-        text: `${c['@label']} (${c['@count']})`,
-        id: c['@value']
-      }
-    })
+    const inspireThemes = themes.dimension.find(d => d['@label'] === 'inspireThemes')
+
+    if (inspireThemes && inspireThemes.category) {
+      this.themes = inspireThemes.category.map((c) => {
+        return {
+          text: `${c['@label']} (${c['@count']})`,
+          id: c['@value']
+        }
+      })
+    } else {
+      this.themes = []
+    }
 
     this.loading = false
   }

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="cards.length">
     <v-row>
       <v-col cols="12">
         <v-chip-group
@@ -34,6 +34,15 @@
           :source="card"
           :region="region"
         />
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-container v-else class="fill-height">
+    <v-row class="fill-height" justify="center" align="center">
+      <v-col cols="auto">
+        <h2 class="text-h2 text-center">
+          Aucune donnée n'est disponible pour le moment.
+        </h2>
       </v-col>
     </v-row>
   </v-container>

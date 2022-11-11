@@ -122,31 +122,34 @@ export default ({ route }, inject) => {
       })
 
       const { metadata, summary } = data
+      console.log(metadata, summary)
 
-      // console.log(data, summary)
+      let cards = []
 
-      const cards = metadata.map((dataset) => {
-        const rawLinks = typeof (dataset.link) === 'object' ? dataset.link : [dataset.link]
-        const links = rawLinks.map((link) => {
-          const vals = link.split('||')
+      if (metadata) {
+        cards = metadata.map((dataset) => {
+          const rawLinks = typeof (dataset.link) === 'object' ? dataset.link : [dataset.link]
+          const links = rawLinks.map((link) => {
+            const vals = link.split('||')
+            return {
+              text: vals[0],
+              url: vals[1]
+            }
+          })
+
+          const datasetId = dataset['geonet:info'].uuid
+
           return {
-            text: vals[0],
-            url: vals[1]
+            title: dataset.defaultTitle,
+            tags: ['Géo-IDE'],
+            text: dataset.abstract,
+            links,
+            mainLink: `http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue/srv/fre/catalog.search#/metadata/${datasetId}`,
+            mainLinkType: 'link',
+            categs: typeof (dataset.inspirethemewithac) === 'object' ? dataset.inspirethemewithac : [dataset.inspirethemewithac]
           }
         })
-
-        const datasetId = dataset['geonet:info'].uuid
-
-        return {
-          title: dataset.defaultTitle,
-          tags: ['Géo-IDE'],
-          text: dataset.abstract,
-          links,
-          mainLink: `http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue/srv/fre/catalog.search#/metadata/${datasetId}`,
-          mainLinkType: 'link',
-          categs: typeof (dataset.inspirethemewithac) === 'object' ? dataset.inspirethemewithac : [dataset.inspirethemewithac]
-        }
-      })
+      }
 
       return { cards, themes: summary }
     },
