@@ -77,10 +77,13 @@ export default {
       axios({
         url: '/api/admin/help',
         method: 'post',
-        data: this.change
+        data: Object.assign({
+          section: this.section.titre,
+          dir: this.section.dir
+        }, this.change)
       })
 
-      this.help = {
+      this.change = {
         email: this.$user.email,
         title: '',
         message: ''

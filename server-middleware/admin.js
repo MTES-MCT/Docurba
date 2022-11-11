@@ -6,7 +6,7 @@ const sendgrid = require('./modules/sendgrid.js')
 const slack = require('./modules/slack.js')
 
 app.post('/help', (req, res) => {
-  const { title, message, email } = req.body
+  const { title, message, section, email, dir } = req.body
 
   sendgrid.sendEmail({
     to: ['fabien@quantedsquare.com', 'celia.vermicelli@beta.gouv.fr', 'hermance.gauthier@developpement-durable.gouv.fr'],
@@ -14,7 +14,9 @@ app.post('/help', (req, res) => {
     template_id: 'd-23a3309075ab4710af6028e4639bf6dc',
     dynamic_template_data: {
       title,
-      message
+      message,
+      section,
+      dir
     }
   })
 
