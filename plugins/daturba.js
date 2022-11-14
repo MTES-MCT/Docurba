@@ -1,15 +1,5 @@
 import axios from 'axios'
 
-const geoIde = axios.create({
-  baseURL: 'http://catalogue.geo-ide.developpement-durable.gouv.fr'
-})
-
-const geoIdeParams = {
-  _content_type: 'json',
-  resultType: 'details',
-  fast: 'index'
-}
-
 export default ({ route }, inject) => {
   const sourceMap = {
     'FR-ARA': {
@@ -115,10 +105,10 @@ export default ({ route }, inject) => {
   inject('daturba', {
     // search arg should be `commune/${codeInsee}` or `departement/${codeDepartement}` or `region/${codeRegion}`
     async getGeoIDE (search) {
-      const { data } = await geoIde({
+      const { data } = await axios({
+        url: '/api/geoide/q',
         method: 'get',
-        url: '/catalogue/srv/eng/q',
-        params: Object.assign({ any: search }, geoIdeParams)
+        params: { any: search }
       })
 
       const { metadata, summary } = data
