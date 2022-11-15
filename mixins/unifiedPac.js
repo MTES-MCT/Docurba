@@ -27,6 +27,11 @@ export default {
           return omitBy(section, isNil)
         }).reverse()
 
+        // This is to test the unified sections depending on path.
+        // if (path === '/PAC/Dispositions-de-documents-supra-territoriaux-et-doctrines/Documents-regionaux/SDAGE-PGRI') {
+        //   console.log('unified sections', sections, Object.assign({}, ...sections))
+        // }
+
         const textEdited = sections.reduce((nbEdit, section) => {
           return nbEdit + !!section.text
         }, 0)

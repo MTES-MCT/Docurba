@@ -62,10 +62,19 @@ export default {
       this.subscribeToBdd()
     })
 
-    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.departementCode)
+    // const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.departementCode)
+
+    const [regionSections, deptSections] = await Promise.all([
+      this.fetchSections('pac_sections_region', {
+        region: this.departement.code_region
+      }),
+      this.fetchSections('pac_sections_dept', {
+        dept: this.departementCode
+      })
+    ])
 
     // Merge data of multiple PACs using unifiedPac.js mixin.
-    this.PAC = this.unifyPacs([deptSections, this.PAC])
+    this.PAC = this.unifyPacs([deptSections, regionSections, this.PAC])
 
     this.loading = false
   },
