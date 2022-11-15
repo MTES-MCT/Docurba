@@ -64,7 +64,10 @@ export default ({ route }, inject) => {
           }
         }),
         mainLink: obj.carto_url,
-        mainLinkType: 'iframe'
+        mainLinkType: 'iframe',
+        // Prodige Keys
+        id: obj.id,
+        nom_table: data.nom_table
       }
     })
   }

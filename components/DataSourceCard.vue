@@ -78,7 +78,7 @@
             </v-btn>
           </template>
           <v-card height="600px" width="900px">
-            <iframe width="900" height="600" :src="source.carto_url" />
+            <iframe width="900" height="600" :src="source.mainLink" />
           </v-card>
         </v-dialog>
         <v-btn
