@@ -354,8 +354,8 @@ export default {
     },
     addInternalLink (link) {
       if (link && link.path) {
-        const projectPath = `/projets/${this.$route.params.projectId}/content`
-        this.editor.commands.setLink({ href: `${projectPath}#${this.$PAC.pathToAnchor(link.path)}`, target: '_self' })
+        // const projectPath = `/projets/${this.$route.params.projectId}/content`
+        this.editor.commands.setLink({ href: `#${this.$PAC.pathToAnchor(link.path)}`, target: '_self' })
       }
 
       this.selectionMenu = false
