@@ -82,7 +82,7 @@
           </v-card>
         </v-col>
         <v-col cols="4">
-          <v-card flat tile>
+          <!-- <v-card flat tile>
             <v-card-subtitle class="text-h6 text--primary">
               Jeux de données
             </v-card-subtitle>
@@ -93,6 +93,26 @@
                 outlined
                 color="primary"
                 :to="`/projets/${projectData.id}/data?region=${projectData.region}`"
+                nuxt
+              >
+                Consulter
+                <v-icon class="ml-2">
+                  {{ icons.mdiEye }}
+                </v-icon>
+              </v-btn>
+            </v-card-actions>
+          </v-card> -->
+          <v-card>
+            <v-card-subtitle class="text-h6 text--primary">
+              Frise d'évènements
+            </v-card-subtitle>
+            <v-card-actions>
+              <v-btn
+                depressed
+                tile
+                outlined
+                color="primary"
+                :to="`/projets/${projectData.id}/frise`"
                 nuxt
               >
                 Consulter
