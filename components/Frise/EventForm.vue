@@ -7,10 +7,10 @@
           <v-row>
             <v-col cols="6">
               <v-row>
-                <v-col cols="12">
+                <v-col cols="10">
                   <v-text-field v-model="event.type" hide-details filled label="Type" />
                 </v-col>
-                <v-col cols="12">
+                <v-col cols="6">
                   <VTextDatePicker v-model="event.date" label="Date" />
                 </v-col>
                 <v-col cols="12">
@@ -22,6 +22,36 @@
                   />
                 </v-col>
               </v-row>
+            </v-col>
+            <v-col cols="6">
+              <span class="label">Partie prenantes</span>
+              <v-checkbox
+                v-for="actor in actorsList"
+                :key="actor"
+                v-model="event.actors"
+                :value="actor"
+                :label="actor"
+                hide-details
+              />
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-col>
+    <v-col cols="12">
+      <v-card outlined>
+        <v-card-text>
+          <v-row>
+            <v-spacer />
+            <v-col cols="auto">
+              <v-btn color="primary" outlined tile @click="$emit('cancel')">
+                Annuler
+              </v-btn>
+            </v-col>
+            <v-col cols="auto">
+              <v-btn color="primary" tile @click="$emit('cancel')">
+                {{ eventId ? 'Modifier' : 'Créer' }}
+              </v-btn>
             </v-col>
           </v-row>
         </v-card-text>
@@ -57,7 +87,8 @@ export default {
   },
   data () {
     return {
-      event: Object.assign({}, defaultEvent)
+      event: Object.assign({}, defaultEvent),
+      actorsList: ['Collectivité', 'DDT', 'Bureau d’étude']
     }
   },
   // async mounted () {
