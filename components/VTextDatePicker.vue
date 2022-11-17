@@ -8,7 +8,11 @@
         :value="desplayedDate"
         hide-details
         v-on="on"
-      />
+      >
+        <template #append>
+          <v-icon>{{ icons.mdiCalendar }}</v-icon>
+        </template>
+      </v-text-field>
     </template>
     <v-date-picker
       v-model="pickerDate"
@@ -20,6 +24,8 @@
 
 <script>
 import dayjs from 'dayjs'
+
+import { mdiCalendar } from '@mdi/js'
 
 export default {
   model: {
@@ -42,7 +48,8 @@ export default {
   },
   data () {
     return {
-      menu: false
+      menu: false,
+      icons: { mdiCalendar }
     }
   },
   computed: {

@@ -10,7 +10,7 @@
     <v-row>
       <v-col cols="12">
         <h1 class="text-h1">
-          Ajouter un événement
+          Modification d'évènement
         </h1>
       </v-col>
       <FriseEventForm
