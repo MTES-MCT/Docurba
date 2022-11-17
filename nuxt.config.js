@@ -119,7 +119,7 @@ export default {
           g200: '#f0f0f0',
           g100: '#f8f8f8',
           w: '#fff',
-          beige: '#f9f8f6',
+          beige: '#F9F8F6',
           'g800-plain': '#1e1e1e',
           'g600-g400': '#6a6a6a',
           'g400-t': '#cecece',
