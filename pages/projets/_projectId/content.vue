@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="loaded" fluid>
+  <v-container v-if="loaded">
     <iframe v-if="pdfUrl" :src="pdfUrl" style="width: 100%;height: calc(100vh - 200px);border: none;" />
     <PACTreeviewContent
       v-if="project && !pdfUrl"

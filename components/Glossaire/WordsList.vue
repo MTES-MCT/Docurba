@@ -28,6 +28,7 @@
         <v-card
           :id="word.titre"
           :ripple="false"
+          outlined
         >
           <v-card-title class="break-word">
             {{ word.titre }}

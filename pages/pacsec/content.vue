@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="loaded" fluid>
+  <v-container v-if="loaded">
     <PACTreeviewContent :pac-data="PAC" />
   </v-container>
   <VGlobalLoader v-else />

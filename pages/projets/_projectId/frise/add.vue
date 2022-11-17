@@ -13,11 +13,7 @@
           Ajouter un événement
         </h1>
       </v-col>
-      <v-col cols="12">
-        <v-card outlined>
-          <v-card-title>Eléments obligatoires</v-card-title>
-        </v-card>
-      </v-col>
+      <FriseEventForm />
     </v-row>
   </v-container>
 </template>
