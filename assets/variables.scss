@@ -141,6 +141,11 @@
     color: var(--v-g800) !important
   }
 
+  .v-application .v-card.v-sheet--outlined {
+    border: 1px solid #DDDDDD !important;
+    border-color: #DDDDDD !important;
+  }
+
   .v-btn .v-btn__content {
     font-family: $heading-font-family;
     text-transform: capitalize;

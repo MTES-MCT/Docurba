@@ -121,6 +121,7 @@ export default {
           g100: '#f8f8f8',
           w: '#fff',
           beige: '#F9F8F6',
+          'alt-beige': '#F6F6F6',
           'g800-plain': '#1e1e1e',
           'g600-g400': '#6a6a6a',
           'g400-t': '#cecece',

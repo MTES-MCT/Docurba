@@ -1,5 +1,5 @@
 <template>
-  <v-card outlined>
+  <v-card outlined color="alt-beige">
     <v-card-title>Répères temporels</v-card-title>
     <v-card-text>
       <v-timeline dense>
