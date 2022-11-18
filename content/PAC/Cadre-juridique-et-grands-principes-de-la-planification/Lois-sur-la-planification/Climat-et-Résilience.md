@@ -32,7 +32,7 @@ D’ores et déjà, la loi prévoit un calendrier d’adaptation des documents d
 
 **A l’échelle régionale :** le SRADDET doit définir une trajectoire permettant d’atteindre zéro artificialisation nette des sols. Par tranche de 10 ans, il définit un objectif chiffré de réduction de l’artificialisation des sols sur son territoire et précise les modalités de répartition des enveloppes de consommation foncière par territoire.
 
-**A l’échelle des SCoT :** ils doivent tout d’abord se réunir en conférence régionale des SCoT et formuler des propositions permettant d’atteindre l’objectif régional avant le 22 octobre 2022 (report dû à la loi 3DS). 
+**A l’échelle des SCoT :** ils doivent tout d’abord se réunir en conférence régionale des SCoT et formuler des propositions permettant d’atteindre l’objectif régional. Cette conférence des SCoT devait se tenir avant le 22 octobre 2022 (report dû à la loi 3DS). 
 
 **A l’échelle des PLU(i) :** le PADD ne pourra prévoir d’ouvrir à l’urbanisation des espaces agricoles, naturels ou forestiers qu’après démonstration de l’impossibilité de prévoir ces développements au sein des espaces urbanisés, à l’aide d’une étude de densification des zones déjà urbanisées. Les OAP doivent obligatoirement intégrer un échéancier d‘ouverture à l’urbanisation, et les zones à urbaniser (AU) non immédiatement constructibles ne pourront être ouvertes à l’urbanisation par voie de modification du PLU(i) que pour une période de 6 ans (au lieu de 9 ans). L’analyse des résultats du PLUi se voit également contracter son échéance de 9 à 6 ans, et un rapport sur l’artificialisation devra être effectué selon un rythme triennal.
 
