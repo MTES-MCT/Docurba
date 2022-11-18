@@ -29,7 +29,6 @@
 </template>
 
 <script>
-import dayjs from 'dayjs'
 import { sortBy } from 'lodash'
 
 export default {
@@ -48,13 +47,13 @@ export default {
   computed: {
     orderedEvents () {
       return sortBy(this.events, (event) => {
-        return -dayjs(event.date_iso).valueOf()
+        return -this.$dayjs(event.date_iso).valueOf()
       })
     }
   },
   methods: {
     formatDate (isoDate) {
-      return dayjs(isoDate).format('DD/MM/YYYY')
+      return this.$dayjs(isoDate).format('DD/MM/YYYY')
     }
   }
 }

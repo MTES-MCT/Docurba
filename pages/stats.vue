@@ -121,9 +121,6 @@
 
 <script>
 import axios from 'axios'
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-dayjs.extend(customParseFormat)
 
 export default {
   data () {
@@ -143,7 +140,7 @@ export default {
     }
   },
   async mounted () {
-    const date = dayjs().subtract(1, 'day')
+    const date = this.$dayjs().subtract(1, 'day')
     const lastMonth = date.subtract(30, 'day')
 
     const dateRange = `${lastMonth.format('YYYY-MM-DD')},${date.format('YYYY-MM-DD')}`
@@ -157,7 +154,7 @@ export default {
 
     if (!err) {
       const days = Object.keys(visits).sort((d1, d2) => {
-        return dayjs(d1, 'YYYY-MM-DD') - dayjs(d2, 'YYYY-MM-DD')
+        return this.$dayjs(d1, 'YYYY-MM-DD') - this.$dayjs(d2, 'YYYY-MM-DD')
       })
 
       // console.log(visits)

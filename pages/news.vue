@@ -35,19 +35,15 @@
 </template>
 
 <script>
-import dayjs from 'dayjs'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-dayjs.extend(customParseFormat)
-
 export default {
-  async asyncData ({ $content }) {
+  async asyncData ({ $content, $dayjs }) {
     const news = await $content('News', {
       deep: true
     }).fetch()
 
     return {
       news: news.filter(q => q.visible).sort((a, b) => {
-        return +dayjs(b.date, 'DD/MM/YYYY') - +dayjs(a.date, 'DD/MM/YYYY')
+        return +$dayjs(b.date, 'DD/MM/YYYY') - +$dayjs(a.date, 'DD/MM/YYYY')
       })
     }
   }

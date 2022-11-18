@@ -23,12 +23,7 @@
 </template>
 
 <script>
-import dayjs from 'dayjs'
-import 'dayjs/locale/fr'
-
 import { groupBy, sortBy } from 'lodash'
-
-dayjs.locale('fr')
 
 export default {
   props: {
@@ -43,18 +38,18 @@ export default {
 
       const checkpoints = Object.keys(months).map((month) => {
         const monthEvents = sortBy(months[month], (event) => {
-          return -dayjs(event.date_iso).valueOf()
+          return -this.$dayjs(event.date_iso).valueOf()
         })
 
         return {
-          text: dayjs(`${month}-01`).format('MMMM YYYY'),
+          text: this.$dayjs(`${month}-01`).format('MMMM YYYY'),
           date: `${month}-01`,
           eventId: monthEvents[0].id
         }
       })
 
       return sortBy(checkpoints, (checkpoint) => {
-        return -dayjs(checkpoint.date).valueOf()
+        return -this.$dayjs(checkpoint.date).valueOf()
       })
     }
   },

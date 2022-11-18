@@ -18,7 +18,10 @@
       <v-col cols="4">
         <v-row class="sticky-row">
           <v-col cols="12">
-            <FriseCheckpoints :events="events" />
+            <FriseCheckpointsCard :events="events" />
+          </v-col>
+          <v-col cols="12">
+            <FriseLastUpdatesCard :events="events" /></friselasteventscard>
           </v-col>
         </v-row>
       </v-col>

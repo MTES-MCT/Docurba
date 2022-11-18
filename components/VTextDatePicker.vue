@@ -23,8 +23,6 @@
 </template>
 
 <script>
-import dayjs from 'dayjs'
-
 import { mdiCalendar } from '@mdi/js'
 
 export default {
@@ -35,7 +33,7 @@ export default {
   props: {
     date: {
       type: String,
-      default () { return dayjs().format('YYYY-MM-DD') }
+      default () { return this.$dayjs().format('YYYY-MM-DD') }
     },
     label: {
       type: String,
@@ -54,7 +52,7 @@ export default {
   },
   computed: {
     desplayedDate () {
-      return dayjs(this.date, 'YYYY-MM-DD').format(this.diplayedFormat)
+      return this.$dayjs(this.date, 'YYYY-MM-DD').format(this.diplayedFormat)
     },
     pickerDate: {
       get () {

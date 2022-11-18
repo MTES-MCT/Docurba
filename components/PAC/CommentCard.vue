@@ -35,7 +35,6 @@
   </v-card>
 </template>
 <script>
-import dayjs from 'dayjs'
 import pacProject from '@/mixins/pacProject.js'
 
 export default {
@@ -63,7 +62,7 @@ export default {
       }
     },
     getCommentDate (comment) {
-      return dayjs(comment.timestamp).format('DD/MM/YY hh:mm')
+      return this.$dayjs(comment.timestamp).format('DD/MM/YY hh:mm')
     },
     saveNewComment () {
       const savedSection = {
