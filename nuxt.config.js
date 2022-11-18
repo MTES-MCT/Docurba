@@ -21,6 +21,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '~/plugins/dayjs.js' },
     { src: '~/plugins/isDev.js' },
     { src: '~/plugins/composition.js' },
     { src: '~/plugins/supabase.js' },
@@ -119,7 +120,8 @@ export default {
           g200: '#f0f0f0',
           g100: '#f8f8f8',
           w: '#fff',
-          beige: '#f9f8f6',
+          beige: '#F9F8F6',
+          'alt-beige': '#F6F6F6',
           'g800-plain': '#1e1e1e',
           'g600-g400': '#6a6a6a',
           'g400-t': '#cecece',

@@ -8,7 +8,7 @@
     >
       <v-card
         flat
-        color="g100"
+        outlined
         :href="getSource(ressource)"
         target="_blank"
       >

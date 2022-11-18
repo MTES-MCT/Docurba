@@ -10,7 +10,7 @@
       </template>
       <slot name="headerExtension" />
     </LayoutsAppBar>
-    <v-main>
+    <v-main class="beige">
       <slot />
     </v-main>
     <!-- <LayoutsFooter /> -->

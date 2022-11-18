@@ -1,0 +1,17 @@
+[
+  {
+    "values": ["Collectivité"],
+    "color": "#855D48",
+    "background": "#FBF5F2"
+  },
+  {
+    "values": ["DDT"],
+    "color": "#66673D",
+    "background": "#FCEEAC"
+  },
+  {
+    "values": ["Bureau d’étude"],
+    "color": "#447049",
+    "background": "#E6FEDA"
+  }
+]

@@ -1,6 +1,6 @@
 <template>
   <v-lazy v-model="isActive" :min-height="228">
-    <v-card flat color="g100">
+    <v-card flat outlined>
       <v-card-title class="break-word">
         {{ source.title }}
         <v-btn
