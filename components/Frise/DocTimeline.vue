@@ -1,13 +1,16 @@
 <template>
-  <v-row>
+  <v-row justify="end">
     <v-col cols="12">
-      <v-timeline align-top class="doc-timeline">
-        <v-timeline-item small>
+      <v-timeline align-top class="doc-timeline pt-0 mt-6">
+        <v-timeline-item color="#E3E3FD" small>
           <v-btn nuxt color="primary" :to="`/projets/${projectId}/frise/add`">
             Ajouter un événement
           </v-btn>
         </v-timeline-item>
       </v-timeline>
+    </v-col>
+    <v-col offset="3" cols="9" class="pl-0">
+      <v-divider />
     </v-col>
     <v-col cols="12">
       <v-timeline align-top class="doc-timeline">
@@ -71,10 +74,16 @@ export default {
 }
 
 .doc-timeline::before {
-  left: calc(25% - 1px) !important;
+  left: calc(25% - 2px) !important;
+  width: 4px;
+  background: repeating-linear-gradient(180deg, #E3E3FD, #E3E3FD 14px, #FFFFFF 14px, #FFFFFF 21px) !important;
 }
 
 .doc-timeline .v-card:before {
   display: none;
+}
+
+.doc-timeline .v-timeline-item__dot {
+  box-shadow: none !important;
 }
 </style>

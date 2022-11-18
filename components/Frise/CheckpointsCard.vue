@@ -2,7 +2,7 @@
   <v-card outlined color="alt-beige">
     <v-card-title>Répères temporels</v-card-title>
     <v-card-text>
-      <v-timeline dense>
+      <v-timeline dense class="checkpoints-timeline">
         <v-timeline-item small>
           <v-btn text @click="scrollTo(checkpoints[0].eventId)">
             Aujourd'hui
@@ -60,3 +60,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.checkpoints-timeline::before {
+  background: repeating-linear-gradient(180deg, #E3E3FD, #E3E3FD 14px, #F6F6F6 14px, #F6F6F6 21px) !important;
+}
+</style>

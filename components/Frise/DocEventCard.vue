@@ -1,5 +1,5 @@
 <template>
-  <v-card outlined>
+  <v-card flat class="event-card">
     <v-menu>
       <template #activator="{on}">
         <v-btn absolute top right icon v-on="on">
@@ -34,9 +34,11 @@
         v-for="actor in event.actors"
         :key="actor"
         label
+        small
         outlined
         class="mr-2"
-        color="primary"
+        :color="getActor(actor).color"
+        :style="{'background-color': `${getActor(actor).background} !important`}"
       >
         {{ actor }}
       </v-chip>
@@ -48,6 +50,7 @@
 
 <script>
 import { mdiDotsHorizontal, mdiPencil } from '@mdi/js'
+import actors from '@/assets/friseActors.json'
 
 export default {
   props: {
@@ -62,9 +65,17 @@ export default {
     }
   },
   methods: {
-    deleteEvent () {
-
+    getActor (val) {
+      return actors.find((actor) => {
+        return actor.values.includes(val)
+      })
     }
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.event-card {
+  border: 1px solid #000091
+}
+</style>
