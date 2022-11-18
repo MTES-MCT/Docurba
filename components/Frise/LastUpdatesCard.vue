@@ -32,12 +32,8 @@ export default {
   computed: {
     lastUpdates () {
       const lastUpdates = sortBy(this.events, (event) => {
-        console.log(event.updated_at, this.$dayjs(event.updated_at).valueOf())
-
         return -this.$dayjs(event.updated_at).valueOf()
       }).slice(0, 4)
-
-      console.log(lastUpdates)
 
       return lastUpdates.map((event) => {
         return {
