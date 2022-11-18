@@ -11,7 +11,13 @@
     </v-col>
     <v-col cols="12">
       <v-timeline align-top class="doc-timeline">
-        <v-timeline-item v-for="event in orderedEvents" :key="event.id" small right>
+        <v-timeline-item
+          v-for="event in orderedEvents"
+          :id="`event-${event.id}`"
+          :key="event.id"
+          small
+          right
+        >
           <template #opposite>
             <v-chip>{{ formatDate(event.date_iso) }}</v-chip>
           </template>
@@ -33,11 +39,10 @@ export default {
       default () {
         return this.$route.params.projectId
       }
-    }
-  },
-  data () {
-    return {
-      events: []
+    },
+    events: {
+      type: Array,
+      required: true
     }
   },
   computed: {
@@ -46,10 +51,6 @@ export default {
         return -dayjs(event.date_iso).valueOf()
       })
     }
-  },
-  async mounted () {
-    const { data: events } = await this.$supabase.from('doc_frise_events').select('*').eq('project_id', this.projectId)
-    this.events = events
   },
   methods: {
     formatDate (isoDate) {
