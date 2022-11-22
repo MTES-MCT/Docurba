@@ -2,7 +2,9 @@
   <v-row v-if="!loading">
     <v-col cols="12">
       <v-card outlined>
-        <v-card-title>Eléments obligatoires</v-card-title>
+        <v-card-title class="text-h3 black--text">
+          Eléments obligatoires
+        </v-card-title>
         <v-card-text>
           <v-row>
             <v-col cols="6">
@@ -37,6 +39,9 @@
           </v-row>
         </v-card-text>
       </v-card>
+    </v-col>
+    <v-col cols="12">
+      <FriseEventAttachementsCard :attachements="attachements" />
     </v-col>
     <v-col cols="12">
       <v-card outlined>
@@ -110,7 +115,8 @@ export default {
       type: '',
       date_iso: this.$dayjs().format('YYYY-MM-DD'),
       description: '',
-      actors: []
+      actors: [],
+      attachements: []
     }
 
     return {
@@ -119,6 +125,7 @@ export default {
         description: this.$isDev ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' : '',
         project_id: this.projectId
       }),
+      attachements: [],
       icons: {
         mdiTrashCan
       },
@@ -133,18 +140,44 @@ export default {
       // fetch event
       const { data: events } = await this.$supabase.from('doc_frise_events').select('*').eq('id', this.eventId)
       this.event = Object.assign({}, events[0])
+      this.attachements = this.event.attachements
     }
 
     this.loading = false
   },
   methods: {
+    async saveAttachements (eventId) {
+      const modifiedAtatchements = this.attachements.filter((attachement) => {
+        return attachement.state !== 'old'
+      })
+
+      await Promise.all(modifiedAtatchements.map((attachement) => {
+        if (attachement.state === 'new') {
+          return this.$supabase.storage
+            .from('doc-events-attachements')
+            .upload(`${this.projectId}/${eventId}/${attachement.id}`, attachement.file)
+        } else if (attachement.state === 'removed') {
+          return this.$supabase.storage.from('project-annexes')
+            .remove([`${this.projectId}/${eventId}/${attachement.id}`])
+        } else { return null }
+      }))
+    },
     async saveEvent () {
       this.saving = true
 
+      this.event.attachement = this.attachements.filter((attachement) => {
+        return attachement.state !== 'removed'
+      }).map((attachement) => {
+        const { id, name } = attachement
+        return { id, name }
+      })
+
       if (this.eventId) {
         await this.$supabase.from('doc_frise_events').update(this.event).eq('id', this.eventId)
+        await this.saveAttachements(this.eventId)
       } else {
-        await this.$supabase.from('doc_frise_events').insert([this.event])
+        const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert([this.event])
+        await this.saveAttachements(savedEvents[0].id)
       }
 
       this.saving = false
