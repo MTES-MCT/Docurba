@@ -3,24 +3,23 @@
 > *Plateforme pour faciliter l’élaboration et le suivi des documents d’urbanisme.*
 > 
 
-<aside>
-📖 **Bienvenue dans le tutoriel d’utilisation de [Docurba](https://docurba.beta.gouv.fr/). Vous trouverez dans ce guide:**
 
-</aside>
+ 📖 Bienvenue dans le tutoriel d’utilisation de [Docurba](https://docurba.beta.gouv.fr/). Vous trouverez dans ce guide:
 
-➕ [Comment créer son compte en tant que DDT](Guide%20d%E2%80%99utilisation%20de%20Docurba%20db7d56e906f94223a6bf52e3d8063e5d.md)
 
-⚙️ [Comment configurer sa trame de PAC](Guide%20d%E2%80%99utilisation%20de%20Docurba%20db7d56e906f94223a6bf52e3d8063e5d.md)
+➕ [Comment créer son compte en tant que DDT](#headCreateAccount)
 
-[📋 Les fonctionnalités d’édition du PAC](Guide%20d%E2%80%99utilisation%20de%20Docurba%20db7d56e906f94223a6bf52e3d8063e5d.md)
+⚙️ [Comment configurer sa trame de PAC](#headConfigPAC)
 
-[🧑🏻‍💻 Créer son projet de PAC](Guide%20d%E2%80%99utilisation%20de%20Docurba%20db7d56e906f94223a6bf52e3d8063e5d.md)
+[📋 Les fonctionnalités d’édition du PAC](#headEditor)
 
-[📤 Le partage du PAC](Guide%20d%E2%80%99utilisation%20de%20Docurba%20db7d56e906f94223a6bf52e3d8063e5d.md)
+[🧑🏻‍💻 Créer son projet de PAC](#headCreateProject)
 
-[🖨️ Imprimer son PAC](Guide%20d%E2%80%99utilisation%20de%20Docurba%20db7d56e906f94223a6bf52e3d8063e5d.md)
+[📤 Le partage du PAC](#headSharing)
 
-[🗃️ Archiver ses projets](Guide%20d%E2%80%99utilisation%20de%20Docurba%20db7d56e906f94223a6bf52e3d8063e5d.md) 
+[🖨️ Imprimer son PAC](#headPrint)
+
+[🗃️ Archiver ses projets](#headArchive) 
 
 ---
 
@@ -32,30 +31,40 @@
 
 ---
 
+<a class="anchor" name="headCreateAccount"></a>
 # ➕ **Créer son compte sur Docurba en tant que DDT/DEAL**
 
-[https://lh5.googleusercontent.com/UOzJPYgrvGfcdz2K9lhqRaU0oy_IlQZPnpepFEhUVDvGbWL2j9Nf9fMIGQgBNVPF1oVKJOtjefcst6tklWVcsTYLYGOXd8Ezr7Ezg5ieJjvRe-4HqTB0SGg73kvRTdbcQpjBjyw278ZOSpFFq4Bfk1C8ZKUoweWF8mj4W-olcbFZ2mXBWxXv1xL1Ww](https://lh5.googleusercontent.com/UOzJPYgrvGfcdz2K9lhqRaU0oy_IlQZPnpepFEhUVDvGbWL2j9Nf9fMIGQgBNVPF1oVKJOtjefcst6tklWVcsTYLYGOXd8Ezr7Ezg5ieJjvRe-4HqTB0SGg73kvRTdbcQpjBjyw278ZOSpFFq4Bfk1C8ZKUoweWF8mj4W-olcbFZ2mXBWxXv1xL1Ww)
-
-Une fois sur la page [https://docurba.beta.gouv.fr/](https://docurba.incubateur.net/), cliquez sur le bouton `connexion` en haut à droite.
+<div class="d-flex align-center">
+  <img class="elevation-3  my-4" style="max-width:70%" src="/images/guide/01.png">
+  <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
+  Une fois sur la page <a href="https://docurba.beta.gouv.fr/](https://docurba.incubateur.net/" target="_blank">https://docurba.beta.gouv.fr/</a>, cliquez sur le bouton <code>connexion</code> en haut à droite.
+  </div>
+</div>
 
 Une fenêtre s’ouvre et il faudra renseigner vos informations:
 
-[https://lh5.googleusercontent.com/ZEdBrmdWnKU2GSQKZ0Bf5O9k7Wk4VvfhPig4uKgoWzc-5P9EwLTAkx6v8NnaYO4h5Og5t-IA635wA8oXnB4fhnUE3kOkTXqGCULwFA26q2pVT45s8ET0LncAWl2qsQC2H9ztUXZADoiz1vpzy4Fr53A4oy_EDA5sQtLBqCeNJtS-M56MjWoa-6wNFQ](https://lh5.googleusercontent.com/ZEdBrmdWnKU2GSQKZ0Bf5O9k7Wk4VvfhPig4uKgoWzc-5P9EwLTAkx6v8NnaYO4h5Og5t-IA635wA8oXnB4fhnUE3kOkTXqGCULwFA26q2pVT45s8ET0LncAWl2qsQC2H9ztUXZADoiz1vpzy4Fr53A4oy_EDA5sQtLBqCeNJtS-M56MjWoa-6wNFQ)
-
+<div class="d-flex align-center">
+  <img class="elevation-3  my-4" style="max-width:70%" src="/images/guide/02.png">
+  <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
 Pour profiter pleinement de Docurba en tant qu’agent de DDT/DEAL, vous devez:
 
-`sélectionner votre département` et `cocher la case “agent de DDT”` puis cliquer sur `inscription.` 
+ <code>sélectionner votre département</code> et  <code>cocher la case “agent de DDT”</code> puis cliquer sur  <code>inscription</code>. 
+  </div>
+</div>
 
-Cela ouvrira vos droits pour votre accès au “backoffice d’édition” de Docurba. ***Cette partie n’est pas accessible aux collectivités.***
+
+
+Cela ouvrira vos droits pour votre accès au “backoffice d’édition” de Docurba. **Cette partie n’est pas accessible aux collectivités.**
 
 *Vous recevrez un courriel de confirmation lorsque votre accès sera validé par l’équipe. Cela peut prendre de quelques minutes à 48h ouvrables.*
 
-# ⚙️ **Configurer sa trame de PAC**
+<a class="anchor" name="headConfigPAC"></a>
+# ⚙️ **Configurer sa trame de PAC**
 
-<aside>
-💡 *Cette trame servira de **base commune pour vos futurs PAC**. Une fois revue pour votre département, elle s’appliquera aux projets de PAC que vous créerez. Vous pourrez sélectionner ou non les parties de cette trame pour créer un nouveau PAC.*
+<div class=" background--text text--lighten-2   rounded g300 rounded-lg pa-4">
+💡 Cette trame servira de **base commune pour vos futurs PAC**. Une fois revue pour votre département, elle s’appliquera aux projets de PAC que vous créerez. Vous pourrez sélectionner ou non les parties de cette trame pour créer un nouveau PAC.*
 
-</aside>
+</div>
 
 Vous pouvez **compléter la trame initiale en cliquant sur `Trame du PAC`**. 
 
@@ -63,6 +72,7 @@ Vous pouvez **compléter la trame initiale en cliquant sur `Trame du PAC`**.
 
 ⚠️ **Le cadre juridique a été validé par QV4 et n’est pas modifiable.** Si nécessaire, vous pouvez ajouter de nouvelles sections dans le cadre juridique qui seront alors vérifiées lors de la validation du document dans son ensemble. 
 
+<a class="anchor" name="headEditor"></a>
 ## 📋 Les fonctionnalités d’édition
 
 [https://lh5.googleusercontent.com/d6G2DXwRqpeuKMz4drcE1o45am88baHbOIliPaV3qfG_BqANzPcMvX4QKBsz1Y9Cpi1HtT0Ba9zcQZF41TiG7iO9Y72LQIf2ehw7hRwHUgqESo64Hbpt5maPY4UvYxAGUAu0YRBY6OJpaNIhI-TjdesFtzaVjONB1ynE4nTL0nyU50tTwUO5N-2A](https://lh5.googleusercontent.com/d6G2DXwRqpeuKMz4drcE1o45am88baHbOIliPaV3qfG_BqANzPcMvX4QKBsz1Y9Cpi1HtT0Ba9zcQZF41TiG7iO9Y72LQIf2ehw7hRwHUgqESo64Hbpt5maPY4UvYxAGUAu0YRBY6OJpaNIhI-TjdesFtzaVjONB1ynE4nTL0nyU50tTwUO5N-2A)
@@ -90,6 +100,7 @@ Vous pouvez **compléter la trame initiale en cliquant sur `Trame du PAC`**.
 
 </aside>
 
+<a class="anchor" name="headCreateProject"></a>
 # 🧑🏻‍💻 **Créer son projet de PAC**
 
 <aside>
@@ -117,6 +128,7 @@ Cette fenêtre s’ouvre. Vous pouvez alors choisir d’utiliser la trame de Doc
 
 **Vous pouvez ensuite éditer et compléter votre projet de PAC,** vous retrouvez alors la même interface d’édition que pour votre trame.
 
+<a class="anchor" name="headSharing"></a>
 # 📤 **Le partage du PAC**
 
 <aside>
@@ -139,6 +151,7 @@ Vous pouvez `partager votre PAC` et choisir qui pourra **collaborer et éditer l
 
 *Vous avez toujours possibilité de supprimer le partage en cliquant sur la croix en face de la personne à supprimer.*
 
+<a class="anchor" name="headPrint"></a>
 # 🖨 Imprimer  **son PAC**
 
 Une fois votre projet finalisé, vous pouvez **exporter votre PAC(formats disponibles: .pdf, .odt, .word)** depuis le `mode lecture` de votre PAC à l’aide de l’`icône de téléchargement` en bas à droite.
@@ -152,6 +165,7 @@ Vous pouvez cocher ou décocher les entêtes et pied de page.
 
 </aside>
 
+<a class="anchor" name="headArchive"></a>
 # 🗃️ Archiver ses projets
 
 Vous pouvez également **archiver le document terminé**. Depuis `mes documents`, cliquez de l’icône du crayon, une fenêtre s’ouvre et vous cliquez sur le bouton rouge *`archiver`.*
