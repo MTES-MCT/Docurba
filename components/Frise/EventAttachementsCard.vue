@@ -21,9 +21,24 @@
               </v-btn>
             </v-col>
             <v-col cols="6">
-              <p v-if="!files.length" class="text-caption">
+              <p v-if="!displayedFiles.length" class="text-caption">
                 Vous n’avez pas encore ajouté de fichier
               </p>
+              <v-list v-else>
+                <v-list-item v-for="file in displayedFiles" :key="file.id">
+                  <v-list-item-title>{{ file.name }}</v-list-item-title>
+                  <v-list-item-action class="mr-2">
+                    <v-btn color="primary" outlined>
+                      <v-icon>{{ icons.mdiDownload }}</v-icon>
+                    </v-btn>
+                  </v-list-item-action>
+                  <v-list-item-action>
+                    <v-btn color="primary" outlined>
+                      <v-icon>{{ icons.mdiDelete }}</v-icon>
+                    </v-btn>
+                  </v-list-item-action>
+                </v-list-item>
+              </v-list>
             </v-col>
           </v-row>
         </v-card-text>
@@ -34,6 +49,8 @@
 
 <script>
 import { v4 as uuidv4 } from 'uuid'
+
+import { mdiDownload, mdiDelete } from '@mdi/js'
 
 export default {
   model: {
@@ -48,6 +65,10 @@ export default {
   },
   data () {
     return {
+      icons: {
+        mdiDownload,
+        mdiDelete
+      },
       files: this.attachements.map((file) => {
         return Object.assign({ state: 'old' }, file)
       })
@@ -61,8 +82,11 @@ export default {
     }
   },
   watch: {
-    displayedFiles () {
-      this.$emit('input', [...this.files])
+    displayedFiles: {
+      deep: true,
+      handler () {
+        this.$emit('input', [...this.files])
+      }
     }
   },
   methods: {

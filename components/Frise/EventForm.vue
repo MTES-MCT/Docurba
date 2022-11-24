@@ -41,7 +41,7 @@
       </v-card>
     </v-col>
     <v-col cols="12">
-      <FriseEventAttachementsCard :attachements="attachements" />
+      <FriseEventAttachementsCard v-model="attachements" />
     </v-col>
     <v-col cols="12">
       <v-card outlined>
@@ -165,7 +165,7 @@ export default {
     async saveEvent () {
       this.saving = true
 
-      this.event.attachement = this.attachements.filter((attachement) => {
+      this.event.attachements = this.attachements.filter((attachement) => {
         return attachement.state !== 'removed'
       }).map((attachement) => {
         const { id, name } = attachement
