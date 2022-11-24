@@ -26,8 +26,7 @@
       <v-btn
         depressed
         tile
-        href="https://docurba.notion.site/Guide-d-utilisation-de-Docurba-db7d56e906f94223a6bf52e3d8063e5d"
-        target="_blank"
+        :to="{name: 'guide'}"
         text
       >
         Guide d'utilisation
