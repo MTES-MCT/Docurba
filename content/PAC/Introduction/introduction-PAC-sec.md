@@ -3,7 +3,7 @@ titre : Socle de PAC
 ordre : 1
 ---
 Le présent document ne constitue pas l'intégralité du porter à connaissance (PAC) réglementaire de l'Etat. Il s'agit de premiers éléments d'information constitutifs de celui-ci qui vous sont communiqués à ce stade, **appelé socle de PAC**. Il comporte :
-- un **cadre juridique national**, construit en partenariat avec le bureau QV4 de la Direction de l'Habitat, de l'Urbanisme et des Paysage du Ministère de la Transition écologique;
+- un **cadre juridique national**, construit en partenariat avec la Direction de l'Habitat, de l'Urbanisme et des Paysage du **Ministère de la transition écologique et de la cohésion des territoires en charge de la planification**;
 - des **éléments généraux sur les documents supra-territoriaux** qui peuvent concerner votre territoire;
 - lorsque les informations ont été complétées, des **informations plus spécifiques concernant les documents d'échelle régionale**.
 
