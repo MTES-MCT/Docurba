@@ -208,8 +208,8 @@ export default {
     }).eq('project_id', this.project.id)
 
     this.projectSubscription = this.$supabase
-      .from(`projects:id=eq.${this.project.id}`)
-      .on('UPDATE', (payload) => {
+      .channel('public:projects')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'projects', filter: `id=eq.${this.project.id}` }, (payload) => {
         // console.log('Change received on project', payload)
         Object.assign(this.projectData, payload.new)
       })
@@ -220,7 +220,7 @@ export default {
     }
   },
   beforeDestroy () {
-    this.$supabase.removeSubscription(this.projectSubscription)
+    this.$supabase.removeChannel(this.projectSubscription)
   },
   methods: {
     async printPAC () {

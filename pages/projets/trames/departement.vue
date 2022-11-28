@@ -79,17 +79,18 @@ export default {
     this.loading = false
   },
   beforeDestroy () {
-    this.$supabase.removeSubscription(this.deptSectionsSub)
+    this.$supabase.removeChannel(this.deptSectionsSub)
   },
   methods: {
     subscribeToBdd () {
       if (this.projectSectionsSub) {
-        this.$supabase.removeSubscription(this.projectSectionsSub)
+        this.$supabase.removeChannel(this.projectSectionsSub)
       }
 
-      this.deptSectionsSub = this.$supabase.from(`pac_sections_dept:dept=eq.${this.departementCode}`).on('*', (update) => {
-        this.spliceSection(this.PAC, update)
-      }).subscribe()
+      this.deptSectionsSub = this.$supabase.channel('public:pac_sections_dept')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'pac_sections_dept', filter: `dept=eq.${this.departementCode}` }, (update) => {
+          this.spliceSection(this.PAC, update)
+        }).subscribe()
     }
   }
 }

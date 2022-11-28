@@ -140,8 +140,8 @@ export default {
         // const projectsIds = this.projects.map(p => p.id)
 
         this.projectsSubscription = this.$supabase
-          .from(`projects:owner=eq.${this.$user.id}`)
-          .on('UPDATE', (payload) => {
+          .channel('public:projects')
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'projects', filter: `owner=eq.${this.$user.id}` }, (payload) => {
             const updatedProject = payload.new
 
             if (updatedProject.archived) {
@@ -165,7 +165,7 @@ export default {
   },
   beforeDestroy () {
     if (this.projectsSubscription) {
-      this.$supabase.removeSubscription(this.projectsSubscription)
+      this.$supabase.removeChannel(this.projectsSubscription)
     }
   }
 }

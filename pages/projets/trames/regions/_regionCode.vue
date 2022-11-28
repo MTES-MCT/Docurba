@@ -67,17 +67,18 @@ export default {
     this.loading = false
   },
   beforeDestroy () {
-    this.$supabase.removeSubscription(this.regionSectionsSub)
+    this.$supabase.removeChannel(this.regionSectionsSub)
   },
   methods: {
     subscribeToBdd () {
       if (this.regionSectionsSub) {
-        this.$supabase.removeSubscription(this.regionSectionsSub)
+        this.$supabase.removeChannel(this.regionSectionsSub)
       }
 
-      this.regionSectionsSub = this.$supabase.from(`pac_sections_regiont:region=eq.${this.region.code}`).on('*', (update) => {
-        this.spliceSection(this.PAC, update)
-      }).subscribe()
+      this.regionSectionsSub = this.$supabase.channel('public:pac_sections_region')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'pac_sections_region', filter: `region=eq.${this.region.code}` }, (update) => {
+          this.spliceSection(this.PAC, update)
+        }).subscribe()
     }
   }
 }

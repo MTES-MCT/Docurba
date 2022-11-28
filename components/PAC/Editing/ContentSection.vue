@@ -177,8 +177,8 @@ export default {
       this.getSectionDataSources()
 
       // console.log('subscribe to changes')
-      this.dataSourcesSubscription = this.$supabase.from(`sections_data_sources:project_id=eq.${this.section.project_id}`)
-        .on('INSERT', async (event) => {
+      this.dataSourcesSubscription = this.$supabase.channel('public:sections_data_sources')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sections_data_sources', filter: `project_id=eq.${this.section.project_id}` }, async (event) => {
           const source = event.new
           // console.log('INSERT TRIGGER')
 
@@ -194,15 +194,38 @@ export default {
             }))
           }
         })
-        .on('DELETE', (event) => {
+        .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'sections_data_sources', filter: `project_id=eq.${this.section.project_id}` }, (event) => {
           // console.log('remove', event.old.id)
           this.selectedDataSources = this.selectedDataSources.filter(source => source.sourceId !== event.old.id)
-        }).subscribe()
+        })
+        .subscribe()
+
+      // this.dataSourcesSubscription = this.$supabase.from(`sections_data_sources:project_id=eq.${this.section.project_id}`)
+      //   .on('INSERT', async (event) => {
+      //     const source = event.new
+      //     // console.log('INSERT TRIGGER')
+
+      //     if (source.section_path === this.section.path) {
+      //       const { data: cardData } = await axios({
+      //         url: source.url,
+      //         meyhod: 'get'
+      //       })
+
+      //       // console.log('insert', cardData)
+      //       this.selectedDataSources.push(Object.assign(cardData, {
+      //         sourceId: source.id
+      //       }))
+      //     }
+      //   })
+      //   .on('DELETE', (event) => {
+      //     // console.log('remove', event.old.id)
+      //     this.selectedDataSources = this.selectedDataSources.filter(source => source.sourceId !== event.old.id)
+      //   }).subscribe()
     }
   },
   beforeDestroy () {
     if (this.dataSourcesSubscription) {
-      this.$supabase.removeSubscription(this.dataSourcesSubscription)
+      this.$supabase.removeChannel(this.dataSourcesSubscription)
     }
   },
   methods: {
