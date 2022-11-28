@@ -75,7 +75,7 @@ export default {
         this.$supabase.removeChannel(this.regionSectionsSub)
       }
 
-      this.regionSectionsSub = this.$supabase.channel('public:pac_sections_region')
+      this.regionSectionsSub = this.$supabase.channel(`public:pac_sections_region:region=eq.${this.region.code}`)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'pac_sections_region', filter: `region=eq.${this.region.code}` }, (update) => {
           this.spliceSection(this.PAC, update)
         }).subscribe()

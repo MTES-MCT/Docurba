@@ -208,7 +208,7 @@ export default {
     }).eq('project_id', this.project.id)
 
     this.projectSubscription = this.$supabase
-      .channel('public:projects')
+      .channel(`public:projects:id=eq.${this.project.id}`)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'projects', filter: `id=eq.${this.project.id}` }, (payload) => {
         // console.log('Change received on project', payload)
         Object.assign(this.projectData, payload.new)
