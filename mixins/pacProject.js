@@ -33,7 +33,7 @@ export default {
           // Because PAC is a JSON data for simplicity. This method update the whole pac project.
           // 2 people making changes at the same time can create conflicts and data loss.
           // 2 components with different pacProject ref for a same projectId can also create conflicts and data loss.
-          // await this.$supabase.from('projects').update({ PAC: this.PAC }).eq('id', this.pacProjectId)
+          // await this.$supabase.from('projects'){ PAC: this.PAC }).eq('id', this.pacProjectId)
         } else {
           // eslint-disable-next-line no-console
           console.error('Item to update not found, try to create a new aitem instead')

@@ -64,7 +64,7 @@ export default {
 
       await this.$supabase.from('news_letter_emails').insert([{
         email: this.email
-      }], { returning: 'minimal' })
+      }])
 
       this.loading = false
       this.displayedIcon = mdiCheck

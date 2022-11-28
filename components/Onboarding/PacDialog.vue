@@ -90,26 +90,6 @@ export default {
       this.snackbar = true
       this.loading = false
       this.dialog = false
-
-      // This form use to create a project.
-      // Now it should send us a notification and the requester a confirmation email.
-      // const PAC = await this.$content('PAC', {
-      //   deep: true
-      //   // text: true
-      // }).fetch()
-
-      // // console.log(PAC)
-
-      // const newProject = Object.assign({
-      //   owner: this.$user.id,
-      //   PAC,
-      //   town: this.selectedTown,
-      //   region: regions.find(r => r.name === this.selectedTown.nom_region).iso
-      // }, this.projectData)
-
-      // const { data: projects } = await this.$supabase.from('projects').insert([newProject])
-
-      // this.$router.push(`/projets/${projects[0].id}/content`)
     }
   }
 }

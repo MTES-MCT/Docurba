@@ -151,19 +151,17 @@ export default {
         return attachement.state !== 'old'
       })
 
-      const attachementsUpdates = await Promise.all(modifiedAtatchements.map((attachement) => {
+      await Promise.all(modifiedAtatchements.map((attachement) => {
         if (attachement.state === 'new') {
           return this.$supabase.storage
             .from('doc-events-attachements')
             .upload(`${this.projectId}/${eventId}/${attachement.id}`, attachement.file)
         } else if (attachement.state === 'removed') {
-          console.log(`${this.projectId}/${eventId}/${attachement.id}`)
+          // console.log(`${this.projectId}/${eventId}/${attachement.id}`)
           return this.$supabase.storage.from('doc-events-attachements')
             .remove([`${this.projectId}/${eventId}/${attachement.id}`])
         } else { return null }
       }))
-
-      console.log(attachementsUpdates)
     },
     async saveEvent () {
       this.saving = true
@@ -179,7 +177,7 @@ export default {
         await this.$supabase.from('doc_frise_events').update(this.event).eq('id', this.eventId)
         await this.saveAttachements(this.eventId)
       } else {
-        const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert([this.event])
+        const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert([this.event]).select()
         await this.saveAttachements(savedEvents[0].id)
       }
 

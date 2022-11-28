@@ -42,7 +42,7 @@ export default {
         text: 'Nouvelle section'
       }, this.tableKeys)
 
-      const { data: savedSection, err } = await this.$supabase.from(this.table).insert([newSection])
+      const { data: savedSection, err } = await this.$supabase.from(this.table).insert([newSection]).select()
 
       if (savedSection && !err) {
         if (this.table === 'pac_sections_project') {
