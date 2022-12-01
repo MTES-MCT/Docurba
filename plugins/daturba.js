@@ -106,6 +106,24 @@ export default ({ route }, inject) => {
   }
 
   inject('daturba', {
+    async getGeorisques ({ dataset, insee }) {
+      const EXISTING_DATASETS = ['gaspar/catnat', 'gaspar/dicrim', 'ppr/etats_documents', 'ppr/famille_risques',
+        'installations_classees', 'gaspar/papi', 'gaspar/pcs', 'ppr', 'radon', 'risques', 'sis', 'gaspar/tim', 'gaspar/tri',
+        'zonage_sismique']
+
+      if (!EXISTING_DATASETS.includes(dataset)) { throw new Error('Le dataset demandé est inconnu. Types disponibles:' + EXISTING_DATASETS.join(', ')) }
+      // https://www.georisques.gouv.fr/api/v1/zonage_sismique?code_insee=74001&page=1&page_size=10&rayon=1000
+      // TODO: ATTENTION, le max de join est de 10. Le faire autrement dans un cas de caumunauté de commune + grand
+      // Ou le faire coté back ?
+      if (Array.isArray(insee)) { insee = insee.join(',') }
+      const { data } = await axios({
+        url: '/api/georisques/q',
+        method: 'get',
+        params: { dataset, insee }
+      })
+
+      return { dataset, data: data.data }
+    },
     // search arg should be `commune/${codeInsee}` or `departement/${codeDepartement}` or `region/${codeRegion}`
     async getGeoIDE (search) {
       const { data } = await axios({
