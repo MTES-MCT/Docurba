@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 export default ({ route }, inject) => {
+// MAP permet d'afficher les onglet de source
   const sourceMap = {
     'FR-ARA': {
       url: 'https://catalogue.datara.gouv.fr/base_territoriale/results?_format=json',
@@ -107,13 +108,14 @@ export default ({ route }, inject) => {
 
   inject('daturba', {
     // search arg should be `commune/${codeInsee}` or `departement/${codeDepartement}` or `region/${codeRegion}`
-    async getGeoIDE (search) {
+    async getGeoIDE (search, platform) {
       const { data } = await axios({
         url: '/api/geoide/q',
         method: 'get',
-        params: { any: search }
+        params: { any: search, platform }
       })
 
+      console.log('DATA DATURBA RET: ', data)
       const { metadata, summary } = data
       let cards = []
 
