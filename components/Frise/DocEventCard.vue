@@ -109,6 +109,6 @@ export default {
 
 <style lang="scss" scoped>
 .event-card {
-  border: 1px solid #000091
+  border: 1px solid #000091;
 }
 </style>

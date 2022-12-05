@@ -23,6 +23,12 @@ export default {
     eventType: {
       type: Object,
       required: true
+    },
+    projectId: {
+      type: String,
+      default () {
+        return this.$route.params.projectId
+      }
     }
   },
   data () {
