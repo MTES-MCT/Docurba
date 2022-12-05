@@ -96,11 +96,8 @@ export default {
       })
     },
     async downloadFile (attachement) {
-      console.log('toto')
       const { data } = await this.$supabase.storage.from('doc-events-attachements')
         .download(`${this.event.project_id}/${this.event.id}/${attachement.id}`)
-
-      console.log(data, this.$refs[`file-${attachement.id}`][0])
 
       const link = this.$refs[`file-${attachement.id}`][0]
       link.href = URL.createObjectURL(data)
