@@ -1,0 +1,428 @@
+[
+  {
+    "name": "Prescription du document d'urbanisme",
+    "order": 0,
+    "recommended": 2,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Définition des modalités"
+    ],
+    "description": "Délibération de prescription lors du conseil municipal/communautaire"
+  },
+  {
+    "name": "Recrutement du bureau d'études",
+    "order": "",
+    "recommended": 2,
+    "required": false,
+    "chrnological": true,
+    "phases": [
+      "Définition des modalités"
+    ],
+    "description": "Le bureau d’étude Citadia a été recruté, la cheffe de projet identifié est a.louis@citadia.fr"
+  },
+  {
+    "name": "Délibération objectifs et modalités concertation",
+    "order": 10,
+    "recommended": 1,
+    "required": false,
+    "chrnological": true,
+    "phases": [
+      "Définition des modalités"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Délibération modalités de collaboration avec les communes",
+    "order": 15,
+    "recommended": 0,
+    "required": false,
+    "chrnological": true,
+    "phases": [
+      "Définition des modalités"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Réunion des PPA",
+    "order": 17,
+    "recommended": 1,
+    "required": false,
+    "chrnological": false,
+    "phases": [
+      "Toutes phases"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Porter à connaissance",
+    "order": 20,
+    "recommended": 2,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Diagnostic"
+    ],
+    "description": "Porter-à-connaissance transmis par l’Etat via Docurba"
+  },
+  {
+    "name": "Note d'enjeux",
+    "order": 18,
+    "recommended": 0,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Diagnostic ou PADD"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Réunion de travail",
+    "order": "",
+    "recommended": 0,
+    "required": false,
+    "chrnological": false,
+    "phases": [
+      "Toutes phases"
+    ],
+    "description": "Réunion de présentation du porter-à-connaissance par la DDT"
+  },
+  {
+    "name": "Réunion de travail",
+    "order": "",
+    "recommended": 0,
+    "required": false,
+    "chrnological": false,
+    "phases": [],
+    "description": "Réunion spécifique sur la prise en compte des risques inondation sur la commune"
+  },
+  {
+    "name": "Notes suite à la réunion de travail",
+    "order": "",
+    "recommended": 0,
+    "required": false,
+    "chrnological": false,
+    "phases": [
+      "Toutes phases"
+    ],
+    "description": "Note complémentaire suite aux questions posées lors de la réunion de travail"
+  },
+  {
+    "name": "Porter à connaissance complémentaire",
+    "order": 21,
+    "recommended": 1,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Toutes phases"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Construction du PADD",
+    "order": "",
+    "recommended": 0,
+    "required": false,
+    "chrnological": false,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Débat sur le PADD ou PAS",
+    "order": 22,
+    "recommended": 1,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "PADD"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Construction des OAP et du réglement",
+    "order": "",
+    "recommended": 0,
+    "required": false,
+    "chrnological": false,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Délibération de bilan de la concertation",
+    "order": 23,
+    "recommended": 1,
+    "required": false,
+    "chrnological": true,
+    "phases": [
+      "Concertation"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Arrêt de projet",
+    "order": 30,
+    "recommended": 2,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Arrêt du projet"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Consultation de l'autorité environnementale",
+    "order": 25,
+    "recommended": 2,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Arrêt du projet"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Consultation de l'autorité environnementale",
+    "order": 26,
+    "recommended": 0,
+    "required": false,
+    "chrnological": false,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Consultation des PPA",
+    "order": 38,
+    "recommended": 2,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Arrêt du projet"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Avis de l'autorité environnementale",
+    "order": 27,
+    "recommended": 2,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Arrêt du projet"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Exemption évaluation environnementale",
+    "order": 28,
+    "recommended": 0,
+    "required": false,
+    "chrnological": false,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Consultation de la CDPENAF",
+    "order": 31,
+    "recommended": 0,
+    "required": false,
+    "chrnological": true,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Avis de la CDPENAF",
+    "order": 32,
+    "recommended": 1,
+    "required": false,
+    "chrnological": true,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Consultation de la CDNPS",
+    "order": 33,
+    "recommended": 0,
+    "required": false,
+    "chrnological": true,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Avis de la CDNPS",
+    "order": 34,
+    "recommended": 0,
+    "required": false,
+    "chrnological": true,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Dérogation au titre du L142-4 (ex L122-2)",
+    "order": 37,
+    "recommended": 0,
+    "required": false,
+    "chrnological": false,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Avis de l'État",
+    "order": 40,
+    "recommended": 2,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Arrêt du projet"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Arrêté d'enquête publique",
+    "order": 50,
+    "recommended": 2,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Enquête publique"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Début d'enquête publique",
+    "order": 51,
+    "recommended": 2,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Enquête publique"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Fin d'enquête publique",
+    "order": 52,
+    "recommended": 0,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Enquête publique"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Abandon",
+    "order": 60,
+    "recommended": 2,
+    "required": false,
+    "chrnological": false,
+    "phases": [
+      "Toutes phases"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Délibération d'approbation",
+    "order": 100,
+    "recommended": 2,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Approbation"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Transmission au contrôle de légalité",
+    "order": 112,
+    "recommended": 1,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Approbation"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Publication du PLU sur le GPU et caractère exécutoire",
+    "order": 120,
+    "recommended": 2,
+    "required": true,
+    "chrnological": true,
+    "phases": [
+      "Doc opposable"
+    ],
+    "description": ""
+  },
+  {
+    "name": "Recours gracieux de l'État",
+    "order": 130,
+    "recommended": 0,
+    "required": false,
+    "chrnological": true,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Annulation TA",
+    "order": 131,
+    "recommended": 0,
+    "required": false,
+    "chrnological": true,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Déclaration d'intérêt général",
+    "order": "",
+    "recommended": 0,
+    "required": false,
+    "chrnological": false,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Autre",
+    "order": "",
+    "recommended": 0,
+    "required": false,
+    "chrnological": false,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Avis de la commune sur le dossier de MC",
+    "order": "",
+    "recommended": 0,
+    "required": false,
+    "chrnological": false,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Remplacé par la publication dans le GPU?",
+    "order": "",
+    "recommended": 1,
+    "required": false,
+    "chrnological": false,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Caducité",
+    "order": "",
+    "recommended": 1,
+    "required": false,
+    "chrnological": false,
+    "phases": [],
+    "description": ""
+  },
+  {
+    "name": "Diffusion",
+    "order": "",
+    "recommended": 0,
+    "required": false,
+    "chrnological": false,
+    "phases": [],
+    "description": ""
+  }
+]

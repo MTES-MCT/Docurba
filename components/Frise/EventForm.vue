@@ -10,7 +10,8 @@
             <v-col cols="6">
               <v-row>
                 <v-col cols="10">
-                  <v-text-field v-model="event.type" hide-details filled label="Type" />
+                  <!-- <v-text-field v-model="event.type" hide-details filled label="Type" /> -->
+                  <FriseEventSelector v-model="event.type" />
                 </v-col>
                 <v-col cols="6">
                   <VTextDatePicker v-model="event.date_iso" label="Date" />
@@ -140,7 +141,7 @@ export default {
       // fetch event
       const { data: events } = await this.$supabase.from('doc_frise_events').select('*').eq('id', this.eventId)
       this.event = Object.assign({}, events[0])
-      this.attachements = this.event.attachements
+      this.attachements = this.event.attachements || []
     }
 
     this.loading = false
