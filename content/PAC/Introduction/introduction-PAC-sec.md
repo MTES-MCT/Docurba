@@ -12,4 +12,4 @@ Pour bénéficier du PAC réglementaire sur Docurba, vous devez **créer un comp
 - Soit le PAC a d'ores et déjà été complété par votre DDT/DEAL et vous accèderez à ces éléments. 
 - Soit votre PAC complet n'est pas encore réalisé et la demande est envoyée via Docurba.
 
-Le PAC que vous recevrez après avoir créé votre compte sera composé du socle du PAC complété par des éléments plus spécifiques à votre territoire ajoutés votre DDT/DEAL.
+Le PAC que vous recevrez après avoir créé votre compte sera composé du socle du PAC complété par des éléments plus spécifiques à votre territoire ajoutés par votre DDT/DEAL.
