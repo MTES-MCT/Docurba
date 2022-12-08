@@ -384,8 +384,13 @@ export default {
           .upload(`public/${uuidv4()}.${image.name.split('.').pop()}`, image)
 
         this.editor.commands.setImage({
-          src: `https://ixxbyuandbmplfnqtxyw.supabase.in/storage/v1/object/public/${data.Key}`
+          src: `https://ixxbyuandbmplfnqtxyw.supabase.co/storage/v1/object/public/text-images/${data.path}`
         })
+
+        // https://ixxbyuandbmplfnqtxyw.supabase.co/storage/v1/object/public/text-images/public/06a340d9-16be-4311-a8ff-30c68d416ce9.jpg?t=2022-12-08T15%3A38%3A26.939Z
+        // https://ixxbyuandbmplfnqtxyw.supabase.co/storage/v1/object/public/text-images/public/809b5fe2-ccce-4380-9e7d-79c9cc9671d3.png
+        // https://ixxbyuandbmplfnqtxyw.supabase.co/storage/v1/object/public-text/public/3cfc6b76-0d87-40f1-b160-77fd7bca4a9b.png
+        // https://ixxbyuandbmplfnqtxyw.supabase.in/storage/v1/object/public-text/public/dda2b06f-e964-4d8a-af8c-49d8f55a4296.png
       }
     }
   }

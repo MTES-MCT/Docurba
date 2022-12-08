@@ -1,6 +1,13 @@
 <template>
   <div>
     <!-- START HERO v2 -->
+    <v-container fluid>
+      <v-row justify="center" align="center" class="primary">
+        <v-col cols="auto">
+          <a class="white--text" href="https://webconf.numerique.gouv.fr/FlashInfoDocurba131222" target="_blank"><b>Flash Info de Docurba : ce mardi 13 décembre à 14h. L'équipe répond à vos questions !</b></a>
+        </v-col>
+      </v-row>
+    </v-container>
     <v-container fluid class="pa-8">
       <v-row class="beige rounded-lg py-16 position-relative">
         <VFloatingShape src="/images/landing/ellipse_half_blue_right.svg" :size="60" :right="15" :bottom="15" />

@@ -194,7 +194,7 @@ export default {
         project_id: this.section.project_id,
         url: sourceUrl,
         section_path: this.section.path
-      }])
+      }]).select()
 
       // console.log(savedSource)
 

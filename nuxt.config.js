@@ -110,6 +110,7 @@ export default {
           'w-bf500': '#fff',
           'bf300-plain': '#9a9aff',
           bf300: '#9a9aff',
+          bf200: '#E8EDFF',
           'bf200-bf300': '#ececff',
           'bf100-g750': '#f5f5ff',
           g800: '#1e1e1e',

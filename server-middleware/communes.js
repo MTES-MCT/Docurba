@@ -16,19 +16,22 @@ function getCommunesByDepartements (code) {
   return cache[code]
 }
 
-app.get('/:departement', (req, res) => {
-  res.status(200).send(getCommunesByDepartements(req.params.departement))
+app.get('/:inseeId', (req, res) => {
+  try {
+    const inseeCode = parseInt(req.params.inseeId)
+    const commune = communes.find(e => e.code_commune_INSEE === inseeCode)
+    if (!commune) { throw new Error(`Le code commune INSEE ${req.params.inseeId} n'existe pas.`) }
+    res.status(200).send(commune)
+  } catch (error) {
+    res.status(400).send({ message: error.message })
+  }
 })
 
-// function getCommunesByRegion (code) {
-//   const filterredCommunes = communes.filter((c) => {
-//     // eslint-disable-next-line eqeqeq
-//     return c.code_region == code
-//   })
-
-//   console.log(filterredCommunes.length)
-// }
-
-// getCommunesByRegion(84)
+// query params:
+// departement - Departement code. eg. 22, 47
+app.get('/', (req, res) => {
+  // console.log('/communes ', req.query)
+  res.status(200).send(getCommunesByDepartements(parseInt(req.query.departements)))
+})
 
 module.exports = app

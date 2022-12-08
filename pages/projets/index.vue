@@ -140,8 +140,9 @@ export default {
         // const projectsIds = this.projects.map(p => p.id)
 
         this.projectsSubscription = this.$supabase
-          .from(`projects:owner=eq.${this.$user.id}`)
-          .on('UPDATE', (payload) => {
+          .channel(`public:projects:owner=eq.${this.$user.id}`)
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'projects', filter: `owner=eq.${this.$user.id}` }, (payload) => {
+            // console.log('projects updated', payload)
             const updatedProject = payload.new
 
             if (updatedProject.archived) {
@@ -150,6 +151,8 @@ export default {
             }
           })
           .subscribe()
+
+        console.log('subscribed to changes', this.projectsSubscription)
       }
     }
   },
@@ -165,7 +168,7 @@ export default {
   },
   beforeDestroy () {
     if (this.projectsSubscription) {
-      this.$supabase.removeSubscription(this.projectsSubscription)
+      this.$supabase.removeChannel(this.projectsSubscription)
     }
   }
 }

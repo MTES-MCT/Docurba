@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 export default ({ route }, inject) => {
+// MAP permet d'afficher les onglet de source
   const sourceMap = {
     'FR-ARA': {
       url: 'https://catalogue.datara.gouv.fr/base_territoriale/results?_format=json',
@@ -125,11 +126,11 @@ export default ({ route }, inject) => {
       return { dataset, data: data.data }
     },
     // search arg should be `commune/${codeInsee}` or `departement/${codeDepartement}` or `region/${codeRegion}`
-    async getGeoIDE (search) {
+    async getGeoIDE (search, platform) {
       const { data } = await axios({
         url: '/api/geoide/q',
         method: 'get',
-        params: { any: search }
+        params: { any: search, platform }
       })
 
       const { metadata, summary } = data
@@ -139,7 +140,11 @@ export default ({ route }, inject) => {
         cards = metadata.map((dataset) => {
           const rawLinks = typeof (dataset.link) === 'object' ? dataset.link : [dataset.link]
           const links = rawLinks.map((link) => {
-            const vals = link.split('||')
+            let vals = link.split('||')
+            if (platform === 'bretagne') {
+              vals = link.split('|')
+              vals = [vals[1], vals[2]]
+            }
             return {
               text: vals[0],
               url: vals[1]
@@ -148,12 +153,25 @@ export default ({ route }, inject) => {
 
           const datasetId = dataset['geonet:info'].uuid
 
+          const PLATFORMS_MAP = {
+            bretagne: {
+              mainLink: 'https://geobretagne.fr/geonetwork',
+              tags: ['GéoBretagne']
+            },
+            default: {
+              mainLink: 'http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue',
+              tags: ['Géo-IDE']
+            }
+
+          }
+          const infosPlatform = PLATFORMS_MAP[platform] ?? PLATFORMS_MAP.default
+
           return {
             title: dataset.defaultTitle,
-            tags: ['Géo-IDE'],
+            tags: infosPlatform.tags,
             text: dataset.abstract,
             links,
-            mainLink: `http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue/srv/fre/catalog.search#/metadata/${datasetId}`,
+            mainLink: `${infosPlatform.mainLink}/srv/fre/catalog.search#/metadata/${datasetId}`,
             mainLinkType: 'link',
             categs: typeof (dataset.inspirethemewithac) === 'object' ? dataset.inspirethemewithac : [dataset.inspirethemewithac]
           }

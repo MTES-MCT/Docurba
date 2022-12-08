@@ -110,11 +110,11 @@ export default {
     },
     async signIn () {
       // console.log('signIn', this.$supabase)
-      const { user, session, error } = await this.$auth.signIn(this.userData)
+      const { user, error } = await this.$auth.signIn(this.userData)
 
       if (!error) {
         // eslint-disable-next-line no-console
-        console.log('success sign in', user, session)
+        console.log('success sign in', user)
 
         if (this.$route.path === '/') {
           this.$router.push('/projets')

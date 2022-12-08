@@ -45,11 +45,36 @@
     </v-card-subtitle>
     <v-card-title>{{ event.type }}</v-card-title>
     <v-card-text>{{ event.description }}</v-card-text>
+    <v-card-actions>
+      <v-chip
+        v-for="attachement in event.attachements"
+        :key="attachement.id"
+        outlined
+        color="primary"
+        class="mr-2"
+        @click="downloadFile(attachement)"
+      >
+        <v-icon class="pr-2">
+          {{ icons.mdiFile }}
+        </v-icon>
+        {{ attachement.name }}
+        <v-icon color="primary" class="pl-2">
+          {{ icons.mdiDownload }}
+        </v-icon>
+      </v-chip>
+      <a
+        v-for="attachement in event.attachements"
+        :key="`file-link-${attachement.id}`"
+        :ref="`file-${attachement.id}`"
+        class="d-none"
+        :download="attachement.name"
+      />
+    </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import { mdiDotsHorizontal, mdiPencil } from '@mdi/js'
+import { mdiDotsHorizontal, mdiPencil, mdiFile, mdiDownload } from '@mdi/js'
 import actors from '@/assets/friseActors.json'
 
 export default {
@@ -61,7 +86,7 @@ export default {
   },
   data () {
     return {
-      icons: { mdiDotsHorizontal, mdiPencil }
+      icons: { mdiDotsHorizontal, mdiPencil, mdiFile, mdiDownload }
     }
   },
   methods: {
@@ -69,6 +94,14 @@ export default {
       return actors.find((actor) => {
         return actor.values.includes(val)
       })
+    },
+    async downloadFile (attachement) {
+      const { data } = await this.$supabase.storage.from('doc-events-attachements')
+        .download(`${this.event.project_id}/${this.event.id}/${attachement.id}`)
+
+      const link = this.$refs[`file-${attachement.id}`][0]
+      link.href = URL.createObjectURL(data)
+      link.click()
     }
   }
 }
@@ -76,6 +109,6 @@ export default {
 
 <style lang="scss" scoped>
 .event-card {
-  border: 1px solid #000091
+  border: 1px solid #000091;
 }
 </style>

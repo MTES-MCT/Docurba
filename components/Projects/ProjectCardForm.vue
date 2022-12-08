@@ -133,9 +133,9 @@ export default {
     },
     createOrUpdate (savedProject) {
       if (savedProject.id) {
-        return this.$supabase.from('projects').upsert(savedProject)
+        return this.$supabase.from('projects').upsert(savedProject).select()
       } else {
-        return this.$supabase.from('projects').insert([savedProject])
+        return this.$supabase.from('projects').insert([savedProject]).select()
       }
     },
     async upsertProject () {

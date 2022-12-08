@@ -34,11 +34,13 @@ export default ({ $supabase, $user }, inject) => {
         }
       })
     },
-    signIn (userData) {
-      return $supabase.auth.signIn({
+    async signIn (userData) {
+      const { data: { user }, error } = await $supabase.auth.signInWithPassword({
         email: userData.email,
         password: userData.password
       })
+
+      return { user, error }
     }
   })
 }

@@ -144,7 +144,7 @@ export default {
         region: this.selectedRegion
       })
 
-      const { data, error } = await this.$supabase.from('projects').insert([newProject])
+      const { data, error } = await this.$supabase.from('projects').insert([newProject]).select()
 
       if (!error && data && data[0]) {
         const project = data[0]

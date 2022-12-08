@@ -115,7 +115,7 @@ export default {
         }
       })
 
-      const { data: savedSharings } = await this.$supabase.from('projects_sharing').insert(newSharings)
+      const { data: savedSharings } = await this.$supabase.from('projects_sharing').insert(newSharings).select()
 
       axios({
         url: '/api/projects/notify/shared',
@@ -134,7 +134,7 @@ export default {
     async updateRole (sharing) {
       const { data: updatedSharing, error } = await this.$supabase.from('projects_sharing').update({
         role: sharing.role
-      }).eq('id', sharing.id)
+      }).eq('id', sharing.id).select()
 
       if (!error) {
         // TODO: Add a feedback here that the change is good.
