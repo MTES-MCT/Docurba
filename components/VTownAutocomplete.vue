@@ -97,10 +97,13 @@ export default {
       if (this.selectedDepartement) {
         this.loading = true
         this.towns = (await axios({
-          url: `/api/communes/${this.selectedDepartement.code_departement}`,
+          // url: `/api/communes/${this.selectedDepartement.code_departement}`,
+          url: '/api/communes',
           method: 'get',
-          data: this.selectedDepartement
+          params: { departements: this.selectedDepartement.code_departement }
+          // data: this.selectedDepartement
         })).data
+        console.log('towns: ', this.towns)
         this.loading = false
       }
     }
