@@ -383,8 +383,6 @@ export default {
           .from('text-images')
           .upload(`public/${uuidv4()}.${image.name.split('.').pop()}`, image)
 
-        console.log(data)
-
         this.editor.commands.setImage({
           src: `https://ixxbyuandbmplfnqtxyw.supabase.co/storage/v1/object/public/text-images/${data.path}`
         })

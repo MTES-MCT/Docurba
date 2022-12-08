@@ -30,7 +30,7 @@ app.get('/:inseeId', (req, res) => {
 // query params:
 // departement - Departement code. eg. 22, 47
 app.get('/', (req, res) => {
-  console.log('req q: ', req.query)
+  // console.log('/communes ', req.query)
   res.status(200).send(getCommunesByDepartements(parseInt(req.query.departements)))
 })
 

@@ -35,7 +35,6 @@ export default {
     }
   },
   mounted () {
-    console.log('route.query.region: ', this.$route.query.region)
     if (this.$route.query.region === 'FR-BRE') {
       this.tabs.splice(2, 0, { text: 'GéoBretagne', to: '/pacsec/geobretagne' })
       this.tabs = this.tabs.filter(e => e.to !== '/pacsec/data')

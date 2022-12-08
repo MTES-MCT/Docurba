@@ -49,7 +49,6 @@ export default {
     const { cards, themes } = await this.$daturba.getGeoIDE(communeDetails.nom_commune, 'bretagne')
 
     this.dataset = cards
-    console.log('cards, themes: ', cards, themes)
     const inspireThemes = themes.dimension.find(d => d['@label'] === 'inspireThemes')
 
     if (inspireThemes && inspireThemes.category) {
