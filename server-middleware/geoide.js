@@ -34,7 +34,6 @@ app.get('/q', async (req, res) => {
       url: PLATFORMS_BASE[platform].baseUrl + PLATFORMS_BASE[platform].searchPath,
       params: Object.assign({}, req.query, geoIdeParams)
     }
-    console.log('axiosParams: ', axiosParams)
 
     const { data } = await axios(axiosParams)
 

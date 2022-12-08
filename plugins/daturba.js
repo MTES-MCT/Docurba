@@ -115,7 +115,6 @@ export default ({ route }, inject) => {
         params: { any: search, platform }
       })
 
-      console.log('DATA DATURBA RET: ', data)
       const { metadata, summary } = data
       let cards = []
 
@@ -123,7 +122,11 @@ export default ({ route }, inject) => {
         cards = metadata.map((dataset) => {
           const rawLinks = typeof (dataset.link) === 'object' ? dataset.link : [dataset.link]
           const links = rawLinks.map((link) => {
-            const vals = link.split('||')
+            let vals = link.split('||')
+            if (platform === 'bretagne') {
+              vals = link.split('|')
+              vals = [vals[1], vals[2]]
+            }
             return {
               text: vals[0],
               url: vals[1]
@@ -132,12 +135,25 @@ export default ({ route }, inject) => {
 
           const datasetId = dataset['geonet:info'].uuid
 
+          const PLATFORMS_MAP = {
+            bretagne: {
+              mainLink: 'https://geobretagne.fr/geonetwork',
+              tags: ['GéoBretagne']
+            },
+            default: {
+              mainLink: 'http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue',
+              tags: ['Géo-IDE']
+            }
+
+          }
+          const infosPlatform = PLATFORMS_MAP[platform] ?? PLATFORMS_MAP.default
+
           return {
             title: dataset.defaultTitle,
-            tags: ['Géo-IDE'],
+            tags: infosPlatform.tags,
             text: dataset.abstract,
             links,
-            mainLink: `http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue/srv/fre/catalog.search#/metadata/${datasetId}`,
+            mainLink: `${infosPlatform.mainLink}/srv/fre/catalog.search#/metadata/${datasetId}`,
             mainLinkType: 'link',
             categs: typeof (dataset.inspirethemewithac) === 'object' ? dataset.inspirethemewithac : [dataset.inspirethemewithac]
           }
