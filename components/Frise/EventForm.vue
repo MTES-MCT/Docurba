@@ -113,7 +113,7 @@ export default {
   },
   data () {
     const defaultEvent = {
-      type: '',
+      type: this.$route.query.eventType || '',
       date_iso: this.$dayjs().format('YYYY-MM-DD'),
       description: '',
       actors: [],
