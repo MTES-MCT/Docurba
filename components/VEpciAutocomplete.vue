@@ -11,6 +11,7 @@
         filled
         dense
         placeholder="EPCI"
+        v-bind="inputProps"
         @change="input"
       />
     </v-col>
@@ -34,6 +35,10 @@ export default {
       default () {
         return []
       }
+    },
+    inputProps: {
+      type: Object,
+      default () { return {} }
     }
   },
   data () {

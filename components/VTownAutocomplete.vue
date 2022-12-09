@@ -3,6 +3,7 @@
     <v-col v-show="!hideDept" cols="12" :sm="colsDep">
       <v-autocomplete
         v-model="selectedDepartement"
+        v-bind="inputProps"
         :items="departements"
         placeholder="Departement"
         hide-details
@@ -14,6 +15,7 @@
     </v-col>
     <v-col cols="12" :sm="colsTown">
       <v-autocomplete
+        v-bind="inputProps"
         :value="selectedTown"
         :no-data-text="loading ? 'Chargement ...' : 'Selectionnez un département'"
         :items="towns"
@@ -41,6 +43,10 @@ export default {
       default () {
         return {}
       }
+    },
+    inputProps: {
+      type: Object,
+      default () { return {} }
     },
     colsDep: {
       type: Number,
