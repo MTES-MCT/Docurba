@@ -161,7 +161,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
  .pac-section-content img {
   max-width: 100%;
  }
