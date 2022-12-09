@@ -40,4 +40,4 @@ En outre, la loi marque la fin de l’expansion urbaine pour l’urbanisme comme
 
 **Pour aller plus loin :**
 - https://www.ecologie.gouv.fr/dossier-presse-loi-climat-et-resilience
-- https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043956924#:~:text=LOI%20n%C2%B0%202021%2D1104,ses%20effets%20(1)%20%2D%20L%C3%A9gifrance&text=l'Union%20Europ%C3%A9enne-,LOI%20n%C2%B0%202021%2D1104%20du%2022%20ao%C3%BBt%202021%20portant,renforcement%20de%20la%20r%C3%A9silience%20...
+- [https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043956924](https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043956924#:~:text=LOI%20n%C2%B0%202021%2D1104,ses%20effets%20(1)%20%2D%20L%C3%A9gifrance&text=l'Union%20Europ%C3%A9enne-,LOI%20n%C2%B0%202021%2D1104%20du%2022%20ao%C3%BBt%202021%20portant,renforcement%20de%20la%20r%C3%A9silience%20...)
