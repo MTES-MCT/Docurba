@@ -54,6 +54,12 @@ import { mdiMagnify } from '@mdi/js'
 import regions from '@/assets/data/Regions.json'
 
 export default {
+  props: {
+    path: {
+      type: String,
+      default: '/pacsec/content'
+    }
+  },
   data () {
     return {
       documents: ['CC', 'PLU', 'PLUi', 'PLUi-H', 'PLUi-D', 'PLUi-HD'], // 'SCoT', 'SCot-AEC'],
@@ -85,7 +91,7 @@ export default {
       }
 
       return {
-        path: '/pacsec/content',
+        path: this.path,
         query
       }
     }
