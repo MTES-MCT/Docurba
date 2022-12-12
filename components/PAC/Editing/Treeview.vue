@@ -22,6 +22,7 @@
         item-key="path"
         selected-color="primary"
         :search="contentSearch"
+        selection-type="independent"
       >
         <template #label="{item}">
           <v-tooltip right nudge-right="35">
@@ -114,10 +115,10 @@ import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiC
 import { uniq } from 'lodash'
 import pacEditing from '@/mixins/pacEditing.js'
 
-function getDepth (path) {
-  // console.log(path)
-  return (path.replace(/\/intro$/, '').match(/\//g) || []).length
-}
+// function getDepth (path) {
+//   // console.log(path)
+//   return (path.replace(/\/intro$/, '').match(/\//g) || []).length
+// }
 
 export default {
   mixins: [pacEditing],
@@ -136,20 +137,22 @@ export default {
     }
   },
   data () {
-    const children = this.value.filter((s) => {
-      const path = (s.path || s).replace(/\/intro$/, '')
-      const depth = getDepth(path)
+    // const children = this.value.filter((s) => {
+    //   const path = (s.path || s).replace(/\/intro$/, '')
+    //   const depth = getDepth(path)
 
-      const child = this.value.find((section) => {
-        // console.log((section.path || section), path)
+    //   const child = this.value.find((section) => {
+    //     // console.log((section.path || section), path)
 
-        return s !== section &&
-          (section.path || section).includes(path + '/') &&
-          depth + 1 === getDepth(section.path || section)
-      })
+    //     return s !== section &&
+    //       (section.path || section).includes(path + '/') &&
+    //       depth + 1 === getDepth(section.path || section)
+    //   })
 
-      return !child
-    })
+    //   return !child
+    // })
+
+    // console.log(this.value, children)
 
     return {
       contentSearch: '',
@@ -161,11 +164,35 @@ export default {
         mdiChevronUp,
         mdiChevronDown
       },
-      overedItem: '',
-      selectedSections: children
+      overedItem: ''
+      // selectedSections: this.value.map(section => section)
     }
   },
   computed: {
+    selectedSections: {
+      get () {
+        console.log('get selected sections')
+        return this.value.map(section => section)
+      },
+      set () {
+        const selection = []
+
+        this.PAC.forEach((section) => {
+          if (section.children) {
+            const selectedChildren = this.selectedSections.find((s) => {
+              const path = section.path.replace(/\/intro$/, '')
+              return s !== section.path && s.includes(path)
+            })
+
+            if (selectedChildren) {
+              selection.push(section.path)
+            }
+          }
+        })
+
+        this.$emit('input', uniq(selection.concat(this.selectedSections)))
+      }
+    },
     PACroots () {
       // if (!this.contentSearch.length) {
       const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
@@ -178,28 +205,28 @@ export default {
       // }
     }
   },
-  watch: {
-    selectedSections () {
-      // if (!this.contentSearch.length) {
-      const selection = []
+  // watch: {
+  //   selectedSections () {
+  //     // if (!this.contentSearch.length) {
+  //     const selection = []
 
-      this.PAC.forEach((section) => {
-        if (section.children) {
-          const selectedChildren = this.selectedSections.find((s) => {
-            const path = section.path.replace(/\/intro$/, '')
-            return s !== section.path && s.includes(path)
-          })
+  //     this.PAC.forEach((section) => {
+  //       if (section.children) {
+  //         const selectedChildren = this.selectedSections.find((s) => {
+  //           const path = section.path.replace(/\/intro$/, '')
+  //           return s !== section.path && s.includes(path)
+  //         })
 
-          if (selectedChildren) {
-            selection.push(section.path)
-          }
-        }
-      })
+  //         if (selectedChildren) {
+  //           selection.push(section.path)
+  //         }
+  //       }
+  //     })
 
-      this.$emit('input', uniq(selection.concat(this.selectedSections)))
-      // }
-    }
-  },
+  //     this.$emit('input', uniq(selection.concat(this.selectedSections)))
+  //     // }
+  //   }
+  // },
   methods: {
     openSection (section) {
       this.$emit('open', section)
