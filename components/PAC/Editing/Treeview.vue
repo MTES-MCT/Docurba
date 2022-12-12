@@ -171,15 +171,14 @@ export default {
   computed: {
     selectedSections: {
       get () {
-        console.log('get selected sections')
         return this.value.map(section => section)
       },
-      set () {
+      set (newSelection) {
         const selection = []
 
         this.PAC.forEach((section) => {
           if (section.children) {
-            const selectedChildren = this.selectedSections.find((s) => {
+            const selectedChildren = newSelection.find((s) => {
               const path = section.path.replace(/\/intro$/, '')
               return s !== section.path && s.includes(path)
             })
@@ -190,7 +189,7 @@ export default {
           }
         })
 
-        this.$emit('input', uniq(selection.concat(this.selectedSections)))
+        this.$emit('input', uniq(selection.concat(newSelection)))
       }
     },
     PACroots () {
