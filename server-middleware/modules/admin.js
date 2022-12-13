@@ -10,6 +10,9 @@ module.exports = {
       dept: userData.dept.code_departement
     }).select()
 
+    // eslint-disable-next-line no-console
+    console.log('updateUserRole', data, error)
+
     if (role === 'ddt' && !error) {
       // Update deal status in Pipedrive.
       const { deals } = pipedrive.findOrganization(userData.dept.code_departement)
