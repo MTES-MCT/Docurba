@@ -158,7 +158,9 @@
   .break-word {
     word-break: break-word !important;
   }
-
+  .no-text-transform {
+  text-transform: none !important;
+}
   .pointer {
     cursor: pointer;
   }

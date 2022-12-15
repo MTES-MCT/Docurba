@@ -96,7 +96,9 @@ export default {
     treeShake: true,
     customVariables: ['~/assets/variables.scss'],
     icons: {
-      iconfont: 'mdiSvg'
+      iconfont: 'mdiSvg',
+      chevronRight: 'mdiChevronRight'
+
     },
     theme: {
       // dark: true,
