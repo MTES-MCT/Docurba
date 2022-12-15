@@ -1,4 +1,5 @@
 import axios from 'axios'
+import GEORISQUES_MAP from '@/assets/data/GeoRisquesMap.json'
 
 export default ({ route }, inject) => {
 // MAP permet d'afficher les onglet de source
@@ -108,10 +109,8 @@ export default ({ route }, inject) => {
 
   inject('daturba', {
     async getGeorisques ({ dataset, insee }) {
-      const EXISTING_DATASETS = ['gaspar/catnat', 'gaspar/dicrim', 'ppr/etats_documents', 'ppr/famille_risques',
-        'installations_classees', 'gaspar/papi', 'gaspar/pcs', 'ppr', 'radon', 'risques', 'sis', 'gaspar/tim', 'gaspar/tri',
-        'zonage_sismique']
-
+      const EXISTING_DATASETS = GEORISQUES_MAP.map(e => e.endpoint)
+      console.log('EXISTING_DATASETS: ', EXISTING_DATASETS)
       if (!EXISTING_DATASETS.includes(dataset)) { throw new Error('Le dataset demandé est inconnu. Types disponibles:' + EXISTING_DATASETS.join(', ')) }
       // https://www.georisques.gouv.fr/api/v1/zonage_sismique?code_insee=74001&page=1&page_size=10&rayon=1000
       // TODO: ATTENTION, le max de join est de 10. Le faire autrement dans un cas de caumunauté de commune + grand
@@ -122,7 +121,7 @@ export default ({ route }, inject) => {
         method: 'get',
         params: { dataset, insee }
       })
-
+      console.log('data STUFF: ', data)
       return { dataset, data: data.data }
     },
     // search arg should be `commune/${codeInsee}` or `departement/${codeDepartement}` or `region/${codeRegion}`
