@@ -100,10 +100,14 @@ export default {
     },
     theme: {
       // dark: true,
+      options: { customProperties: true },
       themes: {
-        options: { customProperties: true },
+
         light: {
-          primary: '#000091',
+          primary: {
+            base: '#000091',
+            lighten1: '#E3E3FD'
+          },
           secondary: '#e1000f',
           bf500: '#000091',
           'bf500-plain': '#000091',
