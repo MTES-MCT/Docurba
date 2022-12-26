@@ -4,7 +4,7 @@
       <v-col :cols="collapsedTree ? 1 : 4" class="collapse-transition">
         <client-only>
           <PACEditingTreeview
-            :value="sectionsList"
+            v-model="selectedSections"
             :p-a-c="PAC"
             :collapsed="collapsedTree"
             :table="table"
@@ -13,7 +13,6 @@
             :selectable="selectable"
             @open="selectSection"
             @collapse="collapsedTree = !collapsedTree"
-            @input="changeSelectedSections"
           />
         </client-only>
       </v-col>
@@ -77,6 +76,7 @@ export default {
   },
   data () {
     return {
+      selectedSections: this.sectionsList.map(s => s),
       collapsedTree: false,
       selectedSection: null
     }
@@ -93,17 +93,22 @@ export default {
       } else { return [] }
     }
   },
+  watch: {
+    selectedSections () {
+      this.changeSelectedSections()
+    }
+  },
   methods: {
     // This method allow us to work on a clean data ref environement.
     selectSection (section) {
       const selectedSection = this.PAC.find(s => s.path === section.path)
       this.selectedSection = Object.assign(sectionsCommonKeys(selectedSection), this.tableKeys)
     },
-    async changeSelectedSections (selectedSections) {
+    async changeSelectedSections () {
       if (this.selectable && this.tableKeys.project_id) {
       // This make it so we can't save sections as objects in reading mode for comments and checked features.
         await this.$supabase.from('projects').update({
-          PAC: selectedSections.map(s => s || s.path)
+          PAC: this.selectedSections.map(s => s || s.path)
         }).eq('id', this.tableKeys.project_id)
 
         this.$notifications.notifyUpdate(this.tableKeys.project_id)

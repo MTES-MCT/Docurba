@@ -22,6 +22,7 @@
         item-key="path"
         selected-color="primary"
         :search="contentSearch"
+        selection-type="independent"
       >
         <template #label="{item}">
           <v-tooltip right nudge-right="35">
@@ -114,10 +115,10 @@ import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiC
 import { uniq } from 'lodash'
 import pacEditing from '@/mixins/pacEditing.js'
 
-function getDepth (path) {
-  // console.log(path)
-  return (path.replace(/\/intro$/, '').match(/\//g) || []).length
-}
+// function getDepth (path) {
+//   // console.log(path)
+//   return (path.replace(/\/intro$/, '').match(/\//g) || []).length
+// }
 
 export default {
   mixins: [pacEditing],
@@ -136,21 +137,6 @@ export default {
     }
   },
   data () {
-    const children = this.value.filter((s) => {
-      const path = (s.path || s).replace(/\/intro$/, '')
-      const depth = getDepth(path)
-
-      const child = this.value.find((section) => {
-        // console.log((section.path || section), path)
-
-        return s !== section &&
-          (section.path || section).includes(path + '/') &&
-          depth + 1 === getDepth(section.path || section)
-      })
-
-      return !child
-    })
-
     return {
       contentSearch: '',
       icons: {
@@ -161,11 +147,43 @@ export default {
         mdiChevronUp,
         mdiChevronDown
       },
-      overedItem: '',
-      selectedSections: children
+      overedItem: ''
     }
   },
   computed: {
+    selectedSections: {
+      get () {
+        return this.value.map(s => s)
+      },
+      set (newSelection) {
+        if (newSelection.length > this.value.length) {
+          // Section was added, we need to add all parents.
+          const selection = []
+
+          this.PAC.forEach((section) => {
+            if (section.children) {
+              const selectedChildren = newSelection.find((s) => {
+                const path = section.path.replace(/\/intro$/, '')
+                return s !== section.path && s.includes(path)
+              })
+
+              if (selectedChildren) {
+                selection.push(section.path)
+              }
+            }
+          })
+
+          this.$emit('input', uniq(selection.concat(newSelection)))
+        } else if (newSelection.length < this.value.length) {
+          // Section was removed, we need to remove all children.
+          const removedSection = this.value.find(s => !newSelection.includes(s))
+          const removedPath = removedSection.replace(/\/intro$/, '')
+          this.$emit('input', newSelection.filter((section) => {
+            return !section.includes(removedPath)
+          }))
+        }
+      }
+    },
     PACroots () {
       // if (!this.contentSearch.length) {
       const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
@@ -175,28 +193,6 @@ export default {
       return roots
       // } else {
       //   return this.filteredPAC
-      // }
-    }
-  },
-  watch: {
-    selectedSections () {
-      // if (!this.contentSearch.length) {
-      const selection = []
-
-      this.PAC.forEach((section) => {
-        if (section.children) {
-          const selectedChildren = this.selectedSections.find((s) => {
-            const path = section.path.replace(/\/intro$/, '')
-            return s !== section.path && s.includes(path)
-          })
-
-          if (selectedChildren) {
-            selection.push(section.path)
-          }
-        }
-      })
-
-      this.$emit('input', uniq(selection.concat(this.selectedSections)))
       // }
     }
   },
