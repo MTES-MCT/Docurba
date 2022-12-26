@@ -95,7 +95,6 @@ export default {
   },
   watch: {
     selectedSections () {
-      console.log('changed selection', this.selectedSections)
       this.changeSelectedSections()
     }
   },

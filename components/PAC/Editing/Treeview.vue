@@ -139,6 +139,7 @@ export default {
   data () {
     return {
       contentSearch: '',
+      removedPath: '',
       icons: {
         mdiPlus,
         mdiDelete,
@@ -156,46 +157,60 @@ export default {
         return this.value.map(s => s)
       },
       set (newSelection) {
-        const selection = uniq(this.value.concat(newSelection))
+        let selection = uniq(this.value.concat(newSelection))
 
-        // For each added section we add its parent to the selection.
-        this.PAC.forEach((section) => {
-          if (section.children) {
-            const selectedChildren = newSelection.find((s) => {
-              const path = section.path.replace(/\/intro$/, '')
-              return s !== section.path && s.includes(path)
-            })
+        console.log(this.value, newSelection, selection, this.removedPath)
 
-            if (selectedChildren) {
-              selection.push(section.path)
+        if (selection.length > this.value.length || newSelection.length < this.value.length) {
+          if (newSelection.length < this.value.length) {
+            if (!this.removedPath && selection.length <= this.value.length) {
+              const removedSection = this.value.find(s => !newSelection.includes(s))
+              if (removedSection) {
+                this.removedPath = removedSection.replace(/\/intro$/, '')
+              }
             }
-          }
-        })
 
-        this.$emit('input', selection)
+            if (this.removedPath) {
+              selection = selection.filter((section) => {
+                return !section.includes(this.removedPath)
+              })
+            }
+
+            this.removedPath = ''
+          }
+
+          this.addParentsToSelection(selection)
+          this.$emit('input', uniq(selection))
+        }
       }
     },
     PACroots () {
-      // if (!this.contentSearch.length) {
       const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
         return (sa.ordre ?? 100) - (sb.ordre ?? 100)
       })
 
       return roots
-      // } else {
-      //   return this.filteredPAC
-      // }
     }
   },
   methods: {
     openSection (section) {
       this.$emit('open', section)
     },
-    addSectionTo (parentSection) {
-      // if (open) {
-      // $event.stopPropagation()
-      // }
+    addParentsToSelection (selection) {
+      this.PAC.forEach((section) => {
+        if (section.children) {
+          const selectedChildren = selection.find((s) => {
+            const path = section.path.replace(/\/intro$/, '')
+            return s !== section.path && s.includes(path)
+          })
 
+          if (selectedChildren) {
+            selection.push(section.path)
+          }
+        }
+      })
+    },
+    addSectionTo (parentSection) {
       this.addNewSection(parentSection)
     },
     selectItem (item) {
@@ -205,6 +220,9 @@ export default {
       this.deleteSection(Object.assign({
         path: item.path
       }, this.tableKey))
+
+      this.removedPath = item.path.replace(/\/intro$/, '')
+
       dialog.value = false
     },
     colorClass (section) {
