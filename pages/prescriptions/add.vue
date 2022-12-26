@@ -65,7 +65,9 @@
                   <v-icon color="primary" class="mr-1">
                     {{ icons.mdiCheck }}
                   </v-icon>
-                  Pour Laon
+                  Pour
+                  <span v-if="type === 'commune'">{{ town.nom_commune }}</span>
+                  <span v-else>{{ epci.label }}</span>
                 </div>
               </div>
             </v-col>
@@ -99,7 +101,7 @@
         </VFileDropzone>
       </v-col>
       <v-col cols="12" class="d-flex justify-end">
-        <v-btn color="primary" depressed @click="choiceDone = true">
+        <v-btn color="primary" depressed :disabled="!choiceDone" @click="uploadPrescription">
           Valider
         </v-btn>
       </v-col>
@@ -124,6 +126,31 @@ export default {
         mdiCheck
       }
     }
+  },
+  watch: {
+    type (newVal) {
+      console.log('type: ', this.type)
+      if (newVal === 'commune') {
+        this.epci = null
+      } else {
+        this.town = null
+      }
+    }
+  },
+  methods: {
+    async uploadPrescription () {
+      try {
+        console.log('uploadPrescription')
+        const prescription = {
+          epci: {},
+          towns: [],
+          attachements: []
+        }
+        await this.$supabase.from('prescriptions').insert([prescription])
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
 }
 </script>
@@ -131,7 +158,6 @@ export default {
 <style lang="scss" >
 #prescription .dropzone{
   cursor: pointer;
-  // border: dashed 2px red;
   border: dashed 2px var(--v-primary-base);
 }
 </style>

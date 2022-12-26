@@ -99,14 +99,13 @@ export default {
       iconfont: 'mdiSvg'
     },
     theme: {
-      // dark: true,
       options: { customProperties: true },
       themes: {
-
         light: {
           primary: {
             base: '#000091',
-            lighten1: '#E3E3FD'
+            lighten1: '#E3E3FD',
+            lighten2: '#0063CB'
           },
           secondary: '#e1000f',
           bf500: '#000091',
