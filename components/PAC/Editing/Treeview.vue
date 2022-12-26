@@ -40,7 +40,7 @@
             <span>{{ item.titre || '[Titre Manquant]' }}</span>
           </v-tooltip>
         </template>
-        <template #append="{item, open}">
+        <template #append="{item}">
           <v-btn
             v-show="overedItem === item.path && item.depth > 2"
             depressed
@@ -67,7 +67,7 @@
             tile
             small
             icon
-            @click="addSectionTo(item, open, $event)"
+            @click.stop="addSectionTo(item)"
           >
             <v-icon>{{ icons.mdiPlus }}</v-icon>
           </v-btn>
@@ -156,32 +156,23 @@ export default {
         return this.value.map(s => s)
       },
       set (newSelection) {
-        if (newSelection.length > this.value.length) {
-          // Section was added, we need to add all parents.
-          const selection = []
+        const selection = uniq(this.value.concat(newSelection))
 
-          this.PAC.forEach((section) => {
-            if (section.children) {
-              const selectedChildren = newSelection.find((s) => {
-                const path = section.path.replace(/\/intro$/, '')
-                return s !== section.path && s.includes(path)
-              })
+        // For each added section we add its parent to the selection.
+        this.PAC.forEach((section) => {
+          if (section.children) {
+            const selectedChildren = newSelection.find((s) => {
+              const path = section.path.replace(/\/intro$/, '')
+              return s !== section.path && s.includes(path)
+            })
 
-              if (selectedChildren) {
-                selection.push(section.path)
-              }
+            if (selectedChildren) {
+              selection.push(section.path)
             }
-          })
+          }
+        })
 
-          this.$emit('input', uniq(selection.concat(newSelection)))
-        } else if (newSelection.length < this.value.length) {
-          // Section was removed, we need to remove all children.
-          const removedSection = this.value.find(s => !newSelection.includes(s))
-          const removedPath = removedSection.replace(/\/intro$/, '')
-          this.$emit('input', newSelection.filter((section) => {
-            return !section.includes(removedPath)
-          }))
-        }
+        this.$emit('input', selection)
       }
     },
     PACroots () {
@@ -200,10 +191,10 @@ export default {
     openSection (section) {
       this.$emit('open', section)
     },
-    addSectionTo (parentSection, open, $event) {
-      if (open) {
-        $event.stopPropagation()
-      }
+    addSectionTo (parentSection) {
+      // if (open) {
+      // $event.stopPropagation()
+      // }
 
       this.addNewSection(parentSection)
     },
