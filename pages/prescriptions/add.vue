@@ -1,5 +1,5 @@
 <template>
-  <v-container id="prescription">
+  <v-container v-if="!loading" id="prescription">
     <v-row>
       <v-col>
         <h1 class="text-h1">
@@ -9,50 +9,11 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <v-container v-if="!choiceDone" class=" primary lighten-1 pa-8 pb-0">
+        <v-container class=" primary lighten-1 pa-8 ">
           <v-row>
             <v-col cols="12">
-              <div class="text-h5 font-weight-bold primary--text pb-8">
-                Déposer une prescription
-              </div>
-              <div class="text-h6 font-weight-bold">
-                Pour ?
-              </div>
-            </v-col>
-            <v-col cols="12" md="8" class="pt-0">
-              <v-radio-group v-model="type" row class="mt-0">
-                <v-radio
-                  label="Commune"
-                  value="commune"
-                />
-                <v-radio
-                  label="EPCI"
-                  value="EPCI"
-                />
-              </v-radio-group>
-              <VTownAutocomplete v-if="type === 'commune'" v-model="town" />
-              <VEpciAutocomplete v-else v-model="epci" />
-            </v-col>
-            <v-col cols="12" class="d-flex justify-center py-8">
-              <v-btn color="primary" depressed @click="choiceDone = true">
-                Valider
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-container>
-        <v-container v-else class=" primary lighten-1 pa-8 ">
-          <v-row>
-            <v-col cols="12">
-              <div class="text-h5 font-weight-bold primary--text pb-8 d-flex justify-space-between align-center">
+              <div class="text-h5 font-weight-bold primary--text pb-8 d-flex  align-center">
                 <div>Vous voulez...</div>
-                <div>
-                  <v-btn color="primary" text @click="choiceDone = false">
-                    <v-icon class="mr-1">
-                      {{ icons.mdiPencil }}
-                    </v-icon>
-                    Modifier
-                  </v-btn>
-                </div>
               </div>
               <div>
                 <div class="mb-4">
@@ -75,7 +36,7 @@
         </v-container>
       </v-col>
     </v-row>
-    <v-row class="pb-16">
+    <v-row v-if="docType === 'upload'" class="pb-16">
       <v-col cols="12">
         <div class="pt-8 black--text">
           Déposez ici votre document de prescription
@@ -106,20 +67,30 @@
         </v-btn>
       </v-col>
     </v-row>
+    <v-row v-else class="pb-16">
+      <v-col cols="12">
+        <div class="pt-8 black--text">
+          LINK
+        </div>
+      </v-col>
+    </v-row>
   </v-container>
+  <VGlobalLoader v-else />
 </template>
 
 <script>
 import { mdiUpload, mdiPencil, mdiCheck } from '@mdi/js'
+import axios from 'axios'
 
 export default {
-  name: 'Prescriptions',
+  name: 'PrescriptionsAdd',
   data () {
     return {
       town: null,
       epci: null,
-      choiceDone: false,
       type: 'commune',
+      loading: true,
+      docType: 'link',
       icons: {
         mdiUpload,
         mdiPencil,
@@ -127,15 +98,16 @@ export default {
       }
     }
   },
-  watch: {
-    type (newVal) {
-      console.log('type: ', this.type)
-      if (newVal === 'commune') {
-        this.epci = null
-      } else {
-        this.town = null
-      }
+  async mounted () {
+    this.loading = true
+    if (!this.$route.query.isEpci) {
+      this.town = (await axios({
+        url: `/api/communes/${this.$route.query.code}`,
+        method: 'get'
+      })).data
     }
+
+    this.loading = false
   },
   methods: {
     async uploadPrescription () {

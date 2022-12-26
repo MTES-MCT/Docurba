@@ -1,5 +1,5 @@
 <template>
-  <v-container id="prescription" class="mb-16">
+  <v-container v-if="!loading" id="prescription" class="mb-16">
     <v-row>
       <v-col>
         <h1 class="text-h1">
@@ -88,6 +88,7 @@
       </v-col>
     </v-row>
   </v-container>
+  <VGlobalLoader v-else />
 </template>
 
 <script>
@@ -101,6 +102,7 @@ export default {
       noPrescription: false,
       town: null,
       epci: null,
+      loading: true,
       icons: {
         mdiDownload,
         mdiEye,
