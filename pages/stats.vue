@@ -191,6 +191,8 @@ export default {
         url: '/api/stats/projects',
         method: 'get'
       })
+
+      console.log(nbProjects)
     },
     sum (values) {
       return values.reduce((total, val) => {
