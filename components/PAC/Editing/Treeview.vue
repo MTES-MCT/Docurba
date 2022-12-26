@@ -159,10 +159,8 @@ export default {
       set (newSelection) {
         let selection = uniq(this.value.concat(newSelection))
 
-        console.log(this.value, newSelection, selection, this.removedPath)
-
         if (selection.length > this.value.length || newSelection.length < this.value.length) {
-          if (newSelection.length < this.value.length) {
+          if ((this.value.length - newSelection.length) === 1) {
             if (!this.removedPath && selection.length <= this.value.length) {
               const removedSection = this.value.find(s => !newSelection.includes(s))
               if (removedSection) {

@@ -136,7 +136,7 @@ export default {
     },
     isReadonly () {
       return !!this.readonlyDirs.find((dir) => {
-        return this.editedSection.path.includes(dir)
+        return this.editedSection.path.includes(dir) && this.section.slug !== 'new-section'
       })
     }
   },
