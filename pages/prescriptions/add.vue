@@ -52,12 +52,14 @@
           row
         >
           <v-radio
-            class="radio-border black--text pa-6 "
+            class="black--text pa-6 "
+            :class="{'radio-border': docType !== 'attachments', 'radio-border-active': docType === 'attachments'}"
             label="Téléverser un fichier"
             value="attachments"
           />
           <v-radio
-            class="radio-border black--text pa-6 "
+            class="black--text pa-6 "
+            :class="{'radio-border': docType !== 'link', 'radio-border-active': docType === 'link'}"
             label="Insérer un lien"
             value="link"
           />
@@ -241,12 +243,19 @@ export default {
   border: dashed 2px var(--v-primary-base);
 }
 
-#prescription .radio-border{
-    border: solid 1px var(--v-primary-base);
+#prescription .radio-border-active{
+   border: solid 1px var(--v-primary-base);
     width: 350px;
     label {
       color: black !important;
     }
+}
 
+#prescription .radio-border{
+    border: solid 1px  var(--v-g300-base);
+    width: 350px;
+    label {
+      color: black !important;
+    }
 }
 </style>
