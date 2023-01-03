@@ -134,7 +134,7 @@ export default {
         })).data
         console.log('EPCI: ', EPCI)
         const regionCode = EPCI.towns[0].code_region
-        // eslint-disable-next-line eqeqeq
+        // eslint-disable-next-line
         const region = regions.find(r => r.code == regionCode)
 
         this.$matomo([

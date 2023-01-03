@@ -164,7 +164,7 @@ export default {
   },
   computed: {
     isEpci () {
-      return this.$route.query.insee.epci_label && this.$route.query.insee.epci_code
+      return this.$route.query.epci_label && this.$route.query.epci_code
     }
   },
   async mounted () {
@@ -176,17 +176,17 @@ export default {
         method: 'get'
       })).data
     }
-    const { data: prescription } = await this.$supabase.from('prescriptions').select('*').contains('towns', ['1001']).order('created_at', { ascending: false }).limit(1)
+    //    this.$route.query.insee
+    const inseeSearch = Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee]
+    console.log('inseeSearch: ', inseeSearch)
+    const { data: prescription } = await this.$supabase.from('prescriptions').select('*').contains('towns', inseeSearch).order('created_at', { ascending: false }).limit(1)
 
     this.prescription = prescription[0]
-    console.log('prescription: ', this.prescription)
     this.loading = false
   },
   methods: {
     async downloadFile (file) {
-      console.log('file: ', file)
       const { data } = await this.$supabase.storage.from('prescriptions').download(file.path)
-      console.log('data: ', data)
       const link = this.$refs[`file-${file.id}`][0]
       link.href = URL.createObjectURL(data)
       link.click()
