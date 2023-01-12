@@ -15,26 +15,26 @@ La hiérarchie des normes est construite autour de deux rapports d’opposabilit
 
 #### a) Documents dont l’évolution est engagée avant le 1er avril 2021 (entrée en vigueur de l’ordonnance relative à la rationalisation de la hiérarchie des normes applicable aux documents d’urbanisme)
 
-##### PLU(i) couverts par un SCoT
+##### PLU(i) ou CC couverts par un SCoT
 
 Dans les territoires couverts par un SCoT, lorsqu’un des documents énumérés supra est approuvé après l’approbation du PLU ou de la carte communale, ces derniers doivent être rendus compatibles ou le prendre en compte, si nécessaire :
 - Dans un délai d'un an s'il s'agit d'un SCoT ou de 3 ans si la mise en compatibilité implique une révision du PLU ;
 - Dans un délai de 3 ans pour la plupart des autres situations 
 
-##### PLU(i) non couverts par un SCoT
+##### PLU(i) ou CC non couverts par un SCoT
 
-Dans les territoires non couverts par un SCoT, lorsqu’un des documents supra est approuvé après l’approbation du PLU, ce dernier doit être rendu compatible ou le prendre en compte, si nécessaire, dans un délai de 3 ans. Si un SRADDET est approuvé après l’approbation du PLU, ce dernier se met en compatibilité lors de sa première révision qui suit l’approbation du schéma régional.
+Dans les territoires non couverts par un SCoT, lorsqu’un des documents supra est approuvé après l’approbation du PLU ou de la carte communale, ce dernier doit être rendu compatible ou le prendre en compte, si nécessaire, dans un délai de 3 ans. Si un SRADDET est approuvé après l’approbation du PLU, ce dernier se met en compatibilité lors de sa première révision qui suit l’approbation du schéma régional.
 
 #### b) Documents dont l’évolution est engagée après le 1er avril 2021 (entrée en vigueur de l’ordonnance relative à la rationalisation de la hiérarchie des normes applicable aux documents d’urbanisme)
 
-#### PLU(i) couverts par un SCoT
+#### PLU(i) ou CC couverts par un SCoT
 
 Dans les territoires couverts par un SCoT, les PLU et cartes communales auront **un an à compter de l'entrée en vigueur du SCoT** pour se prononcer sur leur mise en compatibilité avec ce dernier. Il convient de reproduire l’analyse que lorsque le SCoT est révisé ou, lui-même mis en compatibilité. 
 
 La délibération sur le maintien en vigueur ou sur leur mise en compatibilité doit intervenir avant l’expiration du délai d’un an, ce qui signifie que l’analyse de compatibilité doit pouvoir être lancée dès l’entrée en vigueur du SCoT. Ce délai est porté à trois ans concernant la compatibilité avec les autres documents sectoriels opposables au PLU et carte communale.
 Cette mise en compatibilité devra, dans tous les cas, être réalisée **par le biais de la procédure de modification simplifiée**, et ce quelle que soit l’ampleur des évolutions du document d’urbanisme mis en compatibilité.
 
-##### PLU(i) non couverts par un SCoT
+##### PLU(i) ou CC non couverts par un SCoT
 
 En l’absence de SCoT, les auteurs de PLU, documents en tenant lieu et cartes communales devront examiner **tous les trois ans** la nécessité de mettre en compatibilité leurs documents d’urbanisme avec l’ensemble des documents de rang supérieur qui ont évolué dans ce laps de temps. A l’issue de cet examen, ils doivent délibérer sur le maintien en vigueur ou sur leur mise en compatibilité. **Celle-ci se fait par le biais de la procédure de modification simplifiée**. C’est bien cette délibération qui doit intervenir avant l’expiration du délai de trois ans, ce qui signifie que l’analyse sur la compatibilité doit être lancée dans l’année qui précède l’expiration de ce délai.
 
