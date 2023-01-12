@@ -67,7 +67,8 @@ export default {
     { path: '/api/pipedrive', handler: '~/server-middleware/pipedrive.js' },
     { path: '/api/projects', handler: '~/server-middleware/projects.js' },
     { path: '/api/slack', handler: '~/server-middleware/slack.js' },
-    { path: '/api/stats', handler: '~/server-middleware/stats.js' }
+    { path: '/api/stats', handler: '~/server-middleware/stats.js' },
+    { path: '/api/trames', handler: '~/server-middleware/trames.js' }
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
