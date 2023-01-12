@@ -24,8 +24,7 @@ environnementale systématique ou si la procédure
 d’examen au cas par cas est applicable**.
 
 **Concrètement, relèvent d’un examen au cas par cas :**
-- les **cartes communales** qui correspondent à des
-plans et programmes qui déterminent l’usage de
+- les **cartes communales** qui correspondent à des plans et programmes qui déterminent l’usage de
 « petites zones au niveau local » ;
 - les **procédures d’évolution des documents d’urbanisme assimilables à des modifications mineures**, quelles que soient leurs modalités de mise en œuvre (modifications de droit commun et modifications simplifiées). **Dans une seule hypothèse, strictement circonscrite, la révision d’un PLU peut être concernée** (cf. article [R. 104-11, II du code de l'urbanisme](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000044221680)) : pour être assimilable à une
 « modification mineure », le décret précise que **l’incidence de cette révision doit concerner une superficie réduite et en tout état de cause ne pas être supérieure à cinq hectares.**
@@ -38,7 +37,7 @@ mineure », elle est soumise à l’évaluation environnementale systématique. 
 
  <img src="/images/EE-decret13102021.png"/>
 
-**Pour les procédures soumises au cas par cas**, le décret est la créé un second dispositif, **dit cas par
+**Pour les procédures soumises au cas par cas**, le décret a créé un second dispositif, **dit cas par
 cas « ad hoc »** qui est réalisé par la personne publique
 responsable, à côté du dispositif existant d’examen au cas par cas réalisé par l’autorité environnementale dit cas par cas **« de droit commun »**.
 **L’examen au cas par cas « ad hoc »** a vocation à être mis en œuvre **lorsque la personne
