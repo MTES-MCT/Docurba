@@ -189,7 +189,7 @@ Vous pouvez `partager votre PAC` et choisir qui pourra **collaborer et éditer l
 <a class="anchor" name="headPrint"></a>
 # 🖨 Imprimer  **son PAC**
 
-Une fois votre projet finalisé, vous pouvez **exporter votre PAC(formats disponibles: .pdf, .odt, .word)** depuis le `mode lecture` de votre PAC à l’aide de l’`icône de téléchargement` en bas à droite.
+Une fois votre projet finalisé, vous pouvez **exporter votre PAC en format PDF** depuis le `mode consultation` de votre PAC à l’aide de l’`icône de téléchargement` en bas à droite.
 
 <img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/09.png">
 
