@@ -27,61 +27,23 @@
           </div>
         </div>
       </v-alert>
-      <div v-if="prescription && prescription.type === 'link'">
-        <v-row
-          align="center"
+      <PrescriptionItemListRead :value="prescription" />
+      <v-row>
+        <v-col cols="12">
+          <v-btn outlined color="primary" @click="showHistory = !showHistory">
+            <span><span v-if="!showHistory">Afficher</span><span v-else>Cacher</span> l'historique</span>
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row v-if="showHistory">
+        <v-col
+          v-for="prescrHistory in history"
+          :key="`prescrData-${prescrHistory.id}`"
+          cols="12"
         >
-          <v-col cols="8">
-            <div>
-              Lien vers le <a target="__blank" :href="prescription.link_url">Document de prescription</a>
-            </div>
-          </v-col>
-          <v-col cols="4">
-            <v-btn
-              class="pa-0"
-              outlined
-              color="primary"
-              @click="copyLinktoClip"
-            >
-              <v-icon>{{ icons.mdiLink }}</v-icon>
-            </v-btn>
-            <v-btn
-              class="pa-0"
-              outlined
-              color="primary"
-              target="__blank"
-              :href="prescription.link_url"
-            >
-              <v-icon>{{ icons.mdiEye }}</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </div>
-
-      <div v-if="prescription && prescription.type === 'attachments'">
-        <v-row
-          v-for="prescrData in prescription.attachments"
-          :key="`prescrData-${prescrData.id}`"
-          align="center"
-        >
-          <v-col cols="8">
-            <div>
-              Fichier <a target="__blank" href="" @click="downloadFile(prescrData)">{{ prescrData.name }}</a>
-            </div>
-            <a :ref="`file-${prescrData.id}`" :download="prescrData.name" class="d-none" />
-          </v-col>
-          <v-col cols="4">
-            <v-btn
-              class="pa-0"
-              outlined
-              color="primary"
-              @click="downloadFile(prescrData)"
-            >
-              <v-icon>{{ icons.mdiDownload }}</v-icon>
-            </v-btn>
-          </v-col>
-        </v-row>
-      </div>
+          <PrescriptionItemListRead :value="prescrHistory" />
+        </v-col>
+      </v-row>
     </template>
     <template v-else>
       <v-alert outlined color="primary lighten-2" tile class="pa-0 mb-8 mt-12">
@@ -153,6 +115,8 @@ export default {
       loading: true,
       prescription: null,
       snackClip: false,
+      history: null,
+      showHistory: false,
       icons: {
         mdiDownload,
         mdiInformation,
@@ -179,23 +143,25 @@ export default {
     //    this.$route.query.insee
     const inseeSearch = Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee]
     console.log('inseeSearch: ', inseeSearch)
-    const { data: prescription } = await this.$supabase.from('prescriptions').select('*').contains('towns', inseeSearch).order('created_at', { ascending: false }).limit(1)
+    const { data: prescriptions } = await this.$supabase.from('prescriptions').select('*').contains('towns', inseeSearch).order('created_at', { ascending: false })
 
-    this.prescription = prescription[0]
+    const [current, ...history] = prescriptions
+    this.prescription = current // prescriptions[0]
+    this.history = history
     this.loading = false
-  },
-  methods: {
-    async downloadFile (file) {
-      const { data } = await this.$supabase.storage.from('prescriptions').download(file.path)
-      const link = this.$refs[`file-${file.id}`][0]
-      link.href = URL.createObjectURL(data)
-      link.click()
-    },
-    copyLinktoClip () {
-      navigator.clipboard.writeText(this.prescription.link_url)
-      this.snackClip = true
-    }
   }
+  // methods: {
+  //   async downloadFile (file) {
+  //     const { data } = await this.$supabase.storage.from('prescriptions').download(file.path)
+  //     const link = this.$refs[`file-${file.id}`][0]
+  //     link.href = URL.createObjectURL(data)
+  //     link.click()
+  //   },
+  //   copyLinktoClip () {
+  //     navigator.clipboard.writeText(this.prescription.link_url)
+  //     this.snackClip = true
+  //   }
+  // }
 
 }
 
