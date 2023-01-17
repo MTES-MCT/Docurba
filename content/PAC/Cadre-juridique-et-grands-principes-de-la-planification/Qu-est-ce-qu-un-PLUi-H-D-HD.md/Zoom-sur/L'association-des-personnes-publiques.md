@@ -21,7 +21,7 @@ L’association peut se traduire de différentes manières et par différents ty
 En tout état de cause, l'Etat fait parvenir **le porter à connaissance** complet concernant spécifiquement le territoire sur lequel est établi le document d'urbanisme.  Il est élaboré en référence au code de l’urbanisme ([L132-2](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031210796/) et [R132-2](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031210792/#LEGISCTA000031212163)) et constitue l’acte obligatoire par lequel le Préfet porte à la connaissance de la collectivité les informations nécessaires à l’exercice de ses compétences en matière d’urbanisme. Le PAC représente un ensemble d'informations à caractère continu qui peut être enrichi à tout moment par de nouveaux éléments. Toutefois, tout retard ou omission dans la transmission de ces informations est sans effet sur les procédures engagées par les communes ou leurs groupements.
 
 **Les porteurs de SCoT et de PLUi** peuvent demander à recevoir une **note d'enjeux** de la part de l'Etat. La note d’enjeux permet
-d’expliciter les enjeux stratégiques locaux identifés par les services de l'Etat sur le territoire concerné par le document. . Le contenu de la
+d’expliciter les enjeux stratégiques locaux identifiés par les services de l'Etat sur le territoire concerné par le document. . Le contenu de la
 note d’enjeux doit permettre
 d’aiguiller la collectivité ou l’établissement
 public sur les sujets qui appelleront la
