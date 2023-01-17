@@ -21,7 +21,6 @@
 import unified from 'unified'
 import remarkParse from 'remark-parse'
 
-import axios from 'axios'
 import unifiedPAC from '@/mixins/unifiedPac.js'
 
 export default {
@@ -65,14 +64,6 @@ export default {
     window.addEventListener('focus', () => {
       this.subscribeToBdd(projectId)
     })
-
-    // GITHUB TEST
-    const test = await axios({
-      method: 'get',
-      url: '/api/trames/regions/74'
-    })
-
-    console.log(test)
 
     // Get the data from DB for each level of PAC for this project.
     const [regionSections, deptSections, projectSections] = await Promise.all([

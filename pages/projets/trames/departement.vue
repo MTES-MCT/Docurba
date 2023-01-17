@@ -51,7 +51,6 @@ export default {
   },
   async mounted () {
     const adminAccess = await this.$auth.getDeptAccess()
-
     if (!adminAccess) { this.$router.push('/') }
 
     // eslint-disable-next-line eqeqeq

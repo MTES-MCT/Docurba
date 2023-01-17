@@ -6,15 +6,27 @@ const app = express()
 
 app.use(express.json())
 
+// https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#create-or-update-file-contents
+/* commit:
+{
+  path: section path string,
+  committer: {
+    name: user name string,
+    email: user email string
+  },
+  content: b64 string of content,
+  sha: sha1 from reading the edited file
+}
+*/
 app.post('/regions/:regionCode', async (req, res) => {
   const { regionCode } = req.params
-  const { userId, githubReq } = req.body
+  const { userId, commit } = req.body
 
   const userRoles = await admin.getUserAdminRoles(userId)
   const isAllowed = !!userRoles.find(role => role.region === regionCode)
 
   if (isAllowed) {
-    github(githubReq)
+    github(commit)
   } else {
     res.status(403).send(`User not allowed to edit region ${regionCode} trame.`)
   }
@@ -22,17 +34,29 @@ app.post('/regions/:regionCode', async (req, res) => {
 
 app.post('/departement/:departementCode', async (req, res) => {
   const { departementCode } = req.params
-  const { userId, githubReq } = req.body
+  const { userId, commit } = req.body
 
   const userRoles = await admin.getUserAdminRoles(userId)
   const isAllowed = !!userRoles.find(role => role.dept === departementCode)
 
   if (isAllowed) {
-    github(githubReq)
+    // We assign the branch manually to make sure it cannot be overide in commit.
+    // Someone miss using a userId should not be able to modify anithing else than what this userId is allowed.
+    github(`PUT /repos/UngererFabien/France-PAC/contents/${commit.path}`, Object.assign({}, commit, {
+      branch: `departement-${departementCode}`
+    }))
   } else {
     res.status(403).send(`User not allowed to edit region ${departementCode} trame.`)
   }
 })
+
+asyn function getFiles(path, ref) {
+  const {data: repo} = await github(`GET /repos/UngererFabien/France-PAC/contents/Trame${path}?ref=${ref}`, {
+    path
+  })
+
+
+}
 
 app.get('/regions/:regionCode', async (req, res) => {
   const { data, error } = await github('GET /repos/UngererFabien/France-PAC/contents/Trame?ref=test', {
