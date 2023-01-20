@@ -50,6 +50,14 @@ app.post('/departement/:departementCode', async (req, res) => {
   }
 })
 
+async function getFileContent (path, ref) {
+  const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${path}?ref=${ref}`, {
+    path
+  })
+
+  return file.content
+}
+
 async function getFiles (path, ref) {
   const { data: repo } = await github(`GET /repos/UngererFabien/France-PAC/contents${path}?ref=${ref}`, {
     path
@@ -60,6 +68,9 @@ async function getFiles (path, ref) {
       if (file.type === 'dir') {
         file.children = await getFiles(file.path, ref)
       }
+      // else {
+      //   file.content = await getFileContent(file.path, ref)
+      // }
 
       return file.children
     }))

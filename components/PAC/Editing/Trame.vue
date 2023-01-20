@@ -3,7 +3,7 @@
     <v-row>
       <v-col :cols="collapsedTree ? 1 : 4" class="collapse-transition">
         <client-only>
-          <PACEditingTreeview
+          <!-- <PACEditingTreeview
             v-model="selectedSections"
             :p-a-c="PAC"
             :collapsed="collapsedTree"
@@ -13,6 +13,9 @@
             :selectable="selectable"
             @open="selectSection"
             @collapse="collapsedTree = !collapsedTree"
+          /> -->
+          <PACEditingGitTreeview
+            :selectable="selectable"
           />
         </client-only>
       </v-col>

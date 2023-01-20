@@ -1,5 +1,5 @@
 import { uniq, flatten, omitBy, isNil } from 'lodash'
-import axios from 'axios'
+// import axios from 'axios'
 
 // @vue/component
 export default {
@@ -7,12 +7,12 @@ export default {
     async fetchSections (table, match) {
       const { data: sections } = await this.$supabase.from(table).select('*').match(match)
 
-      const repo = await axios({
-        method: 'get',
-        url: '/api/trames/regions/74'
-      })
+      // const repo = await axios({
+      //   method: 'get',
+      //   url: '/api/trames/regions/74'
+      // })
 
-      console.log(repo)
+      // console.log('sections and repo', sections, repo)
 
       // Need to get text from github.
       // return sections.map(section => {
