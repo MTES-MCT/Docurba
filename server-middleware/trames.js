@@ -65,8 +65,12 @@ async function getFiles (path, ref) {
 
   try {
     await Promise.all(repo.map(async (file) => {
+      file.name = file.name.replace('.md', '')
+
       if (file.type === 'dir') {
-        file.children = await getFiles(file.path, ref)
+        file.children = (await getFiles(file.path, ref)).filter((child) => {
+          return child.name !== 'intro'
+        })
       }
       // else {
       //   file.content = await getFileContent(file.path, ref)

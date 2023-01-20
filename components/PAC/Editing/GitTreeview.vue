@@ -21,7 +21,7 @@
               <div
                 class="d-block text-truncate"
                 v-on="on"
-                @click="openSection(item)"
+                @click="$emit('open', item)"
                 @mouseenter="overedItem = item.path"
               >
                 {{ item.name || '[Titre Manquant]' }}
