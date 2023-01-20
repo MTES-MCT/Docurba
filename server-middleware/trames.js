@@ -50,26 +50,38 @@ app.post('/departement/:departementCode', async (req, res) => {
   }
 })
 
-asyn function getFiles(path, ref) {
-  const {data: repo} = await github(`GET /repos/UngererFabien/France-PAC/contents/Trame${path}?ref=${ref}`, {
+async function getFiles (path, ref) {
+  const { data: repo } = await github(`GET /repos/UngererFabien/France-PAC/contents${path}?ref=${ref}`, {
     path
   })
 
+  try {
+    await Promise.all(repo.map(async (file) => {
+      if (file.type === 'dir') {
+        file.children = await getFiles(file.path, ref)
+      }
 
+      return file.children
+    }))
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.log(err)
+  }
+
+  return repo
 }
 
 app.get('/regions/:regionCode', async (req, res) => {
-  const { data, error } = await github('GET /repos/UngererFabien/France-PAC/contents/Trame?ref=test', {
-    path: 'Trame'
-  })
+  // test should be replaced by region code.
+  const repo = await getFiles('/Trame', 'test')
 
-  if (!error) {
-    res.status(200).send(data)
-  } else {
-    // eslint-disable-next-line no-console
-    console.log('error reading github:', error)
-    req.status(400).send(error)
-  }
+  // if (!error) {
+  res.status(200).send(repo)
+  // } else {
+  //   // eslint-disable-next-line no-console
+  //   console.log('error reading github:', error)
+  //   req.status(400).send(error)
+  // }
 })
 
 app.get('/departements/:departementCode/', async (req, res) => {
