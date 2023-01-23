@@ -7,8 +7,18 @@
         </p>
         <VTownAutocomplete v-model="selectedTown" />
       </v-col>
+      <v-col cols="12">
+        <v-btn color="primary" depressed :loading="loading" @click="loadCommuneEvents">
+          Visualiser
+        </v-btn>
+      </v-col>
     </v-row>
-    <template v-if="!loading">
+    <v-row v-if="!loading && events && docTypes.length === 0">
+      <v-col cols="12">
+        <div>Pas d'events pour cette commune</div>
+      </v-col>
+    </v-row>
+    <template v-else-if="!loading && events && docTypes.length > 0">
       <v-row>
         <v-col cols="12">
           <v-tabs v-model="selectedDocType">
@@ -33,8 +43,8 @@ export default {
     return {
       selectedTown: null,
       selectedDocType: null,
-      loading: true,
-      events: []
+      loading: false,
+      events: null
     }
   },
   computed: {
@@ -43,11 +53,11 @@ export default {
     }
   },
   mounted () {
-    this.loadCommuneEvents()
+    // this.loadCommuneEvents()
   },
   methods: {
     async loadCommuneEvents (commune) {
-      const rawEvents = (await this.$supabase.from('sudocu_events').select()).data
+      const rawEvents = (await this.$supabase.from('sudocu_events').select().eq('codeinseecommune', this.selectedTown.code_commune_INSEE.toString().padStart(5, '0'))).data
       const formattedEvents = rawEvents.map((e) => {
         return {
           date_iso: e.dateevenement,
@@ -65,7 +75,7 @@ export default {
       }, Object.create(null))
 
       this.selectedDocType = 0
-      console.log('test: ', this.events, ' this.selectedDocType: ', this.selectedDocType, ' selectedDocType: ', this.events[this.selectedDocType])
+      console.log('events: ', this.events)
       this.loading = false
     }
   }
