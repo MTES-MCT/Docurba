@@ -4,7 +4,7 @@
     <v-container fluid>
       <v-row justify="center" align="center" class="primary">
         <v-col cols="auto">
-          <a class="white--text" href="https://app.livestorm.co/dinum-12/flash-info-docurba-les-nouveautes-de-loutil?type=detailed" target="_blank"><b>Flash Info de Docurba : jeudi 9 février 2023 à 14h. L'équipe répond à vos questions !</b></a>
+          <a class="white--text" href="https://app.livestorm.co/dinum-12/flash-info-docurba-les-nouveautes-de-loutil?type=detailed" target="_blank"><b>Flash Info de Docurba : jeudi 9 février 2023 à 14h. Cliquez ici pour s’inscrire à la visioconférence !</b></a>
         </v-col>
       </v-row>
     </v-container>
