@@ -13,7 +13,7 @@ L’article 40 de la loi 20201525 du 7 décembre 2020 dite « ASAP » (loi « d�
 
 **Le contenu attendu dans l'évaluation environnementale des documents d'urbanisme est détaillé aux articles [R104-18 et suivants du code de l'urbanisme](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031719280/#LEGISCTA000031721368)** 
 
-En application de ce cette loi, le décret du 13 octobre
+En application de cette loi, le décret du 13 octobre
 2021 complète et modifie les articles [R. 104-3 à
 R. 104-16 du code de l’urbanisme](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074075/LEGISCTA000031719210/#LEGISCTA000031721439) pour viser toutes
 les procédures d’évolution de tous les documents
