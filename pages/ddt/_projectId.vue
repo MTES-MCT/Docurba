@@ -71,7 +71,7 @@ export default {
         region: this.project.towns[0].code_region
       }),
       this.fetchSections('pac_sections_dept', {
-        dept: this.project.towns[0].code_departement
+        dept: +this.project.towns[0].code_departement
       }),
       this.fetchSections('pac_sections_project', {
         project_id: this.project.id
