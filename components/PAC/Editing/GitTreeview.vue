@@ -1,9 +1,9 @@
 <template>
-  <v-row>
+  <v-row v-if="sections.length">
     <v-col cols="12">
       <v-treeview
         ref="tree"
-        v-model="selectedSections"
+        :value="selectedSections"
         hoverable
         open-on-click
         :selectable="selectable"
@@ -14,6 +14,7 @@
         selected-color="primary"
         :search="contentSearch"
         selection-type="independent"
+        @input="updateSelection"
       >
         <template #label="{item}">
           <v-tooltip right nudge-right="35">
@@ -98,10 +99,11 @@
       </v-treeview>
     </v-col>
   </v-row>
+  <VGlobalLoader v-else />
 </template>
 <script>
 import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDown } from '@mdi/js'
-
+import { uniq } from 'lodash'
 import axios from 'axios'
 
 export default {
@@ -124,6 +126,8 @@ export default {
       contentSearch: '',
       overedItem: '',
       sections: [],
+      selectedSections: this.value.map(s => s),
+      treeSelection: [],
       icons: {
         mdiPlus,
         mdiDelete,
@@ -134,18 +138,13 @@ export default {
       }
     }
   },
-  computed: {
-    selectedSections: {
-      get () {
-        return this.value.map(s => s)
-      },
-      set (newSelection) {
-        console.log(newSelection)
-      }
-    }
-  },
-  mounted () {
-    this.fetchSections()
+  async mounted () {
+    await this.fetchSections()
+    // this.treeSelection = this.refs.tree.selectionCache
+
+    this.$nextTick(() => {
+      this.treeSelection = Array.from(this.$refs.tree.selectedCache)
+    })
   },
   methods: {
     async fetchSections (table, match) {
@@ -157,6 +156,45 @@ export default {
       })
 
       this.sections = sections
+    },
+    updateSelection (newSelection) {
+      console.log(newSelection.length, this.treeSelection.length)
+
+      if (newSelection.length < this.treeSelection.length) {
+        // if something was removed
+        const removedPath = this.treeSelection.find(path => !newSelection.includes(path))
+        if (removedPath) {
+        // also remove all children
+          const selection = this.selectedSections.filter((path) => {
+            return !path.includes(removedPath)
+          })
+          this.emitSelectionUpdate(selection)
+        }
+      } else if (newSelection.length > this.treeSelection.length) {
+        // something was added
+        const selection = uniq(this.selectedSections.concat(newSelection))
+        this.addParentsToSelection(selection)
+        this.emitSelectionUpdate(selection)
+      }
+
+      this.treeSelection = newSelection.map(s => s)
+    },
+    emitSelectionUpdate (selection) {
+      this.$emit('input', selection)
+      this.selectedSections = selection
+    },
+    addParentsToSelection (selection) {
+      this.sections.forEach((section) => {
+        if (section.children) {
+          const selectedChildren = selection.find((s) => {
+            return s !== section.path && s.includes(section.path)
+          })
+
+          if (selectedChildren) {
+            selection.push(section.path)
+          }
+        }
+      })
     }
   }
 }

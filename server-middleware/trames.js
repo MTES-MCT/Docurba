@@ -28,7 +28,7 @@ app.post('/regions/:regionCode', async (req, res) => {
   if (isAllowed) {
     github(commit)
   } else {
-    res.status(403).send(`User not allowed to edit region ${regionCode} trame.`)
+    res.status(403).send(`User not allowed to edit region ${regionCode} PAC.`)
   }
 })
 
@@ -88,7 +88,7 @@ async function getFiles (path, ref) {
 
 app.get('/regions/:regionCode', async (req, res) => {
   // test should be replaced by region code.
-  const repo = await getFiles('/Trame', 'test')
+  const repo = await getFiles('/PAC', 'test')
 
   // if (!error) {
   res.status(200).send(repo)
@@ -100,8 +100,8 @@ app.get('/regions/:regionCode', async (req, res) => {
 })
 
 app.get('/departements/:departementCode/', async (req, res) => {
-  const { data, error } = await github('GET /repos/UngererFabien/France-PAC/contents/Trame?ref=test', {
-    path: 'Trame'
+  const { data, error } = await github('GET /repos/UngererFabien/France-PAC/contents/PAC?ref=test', {
+    path: 'PAC'
   })
 
   if (!error) {
@@ -112,8 +112,8 @@ app.get('/departements/:departementCode/', async (req, res) => {
 })
 
 app.get('/document/:documentId/', async (req, res) => {
-  const { data, error } = await github('GET /repos/UngererFabien/France-PAC/contents/Trame?ref=test', {
-    path: 'Trame'
+  const { data, error } = await github('GET /repos/UngererFabien/France-PAC/contents/PAC?ref=test', {
+    path: 'PAC'
   })
 
   if (!error) {

@@ -15,7 +15,9 @@
             @collapse="collapsedTree = !collapsedTree"
           /> -->
           <PACEditingGitTreeview
+            v-model="selectedSections"
             :selectable="selectable"
+            @open="selectSection"
           />
         </client-only>
       </v-col>
@@ -78,8 +80,13 @@ export default {
     }
   },
   data () {
+    // The replace is due to git path not including first /
+    const cleanedPaths = this.sectionsList.map((path) => {
+      return path.replace('/PAC', 'PAC').replace(/\/intro$/, '')
+    })
+
     return {
-      selectedSections: this.sectionsList.map(s => s),
+      selectedSections: cleanedPaths, // The replace is due to git path not including first /
       collapsedTree: false,
       selectedSection: null
     }
