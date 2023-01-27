@@ -140,16 +140,14 @@ export default {
   },
   async mounted () {
     await this.fetchSections()
-    // this.treeSelection = this.refs.tree.selectionCache
 
+    // We need to wait for the tree to render so that we can get its internal selected value.
     this.$nextTick(() => {
       this.treeSelection = Array.from(this.$refs.tree.selectedCache)
     })
   },
   methods: {
     async fetchSections (table, match) {
-      // const { data: sections } = await this.$supabase.from(table).select('*').match(match)
-
       const { data: sections } = await axios({
         method: 'get',
         url: '/api/trames/regions/74'
@@ -158,8 +156,6 @@ export default {
       this.sections = sections
     },
     updateSelection (newSelection) {
-      console.log(newSelection.length, this.treeSelection.length)
-
       if (newSelection.length < this.treeSelection.length) {
         // if something was removed
         const removedPath = this.treeSelection.find(path => !newSelection.includes(path))
@@ -173,7 +169,7 @@ export default {
       } else if (newSelection.length > this.treeSelection.length) {
         // something was added
         const selection = uniq(this.selectedSections.concat(newSelection))
-        this.addParentsToSelection(selection)
+        this.addParentsToSelection(selection, this.sections)
         this.emitSelectionUpdate(selection)
       }
 
@@ -183,9 +179,11 @@ export default {
       this.$emit('input', selection)
       this.selectedSections = selection
     },
-    addParentsToSelection (selection) {
-      this.sections.forEach((section) => {
+    addParentsToSelection (selection, sections) {
+      sections.forEach((section) => {
         if (section.children) {
+          this.addParentsToSelection(selection, section.children)
+
           const selectedChildren = selection.find((s) => {
             return s !== section.path && s.includes(section.path)
           })
