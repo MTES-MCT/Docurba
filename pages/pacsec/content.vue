@@ -68,7 +68,7 @@ export default {
     // TODO: This is duplicated in all read sections
     this.PAC.forEach((section) => {
       // Parse the body only if text was edited.
-      if (section.text) { section.body = this.$mdParse(section.text) }
+      if (section.text) { section.body = this.$md.compile(section.text) }
     })
 
     this.loaded = true

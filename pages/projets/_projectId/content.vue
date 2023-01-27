@@ -116,7 +116,7 @@ export default {
       // TODO: // This is duplicated in all read sections
       this.project.PAC.forEach((section) => {
       // Parse the body only if text was edited.
-        if (section.text) { section.body = this.$mdParse(section.text) }
+        if (section.text) { section.body = this.$md.compile(section.text) }
       })
 
       // The next two enrich and the union should be refactored because there is some useless steps here.

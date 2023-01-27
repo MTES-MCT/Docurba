@@ -123,4 +123,17 @@ app.get('/document/:documentId/', async (req, res) => {
   }
 })
 
+app.get('/file', async (req, res) => {
+  try {
+    const { path, ref } = req.query
+
+    const file = await getFileContent(path, ref)
+
+    res.status(200).send(file)
+  } catch (err) {
+    console.log(err)
+    res.status(400).send(err)
+  }
+})
+
 module.exports = app

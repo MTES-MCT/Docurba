@@ -293,7 +293,7 @@ export default {
     },
     readonlyBody () {
       return {
-        body: this.$mdParse(this.value)
+        body: this.$md.compile(this.value)
       }
     }
   },

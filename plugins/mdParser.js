@@ -12,14 +12,26 @@ import { defaultSchema } from '@/assets/sanitizeSchema.js'
 // ALso, this plugin should have 2 mode one that send a JSON content and an other that send an HTML String
 // Both should start from an MD or HTML String.
 export default (_, inject) => {
-  const mdParser = unified().use(remarkParse)
+  const mdCompiler = unified().use(remarkParse)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
     .use(rehypeSanitize, defaultSchema)
     .use(rehypeStringify)
     .use(jsonCompiler)
 
-  inject('mdParse', (text) => {
-    return mdParser.processSync(text).result
+  const mdParser = unified()
+    .use(remarkParse)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
+    .use(rehypeSanitize, defaultSchema)
+    .use(rehypeStringify)
+
+  inject('md', {
+    parse (text) {
+      return mdParser.processSync(text).contents
+    },
+    compile (text) {
+      return mdCompiler.processSync(text).result
+    }
   })
 }

@@ -22,13 +22,18 @@
         </client-only>
       </v-col>
       <v-col v-if="selectedSection" :cols="collapsedTree ? 11 : 8" class="fill-height collapse-transition">
-        <PACEditingContentSection
+        <!-- <PACEditingContentSection
           :readonly-dirs="readonlyDirs"
           :section="selectedSection"
           :p-a-c="PAC"
           :table="table"
           :table-keys="tableKeys"
           :attachements-folders="attachementsFolders"
+        /> -->
+        <PACEditingGitContentSection
+          :section="selectedSection"
+          :content-ref="'test'"
+          :readonly-dirs="readonlyDirs"
         />
       </v-col>
       <v-col v-else cols="">
@@ -44,10 +49,10 @@
 import pacContent from '@/mixins/pacContent.js'
 
 // Each sections Table should have these keys.
-function sectionsCommonKeys (section) {
-  const { text, titre, path, slug, dir, ordre } = section
-  return { text, titre, path, slug, dir, ordre }
-}
+// function sectionsCommonKeys (section) {
+//   const { text, titre, path, slug, dir, ordre } = section
+//   return { text, titre, path, slug, dir, ordre }
+// }
 
 export default {
   mixins: [pacContent],
@@ -111,8 +116,10 @@ export default {
   methods: {
     // This method allow us to work on a clean data ref environement.
     selectSection (section) {
-      const selectedSection = this.PAC.find(s => s.path === section.path)
-      this.selectedSection = Object.assign(sectionsCommonKeys(selectedSection), this.tableKeys)
+      // console.log(section)
+      this.selectedSection = section
+      // const selectedSection = this.PAC.find(s => s.path === section.path)
+      // this.selectedSection = Object.assign(sectionsCommonKeys(selectedSection), this.tableKeys)
     },
     async changeSelectedSections () {
       if (this.selectable && this.tableKeys.project_id) {
