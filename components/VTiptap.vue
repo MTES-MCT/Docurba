@@ -237,7 +237,7 @@ export default {
     },
     depth: {
       type: Number,
-      default: 4
+      default: 0
     },
     readonly: {
       type: Boolean,

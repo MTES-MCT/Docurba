@@ -52,10 +52,15 @@ app.post('/departement/:departementCode', async (req, res) => {
 
 async function getFileContent (path, ref) {
   const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${path}?ref=${ref}`, {
-    path
+    path,
+    mediaType: {
+      format: 'raw'
+    }
   })
 
-  return file.content
+  // console.log(file)
+
+  return file
 }
 
 async function getFiles (path, ref) {
