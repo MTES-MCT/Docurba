@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const express = require('express')
 const admin = require('./modules/admin.js')
 const github = require('./modules/github.js')
@@ -18,22 +19,8 @@ app.use(express.json())
   sha: sha1 from reading the edited file
 }
 */
-app.post('/regions/:regionCode', async (req, res) => {
-  const { regionCode } = req.params
-  const { userId, commit } = req.body
 
-  const userRoles = await admin.getUserAdminRoles(userId)
-  const isAllowed = !!userRoles.find(role => role.region === regionCode)
-
-  if (isAllowed) {
-    github(commit)
-  } else {
-    res.status(403).send(`User not allowed to edit region ${regionCode} PAC.`)
-  }
-})
-
-app.post('/departement/:departementCode', async (req, res) => {
-  const { departementCode } = req.params
+app.post('/:ref', async (req, res) => {
   const { userId, commit } = req.body
 
   const userRoles = await admin.getUserAdminRoles(userId)
@@ -43,7 +30,7 @@ app.post('/departement/:departementCode', async (req, res) => {
     // We assign the branch manually to make sure it cannot be overide in commit.
     // Someone miss using a userId should not be able to modify anithing else than what this userId is allowed.
     github(`PUT /repos/UngererFabien/France-PAC/contents/${commit.path}`, Object.assign({}, commit, {
-      branch: `departement-${departementCode}`
+      branch: req.params.ref
     }))
   } else {
     res.status(403).send(`User not allowed to edit region ${departementCode} trame.`)
@@ -84,16 +71,15 @@ async function getFiles (path, ref) {
       return file.children
     }))
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.log(err)
   }
 
   return repo
 }
 
-app.get('/regions/:regionCode', async (req, res) => {
+app.get('/tree/:ref', async (req, res) => {
   // test should be replaced by region code.
-  const repo = await getFiles('/PAC', 'test')
+  const repo = await getFiles('/PAC', req.params.ref)
 
   // if (!error) {
   res.status(200).send(repo)
@@ -102,30 +88,6 @@ app.get('/regions/:regionCode', async (req, res) => {
   //   console.log('error reading github:', error)
   //   req.status(400).send(error)
   // }
-})
-
-app.get('/departements/:departementCode/', async (req, res) => {
-  const { data, error } = await github('GET /repos/UngererFabien/France-PAC/contents/PAC?ref=test', {
-    path: 'PAC'
-  })
-
-  if (!error) {
-    res.status(200).send(data)
-  } else {
-    res.status(400).send(error)
-  }
-})
-
-app.get('/document/:documentId/', async (req, res) => {
-  const { data, error } = await github('GET /repos/UngererFabien/France-PAC/contents/PAC?ref=test', {
-    path: 'PAC'
-  })
-
-  if (!error) {
-    res.status(200).send(data)
-  } else {
-    res.status(400).send(error)
-  }
 })
 
 app.get('/file', async (req, res) => {

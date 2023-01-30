@@ -35,6 +35,7 @@
           :section="selectedSection"
           :content-ref="'test'"
           :readonly-dirs="readonlyDirs"
+          :table-keys="tableKeys"
         />
       </v-col>
       <v-col v-else cols="">

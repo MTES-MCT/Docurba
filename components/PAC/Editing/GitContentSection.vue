@@ -100,8 +100,10 @@ export default {
     return {
       icons: { mdiContentSave },
       editedSection: null,
+      rawText: '',
       selectedDataSources: [],
-      attachementFolders
+      attachementFolders,
+      modified: false
     }
   },
   computed: {
@@ -113,7 +115,28 @@ export default {
   },
   watch: {
     async 'section.path' () {
+      if (this.modified) {
+        this.previousSection = Object.assign({}, this.editedSection)
+        this.saveDialog = true
+      }
+
       await this.fetchSection()
+
+      if (this.section.project_id) {
+        this.getSectionDataSources()
+      }
+
+      this.modified = false
+    },
+    editedSection: {
+      deep: true,
+      handler () {
+        if (this.section.titre !== this.editedSection.titre || this.editedSection.text !== this.rawText) {
+          this.modified = true
+        } else {
+          this.modified = false
+        }
+      }
     }
   },
   mounted () {
@@ -142,6 +165,7 @@ export default {
       const rawText = sectionContent.replace(/---([\s\S]*)---/, '')
       const sectionText = this.$md.parse(decodeURIComponent(rawText))
 
+      this.rawText = sectionText
       this.editedSection = Object.assign({ text: sectionText }, this.section)
       this.loading = false
     },
@@ -161,6 +185,36 @@ export default {
       }))
 
       this.selectedDataSources = sourcesCardsData
+    },
+    // section here can be the current section
+    // or the previous one in cas of a "are you sure you want to switch section" modal
+    async saveSection (section) {
+      const sectionMatchKeys = Object.assign({
+        path: section.path
+      }, this.tableKeys)
+
+      const { data: savedSection } = await this.$supabase.from(this.table)
+        .select('id').match(sectionMatchKeys)
+
+      const savedData = Object.assign({}, section, this.tableKeys)
+
+      try {
+        if (savedSection[0]) {
+          await this.$supabase.from(this.table).update(savedData).match(sectionMatchKeys)
+        } else {
+          await this.$supabase.from(this.table).insert([savedData])
+        }
+
+        if (this.tableKeys.project_id) {
+          this.$notifications.notifyUpdate(this.tableKeys.project_id)
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.log('Error saving data')
+      }
+
+      this.modified = false
+      this.saveDialog = false
     }
   }
 }
