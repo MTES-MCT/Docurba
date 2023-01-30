@@ -49,3 +49,31 @@ export default {
   color-adjust: exact !important;
 }
 </style>
+
+<style>
+.print-container h1, .print-container h2,
+.print-container h3, .print-container h4,
+.print-container h5, .print-container h6,
+.print-container ul {
+  margin-bottom: 16px !important;
+}
+
+.print-container h1 {
+  font-size: 40px;
+}
+.print-container h2 {
+  font-size: 32px;
+}
+.print-container h3 {
+  font-size: 28px;
+}
+.print-container h4 {
+  font-size: 24px;
+}
+.print-container h5 {
+  font-size: 22px;
+}
+.print-container h6 {
+  font-size: 20px;
+}
+</style>

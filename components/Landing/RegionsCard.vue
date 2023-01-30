@@ -9,7 +9,13 @@
         <v-col v-for="(regionsList, i) in regionsLists" :key="i" cols="4">
           <v-list color="beige">
             <template v-for="region in regionsList">
-              <v-list-item :key="region.iso + '-item'">
+              <v-list-item
+                :key="region.iso + '-item'"
+                :to="{
+                  path: '/pacsec/content',
+                  query: {document: 'any', region: region.iso}
+                }"
+              >
                 <v-list-item-content>
                   <v-list-item-title>
                     {{ region.name }}

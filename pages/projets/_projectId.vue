@@ -29,6 +29,7 @@ export default {
         { text: 'Frise', to: `/projets/${this.$route.params.projectId}/frise` },
         { text: 'PAC', to: `/projets/${this.$route.params.projectId}/content` },
         { text: 'Base territoriale', to: `/projets/${this.$route.params.projectId}/data` },
+        { text: 'Géo-IDE', to: `/projets/${this.$route.params.projectId}/geoide` },
         { text: 'Ressources', to: `/projets/${this.$route.params.projectId}/ressources` }
       ]
     }

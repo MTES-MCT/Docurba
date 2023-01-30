@@ -41,7 +41,8 @@ export default {
     }
   },
   async mounted () {
-    const { data: events } = await this.$supabase.from('doc_frise_events').select('*').eq('project_id', this.projectId)
+    const { data: events, error } = await this.$supabase.from('doc_frise_events').select('*').eq('project_id', this.projectId)
+    console.log(events, error)
     this.events = events
 
     this.loaded = true

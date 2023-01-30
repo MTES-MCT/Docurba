@@ -37,7 +37,7 @@
         </v-expansion-panel-header>
       </v-hover>
       <v-expansion-panel-content eager>
-        <nuxt-content :document="section" />
+        <nuxt-content class="pac-section-content" :document="section" />
         <PACSectionsAttachementsChips v-if="files[section.path]" small :files="files[section.path]" />
         <PACContentSection
           v-if="section.children && section.children.length"
@@ -160,3 +160,9 @@ export default {
   }
 }
 </script>
+
+<style>
+ .pac-section-content img {
+  max-width: 100%;
+ }
+</style>

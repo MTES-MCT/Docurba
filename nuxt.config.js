@@ -32,6 +32,7 @@ export default {
     { src: '~/plugins/matomo.js', mode: 'client' },
     { src: '~/plugins/mdParser.js', mode: 'client' },
     { src: '~/plugins/print.js', mode: 'client' },
+    { src: '~/plugins/rules.js' },
     { src: '~/plugins/notifications.js', mode: 'client' }
   ],
 

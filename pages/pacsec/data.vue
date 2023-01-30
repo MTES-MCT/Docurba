@@ -1,5 +1,16 @@
 <template>
-  <DataSourcesList v-if="!loading" :region="currentRegion" :data-sources="dataset" :themes="themes" />
+  <DataSourcesList v-if="!loading && $route.query.insee" :region="currentRegion" :data-sources="dataset" :themes="themes" />
+  <v-container v-else-if="!loading" class="fill-height">
+    <v-row class="fill-height" justify="center" align="center">
+      <v-col cols="12">
+        <v-card rounded="lg" class="pa-6">
+          <v-card-text>
+            <LandingSearchForm path="/pacsec/data" />
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
   <VGlobalLoader v-else />
 </template>
 
@@ -29,7 +40,7 @@ export default {
       codes.forEach((code) => {
         this.$matomo([
           'trackEvent', 'Socle de PAC', 'Data',
-          `${this.$route.query.document} - ${code}`
+    `${this.$route.query.document} - ${code}`
         ])
       })
     }

@@ -43,7 +43,7 @@
       <v-row>
         <v-col>
           <h4 class="text-body-1 pb-2">
-            <b>Je créer mon compte</b>
+            <b>Je crée mon compte</b>
           </h4>
           <p class="text-caption">
             Et demande mon PAC à ma Direction Départementale des Territoires (DDT).
