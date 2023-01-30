@@ -38,7 +38,13 @@
       </v-hover>
       <v-expansion-panel-content eager>
         <nuxt-content class="pac-section-content" :document="section" />
-        <PACSectionsAttachementsChips v-if="files[section.path]" small :files="files[section.path]" />
+        <PACSectionsAttachementsChips
+          v-if="projectId && project"
+          :attachement-folders="[
+            project.towns[0].code_departement,
+            projectId
+          ]"
+        />
         <PACContentSection
           v-if="section.children && section.children.length"
           :sections="section.children"
@@ -102,10 +108,6 @@ export default {
     if (this.projectId) {
       const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', this.projectId)
       this.project = projects ? projects[0] : null
-
-      if (this.project) {
-        this.fetchAttachements()
-      }
     }
   },
   methods: {
@@ -113,50 +115,50 @@ export default {
       // Start Analytics
       this.$matomo(['trackEvent', 'PAC Content', 'Open Section', section.titre])
       // End Analytics
-    },
-    fetchAttachements () {
-      const folders = [
-        this.project.towns[0].code_departement,
-        this.projectId
-      ]
-
-      this.sections.forEach((section) => {
-        folders.forEach((folder) => {
-          this.fetchFolderFiles(folder, section)
-        })
-      })
-    },
-    async fetchFolderFiles (folder, section) {
-      // const folder = section.project_id || section.dept
-
-      const { data: attachements, err } = await this.$supabase
-        .storage
-        .from('project-annexes')
-        .list(`${folder}${section.path}`, {
-          limit: 100,
-          offset: 0,
-          sortBy: { column: 'name', order: 'asc' }
-        })
-
-      if (!err) {
-        this.files[section.path] = []
-
-        for (let i = 0; i < attachements.length; i++) {
-          const file = attachements[i]
-
-          const { data } = await this.$supabase
-            .storage
-            .from('project-annexes')
-            .createSignedUrl(`${folder}${section.path}/${file.name}`, 60 * 60)
-
-          file.url = data.signedURL
-
-          this.files[section.path].push(file)
-        }
-      } else {
-        console.log('err fetching attachements', err)
-      }
     }
+    // fetchAttachements () {
+    //   const folders = [
+    //     this.project.towns[0].code_departement,
+    //     this.projectId
+    //   ]
+
+    //   this.sections.forEach((section) => {
+    //     folders.forEach((folder) => {
+    //       this.fetchFolderFiles(folder, section)
+    //     })
+    //   })
+    // },
+    // async fetchFolderFiles (folder, section) {
+    //   // const folder = section.project_id || section.dept
+
+    //   const { data: attachements, err } = await this.$supabase
+    //     .storage
+    //     .from('project-annexes')
+    //     .list(`${folder}${section.path}`, {
+    //       limit: 100,
+    //       offset: 0,
+    //       sortBy: { column: 'name', order: 'asc' }
+    //     })
+
+    //   if (!err) {
+    //     this.files[section.path] = []
+
+    //     for (let i = 0; i < attachements.length; i++) {
+    //       const file = attachements[i]
+
+    //       const { data } = await this.$supabase
+    //         .storage
+    //         .from('project-annexes')
+    //         .createSignedUrl(`${folder}${section.path}/${file.name}`, 60 * 60)
+
+    //       file.url = data.signedURL
+
+    //       this.files[section.path].push(file)
+    //     }
+    //   } else {
+    //     console.log('err fetching attachements', err)
+    //   }
+    // }
   }
 }
 </script>

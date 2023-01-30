@@ -31,6 +31,7 @@
           :attachements-folders="attachementsFolders"
         /> -->
         <PACEditingGitContentSection
+          :project="project"
           :section="selectedSection"
           :content-ref="'test'"
           :readonly-dirs="readonlyDirs"
@@ -100,13 +101,13 @@ export default {
     selectable () {
       // You can select sections only for projects.
       return this.table === 'pac_sections_project'
-    },
-    attachementsFolders () {
-      // Beware, this could be unreactive to project changes.
-      if (this.project && this.project.id && this.project.towns) {
-        return [this.project.towns[0].code_departement]
-      } else { return [] }
     }
+    // attachementsFolders () {
+    //   // Beware, this could be unreactive to project changes.
+    //   if (this.project && this.project.id && this.project.towns) {
+    //     return [this.project.towns[0].code_departement]
+    //   } else { return [] }
+    // }
   },
   watch: {
     selectedSections () {

@@ -10,12 +10,11 @@
       <VTiptap v-model="editedSection.text" :readonly="isReadonly">
         <PACSectionsAttachementsDialog
           :section="section"
-          @upload="fetchAttachements"
         />
       </VTiptap>
     </v-col>
     <v-col cols="12">
-      <PACSectionsAttachementsChips :files="attachements" editable @removed="removeFile" />
+      <PACSectionsAttachementsChips :attachement-folders="attachementFolders" editable />
     </v-col>
     <v-col cols="12">
       <v-row>
@@ -69,6 +68,10 @@ import axios from 'axios'
 
 export default {
   props: {
+    project: {
+      type: Object,
+      default () { return {} }
+    },
     section: {
       type: Object,
       required: true
@@ -76,10 +79,6 @@ export default {
     contentRef: {
       type: String,
       required: true
-    },
-    attachementsFolders: {
-      type: Array,
-      default () { return [] }
     },
     readonlyDirs: {
       type: Array,
@@ -89,9 +88,20 @@ export default {
     }
   },
   data () {
+    const attachementFolders = []
+
+    // if working on a project you need to fetch files from dept and project.
+    if (this.section.project_id) {
+      attachementFolders.push(this.section.project_id, this.project.towns[0].code_departement)
+    } else {
+      attachementFolders.push(this.section.dept)
+    }
+
     return {
       icons: { mdiContentSave },
-      editedSection: null
+      editedSection: null,
+      selectedDataSources: [],
+      attachementFolders
     }
   },
   computed: {
@@ -102,12 +112,16 @@ export default {
     }
   },
   watch: {
-    contentPath () {
-      this.fetchSection()
+    async 'section.path' () {
+      await this.fetchSection()
     }
   },
   mounted () {
     this.fetchSection()
+
+    if (this.project_id) {
+      this.getSectionDataSources()
+    }
   },
   methods: {
     async fetchSection () {
@@ -124,11 +138,29 @@ export default {
         }
       })
 
+      // Replace all metadata with empty string. It should be saved in DB for custom sections.
       const rawText = sectionContent.replace(/---([\s\S]*)---/, '')
       const sectionText = this.$md.parse(decodeURIComponent(rawText))
 
       this.editedSection = Object.assign({ text: sectionText }, this.section)
       this.loading = false
+    },
+    async getSectionDataSources () {
+      const { data: sources } = await this.$supabase.from('sections_data_sources').select('*').match({
+        project_id: this.section.project_id,
+        section_path: this.section.path
+      })
+
+      const sourcesCardsData = await Promise.all(sources.map(async (source) => {
+        const { data } = await axios({
+          url: source.url,
+          meyhod: 'get'
+        })
+
+        return Object.assign(data, { sourceId: source.id })
+      }))
+
+      this.selectedDataSources = sourcesCardsData
     }
   }
 }
