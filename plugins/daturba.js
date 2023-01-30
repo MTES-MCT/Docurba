@@ -2,7 +2,7 @@ import axios from 'axios'
 import GEORISQUES_MAP from '@/assets/data/GeoRisquesMap.json'
 
 export default ({ route }, inject) => {
-// MAP permet d'afficher les onglet de source
+  // MAP permet d'afficher les onglet de source
   const sourceMap = {
     'FR-ARA': {
       url: 'https://catalogue.datara.gouv.fr/base_territoriale/results?_format=json',
@@ -108,6 +108,16 @@ export default ({ route }, inject) => {
   }
 
   inject('daturba', {
+    async getCommunesDetails (inseeArr) {
+      console.log('inseeArr: ', inseeArr)
+      const { data } = await axios({
+        url: '/api/communes',
+        method: 'get',
+        params: { communes: inseeArr }
+      })
+      console.log('data: ', data)
+      return data
+    },
     async getGeorisques ({ dataset, insee }) {
       const EXISTING_DATASETS = GEORISQUES_MAP.map(e => e.endpoint)
       console.log('EXISTING_DATASETS: ', EXISTING_DATASETS)

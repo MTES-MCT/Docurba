@@ -10,12 +10,7 @@
         <v-timeline-item right hide-dot>
           <span class="black--text"><b>Évènements suggérés par Docurba :</b></span>
         </v-timeline-item>
-        <v-timeline-item
-          v-for="event in recommendedEvents"
-          :key="`recommended-${event.order}`"
-          hide-dot
-          right
-        >
+        <v-timeline-item v-for="event in recommendedEvents" :key="`recommended-${event.order}`" hide-dot right>
           <FriseRecommendedEventCard :event-type="event" />
         </v-timeline-item>
       </v-timeline>
@@ -25,13 +20,7 @@
     </v-col>
     <v-col cols="12">
       <v-timeline align-top class="doc-timeline">
-        <v-timeline-item
-          v-for="event in orderedEvents"
-          :id="`event-${event.id}`"
-          :key="event.id"
-          small
-          right
-        >
+        <v-timeline-item v-for="event in orderedEvents" :id="`event-${event.id}`" :key="event.id" small right>
           <template #opposite>
             <v-chip>{{ formatDate(event.date_iso) }}</v-chip>
           </template>

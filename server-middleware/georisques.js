@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 const axios = require('axios')
-const GEORISQUES_MAP = require('../assets/data/GeoRisquesMap.json')
+// const GEORISQUES_MAP = require('../assets/data/GeoRisquesMap.json')
 
 const geoRisques = axios.create({
   baseURL: 'https://www.georisques.gouv.fr/api/v1'
@@ -15,7 +15,6 @@ const geoRisquesParams = {
 
 app.get('/q', async (req, res) => {
   try {
-    console.log('GEORISQUES_MAP: ', GEORISQUES_MAP)
     // const proms = []
     // GEORISQUES_MAP.forEach((e) => {
     //   const prom = geoRisques({
