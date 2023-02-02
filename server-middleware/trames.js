@@ -11,30 +11,62 @@ app.use(express.json())
 /* commit:
 {
   path: section path string,
-  committer: {
-    name: user name string,
-    email: user email string
-  },
   content: b64 string of content,
   sha: sha1 from reading the edited file
 }
 */
 
+async function getAllowedRole (userId, ref) {
+  const userRoles = await admin.getUserAdminRoles(userId)
+  const roles = userRoles.deptRoles.concat(userRoles.regionRoles)
+
+  return roles.find(role => role.dept === ref || role.region === ref)
+}
+
 app.post('/:ref', async (req, res) => {
+  const { ref } = req.params
   const { userId, commit } = req.body
 
-  const userRoles = await admin.getUserAdminRoles(userId)
-  const isAllowed = !!userRoles.find(role => role.dept === departementCode)
+  const allowedRole = await getAllowedRole(userId, ref)
 
-  if (isAllowed) {
-    // We assign the branch manually to make sure it cannot be overide in commit.
-    // Someone miss using a userId should not be able to modify anithing else than what this userId is allowed.
-    github(`PUT /repos/UngererFabien/France-PAC/contents/${commit.path}`, Object.assign({}, commit, {
-      branch: req.params.ref
-    }))
-  } else {
-    res.status(403).send(`User not allowed to edit region ${departementCode} trame.`)
-  }
+  // if (allowedRole) {
+  // We assign the branch and commiter manually to make sure it cannot be overide in commit.
+  // Someone miss using a userId should not be able to modify anithing else than what this userId is allowed.
+  const commitRes = await github(`PUT /repos/UngererFabien/France-PAC/contents/${commit.path}`, Object.assign({}, commit, {
+    branch: ref,
+    committer: {
+      name: 'Fabien', // allowedRole.user_email.replace(/@(.*)/, ''),
+      email: 'fabien.ungerer@gmail.com' // allowedRole.user_email
+    },
+    message: `${commit.sha ? 'Edit' : 'Create'} ${commit.path} for ${ref} from Docurba`
+  }))
+
+  console.log(commitRes)
+
+  res.status(200).send(commitRes)
+  // } else {
+  // res.status(403).send(`User not allowed to edit ${ref} trame.`)
+  // }
+})
+
+app.delete('/:ref', async (req, res) => {
+  const { ref } = req.params
+  const { userId, commit } = req.body
+
+  const allowedRole = await getAllowedRole(userId, ref)
+
+  const commitRes = await github(`DELETE /repos/UngererFabien/France-PAC/contents/${commit.path}`, Object.assign({}, commit, {
+    branch: ref,
+    committer: {
+      name: 'Fabien', // allowedRole.user_email.replace(/@(.*)/, ''),
+      email: 'fabien.ungerer@gmail.com' // allowedRole.user_email
+    },
+    message: `Delete ${commit.path} for ${ref} from Docurba`
+  }))
+
+  console.log(commitRes)
+
+  res.status(200).send(commitRes)
 })
 
 async function getFileContent (path, ref) {

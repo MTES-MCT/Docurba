@@ -52,49 +52,14 @@
           >
             <v-icon>{{ icons.mdiChevronDown }}</v-icon>
           </v-btn>
-          <v-btn
-            v-show="overedItem === item.path"
-            depressed
-            tile
-            small
-            icon
-            @click.stop="addSectionTo(item)"
-          >
-            <v-icon>{{ icons.mdiPlus }}</v-icon>
-          </v-btn>
-          <v-dialog
-            width="500"
-          >
-            <template #activator="{on}">
-              <v-btn
-                v-show="overedItem === item.path && (item.dept || item.project_id || item.region)"
-                depressed
-                tile
-                small
-                icon
-                v-on="on"
-              >
-                <v-icon>{{ icons.mdiDelete }}</v-icon>
-              </v-btn>
-            </template>
-            <template #default="dialog">
-              <v-card>
-                <v-card-title>Supprimer {{ item.name }}</v-card-title>
-                <v-card-text>
-                  Etes vous sur de vouloir supprimer cette section ? Attention, les sous-sections seront elles aussi suprimées.
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn depressed tile color="primary" @click="removeItem(item, dialog)">
-                    Supprimer
-                  </v-btn>
-                  <v-btn depressed tile color="primary" outlined @click="dialog.value = false">
-                    Annuler
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </template>
-          </v-dialog>
+          <PACEditingGitAddSectionDialog
+            :show-activator="overedItem === item.path"
+            :parent="item "
+          />
+          <PACEditingGitRemoveSectionDialog
+            :show-activator="overedItem === item.path && (item.dept || item.project_id || item.region)"
+            :section="item "
+          />
         </template>
       </v-treeview>
     </v-col>
@@ -102,7 +67,7 @@
   <VGlobalLoader v-else />
 </template>
 <script>
-import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDown } from '@mdi/js'
+import { mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDown } from '@mdi/js'
 import { uniq } from 'lodash'
 import axios from 'axios'
 
@@ -111,6 +76,16 @@ export default {
     value: {
       type: Array,
       default () { return [] }
+    },
+    table: {
+      type: String,
+      required: true
+    },
+    // This should be the section identifiers in the table.
+    // For exemple: {project_id: 'XXX'} for table pac_sections_project
+    tableKeys: {
+      type: Object,
+      required: true
     },
     collapsed: {
       type: Boolean,
@@ -129,7 +104,6 @@ export default {
       selectedSections: this.value.map(s => s),
       treeSelection: [],
       icons: {
-        mdiPlus,
         mdiDelete,
         mdiChevronLeft,
         mdiChevronRight,
@@ -150,7 +124,7 @@ export default {
     async fetchSections (table, match) {
       const { data: sections } = await axios({
         method: 'get',
-        url: '/api/trames/regions/74'
+        url: '/api/trames/tree/test' // TODO: change test by the actual ref: dept, projectId or regionCode
       })
 
       this.sections = sections

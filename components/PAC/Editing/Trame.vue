@@ -17,6 +17,8 @@
           <PACEditingGitTreeview
             v-model="selectedSections"
             :selectable="selectable"
+            :table="table"
+            :table-keys="tableKeys"
             @open="selectSection"
           />
         </client-only>
@@ -35,6 +37,7 @@
           :section="selectedSection"
           :content-ref="'test'"
           :readonly-dirs="readonlyDirs"
+          :table="table"
           :table-keys="tableKeys"
         />
       </v-col>

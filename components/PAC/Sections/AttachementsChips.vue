@@ -40,7 +40,7 @@
 export default {
   props: {
     section: {
-      type: String,
+      type: Object,
       required: true
     },
     small: {

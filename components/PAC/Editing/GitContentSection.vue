@@ -14,7 +14,7 @@
       </VTiptap>
     </v-col>
     <v-col cols="12">
-      <PACSectionsAttachementsChips :attachement-folders="attachementFolders" editable />
+      <PACSectionsAttachementsChips :section="section" :attachement-folders="attachementFolders" editable />
     </v-col>
     <v-col cols="12">
       <v-row>
@@ -85,6 +85,14 @@ export default {
       default () {
         return []
       }
+    },
+    table: {
+      type: String,
+      required: true
+    },
+    tableKeys: {
+      type: Object,
+      default () { return {} }
     }
   },
   data () {
@@ -103,7 +111,8 @@ export default {
       rawText: '',
       selectedDataSources: [],
       attachementFolders,
-      modified: false
+      modified: false,
+      saveDialog: false
     }
   },
   computed: {
@@ -150,13 +159,15 @@ export default {
     async fetchSection () {
       this.loading = true
 
-      // console.log(this.section, `/${this.section.path}/${this.section.type === 'dir' ? 'intro.md' : '.md'}`)
+      const path = `/${this.section.path}${this.section.type === 'dir' ? '/intro.md' : ''}`
+
+      // console.log(this.section, this.contentRef, path)
 
       const { data: sectionContent } = await axios({
         method: 'get',
         url: '/api/trames/file',
         params: {
-          path: `/${this.section.path}/${this.section.type === 'dir' ? 'intro.md' : '.md'}`,
+          path,
           ref: this.contentRef
         }
       })
@@ -196,6 +207,8 @@ export default {
       const { data: savedSection } = await this.$supabase.from(this.table)
         .select('id').match(sectionMatchKeys)
 
+      // console.log(savedSection)
+
       const savedData = Object.assign({}, section, this.tableKeys)
 
       try {
@@ -204,6 +217,19 @@ export default {
         } else {
           await this.$supabase.from(this.table).insert([savedData])
         }
+
+        await axios({
+          method: 'post',
+          url: '/api/trames/test', // TODO: replace test by actual ref: dept, projectId or region,
+          data: {
+            userId: this.$user.id,
+            commit: {
+              path: this.editedSection.path,
+              content: btoa(unescape(encodeURIComponent(this.editedSection.text))),
+              sha: this.editedSection.sha
+            }
+          }
+        })
 
         if (this.tableKeys.project_id) {
           this.$notifications.notifyUpdate(this.tableKeys.project_id)
