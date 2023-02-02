@@ -3,19 +3,8 @@
     <v-row>
       <v-col :cols="collapsedTree ? 1 : 4" class="collapse-transition">
         <client-only>
-          <!-- <PACEditingTreeview
-            v-model="selectedSections"
-            :p-a-c="PAC"
-            :collapsed="collapsedTree"
-            :table="table"
-            :table-keys="tableKeys"
-            :project-id="$route.params.projectId"
-            :selectable="selectable"
-            @open="selectSection"
-            @collapse="collapsedTree = !collapsedTree"
-          /> -->
           <PACEditingGitTreeview
-            v-model="selectedSections"
+            :value="selectedSections"
             :selectable="selectable"
             :table="table"
             :table-keys="tableKeys"
@@ -24,14 +13,6 @@
         </client-only>
       </v-col>
       <v-col v-if="selectedSection" :cols="collapsedTree ? 11 : 8" class="fill-height collapse-transition">
-        <!-- <PACEditingContentSection
-          :readonly-dirs="readonlyDirs"
-          :section="selectedSection"
-          :p-a-c="PAC"
-          :table="table"
-          :table-keys="tableKeys"
-          :attachements-folders="attachementsFolders"
-        /> -->
         <PACEditingGitContentSection
           :project="project"
           :section="selectedSection"
@@ -106,36 +87,27 @@ export default {
       // You can select sections only for projects.
       return this.table === 'pac_sections_project'
     }
-    // attachementsFolders () {
-    //   // Beware, this could be unreactive to project changes.
-    //   if (this.project && this.project.id && this.project.towns) {
-    //     return [this.project.towns[0].code_departement]
-    //   } else { return [] }
-    // }
   },
-  watch: {
-    selectedSections () {
-      this.changeSelectedSections()
-    }
-  },
+  // watch: {
+  //   selectedSections () {
+  //     this.changeSelectedSections()
+  //   }
+  // },
   methods: {
     // This method allow us to work on a clean data ref environement.
     selectSection (section) {
-      // console.log(section)
-      this.selectedSection = section
-      // const selectedSection = this.PAC.find(s => s.path === section.path)
-      // this.selectedSection = Object.assign(sectionsCommonKeys(selectedSection), this.tableKeys)
-    },
-    async changeSelectedSections () {
-      if (this.selectable && this.tableKeys.project_id) {
-      // This make it so we can't save sections as objects in reading mode for comments and checked features.
-        await this.$supabase.from('projects').update({
-          PAC: this.selectedSections.map(s => s || s.path)
-        }).eq('id', this.tableKeys.project_id)
-
-        this.$notifications.notifyUpdate(this.tableKeys.project_id)
-      }
+      this.selectedSection = Object.assign({}, section)
     }
+    // async changeSelectedSections () {
+    //   if (this.selectable && this.tableKeys.project_id) {
+    //   // This make it so we can't save sections as objects in reading mode for comments and checked features.
+    //     await this.$supabase.from('projects').update({
+    //       PAC: this.selectedSections.map(s => s || s.path)
+    //     }).eq('id', this.tableKeys.project_id)
+
+    //     this.$notifications.notifyUpdate(this.tableKeys.project_id)
+    //   }
+    // }
   }
 }
 </script>

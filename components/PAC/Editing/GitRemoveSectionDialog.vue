@@ -15,18 +15,18 @@
         <v-icon>{{ icons.mdiDelete }}</v-icon>
       </v-btn>
     </template>
-    <template #default="dialog">
+    <template #default>
       <v-card>
-        <v-card-title>Supprimer {{ item.name }}</v-card-title>
+        <v-card-title>Supprimer {{ section.name }}</v-card-title>
         <v-card-text>
           Etes vous sur de vouloir supprimer cette section ? Attention, les sous-sections seront elles aussi suprimées.
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn depressed tile color="primary" @click="removeSection(item, dialog)">
+          <v-btn depressed tile color="primary" @click="removeSection">
             Supprimer
           </v-btn>
-          <v-btn depressed tile color="primary" outlined @click="dialog.value = false">
+          <v-btn depressed tile color="primary" outlined @click="dialog = false">
             Annuler
           </v-btn>
         </v-card-actions>

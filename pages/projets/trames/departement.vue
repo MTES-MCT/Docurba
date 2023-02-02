@@ -22,23 +22,24 @@ import unifiedPAC from '@/mixins/unifiedPac.js'
 export default {
   mixins: [unifiedPAC],
   layout: 'app',
-  async asyncData ({ $content }) {
-    const PAC = await $content('PAC', {
-      deep: true,
-      text: true
-    }).fetch()
+  // async asyncData ({ $content }) {
+  //   // const PAC = await $content('PAC', {
+  //   //   deep: true,
+  //   //   text: true
+  //   // }).fetch()
 
-    const originalPAC = PAC.map((section) => {
-      return Object.assign({}, section)
-    })
+  //   // const originalPAC = PAC.map((section) => {
+  //   //   return Object.assign({}, section)
+  //   // })
 
-    return {
-      PAC,
-      originalPAC // This is a clone of the row data so we can perform delete on PAC.
-    }
-  },
+  //   return {
+  //     PAC
+  //     // originalPAC // This is a clone of the row data so we can perform delete on PAC.
+  //   }
+  // },
   data () {
     return {
+      PAC: [],
       loading: true,
       departement: { code_departement: 0, nom_departement: '' },
       deptSectionsSub: null
@@ -73,7 +74,7 @@ export default {
     ])
 
     // Merge data of multiple PACs using unifiedPac.js mixin.
-    this.PAC = this.unifyPacs([deptSections, regionSections, this.PAC])
+    this.PAC = this.unifyPacs([deptSections, regionSections])
 
     this.loading = false
   },

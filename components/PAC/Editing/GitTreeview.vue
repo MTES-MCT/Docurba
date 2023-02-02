@@ -129,29 +129,37 @@ export default {
 
       this.sections = sections
     },
-    updateSelection (newSelection) {
+    async updateSelection (newSelection) {
+      let selection = []
+
       if (newSelection.length < this.treeSelection.length) {
         // if something was removed
         const removedPath = this.treeSelection.find(path => !newSelection.includes(path))
         if (removedPath) {
         // also remove all children
-          const selection = this.selectedSections.filter((path) => {
+          selection = this.selectedSections.filter((path) => {
             return !path.includes(removedPath)
           })
-          this.emitSelectionUpdate(selection)
         }
       } else if (newSelection.length > this.treeSelection.length) {
         // something was added
-        const selection = uniq(this.selectedSections.concat(newSelection))
+        selection = uniq(this.selectedSections.concat(newSelection))
         this.addParentsToSelection(selection, this.sections)
-        this.emitSelectionUpdate(selection)
+      }
+
+      this.selectedSections = selection
+
+      // Update the selection for this project in supabase.
+      if (this.selectable && this.tableKeys.project_id) {
+      // This make it so we can't save sections as objects in reading mode for comments and checked features.
+        await this.$supabase.from('projects').update({
+          PAC: selection.map(s => s || s.path)
+        }).eq('id', this.tableKeys.project_id)
+
+        this.$notifications.notifyUpdate(this.tableKeys.project_id)
       }
 
       this.treeSelection = newSelection.map(s => s)
-    },
-    emitSelectionUpdate (selection) {
-      this.$emit('input', selection)
-      this.selectedSections = selection
     },
     addParentsToSelection (selection, sections) {
       sections.forEach((section) => {
