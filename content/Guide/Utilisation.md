@@ -24,6 +24,8 @@
 
 [🗃️ Archiver ses projets de PAC](#headArchive) 
 
+[Feuille de route partagée - fonctionnalité en cours de construction](#headFRP) 
+
 ---
 
 <!-- ---
@@ -59,7 +61,7 @@ Pour profiter pleinement de Docurba en tant qu’agent de DDT/DEAL, vous devez:
 
 
 
-Cela ouvrira vos droits d'accès à l'outil d’édition des PAC de Docurba. **Cette partie n’est pas accessible aux collectivités.**
+Cela ouvrira vos droits d'accès à l'outil d’édition des PAC de Docurba. **Cette partie n’est pas accessible aux collectivités.** Notez que vous pouvez créer autant de comptes DDT/DEAL que nécessaires par DDT. 
 
 *Vous recevrez un courriel de confirmation lorsque votre accès sera validé par l’équipe (cela prend en général quelques minutes).*
 
@@ -67,11 +69,11 @@ Cela ouvrira vos droits d'accès à l'outil d’édition des PAC de Docurba. **C
 # ⚙️ Configurer sa trame de PAC
 
 <div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
-💡 Cette trame servira de <b>base commune pour vos futurs PAC</b>. Une fois votre trame personnalisée au niveau de votre département, vous pourrez vous en servir pour élaborer de nouveaux PAC. (Voir la partie "Créer son projet de PAC" de ce guide)
+💡 La trame de PAC est la <b>base commune pour vos futurs PAC au sein de votre département</b>. Une fois votre trame personnalisée au niveau de votre département, vous pourrez vous en servir pour élaborer de nouveaux PAC. (Voir la partie "Créer son projet de PAC" de ce guide)
 </div>
 
 Vous pouvez **compléter la trame initiale en cliquant sur `Trame du PAC`**. 
-Cette "trame initiale" comporte des éléments harmonisés au niveau national et régional (lorsque cela a été complété). 
+Lors de votre première connexion, vous verrez que votre trame comporte déjà des éléments rédigés : ils correspondent aux éléments harmonisés à l'échelle nationale et régionale (lorsque cela a été complété). 
 
   <img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/03.png">
 
@@ -105,7 +107,9 @@ Cette "trame initiale" comporte des éléments harmonisés au niveau national et
 
 - **Pour ajouter une image**, vous pouvez également `sélectionner l’image` sur votre ordinateur et la faire glisser dans la fenêtre d’édition.
 
-### Fonctionnalités particulières:
+- **Pour ajouter des données**, sélectionnez le trombone dans la barre d'édition de texte, puis sur `data`, identifiez la donnée à insérer dans le PAC et cliquez sur le `+` de la donnée, retourner dans le PAC et elle apparaitra juste en bas de la section sur laquelle vous étiez en train de travailler.
+
+### Fonctionnalités additionnelles:
 
 - Vous pouvez également **`créer de nouvelles sous-parties`** en cliquant sur le `+` à côté du titre. Vous pourrez également les supprimer par la suite.
 
@@ -123,7 +127,7 @@ Cliquez sur 💾 en bas à droite pour sauvegarder vos changements. En cas d’o
 # 🧑🏻‍💻 Créer un nouveau projet de PAC
 
 <div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
-☝ *Notez que les modification apportées au niveau projet de PAC sont prioritaires sur votre trame de PAC. C'est-à-dire que les modifications ne seront pas appliquées à votre trame départementale lorsque vous éditez un PAC pour une collectivité.*
+☝ *Notez que les modifications apportées au niveau projet de PAC sont prioritaires sur votre trame de PAC. C'est-à-dire que les modifications ne seront pas appliquées à votre trame départementale lorsque vous éditez un PAC pour une collectivité.*
 </div>
 
 
@@ -154,7 +158,7 @@ Cliquez sur 💾 en bas à droite pour sauvegarder vos changements. En cas d’o
 
 
 
-**Vous pouvez ensuite éditer et compléter votre projet de PAC,** grâce aux fonctionniltés d'édition classique et vues plus haut dans la partie "Configurer sa trame - les fonctionnalités d'édition".
+**Vous pouvez ensuite éditer et compléter votre projet de PAC,** grâce aux fonctionnalités d'édition classiques et vues plus haut dans la partie "Configurer sa trame - les fonctionnalités d'édition".
 
 <a class="anchor" name="headSharing"></a>
 # 📤 Le partage du PAC
@@ -214,12 +218,21 @@ Il est recommandé de décocher les entêtes et pied de page.
 <div class="d-flex align-center">
   <div class=" background--text text--lighten-2  mr-8 rounded g300 rounded-lg pa-4">
 
-  Vous pouvez également **archiver vos projets de PAC**. Depuis les paramètres principaux de votre projet de PAC, cliquez sur l’icône du crayon, une fenêtre s’ouvre et vous cliquez sur le bouton rouge *`archiver`.* 
+  Vous pouvez également **archiver vos projets de PAC** (utile pour faire disparaitre les essais de PAC que vous serez amenés à faire lors de la prise en main de l'outil. Depuis les paramètres principaux de votre projet de PAC, cliquez sur l’icône du crayon pour faire apparaitre la fenêtre suivante et cliquez sur *`archiver`.* 
 
   </div>
   <img class="elevation-3  my-8" style="max-width:50%" src="/images/guide/16.png">
 
 </div>
+
+<a class="anchor" name="headFRP"></a>
+# Feuille de route partagée entre services de l'État et collectivités
+
+Nous travaillons avec un groupe de DDT dans la construction de cette nouvelle fonctionnalité qui a la volonté de **servir de guide pour la collectivité** dans sa procédure d'élaboration de DU. 
+Via les évènements proposés dans l'outil, les collectivités auront notamment à disposition des informations sur les étapes de la procédure, les articles du code de l'urbanisme (s'il y a lieu), les échéances à respecter, etc. 
+Cette feuille de route est partagée entre les services de l'État, la collectivité et son bureau d'études, dans l'optique de **fluidifier les échanges et vous permettre d'avoir plus de visibilité sur le calendrier des collectivités que vous accompagnez.** 
+
+Nous collaborons également avec différents outils (le GPU et Sudocuh notamment) pour intégrer Docurba dans les pratiques. 
 
 <div class="text-center my-16">
 
