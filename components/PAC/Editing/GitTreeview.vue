@@ -57,7 +57,7 @@
             :parent="item "
           />
           <PACEditingGitRemoveSectionDialog
-            :show-activator="overedItem === item.path && (item.dept || item.project_id || item.region)"
+            :show-activator="overedItem === item.path && !isSectionReadonly(item)"
             :section="item "
           />
         </template>
@@ -76,6 +76,17 @@ export default {
     value: {
       type: Array,
       default () { return [] }
+    },
+    // pacData should be a unified array of sections from DB. See if parent is mixing unifiedPac.js
+    pacData: {
+      type: Array,
+      required: true
+    },
+    readonlyDirs: {
+      type: Array,
+      default () {
+        return []
+      }
     },
     table: {
       type: String,
@@ -121,11 +132,29 @@ export default {
     })
   },
   methods: {
-    async fetchSections (table, match) {
+    // mergeGitWithBD (section) {
+    //   const dbSection = this.pacData.find(s => s.path.replace('/', '') === section.path.replace('.md', ''))
+
+    //   if (dbSection) {
+    //     console.log(dbSection)
+    //   }
+    //   // else if (section.type === 'file') {
+    //   //   console.log(section.path.replace('.md', ''), this.pacData[0].path)
+    //   // }
+
+    //   if (section.children) {
+    //     section.children.forEach(s => this.mergeGitWithBD(s))
+    //   }
+    // },
+    async fetchSections () {
       const { data: sections } = await axios({
         method: 'get',
         url: '/api/trames/tree/test' // TODO: change test by the actual ref: dept, projectId or regionCode
       })
+
+      // console.log(this.pacData[0])
+
+      // sections.forEach(section => this.mergeGitWithBD(section))
 
       this.sections = sections
     },
@@ -174,6 +203,11 @@ export default {
             selection.push(section.path)
           }
         }
+      })
+    },
+    isSectionReadonly (section) {
+      return !!this.readonlyDirs.find((dir) => {
+        return section.path.includes(dir)
       })
     }
   }

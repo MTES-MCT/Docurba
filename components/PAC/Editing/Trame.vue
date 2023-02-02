@@ -5,6 +5,8 @@
         <client-only>
           <PACEditingGitTreeview
             :value="selectedSections"
+            :pac-data="pacData"
+            :readonly-dirs="readonlyDirs"
             :selectable="selectable"
             :table="table"
             :table-keys="tableKeys"
@@ -32,8 +34,6 @@
 </template>
 
 <script>
-import pacContent from '@/mixins/pacContent.js'
-
 // Each sections Table should have these keys.
 // function sectionsCommonKeys (section) {
 //   const { text, titre, path, slug, dir, ordre } = section
@@ -41,8 +41,12 @@ import pacContent from '@/mixins/pacContent.js'
 // }
 
 export default {
-  mixins: [pacContent],
   props: {
+    // pacData should be a unified array of sections from DB. See if parent is mixing unifiedPac.js
+    pacData: {
+      type: Array,
+      required: true
+    },
     table: {
       type: String,
       required: true
@@ -65,7 +69,7 @@ export default {
       type: Array,
       default () {
         return [
-          '/PAC/Cadre-juridique-et-grands-principes-de-la-planification'
+          'PAC/Cadre-juridique-et-grands-principes-de-la-planification'
         ]
       }
     }
