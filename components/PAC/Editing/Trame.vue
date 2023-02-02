@@ -88,26 +88,11 @@ export default {
       return this.table === 'pac_sections_project'
     }
   },
-  // watch: {
-  //   selectedSections () {
-  //     this.changeSelectedSections()
-  //   }
-  // },
   methods: {
     // This method allow us to work on a clean data ref environement.
     selectSection (section) {
       this.selectedSection = Object.assign({}, section)
     }
-    // async changeSelectedSections () {
-    //   if (this.selectable && this.tableKeys.project_id) {
-    //   // This make it so we can't save sections as objects in reading mode for comments and checked features.
-    //     await this.$supabase.from('projects').update({
-    //       PAC: this.selectedSections.map(s => s || s.path)
-    //     }).eq('id', this.tableKeys.project_id)
-
-    //     this.$notifications.notifyUpdate(this.tableKeys.project_id)
-    //   }
-    // }
   }
 }
 </script>
