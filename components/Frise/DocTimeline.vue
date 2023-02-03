@@ -29,6 +29,7 @@
           v-for="event in orderedEvents"
           :id="`event-${event.id}`"
           :key="event.id"
+          :color="event.color"
           small
           right
         >
