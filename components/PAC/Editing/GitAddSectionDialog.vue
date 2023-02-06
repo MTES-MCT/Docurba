@@ -27,7 +27,7 @@
         <v-btn color="primary" tile outlined @click="dialog = false">
           Annuler
         </v-btn>
-        <v-btn color="primary" tile depressed @click="addSection">
+        <v-btn color="primary" :loading="loading" tile depressed @click="addSection">
           Ajouter
         </v-btn>
       </v-card-actions>
@@ -117,7 +117,7 @@ export default {
         data: {
           userId: this.$user.id,
           commit: {
-            path: encodeURIComponent(`${newSectionPath}.md`),
+            path: `${newSectionPath}.md`,
             content: btoa(unescape(encodeURIComponent('Nouvelle section')))
           }
         }

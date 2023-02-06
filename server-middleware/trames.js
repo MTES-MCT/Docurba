@@ -34,7 +34,7 @@ app.post('/:ref', async (req, res) => {
   // if (allowedRole) {
   // We assign the branch and commiter manually to make sure it cannot be overide in commit.
   // Someone miss using a userId should not be able to modify anithing else than what this userId is allowed.
-  const commitRes = await github(`PUT /repos/UngererFabien/France-PAC/contents/${commit.path}`, Object.assign({}, commit, {
+  const commitRes = await github(`PUT /repos/UngererFabien/France-PAC/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
     branch: ref,
     committer: {
       name: 'Fabien', // allowedRole.user_email.replace(/@(.*)/, ''),
@@ -57,7 +57,7 @@ app.delete('/:ref', async (req, res) => {
 
   const allowedRole = await getAllowedRole(userId, ref)
 
-  const commitRes = await github(`DELETE /repos/UngererFabien/France-PAC/contents/${commit.path}`, Object.assign({}, commit, {
+  const commitRes = await github(`DELETE /repos/UngererFabien/France-PAC/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
     branch: ref,
     committer: {
       name: 'Fabien', // allowedRole.user_email.replace(/@(.*)/, ''),
@@ -128,7 +128,7 @@ app.get('/file', async (req, res) => {
   try {
     const { path, ref } = req.query
 
-    console.log('GET FILE CONTENT:', path)
+    // console.log('GET FILE CONTENT:', path)
 
     const file = await getFileContent(path, ref)
 

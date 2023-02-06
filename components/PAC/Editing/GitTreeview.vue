@@ -19,14 +19,16 @@
         <template #label="{item}">
           <v-tooltip right nudge-right="35">
             <template #activator="{on}">
-              <div
-                class="d-block text-truncate"
-                v-on="on"
-                @click="$emit('open', item)"
-                @mouseenter="overedItem = item.path"
-              >
-                {{ item.name || '[Titre Manquant]' }}
-              </div>
+              <transition name="fade">
+                <div
+                  class="d-block text-truncate"
+                  v-on="on"
+                  @click="$emit('open', item)"
+                  @mouseenter="overedItem = item.path"
+                >
+                  {{ item.name || '[Titre Manquant]' }}
+                </div>
+              </transition>
             </template>
             <span>{{ item.name || '[Titre Manquant]' }}</span>
           </v-tooltip>
@@ -54,12 +56,13 @@
           </v-btn>
           <PACEditingGitAddSectionDialog
             :show-activator="overedItem === item.path"
-            :parent="item "
+            :parent="item"
             @update="fetchSections"
           />
           <PACEditingGitRemoveSectionDialog
             :show-activator="overedItem === item.path && !isSectionReadonly(item)"
             :section="item "
+            @update="fetchSections"
           />
         </template>
       </v-treeview>
@@ -153,8 +156,6 @@ export default {
         url: '/api/trames/tree/test' // TODO: change test by the actual ref: dept, projectId or regionCode
       })
 
-      console.log(sections)
-
       // console.log(this.pacData[0])
 
       // sections.forEach(section => this.mergeGitWithBD(section))
@@ -223,5 +224,13 @@ export default {
   overflow: scroll;
   /* 128 = 80 (from search row ) + 48 (one tree leaf) */
   max-height: calc(100vh - 128px);
+}
+
+.fade-enter-active {
+  transition: opacity .5s;
+}
+
+.fade-enter {
+  opacity: 0;
 }
 </style>

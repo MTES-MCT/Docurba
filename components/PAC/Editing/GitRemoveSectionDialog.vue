@@ -10,6 +10,7 @@
         tile
         small
         icon
+        :loading="loading"
         v-on="on"
       >
         <v-icon>{{ icons.mdiDelete }}</v-icon>
@@ -23,7 +24,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn depressed tile color="primary" @click="removeSection">
+          <v-btn depressed tile color="primary" :loading="loading" @click="removeSection">
             Supprimer
           </v-btn>
           <v-btn depressed tile color="primary" outlined @click="dialog = false">
@@ -52,11 +53,14 @@ export default {
   data () {
     return {
       icons: { mdiDelete },
-      dialog: false
+      dialog: false,
+      loading: false
     }
   },
   methods: {
     async removeSection () {
+      this.loading = true
+
       await axios({
         method: 'delete',
         url: '/api/trames/test', // TODO: replace test by actual ref: dept, projectId or region,
@@ -70,6 +74,8 @@ export default {
       })
 
       this.dialog = false
+      this.$emit('update')
+      this.laoding = false
     }
   }
 }
