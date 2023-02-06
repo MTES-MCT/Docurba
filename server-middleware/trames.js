@@ -29,6 +29,8 @@ app.post('/:ref', async (req, res) => {
 
   const allowedRole = await getAllowedRole(userId, ref)
 
+  console.log(commit.path)
+
   // if (allowedRole) {
   // We assign the branch and commiter manually to make sure it cannot be overide in commit.
   // Someone miss using a userId should not be able to modify anithing else than what this userId is allowed.
@@ -70,7 +72,7 @@ app.delete('/:ref', async (req, res) => {
 })
 
 async function getFileContent (path, ref) {
-  const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${path}?ref=${ref}`, {
+  const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
     path,
     mediaType: {
       format: 'raw'
@@ -83,7 +85,7 @@ async function getFileContent (path, ref) {
 }
 
 async function getFiles (path, ref) {
-  const { data: repo } = await github(`GET /repos/UngererFabien/France-PAC/contents${path}?ref=${ref}`, {
+  const { data: repo } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
     path
   })
 
@@ -125,6 +127,8 @@ app.get('/tree/:ref', async (req, res) => {
 app.get('/file', async (req, res) => {
   try {
     const { path, ref } = req.query
+
+    console.log('GET FILE CONTENT:', path)
 
     const file = await getFileContent(path, ref)
 

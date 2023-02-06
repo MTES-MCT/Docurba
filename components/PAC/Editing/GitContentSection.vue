@@ -174,7 +174,8 @@ export default {
 
       // Replace all metadata with empty string. It should be saved in DB for custom sections.
       const rawText = sectionContent.replace(/---([\s\S]*)---/, '')
-      const sectionText = this.$md.parse(decodeURIComponent(rawText))
+      console.log(rawText)
+      const sectionText = this.$md.parse(rawText)
 
       this.rawText = sectionText
       this.editedSection = Object.assign({ text: sectionText }, this.section)

@@ -1,5 +1,5 @@
 <template>
-  <v-row v-if="sections.length">
+  <v-row v-if="sections.length" class="sticky-tree">
     <v-col cols="12">
       <v-treeview
         ref="tree"
@@ -55,6 +55,7 @@
           <PACEditingGitAddSectionDialog
             :show-activator="overedItem === item.path"
             :parent="item "
+            @update="fetchSections"
           />
           <PACEditingGitRemoveSectionDialog
             :show-activator="overedItem === item.path && !isSectionReadonly(item)"
@@ -152,6 +153,8 @@ export default {
         url: '/api/trames/tree/test' // TODO: change test by the actual ref: dept, projectId or regionCode
       })
 
+      console.log(sections)
+
       // console.log(this.pacData[0])
 
       // sections.forEach(section => this.mergeGitWithBD(section))
@@ -213,3 +216,12 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.sticky-tree {
+  /* position: sticky; */
+  overflow: scroll;
+  /* 128 = 80 (from search row ) + 48 (one tree leaf) */
+  max-height: calc(100vh - 128px);
+}
+</style>

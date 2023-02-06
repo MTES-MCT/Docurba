@@ -7,6 +7,7 @@
         tile
         small
         icon
+        :loading="loading"
         v-on="on"
       >
         <v-icon>{{ icons.mdiPlus }}</v-icon>
@@ -53,11 +54,14 @@ export default {
     return {
       icons: { mdiPlus },
       dialog: false,
+      loading: false,
       sectionName: 'Nouvelle section'
     }
   },
   methods: {
     async addSection () {
+      this.loading = true
+
       const dir = this.parent.type === 'file' ? this.parent.path.replace('.md', '') : this.parent.path
 
       if (this.parent.type === 'file') {
@@ -95,11 +99,13 @@ export default {
         })
       }
 
+      const newSectionPath = `${dir}/${this.sectionName}`
+
       const newSection = Object.assign({
         slug: 'new-section',
         dir,
         titre: 'Nouvelle section',
-        path: `${dir}/${Date.now()}`
+        path: newSectionPath
         // text: 'Nouvelle section'
       }, this.tableKeys)
 
@@ -111,14 +117,16 @@ export default {
         data: {
           userId: this.$user.id,
           commit: {
-            path: `${dir}/${this.sectionName}.md`,
+            path: encodeURIComponent(`${newSectionPath}.md`),
             content: btoa(unescape(encodeURIComponent('Nouvelle section')))
           }
         }
       })
 
-      console.log(file)
+      // console.log(file)
       this.dialog = false
+      this.$emit('update', file)
+      this.loading = false
     }
   }
 }
