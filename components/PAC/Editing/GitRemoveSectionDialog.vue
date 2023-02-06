@@ -58,20 +58,41 @@ export default {
     }
   },
   methods: {
+    async deleteSection (section) {
+      if (section.type === 'file') {
+        await axios({
+          method: 'delete',
+          url: '/api/trames/test', // TODO: replace test by actual ref: dept, projectId or region,
+          data: {
+            userId: this.$user.id,
+            commit: {
+              path: section.path,
+              sha: section.sha
+            }
+          }
+        })
+      } else if (section.type === 'dir') {
+        await axios({
+          method: 'delete',
+          url: '/api/trames/test', // TODO: replace test by actual ref: dept, projectId or region,
+          data: {
+            userId: this.$user.id,
+            commit: {
+              path: `${section.path}/intro.md`,
+              sha: section.sha
+            }
+          }
+        })
+
+        await Promise.all(section.children.map((child) => {
+          return this.deleteSection(child)
+        }))
+      }
+    },
     async removeSection () {
       this.loading = true
 
-      await axios({
-        method: 'delete',
-        url: '/api/trames/test', // TODO: replace test by actual ref: dept, projectId or region,
-        data: {
-          userId: this.$user.id,
-          commit: {
-            path: this.section.path,
-            sha: this.section.sha
-          }
-        }
-      })
+      await this.deleteSection(this.section)
 
       this.dialog = false
       this.$emit('update')

@@ -94,7 +94,16 @@ async function getFiles (path, ref) {
       file.name = file.name.replace('.md', '')
 
       if (file.type === 'dir') {
-        file.children = (await getFiles(file.path, ref)).filter((child) => {
+        file.children = await getFiles(file.path, ref)
+
+        const intro = file.children.find(child => child.name === 'intro')
+
+        // if intro is not found. It might be impossible to delete the folder in the UI.
+        // Also clicking on the folder will fail to fetch a file intro.md.
+        // TODO: if there is no intro.md we should create it ?
+        if (intro) { file.sha = intro.sha }
+
+        file.children = file.children.filter((child) => {
           return child.name !== 'intro'
         })
       }
