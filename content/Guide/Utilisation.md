@@ -201,6 +201,8 @@ Vous pouvez `partager votre PAC` et choisir qui pourra **collaborer et éditer l
 
 Une fois votre projet finalisé, vous pouvez **exporter votre PAC en format PDF** depuis le `mode consultation` de votre PAC à l’aide de l’`icône de téléchargement` en bas à droite.
 
+ATTENTION : l'export .PDF depuis le moteur de recherche Firefox présente des bugs que nous ne sommes pas en mesure de résoudre pour le moment. Privilégiez donc Google Chrome et Edge.
+
 <img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/09.png">
 
 Il est recommandé de décocher les entêtes et pied de page.
