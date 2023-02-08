@@ -174,7 +174,7 @@ export default {
 
       // Replace all metadata with empty string. It should be saved in DB for custom sections.
       const rawText = sectionContent.replace(/---([\s\S]*)---/, '')
-      console.log(rawText)
+      // console.log(rawText)
       const sectionText = this.$md.parse(rawText)
 
       this.rawText = sectionText
@@ -226,7 +226,7 @@ export default {
             userId: this.$user.id,
             commit: {
               path: this.editedSection.path,
-              content: btoa(unescape(encodeURIComponent(this.editedSection.text))),
+              content: btoa(decodeURIComponent(encodeURIComponent(this.editedSection.text))),
               sha: this.editedSection.sha
             }
           }
