@@ -23,17 +23,19 @@ export default {
   mixins: [unifiedPAC],
   layout: 'app',
   // async asyncData ({ $content }) {
-  //   // const PAC = await $content('PAC', {
-  //   //   deep: true,
-  //   //   text: true
-  //   // }).fetch()
+  //   const PAC = await $content('PAC', {
+  //     deep: true,
+  //     text: true
+  //   }).fetch()
+
+  //   console.log(JSON.stringify(PAC, null, 4))
 
   //   // const originalPAC = PAC.map((section) => {
   //   //   return Object.assign({}, section)
   //   // })
 
   //   return {
-  //     PAC
+  //     // PAC
   //     // originalPAC // This is a clone of the row data so we can perform delete on PAC.
   //   }
   // },
