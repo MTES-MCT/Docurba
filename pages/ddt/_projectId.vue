@@ -12,6 +12,7 @@
       }"
       :sections-list="project.PAC"
       :project="project"
+      :git-ref="`projet-${project.id}`"
     />
     <VGlobalLoader v-else />
   </LayoutsCustomApp>
