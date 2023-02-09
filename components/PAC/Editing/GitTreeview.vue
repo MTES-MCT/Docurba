@@ -57,11 +57,13 @@
           <PACEditingGitAddSectionDialog
             :show-activator="overedItem === item.path"
             :parent="item"
+            :git-ref="gitRef"
             @update="fetchSections"
           />
           <PACEditingGitRemoveSectionDialog
             :show-activator="overedItem === item.path && !isSectionReadonly(item)"
-            :section="item "
+            :section="item"
+            :git-ref="gitRef"
             @update="fetchSections"
           />
         </template>
@@ -77,6 +79,9 @@ import axios from 'axios'
 
 export default {
   props: {
+    // Value is an array of section paths in string.
+    // It represent the selected sections for this project.
+    // It's not applicable outside of projects.
     value: {
       type: Array,
       default () { return [] }
@@ -109,6 +114,10 @@ export default {
     selectable: {
       type: Boolean,
       default: false
+    },
+    gitRef: {
+      type: String,
+      required: true
     }
   },
   data () {
@@ -153,7 +162,7 @@ export default {
     async fetchSections () {
       const { data: sections } = await axios({
         method: 'get',
-        url: '/api/trames/tree/test' // TODO: change test by the actual ref: dept, projectId or regionCode
+        url: `/api/trames/tree/${this.gitRef}`
       })
 
       // console.log(this.pacData[0])

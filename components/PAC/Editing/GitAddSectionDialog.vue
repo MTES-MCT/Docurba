@@ -48,6 +48,10 @@ export default {
     showActivator: {
       type: Boolean,
       default: true
+    },
+    gitRef: {
+      type: String,
+      required: true
     }
   },
   data () {
@@ -70,13 +74,13 @@ export default {
           url: '/api/trames/file',
           params: {
             path: this.parent.path,
-            ref: 'test'
+            ref: this.gitRef
           }
         })
 
         await axios({
           method: 'delete',
-          url: '/api/trames/test', // TODO: replace test by actual ref: dept, projectId or region,
+          url: `/api/trames/${this.gitRef}`,
           data: {
             userId: this.$user.id,
             commit: {
@@ -88,7 +92,7 @@ export default {
 
         await axios({
           method: 'post',
-          url: '/api/trames/test', // TODO: replace test by actual ref: dept, projectId or region,
+          url: `/api/trames/${this.gitRef}`,
           data: {
             userId: this.$user.id,
             commit: {
@@ -113,7 +117,7 @@ export default {
 
       const file = await axios({
         method: 'post',
-        url: '/api/trames/test', // TODO: replace test by actual ref: dept, projectId or region,
+        url: `/api/trames/${this.gitRef}`,
         data: {
           userId: this.$user.id,
           commit: {

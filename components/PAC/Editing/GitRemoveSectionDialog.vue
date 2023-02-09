@@ -48,6 +48,10 @@ export default {
     showActivator: {
       type: Boolean,
       default: false
+    },
+    gitRef: {
+      type: String,
+      required: true
     }
   },
   data () {
@@ -62,7 +66,7 @@ export default {
       if (section.type === 'file') {
         await axios({
           method: 'delete',
-          url: '/api/trames/test', // TODO: replace test by actual ref: dept, projectId or region,
+          url: `/api/trames/${this.gitRef}`,
           data: {
             userId: this.$user.id,
             commit: {
@@ -74,7 +78,7 @@ export default {
       } else if (section.type === 'dir') {
         await axios({
           method: 'delete',
-          url: '/api/trames/test', // TODO: replace test by actual ref: dept, projectId or region,
+          url: `/api/trames/${this.gitRef}`,
           data: {
             userId: this.$user.id,
             commit: {

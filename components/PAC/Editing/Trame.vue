@@ -10,6 +10,7 @@
             :selectable="selectable"
             :table="table"
             :table-keys="tableKeys"
+            :git-ref="gitRef"
             @open="selectSection"
           />
         </client-only>
@@ -18,7 +19,7 @@
         <PACEditingGitContentSection
           :project="project"
           :section="selectedSection"
-          :content-ref="'test'"
+          :git-ref="gitRef"
           :readonly-dirs="readonlyDirs"
           :table="table"
           :table-keys="tableKeys"
@@ -72,6 +73,10 @@ export default {
           'PAC/Cadre-juridique-et-grands-principes-de-la-planification'
         ]
       }
+    },
+    gitRef: {
+      type: String,
+      required: true
     }
   },
   data () {

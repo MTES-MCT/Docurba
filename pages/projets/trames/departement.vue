@@ -10,6 +10,7 @@
       :table-keys="{
         dept: departementCode
       }"
+      :git-ref="`dept-${departementCode}`"
     />
     <VGlobalLoader v-else />
   </LayoutsCustomApp>

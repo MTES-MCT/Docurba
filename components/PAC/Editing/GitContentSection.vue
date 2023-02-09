@@ -76,10 +76,6 @@ export default {
       type: Object,
       required: true
     },
-    contentRef: {
-      type: String,
-      required: true
-    },
     readonlyDirs: {
       type: Array,
       default () {
@@ -93,6 +89,10 @@ export default {
     tableKeys: {
       type: Object,
       default () { return {} }
+    },
+    gitRef: {
+      type: String,
+      required: true
     }
   },
   data () {
@@ -161,14 +161,12 @@ export default {
 
       const path = `/${this.section.path}${this.section.type === 'dir' ? '/intro.md' : ''}`
 
-      // console.log(this.section, this.contentRef, path)
-
       const { data: sectionContent } = await axios({
         method: 'get',
         url: '/api/trames/file',
         params: {
           path,
-          ref: this.contentRef
+          ref: this.gitRef
         }
       })
 
@@ -221,7 +219,7 @@ export default {
 
         await axios({
           method: 'post',
-          url: '/api/trames/test', // TODO: replace test by actual ref: dept, projectId or region,
+          url: `/api/trames/${this.gitRef}`,
           data: {
             userId: this.$user.id,
             commit: {
