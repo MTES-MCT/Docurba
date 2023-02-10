@@ -1,0 +1,20 @@
+[
+  { "endpoint": "gaspar/azi", "name": "AZI", "description": "Opérations sur les Atlas des Zones Inondables (AZI)"},
+  { "endpoint": "gaspar/catnat", "name": "CATNAT", "description": "Opérations sur les catastrophes naturelles"},
+  { "endpoint": "gaspar/dicrim", "name": "DICRIM", "description": "Opérations sur les Documents d'Information Communal sur les Risques Majeurs (DICRIM)"},
+  { "endpoint": "ppr/etats_documents", "name": "Etats documents PPR", "description": "Opérations sur les états des documents PPR"},
+  { "endpoint": "ppr/famille_risques", "name": "Familles risque PPR", "description": "Opérations sur les familles de risque PPR"},
+  { "endpoint": "installations_classees", "name": "Installations Classées", "description": "Opérations sur les installations classées"},
+  { "endpoint": "gaspar/papi", "name": "PAPI", "description": "Opérations sur les Programmes d'Actions de Prévention des Inondations (PAPI)"},
+  { "endpoint": "gaspar/pcs", "name": "PCS", "description": "Opérations sur les Plans Communaux de Sauvegarde (PCS)"},
+  { "endpoint": "ppr", "name": "PPR", "description": "Opérations sur les documents PPR"},
+  { "endpoint": "radon", "name": "Radon", "description": "Opérations sur le risque radon"},
+  { "endpoint": "gaspar/risques", "name": "Risques", "description": "Opérations sur le Détail des risques"},
+  { "endpoint": "sis", "name": "SIS", "description": "Opérations sur les données SIS"},
+  { "endpoint": "gaspar/tim", "name": "TIM", "description": "Opérations sur les Transmissions d'Informations au Maire (TIM)"},
+  { "endpoint": "gaspar/tri", "name": "TRI", "description": "Opérations sur les Territoires à Risques importants d'Inondation (TRI)"},
+  { "endpoint": "zonage_sismique", "name": "Zonage Sismique", "description": "Opérations sur le risque sismique"}
+]
+
+
+
