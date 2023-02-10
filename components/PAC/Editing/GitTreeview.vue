@@ -172,38 +172,42 @@ export default {
       this.sections = sections
     },
     async updateSelection (newSelection) {
-      let selection = []
+      // console.log(this.sections)
 
-      if (newSelection.length < this.treeSelection.length) {
+      if (newSelection.length !== this.treeSelection.length) {
+        let selection = []
+        if (newSelection.length < this.treeSelection.length) {
         // if something was removed
-        const removedPath = this.treeSelection.find(path => !newSelection.includes(path))
-        if (removedPath) {
-        // also remove all children
-          selection = this.selectedSections.filter((path) => {
-            return !path.includes(removedPath)
-          })
-        }
-      } else if (newSelection.length > this.treeSelection.length) {
+          const removedPath = this.treeSelection.find(path => !newSelection.includes(path))
+          if (removedPath) {
+          // also remove all children
+            selection = this.selectedSections.filter((path) => {
+              return !path.includes(removedPath)
+            })
+          }
+        } else if (newSelection.length > this.treeSelection.length) {
         // something was added
-        selection = uniq(this.selectedSections.concat(newSelection))
-        this.addParentsToSelection(selection, this.sections)
+          selection = uniq(this.selectedSections.concat(newSelection))
+          this.addParentsToSelection(selection, this.sections)
+        }
+
+        this.selectedSections = uniq(selection)
+        this.treeSelection = newSelection.map(s => s)
+
+        // Update the selection for this project in supabase.
+        if (this.selectable && this.tableKeys.project_id) {
+        // This make it so we can't save sections as objects in reading mode for comments and checked features.
+          await this.$supabase.from('projects').update({
+            PAC: selection.map(s => s || s.path)
+          }).eq('id', this.tableKeys.project_id)
+
+          this.$notifications.notifyUpdate(this.tableKeys.project_id)
+        }
       }
-
-      this.selectedSections = selection
-
-      // Update the selection for this project in supabase.
-      if (this.selectable && this.tableKeys.project_id) {
-      // This make it so we can't save sections as objects in reading mode for comments and checked features.
-        await this.$supabase.from('projects').update({
-          PAC: selection.map(s => s || s.path)
-        }).eq('id', this.tableKeys.project_id)
-
-        this.$notifications.notifyUpdate(this.tableKeys.project_id)
-      }
-
-      this.treeSelection = newSelection.map(s => s)
     },
     addParentsToSelection (selection, sections) {
+      const selectedParents = []
+
       sections.forEach((section) => {
         if (section.children) {
           this.addParentsToSelection(selection, section.children)
@@ -213,10 +217,12 @@ export default {
           })
 
           if (selectedChildren) {
-            selection.push(section.path)
+            selectedParents.push(section.path)
           }
         }
       })
+
+      selection.push(...selectedParents)
     },
     isSectionReadonly (section) {
       return !!this.readonlyDirs.find((dir) => {

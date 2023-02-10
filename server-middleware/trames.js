@@ -51,7 +51,7 @@ app.post('/:ref', async (req, res) => {
 
   const allowedRole = await getAllowedRole(userId, ref)
 
-  console.log(commit.path)
+  // console.log(commit.path)
 
   // if (allowedRole) {
   // We assign the branch and commiter manually to make sure it cannot be overide in commit.
@@ -94,16 +94,27 @@ app.delete('/:ref', async (req, res) => {
 })
 
 async function getFileContent (path, ref) {
-  const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
-    path,
-    mediaType: {
-      format: 'raw'
-    }
-  })
+  try {
+    const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
+      path,
+      mediaType: {
+        format: 'raw'
+      }
+    })
 
-  // console.log(file)
+    return file
+  } catch (err) {
+    // If a file was saved as intro instead of intro.md we have this fail safe.
+    // Need to clean all the branches to change that.
+    const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path.replace('.md', ''))}?ref=${ref}`, {
+      path,
+      mediaType: {
+        format: 'raw'
+      }
+    })
 
-  return file
+    return file
+  }
 }
 
 async function getFiles (path, ref) {

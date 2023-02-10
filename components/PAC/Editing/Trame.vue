@@ -99,6 +99,7 @@ export default {
   methods: {
     // This method allow us to work on a clean data ref environement.
     selectSection (section) {
+      console.log(section)
       this.selectedSection = Object.assign({}, section)
     }
   }

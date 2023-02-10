@@ -1,8 +1,9 @@
 <template>
   <v-row v-if="editedSection && !loading" class="fill-height">
-    <v-col cols="12">
+    <!-- This is a hidden feature like the section order waiting to be re implemented -->
+    <!-- <v-col cols="12">
       <v-text-field v-model="editedSection.titre" :readonly="isReadonly" label="Titre dans le sommaire" filled hide-details />
-    </v-col>
+    </v-col> -->
     <v-col cols="12">
       <PACEditingReadOnlyCard v-show="isReadonly" :section="editedSection" />
     </v-col>
@@ -217,15 +218,19 @@ export default {
           await this.$supabase.from(this.table).insert([savedData])
         }
 
+        // console.log(section, this.editedSection)
+
+        const filePath = section.type === 'dir' ? `${section.path}/intro${section.path.match(/\//g).length === 1 ? '' : '.md'}` : section.path
+
         await axios({
           method: 'post',
           url: `/api/trames/${this.gitRef}`,
           data: {
             userId: this.$user.id,
             commit: {
-              path: this.editedSection.path,
-              content: btoa(decodeURIComponent(encodeURIComponent(this.editedSection.text))),
-              sha: this.editedSection.sha
+              path: filePath,
+              content: btoa(decodeURIComponent(encodeURIComponent(section.text))),
+              sha: section.sha
             }
           }
         })
