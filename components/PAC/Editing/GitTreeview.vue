@@ -87,10 +87,10 @@ export default {
       default () { return [] }
     },
     // pacData should be a unified array of sections from DB. See if parent is mixing unifiedPac.js
-    pacData: {
-      type: Array,
-      required: true
-    },
+    // pacData: {
+    //   type: Array,
+    //   required: true
+    // },
     readonlyDirs: {
       type: Array,
       default () {

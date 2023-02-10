@@ -5,7 +5,6 @@
     </template>
     <PACEditingTrame
       v-if="!loading"
-      :pac-data="PAC"
       table="pac_sections_project"
       :table-keys="{
         project_id: project.id

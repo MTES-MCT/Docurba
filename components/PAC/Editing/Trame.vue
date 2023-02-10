@@ -5,7 +5,6 @@
         <client-only>
           <PACEditingGitTreeview
             :value="selectedSections"
-            :pac-data="pacData"
             :readonly-dirs="readonlyDirs"
             :selectable="selectable"
             :table="table"
@@ -44,10 +43,10 @@
 export default {
   props: {
     // pacData should be a unified array of sections from DB. See if parent is mixing unifiedPac.js
-    pacData: {
-      type: Array,
-      required: true
-    },
+    // pacData: {
+    //   type: Array,
+    //   required: true
+    // },
     table: {
       type: String,
       required: true

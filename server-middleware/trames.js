@@ -23,6 +23,28 @@ async function getAllowedRole (userId, ref) {
   return roles.find(role => role.dept === ref || role.region === ref)
 }
 
+app.post('/projects/:parentRef', async (req, res) => {
+  const { parentRef } = req.params
+  const { userId, projectId } = req.body
+
+  const allowedRole = await getAllowedRole(userId, parentRef.replace('dept-', ''))
+
+  const parentBranch = await github(`GET /repos/UngererFabien/France-PAC/git/ref/heads/${parentRef}`, {
+    ref: parentRef
+  })
+
+  try {
+    const newProjectBranch = await github('POST /repos/UngererFabien/France-PAC/git/refs', {
+      ref: `refs/heads/projet-${projectId}`,
+      sha: parentBranch.data.object.sha
+    })
+
+    res.status(200).send(newProjectBranch)
+  } catch (err) {
+    res.status(400).send(err)
+  }
+})
+
 app.post('/:ref', async (req, res) => {
   const { ref } = req.params
   const { userId, commit } = req.body
