@@ -16,6 +16,11 @@ function getCommunesByDepartements (code) {
   return cache[code]
 }
 
+function getCommunesDetails (inseeArray) {
+  console.log('inseeArray: ', inseeArray)
+  return communes.filter(e => inseeArray.includes(e.code_commune_INSEE.toString()))
+}
+
 app.get('/:inseeId', (req, res) => {
   try {
     const inseeCode = parseInt(req.params.inseeId)
@@ -30,8 +35,12 @@ app.get('/:inseeId', (req, res) => {
 // query params:
 // departement - Departement code. eg. 22, 47
 app.get('/', (req, res) => {
-  // console.log('/communes ', req.query)
-  res.status(200).send(getCommunesByDepartements(parseInt(req.query.departements)))
+  console.log('/communes ', req.query)
+  if (req.query.communes && req.query.communes.length > 0) {
+    res.status(200).send(getCommunesDetails(req.query.communes))
+  } else {
+    res.status(200).send(getCommunesByDepartements(parseInt(req.query.departements)))
+  }
 })
 
 module.exports = app

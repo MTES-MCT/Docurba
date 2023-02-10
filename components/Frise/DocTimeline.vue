@@ -1,7 +1,7 @@
 <template>
   <v-row justify="end">
     <v-col cols="12">
-      <v-timeline align-top class="doc-timeline pt-0 mt-6">
+      <v-timeline v-if="!noProject" align-top class="doc-timeline pt-0 mt-6">
         <v-timeline-item color="#E3E3FD" small>
           <v-btn nuxt color="primary" :to="`/projets/${projectId}/frise/add`">
             Ajouter un événement
@@ -10,17 +10,12 @@
         <v-timeline-item right hide-dot>
           <span class="black--text"><b>Évènements suggérés par Docurba :</b></span>
         </v-timeline-item>
-        <v-timeline-item
-          v-for="event in recommendedEvents"
-          :key="`recommended-${event.order}`"
-          hide-dot
-          right
-        >
+        <v-timeline-item v-for="event in recommendedEvents" :key="`recommended-${event.order}`" hide-dot right>
           <FriseRecommendedEventCard :event-type="event" />
         </v-timeline-item>
       </v-timeline>
     </v-col>
-    <v-col offset="3" cols="9" class="pl-0">
+    <v-col v-if="!noProject" offset="3" cols="9" class="pl-0">
       <v-divider />
     </v-col>
     <v-col cols="12">
@@ -29,6 +24,7 @@
           v-for="event in orderedEvents"
           :id="`event-${event.id}`"
           :key="event.id"
+          :color="event.color"
           small
           right
         >
@@ -48,6 +44,10 @@ import documentEvents from '@/assets/data/DU_events.json'
 
 export default {
   props: {
+    noProject: {
+      type: Boolean,
+      default: () => false
+    },
     projectId: {
       type: String,
       default () {

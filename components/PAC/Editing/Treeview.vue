@@ -12,7 +12,7 @@
     <v-col cols="12" class="pa-0" @click="collapsed ? $emit('collapse') : ''">
       <v-treeview
         ref="tree"
-        v-model="selectedSections"
+        :value="selectedSections"
         hoverable
         open-on-click
         :selectable="selectable"
@@ -22,6 +22,8 @@
         item-key="path"
         selected-color="primary"
         :search="contentSearch"
+        selection-type="independent"
+        @input="updateSelection"
       >
         <template #label="{item}">
           <v-tooltip right nudge-right="35">
@@ -39,7 +41,7 @@
             <span>{{ item.titre || '[Titre Manquant]' }}</span>
           </v-tooltip>
         </template>
-        <template #append="{item, open}">
+        <template #append="{item}">
           <v-btn
             v-show="overedItem === item.path && item.depth > 2"
             depressed
@@ -66,7 +68,7 @@
             tile
             small
             icon
-            @click="addSectionTo(item, open, $event)"
+            @click.stop="addSectionTo(item)"
           >
             <v-icon>{{ icons.mdiPlus }}</v-icon>
           </v-btn>
@@ -114,10 +116,10 @@ import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiC
 import { uniq } from 'lodash'
 import pacEditing from '@/mixins/pacEditing.js'
 
-function getDepth (path) {
-  // console.log(path)
-  return (path.replace(/\/intro$/, '').match(/\//g) || []).length
-}
+// function getDepth (path) {
+//   // console.log(path)
+//   return (path.replace(/\/intro$/, '').match(/\//g) || []).length
+// }
 
 export default {
   mixins: [pacEditing],
@@ -136,23 +138,11 @@ export default {
     }
   },
   data () {
-    const children = this.value.filter((s) => {
-      const path = (s.path || s).replace(/\/intro$/, '')
-      const depth = getDepth(path)
-
-      const child = this.value.find((section) => {
-        // console.log((section.path || section), path)
-
-        return s !== section &&
-          (section.path || section).includes(path + '/') &&
-          depth + 1 === getDepth(section.path || section)
-      })
-
-      return !child
-    })
-
     return {
       contentSearch: '',
+      removedPath: '',
+      selectedSections: this.value.map(s => s),
+      treeSelection: [],
       icons: {
         mdiPlus,
         mdiDelete,
@@ -161,31 +151,61 @@ export default {
         mdiChevronUp,
         mdiChevronDown
       },
-      overedItem: '',
-      selectedSections: children
+      overedItem: ''
     }
   },
   computed: {
+    // selectedSections: {
+    //   get () {
+    //     return this.value.map(s => s)
+    //   },
+    //   set (newSelection) {
+    //     let selection = uniq(this.value.concat(newSelection))
+
+    //     if (selection.length > this.value.length || newSelection.length < this.value.length) {
+    //       if ((this.value.length - newSelection.length) === 1) {
+    //         if (!this.removedPath && selection.length <= this.value.length) {
+    //           const removedSection = this.value.find(s => !newSelection.includes(s))
+    //           if (removedSection) {
+    //             this.removedPath = removedSection.replace(/\/intro$/, '')
+    //           }
+    //         }
+
+    //         if (this.removedPath) {
+    //           selection = selection.filter((section) => {
+    //             return !section.includes(this.removedPath)
+    //           })
+    //         }
+
+    //         this.removedPath = ''
+    //       }
+
+    //       this.addParentsToSelection(selection)
+    //       this.$emit('input', uniq(selection))
+    //     }
+    //   }
+    // },
     PACroots () {
-      // if (!this.contentSearch.length) {
       const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
         return (sa.ordre ?? 100) - (sb.ordre ?? 100)
       })
 
       return roots
-      // } else {
-      //   return this.filteredPAC
-      // }
     }
   },
-  watch: {
-    selectedSections () {
-      // if (!this.contentSearch.length) {
-      const selection = []
-
+  mounted () {
+    this.$nextTick(() => {
+      this.treeSelection = Array.from(this.$refs.tree.selectedCache)
+    })
+  },
+  methods: {
+    openSection (section) {
+      this.$emit('open', section)
+    },
+    addParentsToSelection (selection) {
       this.PAC.forEach((section) => {
         if (section.children) {
-          const selectedChildren = this.selectedSections.find((s) => {
+          const selectedChildren = selection.find((s) => {
             const path = section.path.replace(/\/intro$/, '')
             return s !== section.path && s.includes(path)
           })
@@ -195,20 +215,37 @@ export default {
           }
         }
       })
-
-      this.$emit('input', uniq(selection.concat(this.selectedSections)))
-      // }
-    }
-  },
-  methods: {
-    openSection (section) {
-      this.$emit('open', section)
     },
-    addSectionTo (parentSection, open, $event) {
-      if (open) {
-        $event.stopPropagation()
+    updateSelection (newSelection) {
+      // console.log(newSelection.length, this.treeSelection.length)
+
+      if (newSelection.length < this.treeSelection.length) {
+        // if something was removed
+        let removedPath = this.treeSelection.find(path => !newSelection.includes(path))
+        if (removedPath) {
+          removedPath = removedPath.replace(/\/intro$/, '')
+
+          // also remove all children
+          const selection = this.selectedSections.filter((path) => {
+            return !path.includes(removedPath)
+          })
+          this.emitSelectionUpdate(selection)
+        }
+      } else if (newSelection.length > this.treeSelection.length) {
+        // something was added
+        const selection = uniq(this.selectedSections.concat(newSelection))
+        this.addParentsToSelection(selection)
+        this.emitSelectionUpdate(selection)
       }
 
+      this.treeSelection = newSelection.map(s => s)
+    },
+    emitSelectionUpdate (selection) {
+      // console.log('update selection', selection.length)
+      this.$emit('input', selection)
+      this.selectedSections = selection
+    },
+    addSectionTo (parentSection) {
       this.addNewSection(parentSection)
     },
     selectItem (item) {
@@ -218,6 +255,9 @@ export default {
       this.deleteSection(Object.assign({
         path: item.path
       }, this.tableKey))
+
+      this.removedPath = item.path.replace(/\/intro$/, '')
+
       dialog.value = false
     },
     colorClass (section) {

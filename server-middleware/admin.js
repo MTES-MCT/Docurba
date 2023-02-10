@@ -30,6 +30,7 @@ app.post('/pac', (req, res) => {
 
   slack.requestPAC(userData, pacData)
 
+  // Todo: Test this email is working.
   sendgrid.sendEmail({
     to: [userData.email],
     template_id: 'd-adea54033fba4a2b9d6f814297f2eca7',

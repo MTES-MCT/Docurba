@@ -10,7 +10,14 @@ module.exports = {
       dept: userData.dept.code_departement
     }).select()
 
+    // eslint-disable-next-line no-console
+    console.log('updateUserRole', data, error)
+
     if (role === 'ddt' && !error) {
+      // TODO: Send email Validation de compte.
+      // d-939bd4723dd04edcad17e6584b7641f3
+      // {firstname, dept}
+
       // Update deal status in Pipedrive.
       const { deals } = pipedrive.findOrganization(userData.dept.code_departement)
 
