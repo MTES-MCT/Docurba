@@ -172,19 +172,19 @@ export default {
       this.sections = sections
     },
     async updateSelection (newSelection) {
-      // console.log(this.sections)
+      console.log(newSelection, this.treeSelection)
 
       if (newSelection.length !== this.treeSelection.length) {
         let selection = []
         if (newSelection.length < this.treeSelection.length) {
         // if something was removed
-          const removedPath = this.treeSelection.find(path => !newSelection.includes(path))
-          if (removedPath) {
+          const removedPaths = this.treeSelection.filter(path => !newSelection.includes(path))
+          if (removedPaths.length === 1) {
           // also remove all children
             selection = this.selectedSections.filter((path) => {
-              return !path.includes(removedPath)
+              return !path.includes(removedPaths[0])
             })
-          }
+          } else { return }
         } else if (newSelection.length > this.treeSelection.length) {
         // something was added
           selection = uniq(this.selectedSections.concat(newSelection))
