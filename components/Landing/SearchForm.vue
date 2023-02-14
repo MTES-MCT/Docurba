@@ -1,7 +1,7 @@
 <template>
   <v-form ref="form" v-model="valid">
     <v-row justify="center" align="center">
-      <v-col cols="2">
+      <v-col cols="3">
         <v-select
           v-model="searchQuery.document"
           filled
@@ -13,24 +13,32 @@
           required
         />
       </v-col>
-      <v-col v-if="searchQuery.document && searchQuery.document.includes('i')" cols="">
-        <VEpciAutocomplete
-          v-model="selectedEpci"
-          :input-props="{
-            rules: [$rules.required]
-          }"
-        />
+      <v-col v-if="searchQuery.document === 'Prescriptions'" cols="">
+        <v-select v-model="typePrescription" filled hide-details dense :items="['EPCI', 'Commune']" />
       </v-col>
-      <v-col v-else cols="">
-        <VTownAutocomplete
-          v-model="selectedTown"
-          :cols-dep="4"
-          :cols-town="8"
-          :input-props="{
-            rules: [$rules.required]
-          }"
-        />
+      <v-col v-if="searchQuery.document === 'Prescriptions' && !typePrescription">
+        <v-select filled hide-details dense no-data-text="Choissiez un type" />
       </v-col>
+      <template v-else>
+        <v-col v-if="showEpciSelect" cols="">
+          <VEpciAutocomplete
+            v-model="selectedEpci"
+            :input-props="{
+              rules: [$rules.required]
+            }"
+          />
+        </v-col>
+        <v-col v-else cols="">
+          <VTownAutocomplete
+            v-model="selectedTown"
+            :cols-dep="4"
+            :cols-town="8"
+            :input-props="{
+              rules: [$rules.required]
+            }"
+          />
+        </v-col>
+      </template>
       <v-col cols="auto">
         <v-btn
           depressed
@@ -62,12 +70,13 @@ export default {
   },
   data () {
     return {
-      documents: ['CC', 'PLU', 'PLUi', 'PLUi-H', 'PLUi-D', 'PLUi-HD'], // 'SCoT', 'SCot-AEC'],
+      documents: ['CC', 'PLU', 'PLUi', 'PLUi-H', 'PLUi-D', 'PLUi-HD'], // 'Prescriptions', 'SCoT', 'SCot-AEC'],
       searchQuery: {
         region: null,
         document: null
       },
       valid: false,
+      typePrescription: '',
       selectedEpci: null,
       selectedTown: null,
       searchLoading: false,
@@ -77,6 +86,12 @@ export default {
     }
   },
   computed: {
+    showEpciSelect () {
+      const acceptEpci = ['PLUi', 'PLUi-H', 'PLUi-D', 'PLUi-HD']
+      const isEpciGlobal = this.searchQuery.document && acceptEpci.includes(this.searchQuery.document)
+
+      return isEpciGlobal || (this.searchQuery.document === 'Prescriptions' && this.typePrescription === 'EPCI')
+    },
     searchLink () {
       const query = {
         insee: [this.selectedTown ? this.selectedTown.code_commune_INSEE : '']
@@ -91,12 +106,15 @@ export default {
       }
 
       return {
-        path: this.path,
+        path: this.searchQuery.document === 'Prescriptions' ? '/prescriptions' : this.path,
         query
       }
     }
   },
   watch: {
+    'searchQuery.document' (newVal) {
+      if (newVal !== 'Prescriptions') { this.typePrescription = '' }
+    },
     selectedTown () {
       this.searchQuery.region = regions.find(r => r.name === this.selectedTown.nom_region)
     }
@@ -108,16 +126,15 @@ export default {
         return false
       }
 
-      if (this.searchQuery.document && this.searchQuery.document.includes('i')) {
+      if (this.showEpciSelect) {
         this.searchLoading = true
-
         const EPCI = (await axios({
           method: 'get',
           url: `/api/epci/${this.selectedEpci.id}`
         })).data
-
+        console.log('EPCI: ', EPCI)
         const regionCode = EPCI.towns[0].code_region
-        // eslint-disable-next-line eqeqeq
+        // eslint-disable-next-line
         const region = regions.find(r => r.code == regionCode)
 
         this.$matomo([
@@ -126,10 +143,12 @@ export default {
         ])
 
         this.$router.push({
-          path: '/pacsec/content',
+          path: this.searchLink.path,
           query: Object.assign({}, this.searchLink.query, {
             insee: EPCI.towns.map(t => t.code_commune_INSEE),
-            region: region.iso
+            region: region.iso,
+            epci_code: EPCI.EPCI,
+            epci_label: EPCI.label
           })
         })
 
@@ -139,6 +158,8 @@ export default {
           'trackEvent', 'Socle de PAC', 'Recherche',
           `${this.selectedTown.code_departement} - ${this.selectedTown.nom_commune}`
         ])
+
+        console.log('this.searchLink: ', this.searchLink)
 
         this.$router.push(this.searchLink)
       }

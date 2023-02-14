@@ -29,6 +29,7 @@ export default {
         { text: 'Socle du PAC', to: '/pacsec/content' },
         { text: 'Base territoriale', to: '/pacsec/data' },
         { text: 'Géo-IDE', to: '/pacsec/geoide' },
+        { text: 'Géorisques', to: '/pacsec/georisques' },
         { text: 'Ressources', to: '/pacsec/ressources' },
         { text: 'Glossaire', to: '/pacsec/glossaire' }
       ]
