@@ -1,56 +1,29 @@
 <template>
   <v-expansion-panels :value="open" multiple focusable flat>
     <v-expansion-panel v-for="(section, i) in sortedSections" :id="`panel__${section.path.replaceAll(/[^A-Za-z0-9]/g, '__')}`" :key="i">
-      <v-hover v-slot="{hover}">
-        <v-expansion-panel-header @click="openSection(section)">
-          <v-row align="center">
-            <v-col cols="auto">
-              {{ section.tocCounter ? `${section.tocCounter.join('.')} - ` : '' }} {{ section.titre }}
-            </v-col>
-            <v-spacer />
-            <v-col v-if="editable" cols="auto" class="py-0">
-              <v-dialog max-width="1000">
-                <template #activator="{on}">
-                  <v-badge
-                    :content="section.comments.length"
-                    :value="section.comments.length"
-                    offset-x="17"
-                    offset-y="17"
-                  >
-                    <v-btn
-                      v-show="hover || section.comments.length"
-                      depressed
-                      tile
-                      icon
-                      v-on="on"
-                    >
-                      <v-icon color="secondary">
-                        {{ icons.mdiCommentOutline }}
-                      </v-icon>
-                    </v-btn>
-                  </v-badge>
-                </template>
-                <PACCommentCard :section="section" />
-              </v-dialog>
-            </v-col>
-          </v-row>
-        </v-expansion-panel-header>
-      </v-hover>
+      <v-expansion-panel-header @click="openSection(section)">
+        {{ section.tocCounter ? `${section.tocCounter.join('.')} - ` : '' }} {{ section.name }}
+      </v-expansion-panel-header>
       <v-expansion-panel-content eager>
-        <nuxt-content class="pac-section-content" :document="section" />
-        <PACSectionsAttachementsChips
-          v-if="projectId && project"
-          :attachement-folders="[
-            project.towns[0].code_departement,
-            projectId
-          ]"
-        />
-        <PACContentSection
-          v-if="section.children && section.children.length"
-          :sections="section.children"
-          :open="section.titre === 'Introduction' ? [0] : []"
-          :editable="editable"
-        />
+        <v-row>
+          <v-col cols="12">
+            <nuxt-content class="pac-section-content" :document="section" />
+            <PACSectionsAttachementsChips
+              v-if="projectId && project"
+              :section="section"
+              :attachement-folders="[
+                project.towns[0].code_departement,
+                projectId
+              ]"
+            />
+            <PACContentSection
+              v-if="section.children && section.children.length"
+              :sections="section.children"
+              :open="section.titre === 'Introduction' ? [0] : []"
+              :editable="editable"
+            />
+          </v-col>
+        </v-row>
         <PACSectionsAttachementsCardList v-if="projectId" :section-path="section.path" :project-id="projectId" />
       </v-expansion-panel-content>
     </v-expansion-panel>

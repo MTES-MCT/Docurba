@@ -6,70 +6,29 @@
 </template>
 
 <script>
+import axios from 'axios'
 import regions from '@/assets/data/Regions.json'
 
-import unifiedPAc from '@/mixins/unifiedPac.js'
-
 export default {
-  mixins: [unifiedPAc],
-  async asyncData ({ $content, route }) {
-    let PAC = await $content('PAC', {
-      deep: true
-    }).fetch()
-
-    // remove unwanted intros
-    PAC.splice(PAC.findIndex(s => s.path === '/PAC/Introduction/introcution-PAC-valide'), 1)
-    // Filter sections in socle
-    PAC = PAC.filter((s) => {
-      // No PP
-      return !s.path.includes('PP-du-territoire')
-    })
-    // Filter PLUi/PLU depending on doc type.
-    const docType = route.query.document
-    PAC = PAC.filter((s) => {
-      if (docType === 'PLU') {
-        // In PLU remove PLUi sections
-        return !s.titre.includes('PLUi')
-      } else if (docType.includes('PLUi')) {
-        // In PLUi remove PLU sections.
-        return !s.titre.includes(' PLU ')
-      } else {
-        // In CC remove all PLU/PLUi sections
-        return !s.titre.includes('PLU')
-      }
-    })
-
-    PAC = PAC.filter((s) => {
-      return !s.dir.includes('/PAC/Annexes')
-    })
-
-    return {
-      // PAC: PAC.filter(s => !s.path.includes('olitiques-publiques-specifiques'))
-      PAC
-    }
-  },
   data () {
     const region = regions.find(r => r.iso === this.$route.query.region)
 
     return {
       region,
+      PAC: [],
       loaded: false
     }
   },
   async mounted () {
-    let regionSections = await this.fetchSections('pac_sections_region', {
-      region: this.region.code
+    const region = regions.find(r => r.iso === this.$route.query.region)
+    const ref = region ? `region-${region.code}` : 'main'
+
+    const { data: sections } = await axios({
+      method: 'get',
+      url: `/api/trames/tree/${ref}?content=true`
     })
 
-    regionSections = regionSections.filter(s => !s.dir.includes('/PAC/Annexes'))
-
-    this.PAC = this.unifyPacs([regionSections, this.PAC])
-
-    // TODO: This is duplicated in all read sections
-    this.PAC.forEach((section) => {
-      // Parse the body only if text was edited.
-      if (section.text) { section.body = this.$md.compile(section.text) }
-    })
+    this.PAC = this.filterSections(sections)
 
     this.loaded = true
 
@@ -86,6 +45,35 @@ export default {
       })
     }
     // End Analytics
+  },
+  methods: {
+    filterSections (sections) {
+      const docType = this.$route.query.document
+
+      sections = sections.filter((section) => {
+        const isAllowed = (!section.path.includes('PAC/Introduction/PAC valid') &&
+          !section.path.includes('PP-du-territoire') &&
+          !section.path.includes('PAC/Annexes'))
+
+        if (docType === 'PLU') {
+          return isAllowed && !section.name.includes('PLUi')
+        } else if (docType.includes('PLUi')) {
+          return isAllowed && !section.name.includes(' PLU ')
+        } else {
+          return isAllowed && !section.name.includes('PLU')
+        }
+      })
+
+      sections.forEach((section) => {
+        if (section.content) { section.body = this.$md.compile(section.content) }
+
+        if (section.children) {
+          section.children = this.filterSections(section.children)
+        }
+      })
+
+      return sections
+    }
   }
 }
 </script>

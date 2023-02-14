@@ -16,6 +16,8 @@ app.use(express.json())
 }
 */
 
+const cache = {}
+
 async function getAllowedRole (userId, ref) {
   const userRoles = await admin.getUserAdminRoles(userId)
   const roles = userRoles.deptRoles.concat(userRoles.regionRoles)
@@ -93,7 +95,19 @@ app.delete('/:ref', async (req, res) => {
   res.status(200).send(commitRes)
 })
 
-async function getFileContent (path, ref) {
+async function getFileContent (path, ref, useCache) {
+  const cachedFile = cache[`${path}-${ref}`]
+
+  if (cachedFile && useCache) {
+    const cacheExpiration = cachedFile.timestamp + (1000 * 60 * 60)
+
+    if (cacheExpiration > Date.now()) {
+      return cachedFile.data
+    } else {
+      delete cache[`${path}-${ref}`]
+    }
+  }
+
   try {
     const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
       path,
@@ -101,6 +115,11 @@ async function getFileContent (path, ref) {
         format: 'raw'
       }
     })
+
+    cache[`${path}-${ref}`] = {
+      data: file,
+      timestamp: Date.now()
+    }
 
     return file
   } catch (err) {
@@ -113,11 +132,16 @@ async function getFileContent (path, ref) {
       }
     })
 
+    cache[`${path}-${ref}`] = {
+      data: file,
+      timestamp: Date.now()
+    }
+
     return file
   }
 }
 
-async function getFiles (path, ref) {
+async function getFiles (path, ref, fetchContent = false) {
   const { data: repo } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
     path
   })
@@ -127,22 +151,25 @@ async function getFiles (path, ref) {
       file.name = file.name.replace('.md', '')
 
       if (file.type === 'dir') {
-        file.children = await getFiles(file.path, ref)
-
+        file.children = await getFiles(file.path, ref, fetchContent)
         const intro = file.children.find(child => child.name === 'intro')
 
         // if intro is not found. It might be impossible to delete the folder in the UI.
         // Also clicking on the folder will fail to fetch a file intro.md.
         // TODO: if there is no intro.md we should create it ?
-        if (intro) { file.sha = intro.sha }
+        if (intro) {
+          file.sha = intro.sha
+          if (fetchContent) {
+            file.content = await getFileContent(intro.path, ref, true)
+          }
+        }
 
         file.children = file.children.filter((child) => {
           return child.name !== 'intro'
         })
+      } else if (fetchContent) {
+        file.content = await getFileContent(file.path, ref, true)
       }
-      // else {
-      //   file.content = await getFileContent(file.path, ref)
-      // }
 
       return file.children
     }))
@@ -154,8 +181,9 @@ async function getFiles (path, ref) {
 }
 
 app.get('/tree/:ref', async (req, res) => {
+  const { content } = req.query
   // test should be replaced by region code.
-  const repo = await getFiles('/PAC', req.params.ref)
+  const repo = await getFiles('/PAC', req.params.ref, content)
 
   // if (!error) {
   res.status(200).send(repo)

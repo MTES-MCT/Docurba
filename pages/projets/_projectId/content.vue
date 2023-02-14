@@ -4,10 +4,9 @@
     <PACTreeviewContent
       v-if="project && !pdfUrl"
       :pac-data="project.PAC"
-      editable
       @read="savePacItem"
     />
-    <client-only>
+    <!-- <client-only>
       <v-btn
         v-if="!pdfUrl"
         depressed
@@ -19,7 +18,7 @@
         @click="$print(`/print/${project.id}`)"
       >
         <v-icon>{{ icons.mdiDownload }}</v-icon>
-      </v-btn>
+      </v-btn> -->
     </client-only>
   </v-container>
   <VGlobalLoader v-else />
@@ -27,6 +26,7 @@
 <script>
 import { mdiDownload } from '@mdi/js'
 
+import axios from 'axios'
 import unifiedPAC from '@/mixins/unifiedPac.js'
 
 export default {
@@ -36,16 +36,16 @@ export default {
       pacProject: this._project
     }
   },
-  async asyncData ({ $content }) {
-    const PAC = await $content('PAC', {
-      deep: true,
-      text: true
-    }).fetch()
+  // async asyncData ({ $content }) {
+  //   const PAC = await $content('PAC', {
+  //     deep: true,
+  //     text: true
+  //   }).fetch()
 
-    return {
-      PAC
-    }
-  },
+  //   return {
+  //     PAC
+  //   }
+  // },
   data () {
     return {
       project: null,
@@ -83,46 +83,65 @@ export default {
     _project () {
       return this.project
     },
+    parseSection (section, paths) {
+      if (section.content) { section.body = this.$md.compile(section.content) }
+
+      if (section.children) {
+        section.children = section.children.filter(c => paths.includes(c.path))
+        section.children.forEach(c => this.parseSection(c, paths))
+      }
+    },
     async setPACFromTrame () {
-      const PAC = await this.$content('PAC', {
-        deep: true,
-        text: true
-      }).fetch()
+      // const PAC = await this.$content('PAC', {
+      //   deep: true,
+      //   text: true
+      // }).fetch()
 
-      this.PAC = PAC
+      // this.PAC = PAC
 
-      const [regionSections, deptSections, projectSections] = await Promise.all([
-        this.fetchSections('pac_sections_region', {
-          region: this.project.towns[0].code_region
-        }),
-        this.fetchSections('pac_sections_dept', {
-          dept: this.project.towns[0].code_departement
-        }),
-        this.fetchSections('pac_sections_project', {
-          project_id: this.project.id
-        })
-      ])
+      // const [regionSections, deptSections, projectSections] = await Promise.all([
+      //   this.fetchSections('pac_sections_region', {
+      //     region: this.project.towns[0].code_region
+      //   }),
+      //   this.fetchSections('pac_sections_dept', {
+      //     dept: this.project.towns[0].code_departement
+      //   }),
+      //   this.fetchSections('pac_sections_project', {
+      //     project_id: this.project.id
+      //   })
+      // ])
 
-      // TODO: Need to add the reading and unify of comments and checked markers here.
-      this.project.PAC = this.unifyPacs([
-        projectSections,
-        deptSections,
-        regionSections,
-        this.PAC
-      ], this.project.PAC.map((s) => {
-        return s.path || s
-      }))
+      // // TODO: Need to add the reading and unify of comments and checked markers here.
+      // this.project.PAC = this.unifyPacs([
+      //   projectSections,
+      //   deptSections,
+      //   regionSections,
+      //   this.PAC
+      // ], this.project.PAC.map((s) => {
+      //   return s.path || s
+      // }))
 
-      // TODO: // This is duplicated in all read sections
-      this.project.PAC.forEach((section) => {
-      // Parse the body only if text was edited.
-        if (section.text) { section.body = this.$md.compile(section.text) }
+      const { data: sections } = await axios({
+        method: 'get',
+        url: `/api/trames/tree/projet-${this.project.id}?content=true`
       })
 
+      // console.log(sections)
+
+      const sectionsPaths = this.project.PAC.map(p => p)
+      this.project.PAC = sections.filter(s => sectionsPaths.includes(s.path))
+      this.project.PAC.forEach(s => this.parseSection(s, sectionsPaths))
+
+      // TODO: // This is duplicated in all read sections
+      // this.project.PAC.forEach((section) => {
+      // // Parse the body only if text was edited.
+      //   if (section.text) { section.body = this.$md.compile(section.text) }
+      // })
+
       // The next two enrich and the union should be refactored because there is some useless steps here.
-      this.project.PAC = this.project.PAC.map((section) => {
-        return this.enrichSection(section)
-      }).filter(s => !!s.body)
+      // this.project.PAC = this.project.PAC.map((section) => {
+      //   return this.enrichSection(section)
+      // }).filter(s => !!s.body)
     },
     async loadPACFile () {
       const { signedURL: pdfUrl, err } = await this.$supabase.storage
