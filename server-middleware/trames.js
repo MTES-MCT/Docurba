@@ -16,8 +16,6 @@ app.use(express.json())
 }
 */
 
-const cache = {}
-
 async function getAllowedRole (userId, ref) {
   const userRoles = await admin.getUserAdminRoles(userId)
   const roles = userRoles.deptRoles.concat(userRoles.regionRoles)
@@ -95,19 +93,7 @@ app.delete('/:ref', async (req, res) => {
   res.status(200).send(commitRes)
 })
 
-async function getFileContent (path, ref, useCache) {
-  const cachedFile = cache[`${path}-${ref}`]
-
-  if (cachedFile && useCache) {
-    const cacheExpiration = cachedFile.timestamp + (1000 * 60 * 60)
-
-    if (cacheExpiration > Date.now()) {
-      return cachedFile.data
-    } else {
-      delete cache[`${path}-${ref}`]
-    }
-  }
-
+async function getFileContent (path, ref) {
   try {
     const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
       path,
@@ -115,12 +101,6 @@ async function getFileContent (path, ref, useCache) {
         format: 'raw'
       }
     })
-
-    cache[`${path}-${ref}`] = {
-      data: file,
-      timestamp: Date.now()
-    }
-
     return file
   } catch (err) {
     // If a file was saved as intro instead of intro.md we have this fail safe.
@@ -131,11 +111,6 @@ async function getFileContent (path, ref, useCache) {
         format: 'raw'
       }
     })
-
-    cache[`${path}-${ref}`] = {
-      data: file,
-      timestamp: Date.now()
-    }
 
     return file
   }
@@ -160,7 +135,7 @@ async function getFiles (path, ref, fetchContent = false) {
         if (intro) {
           file.sha = intro.sha
           if (fetchContent) {
-            file.content = await getFileContent(intro.path, ref, true)
+            file.content = await getFileContent(intro.path, ref)
           }
         }
 
@@ -168,7 +143,7 @@ async function getFiles (path, ref, fetchContent = false) {
           return child.name !== 'intro'
         })
       } else if (fetchContent) {
-        file.content = await getFileContent(file.path, ref, true)
+        file.content = await getFileContent(file.path, ref)
       }
 
       return file.children
@@ -183,10 +158,14 @@ async function getFiles (path, ref, fetchContent = false) {
 app.get('/tree/:ref', async (req, res) => {
   const { content } = req.query
   // test should be replaced by region code.
-  const repo = await getFiles('/PAC', req.params.ref, content)
+  try {
+    const repo = await getFiles('/PAC', req.params.ref, content)
 
-  // if (!error) {
-  res.status(200).send(repo)
+    // if (!error) {
+    res.status(200).send(repo)
+  } catch (err) {
+    console.log('Error getting tree', err, err.status)
+  }
   // } else {
   //   // eslint-disable-next-line no-console
   //   console.log('error reading github:', error)
@@ -204,7 +183,7 @@ app.get('/file', async (req, res) => {
 
     res.status(200).send(file)
   } catch (err) {
-    console.log(err)
+    console.log('error getting file', err)
     res.status(400).send(err)
   }
 })
