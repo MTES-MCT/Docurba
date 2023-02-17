@@ -1,13 +1,13 @@
 <template>
   <div>
     <!-- START HERO v2 -->
-    <v-container fluid>
+    <!-- <v-container fluid>
       <v-row justify="center" align="center" class="primary">
         <v-col cols="auto">
           <a class="white--text" href="https://app.livestorm.co/dinum-12/flash-info-docurba-les-nouveautes-de-loutil?type=detailed" target="_blank"><b>Flash Info de Docurba : jeudi 9 février 2023 à 14h. Cliquez ici pour s’inscrire à la visioconférence !</b></a>
         </v-col>
       </v-row>
-    </v-container>
+    </v-container> -->
     <v-container fluid class="pa-8">
       <v-row class="beige rounded-lg py-16 position-relative">
         <VFloatingShape src="/images/landing/ellipse_half_blue_right.svg" :size="60" :right="15" :bottom="15" />
