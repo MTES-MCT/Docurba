@@ -83,7 +83,7 @@ export default {
             userId: this.$user.id,
             commit: {
               path: `${section.path}/intro.md`,
-              sha: section.sha
+              sha: section.introSha
             }
           }
         })

@@ -1,9 +1,15 @@
 <template>
   <v-row v-if="editedSection && !loading" class="fill-height">
     <!-- This is a hidden feature like the section order waiting to be re implemented -->
-    <!-- <v-col cols="12">
-      <v-text-field v-model="editedSection.titre" :readonly="isReadonly" label="Titre dans le sommaire" filled hide-details />
-    </v-col> -->
+    <v-col cols="12">
+      <v-text-field
+        v-model="editedSection.name"
+        :readonly="isReadonly"
+        label="Titre dans le sommaire"
+        filled
+        hide-details
+      />
+    </v-col>
     <v-col cols="12">
       <PACEditingReadOnlyCard v-show="isReadonly" :section="editedSection" />
     </v-col>
@@ -141,7 +147,7 @@ export default {
     editedSection: {
       deep: true,
       handler () {
-        if (this.section.titre !== this.editedSection.titre || this.editedSection.text !== this.rawText) {
+        if (this.section.name !== this.editedSection.name || this.editedSection.text !== this.rawText) {
           this.modified = true
         } else {
           this.modified = false
@@ -197,9 +203,23 @@ export default {
 
       this.selectedDataSources = sourcesCardsData
     },
+    async updateName () {
+      await axios({
+        method: 'post',
+        url: `/api/trames/tree/${this.gitRef}`,
+        data: {
+          section: this.section,
+          newName: this.editedSection.name
+        }
+      })
+    },
     // section here can be the current section
     // or the previous one in cas of a "are you sure you want to switch section" modal
     async saveSection (section) {
+      if (this.section.name !== this.editedSection.name) {
+        this.updateName()
+      }
+
       const sectionMatchKeys = Object.assign({
         path: section.path
       }, this.tableKeys)
@@ -230,7 +250,7 @@ export default {
             commit: {
               path: filePath,
               content: btoa(decodeURIComponent(encodeURIComponent(section.text))),
-              sha: section.sha
+              sha: section.type === 'dir' ? section.introSha : section.sha
             }
           }
         })
