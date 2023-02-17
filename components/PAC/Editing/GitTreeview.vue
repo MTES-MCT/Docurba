@@ -179,17 +179,23 @@ export default {
         if (newSelection.length < this.treeSelection.length) {
         // if something was removed
           const removedPaths = this.treeSelection.filter(path => !newSelection.includes(path))
+          console.log(removedPaths.length)
           if (removedPaths.length === 1) {
           // also remove all children
             selection = this.selectedSections.filter((path) => {
               return !path.includes(removedPaths[0])
             })
-          } else { return }
+          } else {
+            console.log('do not save')
+            return
+          }
         } else if (newSelection.length > this.treeSelection.length) {
         // something was added
           selection = uniq(this.selectedSections.concat(newSelection))
           this.addParentsToSelection(selection, this.sections)
         }
+
+        console.log('saving')
 
         this.selectedSections = uniq(selection)
         this.treeSelection = newSelection.map(s => s)
@@ -198,7 +204,7 @@ export default {
         if (this.selectable && this.tableKeys.project_id) {
         // This make it so we can't save sections as objects in reading mode for comments and checked features.
           await this.$supabase.from('projects').update({
-            PAC: selection.map(s => s || s.path)
+            PAC: this.selectedSections.map(s => s || s.path)
           }).eq('id', this.tableKeys.project_id)
 
           this.$notifications.notifyUpdate(this.tableKeys.project_id)

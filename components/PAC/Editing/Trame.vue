@@ -81,7 +81,7 @@ export default {
   data () {
     // The replace is due to git path not including first /
     const cleanedPaths = this.sectionsList.map((path) => {
-      return path.replace('/PAC', 'PAC').replace(/\/intro$/, '')
+      return path.replace(/^\/PAC/, 'PAC').replace(/\/intro$/, '')
     })
 
     return {

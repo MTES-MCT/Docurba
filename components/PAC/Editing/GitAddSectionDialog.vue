@@ -62,6 +62,11 @@ export default {
       sectionName: 'Nouvelle section'
     }
   },
+  computed: {
+    projectId () {
+      return this.gitRef.includes('projet') ? this.gitRef.replace('projet-', '') : null
+    }
+  },
   methods: {
     async addSection () {
       this.loading = true
@@ -105,15 +110,22 @@ export default {
 
       const newSectionPath = `${dir}/${this.sectionName}`
 
-      const newSection = Object.assign({
-        slug: 'new-section',
-        dir,
-        titre: 'Nouvelle section',
-        path: newSectionPath
-        // text: 'Nouvelle section'
-      }, this.tableKeys)
+      if (this.projectId) {
+        const { data: projects } = await this.$supabase.from('projects').select('PAC').eq('id', this.projectId)
+        const paths = projects[0].PAC
+        paths.push(newSectionPath)
+        await this.$supabase.from('projects').update({ PAC: paths }).eq('id', this.projectId)
+      }
 
-      await this.$supabase.from(this.table).insert([newSection])
+      // const newSection = Object.assign({
+      //   slug: 'new-section',
+      //   dir,
+      //   titre: 'Nouvelle section',
+      //   path: newSectionPath
+      //   // text: 'Nouvelle section'
+      // }, this.tableKeys)
+
+      // await this.$supabase.from(this.table).insert([newSection])
 
       const file = await axios({
         method: 'post',

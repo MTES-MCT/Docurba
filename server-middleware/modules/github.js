@@ -14,7 +14,7 @@ module.exports = async function (path, options) {
   let cachedRes = null
 
   if (path.includes('GET')) {
-    const { data: cache, error } = await supabase.from('github_cache').select('*').eq('path', path)
+    const { data: cache } = await supabase.from('github_cache').select('*').eq('path', path)
 
     if (cache && cache[0]) {
       cachedRes = cache[0]
@@ -35,14 +35,14 @@ module.exports = async function (path, options) {
         etag: res.headers.etag,
         data: res
       }]).then((data) => {
-        console.log('cache saved', data)
+        // console.log('cache saved', data)
       })
     }
 
     return res
   } catch (err) {
     if (err.status === 304) {
-      console.log('Cache Working')
+      // console.log('Cache Working')
       return cachedRes.data
     }
   }
