@@ -23,7 +23,17 @@
       </v-col>
       <v-col v-else cols="">
         <v-card flat color="g100">
-          <v-card-text>Selectionnez une section à éditer.</v-card-text>
+          <v-card-text>
+            <p>
+              Selectionnez une section à éditer.
+            </p>
+
+            <p>
+              <b>Suite à notre changement de système, vous pourriez observer quelques anomalies à l’usage de l’outil d’édition des PAC ces jours-ci : c’est normal et votre travail ne sera pas perdu. Nous travaillons à stabiliser ces fonctionnalités.</b>
+            </p>
+
+            <p>N'hesitez pas à nous contacter si vous rencontrez le moindre problème.</p>
+          </v-card-text>
         </v-card>
       </v-col>
     </v-row>
