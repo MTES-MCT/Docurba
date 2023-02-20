@@ -26,12 +26,12 @@
         </div>
       </div>
       <v-spacer />
-      <div v-if="project" class="ddt-text text-right">
+      <div v-if="project && loaded" class="ddt-text text-right">
         Direction départementale des territoires <br>
         {{ project.towns[0].nom_departement }}
       </div>
     </v-app-bar>
-    <PACPDFPagesCounters v-if="project" :pac-data="project.PAC" content-id="pac-content-pdf" />
+    <PACPDFPagesCounters v-if="project && loaded" :pac-data="project.PAC" content-id="pac-content-pdf" />
     <table>
       <thead>
         <tr>
@@ -43,7 +43,7 @@
       <tbody>
         <tr>
           <td>
-            <PACPDFGardeTemplate v-if="project" :project="project" />
+            <PACPDFGardeTemplate v-if="project && loaded" :project="project" />
           </td>
         </tr>
       </tbody>
@@ -52,7 +52,7 @@
       <tbody>
         <tr>
           <td>
-            <PACPDFTableOfContent v-if="project" :pac-data="project.PAC" />
+            <PACPDFTableOfContent v-if="project && loaded" :pac-data="project.PAC" />
           </td>
         </tr>
       </tbody>
@@ -61,7 +61,7 @@
       <tbody>
         <tr>
           <td>
-            <PACPDFPagesTemplate v-if="project" :pac-data="project.PAC" />
+            <PACPDFPagesTemplate v-if="project && loaded" :pac-data="project.PAC" />
           </td>
         </tr>
       </tbody>
@@ -77,34 +77,10 @@
 </template>
 
 <script>
-// import { unionBy, omitBy, isNil } from 'lodash'
-
-import unified from 'unified'
-import remarkParse from 'remark-parse'
-import remarkRehype from 'remark-rehype'
-import rehypeRaw from 'rehype-raw'
-import rehypeSanitize from 'rehype-sanitize'
-import rehypeStringify from 'rehype-stringify'
-
-import jsonCompiler from '@nuxt/content/parsers/markdown/compilers/json.js'
-
-import { defaultSchema } from '@/assets/sanitizeSchema.js'
-
-import unifiedPAC from '@/mixins/unifiedPac.js'
+import axios from 'axios'
 
 export default {
-  mixins: [unifiedPAC],
   layout: 'print',
-  async asyncData ({ $content }) {
-    const PAC = await $content('PAC', {
-      deep: true,
-      text: true
-    }).fetch()
-
-    return {
-      PAC
-    }
-  },
   data () {
     return {
       project: null,
@@ -119,34 +95,40 @@ export default {
     }
   },
   async mounted () {
-    const mdParser = unified().use(remarkParse)
-      .use(remarkRehype, { allowDangerousHtml: true })
-      .use(rehypeRaw)
-      .use(rehypeSanitize, defaultSchema)
-      .use(rehypeStringify)
-      .use(jsonCompiler)
-
     const projectId = this.$route.params.projectId
 
     const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-    const project = projects ? projects[0] : null
+    this.project = projects[0]
 
-    const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', project.towns[0].code_departement)
-    const { data: projectSections } = await this.$supabase.from('pac_sections_project').select('*').eq('project_id', project.id)
+    await this.setPACFromTrame()
 
-    project.PAC = this.unifyPacs([projectSections, deptSections, this.PAC], project.PAC.map((s) => {
-      return s.path || s
-    }))
+    this.loaded = true
+  },
+  methods: {
+    parseSection (section, paths) {
+      if (section.content) { section.body = this.$md.compile(section.content) }
 
-    project.PAC.forEach((section) => {
-      // Parse the body only if text was edited.
-      if (section.text) { section.body = mdParser.processSync(section.text).result }
-    })
+      if (section.children) {
+        section.children = section.children.filter(c => paths.includes(c.path))
+        section.children.forEach(c => this.parseSection(c, paths))
+      }
+    },
+    async setPACFromTrame () {
+      const { data: sections } = await axios({
+        method: 'get',
+        url: `/api/trames/tree/projet-${this.project.id}?content=true`
+      })
 
-    // Filter empty sections
-    project.PAC = project.PAC.filter(s => !!s.body)
+      // console.log(sections)
 
-    this.project = project
+      const sectionsPaths = this.project.PAC.map(p => p)
+      this.project.PAC = sections.filter(s => sectionsPaths.includes(s.path))
+      this.project.PAC.forEach(s => this.parseSection(s, sectionsPaths))
+
+      this.$nextTick(() => {
+        window.parent.postMessage('print', '*')
+      })
+    }
   }
 }
 </script>

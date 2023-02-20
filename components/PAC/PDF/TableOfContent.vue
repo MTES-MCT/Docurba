@@ -4,7 +4,7 @@
       <v-col>
         <v-treeview
           ref="toc"
-          :items="PACroots"
+          :items="pacData"
           open-all
           item-text="titre"
           item-key="path"
@@ -31,20 +31,15 @@
 
 <script>
 import slugify from 'slugify'
-import pacContent from '@/mixins/pacContent.js'
 
 export default {
-  mixins: [pacContent],
+  props: {
+    pacData: {
+      type: Array,
+      required: true
+    }
+  },
   computed: {
-    PACroots () {
-      const roots = this.PAC.filter((section) => {
-        return section.depth === 2
-      }).sort((sa, sb) => {
-        return sa.ordre - sb.ordre
-      })
-
-      return roots
-    },
     contentHeight () {
       return this.$refs.content.offsetHeight
     },
@@ -64,12 +59,12 @@ export default {
   },
   mounted () {
     // this.$nextTick(() => {
-    this.PACroots.forEach((root, index) => {
+    this.pacData.forEach((root, index) => {
       this.addCounter(root, [index + 1])
     })
     // })
 
-    this.PAC.forEach((section) => {
+    this.pacData.forEach((section) => {
       this.getPage(section)
     })
 
@@ -78,6 +73,16 @@ export default {
     })
   },
   methods: {
+    addCounter (section, depths) {
+      // section.titre = `${depths.join('.')} ${section.titre}`
+      section.tocCounter = depths
+
+      if (section.children) {
+        section.children.forEach((child, index) => {
+          this.addCounter(child, depths.concat([index + 1]))
+        })
+      }
+    },
     slugify (str) {
       return slugify(str)
     },
@@ -99,7 +104,7 @@ export default {
         const itemRect = itemEl.getBoundingClientRect()
         const top = itemRect.top - this.topPosition
 
-        const rootsPositions = this.PACroots.map((r) => {
+        const rootsPositions = this.pacData.map((r) => {
           const rootEl = document.getElementById(slugify(r.path.replace(/\//g, '_')))
           try {
             const rootRect = rootEl.getBoundingClientRect()
@@ -120,6 +125,12 @@ export default {
       // const pageHeight = this.$refs.page.offsetHeight
 
       // const nbTopPage = Math.ceil(topPosition / this.contentHeight)
+
+      if (item.children) {
+        item.children.forEach((child) => {
+          this.getPage(child)
+        })
+      }
     }
   }
 }

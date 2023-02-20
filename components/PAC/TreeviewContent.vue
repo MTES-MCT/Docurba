@@ -92,8 +92,6 @@ export default {
     }
   },
   data () {
-    console.log(this.pacData)
-
     // const PACroots = this.parsePAC().filter(section => section.depth === 2).sort((sa, sb) => {
     //   return sa.ordre - sb.ordre
     // })

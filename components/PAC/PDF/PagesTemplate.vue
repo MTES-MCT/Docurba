@@ -1,7 +1,7 @@
 <template>
   <div class="page-container text-justify">
     <PACPDFSectionTemplate
-      v-for="root in PACroots"
+      v-for="root in pacData"
       :key="root.path"
       ref="rootsEl"
       :section="root"
@@ -11,17 +11,12 @@
 </template>
 
 <script>
-import pacContent from '@/mixins/pacContent.js'
 
 export default {
-  mixins: [pacContent],
-  computed: {
-    PACroots () {
-      const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
-        return sa.ordre - sb.ordre
-      })
-
-      return roots
+  props: {
+    pacData: {
+      type: Array,
+      required: true
     }
   }
 }

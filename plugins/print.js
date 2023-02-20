@@ -3,23 +3,23 @@ export default (_, inject) => {
   // Exemple: this.$print('/print/:projectId')
   inject('print', (path) => {
     return new Promise((resolve) => {
-      function closePrint () {
-        document.body.removeChild(this.__container__)
-      }
+      const iframe = document.createElement('iframe')
 
       function setPrint () {
-        setTimeout(() => {
-          this.contentWindow.__container__ = this
-          this.contentWindow.onbeforeunload = closePrint
-          this.contentWindow.onafterprint = closePrint
-          resolve()
-          // this.contentWindow.focus() // Required for IE
-          this.contentWindow.print()
-        }, 2000)
+        iframe.contentWindow.onbeforeunload = closePrint
+        iframe.contentWindow.onafterprint = closePrint
+        resolve()
+        // this.contentWindow.focus() // Required for IE
+        iframe.contentWindow.print()
       }
 
-      const iframe = document.createElement('iframe')
-      iframe.onload = setPrint
+      function closePrint () {
+        document.body.removeChild(iframe.__container__)
+      }
+
+      window.addEventListener('message', setPrint)
+
+      // iframe.onload = setPrint
       iframe.src = `${window.location.origin}${path}`
       iframe.style.position = 'fixed'
       // iframe.style.display = 'none'

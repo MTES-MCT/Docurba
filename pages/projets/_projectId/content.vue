@@ -6,7 +6,7 @@
       :pac-data="project.PAC"
       @read="savePacItem"
     />
-    <!-- <client-only>
+    <client-only>
       <v-btn
         v-if="!pdfUrl"
         depressed
@@ -14,43 +14,32 @@
         fixed
         bottom
         right
+        :loading="printing"
         color="primary"
-        @click="$print(`/print/${project.id}`)"
+        @click="print"
       >
         <v-icon>{{ icons.mdiDownload }}</v-icon>
-      </v-btn> -->
+      </v-btn>
     </client-only>
   </v-container>
   <VGlobalLoader v-else />
 </template>
 <script>
 import { mdiDownload } from '@mdi/js'
-
 import axios from 'axios'
-import unifiedPAC from '@/mixins/unifiedPac.js'
 
 export default {
-  mixins: [unifiedPAC],
   provide () {
     return {
       pacProject: this._project
     }
   },
-  // async asyncData ({ $content }) {
-  //   const PAC = await $content('PAC', {
-  //     deep: true,
-  //     text: true
-  //   }).fetch()
-
-  //   return {
-  //     PAC
-  //   }
-  // },
   data () {
     return {
       project: null,
       pdfUrl: null,
       loaded: false,
+      printing: false,
       icons: {
         mdiDownload
       }
@@ -92,35 +81,6 @@ export default {
       }
     },
     async setPACFromTrame () {
-      // const PAC = await this.$content('PAC', {
-      //   deep: true,
-      //   text: true
-      // }).fetch()
-
-      // this.PAC = PAC
-
-      // const [regionSections, deptSections, projectSections] = await Promise.all([
-      //   this.fetchSections('pac_sections_region', {
-      //     region: this.project.towns[0].code_region
-      //   }),
-      //   this.fetchSections('pac_sections_dept', {
-      //     dept: this.project.towns[0].code_departement
-      //   }),
-      //   this.fetchSections('pac_sections_project', {
-      //     project_id: this.project.id
-      //   })
-      // ])
-
-      // // TODO: Need to add the reading and unify of comments and checked markers here.
-      // this.project.PAC = this.unifyPacs([
-      //   projectSections,
-      //   deptSections,
-      //   regionSections,
-      //   this.PAC
-      // ], this.project.PAC.map((s) => {
-      //   return s.path || s
-      // }))
-
       const { data: sections } = await axios({
         method: 'get',
         url: `/api/trames/tree/projet-${this.project.id}?content=true`
@@ -131,17 +91,6 @@ export default {
       const sectionsPaths = this.project.PAC.map(p => p)
       this.project.PAC = sections.filter(s => sectionsPaths.includes(s.path))
       this.project.PAC.forEach(s => this.parseSection(s, sectionsPaths))
-
-      // TODO: // This is duplicated in all read sections
-      // this.project.PAC.forEach((section) => {
-      // // Parse the body only if text was edited.
-      //   if (section.text) { section.body = this.$md.compile(section.text) }
-      // })
-
-      // The next two enrich and the union should be refactored because there is some useless steps here.
-      // this.project.PAC = this.project.PAC.map((section) => {
-      //   return this.enrichSection(section)
-      // }).filter(s => !!s.body)
     },
     async loadPACFile () {
       const { signedURL: pdfUrl, err } = await this.$supabase.storage
@@ -167,20 +116,11 @@ export default {
 
       // await this.$supabase.from('projects').update({ PAC }).eq('id', this.project.id)
     },
-    enrichSection (section) {
-      const enrichedSection = Object.assign({ comments: [] }, section)
-      // const rawSection = this.PAC.find(s => s.path === section)
-
-      // We set the anchor manually so that it's esier to navigate the content.
-      if (enrichedSection.body) {
-        const firstChild = enrichedSection.body.children[0]
-
-        if (firstChild) {
-          firstChild.props.id = enrichedSection.path.replaceAll(/[^A-Za-z0-9]/g, '__')
-        }
-      }
-
-      return enrichedSection
+    print () {
+      this.$print(`/print/${this.project.id}`).then(() => {
+        this.printing = false
+      })
+      this.printing = true
     }
   }
 }
