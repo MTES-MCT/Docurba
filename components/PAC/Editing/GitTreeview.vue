@@ -86,26 +86,11 @@ export default {
       type: Array,
       default () { return [] }
     },
-    // pacData should be a unified array of sections from DB. See if parent is mixing unifiedPac.js
-    // pacData: {
-    //   type: Array,
-    //   required: true
-    // },
     readonlyDirs: {
       type: Array,
       default () {
         return []
       }
-    },
-    table: {
-      type: String,
-      required: true
-    },
-    // This should be the section identifiers in the table.
-    // For exemple: {project_id: 'XXX'} for table pac_sections_project
-    tableKeys: {
-      type: Object,
-      required: true
     },
     collapsed: {
       type: Boolean,
@@ -114,6 +99,10 @@ export default {
     selectable: {
       type: Boolean,
       default: false
+    },
+    project: {
+      type: Object,
+      default () { return {} }
     },
     gitRef: {
       type: String,
@@ -172,21 +161,21 @@ export default {
       this.sections = sections
     },
     async updateSelection (newSelection) {
-      console.log(newSelection, this.treeSelection)
+      // console.log(newSelection, this.treeSelection)
 
       if (newSelection.length !== this.treeSelection.length) {
         let selection = []
         if (newSelection.length < this.treeSelection.length) {
         // if something was removed
           const removedPaths = this.treeSelection.filter(path => !newSelection.includes(path))
-          console.log(removedPaths.length)
+          // console.log(removedPaths.length)
           if (removedPaths.length === 1) {
           // also remove all children
             selection = this.selectedSections.filter((path) => {
               return !path.includes(removedPaths[0])
             })
           } else {
-            console.log('do not save')
+            // console.log('do not save')
             return
           }
         } else if (newSelection.length > this.treeSelection.length) {
@@ -195,19 +184,19 @@ export default {
           this.addParentsToSelection(selection, this.sections)
         }
 
-        console.log('saving')
+        // console.log('saving')
 
         this.selectedSections = uniq(selection)
         this.treeSelection = newSelection.map(s => s)
 
         // Update the selection for this project in supabase.
-        if (this.selectable && this.tableKeys.project_id) {
+        if (this.selectable && this.project.id) {
         // This make it so we can't save sections as objects in reading mode for comments and checked features.
           await this.$supabase.from('projects').update({
             PAC: this.selectedSections.map(s => s || s.path)
-          }).eq('id', this.tableKeys.project_id)
+          }).eq('id', this.project.id)
 
-          this.$notifications.notifyUpdate(this.tableKeys.project_id)
+          this.$notifications.notifyUpdate(this.project.id)
         }
       }
     },
