@@ -8,7 +8,7 @@
         open-on-click
         :selectable="selectable"
         :items="sections"
-        item-text="titre"
+        item-text="name"
         class="d-block text-truncate"
         item-key="path"
         selected-color="primary"
@@ -58,13 +58,13 @@
             :show-activator="overedItem === item.path"
             :parent="item"
             :git-ref="gitRef"
-            @update="fetchSections"
+            @added="addSection"
           />
           <PACEditingGitRemoveSectionDialog
             :show-activator="overedItem === item.path && !isSectionReadonly(item)"
             :section="item"
             :git-ref="gitRef"
-            @update="fetchSections"
+            @removed="removeSection"
           />
         </template>
       </v-treeview>
@@ -134,31 +134,38 @@ export default {
     })
   },
   methods: {
-    // mergeGitWithBD (section) {
-    //   const dbSection = this.pacData.find(s => s.path.replace('/', '') === section.path.replace('.md', ''))
-
-    //   if (dbSection) {
-    //     console.log(dbSection)
-    //   }
-    //   // else if (section.type === 'file') {
-    //   //   console.log(section.path.replace('.md', ''), this.pacData[0].path)
-    //   // }
-
-    //   if (section.children) {
-    //     section.children.forEach(s => this.mergeGitWithBD(s))
-    //   }
-    // },
     async fetchSections () {
       const { data: sections } = await axios({
         method: 'get',
         url: `/api/trames/tree/${this.gitRef}`
       })
 
-      // console.log(this.pacData[0])
-
-      // sections.forEach(section => this.mergeGitWithBD(section))
-
       this.sections = sections
+    },
+    addSection (newSection, parent) {
+      parent.children.push(newSection)
+      // It's safer to fetch the sections again to avoid sync issues.
+      this.fetchSections()
+    },
+    removeSection (removedSection) {
+      function filterSections (children) {
+        children.forEach((child) => {
+          if (child.children) {
+            child.children = filterSections(child.children)
+          }
+        })
+
+        return children.filter(s => s.path !== removedSection.path)
+      }
+
+      this.sections.forEach((section) => {
+        if (section.children) {
+          section.children = filterSections(section.children)
+        }
+      })
+
+      this.sections = [...this.sections]
+      this.fetchSections()
     },
     async updateSelection (newSelection) {
       // console.log(newSelection, this.treeSelection)

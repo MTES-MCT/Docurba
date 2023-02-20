@@ -70,7 +70,6 @@ export default {
   methods: {
     async addSection () {
       this.loading = true
-
       const dir = this.parent.type === 'file' ? this.parent.path.replace('.md', '') : this.parent.path
 
       if (this.parent.type === 'file') {
@@ -127,7 +126,7 @@ export default {
 
       // await this.$supabase.from(this.table).insert([newSection])
 
-      const file = await axios({
+      const { data: { data: { content: file } } } = await axios({
         method: 'post',
         url: `/api/trames/${this.gitRef}`,
         data: {
@@ -140,8 +139,11 @@ export default {
       })
 
       // console.log(file)
+      file.name = file.name.replace('.md', '')
+      file.children = []
+
       this.dialog = false
-      this.$emit('update', file)
+      this.$emit('added', file, this.parent)
       this.loading = false
     }
   }

@@ -89,14 +89,6 @@ export default {
         return []
       }
     },
-    table: {
-      type: String,
-      required: true
-    },
-    tableKeys: {
-      type: Object,
-      default () { return {} }
-    },
     gitRef: {
       type: String,
       required: true
@@ -231,26 +223,7 @@ export default {
         this.updateName()
       }
 
-      const sectionMatchKeys = Object.assign({
-        path: section.path
-      }, this.tableKeys)
-
-      const { data: savedSection } = await this.$supabase.from(this.table)
-        .select('id').match(sectionMatchKeys)
-
-      // console.log(savedSection)
-
-      const savedData = Object.assign({}, section, this.tableKeys)
-
       try {
-        if (savedSection[0]) {
-          await this.$supabase.from(this.table).update(savedData).match(sectionMatchKeys)
-        } else {
-          await this.$supabase.from(this.table).insert([savedData])
-        }
-
-        // console.log(section, this.editedSection)
-
         const filePath = section.type === 'dir' ? `${section.path}/intro${section.path.match(/\//g).length === 1 ? '' : '.md'}` : section.path
 
         await axios({
@@ -266,8 +239,8 @@ export default {
           }
         })
 
-        if (this.tableKeys.project_id) {
-          this.$notifications.notifyUpdate(this.tableKeys.project_id)
+        if (this.project.id) {
+          this.$notifications.notifyUpdate(this.prooject.id)
         }
       } catch (err) {
         // eslint-disable-next-line no-console

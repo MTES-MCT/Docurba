@@ -5,10 +5,6 @@
     </template>
     <PACEditingTrame
       v-if="!loading"
-      table="pac_sections_dept"
-      :table-keys="{
-        dept: departementCode
-      }"
       :git-ref="`dept-${departementCode}`"
     />
     <VGlobalLoader v-else />
@@ -17,28 +13,11 @@
 
 <script>
 import departements from '@/assets/data/departements-france.json'
-import unifiedPAC from '@/mixins/unifiedPac.js'
+// import unifiedPAC from '@/mixins/unifiedPac.js'
 
 export default {
-  mixins: [unifiedPAC],
+  // mixins: [unifiedPAC],
   layout: 'app',
-  // async asyncData ({ $content }) {
-  //   const PAC = await $content('PAC', {
-  //     deep: true,
-  //     text: true
-  //   }).fetch()
-
-  //   console.log(JSON.stringify(PAC, null, 4))
-
-  //   // const originalPAC = PAC.map((section) => {
-  //   //   return Object.assign({}, section)
-  //   // })
-
-  //   return {
-  //     // PAC
-  //     // originalPAC // This is a clone of the row data so we can perform delete on PAC.
-  //   }
-  // },
   data () {
     return {
       PAC: [],
@@ -59,41 +38,41 @@ export default {
     // eslint-disable-next-line eqeqeq
     this.departement = departements.find(d => d.code_departement == adminAccess.dept)
 
-    this.subscribeToBdd()
-    window.addEventListener('focus', () => {
-      this.subscribeToBdd()
-    })
+    // this.subscribeToBdd()
+    // window.addEventListener('focus', () => {
+    //   this.subscribeToBdd()
+    // })
 
     // const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.departementCode)
 
-    const [regionSections, deptSections] = await Promise.all([
-      this.fetchSections('pac_sections_region', {
-        region: this.departement.code_region
-      }),
-      this.fetchSections('pac_sections_dept', {
-        dept: this.departementCode
-      })
-    ])
+    // const [regionSections, deptSections] = await Promise.all([
+    //   this.fetchSections('pac_sections_region', {
+    //     region: this.departement.code_region
+    //   }),
+    //   this.fetchSections('pac_sections_dept', {
+    //     dept: this.departementCode
+    //   })
+    // ])
 
-    // Merge data of multiple PACs using unifiedPac.js mixin.
-    this.PAC = this.unifyPacs([deptSections, regionSections])
+    // // Merge data of multiple PACs using unifiedPac.js mixin.
+    // this.PAC = this.unifyPacs([deptSections, regionSections])
 
     this.loading = false
   },
-  beforeDestroy () {
-    this.$supabase.removeChannel(this.deptSectionsSub)
-  },
+  // beforeDestroy () {
+  //   this.$supabase.removeChannel(this.deptSectionsSub)
+  // },
   methods: {
-    subscribeToBdd () {
-      if (this.projectSectionsSub) {
-        this.$supabase.removeChannel(this.projectSectionsSub)
-      }
+    // subscribeToBdd () {
+    //   if (this.projectSectionsSub) {
+    //     this.$supabase.removeChannel(this.projectSectionsSub)
+    //   }
 
-      this.deptSectionsSub = this.$supabase.channel(`public:pac_sections_dept:dept=eq.${this.departementCode}`)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'pac_sections_dept', filter: `dept=eq.${this.departementCode}` }, (update) => {
-          this.spliceSection(this.PAC, update)
-        }).subscribe()
-    }
+    //   this.deptSectionsSub = this.$supabase.channel(`public:pac_sections_dept:dept=eq.${this.departementCode}`)
+    //     .on('postgres_changes', { event: '*', schema: 'public', table: 'pac_sections_dept', filter: `dept=eq.${this.departementCode}` }, (update) => {
+    //       this.spliceSection(this.PAC, update)
+    //     }).subscribe()
+    // }
   }
 }
 </script>

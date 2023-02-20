@@ -63,6 +63,7 @@ export default {
   },
   methods: {
     async deleteSection (section) {
+      // Todo, this could use git API tree to avoid making a call for each children.
       if (section.type === 'file') {
         await axios({
           method: 'delete',
@@ -99,8 +100,8 @@ export default {
       await this.deleteSection(this.section)
 
       this.dialog = false
-      this.$emit('update')
-      this.laoding = false
+      this.loading = false
+      this.$emit('removed', this.section)
     }
   }
 }
