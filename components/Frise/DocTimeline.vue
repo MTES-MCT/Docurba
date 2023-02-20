@@ -71,10 +71,7 @@ export default {
       })
     },
     recommendedEvents () {
-      const lastEventType = this.orderedEvents.find((event) => {
-        return this.documentEvents.find(eventType => eventType.name === event)
-      })
-
+      const lastEventType = this.documentEvents.find(event => this.orderedEvents[0].type === event.name)
       const lastEventOrder = lastEventType ? lastEventType.order : -1
 
       const recommendedEvents = [

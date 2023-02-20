@@ -47,6 +47,9 @@
                 {{ currentEventsProcedure[0].typeProcedure }}
               </div>
               <p>
+                Rattaché a la pricédure principale: {{ currentEventsProcedure[0].idProcedurePrincipal }}
+              </p>
+              <p>
                 <b>Commentaire DGD: </b> {{ currentEventsProcedure[0].commentaireDgd }}
               </p>
               <p>
@@ -79,6 +82,8 @@
   </v-container>
 </template>
 <script>
+import { groupBy } from 'lodash'
+
 export default {
   name: 'Sudocu',
   data () {
@@ -96,6 +101,11 @@ export default {
     },
     procedureIds () {
       return this.eventsByProcedure ? Object.keys(this.eventsByProcedure) : []
+    },
+    proceduresPrincipales () {
+      const princps = groupBy(this.eventsByProcedure, e => e[0].idProcedurePrincipal)
+      console.log('princps: ', princps)
+      return princps
     },
     currentEventsProcedure () {
       return this.eventsByProcedure[this.procedureIds[this.selectedProcedure]]
@@ -138,8 +148,9 @@ export default {
           actors: [],
           attachements: [],
           docType: e.codetypedocument,
-          idProcedure: e.noserieprocedureratt,
+          idProcedure: e.noserieprocedure,
           typeProcedure: e.libtypeprocedure,
+          idProcedurePrincipal: e.noserieprocedureratt,
           commentaireDgd: e.commentairedgd,
           commentaireProcedure: e.commentaireproc,
           dateLancement: e.datelancement,
