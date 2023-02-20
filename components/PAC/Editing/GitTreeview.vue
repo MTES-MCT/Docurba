@@ -143,6 +143,7 @@ export default {
       this.sections = sections
     },
     addSection (newSection, parent) {
+      if (!parent.children) { parent.children = [] }
       parent.children.push(newSection)
       // It's safer to fetch the sections again to avoid sync issues.
       this.fetchSections()

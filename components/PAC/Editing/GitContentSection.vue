@@ -207,14 +207,16 @@ export default {
         }
       })
 
-      const nameIndex = this.section.path.lastIndexOf(this.section.name)
-      const newPath = `${this.section.path.substring(0, nameIndex)}${newName}${this.section.type === 'file' ? '.md' : ''}`
+      if (this.project.id) {
+        const nameIndex = this.section.path.lastIndexOf(this.section.name)
+        const newPath = `${this.section.path.substring(0, nameIndex)}${newName}${this.section.type === 'file' ? '.md' : ''}`
 
-      const newPaths = this.project.PAC.map((path) => {
-        return path.replace(this.section.path, newPath)
-      })
+        const newPaths = this.project.PAC.map((path) => {
+          return path.replace(this.section.path, newPath)
+        })
 
-      await this.$supabase.from('projects').update({ PAC: newPaths }).eq('id', this.project.id)
+        await this.$supabase.from('projects').update({ PAC: newPaths }).eq('id', this.project.id)
+      }
     },
     // section here can be the current section
     // or the previous one in cas of a "are you sure you want to switch section" modal
