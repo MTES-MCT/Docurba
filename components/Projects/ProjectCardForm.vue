@@ -69,10 +69,10 @@
 <script>
 import axios from 'axios'
 import regions from '@/assets/data/Regions.json'
-import unifiedPac from '@/mixins/unifiedPac.js'
+// import unifiedPac from '@/mixins/unifiedPac.js'
 
 export default {
-  mixins: [unifiedPac],
+  // mixins: [unifiedPac],
   props: {
     project: {
       type: Object,
@@ -88,7 +88,7 @@ export default {
   },
   data () {
     return {
-      PAC: [],
+      // PAC: [],
       projectForm: {
         useTrame: this.project.id ? !!this.project.trame : true,
         epci: this.project.epci,
@@ -102,7 +102,13 @@ export default {
     }
   },
   async mounted () {
-    await this.initPAC()
+    const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('dept').match({
+      user_id: this.$user.id,
+      user_email: this.$user.email,
+      role: 'ddt'
+    })
+
+    this.userDeptCode = adminAccess[0].dept
 
     const EPCIs = (await axios({
       method: 'get',
@@ -112,36 +118,31 @@ export default {
     this.EPCIs = EPCIs
   },
   methods: {
-    async initPAC () {
-      const PAC = await this.$content('PAC', {
-        deep: true,
-        text: true
-      }).fetch()
-
-      this.PAC = PAC
-
-      const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('dept').match({
-        user_id: this.$user.id,
-        user_email: this.$user.email,
-        role: 'ddt'
-      })
-
-      this.userDeptCode = adminAccess[0].dept
-
-      const { data: deptSections } = await this.$supabase.from('pac_sections_dept').select('*').eq('dept', this.userDeptCode)
-      this.PAC = this.unifyPacs([deptSections, this.PAC])
-    },
-    createOrUpdate (savedProject) {
+    async createOrUpdate (savedProject) {
       if (savedProject.id) {
-        return this.$supabase.from('projects').upsert(savedProject).select()
+        return await this.$supabase.from('projects').upsert(savedProject).select()
       } else {
-        return this.$supabase.from('projects').insert([savedProject]).select()
+        const { data, err } = await this.$supabase.from('projects').insert([savedProject]).select()
+        const projectId = data[0].id
+
+        const dept = +savedProject.towns[0].code_departement
+
+        await axios({
+          method: 'post',
+          url: `api/trames/projects/dept-${dept}`,
+          data: {
+            userId: this.$user.id,
+            projectId
+          }
+        })
+
+        return { data, err }
       }
     },
     async upsertProject () {
       this.loading = true
 
-      this.newProject.PAC = this.newProject.PAC.length ? this.newProject.PAC : this.PAC.map(s => s.path)
+      // this.newProject.PAC = this.newProject.PAC.length ? this.newProject.PAC : this.PAC.map(s => s.path)
 
       const isEpci = this.newProject.doc_type.includes('i')
 
@@ -151,6 +152,24 @@ export default {
         region: this.getRegion(isEpci),
         trame: this.projectForm.useTrame ? (this.project.trame || this.userDeptCode) : ''
       })
+
+      if (!this.newProject.PAC.length) {
+        savedProject.PAC = []
+
+        const { data: sections } = await axios({
+          method: 'get',
+          url: `/api/trames/tree/dept-${+savedProject.towns[0].code_departement}`
+        })
+
+        function addPath (section) {
+          savedProject.PAC.push(section.path)
+          if (section.children) {
+            section.children.forEach(c => addPath(c))
+          }
+        }
+
+        sections.forEach(s => addPath(s))
+      }
 
       const { data, err } = await this.createOrUpdate(savedProject)
 

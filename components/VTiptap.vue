@@ -237,7 +237,7 @@ export default {
     },
     depth: {
       type: Number,
-      default: 4
+      default: 0
     },
     readonly: {
       type: Boolean,
@@ -293,7 +293,7 @@ export default {
     },
     readonlyBody () {
       return {
-        body: this.$mdParse(this.value)
+        body: this.$md.compile(this.value)
       }
     }
   },

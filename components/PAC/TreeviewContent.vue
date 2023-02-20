@@ -71,37 +71,43 @@
       </client-only>
     </v-col> -->
     <v-col cols="12">
-      <PACContentSection :sections="PACroots" :editable="editable" :open="[0]" />
+      <PACContentSection :sections="pacData" :editable="editable" :open="[0]" />
     </v-col>
   </v-row>
 </template>
 
 <script>
-import pacContent from '@/mixins/pacContent.js'
+// import pacContent from '@/mixins/pacContent.js'
 
 export default {
-  mixins: [pacContent],
+  // mixins: [pacContent],
   props: {
     editable: {
       type: Boolean,
       default: false
+    },
+    pacData: {
+      type: Array,
+      required: true
     }
   },
   data () {
-    const PACroots = this.parsePAC().filter(section => section.depth === 2).sort((sa, sb) => {
-      return sa.ordre - sb.ordre
-    })
+    console.log(this.pacData)
 
-    PACroots.forEach((root, index) => {
-      if (index) {
-        this.addCounter(root, [index])
-      }
-    })
+    // const PACroots = this.parsePAC().filter(section => section.depth === 2).sort((sa, sb) => {
+    //   return sa.ordre - sb.ordre
+    // })
+
+    // PACroots.forEach((root, index) => {
+    //   if (index) {
+    //     this.addCounter(root, [index])
+    //   }
+    // })
 
     return {
       contentSearch: '',
-      checkedItems: 0,
-      PACroots
+      checkedItems: 0
+      // PACroots
     }
   },
   computed: {
@@ -139,7 +145,7 @@ export default {
     // }
   },
   mounted () {
-    this.checkedItems = this.PAC.filter(item => item.checked).length
+    // this.checkedItems = this.PAC.filter(item => item.checked).length
 
     // this.PACroots.forEach((root, index) => {
     //   this.addCounter(root, [index + 1])

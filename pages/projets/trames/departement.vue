@@ -5,11 +5,11 @@
     </template>
     <PACEditingTrame
       v-if="!loading"
-      :pac-data="PAC"
       table="pac_sections_dept"
       :table-keys="{
         dept: departementCode
       }"
+      :git-ref="`dept-${departementCode}`"
     />
     <VGlobalLoader v-else />
   </LayoutsCustomApp>
@@ -22,23 +22,26 @@ import unifiedPAC from '@/mixins/unifiedPac.js'
 export default {
   mixins: [unifiedPAC],
   layout: 'app',
-  async asyncData ({ $content }) {
-    const PAC = await $content('PAC', {
-      deep: true,
-      text: true
-    }).fetch()
+  // async asyncData ({ $content }) {
+  //   const PAC = await $content('PAC', {
+  //     deep: true,
+  //     text: true
+  //   }).fetch()
 
-    const originalPAC = PAC.map((section) => {
-      return Object.assign({}, section)
-    })
+  //   console.log(JSON.stringify(PAC, null, 4))
 
-    return {
-      PAC,
-      originalPAC // This is a clone of the row data so we can perform delete on PAC.
-    }
-  },
+  //   // const originalPAC = PAC.map((section) => {
+  //   //   return Object.assign({}, section)
+  //   // })
+
+  //   return {
+  //     // PAC
+  //     // originalPAC // This is a clone of the row data so we can perform delete on PAC.
+  //   }
+  // },
   data () {
     return {
+      PAC: [],
       loading: true,
       departement: { code_departement: 0, nom_departement: '' },
       deptSectionsSub: null
@@ -51,7 +54,6 @@ export default {
   },
   async mounted () {
     const adminAccess = await this.$auth.getDeptAccess()
-
     if (!adminAccess) { this.$router.push('/') }
 
     // eslint-disable-next-line eqeqeq
@@ -74,7 +76,7 @@ export default {
     ])
 
     // Merge data of multiple PACs using unifiedPac.js mixin.
-    this.PAC = this.unifyPacs([deptSections, regionSections, this.PAC])
+    this.PAC = this.unifyPacs([deptSections, regionSections])
 
     this.loading = false
   },

@@ -5,13 +5,13 @@
     </template>
     <PACEditingTrame
       v-if="!loading"
-      :pac-data="PAC"
       table="pac_sections_project"
       :table-keys="{
         project_id: project.id
       }"
       :sections-list="project.PAC"
       :project="project"
+      :git-ref="`projet-${project.id}`"
     />
     <VGlobalLoader v-else />
   </LayoutsCustomApp>

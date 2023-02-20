@@ -35,5 +35,18 @@ module.exports = {
     }
 
     return { data, error }
+  },
+  async getUserAdminRoles (userId) {
+    const { data: deptRoles } = await supabase
+      .from('admin_users_dept')
+      .select('*')
+      .match({ user_id: userId, role: 'ddt' })
+
+    const { data: regionRoles } = await supabase
+      .from('admin_users_region')
+      .select('*')
+      .match({ user_id: userId, role: 'admin' })
+
+    return { deptRoles, regionRoles }
   }
 }
