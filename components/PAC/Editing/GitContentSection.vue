@@ -204,14 +204,25 @@ export default {
       this.selectedDataSources = sourcesCardsData
     },
     async updateName () {
+      const newName = this.editedSection.name
+
       await axios({
         method: 'post',
         url: `/api/trames/tree/${this.gitRef}`,
         data: {
           section: this.section,
-          newName: this.editedSection.name
+          newName
         }
       })
+
+      const nameIndex = this.section.path.lastIndexOf(this.section.name)
+      const newPath = `${this.section.path.substring(0, nameIndex)}${newName}${this.section.type === 'file' ? '.md' : ''}`
+
+      const newPaths = this.project.PAC.map((path) => {
+        return path.replace(this.section.path, newPath)
+      })
+
+      await this.$supabase.from('projects').update({ PAC: newPaths }).eq('id', this.project.id)
     },
     // section here can be the current section
     // or the previous one in cas of a "are you sure you want to switch section" modal

@@ -29,8 +29,6 @@ module.exports = {
       })
     }
 
-    filesToDelete.forEach(f => console.log(f))
-
     // https://docs.github.com/en/rest/git/trees?apiVersion=2022-11-28#create-a-tree
     const { data: newTree } = await github('POST /repos/{owner}/{repo}/git/trees', {
       base_tree: baseTree,
