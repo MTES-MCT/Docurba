@@ -9,7 +9,7 @@ module.exports = {
       ref
     })
 
-    console.log(head)
+    // console.log(head)
 
     const baseTree = head.object.sha
 
@@ -42,7 +42,7 @@ module.exports = {
       }, ...filesToDelete]
     })
 
-    console.log('new tree:', newTree)
+    // console.log('new tree:', newTree)
 
     const { data: commit } = await github('POST /repos/{owner}/{repo}/git/commits', {
       message: `Change ${section.path} to ${newPath}`,
@@ -59,7 +59,7 @@ module.exports = {
         force: true
       })
 
-      console.log('merge:', merge)
+      // console.log('merge:', merge)
       return merge
     } catch (err) {
       console.log(err, err.status)
