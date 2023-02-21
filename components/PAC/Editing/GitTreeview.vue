@@ -34,26 +34,12 @@
           </v-tooltip>
         </template>
         <template #append="{item}">
-          <v-btn
-            v-show="overedItem === item.path && item.depth > 2"
-            depressed
-            tile
-            small
-            icon
-            @click.stop="changeSectionOrder(item, -1)"
-          >
-            <v-icon>{{ icons.mdiChevronUp }}</v-icon>
-          </v-btn>
-          <v-btn
-            v-show="overedItem === item.path && item.depth > 2"
-            depressed
-            tile
-            small
-            icon
-            @click.stop="changeSectionOrder(item, 1)"
-          >
-            <v-icon>{{ icons.mdiChevronDown }}</v-icon>
-          </v-btn>
+          <PACEditingOrderInputs
+            :show-btn="overedItem === item.path"
+            :git-ref="gitRef"
+            :section="item"
+            :sections="sections"
+          />
           <PACEditingGitAddSectionDialog
             :show-activator="overedItem === item.path"
             :parent="item"
