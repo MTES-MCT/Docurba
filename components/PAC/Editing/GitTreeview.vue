@@ -39,6 +39,7 @@
             :git-ref="gitRef"
             :section="item"
             :sections="sections"
+            @change="chageOrderSections"
           />
           <PACEditingGitAddSectionDialog
             :show-activator="overedItem === item.path"
@@ -126,7 +127,29 @@ export default {
         url: `/api/trames/tree/${this.gitRef}`
       })
 
+      const { data: supSections } = await this.$supabase.from('pac_sections').select('*').eq('ref', this.gitRef)
+
+      this.orderSections(sections, supSections)
+
       this.sections = sections
+    },
+    orderSections (sections, supSections) {
+      sections.forEach((section) => {
+        const { order } = supSections.find(s => s.path === section.path) || { order: 0 }
+
+        Object.assign(section, { order })
+
+        if (section.children) {
+          this.orderSections(section.children, supSections)
+        }
+      })
+
+      sections.sort((s1, s2) => {
+        return s1.order - s2.order
+      })
+    },
+    chageOrderSections ({ sections, supSections }) {
+      this.orderSections(sections, supSections)
     },
     addSection (newSection, parent) {
       if (!parent.children) { parent.children = [] }

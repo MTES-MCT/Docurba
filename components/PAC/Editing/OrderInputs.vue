@@ -24,7 +24,6 @@
 </template>
 <script>
 import { mdiChevronUp, mdiChevronDown } from '@mdi/js'
-import { v4 as uuidv4 } from 'uuid'
 
 export default {
   props: {
@@ -88,16 +87,16 @@ export default {
         ]
 
         const updatedSections = this.parent.children.map((child, index) => {
-          const { id, path } = child
+          const { path } = child
           return {
-            id: id || uuidv4(),
             path,
             ref: this.gitRef,
             order: index
           }
         })
 
-        await this.$supabase.from('pac_sections').insert(updatedSections, { upsert: true })
+        const { data: supSections } = await this.$supabase.from('pac_sections').upsert(updatedSections).select()
+        this.$emit('change', { sections: this.parent.children, supSections })
       }
     }
   }
