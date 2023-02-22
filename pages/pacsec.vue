@@ -30,6 +30,7 @@ export default {
         { text: 'Base territoriale', to: '/pacsec/data' },
         { text: 'Géo-IDE', to: '/pacsec/geoide' },
         { text: 'Géorisques', to: '/pacsec/georisques' },
+        { text: 'INPN', to: '/pacsec/inpn' },
         { text: 'Ressources', to: '/pacsec/ressources' },
         { text: 'Glossaire', to: '/pacsec/glossaire' }
       ]
