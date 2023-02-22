@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 const express = require('express')
 const admin = require('./modules/admin.js')
-const github = require('./modules/github.js')
+const github = require('./modules/github/github.js')
+const tree = require('./modules/github/tree.js')
 
 const app = express()
 
@@ -29,14 +30,14 @@ app.post('/projects/:parentRef', async (req, res) => {
 
   const allowedRole = await getAllowedRole(userId, parentRef.replace('dept-', ''))
 
-  const parentBranch = await github(`GET /repos/UngererFabien/France-PAC/git/ref/heads/${parentRef}`, {
+  const { data: parentBranch } = await github(`GET /repos/UngererFabien/France-PAC/git/ref/heads/${parentRef}`, {
     ref: parentRef
   })
 
   try {
     const newProjectBranch = await github('POST /repos/UngererFabien/France-PAC/git/refs', {
       ref: `refs/heads/projet-${projectId}`,
-      sha: parentBranch.data.object.sha
+      sha: parentBranch.object.sha
     })
 
     res.status(200).send(newProjectBranch)
@@ -65,7 +66,7 @@ app.post('/:ref', async (req, res) => {
     message: `${commit.sha ? 'Edit' : 'Create'} ${commit.path} for ${ref} from Docurba`
   }))
 
-  console.log(commitRes)
+  // console.log(commitRes)
 
   res.status(200).send(commitRes)
   // } else {
@@ -133,7 +134,7 @@ async function getFiles (path, ref, fetchContent = false) {
         // Also clicking on the folder will fail to fetch a file intro.md.
         // TODO: if there is no intro.md we should create it ?
         if (intro) {
-          file.sha = intro.sha
+          file.introSha = intro.sha
           if (fetchContent) {
             file.content = await getFileContent(intro.path, ref)
           }
@@ -171,6 +172,18 @@ app.get('/tree/:ref', async (req, res) => {
   //   console.log('error reading github:', error)
   //   req.status(400).send(error)
   // }
+})
+
+app.post('/tree/:ref', async (req, res) => {
+  const { section, newName } = req.body
+
+  try {
+    await tree.changeName(req.params.ref, section, newName)
+    res.status(200).send('OK')
+  } catch (err) {
+    console.log(err)
+    res.status(400).send(err)
+  }
 })
 
 app.get('/file', async (req, res) => {

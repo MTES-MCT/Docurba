@@ -1,9 +1,15 @@
 <template>
   <v-row v-if="editedSection && !loading" class="fill-height">
     <!-- This is a hidden feature like the section order waiting to be re implemented -->
-    <!-- <v-col cols="12">
-      <v-text-field v-model="editedSection.titre" :readonly="isReadonly" label="Titre dans le sommaire" filled hide-details />
-    </v-col> -->
+    <v-col cols="12">
+      <v-text-field
+        v-model="editedSection.name"
+        :readonly="isReadonly"
+        label="Titre dans le sommaire"
+        filled
+        hide-details
+      />
+    </v-col>
     <v-col cols="12">
       <PACEditingReadOnlyCard v-show="isReadonly" :section="editedSection" />
     </v-col>
@@ -83,14 +89,6 @@ export default {
         return []
       }
     },
-    table: {
-      type: String,
-      required: true
-    },
-    tableKeys: {
-      type: Object,
-      default () { return {} }
-    },
     gitRef: {
       type: String,
       required: true
@@ -141,7 +139,7 @@ export default {
     editedSection: {
       deep: true,
       handler () {
-        if (this.section.titre !== this.editedSection.titre || this.editedSection.text !== this.rawText) {
+        if (this.section.name !== this.editedSection.name || this.editedSection.text !== this.rawText) {
           this.modified = true
         } else {
           this.modified = false
@@ -197,29 +195,37 @@ export default {
 
       this.selectedDataSources = sourcesCardsData
     },
+    async updateName () {
+      const newName = this.editedSection.name
+
+      await axios({
+        method: 'post',
+        url: `/api/trames/tree/${this.gitRef}`,
+        data: {
+          section: this.section,
+          newName
+        }
+      })
+
+      if (this.project.id) {
+        const nameIndex = this.section.path.lastIndexOf(this.section.name)
+        const newPath = `${this.section.path.substring(0, nameIndex)}${newName}${this.section.type === 'file' ? '.md' : ''}`
+
+        const newPaths = this.project.PAC.map((path) => {
+          return path.replace(this.section.path, newPath)
+        })
+
+        await this.$supabase.from('projects').update({ PAC: newPaths }).eq('id', this.project.id)
+      }
+    },
     // section here can be the current section
     // or the previous one in cas of a "are you sure you want to switch section" modal
     async saveSection (section) {
-      const sectionMatchKeys = Object.assign({
-        path: section.path
-      }, this.tableKeys)
-
-      const { data: savedSection } = await this.$supabase.from(this.table)
-        .select('id').match(sectionMatchKeys)
-
-      // console.log(savedSection)
-
-      const savedData = Object.assign({}, section, this.tableKeys)
+      if (this.section.name !== this.editedSection.name) {
+        this.updateName()
+      }
 
       try {
-        if (savedSection[0]) {
-          await this.$supabase.from(this.table).update(savedData).match(sectionMatchKeys)
-        } else {
-          await this.$supabase.from(this.table).insert([savedData])
-        }
-
-        // console.log(section, this.editedSection)
-
         const filePath = section.type === 'dir' ? `${section.path}/intro${section.path.match(/\//g).length === 1 ? '' : '.md'}` : section.path
 
         await axios({
@@ -230,13 +236,13 @@ export default {
             commit: {
               path: filePath,
               content: btoa(decodeURIComponent(encodeURIComponent(section.text))),
-              sha: section.sha
+              sha: section.type === 'dir' ? section.introSha : section.sha
             }
           }
         })
 
-        if (this.tableKeys.project_id) {
-          this.$notifications.notifyUpdate(this.tableKeys.project_id)
+        if (this.project.id) {
+          this.$notifications.notifyUpdate(this.prooject.id)
         }
       } catch (err) {
         // eslint-disable-next-line no-console

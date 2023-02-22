@@ -8,7 +8,7 @@
         open-on-click
         :selectable="selectable"
         :items="sections"
-        item-text="titre"
+        item-text="name"
         class="d-block text-truncate"
         item-key="path"
         selected-color="primary"
@@ -58,13 +58,13 @@
             :show-activator="overedItem === item.path"
             :parent="item"
             :git-ref="gitRef"
-            @update="fetchSections"
+            @added="addSection"
           />
           <PACEditingGitRemoveSectionDialog
             :show-activator="overedItem === item.path && !isSectionReadonly(item)"
             :section="item"
             :git-ref="gitRef"
-            @update="fetchSections"
+            @removed="removeSection"
           />
         </template>
       </v-treeview>
@@ -86,26 +86,11 @@ export default {
       type: Array,
       default () { return [] }
     },
-    // pacData should be a unified array of sections from DB. See if parent is mixing unifiedPac.js
-    // pacData: {
-    //   type: Array,
-    //   required: true
-    // },
     readonlyDirs: {
       type: Array,
       default () {
         return []
       }
-    },
-    table: {
-      type: String,
-      required: true
-    },
-    // This should be the section identifiers in the table.
-    // For exemple: {project_id: 'XXX'} for table pac_sections_project
-    tableKeys: {
-      type: Object,
-      required: true
     },
     collapsed: {
       type: Boolean,
@@ -114,6 +99,10 @@ export default {
     selectable: {
       type: Boolean,
       default: false
+    },
+    project: {
+      type: Object,
+      default () { return {} }
     },
     gitRef: {
       type: String,
@@ -145,63 +134,77 @@ export default {
     })
   },
   methods: {
-    // mergeGitWithBD (section) {
-    //   const dbSection = this.pacData.find(s => s.path.replace('/', '') === section.path.replace('.md', ''))
-
-    //   if (dbSection) {
-    //     console.log(dbSection)
-    //   }
-    //   // else if (section.type === 'file') {
-    //   //   console.log(section.path.replace('.md', ''), this.pacData[0].path)
-    //   // }
-
-    //   if (section.children) {
-    //     section.children.forEach(s => this.mergeGitWithBD(s))
-    //   }
-    // },
     async fetchSections () {
       const { data: sections } = await axios({
         method: 'get',
         url: `/api/trames/tree/${this.gitRef}`
       })
 
-      // console.log(this.pacData[0])
-
-      // sections.forEach(section => this.mergeGitWithBD(section))
-
       this.sections = sections
     },
+    addSection (newSection, parent) {
+      if (!parent.children) { parent.children = [] }
+      parent.children.push(newSection)
+      // It's safer to fetch the sections again to avoid sync issues.
+      this.fetchSections()
+    },
+    removeSection (removedSection) {
+      function filterSections (children) {
+        children.forEach((child) => {
+          if (child.children) {
+            child.children = filterSections(child.children)
+          }
+        })
+
+        return children.filter(s => s.path !== removedSection.path)
+      }
+
+      this.sections.forEach((section) => {
+        if (section.children) {
+          section.children = filterSections(section.children)
+        }
+      })
+
+      this.sections = [...this.sections]
+      this.fetchSections()
+    },
     async updateSelection (newSelection) {
-      console.log(newSelection, this.treeSelection)
+      // console.log(newSelection, this.treeSelection)
 
       if (newSelection.length !== this.treeSelection.length) {
         let selection = []
         if (newSelection.length < this.treeSelection.length) {
         // if something was removed
           const removedPaths = this.treeSelection.filter(path => !newSelection.includes(path))
+          // console.log(removedPaths.length)
           if (removedPaths.length === 1) {
           // also remove all children
             selection = this.selectedSections.filter((path) => {
               return !path.includes(removedPaths[0])
             })
-          } else { return }
+          } else {
+            // console.log('do not save')
+            return
+          }
         } else if (newSelection.length > this.treeSelection.length) {
         // something was added
           selection = uniq(this.selectedSections.concat(newSelection))
           this.addParentsToSelection(selection, this.sections)
         }
 
+        // console.log('saving')
+
         this.selectedSections = uniq(selection)
         this.treeSelection = newSelection.map(s => s)
 
         // Update the selection for this project in supabase.
-        if (this.selectable && this.tableKeys.project_id) {
+        if (this.selectable && this.project.id) {
         // This make it so we can't save sections as objects in reading mode for comments and checked features.
           await this.$supabase.from('projects').update({
-            PAC: selection.map(s => s || s.path)
-          }).eq('id', this.tableKeys.project_id)
+            PAC: this.selectedSections.map(s => s || s.path)
+          }).eq('id', this.project.id)
 
-          this.$notifications.notifyUpdate(this.tableKeys.project_id)
+          this.$notifications.notifyUpdate(this.project.id)
         }
       }
     },

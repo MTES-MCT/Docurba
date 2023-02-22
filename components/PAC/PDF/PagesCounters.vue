@@ -15,29 +15,22 @@
 </template>
 
 <script>
-import pacContent from '@/mixins/pacContent.js'
 
 export default {
-  mixins: [pacContent],
   props: {
     // eslint-disable-next-line vue/prop-name-casing
     contentId: {
       type: String,
       default: 'pac-content-pdf'
+    },
+    pacData: {
+      type: Array,
+      required: true
     }
   },
   data () {
     return {
       pageCounters: []
-    }
-  },
-  computed: {
-    PACroots () {
-      const roots = this.PAC.filter(section => section.depth === 2).sort((sa, sb) => {
-        return sa.ordre - sb.ordre
-      })
-
-      return roots
     }
   },
   mounted () {
@@ -47,7 +40,7 @@ export default {
       // console.log(this.$refs.rootsEl)
       // const pageHeight = this.$refs.page.offsetHeight
       const contentHeight = this.$refs.content.offsetHeight
-      const nbPages = (contentEl.offsetHeight / contentHeight) + this.PACroots.length
+      const nbPages = (contentEl.offsetHeight / contentHeight) + this.pacData.length
 
       const elRect = contentEl.getBoundingClientRect()
       const topPosition = elRect.top

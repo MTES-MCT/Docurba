@@ -62,10 +62,14 @@ export default {
       sectionName: 'Nouvelle section'
     }
   },
+  computed: {
+    projectId () {
+      return this.gitRef.includes('projet') ? this.gitRef.replace('projet-', '') : null
+    }
+  },
   methods: {
     async addSection () {
       this.loading = true
-
       const dir = this.parent.type === 'file' ? this.parent.path.replace('.md', '') : this.parent.path
 
       if (this.parent.type === 'file') {
@@ -105,17 +109,24 @@ export default {
 
       const newSectionPath = `${dir}/${this.sectionName}`
 
-      const newSection = Object.assign({
-        slug: 'new-section',
-        dir,
-        titre: 'Nouvelle section',
-        path: newSectionPath
-        // text: 'Nouvelle section'
-      }, this.tableKeys)
+      if (this.projectId) {
+        const { data: projects } = await this.$supabase.from('projects').select('PAC').eq('id', this.projectId)
+        const paths = projects[0].PAC
+        paths.push(newSectionPath)
+        await this.$supabase.from('projects').update({ PAC: paths }).eq('id', this.projectId)
+      }
 
-      await this.$supabase.from(this.table).insert([newSection])
+      // const newSection = Object.assign({
+      //   slug: 'new-section',
+      //   dir,
+      //   titre: 'Nouvelle section',
+      //   path: newSectionPath
+      //   // text: 'Nouvelle section'
+      // }, this.tableKeys)
 
-      const file = await axios({
+      // await this.$supabase.from(this.table).insert([newSection])
+
+      const { data: { data: { content: file } } } = await axios({
         method: 'post',
         url: `/api/trames/${this.gitRef}`,
         data: {
@@ -128,8 +139,11 @@ export default {
       })
 
       // console.log(file)
+      file.name = file.name.replace('.md', '')
+      file.children = []
+
       this.dialog = false
-      this.$emit('update', file)
+      this.$emit('added', file, this.parent)
       this.loading = false
     }
   }
