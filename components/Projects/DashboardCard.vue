@@ -102,7 +102,7 @@
               </v-btn>
             </v-card-actions>
           </v-card> -->
-          <v-card>
+          <v-card flat tile>
             <v-card-subtitle class="text-h6 text--primary">
               Frise d'évènements
             </v-card-subtitle>
