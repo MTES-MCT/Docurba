@@ -7,23 +7,25 @@
       <!-- SIGNIN -->
       <template v-if="loginTemplate === 'Connexion'">
         <v-card-text>
-          <v-row justify="end">
-            <v-col cols="12">
-              <v-text-field v-model="userData.email" hide-details filled label="Email" />
-            </v-col>
-            <v-col cols="12">
-              <InputsPasswordTextField v-model="userData.password" />
-            </v-col>
-            <v-col v-if="error && error.status === 400" cols="12">
-              <span class="error--text">Email ou mot de passe incorrecte.</span>
-            </v-col>
-            <v-spacer />
-            <v-col cols="auto">
-              <v-btn depressed tile text small @click="sendResetPassword">
-                Mot de passe oublié ?
-              </v-btn>
-            </v-col>
-          </v-row>
+          <v-form ref="loginForm" v-model="isLoginValid">
+            <v-row justify="end">
+              <v-col cols="12">
+                <v-text-field v-model="userData.email" :rules="[$rules.required]" hide-details filled label="Email" />
+              </v-col>
+              <v-col v-show="!forgotPassword" cols="12">
+                <InputsPasswordTextField v-model="userData.password" />
+              </v-col>
+              <v-col v-if="error && error.status === 400" cols="12">
+                <span class="error--text">Email ou mot de passe incorrecte.</span>
+              </v-col>
+              <v-spacer />
+              <v-col v-show="!forgotPassword" cols="auto">
+                <v-btn depressed tile text small @click="sendResetPassword">
+                  Mot de passe oublié ?
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-form>
         </v-card-text>
       </template>
       <!-- SIGNUP -->
@@ -38,11 +40,21 @@
       </template>
       <v-card-actions>
         <v-spacer />
-        <v-btn depressed tile color="primary" @click="loginTemplate === 'Inscription' ? signUp() : signIn()">
+        <v-btn v-show="!forgotPassword" depressed tile color="primary" @click="loginTemplate === 'Inscription' ? signUp() : signIn()">
           {{ loginTemplate }}
         </v-btn>
-        <v-btn depressed tile color="primary" outlined @click="toggleTemplate">
+        <v-btn
+          v-show="!forgotPassword"
+          depressed
+          tile
+          color="primary"
+          outlined
+          @click="toggleTemplate"
+        >
           {{ loginTemplate === 'Inscription' ? 'Connexion' : 'Inscription' }}
+        </v-btn>
+        <v-btn v-show="forgotPassword" depressed tile color="primary" @click="sendResetPassword">
+          Envoyer
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -74,6 +86,9 @@ export default {
         mdiEye,
         mdiEyeOff
       },
+      isLoginValid: false,
+      forgotPassword: false,
+      sendingRecoveryEmail: false,
       showPassword: false,
       userData: {
         firstname: '',
@@ -97,6 +112,10 @@ export default {
         return this.value || false
       },
       set (val) {
+        if (val === false) {
+          this.forgotPassword = false
+        }
+
         this.$emit('input', val)
       }
     }
@@ -162,13 +181,21 @@ export default {
         this.error = error
       }
     },
-    sendResetPassword () {
+    async sendResetPassword () {
+      this.forgotPassword = true
+
+      if (!this.isLoginValid) {
+        this.$refs.loginForm.validate()
+        return
+      }
+
       // this.$supabase.auth.api
       //   .resetPasswordForEmail(this.userData.email, {
       //     redirectTo: window.location.origin
       //   })
+      this.sendingRecoveryEmail = true
 
-      axios({
+      await axios({
         method: 'post',
         url: '/api/auth/password',
         data: {
@@ -179,6 +206,9 @@ export default {
 
       this.snackbar.text = `Un email de changement de mot de passe à été envoyé à ${this.userData.email}`
       this.snackbar.val = true
+
+      this.sendingRecoveryEmail = false
+      this.forgotPassword = false
     }
   }
 }

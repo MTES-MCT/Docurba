@@ -132,7 +132,7 @@ export default {
           method: 'get',
           url: `/api/epci/${this.selectedEpci.id}`
         })).data
-        console.log('EPCI: ', EPCI)
+        // console.log('EPCI: ', EPCI)
         const regionCode = EPCI.towns[0].code_region
         // eslint-disable-next-line
         const region = regions.find(r => r.code == regionCode)
