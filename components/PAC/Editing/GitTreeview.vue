@@ -61,12 +61,13 @@
 </template>
 <script>
 import { mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDown } from '@mdi/js'
-import { uniq, groupBy } from 'lodash'
+import { uniq } from 'lodash'
 import axios from 'axios'
 
-import sectionsOrder from '@/assets/data/defaultSectionsOrder.json'
+import orderSections from '@/mixins/orderSections.js'
 
 export default {
+  mixins: [orderSections],
   props: {
     // Value is an array of section paths in string.
     // It represent the selected sections for this project.
@@ -129,41 +130,30 @@ export default {
         url: `/api/trames/tree/${this.gitRef}`
       })
 
-      let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
+      const { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,
         `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`,
         this.gitRef
       ])
 
-      supSections.push(...sectionsOrder)
-
-      const groupedSupSections = groupBy(supSections, s => s.path)
-      supSections = Object.keys(groupedSupSections).map((path) => {
-        return groupedSupSections[path].find(s => s.ref.includes('projet')) ||
-          groupedSupSections[path].find(s => s.ref.includes('dept')) ||
-          groupedSupSections[path].find(s => s.ref.includes('region')) ||
-          groupedSupSections[path].find(s => s.ref.includes('main'))
-      })
-
       this.orderSections(sections, supSections)
-
       this.sections = sections
     },
-    orderSections (sections, supSections) {
-      sections.forEach((section) => {
-        const { order } = supSections.find(s => s.path === section.path) || { order: 0 }
+    // orderSections (sections, supSections) {
+    //   sections.forEach((section) => {
+    //     const { order } = supSections.find(s => s.path === section.path) || { order: 0 }
 
-        Object.assign(section, { order })
+    //     Object.assign(section, { order })
 
-        if (section.children) {
-          this.orderSections(section.children, supSections)
-        }
-      })
+    //     if (section.children) {
+    //       this.orderSections(section.children, supSections)
+    //     }
+    //   })
 
-      sections.sort((s1, s2) => {
-        return s1.order - s2.order
-      })
-    },
+    //   sections.sort((s1, s2) => {
+    //     return s1.order - s2.order
+    //   })
+    // },
     chageOrderSections ({ sections, supSections }) {
       this.orderSections(sections, supSections)
     },

@@ -7,8 +7,10 @@
 </template>
 
 <script>
+import orderSections from '@/mixins/orderSections.js'
 
 export default {
+  mixins: [orderSections],
   props: {
     editable: {
       type: Boolean,
@@ -17,6 +19,10 @@ export default {
     pacData: {
       type: Array,
       required: true
+    },
+    project: {
+      type: Object,
+      default () { return {} }
     }
   },
   data () {
@@ -26,12 +32,13 @@ export default {
       // PACroots
     }
   },
-  mounted () {
-    // this.checkedItems = this.PAC.filter(item => item.checked).length
+  async mounted () {
+    const { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
+        `projet-${this.project.id}`,
+        `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`
+    ])
 
-    // this.PACroots.forEach((root, index) => {
-    //   this.addCounter(root, [index + 1])
-    // })
+    this.orderSections(this.pacData, supSections)
   },
   methods: {
     checkItem (section) {

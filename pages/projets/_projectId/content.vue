@@ -4,6 +4,7 @@
     <PACTreeviewContent
       v-if="project && !pdfUrl"
       :pac-data="project.PAC"
+      :project="project"
       @read="savePacItem"
     />
     <client-only>
