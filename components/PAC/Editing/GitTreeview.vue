@@ -61,8 +61,10 @@
 </template>
 <script>
 import { mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDown } from '@mdi/js'
-import { uniq } from 'lodash'
+import { uniq, groupBy } from 'lodash'
 import axios from 'axios'
+
+import sectionsOrder from '@/assets/data/defaultSectionsOrder.json'
 
 export default {
   props: {
@@ -127,7 +129,21 @@ export default {
         url: `/api/trames/tree/${this.gitRef}`
       })
 
-      const { data: supSections } = await this.$supabase.from('pac_sections').select('*').eq('ref', this.gitRef)
+      let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
+        `projet-${this.project.id}`,
+        `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`,
+        this.gitRef
+      ])
+
+      supSections.push(...sectionsOrder)
+
+      const groupedSupSections = groupBy(supSections, s => s.path)
+      supSections = Object.keys(groupedSupSections).map((path) => {
+        return groupedSupSections[path].find(s => s.ref.includes('projet')) ||
+          groupedSupSections[path].find(s => s.ref.includes('dept')) ||
+          groupedSupSections[path].find(s => s.ref.includes('region')) ||
+          groupedSupSections[path].find(s => s.ref.includes('main'))
+      })
 
       this.orderSections(sections, supSections)
 
