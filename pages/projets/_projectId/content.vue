@@ -65,9 +65,6 @@ export default {
     this.loaded = true
   },
   methods: {
-    _project () {
-      return this.project
-    },
     parseSection (section, paths) {
       if (section.content) { section.body = this.$md.compile(section.content) }
 

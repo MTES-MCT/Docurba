@@ -15,7 +15,7 @@
         </v-tab>
       </v-tabs>
     </template>
-    <NuxtChild />
+    <NuxtChild keep-alive />
   </LayoutsCustomApp>
 </template>
 
