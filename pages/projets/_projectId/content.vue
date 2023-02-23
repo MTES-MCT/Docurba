@@ -29,11 +29,6 @@ import { mdiDownload } from '@mdi/js'
 import axios from 'axios'
 
 export default {
-  provide () {
-    return {
-      pacProject: this._project
-    }
-  },
   data () {
     return {
       project: null,
