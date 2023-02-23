@@ -26,9 +26,6 @@
         <v-col cols="12">
           <v-switch v-model="projectForm.useTrame" :label="`Utiliser la trame de PAC du ${userDeptCode}`" />
         </v-col>
-        <!-- <v-col cols="12" class="tree-view">
-          <PACTreeviewSelection v-model="newProject.PAC" :pac-data="PAC" />
-        </v-col> -->
         <v-col v-if="error" cols="12">
           <span class="error--text">Echec de sauvegarde, veuillz réessayer ultérieurement.</span>
         </v-col>

@@ -39,21 +39,3 @@ $ gcloud app deploy app.yaml --project docurba
 
 $ gcloud app deploy app_dev.yaml --project docurba
 ```
-
-## Dev
-
-### Manipulating PAC Data
-A PAC can be composed of multiple Trame. A Trame is a combination of multiple Sections.
-
-Sections overide each others keys using their path as identifier. Overide respect this hierarchie:
-project > departement > region > national
-
-To merge sections a component should mixin unifiedPac.js
-
-A component that merge Sections into a tram should be a Page and also subscribe to the real time DB to update the PAC if it's interacted with.
-
-This way the app can respect the flux patern where data updates flow from the parent to all its children.
-
-To limit confusion, component that need to handle a Tram should mixin the pacContent.js file.
-
-Finally, component that allow editing can mixin the pacEditing.js file. In the best case, their parent should handle data updates and they should not update the state of the data by themselves.
