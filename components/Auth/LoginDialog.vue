@@ -133,7 +133,7 @@ export default {
 
       if (!error) {
         // eslint-disable-next-line no-console
-        // console.log('success sign in', user)
+        console.log('success sign in', user)
 
         if (this.$route.path === '/') {
           this.$router.push('/projets')
