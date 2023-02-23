@@ -137,11 +137,13 @@ export default {
         // console.log('success sign up', user, session)
 
         if (this.userData.isDDT && this.userData.dept) {
+          const { data: { session: { user } } } = await this.$supabase.auth.getSession()
+
           await this.$supabase.from('admin_users_dept').insert([{
             role: 'user',
             dept: this.userData.dept.code_departement,
-            user_id: this.$user.id,
-            user_email: this.$user.email
+            user_id: user.id,
+            user_email: user.email
           }])
         }
 
