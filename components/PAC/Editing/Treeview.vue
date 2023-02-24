@@ -112,14 +112,8 @@
 </template>
 <script>
 import { mdiPlus, mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDown } from '@mdi/js'
-// import { v4 as uuidv4 } from 'uuid'
 import { uniq } from 'lodash'
 import pacEditing from '@/mixins/pacEditing.js'
-
-// function getDepth (path) {
-//   // console.log(path)
-//   return (path.replace(/\/intro$/, '').match(/\//g) || []).length
-// }
 
 export default {
   mixins: [pacEditing],

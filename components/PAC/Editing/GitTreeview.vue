@@ -34,26 +34,13 @@
           </v-tooltip>
         </template>
         <template #append="{item}">
-          <v-btn
-            v-show="overedItem === item.path && item.depth > 2"
-            depressed
-            tile
-            small
-            icon
-            @click.stop="changeSectionOrder(item, -1)"
-          >
-            <v-icon>{{ icons.mdiChevronUp }}</v-icon>
-          </v-btn>
-          <v-btn
-            v-show="overedItem === item.path && item.depth > 2"
-            depressed
-            tile
-            small
-            icon
-            @click.stop="changeSectionOrder(item, 1)"
-          >
-            <v-icon>{{ icons.mdiChevronDown }}</v-icon>
-          </v-btn>
+          <PACEditingOrderInputs
+            :show-btn="overedItem === item.path"
+            :git-ref="gitRef"
+            :section="item"
+            :sections="sections"
+            @change="chageOrderSections"
+          />
           <PACEditingGitAddSectionDialog
             :show-activator="overedItem === item.path"
             :parent="item"
@@ -77,7 +64,10 @@ import { mdiDelete, mdiChevronLeft, mdiChevronRight, mdiChevronUp, mdiChevronDow
 import { uniq } from 'lodash'
 import axios from 'axios'
 
+import orderSections from '@/mixins/orderSections.js'
+
 export default {
+  mixins: [orderSections],
   props: {
     // Value is an array of section paths in string.
     // It represent the selected sections for this project.
@@ -140,7 +130,32 @@ export default {
         url: `/api/trames/tree/${this.gitRef}`
       })
 
+      const { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
+        `projet-${this.project.id}`,
+        `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`,
+        this.gitRef
+      ])
+
+      this.orderSections(sections, supSections)
       this.sections = sections
+    },
+    // orderSections (sections, supSections) {
+    //   sections.forEach((section) => {
+    //     const { order } = supSections.find(s => s.path === section.path) || { order: 0 }
+
+    //     Object.assign(section, { order })
+
+    //     if (section.children) {
+    //       this.orderSections(section.children, supSections)
+    //     }
+    //   })
+
+    //   sections.sort((s1, s2) => {
+    //     return s1.order - s2.order
+    //   })
+    // },
+    chageOrderSections ({ sections, supSections }) {
+      this.orderSections(sections, supSections)
     },
     addSection (newSection, parent) {
       if (!parent.children) { parent.children = [] }

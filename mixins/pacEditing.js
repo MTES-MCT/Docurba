@@ -1,3 +1,5 @@
+// DEPRECATED DO NOT USE
+
 import { v4 as uuidv4 } from 'uuid'
 
 // @vue/component

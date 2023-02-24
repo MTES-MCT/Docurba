@@ -50,8 +50,8 @@ export default {
     async resetPassword () {
       this.loading = true
 
-      await this.$supabase.auth.api
-        .updateUser(this.resetToken, { password: this.password })
+      await this.$supabase.auth
+        .updateUser({ password: this.password })
 
       this.loading = false
       this.dialog = false

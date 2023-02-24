@@ -1,5 +1,8 @@
 /* eslint-disable no-console */
+const { createClient } = require('@supabase/supabase-js')
 const github = require('./github.js')
+
+const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 module.exports = {
   async changeName (ref, section, newName) {
@@ -21,6 +24,15 @@ module.exports = {
     if (section.type === 'dir') {
       const { data: { tree: subTree } } = await github(`GET /repos/{owner}/{repo}/git/trees/${section.sha}?recursive=1`, {
         tree_sha: section.sha
+      })
+
+      subTree.forEach((subSection) => {
+        supabase.from('pac_sections').update({
+          path: `${newPath.replace('.md', '')}/${subSection.path}`
+        }).match({
+          path: `${section.path}/${subSection.path}`,
+          ref
+        }).then()
       })
 
       filesToDelete = subTree.filter(f => f.type === 'blob').map((f) => {

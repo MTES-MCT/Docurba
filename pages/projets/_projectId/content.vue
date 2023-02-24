@@ -4,6 +4,7 @@
     <PACTreeviewContent
       v-if="project && !pdfUrl"
       :pac-data="project.PAC"
+      :project="project"
       @read="savePacItem"
     />
     <client-only>
@@ -29,11 +30,6 @@ import { mdiDownload } from '@mdi/js'
 import axios from 'axios'
 
 export default {
-  provide () {
-    return {
-      pacProject: this._project
-    }
-  },
   data () {
     return {
       project: null,
@@ -69,9 +65,6 @@ export default {
     this.loaded = true
   },
   methods: {
-    _project () {
-      return this.project
-    },
     parseSection (section, paths) {
       if (section.content) { section.body = this.$md.compile(section.content) }
 

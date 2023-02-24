@@ -1,0 +1,17 @@
+[{
+  "path": "PAC/Introduction",
+  "order": 0,
+  "ref": "main"
+}, {
+  "path": "PAC/Cadre-juridique-et-grands-principes-de-la-planification",
+  "order": 1,
+  "ref": "main"
+}, {
+  "path": "PAC/Dispositions-de-documents-supra-territoriaux-et-doctrines",
+  "order": 2,
+  "ref": "main"
+}, {
+  "path": "PAC/PP-du-territoire",
+  "order": 3,
+  "ref": "main"
+}]
