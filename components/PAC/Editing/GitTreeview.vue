@@ -117,11 +117,11 @@ export default {
   computed: {
     selectedSections: {
       get () {
-        console.log('get Sections', this.selectedSectionsCache)
         return this.selectedSectionsCache
       },
+      // https://github.com/vuetifyjs/vuetify/blob/master/packages/vuetify/src/components/VTreeview/VTreeview.ts
       async set (newSelection) {
-        console.log(newSelection, this.treeSelection)
+        // console.log(newSelection, this.treeSelection)
 
         if (newSelection.length !== this.treeSelection.length) {
           let selection = []
@@ -135,7 +135,7 @@ export default {
                 return !path.includes(removedPaths[0])
               })
             } else {
-              console.log('do not save')
+              // console.log('do not save')
               // this.$refs.tree.selectedCache = this.treeSelection
               this.selectedSectionsCache = this.treeSelection
               this.selectedSectionsCache.forEach((path) => {
@@ -220,48 +220,6 @@ export default {
       this.sections = [...this.sections]
       this.fetchSections()
     },
-    // async updateSelection (newSelection) {
-    //   // console.log(newSelection, this.treeSelection, this.selectedSections)
-
-    //   if (newSelection.length !== this.treeSelection.length) {
-    //     let selection = []
-    //     if (newSelection.length < this.treeSelection.length) {
-    //     // if something was removed
-    //       const removedPaths = this.treeSelection.filter(path => !newSelection.includes(path))
-    //       // console.log(removedPaths.length)
-    //       if (removedPaths.length === 1) {
-    //       // also remove all children
-    //         selection = this.selectedSections.filter((path) => {
-    //           return !path.includes(removedPaths[0])
-    //         })
-    //       } else {
-    //         console.log('do not save')
-    //         // this.$refs.tree.selectedCache = this.treeSelection
-    //         this.selectedSections = this.treeSelection
-    //         return
-    //       }
-    //     } else if (newSelection.length > this.treeSelection.length) {
-    //     // something was added
-    //       selection = uniq(this.selectedSections.concat(newSelection))
-    //       this.addParentsToSelection(selection, this.sections)
-    //     }
-
-    //     // console.log('saving')
-
-    //     this.selectedSections = uniq(selection)
-    //     this.treeSelection = newSelection.map(s => s)
-
-    //     // Update the selection for this project in supabase.
-    //     if (this.selectable && this.project.id) {
-    //     // This make it so we can't save sections as objects in reading mode for comments and checked features.
-    //       await this.$supabase.from('projects').update({
-    //         PAC: this.selectedSections.map(s => s || s.path)
-    //       }).eq('id', this.project.id)
-
-    //       this.$notifications.notifyUpdate(this.project.id)
-    //     }
-    //   }
-    // },
     addParentsToSelection (selection, sections) {
       const selectedParents = []
 
