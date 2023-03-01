@@ -243,7 +243,7 @@ export default {
         })
 
         if (this.project.id) {
-          this.$notifications.notifyUpdate(this.prooject.id)
+          this.$notifications.notifyUpdate(this.project.id)
         }
       } catch (err) {
         // eslint-disable-next-line no-console

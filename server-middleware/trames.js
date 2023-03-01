@@ -48,11 +48,16 @@ app.post('/projects/:parentRef', async (req, res) => {
 
 app.post('/:ref', async (req, res) => {
   const { ref } = req.params
-  const { userId, commit } = req.body
+  const { commit } = req.body
 
-  const allowedRole = await getAllowedRole(userId, ref)
+  // const allowedRole = await getAllowedRole(userId, ref)
 
-  // console.log(commit.path)
+  // Front is trying to update a section. But someone could be editing this section as well.
+  // So the front can't guarantee its sha is correct.
+  if (commit.sha) {
+    const currentFile = await getFileContent(commit.path, ref, 'object')
+    commit.sha = currentFile.sha
+  }
 
   // if (allowedRole) {
   // We assign the branch and commiter manually to make sure it cannot be overide in commit.
@@ -94,12 +99,12 @@ app.delete('/:ref', async (req, res) => {
   res.status(200).send(commitRes)
 })
 
-async function getFileContent (path, ref) {
+async function getFileContent (path, ref, format = 'raw') {
   try {
     const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
       path,
       mediaType: {
-        format: 'raw'
+        format
       }
     })
     return file
@@ -109,7 +114,7 @@ async function getFileContent (path, ref) {
     const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path.replace('.md', ''))}?ref=${ref}`, {
       path,
       mediaType: {
-        format: 'raw'
+        format
       }
     })
 

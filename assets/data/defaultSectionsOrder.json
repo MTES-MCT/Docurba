@@ -14,4 +14,8 @@
   "path": "PAC/PP-du-territoire",
   "order": 3,
   "ref": "main"
+}, {
+  "path": "PAC/Annexes",
+  "order": 4,
+  "ref": "main"
 }]
