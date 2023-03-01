@@ -41,11 +41,11 @@ module.exports = async function (path, options) {
 
     return res
   } catch (err) {
-    // console.log(err)
-
     if (err.status === 304) {
       // console.log('Cache Working')
       return cachedRes.data
+    } else {
+      console.log('error in github', err)
     }
   }
 }

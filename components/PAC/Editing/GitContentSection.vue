@@ -70,6 +70,7 @@
 </template>
 <script>
 import { mdiContentSave } from '@mdi/js'
+import { encode } from 'js-base64'
 
 import axios from 'axios'
 
@@ -235,7 +236,7 @@ export default {
             userId: this.$user.id,
             commit: {
               path: filePath,
-              content: btoa(decodeURIComponent(encodeURIComponent(section.text))),
+              content: encode(section.text),
               sha: section.type === 'dir' ? section.introSha : section.sha
             }
           }
@@ -246,7 +247,7 @@ export default {
         }
       } catch (err) {
         // eslint-disable-next-line no-console
-        console.log('Error saving data')
+        console.log('Error saving data', err)
       }
 
       this.modified = false

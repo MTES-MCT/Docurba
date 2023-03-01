@@ -38,6 +38,7 @@
 <script>
 import axios from 'axios'
 import { mdiPlus } from '@mdi/js'
+import { encode } from 'js-base64'
 
 export default {
   props: {
@@ -101,7 +102,7 @@ export default {
             userId: this.$user.id,
             commit: {
               path: `${dir}/intro.md`,
-              content: btoa(unescape(encodeURIComponent(parentContent)))
+              content: encode(parentContent)
             }
           }
         })
@@ -133,7 +134,7 @@ export default {
           userId: this.$user.id,
           commit: {
             path: `${newSectionPath}.md`,
-            content: btoa(unescape(encodeURIComponent('Nouvelle section')))
+            content: encode('Nouvelle section')
           }
         }
       })
