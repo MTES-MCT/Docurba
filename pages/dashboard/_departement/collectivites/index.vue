@@ -11,8 +11,7 @@
         </v-tabs>
         <v-data-table
           :headers="headers"
-          :items="desserts"
-          item-key="name"
+          :items="collectivites"
           class="elevation-1"
           :search="search"
         >
@@ -26,7 +25,7 @@
           <!-- eslint-disable-next-line -->
             <template #item.actions="{ item }">
             <div>
-              <v-btn depressed color="primary" :to="{name:'dashboard-departement-collectivites-collectiviteId', params:{departement: $route.params.departement, collectiviteId: $route.params.departement }}">
+              <v-btn depressed color="primary" :to="item.detailsPath">
                 Consulter
               </v-btn>
               <v-btn depressed color="primary" :to="{name:'dashboard-departement-collectivites-collectiviteId', params:{departement: '47', collectiviteId:'LUL' }}">
@@ -41,11 +40,14 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data () {
     return {
       search: '',
       calories: '',
+      epci: null,
       desserts: [
         {
           name: 'Frozen Yogurt',
@@ -133,28 +135,38 @@ export default {
   computed: {
     headers () {
       return [
-        {
-          text: 'Dessert (100g serving)',
-          align: 'start',
-          sortable: false,
-          value: 'name'
-        },
-        {
-          text: 'Calories',
-          value: 'calories',
-          filter: (value) => {
-            if (!this.calories) { return true }
-
-            return value < parseInt(this.calories)
-          }
-        },
-        { text: 'Nom', value: 'fat' },
-        { text: 'Type', value: 'carbs' },
-        { text: 'Dernière proc. princip.', value: 'protein' },
-        { text: 'Statut', value: 'iron' },
+        { text: 'Collec. porteuse', align: 'start', value: 'name' },
+        { text: 'Type', value: 'type' },
+        { text: 'Dernière proc.', value: 'lastProc' },
+        { text: 'Status', value: 'status' },
         { text: 'Actions', value: 'actions' }
       ]
+    },
+    collectivites () {
+      if (!this.epci) { return [] }
+      return this.epci.map((e) => {
+        return {
+          name: e.label,
+          type: `EPCI (${e.towns.length})`,
+          lastProc: '',
+          status: '',
+          detailsPath: { name: 'dashboard-departement-collectivites-collectiviteId', params: { departement: this.$route.params.departement, collectiviteId: e.EPCI }, query: { isEpci: true } },
+          frpProcPrincipalPath: { name: 'foo' }
+        }
+      })
     }
+  },
+  async mounted () {
+    const { data: epcis } = await axios({
+      url: '/api/epci',
+      method: 'get',
+      params: {
+        departement: this.$route.params.departement
+      }
+    })
+
+    this.epci = epcis
+    console.log('EPCIs: ', this.epci)
   }
 }
 </script>

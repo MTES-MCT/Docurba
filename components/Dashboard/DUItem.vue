@@ -15,15 +15,33 @@
             <v-chip>En cours</v-chip>
           </div>
         </v-col>
-        <v-col cols="12">
+        <v-col cols="12" class="pb-0">
           <v-divider />
         </v-col>
         <v-col cols="12">
-          <span>
+          <span class="primary--text text-decoration-underline mr-4">
             Liste des communes concernées
+          </span>
+          <span class="primary--text text-decoration-underline mr-4">
+            Feuille de route partagée
+          </span>
+          <span class="primary--text text-decoration-underline mr-4">
+            PAC
+          </span>
+          <span class="primary--text text-decoration-underline">
+            Note d'enjeux
           </span>
         </v-col>
       </v-row>
     </v-container>
   </v-card>
 </template>
+<script>
+export default {
+  data () {
+    return {
+
+    }
+  }
+}
+</script>
