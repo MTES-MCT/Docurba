@@ -40,8 +40,9 @@
       </v-col>
       <v-col cols="12">
         <DashboardDUItem
-          v-for="(item,i) in 5"
+          v-for="(procedure,i) in procedures"
           :key="'du_' + i"
+          :procedure="procedure"
         />
       </v-col>
     </v-row>
@@ -53,7 +54,8 @@ import axios from 'axios'
 export default {
   data () {
     return {
-      collectivite: null
+      collectivite: null,
+      procedures: null
     }
   },
   computed: {
@@ -69,6 +71,47 @@ export default {
     collectivite.name = this.isEpci ? collectivite.label : collectivite.nom_commune
     this.collectivite = collectivite
     console.log('collectivite: ', this.collectivite)
+    this.loadCommuneEvents(this.collectivite)
+  },
+  methods: {
+    async loadCommuneEvents (commune) {
+      const rawEvents = (await this.$supabase.from('sudocu_events').select().eq('codeinseecommune', commune.code_commune_INSEE.toString().padStart(5, '0'))).data
+      console.log('rawEvents: ', rawEvents)
+      const formattedEvents = rawEvents.map((e) => {
+        return {
+          date_iso: e.dateevenement,
+          type: e.libtypeevenement + ' - ' + e.libstatutevenement,
+          description: e.commentaire + ' - Document sur le reseau: ' + e.nomdocument,
+          actors: [],
+          attachements: [],
+          docType: e.codetypedocument,
+          idProcedure: e.noserieprocedure,
+          typeProcedure: e.libtypeprocedure,
+          idProcedurePrincipal: e.noserieprocedureratt,
+          commentaireDgd: e.commentairedgd,
+          commentaireProcedure: e.commentaireproc,
+          dateLancement: e.datelancement,
+          dateApprobation: e.dateapprobation,
+          dateAbandon: e.dateabandon,
+          dateExecutoire: e.dateexecutoire
+
+        }
+      })
+      // const events = formattedEvents.reduce(function (r, a) {
+      //   r[a.docType] = r[a.docType] || []
+      //   r[a.docType].push(a)
+      //   return r
+      // }, Object.create(null))
+
+      // console.log('events: ', events)
+
+      this.procedures = formattedEvents.reduce(function (r, a) {
+        r[a.idProcedure] = r[a.idProcedure] || []
+        r[a.idProcedure].push(a)
+        return r
+      }, Object.create(null))
+      console.log('eventsByProc: ', this.procedures)
+    }
   }
 }
 </script>
