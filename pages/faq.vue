@@ -189,11 +189,5 @@ export default {
 </script>
 
 <style lang="scss">
-.bottom-border{
-  height: 3px;
-  width: 100%;
-  background-color: var(--v-primary);
-  position: absolute;
-  bottom: 0;
-}
+
 </style>

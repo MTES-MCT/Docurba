@@ -51,6 +51,17 @@
           </v-icon>
           Rechercher
         </v-btn>
+        <v-btn
+          depressed
+          color="primary"
+          :loading="searchLoading"
+          @click="toPublicDashboard"
+        >
+          <v-icon class="mr-2" small>
+            {{ icons.mdiMagnify }}
+          </v-icon>
+          Dash
+        </v-btn>
       </v-col>
     </v-row>
   </v-form>
@@ -120,6 +131,18 @@ export default {
     }
   },
   methods: {
+    toPublicDashboard () {
+      const collectiviteId = this.showEpciSelect ? this.selectedEpci.id : this.selectedTown.code_commune_INSEE
+      this.$router.push({
+        name: 'dashboard-collectivites-collectiviteId',
+        params: {
+          collectiviteId
+        },
+        query: {
+          isEpci: !!this.showEpciSelect
+        }
+      })
+    },
     async searchCTA () {
       if (!this.valid) {
         this.$refs.form.validate()

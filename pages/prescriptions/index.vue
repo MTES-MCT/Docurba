@@ -128,7 +128,7 @@ export default {
   },
   computed: {
     isEpci () {
-      return this.$route.query.epci_label && this.$route.query.epci_code
+      return (this.$route.query.epci_label && this.$route.query.epci_code) || this.$route.query.isEpci
     }
   },
   async mounted () {

@@ -31,9 +31,6 @@
                   <v-btn depressed color="primary" :to="item.detailsPath">
                     Consulter
                   </v-btn>
-                  <v-btn depressed color="primary" :to="{name:'dashboard-departement-collectivites-collectiviteId', params:{departement: '47', collectiviteId:'LUL' }}">
-                    Voir FRP
-                  </v-btn>
                 </div>
               </template>
             </v-data-table>
@@ -58,9 +55,6 @@
                 <div>
                   <v-btn depressed color="primary" :to="item.detailsPath">
                     Consulter
-                  </v-btn>
-                  <v-btn depressed color="primary" :to="{name:'dashboard-departement-collectivites-collectiviteId', params:{departement: '47', collectiviteId:'LUL' }}">
-                    Voir FRP
                   </v-btn>
                 </div>
               </template>
