@@ -133,9 +133,14 @@ export default {
   methods: {
     toPublicDashboard () {
       const collectiviteId = this.showEpciSelect ? this.selectedEpci.id : this.selectedTown.code_commune_INSEE
+      const departementId = this.showEpciSelect ? '' : this.selectedTown.code_departement
+
+      console.log('selectedTown: ', this.selectedTown, ' this.selectedEpci: ', this.selectedEpci)
+      console.log('collectiviteId: ', collectiviteId, 'departementId: ', departementId)
       this.$router.push({
-        name: 'dashboard-collectivites-collectiviteId',
+        name: 'dashboard-ddt-departement-collectivites-collectiviteId',
         params: {
+          departement: departementId,
           collectiviteId
         },
         query: {

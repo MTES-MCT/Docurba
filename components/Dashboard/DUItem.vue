@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-          {{ firstEvent.docType }} - {{ firstEvent.idProcedure }}
+          {{ firstEvent.docType }} - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
         </v-col>
       </v-row>
       <v-row class="mt-0">
@@ -79,7 +79,6 @@ export default {
   },
   computed: {
     firstEvent () {
-      console.log('this.procedure[0] :', this.procedure[0])
       return this.procedure[0]
     },
     status () {

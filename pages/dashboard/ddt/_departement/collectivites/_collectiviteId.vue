@@ -50,6 +50,7 @@
 </template>
 <script>
 import axios from 'axios'
+import _ from 'lodash'
 
 export default {
   data () {
@@ -111,6 +112,25 @@ export default {
         return r
       }, Object.create(null))
       console.log('eventsByProc: ', this.procedures)
+      // const test = Object.entries(this.procedures).map(([k, e]) => {
+      //   console.log(k, e)
+      //   return [k, e]
+      // })
+      // this.procedures.map(e => (e.procSec = {}))
+      // TODO: le mettre dans une reactive que a la fin du traitement
+      // for (const [k, v] of Object.entries(this.procedures)) {
+      _.map(this.procedures, (v, k) => {
+        // console.log('v.idProcedure: ', v, ' - ', k)
+        const procSecs = _.filter(this.procedures, (e) => {
+          console.log('e.idProcedurePrincipal: ', e[0].idProcedurePrincipal, ' v.idProcedure: ', v)
+          return e[0].idProcedurePrincipal === v.idProcedure
+        })
+        console.log('procSecs: ', procSecs)
+        this.procedures[k].procSecs = procSecs
+      })
+
+      // }
+      console.log('this.procedures after: ', this.procedures)
     }
   }
 }

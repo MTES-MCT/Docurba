@@ -1,7 +1,7 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col>
+    <v-row align="end">
+      <v-col cols="auto">
         <h2>Ressources</h2>
       </v-col>
       <v-col>

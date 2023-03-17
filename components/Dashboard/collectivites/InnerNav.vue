@@ -11,14 +11,17 @@ export default {
   data () {
     return {
       links: [{
+        name: 'Tableau de bord',
+        to: { name: 'dashboard-collectivites-collectiviteId-index' }
+      }, {
         name: 'Prescription',
-        to: { name: 'prescriptions' }
+        to: { name: 'dashboard-collectivites-collectiviteId-index-prescriptions' }
       }, {
         name: 'Socle de PAC',
         to: '/'
       }, {
         name: 'Données',
-        to: '/'
+        to: { name: 'dashboard-collectivites-collectiviteId-index-donnees' }
       }, {
         name: 'Glossaire',
         to: '/'

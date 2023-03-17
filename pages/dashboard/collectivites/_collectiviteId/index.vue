@@ -31,6 +31,7 @@ export default {
       method: 'get'
     })
     collectivite.name = this.isEpci ? collectivite.label : collectivite.nom_commune
+    collectivite.id = this.isEpci ? '' : collectivite.code_commune_INSEE.toString().padStart(5, '0')
     this.collectivite = collectivite
     console.log('collectivite: ', this.collectivite)
     // this.loadCommuneEvents(this.collectivite)

@@ -19,8 +19,8 @@
             outlined
             tile
             color="white"
-            class="py-2"
-            :to="{name: 'dashboard-collectivites-collectiviteId-index-ressources', params: {'collectiviteId': collectivite.code_commune_INSEE}}"
+            class="py-2 fill-height"
+            :to="actionsCard.to"
           >
             <v-card-title class="text-body-1 font-weight-bold break-word" style="line-height:24px">
               {{ actionsCard.title }}
@@ -64,22 +64,23 @@ export default {
         {
           title: 'Prescription',
           text: 'Déposez ou consultez votre prescription',
-          link: ''
+          to: { name: 'dashboard-collectivites-collectiviteId-index-prescriptions', params: { collectiviteId: this.collectivite.code_commune_INSEE } }
         },
         {
           title: 'Socle de PAC',
           text: 'Consultez ou modifiez votre socle de Porter à Connaissance',
-          link: ''
+          // http://localhost:3000/pacsec/content?insee=2001&region=FR-HDF&document=PLU
+          to: { name: 'pacsec-content', query: { insee: '2001', region: 'FR-HDF', document: 'PLU' } }
         },
         {
           title: 'Ressources',
           text: 'Lorem ipsum dolor sit amet consectetur. Ut nullam vitae.',
-          link: ''
+          to: { name: 'dashboard-collectivites-collectiviteId-index-ressources', params: { collectiviteId: this.collectivite.code_commune_INSEE } }
         },
         {
           title: 'Données',
           text: 'Lorem ipsum dolor sit amet consectetur. Ut nullam vitae.',
-          link: ''
+          to: { name: 'dashboard-collectivites-collectiviteId-index-donnees', params: { collectiviteId: this.collectivite.code_commune_INSEE } }
         }
       ]
     }

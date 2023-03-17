@@ -129,7 +129,7 @@ export default {
         type: 'Commune',
         lastProc: '',
         status: '',
-        detailsPath: { name: 'dashboard-departement-collectivites-collectiviteId', params: { departement: this.$route.params.departement, collectiviteId: e.code_commune_INSEE }, query: { isEpci: false } },
+        detailsPath: { name: 'dashboard-ddt-departement-collectivites-collectiviteId', params: { departement: this.$route.params.departement, collectiviteId: e.code_commune_INSEE }, query: { isEpci: false } },
         frpProcPrincipalPath: { name: 'foo' }
       }
     })
