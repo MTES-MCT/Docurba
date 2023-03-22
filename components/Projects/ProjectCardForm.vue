@@ -172,7 +172,7 @@ export default {
 
       if (!err && data) {
         if (!savedProject.id) {
-          this.$router.push(`/ddt/${savedProject.id || data[0].id}`)
+          this.$router.push(`/trames/projet-${savedProject.id || data[0].id}`)
         } else {
           this.$emit('cancel')
         }

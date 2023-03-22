@@ -55,7 +55,7 @@
                 tile
                 outlined
                 color="primary"
-                :to="`/ddt/${projectData.id}`"
+                :to="`/trames/projet-${projectData.id}`"
                 nuxt
               >
                 Modifier
