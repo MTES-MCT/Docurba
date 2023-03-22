@@ -1,5 +1,16 @@
 export default ({ $supabase, $user }, inject) => {
   inject('auth', {
+    async getRefsRoles () {
+      console.log('userId', $user.id)
+
+      const { data: roles } = await $supabase.from('github_ref_roles').select('*')
+        .match({
+          user_id: $user.id,
+          role: 'admin'
+        })
+
+      return roles
+    },
     // multiple allow you to get all region access instead of the first
     async getDeptAccess (multiple) {
       const { data: adminAccess } = await $supabase.from('admin_users_dept').select('role, dept').match({

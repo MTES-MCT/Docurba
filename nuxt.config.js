@@ -33,7 +33,8 @@ export default {
     { src: '~/plugins/mdParser.js', mode: 'client' },
     { src: '~/plugins/print.js', mode: 'client' },
     { src: '~/plugins/rules.js' },
-    { src: '~/plugins/notifications.js', mode: 'client' }
+    { src: '~/plugins/notifications.js', mode: 'client' },
+    { src: '~/plugins/githubRefs.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

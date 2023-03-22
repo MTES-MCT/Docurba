@@ -8,18 +8,25 @@
         >
           Projets
         </v-tab>
-        <v-tab
+        <!-- <v-tab
           :to="{path: '/projets/trames/departement'}"
           nuxt
         >
           Trame du {{ deptAccess.dept }}
-        </v-tab>
-        <v-tab
+        </v-tab> -->
+        <!-- <v-tab
           v-for="region in regions"
           :key="region.iso"
           :to="{path: `/projets/trames/regions/${region.code}`}"
         >
           Trame {{ region.iso }}
+        </v-tab> -->
+        <v-tab
+          v-for="refRole in refsRoles"
+          :key="refRole.ref"
+          :to="{path: `/trames/${refRole.ref}`}"
+        >
+          {{ refRole.ref | githubRef }}
         </v-tab>
       </v-tabs>
       <v-spacer />
@@ -118,7 +125,7 @@
 import { mdiPlus, mdiFileDocumentEdit, mdiHelp } from '@mdi/js'
 import projectsList from '@/mixins/projectsList.js'
 
-import regions from '@/assets/data/Regions.json'
+// import regions from '@/assets/data/Regions.json'
 
 export default {
   mixins: [projectsList],
@@ -130,18 +137,19 @@ export default {
         mdiFileDocumentEdit,
         mdiHelp
       },
+      refsRoles: [],
       projectsSubscription: null,
       projectDialog: false,
       loadingAccess: true
     }
   },
   computed: {
-    regions () {
-      return this.regionAccess.map((access) => {
-        // eslint-disable-next-line eqeqeq
-        return regions.find(r => r.code == access.region)
-      })
-    }
+    // regions () {
+    //   return this.regionAccess.map((access) => {
+    //     // eslint-disable-next-line eqeqeq
+    //     return regions.find(r => r.code == access.region)
+    //   })
+    // }
   },
   watch: {
     projectListLoaded () {
@@ -161,18 +169,21 @@ export default {
           })
           .subscribe()
 
-        console.log('subscribed to changes', this.projectsSubscription)
+        // console.log('subscribed to changes', this.projectsSubscription)
       }
     }
   },
   async mounted () {
-    const [regionAccess, deptAccess] = await Promise.all([
-      this.$auth.getRegionAccess(true),
-      this.$auth.getDeptAccess()
-    ])
+    this.refsRoles = await this.$auth.getRefsRoles()
+    console.log(this.refsRoles)
 
-    this.regionAccess = regionAccess
-    this.deptAccess = deptAccess
+    // const [regionAccess, deptAccess] = await Promise.all([
+    //   this.$auth.getRegionAccess(true),
+    //   this.$auth.getDeptAccess()
+    // ])
+
+    // this.regionAccess = regionAccess
+    // this.deptAccess = deptAccess
     this.loadingAccess = false
   },
   beforeDestroy () {
