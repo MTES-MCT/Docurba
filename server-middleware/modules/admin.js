@@ -5,9 +5,9 @@ const pipedrive = require('./pipedrive.js')
 
 module.exports = {
   async updateUserRole (userData, role) {
-    const { data, error } = await supabase.from('admin_users_dept').update({ role }).match({
-      user_email: userData.email,
-      dept: userData.dept.code_departement
+    const { data, error } = await supabase.from('github_ref_roles').update({ role }).match({
+      user_id: userData.id,
+      ref: `dept-${userData.dept.code_departement}`
     }).select()
 
     // eslint-disable-next-line no-console

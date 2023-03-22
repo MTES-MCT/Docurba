@@ -50,7 +50,7 @@ app.post('/webhook/interactivity', async (req, res) => {
       // eslint-disable-next-line no-console
       console.log('userData:', userData)
 
-      const { data, error } = await admin.updateUserRole(userData, 'ddt')
+      const { data, error } = await admin.updateUserRole(userData, 'admin')
 
       if (data && !error) {
         res.status(200).send('OK')

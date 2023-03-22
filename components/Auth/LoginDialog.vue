@@ -158,12 +158,13 @@ export default {
         if (this.userData.isDDT && this.userData.dept) {
           const { data: { session: { user } } } = await this.$supabase.auth.getSession()
 
-          await this.$supabase.from('admin_users_dept').insert([{
+          await this.$supabase.from('github_ref_roles').insert([{
             role: 'user',
-            dept: this.userData.dept.code_departement,
-            user_id: user.id,
-            user_email: user.email
+            ref: `dept-${this.userData.dept.code_departement}`,
+            user_id: user.id
           }])
+
+          this.userData.id = user.id
         }
 
         axios({

@@ -60,11 +60,10 @@ export default {
   methods: {
     async makeDDTRequest () {
       if (this.selectedDepartement) {
-        await this.$supabase.from('admin_users_dept').insert([{
+        await this.$supabase.from('github_ref_roles').insert([{
           role: 'user',
-          dept: this.selectedDepartement.code_departement,
-          user_id: this.$user.id,
-          user_email: this.$user.email
+          ref: `dept-${this.selectedDepartement.code_departement}`,
+          user_id: this.$user.id
         }])
 
         await axios({
@@ -75,7 +74,8 @@ export default {
               email: this.$user.email,
               firstname: this.$user.user_metadata.firstname,
               lastname: this.$user.user_metadata.lastname,
-              dept: this.selectedDepartement
+              dept: this.selectedDepartement,
+              id: this.$user.id
             }
           }
         })
