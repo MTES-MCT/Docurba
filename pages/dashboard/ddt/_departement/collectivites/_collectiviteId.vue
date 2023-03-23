@@ -98,39 +98,53 @@ export default {
 
         }
       })
-      // const events = formattedEvents.reduce(function (r, a) {
-      //   r[a.docType] = r[a.docType] || []
-      //   r[a.docType].push(a)
-      //   return r
-      // }, Object.create(null))
 
-      // console.log('events: ', events)
-
-      this.procedures = formattedEvents.reduce(function (r, a) {
+      const eventsByProc = formattedEvents.reduce(function (r, a) {
         r[a.idProcedure] = r[a.idProcedure] || []
         r[a.idProcedure].push(a)
         return r
       }, Object.create(null))
-      console.log('eventsByProc: ', this.procedures)
-      // const test = Object.entries(this.procedures).map(([k, e]) => {
-      //   console.log(k, e)
-      //   return [k, e]
-      // })
-      // this.procedures.map(e => (e.procSec = {}))
-      // TODO: le mettre dans une reactive que a la fin du traitement
-      // for (const [k, v] of Object.entries(this.procedures)) {
-      _.map(this.procedures, (v, k) => {
-        // console.log('v.idProcedure: ', v, ' - ', k)
-        const procSecs = _.filter(this.procedures, (e) => {
-          console.log('e.idProcedurePrincipal: ', e[0].idProcedurePrincipal, ' v.idProcedure: ', v)
-          return e[0].idProcedurePrincipal === v.idProcedure
-        })
-        console.log('procSecs: ', procSecs)
-        this.procedures[k].procSecs = procSecs
-      })
+      console.log('eventsByProc: ', eventsByProc)
 
-      // }
-      console.log('this.procedures after: ', this.procedures)
+      const tempProcs = {}
+      for (const [k, v] of Object.entries(eventsByProc)) {
+        let procSecs = _.filter(eventsByProc, (e, i) => {
+          return e[0].idProcedurePrincipal?.toString() === k
+        })
+
+        if (procSecs && procSecs.length > 0) {
+          procSecs = procSecs.reduce((acc, curr) => {
+            acc[curr[0].idProcedure] = curr
+            return acc
+          }, {})
+        } else { procSecs = null }
+
+        tempProcs[k] = { events: v, procSecs }
+      }
+
+      const cleanedProcs = {}
+      for (const [k, v] of Object.entries(tempProcs)) {
+        if (v.procSecs) { cleanedProcs[k] = v }
+      }
+      console.log('HERE tempProcs: ', tempProcs)
+      console.log('HERE cleanedProcs: ', cleanedProcs)
+
+      function lastStepDate (procedure) {
+        if (procedure.events[0].dateAbandon) {
+          return procedure.events[0].dateAbandon
+        } else if (procedure.events[0].dateExecutoire) {
+          return procedure.events[0].dateExecutoire
+        } else if (procedure.events[0].dateApprobation) {
+          return procedure.events[0].dateApprobation
+        } else if (procedure.events[0].dateLancement) {
+          return procedure.events[0].dateLancement
+        }
+        return null
+      }
+
+      this.procedures = _.chain(cleanedProcs).map(e => ({ ...e, procSecs: _.chain(e.procSecs).map(i => ({ ...i, lastStepDate: lastStepDate({ events: i }) })).orderBy('lastStepDate', 'desc').value(), lastStepDate: lastStepDate(e) })).orderBy('lastStepDate', 'desc').value()
+
+      console.log('eventsByProc after: ', this.procedures)
     }
   }
 }

@@ -1,64 +1,23 @@
 <template>
   <v-card outlined class="mb-4">
     <v-container>
+      <DashboardDUProcedureItem :procedure="procedure" />
       <v-row>
-        <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-          {{ firstEvent.docType }} - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
-        </v-col>
-      </v-row>
-      <v-row class="mt-0">
-        <v-col>
-          <div class="text-caption g600--text">
-            Statut
-          </div>
-          <div>
-            <v-chip>{{ status }}</v-chip>
-          </div>
-        </v-col>
-        <v-col>
-          <div class="text-caption g600--text">
-            Type de procédure
-          </div>
-          <div>
-            {{ procedure[0].typeProcedure }}
-          </div>
-        </v-col>
-        <v-col>
-          <div class="text-caption g600--text">
-            Etape de la procédure
-          </div>
-          <div>
-            {{ step }}
-          </div>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12" class="pb-0">
-          <v-divider />
-        </v-col>
-        <v-col cols="12" class="pb-0">
-          <p class="font-weight-bold">
-            Commentaire / Note
-          </p>
-          <p>{{ firstEvent.commentaireProcedure }} </p>
-          <p>{{ firstEvent.commentaireDgd }} </p>
-        </v-col>
-        <v-col cols="12" class="pb-0">
-          <v-divider />
-        </v-col>
-        <v-col cols="12">
-          <span class="primary--text text-decoration-underline mr-4">
-            Liste des communes concernées
-          </span>
-          <span class="primary--text text-decoration-underline mr-4">
-            Feuille de route partagée
-          </span>
-          <span class="primary--text text-decoration-underline mr-4">
-            PAC
-          </span>
-          <span class="primary--text text-decoration-underline">
-            Note d'enjeux
-          </span>
+        <v-col cols="11" offset="1">
+          <v-expansion-panels flat>
+            <v-expansion-panel>
+              <v-expansion-panel-header>
+                Procédures secondaires
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <DashboardDUSubProcedureItem
+                  v-for="procSec in procedure.procSecs"
+                  :key="'procSec_' + procSec[0].idProcedure"
+                  :procedure="{events: procSec}"
+                />
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
         </v-col>
       </v-row>
     </v-container>
@@ -68,7 +27,7 @@
 export default {
   props: {
     procedure: {
-      type: Array,
+      type: Object,
       required: true
     }
   },
@@ -79,11 +38,13 @@ export default {
   },
   computed: {
     firstEvent () {
-      return this.procedure[0]
+      return this.procedure.events[0]
     },
     status () {
-      if (this.firstEvent.dateExecutoire) {
+      if (this.firstEvent.dateExecutoire && !this.firstEvent.idProcedurePrincipal) {
         return 'opposable'
+      } else if (this.firstEvent.dateExecutoire && this.firstEvent.idProcedurePrincipal) {
+        return 'précédent'
       } else if (this.firstEvent.dateLancement || this.firstEvent.dateApprobation) {
         return 'en cours'
       } else {
