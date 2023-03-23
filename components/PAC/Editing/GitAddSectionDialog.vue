@@ -83,7 +83,7 @@ export default {
           }
         })
 
-        await axios({
+        axios({
           method: 'delete',
           url: `/api/trames/${this.gitRef}`,
           data: {
@@ -116,16 +116,6 @@ export default {
         paths.push(newSectionPath)
         await this.$supabase.from('projects').update({ PAC: paths }).eq('id', this.projectId)
       }
-
-      // const newSection = Object.assign({
-      //   slug: 'new-section',
-      //   dir,
-      //   titre: 'Nouvelle section',
-      //   path: newSectionPath
-      //   // text: 'Nouvelle section'
-      // }, this.tableKeys)
-
-      // await this.$supabase.from(this.table).insert([newSection])
 
       const { data: { data: { content: file } } } = await axios({
         method: 'post',

@@ -17,18 +17,9 @@ app.use(express.json())
 }
 */
 
-async function getAllowedRole (userId, ref) {
-  const userRoles = await admin.getUserAdminRoles(userId)
-  const roles = userRoles.deptRoles.concat(userRoles.regionRoles)
-
-  return roles.find(role => role.dept === ref || role.region === ref)
-}
-
 app.post('/projects/:parentRef', async (req, res) => {
   const { parentRef } = req.params
   const { userId, projectId } = req.body
-
-  const allowedRole = await getAllowedRole(userId, parentRef.replace('dept-', ''))
 
   const { data: parentBranch } = await github(`GET /repos/UngererFabien/France-PAC/git/ref/heads/${parentRef}`, {
     ref: parentRef
@@ -50,8 +41,6 @@ app.post('/:ref', async (req, res) => {
   const { ref } = req.params
   const { commit } = req.body
 
-  // const allowedRole = await getAllowedRole(userId, ref)
-
   // Front is trying to update a section. But someone could be editing this section as well.
   // So the front can't guarantee its sha is correct.
   if (commit.sha) {
@@ -59,7 +48,6 @@ app.post('/:ref', async (req, res) => {
     commit.sha = currentFile.sha
   }
 
-  // if (allowedRole) {
   // We assign the branch and commiter manually to make sure it cannot be overide in commit.
   // Someone miss using a userId should not be able to modify anithing else than what this userId is allowed.
   const commitRes = await github(`PUT /repos/UngererFabien/France-PAC/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
@@ -71,19 +59,12 @@ app.post('/:ref', async (req, res) => {
     message: `${commit.sha ? 'Edit' : 'Create'} ${commit.path} for ${ref} from Docurba`
   }))
 
-  // console.log(commitRes)
-
   res.status(200).send(commitRes)
-  // } else {
-  // res.status(403).send(`User not allowed to edit ${ref} trame.`)
-  // }
 })
 
 app.delete('/:ref', async (req, res) => {
   const { ref } = req.params
   const { userId, commit } = req.body
-
-  const allowedRole = await getAllowedRole(userId, ref)
 
   const commitRes = await github(`DELETE /repos/UngererFabien/France-PAC/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
     branch: ref,
@@ -93,8 +74,6 @@ app.delete('/:ref', async (req, res) => {
     },
     message: `Delete ${commit.path} for ${ref} from Docurba`
   }))
-
-  console.log(commitRes)
 
   res.status(200).send(commitRes)
 })
@@ -132,7 +111,7 @@ async function getFiles (path, ref, fetchContent = false) {
       file.name = file.name.replace('.md', '')
 
       if (file.type === 'dir') {
-        file.children = await getFiles(file.path, ref, fetchContent)
+        file.children = await getFiles(file.path, ref)
         const intro = file.children.find(child => child.name === 'intro')
 
         // if intro is not found. It might be impossible to delete the folder in the UI.

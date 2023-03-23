@@ -1,10 +1,10 @@
 <template>
   <v-expansion-panels :value="open" multiple focusable flat>
-    <v-expansion-panel v-for="(section, i) in sortedSections" :id="`panel__${section.path.replaceAll(/[^A-Za-z0-9]/g, '__')}`" :key="i">
+    <v-expansion-panel v-for="(section) in sortedSections" :id="`panel__${section.path.replaceAll(/[^A-Za-z0-9]/g, '__')}`" :key="section.path">
       <v-expansion-panel-header @click="openSection(section)">
         {{ section.tocCounter ? `${section.tocCounter.join('.')} - ` : '' }} {{ section.name }}
       </v-expansion-panel-header>
-      <v-expansion-panel-content eager>
+      <v-expansion-panel-content>
         <v-row>
           <v-col cols="12">
             <nuxt-content class="pac-section-content" :document="section" />
@@ -19,8 +19,9 @@
             <PACContentSection
               v-if="section.children && section.children.length"
               :sections="section.children"
-              :open="section.titre === 'Introduction' ? [0] : []"
+              :open="section.name === 'Introduction' ? [0] : []"
               :editable="editable"
+              :git-ref="gitRef"
             />
           </v-col>
         </v-row>
@@ -33,6 +34,8 @@
 <script>
 import { mdiCommentOutline } from '@mdi/js'
 
+import axios from 'axios'
+
 export default {
   props: {
     sections: {
@@ -42,6 +45,10 @@ export default {
     editable: {
       type: Boolean,
       default: false
+    },
+    gitRef: {
+      type: String,
+      default: 'main'
     },
     projectId: {
       type: String,
@@ -82,6 +89,24 @@ export default {
       const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', this.projectId)
       this.project = projects ? projects[0] : null
     }
+
+    this.sections.forEach(async (section) => {
+      if (!section.content) {
+        const path = `/${section.path}${section.type === 'dir' ? '/intro.md' : ''}`
+
+        const { data: sectionContent } = await axios({
+          method: 'get',
+          url: '/api/trames/file',
+          params: {
+            path,
+            ref: this.gitRef
+          }
+        })
+
+        section.content = sectionContent
+        section.body = this.$md.compile(section.content)
+      }
+    })
   },
   methods: {
     openSection (section) {

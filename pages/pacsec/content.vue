@@ -1,6 +1,6 @@
 <template>
   <v-container v-if="loaded">
-    <PACTreeviewContent :pac-data="PAC" />
+    <PACTreeviewContent :pac-data="PAC" :git-ref="gitRef" />
   </v-container>
   <VGlobalLoader v-else />
 </template>
@@ -15,17 +15,15 @@ export default {
 
     return {
       region,
+      gitRef: region ? `region-${region.code}` : 'main',
       PAC: [],
       loaded: false
     }
   },
   async mounted () {
-    const region = regions.find(r => r.iso === this.$route.query.region)
-    const ref = region ? `region-${region.code}` : 'main'
-
     const { data: sections } = await axios({
       method: 'get',
-      url: `/api/trames/tree/${ref}?content=true`
+      url: `/api/trames/tree/${this.gitRef}?content=true`
     })
 
     this.PAC = this.filterSections(sections)
@@ -65,7 +63,12 @@ export default {
       })
 
       sections.forEach((section) => {
-        if (section.content) { section.body = this.$md.compile(section.content) }
+        if (section.content) {
+          section.body = this.$md.compile(section.content)
+        } else {
+          section.content = null
+          section.body = null
+        }
 
         if (section.children) {
           section.children = this.filterSections(section.children)

@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col cols="12">
-      <PACContentSection :sections="pacData" :editable="editable" :open="[0]" />
+      <PACContentSection v-if="loaded" :sections="pacData" :editable="editable" :open="[0]" :git-ref="gitRef" />
     </v-col>
   </v-row>
 </template>
@@ -20,6 +20,10 @@ export default {
       type: Array,
       required: true
     },
+    gitRef: {
+      type: String,
+      default: 'main'
+    },
     project: {
       type: Object,
       default () { return {} }
@@ -28,7 +32,8 @@ export default {
   data () {
     return {
       contentSearch: '',
-      checkedItems: 0
+      checkedItems: 0,
+      loaded: false
       // PACroots
     }
   },
@@ -39,6 +44,8 @@ export default {
     ])
 
     this.orderSections(this.pacData, supSections)
+
+    this.loaded = true
   },
   methods: {
     checkItem (section) {

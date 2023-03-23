@@ -11,7 +11,8 @@ export default {
         return groupedSupSections[path].find(s => s.ref.includes('projet')) ||
           groupedSupSections[path].find(s => s.ref.includes('dept')) ||
           groupedSupSections[path].find(s => s.ref.includes('region')) ||
-          groupedSupSections[path].find(s => s.ref.includes('main'))
+          groupedSupSections[path].find(s => s.ref.includes('main')) ||
+          groupedSupSections[path].find(s => s.ref.includes('test'))
       })
 
       sections.forEach((section) => {
