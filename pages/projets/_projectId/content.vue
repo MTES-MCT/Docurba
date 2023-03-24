@@ -4,6 +4,7 @@
     <PACTreeviewContent
       v-if="project && !pdfUrl"
       :pac-data="project.PAC"
+      :git-ref="`projet-${project.id}`"
       :project="project"
       @read="savePacItem"
     />
