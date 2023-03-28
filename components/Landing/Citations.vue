@@ -1,6 +1,6 @@
 <template>
   <v-container class="mt-10">
-    <v-row justify="center">
+    <v-row>
       <v-col v-for="(c, i) in citations" :key="`citation-${i}`" cols="12" :sm="c.cols">
         <v-card flat class="citation-card pl-2">
           <v-card-title class="break-word">
@@ -30,8 +30,8 @@ export default {
     return {
       citations: [
         {
-          text: 'C’est une plateforme de ressources pour nous guider dans notre démarche de PLU et dans laquelle on va retrouver à la fois des documents de référence, des données qui nous sont utiles pour l’élaboration du document et puis une aide à la conduite du projet',
-          author: 'Élus d’une commune de 500 hab',
+          text: 'Je trouve que c’est une très bonne idée, même avec nos très bonnes relations avec la DDT et nos collectivités, nous n’avons pas d’outils qui nous permettent une telle communication et partage de documents avec les services de l’État',
+          author: 'Agence d\'urbanisme',
           cols: 6
         },
         {
@@ -40,19 +40,9 @@ export default {
           cols: 6
         },
         {
-          text: 'C’est une plateforme qui permet d’avoir un peu plus de transparence sur les attendus pour ne pas avoir de points de blocage quand on est plus avancé dans le projet.',
-          author: 'Bureau d’étude',
+          text: 'La recherche de données est très chronophage pour nous, les voir centralisées sur l’outil nous rassure et nous permet de mutualiser un certain nombre d’engagements, au lieu d\'aller auprès de chaque partenaire.',
+          author: 'Intercommunalité (11 communes, 11,000 habitants)',
           cols: 6
-        },
-        {
-          text: 'C’est bien que tout soit centralisé, c’est rassurant',
-          author: 'Bureau d’étude',
-          cols: 3
-        },
-        {
-          text: 'Ca fait gagner du temps.',
-          author: 'Bureau d’étude',
-          cols: 3
         }
       ]
     }

@@ -62,24 +62,24 @@ export default {
     return {
       actionsCards: [
         {
-          title: 'Prescription',
-          text: 'Déposez ou consultez votre prescription',
+          title: 'Déposer un acte',
+          text: 'Déposez une délibération de prescription ou un arrêté.',
           to: { name: 'dashboard-collectivites-collectiviteId-index-prescriptions', params: { collectiviteId: this.collectivite.code_commune_INSEE } }
         },
         {
-          title: 'Socle de PAC',
-          text: 'Consultez ou modifiez votre socle de Porter à Connaissance',
+          title: 'Socle de Porter à connaissance',
+          text: 'Consultez ou modifiez votre socle de Porter à Connaissance.',
           // http://localhost:3000/pacsec/content?insee=2001&region=FR-HDF&document=PLU
           to: { name: 'pacsec-content', query: { insee: '2001', region: 'FR-HDF', document: 'PLU' } }
         },
         {
           title: 'Ressources',
-          text: 'Lorem ipsum dolor sit amet consectetur. Ut nullam vitae.',
+          text: 'Consultez des guides ou sites internet utiles.',
           to: { name: 'dashboard-collectivites-collectiviteId-index-ressources', params: { collectiviteId: this.collectivite.code_commune_INSEE } }
         },
         {
           title: 'Données',
-          text: 'Lorem ipsum dolor sit amet consectetur. Ut nullam vitae.',
+          text: 'Consultez les données de votre territoire.',
           to: { name: 'dashboard-collectivites-collectiviteId-index-donnees', params: { collectiviteId: this.collectivite.code_commune_INSEE } }
         }
       ]

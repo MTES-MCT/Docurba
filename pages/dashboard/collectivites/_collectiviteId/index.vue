@@ -34,7 +34,6 @@ export default {
     collectivite.id = this.isEpci ? '' : collectivite.code_commune_INSEE.toString().padStart(5, '0')
     this.collectivite = collectivite
     console.log('collectivite: ', this.collectivite)
-    // this.loadCommuneEvents(this.collectivite)
   }
 }
 </script>

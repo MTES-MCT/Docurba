@@ -65,6 +65,16 @@ import GEORISQUES_MAP from '@/assets/data/GeoRisquesMap.json'
 
 export default {
   name: 'Georisque',
+  props: {
+    isEpci: {
+      type: Boolean,
+      required: true
+    },
+    collectivite: {
+      type: Object,
+      required: true
+    }
+  },
   data () {
     return {
       icons: {
@@ -93,18 +103,13 @@ export default {
       loading: true
     }
   },
-  computed: {
-    currentRegion () {
-      return this.$route.query.region
-    }
-  },
   watch: {
     async selectedTheme (newVal) {
       console.log('selectedTheme: ', newVal)
       await this.getTheme()
     }
   },
-  async mounted () {
+  mounted () {
     // Start Analytics
     const inseeQuery = this.$route.query.insee
     const codes = typeof inseeQuery === 'object' ? inseeQuery : [inseeQuery]
@@ -121,29 +126,12 @@ export default {
     }
     // End Analytics
 
-    // const parsedInseeCode = codes.map((code) => {
-    //   return `commune/${code.toString().length < 5 ? '0' + code : code}`
-    // })
-
-    // console.log('CODE: ', parsedInseeCode)
-
-    // function objToArr (obj) {
-    //   const arr = []
-    //   for (const [key, value] of Object.entries(obj)) {
-    //     console.log(`${key}: ${value}`)
-    //     arr.push({ nom: key, valeur: value })
-    //   }
-    //   return arr
-    // }
-    // console.log('this.selectedTheme: ', this.selectedTheme)
-    // const data = await this.$daturba.getGeorisques({ dataset: this.selectedTheme, insee: this.$route.query.insee })
-    // console.log('Data Georisques: ', data)
-    // if (data.data.length > 0) {
-    //   this.dataset = [data].map(e => ({ champs: objToArr(data.data[0]), title: data.dataset }))
-    // }
-    let communesData = await this.$daturba.getCommunesDetails(
-      Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee]
-    )
+    let communesData
+    if (this.Epci) {
+      communesData = this.collectivite.towns
+    } else {
+      communesData = [this.collectivite]
+    }
 
     communesData = communesData.map((e) => {
       const enriched = {
@@ -164,7 +152,7 @@ export default {
           dataset: 'ppr',
           insee: commune.code_commune_INSEE
         })
-        console.log('pprData: ', pprData)
+
         const text = JSON.stringify(pprData)
         const filename = `ppr_${commune.nom_commune}.json`
         const element = document.createElement('a')
@@ -190,12 +178,12 @@ export default {
         }
         return arr
       }
-      console.log('this.selectedTheme: ', this.selectedTheme)
+
       const data = await this.$daturba.getGeorisques({
         dataset: this.selectedTheme,
         insee: this.$route.query.insee
       })
-      console.log('Data Georisques: ', data)
+
       if (data.data.length > 0) {
         this.dataset = data.data.map((e, i) => ({
           champs: objToArr(data.data[i]),

@@ -9,10 +9,10 @@
       <v-row>
         <v-col>
           <h4 class="text-body-1 pb-2">
-            <b>Je trouve ma trame de pac</b>
+            <b>Acte</b>
           </h4>
           <p class="text-caption">
-            En précisant mon territoire et le type de document d’urbanisme.
+            Consulter un acte qui concerne l'élaboration, la révision ou l'évolution de vos documents d'urbanisme
           </p>
         </v-col>
       </v-row>
@@ -26,10 +26,10 @@
       <v-row>
         <v-col>
           <h4 class="text-body-1 pb-2">
-            <b>J'accède aux premiers éléments</b>
+            <b>Socle de Porter à Connaissance</b>
           </h4>
           <p class="text-caption">
-            Fournis par les services de l’État pour mon département.
+            Consulter les premiers éléments d'informations disponibles pour votre territoire.
           </p>
         </v-col>
       </v-row>
@@ -43,10 +43,10 @@
       <v-row>
         <v-col>
           <h4 class="text-body-1 pb-2">
-            <b>Je crée mon compte</b>
+            <b>Feuille de route</b>
           </h4>
           <p class="text-caption">
-            Et demande mon PAC à ma Direction Départementale des Territoires (DDT).
+            Suivre vos procédures à l'aide d'un tableau de bord et d'une feuille de route partagée avec les services de l'Etat.
           </p>
         </v-col>
       </v-row>
@@ -60,10 +60,10 @@
       <v-row>
         <v-col>
           <h4 class="text-body-1 pb-2">
-            <b>Je reçois mon PAC en ligne</b>
+            <b>Données</b>
           </h4>
           <p class="text-caption">
-            Ainsi que ma note d’enjeu, le cas échéant et un accompagnement du projet
+            Accéder à des données territorialisées utiles dans l'élaboration de vos documents d'urbanisme.
           </p>
         </v-col>
       </v-row>

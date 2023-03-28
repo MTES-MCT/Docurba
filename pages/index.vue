@@ -22,7 +22,7 @@
                 <v-card rounded="lg" class="pa-6">
                   <v-card-title class="">
                     <h2 class="text-h2 black--text break-word">
-                      Ressources utiles pour votre <span class="focus--text">document d'urbanisme.</span>
+                      Ressources utiles autour de votre <span class="focus--text">document d'urbanisme.</span>
                     </h2>
                   </v-card-title>
                   <v-card-text class="mt-2">
@@ -37,12 +37,29 @@
       </v-row>
     </v-container>
     <v-container>
-      <LandingDemarche />
+      <v-row>
+        <v-col cols="12">
+          <div class="primary lighten-3 my-12 pa-8">
+            <p class="font-weight-bold">
+              Vous êtes agent de l'Etat et voulez paramétrer votre trame de PAC et suivre les procédures de votre département ?
+            </p>
+            <div>
+              <v-btn depressed color="primary" class="mr-6">
+                S'inscrire
+              </v-btn>
+              <v-btn outlined color="primary">
+                Se connecter
+              </v-btn>
+            </div>
+          </div>
+        </v-col>
+      </v-row>
+      <LandingDemarche class="mb-12" />
       <LandingKeyFeatures class="mt-12" />
     </v-container>
-    <v-container>
+    <!-- <v-container>
       <LandingRegionsCard class="mt-12" />
-    </v-container>
+    </v-container> -->
     <!-- <LandingCtaByNeed /> -->
     <LandingCitations />
     <v-container fluid>
