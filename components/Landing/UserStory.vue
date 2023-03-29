@@ -1,13 +1,13 @@
 <template>
   <v-container fluid>
-    <v-row justify="space-around" class="py-5 mt-10" align="center">
+    <v-row justify="space-around" class="py-5 mt-10 fill-height" align="strech">
       <v-col cols="12" sm="6" md="3" class="collapse-transition">
         <div class="pa-4 card-us">
           <h4 class="text-body-1 pb-3">
             <b>Acte</b>
           </h4>
           <div class="text-caption">
-            Consulter un acte qui concerne l'élaboration, la révision ou l'évolution de vos documents d'urbanisme
+            Déposer un acte qui concerne l'élaboration, la révision ou l'évolution de vos documents d'urbanisme
           </div>
         </div>
       </v-col>
@@ -65,7 +65,8 @@ export default {
   background: #FFFFFF;
   border: 2px solid #F9F8F6;
   border-radius: 8px;
-  width: 90%;
+  width: 100%;
+  height: 100% !important;
   margin: auto;
 }
 </style>

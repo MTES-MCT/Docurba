@@ -19,7 +19,7 @@
                 <VFloatingShape src="/images/landing/ellipse_blue.svg" :size="70" :left="-15" :top="-20" />
                 <VFloatingShape src="/images/landing/ellipse_red.svg" :size="50" :right="100" :top="-20" />
                 <VFloatingShape src="/images/landing/circle_yellow.svg" :size="80" :right="200" :bottom="-40" />
-                <v-card rounded="lg" class="pa-6" style="z-index:100">
+                <v-card rounded="lg" class="pa-6" style="z-index:1">
                   <v-card-title class="">
                     <h2 class="text-h2 black--text break-word">
                       Ressources utiles autour de votre <span class="focus--text">document d'urbanisme.</span>
@@ -47,7 +47,7 @@
               <v-btn depressed color="primary" class="mr-6" @click="openSignupSiginDialog('inscription')">
                 S'inscrire
               </v-btn>
-              <v-btn outlined color="primary" @click="openSignupSiginDialog('connexion')">
+              <v-btn class="custom-transform-class text-none" outlined color="primary" @click="openSignupSiginDialog('connexion')">
                 Se connecter
               </v-btn>
             </div>

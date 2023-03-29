@@ -28,6 +28,24 @@ export default {
       ressources
     }
   },
+  props: {
+    isEpci: {
+      type: Boolean,
+      required: true
+    },
+    collectivite: {
+      type: Object,
+      required: true
+    },
+    communes: {
+      type: Array,
+      required: true
+    },
+    region: {
+      type: Object,
+      required: true
+    }
+  },
   mounted () {
     // Start Analytics
     const inseeQuery = this.$route.query.insee

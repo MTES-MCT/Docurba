@@ -27,7 +27,7 @@
                 {{ actionsCard.title }}
               </div>
 
-              <v-chip v-if="actionsCard.tag" class="font-weight-regular primary--text text--lighten-2" x-small color="primary lighten-3 ">
+              <v-chip v-if="actionsCard.tag" class="mt-2 font-weight-regular primary--text text--lighten-2" x-small color="primary lighten-3 ">
                 {{ actionsCard.tag }}
               </v-chip>
             </v-card-title>
@@ -49,7 +49,7 @@
         </p>
         <div>
           <v-chip color="primary--text text--lighten-2 primary lighten-3 px-6">
-            Coming Soon !
+           Disponible bientôt
           </v-chip>
         </div>
       </v-col>
@@ -83,7 +83,7 @@ export default {
         {
           title: 'Déposer un acte',
           text: 'Déposez une délibération de prescription ou un arrêté.',
-          tag: 'Coming soon !',
+          tag: 'Disponible bientôt',
           disabled: true,
           to: { name: 'dashboard-collectivites-collectiviteId-index-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.id : this.collectivite.code_commune_INSEE } }
         },
