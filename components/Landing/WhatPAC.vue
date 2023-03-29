@@ -18,12 +18,12 @@
       <p class="font-weight-bold">
         Consultez un exemple de socle de PAC déjà disponible
       </p>
-      <a class="primary--text text-decoration-underline">
+      <nuxt-link :to="{path:'/pacsec/content', query:{region:'FR-ARA',document:'PLU'}}" class="primary--text text-decoration-underline">
         <v-icon small color="primary">
           {{ icons.mdiArrowRight }}
         </v-icon>
         Région Auvergne-Rhône-Alpes
-      </a>
+      </nuxt-link>
     </v-card-text>
   </v-card>
 </template>

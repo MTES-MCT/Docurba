@@ -5,7 +5,7 @@
         <h2>Données</h2>
       </v-col>
       <v-col>
-        <DashboardCollectivitesInnerNav />
+        <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
       </v-col>
     </v-row>
     <v-row>
@@ -14,7 +14,8 @@
           <v-tab
             v-for="tab in tabs"
             :key="tab.text"
-            :to="{name: tab.to, query: $route.query}"
+            v-model="currTab"
+            :to="{path: tab.path, query: $route.query}"
             nuxt
           >
             {{ tab.text }}
@@ -22,7 +23,7 @@
         </v-tabs>
       </v-col>
     </v-row>
-    <NuxtChild :is-epci="isEpci" :collectivite="collectivite" />
+    <NuxtChild :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
   </v-container>
 </template>
 
@@ -39,15 +40,24 @@ export default {
     collectivite: {
       type: Object,
       required: true
+    },
+    communes: {
+      type: Array,
+      required: true
+    },
+    region: {
+      type: Object,
+      required: true
     }
   },
   data () {
     return {
+      currTab: 0,
       tabs: [
-        { text: 'Base territoriale', to: 'dashboard-collectivites-collectiviteId-index-donnees-data' },
-        { text: 'Géo-IDE', to: 'dashboard-collectivites-collectiviteId-index-donnees-geoide' },
-        { text: 'Géorisques', to: 'dashboard-collectivites-collectiviteId-index-donnees-georisques' },
-        { text: 'INPN', to: 'dashboard-collectivites-collectiviteId-index-donnees-inpn' }
+        { text: 'Base territoriale', path: `/collectivites/${this.$route.params.collectiviteId}/donnees/data` },
+        { text: 'Géo-IDE', path: `/collectivites/${this.$route.params.collectiviteId}/donnees/geoide` },
+        { text: 'Géorisques', path: `/collectivites/${this.$route.params.collectiviteId}/donnees/georisques` },
+        { text: 'INPN', path: `/collectivites/${this.$route.params.collectiviteId}/donnees/inpn` }
       ]
     }
   }

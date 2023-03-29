@@ -1,5 +1,13 @@
 <template>
   <v-container>
+    <v-row align="end">
+      <v-col cols="auto">
+        <h2>Glossaire</h2>
+      </v-col>
+      <v-col>
+        <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
+      </v-col>
+    </v-row>
     <GlossaireWordsList />
   </v-container>
 </template>

@@ -5,7 +5,7 @@
         <h2>Ressources</h2>
       </v-col>
       <v-col>
-        <DashboardCollectivitesInnerNav />
+        <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
       </v-col>
     </v-row>
     <RessourcesList :ressources="ressources" />

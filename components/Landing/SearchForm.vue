@@ -1,56 +1,25 @@
 <template>
   <v-form ref="form" v-model="valid">
     <v-row justify="center" align="center">
-      <v-col cols="3">
-        <v-select
-          v-model="searchQuery.document"
-          filled
-          hide-details
-          dense
-          placeholder="Type de document"
-          :items="documents"
-          :rules="[$rules.required]"
-          required
+      <v-col v-if="showEpciSelect" cols="">
+        <VEpciAutocomplete
+          v-model="selectedEpci"
+          :input-props="{
+            rules: [$rules.required]
+          }"
         />
       </v-col>
-      <v-col v-if="searchQuery.document === 'Prescriptions'" cols="">
-        <v-select v-model="typePrescription" filled hide-details dense :items="['EPCI', 'Commune']" />
+      <v-col v-else cols="">
+        <VTownAutocomplete
+          v-model="selectedTown"
+          :cols-dep="4"
+          :cols-town="8"
+          :input-props="{
+            rules: [$rules.required]
+          }"
+        />
       </v-col>
-      <v-col v-if="searchQuery.document === 'Prescriptions' && !typePrescription">
-        <v-select filled hide-details dense no-data-text="Choissiez un type" />
-      </v-col>
-      <template v-else>
-        <v-col v-if="showEpciSelect" cols="">
-          <VEpciAutocomplete
-            v-model="selectedEpci"
-            :input-props="{
-              rules: [$rules.required]
-            }"
-          />
-        </v-col>
-        <v-col v-else cols="">
-          <VTownAutocomplete
-            v-model="selectedTown"
-            :cols-dep="4"
-            :cols-town="8"
-            :input-props="{
-              rules: [$rules.required]
-            }"
-          />
-        </v-col>
-      </template>
       <v-col cols="auto">
-        <v-btn
-          depressed
-          color="primary"
-          :loading="searchLoading"
-          @click="searchCTA"
-        >
-          <v-icon class="mr-2" small>
-            {{ icons.mdiMagnify }}
-          </v-icon>
-          Rechercher
-        </v-btn>
         <v-btn
           depressed
           color="primary"
@@ -60,7 +29,7 @@
           <v-icon class="mr-2" small>
             {{ icons.mdiMagnify }}
           </v-icon>
-          Dash
+          Rechercher
         </v-btn>
       </v-col>
     </v-row>
@@ -132,21 +101,24 @@ export default {
   },
   methods: {
     toPublicDashboard () {
-      const collectiviteId = this.showEpciSelect ? this.selectedEpci.id : this.selectedTown.code_commune_INSEE
-      const departementId = this.showEpciSelect ? '' : this.selectedTown.code_departement
+      if (!this.valid) {
+        this.$refs.form.validate()
+      } else {
+        const collectiviteId = this.showEpciSelect ? this.selectedEpci.id : this.selectedTown.code_commune_INSEE
+        const departementId = this.showEpciSelect ? '' : this.selectedTown.code_departement
 
-      console.log('selectedTown: ', this.selectedTown, ' this.selectedEpci: ', this.selectedEpci)
-      console.log('collectiviteId: ', collectiviteId, 'departementId: ', departementId)
-      this.$router.push({
-        name: 'dashboard-ddt-departement-collectivites-collectiviteId',
-        params: {
-          departement: departementId,
-          collectiviteId
-        },
-        query: {
-          isEpci: !!this.showEpciSelect
-        }
-      })
+        console.log('selectedTown: ', this.selectedTown, ' this.selectedEpci: ', this.selectedEpci)
+        console.log('collectiviteId: ', collectiviteId, 'departementId: ', departementId)
+        this.$router.push({
+          name: 'collectivites-collectiviteId',
+          params: {
+            collectiviteId
+          },
+          query: {
+            isEpci: !!this.showEpciSelect
+          }
+        })
+      }
     },
     async searchCTA () {
       if (!this.valid) {

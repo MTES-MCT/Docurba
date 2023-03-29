@@ -19,7 +19,7 @@
                 <VFloatingShape src="/images/landing/ellipse_blue.svg" :size="70" :left="-15" :top="-20" />
                 <VFloatingShape src="/images/landing/ellipse_red.svg" :size="50" :right="100" :top="-20" />
                 <VFloatingShape src="/images/landing/circle_yellow.svg" :size="80" :right="200" :bottom="-40" />
-                <v-card rounded="lg" class="pa-6">
+                <v-card rounded="lg" class="pa-6" style="z-index:100">
                   <v-card-title class="">
                     <h2 class="text-h2 black--text break-word">
                       Ressources utiles autour de votre <span class="focus--text">document d'urbanisme.</span>
@@ -31,23 +31,23 @@
                 </v-card>
               </v-col>
             </v-row>
-            <LandingUserStory />
           </v-container>
+          <LandingUserStory style="position:absolute;bottom:-28%;left:0" />
         </v-col>
       </v-row>
     </v-container>
     <v-container>
       <v-row>
-        <v-col cols="12">
+        <v-col cols="12" class="mt-16">
           <div class="primary lighten-3 my-12 pa-8">
             <p class="font-weight-bold">
               Vous êtes agent de l'Etat et voulez paramétrer votre trame de PAC et suivre les procédures de votre département ?
             </p>
             <div>
-              <v-btn depressed color="primary" class="mr-6">
+              <v-btn depressed color="primary" class="mr-6" @click="openSignupSiginDialog('inscription')">
                 S'inscrire
               </v-btn>
-              <v-btn outlined color="primary">
+              <v-btn outlined color="primary" @click="openSignupSiginDialog('connexion')">
                 Se connecter
               </v-btn>
             </div>
@@ -67,9 +67,35 @@
         <LandingNewsLetterForm />
       </v-row>
     </v-container>
+    <AuthLoginDialog v-model="loginDialogState.open" :signup-mode="loginDialogState.signupMode" />
   </div>
 </template>
 
+<script>
+export default {
+  data () {
+    return {
+      loginDialogState: {
+        open: false,
+        signupMode: false
+      }
+
+    }
+  },
+  methods: {
+    openSignupSiginDialog (source) {
+      console.log('source: ', source)
+      if (source === 'connexion') {
+        this.loginDialogState.signupMode = false
+      } else {
+        this.loginDialogState.signupMode = true
+      }
+      this.loginDialogState.open = !this.loginDialogState.open
+    }
+  }
+}
+
+</script>
 <style>
 .position-relative {
   position: relative

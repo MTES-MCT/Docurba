@@ -1,5 +1,5 @@
 <template>
-  <GeoIDECardList v-if="!loading && $route.query.insee" :region="currentRegion" :cards="dataset" :themes="themes" />
+  <GeoIDECardList v-if="!loading && communes" :region="region.iso" :cards="dataset" :themes="themes" />
   <v-container v-else-if="!loading" class="fill-height">
     <v-row class="fill-height" justify="center" align="center">
       <v-col cols="12">
@@ -15,10 +15,27 @@
 </template>
 
 <script>
+
 export default {
-  // async asyncData ({ $daturba, route }) {
-  //   return await $daturba.getData(route.query.region, route.query.insee)
-  // },
+  name: 'GeoIDE',
+  props: {
+    isEpci: {
+      type: Boolean,
+      required: true
+    },
+    collectivite: {
+      type: Object,
+      required: true
+    },
+    communes: {
+      type: Array,
+      required: true
+    },
+    region: {
+      type: Object,
+      required: true
+    }
+  },
   data () {
     return {
       dataset: [],
@@ -26,51 +43,25 @@ export default {
       loading: true
     }
   },
-  computed: {
-    currentRegion () {
-      return this.$route.query.region
-    }
-  },
-  watch: {
-    '$route.query.insee' () {
-      this.fetchDatasets()
-    }
-  },
   async mounted () {
-    if (this.$route.query.insee) {
-      const inseeQuery = this.$route.query.insee
-      const codes = typeof (inseeQuery) === 'object' ? inseeQuery : [inseeQuery]
+    this.communes.forEach((commune) => {
+      this.$matomo([
+        'trackEvent', 'Socle de PAC', 'GeoIDE',
+        `${this.$route.query.document} - ${commune.id}`
+      ])
+    })
 
-      // Start Analytics
-      if (codes) {
-        codes.forEach((code) => {
-          this.$matomo([
-            'trackEvent', 'Socle de PAC', 'GeoIDE',
-          `${this.$route.query.document} - ${code}`
-          ])
-        })
-      }
-      // End Analytics
-
-      await this.fetchDatasets()
-    }
+    await this.fetchDatasets()
 
     this.loading = false
   },
   methods: {
     async fetchDatasets () {
       this.loading = true
-      const inseeQuery = this.$route.query.insee
-      const codes = typeof (inseeQuery) === 'object' ? inseeQuery : [inseeQuery]
-
-      const parsedInseeCode = codes.map((code) => {
-        return `commune/${code.toString().length < 5 ? '0' + code : code}`
-      })
-
+      const parsedInseeCode = this.communes.map(commune => `commune/${commune.id}`)
       const { cards, themes } = await this.$daturba.getGeoIDE(parsedInseeCode.join(' or '))
 
       this.dataset = cards
-
       const inspireThemes = themes.dimension.find(d => d['@label'] === 'inspireThemes')
 
       if (inspireThemes && inspireThemes.category) {

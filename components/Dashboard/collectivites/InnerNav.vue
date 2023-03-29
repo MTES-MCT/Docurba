@@ -8,23 +8,41 @@
 <script>
 export default {
   name: 'InnerNav',
+  props: {
+    isEpci: {
+      type: Boolean,
+      required: true
+    },
+    collectivite: {
+      type: Object,
+      required: true
+    },
+    communes: {
+      type: Array,
+      required: true
+    },
+    region: {
+      type: Object,
+      required: true
+    }
+  },
   data () {
     return {
       links: [{
         name: 'Tableau de bord',
-        to: { name: 'dashboard-collectivites-collectiviteId-index' }
+        to: { path: `/collectivites/${this.$route.params.collectiviteId}` }
       }, {
         name: 'Prescription',
-        to: { name: 'dashboard-collectivites-collectiviteId-index-prescriptions' }
+        to: { path: `/collectivites/${this.$route.params.collectiviteId}/prescriptions` }
       }, {
         name: 'Socle de PAC',
-        to: '/'
+        to: { path: '/pacsec/content', query: { region: this.region.iso, document: 'PLU' } }
       }, {
         name: 'Données',
-        to: { name: 'dashboard-collectivites-collectiviteId-index-donnees' }
+        to: { path: `/collectivites/${this.$route.params.collectiviteId}/donnees/georisques` }
       }, {
         name: 'Glossaire',
-        to: '/'
+        to: { path: `/collectivites/${this.$route.params.collectiviteId}/glossaire` }
       }]
     }
   }
