@@ -5,12 +5,14 @@
       :key="ressource.title"
       cols="12"
       md="4"
+      class="d-flex align-stretch"
     >
       <v-card
         flat
         outlined
         :href="getSource(ressource)"
         target="_blank"
+        class="flex-grow-1"
       >
         <v-card-title class="break-word">
           {{ ressource.title }}
@@ -36,6 +38,7 @@ export default {
   },
   computed: {
     filteredRessources () {
+      console.log('this.ressources: ', this.ressources)
       return this.ressources.filter((r) => {
         return this.getSource(r)
       })
@@ -58,6 +61,6 @@ export default {
 
 <style scoped>
 .ressource-text {
-  max-height: 250px;
+  max-height: 50px;
 }
 </style>

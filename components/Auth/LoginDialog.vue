@@ -78,6 +78,10 @@ export default {
     value: {
       type: Boolean,
       default: false
+    },
+    signupMode: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -117,6 +121,16 @@ export default {
         }
 
         this.$emit('input', val)
+      }
+    }
+  },
+  watch: {
+    signupMode (newVal) {
+      console.log('signupMode: ', newVal)
+      if (newVal) {
+        this.loginTemplate = 'Inscription'
+      } else {
+        this.loginTemplate = 'Connexion'
       }
     }
   },

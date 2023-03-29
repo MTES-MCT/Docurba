@@ -1,74 +1,48 @@
 <template>
-  <v-row justify="space-around" class="py-5 mt-10" align="center">
-    <v-col cols="12" sm="6" md="3" class="collapse-transition">
-      <v-row justify="center">
-        <v-col cols="10">
-          <v-img height="150px" contain :src="require('@/assets/picto/undraw_search.svg')" />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <h4 class="text-body-1 pb-2">
-            <b>Je trouve ma trame de pac</b>
+  <v-container fluid>
+    <v-row justify="space-around" class="py-5 mt-10" align="center">
+      <v-col cols="12" sm="6" md="3" class="collapse-transition">
+        <div class="pa-4 card-us">
+          <h4 class="text-body-1 pb-3">
+            <b>Acte</b>
           </h4>
-          <p class="text-caption">
-            En précisant mon territoire et le type de document d’urbanisme.
-          </p>
-        </v-col>
-      </v-row>
-    </v-col>
-    <v-col cols="12" sm="6" md="3" class="collapse-transition">
-      <v-row justify="center">
-        <v-col cols="10">
-          <v-img height="150px" contain :src="require('@/assets/picto/undraw_file_analysis.svg')" />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <h4 class="text-body-1 pb-2">
-            <b>J'accède aux premiers éléments</b>
+          <div class="text-caption">
+            Consulter un acte qui concerne l'élaboration, la révision ou l'évolution de vos documents d'urbanisme
+          </div>
+        </div>
+      </v-col>
+      <v-col cols="12" sm="6" md="3" class="collapse-transition">
+        <div class="pa-4 card-us">
+          <h4 class="text-body-1 pb-3">
+            <b>Socle de Porter à Connaissance</b>
           </h4>
-          <p class="text-caption">
-            Fournis par les services de l’État pour mon département.
-          </p>
-        </v-col>
-      </v-row>
-    </v-col>
-    <v-col cols="12" sm="6" md="3" class="collapse-transition">
-      <v-row justify="center">
-        <v-col cols="10">
-          <v-img height="150px" contain :src="require('@/assets/picto/undraw_profile.svg')" />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <h4 class="text-body-1 pb-2">
-            <b>Je crée mon compte</b>
+          <div class="text-caption">
+            Consulter les premiers éléments d'informations disponibles pour votre territoire.
+          </div>
+        </div>
+      </v-col>
+      <v-col cols="12" sm="6" md="3" class="collapse-transition">
+        <div class="pa-4 card-us">
+          <h4 class="text-body-1 pb-3">
+            <b>Feuille de route</b>
           </h4>
-          <p class="text-caption">
-            Et demande mon PAC à ma Direction Départementale des Territoires (DDT).
-          </p>
-        </v-col>
-      </v-row>
-    </v-col>
-    <v-col cols="12" sm="6" md="3" class="collapse-transition">
-      <v-row justify="center">
-        <v-col cols="10">
-          <v-img height="150px" contain :src="require('@/assets/picto/undraw_message_sent.svg')" />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <h4 class="text-body-1 pb-2">
-            <b>Je reçois mon PAC en ligne</b>
+          <div class="text-caption">
+            Suivre vos procédures à l'aide d'un tableau de bord et d'une feuille de route partagée avec les services de l'Etat.
+          </div>
+        </div>
+      </v-col>
+      <v-col cols="12" sm="6" md="3" class="collapse-transition">
+        <div class="pa-4 card-us">
+          <h4 class="text-body-1 pb-3">
+            <b>Données</b>
           </h4>
-          <p class="text-caption">
-            Ainsi que ma note d’enjeu, le cas échéant et un accompagnement du projet
-          </p>
-        </v-col>
-      </v-row>
-    </v-col>
-  </v-row>
+          <div class="text-caption">
+            Accéder à des données territorialisées utiles dans l'élaboration de vos documents d'urbanisme.
+          </div>
+        </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 <script>
 export default {
@@ -87,4 +61,11 @@ export default {
 </script>
 
 <style scoped>
+.card-us{
+  background: #FFFFFF;
+  border: 2px solid #F9F8F6;
+  border-radius: 8px;
+  width: 90%;
+  margin: auto;
+}
 </style>
