@@ -10,23 +10,34 @@
         Docurba, la plateforme mise en place par les services de l’Etat pour les collectivités et leurs bureaux d’étude afin de faciliter l'élaboration des documents d'urbanisme et la prise en compte des informations et enjeux environnementaux
       </p>
       <p>
-        Avec Docurba, le socle de Porter-à-connaissance (PAC) est en libre accès avec les ressources suivantes disponibles pour chaque territoire :
+        Avec Docurba, vous pouvez consulter en libre accès des données territorialisées, diverses ressources ainsi que le socle de PAC qui comprend :
       </p>
       <ul class="list">
-        <li>
+        <li class="mb-2">
           <v-icon color="focus" class="mr-2">
             {{ icons.mdiCheck }}
-          </v-icon><b>Le cadre juridique national</b>
+          </v-icon><b>Le cadre juridique national ;</b>
         </li>
         <li>
           <v-icon color="focus" class="mr-2">
             {{ icons.mdiCheck }}
-          </v-icon><b>Les éléments régionaux</b> (SRADDET & doctrine régionale)
+          </v-icon><b>Les éléments régionaux</b> (SRADDET & doctrine régionale).
+        </li>
+      </ul>
+      <p class="mt-4">
+        Vous pouvez également suivre les procédures avec :
+      </p>
+      <ul class="list">
+        <li class="mb-2">
+          <v-icon color="focus" class="mr-2">
+            {{ icons.mdiCheck }}
+          </v-icon>les <b>actes</b> correspondant aux étapes clés ;
         </li>
         <li>
           <v-icon color="focus" class="mr-2">
             {{ icons.mdiCheck }}
-          </v-icon>Les <b>données territorialisées</b>
+          </v-icon>
+          le <b>tableau de bord</b> et la <b>feuille de route</b> avec l'état d'avancement.
         </li>
       </ul>
     </v-col>

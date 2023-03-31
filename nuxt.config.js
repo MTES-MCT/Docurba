@@ -110,7 +110,8 @@ export default {
           primary: {
             base: '#000091',
             lighten1: '#E3E3FD',
-            lighten2: '#0063CB'
+            lighten2: '#0063CB',
+            lighten3: '#F7F7FB'
           },
           secondary: '#e1000f',
           bf500: '#000091',

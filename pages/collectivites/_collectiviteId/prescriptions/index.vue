@@ -1,17 +1,18 @@
 <template>
   <v-container v-if="!loading" id="prescription" class="mb-16">
-    <v-row>
+    <v-row align="end">
+      <v-col cols="auto">
+        <h2>Prescription</h2>
+      </v-col>
       <v-col>
-        <h1 class="text-h1">
-          Prescriptions
-        </h1>
+        <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
       </v-col>
     </v-row>
     <template v-if="prescription">
       <v-row>
         <v-col cols="12">
           <div class="text-h6 font-weight-bold">
-            Le document de prescription pour {{ isEpci ? $route.query.epci_label : town.nom_commune_complet }} :
+            Le document de prescription pour {{ isEpci ? $route.query.epci_label : collectivite.nom_commune_complet }} :
           </div>
         </v-col>
       </v-row>
@@ -103,14 +104,24 @@
 
 <script>
 import { mdiDownload, mdiEye, mdiLink, mdiInformation, mdiCheckCircle } from '@mdi/js'
-import axios from 'axios'
+// import axios from 'axios'
 
 export default {
   name: 'Prescriptions',
+  props: {
+    isEpci: {
+      type: Boolean,
+      required: true
+    },
+    collectivite: {
+      type: Object,
+      required: true
+    }
+  },
   data () {
     return {
       noPrescription: false,
-      town: null,
+      // collectivite: null,
       epci: null,
       loading: true,
       prescription: null,
@@ -126,43 +137,20 @@ export default {
       }
     }
   },
-  computed: {
-    isEpci () {
-      return (this.$route.query.epci_label && this.$route.query.epci_code) || this.$route.query.isEpci
-    }
-  },
   async mounted () {
     this.loading = true
-
-    if (!this.isEpci) {
-      this.town = (await axios({
-        url: `/api/communes/${this.$route.query.insee}`,
-        method: 'get'
-      })).data
-    }
     //    this.$route.query.insee
-    const inseeSearch = Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee]
+
+    // const inseeSearch = Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee]
+    const inseeSearch = this.isEpci ? [this.collectivite.code_commune_INSEE] : [this.collectivite.code_commune_INSEE]
     console.log('inseeSearch: ', inseeSearch)
     const { data: prescriptions } = await this.$supabase.from('prescriptions').select('*').contains('towns', inseeSearch).order('created_at', { ascending: false })
-
+    console.log('prescriptions: ', prescriptions)
     const [current, ...history] = prescriptions
     this.prescription = current // prescriptions[0]
     this.history = history
     this.loading = false
   }
-  // methods: {
-  //   async downloadFile (file) {
-  //     const { data } = await this.$supabase.storage.from('prescriptions').download(file.path)
-  //     const link = this.$refs[`file-${file.id}`][0]
-  //     link.href = URL.createObjectURL(data)
-  //     link.click()
-  //   },
-  //   copyLinktoClip () {
-  //     navigator.clipboard.writeText(this.prescription.link_url)
-  //     this.snackClip = true
-  //   }
-  // }
-
 }
 
 </script>

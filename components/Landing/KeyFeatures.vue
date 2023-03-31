@@ -35,21 +35,17 @@ export default {
   data () {
     return {
       keyFeatures: [{
-        floatingTitle: 'DIRECT',
-        title: 'Ressources disponibles immédiatement.',
-        text: 'Les éléments nationaux et régionaux, ainsi que les données concernant votre territoire sont mis à votre disposition par les services de l’Etat et téléchargeables aux formats .csv ou .shp.'
+        floatingTitle: 'CENTRAL & DIRECT',
+        title: 'Ressources centralisées et disponibles à tout moment.',
+        text: 'Des données territorialisées utiles pour vos documents d\'urbanisme, téléchargeables aux formats .csv ou .shp Ainsi que les premiers éléments  du PAC à échelle nationale et régionale, consultables en ligne immédiatement et mis à jour régulièrement.'
       }, {
-        floatingTitle: 'LISIBLE',
-        title: 'Navigation optimisée dans votre porter-à-connaissance.',
-        text: 'Les données et informations du PAC sont mises en forme et faciles à consulter grâce à différents niveaux d’informations, et des fonctionnalités de commentaires ou partages au sein de l’équipe.'
+        floatingTitle: 'COLLABORATIF & INTERACTIF',
+        title: 'Outil rassemblant services de l\'Etat, collectivités et bureaux d\'études',
+        text: 'Une feuille de route partagée facilitant la collaboration avec les services de l\'État. Outil destiné au suivi des étapes clef de la procédure et au partage de fichiers lié à celle-ci. La feuille de route vous guide tout au long de votre procédure'
       }, {
-        floatingTitle: 'COLLABORATIF',
-        title: 'Accompagnement des services de l’Etat.',
-        text: 'La plateforme propose une FAQ dédiée, et l’option feuille de route partagée avec la possibilité de suivre les étapes clés de la procédure. Vous pouvez ainsi offrir de la visibilité aux Services de l’Etat associées lors de l’élaboration du document d’urbanisme.'
-      }, {
-        floatingTitle: 'COMPLET',
-        title: 'Un maximum d’informations centralisées au même endroit.',
-        text: 'Documents supra-territoriaux (SRADDET, SCoT…), les données et le porter à connaissance préparé par la Direction Départementale du Territoire (DDT) en partenariat avec la DGALN (Direction Générale de l’Aménagement, du Logement et du Territoire) en partenariat avec les Directions Régionales de l’Environnement, de l’Aménagement et du Logement (DREAL).'
+        floatingTitle: 'OUTIL DU SERVICE PUBLIC',
+        title: 'Conçu avec les services de l’État et le Ministère de la Transition Écologique et de la Cohésion des Territoires.',
+        text: 'Outil pensé avec et pour les collectivités, les bureaux d\'études et les services de l\'État pour proposer les informations de références sur les procédures, les dernières lois et décrets d\'application, et les étapes essentielles d\'un document d\'urbanisme.'
       }]
     }
   }

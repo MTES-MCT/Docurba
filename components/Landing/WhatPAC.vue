@@ -14,18 +14,28 @@
       </v-row>
     </v-card-title>
     <v-card-text class="black--text">
-      Le PAC contient les informations nécessaires à l’exercice des compétences des collectivités en matière d’urbanisme. Il contient notamment le cadre législatif et réglementaire à respecter ou encore les protections existantes en matière d’environnement et de patrimoine sur le territoire.
+      <p>Le PAC contient les informations nécessaires à l’exercice des compétences des collectivités en matière d’urbanisme. Il contient notamment le cadre législatif et réglementaire à respecter ou encore les protections existantes en matière d’environnement et de patrimoine sur le territoire.</p>
+      <p class="font-weight-bold">
+        Consultez un exemple de socle de PAC déjà disponible
+      </p>
+      <nuxt-link :to="{path:'/pacsec/content', query:{region:'FR-ARA',document:'PLU'}}" class="primary--text text-decoration-underline">
+        <v-icon small color="primary">
+          {{ icons.mdiArrowRight }}
+        </v-icon>
+        Région Auvergne-Rhône-Alpes
+      </nuxt-link>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
-import { mdiInformationOutline } from '@mdi/js'
+import { mdiInformationOutline, mdiArrowRight } from '@mdi/js'
 export default {
   data () {
     return {
       icons: {
-        mdiInformationOutline
+        mdiInformationOutline,
+        mdiArrowRight
       }
     }
   }
