@@ -91,6 +91,15 @@ export default {
     // selectedDepartement () {
     //   this.fetchTowns()
     // }
+
+    defaultDepartementCode () {
+      this.selectedDepartement = this.departements.find((d) => {
+        // eslint-disable-next-line eqeqeq
+        return d.code_departement == this.defaultDepartementCode
+      })
+
+      this.fetchTowns()
+    }
   },
   mounted () {
     this.fetchTowns()
