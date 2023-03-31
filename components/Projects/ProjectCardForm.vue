@@ -22,6 +22,7 @@
             :items="refsRoles"
             hint="Trame départementale"
             persistent-hint
+            :readonly="!!project.id"
             @change="fetchEPCIs"
           />
         </v-col>
@@ -118,7 +119,7 @@ export default {
       role.value = role.ref.replace('dept-', '')
     })
 
-    this.userDeptCode = this.refsRoles[0].value
+    this.userDeptCode = this.project.id ? this.project.trame : this.refsRoles[0].value
 
     this.fetchEPCIs()
   },
