@@ -15,6 +15,18 @@
           />
         </v-col>
         <v-col cols="12">
+          <v-select
+            v-model="userDeptCode"
+            filled
+            dense
+            :items="refsRoles"
+            hint="Trame départementale"
+            persistent-hint
+            :readonly="!!project.id"
+            @change="fetchEPCIs"
+          />
+        </v-col>
+        <v-col cols="12">
           <VDocumentSelect v-model="newProject.doc_type" />
         </v-col>
         <v-col v-if="newProject.doc_type.includes('i') && EPCIs.length" cols="12">
@@ -66,10 +78,8 @@
 <script>
 import axios from 'axios'
 import regions from '@/assets/data/Regions.json'
-// import unifiedPac from '@/mixins/unifiedPac.js'
 
 export default {
-  // mixins: [unifiedPac],
   props: {
     project: {
       type: Object,
@@ -86,35 +96,42 @@ export default {
   data () {
     return {
       // PAC: [],
+      refsRoles: [],
+      userDeptCode: null,
       projectForm: {
         useTrame: this.project.id ? !!this.project.trame : true,
         epci: this.project.epci,
         town: this.project.towns ? this.project.towns[0] : null
       },
       newProject: Object.assign({}, this.project),
-      userDeptCode: null,
       EPCIs: [],
       loading: false,
       error: null
     }
   },
   async mounted () {
-    const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('dept').match({
-      user_id: this.$user.id,
-      user_email: this.$user.email,
-      role: 'ddt'
+    this.refsRoles = (await this.$auth.getRefsRoles()).filter((role) => {
+      return role.ref.includes('dept')
     })
 
-    this.userDeptCode = adminAccess[0].dept
+    this.refsRoles.forEach((role) => {
+      role.text = this.$options.filters.githubRef(role.ref)
+      role.value = role.ref.replace('dept-', '')
+    })
 
-    const EPCIs = (await axios({
-      method: 'get',
-      url: `/api/epci?departement=${this.userDeptCode}`
-    })).data
+    this.userDeptCode = this.project.id ? this.project.trame : this.refsRoles[0].value
 
-    this.EPCIs = EPCIs
+    this.fetchEPCIs()
   },
   methods: {
+    async fetchEPCIs () {
+      const EPCIs = (await axios({
+        method: 'get',
+        url: `/api/epci?departement=${this.userDeptCode}`
+      })).data
+
+      this.EPCIs = EPCIs
+    },
     async createOrUpdate (savedProject) {
       if (savedProject.id) {
         return await this.$supabase.from('projects').upsert(savedProject).select()
@@ -122,7 +139,7 @@ export default {
         const { data, err } = await this.$supabase.from('projects').insert([savedProject]).select()
         const projectId = data[0].id
 
-        const dept = +savedProject.towns[0].code_departement
+        const dept = +savedProject.trame
 
         await axios({
           method: 'post',
@@ -139,8 +156,6 @@ export default {
     async upsertProject () {
       this.loading = true
 
-      // this.newProject.PAC = this.newProject.PAC.length ? this.newProject.PAC : this.PAC.map(s => s.path)
-
       const isEpci = this.newProject.doc_type.includes('i')
 
       const savedProject = Object.assign({}, this.newProject, {
@@ -155,7 +170,7 @@ export default {
 
         const { data: sections } = await axios({
           method: 'get',
-          url: `/api/trames/tree/dept-${+savedProject.towns[0].code_departement}`
+          url: `/api/trames/tree/dept-${+savedProject.trame}`
         })
 
         function addPath (section) {
