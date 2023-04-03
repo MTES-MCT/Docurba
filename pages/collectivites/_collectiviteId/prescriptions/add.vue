@@ -1,0 +1,260 @@
+<template>
+  <v-container id="prescription">
+    <v-row align="end">
+      <v-col cols="auto">
+        <h2>Actes</h2>
+      </v-col>
+      <v-col>
+        <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
+      </v-col>
+    </v-row>
+
+    <PrescriptionYouWantCard />
+    <v-row>
+      <v-col cols="12" class="pt-0 pb-2">
+        <v-select filled label="Type d'acte" :items="['Délibération de prescription', 'Arrêté', 'Notification aux personnes publiques associées', 'Autre']" />
+      </v-col>
+      <v-col cols="12" class="pt-0 pb-2">
+        <v-text-field filled label="Date de l'acte" type="date" />
+      </v-col>
+      <v-col cols="12" class="pt-0 pb-2">
+        <v-select v-model="acteType" filled placeholder="Selectionner une option" label="Type de document d'urbanisme" :items="['Carte Communale', 'PLU', 'PLUi']" />
+      </v-col>
+      <template v-if="acteType === 'PLUi'">
+        <p>Périmètre de l’acte dans le territoire sélectionné</p>
+      </template>
+      <v-col cols="12" class="pt-0 pb-2">
+        <v-select filled placeholder="Selectionner une option" label="Type de procédure" :items="['Carte Communale', 'PLU', 'PLUi']" />
+      </v-col>
+      <v-col cols="12" class="pt-0 pb-2">
+        <v-select filled placeholder="Selectionner une option" label="Numéro de procédure" :items="['Carte Communale', 'PLU', 'PLUi']" />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <div class="text-h6 font-weight-bold">
+          Comment souhaitez-vous déposer votre fichier ?
+        </div>
+      </v-col>
+      <v-col cols="12">
+        <v-radio-group
+          v-model="docType"
+          class="mt-0"
+          hide-details
+          row
+        >
+          <v-radio
+            class="black--text pa-6 "
+            :class="{'radio-border': docType !== 'attachments', 'radio-border-active': docType === 'attachments'}"
+            label="Téléverser un fichier"
+            value="attachments"
+          />
+          <v-radio
+            class="black--text pa-6 "
+            :class="{'radio-border': docType !== 'link', 'radio-border-active': docType === 'link'}"
+            label="Insérer un lien"
+            value="link"
+          />
+        </v-radio-group>
+      </v-col>
+      <v-col v-if="docType" cols="12">
+        <div class=" black--text">
+          Déposez ici votre document de prescription
+        </div>
+      </v-col>
+    </v-row>
+    <v-row v-if="docType === 'attachments'">
+      <v-col cols="12">
+        <div class="mb-8">
+          <v-row
+            v-for="(file, i) in files"
+            :key="`${file.name}--${i}`"
+            align="center"
+          >
+            <v-col cols="8" class="py-1">
+              <div>
+                {{ file.name }}
+              </div>
+            </v-col>
+            <v-col cols="4" class="py-1">
+              <v-btn
+                class="pa-0"
+                outlined
+                color="primary"
+                small
+                @click="removeFile(file)"
+              >
+                <v-icon>{{ icons.mdiDelete }}</v-icon>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </div>
+        <VFileDropzone class="drop-zone" @change="setFiles">
+          <div class="dropzone text-center text--secondary rounded pa-8">
+            <v-icon class="pb-6" color="primary">
+              {{ icons.mdiUpload }}
+            </v-icon>
+
+            <div>Glisser le fichier dans cette zone ou cliquez sur le bouton pour ajouter un document</div>
+            <div class="py-8">
+              <!-- Taille maximale : xx Mo.
+              <br> -->
+              Formats acceptés : jpg, png, pdf.
+            </div>
+            <v-btn color="primary" outlined>
+              Ajout un document
+            </v-btn>
+          </div>
+        </VFileDropzone>
+      </v-col>
+    </v-row>
+    <v-row v-if="docType === 'link'">
+      <v-col cols="12" md="10">
+        <v-text-field ref="urlTextfield" v-model="link" filled placeholder="documentprescription.com" :rules="urlRules" />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" class="d-flex mb-16">
+        <v-btn color="primary" depressed :disabled="!choiceDone" :loading="loadingSave" @click="submitPrescription">
+          {{ docType === 'link'? 'Lier le document' : 'Déposer' }}
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
+
+<script>
+import { mdiUpload, mdiPencil, mdiCheck, mdiAccountSearchOutline, mdiDelete } from '@mdi/js'
+// import axios from 'axios'
+import slugify from 'slugify'
+import { v4 as uuidv4 } from 'uuid'
+
+export default {
+  name: 'PrescriptionsAdd',
+  props: {
+    isEpci: {
+      type: Boolean,
+      required: true
+    },
+    collectivite: {
+      type: Object,
+      required: true
+    },
+    communes: {
+      type: Array,
+      required: true
+    },
+    region: {
+      type: Object,
+      required: true
+    }
+  },
+  data () {
+    return {
+      town: null,
+      epci: null,
+      type: 'commune',
+      // loading: true,
+      loadingSave: false,
+      acteType: null,
+      docType: null,
+      link: null,
+      files: null,
+      icons: {
+        mdiUpload,
+        mdiPencil,
+        mdiCheck,
+        mdiAccountSearchOutline,
+        mdiDelete
+      },
+      urlRules: [
+        v => !!v || 'Une addresse URL est requise.',
+        // eslint-disable-next-line
+        v => /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi.test(v) || 'L\'addresse URL n\'est pas valide.'
+      ]
+    }
+  },
+  computed: {
+    choiceDone () {
+      return (this.docType === 'attachments' && this.files && this.files.length > 0) || (this.docType === 'link' && this.link && this.$refs?.urlTextfield?.valid)
+    }
+  },
+  methods: {
+    removeFile (file) {
+      console.log('File to delete: ', file)
+      console.log('this.files: ', this.files)
+      this.files = [...this.files].filter(e => e !== file)
+    },
+    setFiles (files) {
+      this.files = files
+    },
+
+    async uploadFiles () {
+      if (this.files.length) {
+        const uploadTimestamp = Date.now()
+        const filesData = []
+        for (let fileIndex = 0; fileIndex < this.files.length; fileIndex++) {
+          const file = this.files[fileIndex]
+
+          // <type_epci_commune>/<insee_or_code>/<date>/files
+          const path = `${this.$route.query.epci_code ? 'epci' : 'commune'}/${this.$route.query.epci_code ? this.$route.query.epci_code : this.$route.query.insee}/${uploadTimestamp}/${slugify(file.name, '_')}`
+          await this.$supabase.storage
+            .from('prescriptions')
+            .upload(path, file)
+          filesData.push({ path, name: file.name, id: uuidv4() })
+        }
+        return filesData
+      } else {
+        throw new Error('Pas de fichier à téléverser')
+      }
+    },
+
+    async submitPrescription () {
+      try {
+        this.loadingSave = true
+        const prescription = {
+          epci: null,
+          towns: Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee],
+          attachments: null,
+          type: this.docType
+
+        }
+        if (this.docType === 'link') {
+          prescription.link_url = this.link
+        } else if (this.docType === 'attachments') {
+          prescription.attachments = await this.uploadFiles()
+        }
+
+        await this.$supabase.from('prescriptions').insert([prescription])
+        this.loadingSave = false
+        this.$router.push({ name: 'prescriptions', query: { ...this.$route.query, success: true } })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
+}
+</script>
+
+<style lang="scss" >
+#prescription .dropzone{
+  cursor: pointer;
+  border: dashed 2px var(--v-primary-base);
+}
+
+#prescription .radio-border-active{
+   border: solid 1px var(--v-primary-base);
+    width: 350px;
+    label {
+      color: black !important;
+    }
+}
+
+#prescription .radio-border{
+    border: solid 1px  var(--v-g300-base);
+    width: 350px;
+    label {
+      color: black !important;
+    }
+}
+</style>

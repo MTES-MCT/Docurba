@@ -83,9 +83,7 @@ export default {
         {
           title: 'Déposer un acte',
           text: 'Déposez une délibération de prescription ou un arrêté.',
-          tag: 'Disponible bientôt',
-          disabled: true,
-          to: { name: 'dashboard-collectivites-collectiviteId-index-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.id : this.collectivite.code_commune_INSEE } }
+          to: { name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.id : this.collectivite.code_commune_INSEE } }
         },
         {
           title: 'Socle de Porter à connaissance',

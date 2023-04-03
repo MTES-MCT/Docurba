@@ -2,18 +2,57 @@
   <v-container v-if="!loading" id="prescription" class="mb-16">
     <v-row align="end">
       <v-col cols="auto">
-        <h2>Prescription</h2>
+        <h2>Actes</h2>
       </v-col>
       <v-col>
         <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
       </v-col>
     </v-row>
+    <v-row>
+      <v-col cols="8">
+        <p class="text-h6 font-weight-bold">
+          Déposer un nouvel acte
+        </p>
+
+        <p>
+          Si vous disposez de la prescription mise à jour, vous pouvez la déposer ici.
+        </p>
+
+        <v-btn outlined color="primary" :to="{ name: 'collectivites-collectiviteId-prescriptions-signup', params: { collectiviteId: isEpci ? collectivite.id : collectivite.code_commune_INSEE } }">
+          Déposer
+        </v-btn>
+      </v-col>
+      <v-col cols="4">
+        <v-card flat color="bf100-g750" class="position-relative">
+          <v-card-title>
+            <v-row no-gutters>
+              <v-col cols="12">
+                <v-icon color="focus">
+                  {{ icons.mdiInformationOutline }}
+                </v-icon>
+              </v-col>
+            </v-row>
+          </v-card-title>
+          <v-card-text class="black--text">
+            <p>Ce versement vaut versement sur le géoportail national de l'urbanisme.</p>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-col cols="12">
+        <v-divider class="my-8" />
+      </v-col>
+    </v-row>
+
     <template v-if="prescription">
       <v-row>
         <v-col cols="12">
-          <div class="text-h6 font-weight-bold">
-            Le document de prescription pour {{ isEpci ? $route.query.epci_label : collectivite.nom_commune_complet }} :
-          </div>
+          <p class="text-h6 font-weight-bold">
+            Actes déposés
+          </p>
+          <p>Par ordre chronologie de dépôt :</p>
         </v-col>
       </v-row>
       <v-alert v-if="$route.query.success" outlined color="success lighten-2" tile class="pa-0 mb-8 mt-12">
@@ -60,32 +99,7 @@
         </div>
       </v-alert>
     </template>
-    <v-row>
-      <v-col cols="12">
-        <v-divider class="my-8" />
-      </v-col>
-    </v-row>
 
-    <v-row>
-      <v-col cols="12">
-        <div class="text-h6 font-weight-bold">
-          Vous pouvez mettre à jour la prescription
-        </div>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col cols="12">
-        <div class="">
-          Si vous disposez de la prescription mise à jour, vous pouvez la déposer ici.
-        </div>
-      </v-col>
-      <v-col cols="12">
-        <v-btn outlined color="primary" :to="{name: 'prescriptions-add', query: {...$route.query, success:false}}">
-          Déposer
-        </v-btn>
-      </v-col>
-    </v-row>
     <v-snackbar v-model="snackClip" color="primary">
       L'addresse est copiée dans le presse papier
       <template #action="{ attrs }">
@@ -103,7 +117,7 @@
 </template>
 
 <script>
-import { mdiDownload, mdiEye, mdiLink, mdiInformation, mdiCheckCircle } from '@mdi/js'
+import { mdiDownload, mdiEye, mdiLink, mdiInformation, mdiCheckCircle, mdiInformationOutline } from '@mdi/js'
 // import axios from 'axios'
 
 export default {
@@ -114,6 +128,14 @@ export default {
       required: true
     },
     collectivite: {
+      type: Object,
+      required: true
+    },
+    communes: {
+      type: Array,
+      required: true
+    },
+    region: {
       type: Object,
       required: true
     }
@@ -131,6 +153,7 @@ export default {
       icons: {
         mdiDownload,
         mdiInformation,
+        mdiInformationOutline,
         mdiEye,
         mdiLink,
         mdiCheckCircle
