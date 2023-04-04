@@ -11,6 +11,11 @@
 
     <PrescriptionYouWantCard />
     <v-row>
+      <v-col cols="12">
+        <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+          Est-ce que l’acte en question concerne bien [Gap (Hautes-Alpes)] ?
+        </VBigRadio>
+      </v-col>
       <v-col cols="12" class="pt-0 pb-2">
         <v-select filled label="Type d'acte" :items="['Délibération de prescription', 'Arrêté', 'Notification aux personnes publiques associées', 'Autre']" />
       </v-col>
@@ -35,6 +40,32 @@
         <div class="text-h6 font-weight-bold">
           Comment souhaitez-vous déposer votre fichier ?
         </div>
+      </v-col>
+      <v-col cols="12">
+        <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+          Tient lieu de PLUiH
+        </VBigRadio>
+      </v-col>
+      <v-col cols="12">
+        <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+          Tient lieu de PLUM/PLUiM (ex PDU)
+        </VBigRadio>
+      </v-col>
+      <v-col cols="12">
+        <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
+          Si oui, le PLUM/PLUiM est-il obligatoire ?
+        </VBigRadio>
+      </v-col>
+      <v-col cols="12">
+        <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+          Tient lieu de SCoT
+        </VBigRadio>
+      </v-col>
+      <v-col cols="12" class="pt-0 pb-2">
+        <v-select v-model="acteType" filled placeholder="Selectionner une option" label="Type de procédure" :items="['Principale : E - élaboration','Principale : R - révision', 'Secondaire : RMS - Révision à modalité simplifiée ou Revision allegée', 'Secondaire : M - Modification', 'Secondaire: MS - Modification simplifiée', 'Secondaire : MC - Mise en compatibilité', 'Secondaire : MJ - Mise à jour']" />
+      </v-col>
+      <v-col cols="12" class="pt-0 pb-2">
+        <v-text-field v-model="acteType" filled placeholder="Ex. 4" label="Numéro de procédure" />
       </v-col>
       <v-col cols="12">
         <v-radio-group
@@ -151,6 +182,10 @@ export default {
   },
   data () {
     return {
+      isPLUiH: null,
+      isPLUM: null,
+      isRequiredPLUM: null,
+      isSCoT: null,
       town: null,
       epci: null,
       type: 'commune',
