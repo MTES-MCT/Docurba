@@ -59,6 +59,20 @@ export default {
     '@nuxt/content'
   ],
 
+  render: {
+    csp: {
+      // hashAlgorithm: 'sha256',
+      policies: {
+        // 'default-src': ["'self'"],
+        'script-src': [
+          // "'self'",
+          'https://stats.data.gouv.fr/piwik.js'
+        ]
+      }
+      // addMeta: true
+    }
+  },
+
   serverMiddleware: [
     '~/server-middleware/redirects.js',
     { path: '/api/admin', handler: '~/server-middleware/admin.js' },
