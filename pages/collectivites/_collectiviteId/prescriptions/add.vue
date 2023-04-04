@@ -12,8 +12,8 @@
     <PrescriptionYouWantCard />
     <v-row>
       <v-col cols="12">
-        <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
-          Est-ce que l’acte en question concerne bien [Gap (Hautes-Alpes)] ?
+        <VBigRadio v-model="confirmCollectivite" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
+          Est-ce que l’acte en question concerne bien  <b>{{ collectivite.name }} ({{ region.name }})</b> ?
         </VBigRadio>
       </v-col>
       <v-col cols="12" class="pt-0 pb-2">
@@ -25,68 +25,75 @@
       <v-col cols="12" class="pt-0 pb-2">
         <v-select v-model="acteType" filled placeholder="Selectionner une option" label="Type de document d'urbanisme" :items="['Carte Communale', 'PLU', 'PLUi']" />
       </v-col>
-      <template v-if="acteType === 'PLUi'">
-        <p>Périmètre de l’acte dans le territoire sélectionné</p>
-      </template>
-      <v-col cols="12" class="pt-0 pb-2">
-        <v-select filled placeholder="Selectionner une option" label="Type de procédure" :items="['Carte Communale', 'PLU', 'PLUi']" />
-      </v-col>
-      <v-col cols="12" class="pt-0 pb-2">
-        <v-select filled placeholder="Selectionner une option" label="Numéro de procédure" :items="['Carte Communale', 'PLU', 'PLUi']" />
-      </v-col>
     </v-row>
-    <v-row>
-      <v-col cols="12">
-        <div class="text-h6 font-weight-bold">
-          Comment souhaitez-vous déposer votre fichier ?
-        </div>
+    <v-row v-if="acteType === 'PLUi'">
+      <v-col cols="11" offset="1">
+        <v-row>
+          <v-col cols="12">
+            <p>Périmètre de l’acte dans le territoire sélectionné</p>
+            <v-btn
+              color="primary"
+              outlined
+              @click="selectAllPerimetre"
+            >
+              Selectionner toutes
+            </v-btn>
+            <v-btn
+              color="primary"
+              outlined
+              @click="perimetre = []"
+            >
+              Déselectionner toutes
+            </v-btn>
+          </v-col>
+          <v-col v-for="(commune, i) in communes" :key="i" cols="4">
+            <v-checkbox
+              v-model="perimetre"
+              hide-details
+              class="mt-0"
+              :label="`${commune.nom_commune} (${commune.code_commune_INSEE})`"
+              :value="commune.code_commune_INSEE"
+            />
+          </v-col>
+          <v-col cols="12">
+            <div class="black-border pa-3 d-inline">
+              Nombre de communes concernées : <b>{{ perimetre.length }}</b>
+            </div>
+          </v-col>
+        </v-row>
       </v-col>
-      <v-col cols="12">
+      <v-col cols="11" offset="1">
         <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
           Tient lieu de PLUiH
         </VBigRadio>
       </v-col>
-      <v-col cols="12">
-        <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+      <v-col cols="11" offset="1">
+        <VBigRadio v-model="isPLUM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
           Tient lieu de PLUM/PLUiM (ex PDU)
         </VBigRadio>
       </v-col>
-      <v-col cols="12">
-        <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
+      <v-col cols="11" offset="1">
+        <VBigRadio v-model="isRequiredPLUM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
           Si oui, le PLUM/PLUiM est-il obligatoire ?
         </VBigRadio>
       </v-col>
-      <v-col cols="12">
-        <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+      <v-col cols="11" offset="1">
+        <VBigRadio v-model="isSCoT" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
           Tient lieu de SCoT
         </VBigRadio>
       </v-col>
+    </v-row>
+    <v-row>
       <v-col cols="12" class="pt-0 pb-2">
-        <v-select v-model="acteType" filled placeholder="Selectionner une option" label="Type de procédure" :items="['Principale : E - élaboration','Principale : R - révision', 'Secondaire : RMS - Révision à modalité simplifiée ou Revision allegée', 'Secondaire : M - Modification', 'Secondaire: MS - Modification simplifiée', 'Secondaire : MC - Mise en compatibilité', 'Secondaire : MJ - Mise à jour']" />
+        <v-select v-model="typeProcedure" filled placeholder="Selectionner une option" label="Type de procédure" :items="['Principale : E - élaboration','Principale : R - révision', 'Secondaire : RMS - Révision à modalité simplifiée ou Revision allegée', 'Secondaire : M - Modification', 'Secondaire: MS - Modification simplifiée', 'Secondaire : MC - Mise en compatibilité', 'Secondaire : MJ - Mise à jour']" />
       </v-col>
       <v-col cols="12" class="pt-0 pb-2">
-        <v-text-field v-model="acteType" filled placeholder="Ex. 4" label="Numéro de procédure" />
+        <v-text-field v-model="numberProcedure" filled placeholder="Ex. 4" label="Numéro de procédure" />
       </v-col>
       <v-col cols="12">
-        <v-radio-group
-          v-model="docType"
-          class="mt-0"
-          hide-details
-          row
-        >
-          <v-radio
-            class="black--text pa-6 "
-            :class="{'radio-border': docType !== 'attachments', 'radio-border-active': docType === 'attachments'}"
-            label="Téléverser un fichier"
-            value="attachments"
-          />
-          <v-radio
-            class="black--text pa-6 "
-            :class="{'radio-border': docType !== 'link', 'radio-border-active': docType === 'link'}"
-            label="Insérer un lien"
-            value="link"
-          />
-        </v-radio-group>
+        <VBigRadio v-model="docType" :items="[{label: 'Téléverser un fichier', value:'attachments'}, {label: 'Insérer un lien', value:'link'}]">
+          Comment souhaitez-vous déposer votre fichier ?
+        </VBigRadio>
       </v-col>
       <v-col v-if="docType" cols="12">
         <div class=" black--text">
@@ -182,16 +189,20 @@ export default {
   },
   data () {
     return {
+      confirmCollectivite: null,
+      acteType: this.isEpci ? 'PLUi' : null,
+      perimetre: [],
       isPLUiH: null,
       isPLUM: null,
       isRequiredPLUM: null,
       isSCoT: null,
+      typeProcedure: null,
+      numberProcedure: '',
       town: null,
       epci: null,
       type: 'commune',
       // loading: true,
       loadingSave: false,
-      acteType: null,
       docType: null,
       link: null,
       files: null,
@@ -214,7 +225,13 @@ export default {
       return (this.docType === 'attachments' && this.files && this.files.length > 0) || (this.docType === 'link' && this.link && this.$refs?.urlTextfield?.valid)
     }
   },
+  mounted () {
+    this.selectAllPerimetre()
+  },
   methods: {
+    selectAllPerimetre () {
+      this.perimetre = this.communes.map(e => e.code_commune_INSEE)
+    },
     removeFile (file) {
       console.log('File to delete: ', file)
       console.log('this.files: ', this.files)
@@ -277,19 +294,7 @@ export default {
   border: dashed 2px var(--v-primary-base);
 }
 
-#prescription .radio-border-active{
-   border: solid 1px var(--v-primary-base);
-    width: 350px;
-    label {
-      color: black !important;
-    }
-}
-
-#prescription .radio-border{
-    border: solid 1px  var(--v-g300-base);
-    width: 350px;
-    label {
-      color: black !important;
-    }
+.black-border{
+   border: solid 1px var(--v-g800-base);
 }
 </style>

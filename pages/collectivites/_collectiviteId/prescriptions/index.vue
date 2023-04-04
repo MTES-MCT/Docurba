@@ -18,7 +18,7 @@
           Si vous disposez de la prescription mise à jour, vous pouvez la déposer ici.
         </p>
 
-        <v-btn outlined color="primary" :to="{ name: 'collectivites-collectiviteId-prescriptions-signup', params: { collectiviteId: isEpci ? collectivite.id : collectivite.code_commune_INSEE } }">
+        <v-btn outlined color="primary" :to="{ name: 'collectivites-collectiviteId-prescriptions-signup', params: { collectiviteId: isEpci ? collectivite.EPCI : collectivite.code_commune_INSEE }, query: $route.query }">
           Déposer
         </v-btn>
       </v-col>

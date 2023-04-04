@@ -53,7 +53,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <v-btn depressed color="primary" :to="{ name: 'collectivites-collectiviteId-prescriptions-add', params: { collectiviteId: isEpci ? collectivite.id : collectivite.code_commune_INSEE } }">
+        <v-btn depressed color="primary" :to="{ name: 'collectivites-collectiviteId-prescriptions-add', params: { collectiviteId: isEpci ? collectivite.EPCI : collectivite.code_commune_INSEE }, query: $route.query }">
           Valider
         </v-btn>
       </v-col>
