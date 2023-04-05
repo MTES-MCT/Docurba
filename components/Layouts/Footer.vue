@@ -58,10 +58,22 @@
           tile
           text
           small
-          href="https://beta.gouv.fr/suivi/"
-          target="_blank"
+          to="/confidentialite"
+          nuxt
         >
           Politique de confidentialité
+        </v-btn>
+      </v-col>
+      <v-col cols="auto">
+        <v-btn
+          depressed
+          tile
+          text
+          small
+          to="/mentions-legales"
+          nuxt
+        >
+          Mentions légales
         </v-btn>
       </v-col>
       <v-col cols="auto">
