@@ -227,7 +227,7 @@ export default {
       }
 
       try {
-        const filePath = section.type === 'dir' ? `${section.path}/intro${section.path.match(/\//g).length === 1 ? '' : '.md'}` : section.path
+        const filePath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
 
         await axios({
           method: 'post',

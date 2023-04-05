@@ -45,6 +45,10 @@ app.post('/:ref', async (req, res) => {
   // So the front can't guarantee its sha is correct.
   if (commit.sha) {
     const currentFile = await getFileContent(commit.path, ref, 'object')
+
+    console.log('currentFile', commit.path)
+    // console.log('currentFile', currentFile)
+
     commit.sha = currentFile.sha
   }
 
@@ -79,6 +83,8 @@ app.delete('/:ref', async (req, res) => {
 })
 
 async function getFileContent (path, ref, format = 'raw') {
+  console.log('getFileContent FORMAT: ', format)
+
   try {
     const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
       path,
@@ -86,6 +92,9 @@ async function getFileContent (path, ref, format = 'raw') {
         format
       }
     })
+
+    console.log('no error', file)
+
     return file
   } catch (err) {
     // If a file was saved as intro instead of intro.md we have this fail safe.
@@ -96,6 +105,8 @@ async function getFileContent (path, ref, format = 'raw') {
         format
       }
     })
+
+    console.log('error', file)
 
     return file
   }
