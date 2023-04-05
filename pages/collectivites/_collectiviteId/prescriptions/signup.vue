@@ -53,7 +53,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <v-btn depressed color="primary" :to="{ name: 'collectivites-collectiviteId-prescriptions-add', params: { collectiviteId: isEpci ? collectivite.EPCI : collectivite.code_commune_INSEE }, query: $route.query }">
+        <v-btn depressed color="primary" @click="nextPage">
           Valider
         </v-btn>
       </v-col>
@@ -89,7 +89,14 @@ export default {
         mdiArrowLeft
       }
     }
+  },
+  methods: {
+    nextPage () {
+      this.$emit('snackMessage', 'Vous pouvez dès a présent soumettre votre acte. Nous vous préviendrons par email quand ce dernier sera avalisée.')
+      this.$router.push({ name: 'collectivites-collectiviteId-prescriptions-add', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: this.$route.query })
+    }
   }
+
 }
 </script>
 

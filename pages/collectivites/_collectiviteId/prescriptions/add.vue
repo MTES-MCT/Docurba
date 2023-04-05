@@ -11,7 +11,7 @@
 
     <PrescriptionYouWantCard />
     <v-row>
-      <v-col cols="12">
+      <v-col cols="12" class="mb-6">
         <VBigRadio v-model="confirmCollectivite" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
           Est-ce que l’acte en question concerne bien  <b>{{ collectivite.name }} ({{ region.name }})</b> ?
         </VBigRadio>
@@ -26,13 +26,14 @@
         <v-select v-model="acteType" filled placeholder="Selectionner une option" label="Type de document d'urbanisme" :items="['Carte Communale', 'PLU', 'PLUi']" />
       </v-col>
     </v-row>
-    <v-row v-if="acteType === 'PLUi'">
+    <v-row v-if="acteType === 'PLUi'" class="mb-6">
       <v-col cols="11" offset="1">
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" class="pt-0">
             <p>Périmètre de l’acte dans le territoire sélectionné</p>
             <v-btn
               color="primary"
+              class="mr-4"
               outlined
               @click="selectAllPerimetre"
             >
@@ -55,7 +56,7 @@
               :value="commune.code_commune_INSEE"
             />
           </v-col>
-          <v-col cols="12">
+          <v-col cols="12" class="my-2">
             <div class="black-border pa-3 d-inline">
               Nombre de communes concernées : <b>{{ perimetre.length }}</b>
             </div>
@@ -68,13 +69,13 @@
         </VBigRadio>
       </v-col>
       <v-col cols="11" offset="1">
-        <VBigRadio v-model="isPLUM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
-          Tient lieu de PLUM/PLUiM (ex PDU)
+        <VBigRadio v-model="isPLUiM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+          Tient lieu de PLUiM (ex PDU)
         </VBigRadio>
       </v-col>
-      <v-col cols="11" offset="1">
-        <VBigRadio v-model="isRequiredPLUM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
-          Si oui, le PLUM/PLUiM est-il obligatoire ?
+      <v-col v-if="isPLUiM === 'oui'" cols="11" offset="1">
+        <VBigRadio v-model="isRequiredPLUiM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
+          Si oui, le PLUiM est-il obligatoire ?
         </VBigRadio>
       </v-col>
       <v-col cols="11" offset="1">
@@ -87,10 +88,24 @@
       <v-col cols="12" class="pt-0 pb-2">
         <v-select v-model="typeProcedure" filled placeholder="Selectionner une option" label="Type de procédure" :items="['Principale : E - élaboration','Principale : R - révision', 'Secondaire : RMS - Révision à modalité simplifiée ou Revision allegée', 'Secondaire : M - Modification', 'Secondaire: MS - Modification simplifiée', 'Secondaire : MC - Mise en compatibilité', 'Secondaire : MJ - Mise à jour']" />
       </v-col>
-      <v-col cols="12" class="pt-0 pb-2">
-        <v-text-field v-model="numberProcedure" filled placeholder="Ex. 4" label="Numéro de procédure" />
+      <v-col cols="12" class="pt-0 pb-2 d-flex align-start">
+        <v-text-field v-model="numberProcedure" style="max-width:25%;" filled placeholder="Ex. 4" label="Numéro de procédure" />
+
+        <v-tooltip right>
+          <template #activator="{ on, attrs }">
+            <v-icon
+              color="primary"
+              class="ml-4"
+              v-bind="attrs"
+              v-on="on"
+            >
+              {{ icons.mdiInformationOutline }}
+            </v-icon>
+          </template>
+          <div>Le numéro est dans l’acte (ex : modification simplifiée : 4)</div>
+        </v-tooltip>
       </v-col>
-      <v-col cols="12">
+      <v-col cols="12" class="pt-0">
         <VBigRadio v-model="docType" :items="[{label: 'Téléverser un fichier', value:'attachments'}, {label: 'Insérer un lien', value:'link'}]">
           Comment souhaitez-vous déposer votre fichier ?
         </VBigRadio>
@@ -162,7 +177,7 @@
 </template>
 
 <script>
-import { mdiUpload, mdiPencil, mdiCheck, mdiAccountSearchOutline, mdiDelete } from '@mdi/js'
+import { mdiUpload, mdiPencil, mdiCheck, mdiAccountSearchOutline, mdiDelete, mdiInformationOutline } from '@mdi/js'
 // import axios from 'axios'
 import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
@@ -193,8 +208,8 @@ export default {
       acteType: this.isEpci ? 'PLUi' : null,
       perimetre: [],
       isPLUiH: null,
-      isPLUM: null,
-      isRequiredPLUM: null,
+      isPLUiM: null,
+      isRequiredPLUiM: null,
       isSCoT: null,
       typeProcedure: null,
       numberProcedure: '',
@@ -211,6 +226,7 @@ export default {
         mdiPencil,
         mdiCheck,
         mdiAccountSearchOutline,
+        mdiInformationOutline,
         mdiDelete
       },
       urlRules: [
@@ -279,7 +295,7 @@ export default {
 
         await this.$supabase.from('prescriptions').insert([prescription])
         this.loadingSave = false
-        this.$router.push({ name: 'prescriptions', query: { ...this.$route.query, success: true } })
+        this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
       } catch (error) {
         console.log(error)
       }
