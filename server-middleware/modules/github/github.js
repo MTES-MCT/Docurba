@@ -9,12 +9,19 @@ const octokit = new Octokit({
 const { createClient } = require('@supabase/supabase-js')
 const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
-module.exports = async function (path, options) {
+module.exports = async function (path, options = {}) {
   const headers = {}
   let cachedRes = null
 
+  const format = (options.mediaType ? options.mediaType.format : 'default') || 'default'
+
+  // console.log('github request format', format)
+
   if (path.includes('GET')) {
-    const { data: cache } = await supabase.from('github_cache').select('*').eq('path', path)
+    const { data: cache } = await supabase.from('github_cache').select('*').match({
+      path,
+      format
+    })
 
     if (cache && cache[0]) {
       cachedRes = cache[0]
@@ -32,6 +39,7 @@ module.exports = async function (path, options) {
     if (path.includes('GET')) {
       supabase.from('github_cache').upsert([{
         path,
+        format,
         etag: res.headers.etag,
         data: res
       }]).then((data) => {

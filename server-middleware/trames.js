@@ -83,8 +83,6 @@ app.delete('/:ref', async (req, res) => {
 })
 
 async function getFileContent (path, ref, format = 'raw') {
-  console.log('getFileContent FORMAT: ', format)
-
   try {
     const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
       path,
@@ -93,7 +91,7 @@ async function getFileContent (path, ref, format = 'raw') {
       }
     })
 
-    console.log('no error', file)
+    // console.log('no error', file)
 
     return file
   } catch (err) {
@@ -106,7 +104,7 @@ async function getFileContent (path, ref, format = 'raw') {
       }
     })
 
-    console.log('error', file)
+    // console.log('error', file)
 
     return file
   }
