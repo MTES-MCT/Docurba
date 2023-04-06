@@ -126,7 +126,8 @@ export default {
             base: '#000091',
             lighten1: '#E3E3FD',
             lighten2: '#0063CB',
-            lighten3: '#F7F7FB'
+            lighten3: '#F7F7FB',
+            lighten4: '#F5F5FE'
           },
           secondary: '#e1000f',
           bf500: '#000091',

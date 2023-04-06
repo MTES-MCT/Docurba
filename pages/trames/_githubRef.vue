@@ -11,7 +11,7 @@
     <v-container v-if="!loading">
       <v-row>
         <v-col v-for="section in sections" :key="section.path" cols="12">
-          <PACSectionCard :section="section" :git-ref="gitRef" />
+          <PACSectionCard :section="section" :git-ref="gitRef" editable />
         </v-col>
       </v-row>
     </v-container>
@@ -21,8 +21,10 @@
 
 <script>
 import axios from 'axios'
+import orderSections from '@/mixins/orderSections.js'
 
 export default {
+  mixins: [orderSections],
   layout: 'app',
   data () {
     return {
@@ -44,6 +46,14 @@ export default {
       method: 'get',
       url: `/api/trames/tree/${this.gitRef}`
     })
+
+    const { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
+        `projet-${this.project.id}`,
+        `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`,
+        this.gitRef
+    ])
+
+    this.orderSections(sections, supSections)
 
     this.sections = sections
 
