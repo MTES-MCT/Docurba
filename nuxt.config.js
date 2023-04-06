@@ -45,7 +45,8 @@ export default {
     // https://go.nuxtjs.dev/eslint
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/vuetify
-    '@nuxtjs/vuetify'
+    '@nuxtjs/vuetify',
+    '@nuxt/postcss8'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -57,6 +58,20 @@ export default {
     // https://go.nuxtjs.dev/content
     '@nuxt/content'
   ],
+
+  render: {
+    csp: {
+      // hashAlgorithm: 'sha256',
+      policies: {
+        // 'default-src': ["'self'"],
+        'script-src': [
+          // "'self'",
+          'https://stats.data.gouv.fr/piwik.js'
+        ]
+      }
+      // addMeta: true
+    }
+  },
 
   serverMiddleware: [
     '~/server-middleware/redirects.js',
