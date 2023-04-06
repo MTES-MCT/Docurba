@@ -17,16 +17,19 @@
         </VBigRadio>
       </v-col>
       <v-col cols="12" class="pt-0 pb-2">
-        <v-select filled label="Type d'acte" :items="['Délibération de prescription', 'Arrêté', 'Notification aux personnes publiques associées', 'Autre']" />
+        <v-select v-model="acteType" filled label="Type d'acte" :items="['Délibération de prescription', 'Délibération du débat sur le PADD', 'Délibération d\'arrêt du projet', 'Délibération de lancement de l\'enquête publique', 'Délibération d\'approbation', 'Arrêté', 'Notification aux personnes publiques associées', 'Autre']" />
+      </v-col>
+      <v-col v-if="acteType === 'Autre'" offset="1" cols="11" class="pt-0 pb-2">
+        <v-text-field v-model="otherActeType" filled label="Précisez" />
       </v-col>
       <v-col cols="12" class="pt-0 pb-2">
         <v-text-field filled label="Date de l'acte" type="date" />
       </v-col>
       <v-col cols="12" class="pt-0 pb-2">
-        <v-select v-model="acteType" filled placeholder="Selectionner une option" label="Type de document d'urbanisme" :items="['Carte Communale', 'PLU', 'PLUi']" />
+        <v-select v-model="DUType" filled placeholder="Selectionner une option" label="Type de document d'urbanisme" :items="['Carte Communale', 'PLU', 'PLUi']" />
       </v-col>
     </v-row>
-    <v-row v-if="acteType === 'PLUi'" class="mb-6">
+    <v-row v-if="isEpci" class="mb-6">
       <v-col cols="11" offset="1">
         <v-row>
           <v-col cols="12" class="pt-0">
@@ -86,7 +89,7 @@
     </v-row>
     <v-row>
       <v-col cols="12" class="pt-0 pb-2">
-        <v-select v-model="typeProcedure" filled placeholder="Selectionner une option" label="Type de procédure" :items="['Principale : E - élaboration','Principale : R - révision', 'Secondaire : RMS - Révision à modalité simplifiée ou Revision allegée', 'Secondaire : M - Modification', 'Secondaire: MS - Modification simplifiée', 'Secondaire : MC - Mise en compatibilité', 'Secondaire : MJ - Mise à jour']" />
+        <v-select v-model="typeProcedure" filled placeholder="Selectionner une option" label="Type de procédure" :items="typesProcedure" />
       </v-col>
       <v-col cols="12" class="pt-0 pb-2 d-flex align-start">
         <v-text-field v-model="numberProcedure" style="max-width:25%;" filled placeholder="Ex. 4" label="Numéro de procédure" />
@@ -102,7 +105,7 @@
               {{ icons.mdiInformationOutline }}
             </v-icon>
           </template>
-          <div>Le numéro est dans l’acte (ex : modification simplifiée : 4)</div>
+          <div>Le numéro est dans l’acte (ex : modification simplifiée n°4)</div>
         </v-tooltip>
       </v-col>
       <v-col cols="12" class="pt-0">
@@ -204,7 +207,9 @@ export default {
   },
   data () {
     return {
+      typesProcedure: [{ header: 'Principale' }, { text: 'E - élaboration' }, { text: 'R - révision' }, { divider: true }, { header: 'Secondaire' }, { text: 'RMS - Révision à modalité simplifiée ou Revision allegée' }, { text: 'M - Modification' }, { text: 'MS - Modification simplifiée' }, { text: 'MC - Mise en compatibilité' }, { text: 'MJ - Mise à jour' }],
       confirmCollectivite: null,
+      DUType: null,
       acteType: this.isEpci ? 'PLUi' : null,
       perimetre: [],
       isPLUiH: null,
@@ -239,6 +244,15 @@ export default {
   computed: {
     choiceDone () {
       return (this.docType === 'attachments' && this.files && this.files.length > 0) || (this.docType === 'link' && this.link && this.$refs?.urlTextfield?.valid)
+    }
+  },
+  watch: {
+    DUType (newVal) {
+      if (newVal === 'PLUi') {
+        this.selectAllPerimetre()
+      } else {
+        this.perimetre = []
+      }
     }
   },
   mounted () {
