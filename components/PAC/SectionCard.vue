@@ -54,17 +54,26 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
-      <v-row v-if="editable && isOpen" align="center" class="my-3 pointer">
-        <v-col cols="">
-          <v-divider />
-        </v-col>
-        <v-col cols="auto">
-          <span><v-icon>{{ icons.mdiPlus }}</v-icon> Ajouter une sous-section </span>
-        </v-col>
-        <v-col cols="">
-          <v-divider />
-        </v-col>
-      </v-row>
+      <PACEditingGitAddSectionDialog
+        v-if="editable && isOpen"
+        :parent="section"
+        :git-ref="gitRef"
+        @added="sectionAdded"
+      >
+        <template #activator="{on}">
+          <v-row align="center" class="my-3 pointer" v-on="on">
+            <v-col cols="">
+              <v-divider />
+            </v-col>
+            <v-col cols="auto">
+              <span><v-icon>{{ icons.mdiPlus }}</v-icon> Ajouter une sous-section </span>
+            </v-col>
+            <v-col cols="">
+              <v-divider />
+            </v-col>
+          </v-row>
+        </template>
+      </PACEditingGitAddSectionDialog>
     </v-card-text>
     <v-snackbar v-model="errorSaving" top :timeout="-1" color="error">
       Une erreur s'est produite, vos modifications sur "{{ section.name }}" ne sont pas sauvegardées.
@@ -179,6 +188,10 @@ export default {
       }
 
       this.saving = false
+    },
+    sectionAdded (newSection) {
+      // eslint-disable-next-line vue/no-mutating-props
+      this.section.children.push(newSection)
     },
     cancelEditing () {
       this.sectionMarkdown = this.$md.parse(this.sectionText)

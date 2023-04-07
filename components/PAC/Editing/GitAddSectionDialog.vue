@@ -1,24 +1,26 @@
 <template>
   <v-dialog v-model="dialog" width="500">
     <template #activator="{on}">
-      <v-btn
-        v-show="showActivator"
-        depressed
-        tile
-        small
-        icon
-        :loading="loading"
-        v-on="on"
-      >
-        <v-icon>{{ icons.mdiPlus }}</v-icon>
-      </v-btn>
+      <slot name="activator" :on="on">
+        <v-btn
+          v-show="showActivator"
+          depressed
+          tile
+          small
+          icon
+          :loading="loading"
+          v-on="on"
+        >
+          <v-icon>{{ icons.mdiPlus }}</v-icon>
+        </v-btn>
+      </slot>
     </template>
     <v-card>
       <v-card-title>Ajouter une section</v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12">
-            <v-text-field v-model="sectionName" label="Nom" hide-details="" />
+            <v-text-field v-model="sectionName" label="Nom" :error-messages="errorMessage" />
           </v-col>
         </v-row>
       </v-card-text>
@@ -27,7 +29,14 @@
         <v-btn color="primary" tile outlined @click="dialog = false">
           Annuler
         </v-btn>
-        <v-btn color="primary" :loading="loading" tile depressed @click="addSection">
+        <v-btn
+          :disabled="!!errorMessage"
+          color="primary"
+          :loading="loading"
+          tile
+          depressed
+          @click="addSection"
+        >
           Ajouter
         </v-btn>
       </v-card-actions>
@@ -66,6 +75,15 @@ export default {
   computed: {
     projectId () {
       return this.gitRef.includes('projet') ? this.gitRef.replace('projet-', '') : null
+    },
+    errorMessage () {
+      if (this.parent.children) {
+        const sameNameChild = this.parent.children.find(c => c.name === this.sectionName)
+
+        if (sameNameChild) { return 'Une section porte déjà ce nom.' }
+      }
+
+      return null
     }
   },
   methods: {
