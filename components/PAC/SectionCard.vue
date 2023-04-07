@@ -8,6 +8,15 @@
               <v-col cols="">
                 <h2 class="section-title">
                   {{ section.name }}
+                  <v-chip
+                    v-if="section.diff && editable"
+                    label
+                    color="bf200"
+                    text-color="primary lighten-2"
+                    class="ml-2"
+                  >
+                    {{ section.diff.label }}
+                  </v-chip>
                 </h2>
               </v-col>
               <v-col v-if="isOpen && editable" cols="auto">

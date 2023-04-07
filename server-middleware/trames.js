@@ -194,4 +194,21 @@ app.get('/file', async (req, res) => {
   }
 })
 
+app.get('/compare', async (req, res) => {
+  try {
+    const { basehead } = req.query
+
+    // https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits
+    const { data } = await github(`GET /repos/UngererFabien/France-PAC/compare/${basehead}`, {
+      basehead,
+      per_page: 10,
+      page: 1
+    })
+
+    res.send(data.files)
+  } catch (err) {
+    console.log('err in compare', err)
+  }
+})
+
 module.exports = app

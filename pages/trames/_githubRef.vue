@@ -22,6 +22,7 @@
 <script>
 import axios from 'axios'
 import orderSections from '@/mixins/orderSections.js'
+import departements from '@/assets/data/departements-france.json'
 
 export default {
   mixins: [orderSections],
@@ -55,9 +56,63 @@ export default {
 
     this.orderSections(sections, supSections)
 
-    this.sections = sections
+    this.sections = sections.map((section) => {
+      return Object.assign({
+        diff: null
+      }, section)
+    })
 
     this.loading = false
+
+    this.getDiff()
+  },
+  methods: {
+    async getDiff () {
+      let headRef = 'main'
+
+      if (this.project && this.project.id) {
+        headRef = `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`
+      }
+
+      if (this.gitRef.includes('dept-')) {
+        const dept = this.gitRef.replace('dept-', '')
+        // eslint-disable-next-line eqeqeq
+        const region = departements.find(d => d.code_departement == dept).code_region
+        headRef = `region-${region}`
+      }
+
+      // https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits
+      const { data: diffFiles } = await axios({
+        url: `/api/trames/compare?basehead=${this.gitRef}...${headRef}`
+      })
+
+      this.sections.forEach((section) => {
+        this.setDiff(section, diffFiles, headRef)
+      })
+    },
+    setDiff (section, diffFiles, diffRef) {
+      const sectionPath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
+
+      const diffFile = diffFiles.find((file) => {
+        return file.filename === sectionPath
+      })
+
+      const level = diffRef.includes('dept-') ? 'départementale' : 'régionale'
+
+      if (diffFile) {
+        section.diff = {
+          path: diffFile.filename,
+          ref: diffRef,
+          label: `Modifications au niveau ${level}`
+        }
+      }
+
+      if (section.children) {
+        section.children.forEach((child) => {
+          this.setDiff(child, diffFiles, diffRef)
+        })
+      }
+    }
   }
 }
 </script>
