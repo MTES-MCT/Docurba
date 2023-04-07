@@ -1,6 +1,6 @@
 <template>
-  <v-card class="tvwysiwyg-editor tiptap-content" style="width: 100%;">
-    <v-toolbar v-if="editor">
+  <v-card class="tvwysiwyg-editor tiptap-content" flat outlined style="width: 100%;">
+    <v-toolbar v-if="editor" flat>
       <v-toolbar-items>
         <v-btn depressed tile icon>
           <v-icon

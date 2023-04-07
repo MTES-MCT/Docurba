@@ -11,19 +11,25 @@
                 </h2>
               </v-col>
               <v-col v-if="isOpen && editable" cols="auto">
-                <v-btn icon @click.stop="editEnabled = true">
+                <v-btn v-if="!editEnabled" icon @click.stop="editEnabled = true">
                   <v-icon>{{ icons.mdiPencil }}</v-icon>
                 </v-btn>
+                <template v-else>
+                  <PACEditingCancelDialog :section="section" @cancel="cancelEditing" />
+                  <v-btn icon :loading="saving" @click.stop="saveSection">
+                    <v-icon>{{ icons.mdiContentSave }}</v-icon>
+                  </v-btn>
+                </template>
               </v-col>
             </v-row>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="rounded">
             <v-row v-if="editEnabled">
               <v-col cols="12">
-                <VTiptap v-if="editEnabled" v-model="sectionMarkdown">
-                  <PACSectionsAttachementsDialog
+                <VTiptap v-if="editEnabled" v-model="sectionMarkdown" class="mt-6">
+                  <!-- <PACSectionsAttachementsDialog
                     :section="section"
-                  />
+                  /> -->
                 </VTiptap>
               </v-col>
             </v-row>
@@ -41,6 +47,7 @@
                 <PACSectionCard
                   :section="child"
                   :git-ref="gitRef"
+                  :editable="editable"
                 />
               </v-col>
             </v-row>
@@ -59,12 +66,21 @@
         </v-col>
       </v-row>
     </v-card-text>
+    <v-snackbar v-model="errorSaving" top :timeout="-1" color="error">
+      Une erreur s'est produite, vos modifications sur "{{ section.name }}" ne sont pas sauvegardées.
+      <template #action>
+        <v-btn icon @click="errorSaving = false">
+          <v-icon>{{ icons.mdiClose }}</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-card>
 </template>
 
 <script>
 import axios from 'axios'
-import { mdiPlus, mdiPencil } from '@mdi/js'
+import { mdiPlus, mdiPencil, mdiContentSave, mdiClose } from '@mdi/js'
+import { encode } from 'js-base64'
 
 export default {
   props: {
@@ -85,13 +101,18 @@ export default {
     return {
       icons: {
         mdiPlus,
-        mdiPencil
+        mdiPencil,
+        mdiContentSave,
+        mdiClose
       },
+      projectId: this.gitRef.includes('projet-') ? this.gitRef.replace('projet-', '') : null,
       sectionText: '',
       sectionContent: {},
       sectionMarkdown: '',
       editEnabled: false,
-      openedSections: []
+      openedSections: [],
+      saving: false,
+      errorSaving: false
     }
   },
   computed: {
@@ -119,11 +140,49 @@ export default {
       try {
         this.sectionText = sectionContent.replace(/---([\s\S]*)---/, '')
         this.sectionContent.body = this.$md.compile(this.sectionText)
-        this.sectionMarkdown = this.$md.parse(this.sectiontext)
+        this.sectionMarkdown = this.$md.parse(this.sectionText)
       } catch (err) {
         // eslint-disable-next-line no-console
         console.log(err, sectionContent)
       }
+    },
+    async saveSection () {
+      this.saving = true
+
+      try {
+        const filePath = this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path
+
+        await axios({
+          method: 'post',
+          url: `/api/trames/${this.gitRef}`,
+          data: {
+            userId: this.$user.id,
+            commit: {
+              path: filePath,
+              content: encode(this.sectionMarkdown),
+              sha: this.section.type === 'dir' ? this.section.introSha : this.section.sha
+            }
+          }
+        })
+
+        if (this.projectId) {
+          this.$notifications.notifyUpdate(this.projectId)
+        }
+
+        this.sectionContent.body = this.$md.compile(this.sectionMarkdown)
+        this.editEnabled = false
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.log('Error saving data', err)
+
+        this.errorSaving = true
+      }
+
+      this.saving = false
+    },
+    cancelEditing () {
+      this.sectionMarkdown = this.$md.parse(this.sectionText)
+      this.editEnabled = false
     }
   }
 }
