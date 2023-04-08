@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar-items v-if="!dense">
+  <v-toolbar-items>
     <v-btn
       depressed
       tile
