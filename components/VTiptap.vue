@@ -1,6 +1,6 @@
 <template>
   <v-card class="tvwysiwyg-editor tiptap-content" flat outlined style="width: 100%;">
-    <v-toolbar v-if="editor" flat>
+    <v-toolbar v-if="editor" ref="toolbar" flat>
       <v-toolbar-items>
         <v-btn depressed tile icon>
           <v-icon
@@ -44,88 +44,19 @@
             <v-icon>{{ item.icon }}</v-icon>
           </template>
         </v-select>
-        <!-- <v-btn depressed tile
-          icon
-          @click="
-            editor
-              .chain()
-              .focus()
-              .toggleHeading({ level: 1 })
-              .run()
-          "
-        >
-          <v-icon>{{ icons.mdiFormatHeader1 }}</v-icon>
-        </v-btn> -->
-        <v-btn
-          depressed
-          tile
-          icon
-          @click="
-            editor
-              .chain()
-              .focus()
-              .toggleBold()
-              .run()
-          "
-        >
-          <v-icon>{{ icons.mdiFormatBold }}</v-icon>
-        </v-btn>
-        <v-btn
-          depressed
-          tile
-          icon
-          @click="
-            editor
-              .chain()
-              .focus()
-              .toggleItalic()
-              .run()
-          "
-        >
-          <v-icon>{{ icons.mdiFormatItalic }}</v-icon>
-        </v-btn>
-        <v-btn
-          depressed
-          tile
-          icon
-          @click="
-            editor
-              .chain()
-              .focus()
-              .toggleUnderline()
-              .run()
-          "
-        >
-          <v-icon>{{ icons.mdiFormatUnderline }}</v-icon>
-        </v-btn>
-        <v-btn
-          depressed
-          tile
-          icon
-          @click="
-            editor
-              .chain()
-              .focus()
-              .toggleBulletList()
-              .run()
-          "
-        >
-          <v-icon>{{ icons.mdiFormatListBulleted }}</v-icon>
-        </v-btn>
-        <v-btn
-          depressed
-          tile
-          icon
-          @click="
-            editor
-              .chain()
-              .focus()
-              .toggleOrderedList()
-              .run()
-          "
-        >
-          <v-icon>{{ icons.mdiFormatListNumbered }}</v-icon>
-        </v-btn>
+        <v-menu v-if="dense">
+          <template #activator="{on}">
+            <v-btn icon tile depressed v-on="on">
+              <v-icon>{{ icons.mdiDotsVertical }}</v-icon>
+            </v-btn>
+          </template>
+          <v-toolbar>
+            <VTiptapItems :editor="editor" />
+          </v-toolbar>
+        </v-menu>
+      </v-toolbar-items>
+      <VTiptapItems v-if="!dense" :editor="editor" />
+      <v-toolbar-items>
         <v-btn
           depressed
           tile
@@ -216,7 +147,7 @@ import {
   mdiFormatHeader2, mdiFormatHeader3, mdiFormatHeader4,
   mdiFormatBold, mdiFormatUnderline, mdiFormatItalic,
   mdiFormatListBulleted, mdiFormatListNumbered, mdiLink,
-  mdiCheck, mdiFileImage
+  mdiCheck, mdiFileImage, mdiDotsVertical
 } from '@mdi/js'
 
 export default {
@@ -245,8 +176,18 @@ export default {
     }
   },
   data () {
+    Image.configure({
+      allowBase64: true
+    })
+
     return {
-      editor: null,
+      editor: new Editor({
+        extensions: [StarterKit, Underline, Link, Image],
+        content: this.value,
+        onUpdate: () => {
+          this.$emit('input', this.editor.getHTML())
+        }
+      }),
       icons: {
         mdiUndo,
         mdiRedo,
@@ -258,7 +199,8 @@ export default {
         mdiFormatListNumbered,
         mdiLink,
         mdiCheck,
-        mdiFileImage
+        mdiFileImage,
+        mdiDotsVertical
       },
       selecitionValid: true,
       selection: null,
@@ -267,7 +209,8 @@ export default {
         x: 0,
         y: 0
       },
-      linkHref: ''
+      linkHref: '',
+      dense: false
     }
   },
   computed: {
@@ -308,17 +251,25 @@ export default {
     }
   },
   mounted () {
-    Image.configure({
-      allowBase64: true
+    this.dense = this.$el.offsetWidth < 550
+
+    const resizeObserver = new ResizeObserver(() => {
+      this.dense = this.$el.offsetWidth < 550
     })
 
-    this.editor = new Editor({
-      extensions: [StarterKit, Underline, Link, Image],
-      content: this.value,
-      onUpdate: () => {
-        this.$emit('input', this.editor.getHTML())
-      }
-    })
+    resizeObserver.observe(this.$el)
+
+    // Image.configure({
+    //   allowBase64: true
+    // })
+
+    // this.editor = new Editor({
+    //   extensions: [StarterKit, Underline, Link, Image],
+    //   content: this.value,
+    //   onUpdate: () => {
+    //     this.$emit('input', this.editor.getHTML())
+    //   }
+    // })
   },
   beforeUnmount () {
     this.editor.destroy()

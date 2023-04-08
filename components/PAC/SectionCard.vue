@@ -34,12 +34,18 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content class="rounded">
             <v-row v-if="editEnabled">
-              <v-col cols="12">
+              <v-col :cols="diff.visible ? 6 : 12">
                 <VTiptap v-if="editEnabled" v-model="sectionMarkdown" class="mt-6">
                   <!-- <PACSectionsAttachementsDialog
                     :section="section"
                   /> -->
+                  <v-btn v-if="section.diff" icon tile @click="toggleDiff">
+                    <v-icon>{{ icons.mdiFileCompare }}</v-icon>
+                  </v-btn>
                 </VTiptap>
+              </v-col>
+              <v-col v-if="diff.visible" cols="6">
+                <PACEditingDiffCard class="mt-6" :diff="diff" :label="'Trame departementale'" />
               </v-col>
             </v-row>
             <v-row v-else>
@@ -97,7 +103,7 @@
 
 <script>
 import axios from 'axios'
-import { mdiPlus, mdiPencil, mdiContentSave, mdiClose } from '@mdi/js'
+import { mdiPlus, mdiPencil, mdiContentSave, mdiClose, mdiFileCompare } from '@mdi/js'
 import { encode } from 'js-base64'
 
 export default {
@@ -113,6 +119,10 @@ export default {
     editable: {
       type: Boolean,
       default: false
+    },
+    project: {
+      type: Object,
+      default () { return {} }
     }
   },
   data () {
@@ -121,16 +131,17 @@ export default {
         mdiPlus,
         mdiPencil,
         mdiContentSave,
-        mdiClose
+        mdiClose,
+        mdiFileCompare
       },
-      projectId: this.gitRef.includes('projet-') ? this.gitRef.replace('projet-', '') : null,
       sectionText: '',
-      sectionContent: {},
+      sectionContent: { body: null },
       sectionMarkdown: '',
       editEnabled: false,
       openedSections: [],
       saving: false,
-      errorSaving: false
+      errorSaving: false,
+      diff: { body: null, visible: false }
     }
   },
   computed: {
@@ -183,8 +194,8 @@ export default {
           }
         })
 
-        if (this.projectId) {
-          this.$notifications.notifyUpdate(this.projectId)
+        if (this.project && this.project.id) {
+          this.$notifications.notifyUpdate(this.project.id)
         }
 
         this.sectionContent.body = this.$md.compile(this.sectionMarkdown)
@@ -205,6 +216,22 @@ export default {
     cancelEditing () {
       this.sectionMarkdown = this.$md.parse(this.sectionText)
       this.editEnabled = false
+    },
+    async toggleDiff () {
+      if (this.section.diff && !this.diff.body) {
+        const { data: diffSectionContent } = await axios({
+          method: 'get',
+          url: '/api/trames/file',
+          params: {
+            path: this.section.diff.path,
+            ref: this.section.diff.ref
+          }
+        })
+
+        this.diff.body = this.$md.compile(diffSectionContent.replace(/---([\s\S]*)---/, ''))
+      }
+
+      this.diff.visible = !this.diff.visible
     }
   }
 }
