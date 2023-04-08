@@ -34,17 +34,17 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content class="rounded">
             <v-row v-if="editEnabled">
-              <v-col :cols="diff.visible ? 6 : 12">
+              <v-col :cols="(diff.visible && diff.body) ? 6 : 12">
                 <VTiptap v-if="editEnabled" v-model="sectionMarkdown" class="mt-6">
                   <!-- <PACSectionsAttachementsDialog
                     :section="section"
                   /> -->
-                  <v-btn v-if="section.diff" icon tile @click="toggleDiff">
+                  <v-btn icon tile @click="toggleDiff">
                     <v-icon>{{ icons.mdiFileCompare }}</v-icon>
                   </v-btn>
                 </VTiptap>
               </v-col>
-              <v-col v-if="diff.visible" cols="6">
+              <v-col v-if="diff.visible && diff.body" cols="6">
                 <PACEditingDiffCard class="mt-6" :diff="diff" :label="'Trame departementale'" />
               </v-col>
             </v-row>
@@ -98,13 +98,23 @@
         </v-btn>
       </template>
     </v-snackbar>
+    <v-snackbar v-model="errorDiff" top :timeout="4000" color="error">
+      La section {{ section.name }} n'est pas trouvable au niveau {{ diff.label }}.
+      <template #action>
+        <v-btn icon @click="errorDiff = false">
+          <v-icon>{{ icons.mdiClose }}</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-card>
 </template>
 
 <script>
+
 import axios from 'axios'
 import { mdiPlus, mdiPencil, mdiContentSave, mdiClose, mdiFileCompare } from '@mdi/js'
 import { encode } from 'js-base64'
+import departements from '@/assets/data/departements-france.json'
 
 export default {
   props: {
@@ -141,7 +151,8 @@ export default {
       openedSections: [],
       saving: false,
       errorSaving: false,
-      diff: { body: null, visible: false }
+      errorDiff: false,
+      diff: { body: null, visible: false, label: '' }
     }
   },
   computed: {
@@ -217,18 +228,41 @@ export default {
       this.sectionMarkdown = this.$md.parse(this.sectionText)
       this.editEnabled = false
     },
-    async toggleDiff () {
-      if (this.section.diff && !this.diff.body) {
+    async fetchDiff () {
+      let headRef = 'main'
+
+      if (this.project && this.project.id) {
+        headRef = `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`
+      }
+
+      if (this.gitRef.includes('dept-')) {
+        const dept = this.gitRef.replace('dept-', '')
+        // eslint-disable-next-line eqeqeq
+        const region = departements.find(d => d.code_departement == dept).code_region
+        headRef = `region-${region}`
+      }
+
+      this.diff.label = `Trame ${headRef.includes('dept-') ? 'départementale' : 'régionale'}`
+
+      try {
         const { data: diffSectionContent } = await axios({
           method: 'get',
           url: '/api/trames/file',
           params: {
-            path: this.section.diff.path,
-            ref: this.section.diff.ref
+            path: this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path,
+            ref: headRef
           }
         })
 
         this.diff.body = this.$md.compile(diffSectionContent.replace(/---([\s\S]*)---/, ''))
+      } catch (err) {
+        this.diff.body = null
+        this.errorDiff = true
+      }
+    },
+    async toggleDiff () {
+      if (!this.diff.body) {
+        await this.fetchDiff()
       }
 
       this.diff.visible = !this.diff.visible
