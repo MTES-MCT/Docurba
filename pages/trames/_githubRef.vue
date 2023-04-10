@@ -17,6 +17,7 @@
             :project="project"
             editable
             @selectionChange="saveSelection"
+            @changeOrder="saveOrder"
           />
         </v-col>
       </v-row>
@@ -137,6 +138,61 @@ export default {
       await this.$supabase.from('projects').update({
         PAC: this.project.PAC
       }).eq('id', this.project.id)
+    },
+    findParent (section, path) {
+      const child = section.children.find(s => s.path === path)
+
+      if (child) {
+        return section
+      } else {
+        return section.children.find((s) => {
+          return this.findParent(s, path)
+        })
+      }
+    },
+    async saveOrder (sectionPath, orderChange) {
+      let parent = this.sections.find(s => s.path === sectionPath)
+      let changedSections = null
+
+      if (!parent) {
+        this.sections.find((section) => {
+          parent = this.findParent(section, sectionPath)
+          return parent
+        })
+
+        changedSections = parent.children
+      } else {
+        changedSections = this.sections
+      }
+
+      const changedSectionIndex = changedSections.findIndex(s => s.path === sectionPath)
+      const newIndex = changedSectionIndex + orderChange
+
+      if (newIndex >= 0 && newIndex < changedSections.length) {
+        [
+          changedSections[changedSectionIndex],
+          changedSections[newIndex]
+        ] = [
+          changedSections[newIndex],
+          changedSections[changedSectionIndex]
+        ]
+
+        const updatedSections = changedSections.map((section, index) => {
+          section.order = index
+          const { path } = section
+          return {
+            path,
+            ref: this.gitRef,
+            order: index
+          }
+        })
+
+        changedSections.sort((s1, s2) => {
+          return s1.order - s2.order
+        })
+
+        await this.$supabase.from('pac_sections').upsert(updatedSections).select()
+      }
     }
   }
 }

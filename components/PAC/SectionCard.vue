@@ -30,6 +30,12 @@
                 </h2>
               </v-col>
               <v-col v-if="isOpen && editable" cols="auto">
+                <v-btn icon @click.stop="$emit('changeOrder', section.path, -1)">
+                  <v-icon>{{ icons.mdiArrowUp }}</v-icon>
+                </v-btn>
+                <v-btn icon @click.stop="$emit('changeOrder', section.path, 1)">
+                  <v-icon>{{ icons.mdiArrowDown }}</v-icon>
+                </v-btn>
                 <v-btn v-if="!editEnabled" icon @click.stop="editEnabled = true">
                   <v-icon>{{ icons.mdiPencil }}</v-icon>
                 </v-btn>
@@ -75,6 +81,7 @@
                   :project="project"
                   :editable="editable"
                   @selectionChange="dispatchSelectionChange"
+                  @changeOrder="dispatchChangeOrder"
                 />
               </v-col>
             </v-row>
@@ -124,7 +131,11 @@
 <script>
 
 import axios from 'axios'
-import { mdiPlus, mdiPencil, mdiContentSave, mdiClose, mdiFileCompare } from '@mdi/js'
+import {
+  mdiPlus, mdiPencil, mdiContentSave,
+  mdiClose, mdiFileCompare,
+  mdiArrowDown, mdiArrowUp
+} from '@mdi/js'
 import { encode } from 'js-base64'
 import departements from '@/assets/data/departements-france.json'
 
@@ -157,7 +168,9 @@ export default {
         mdiPencil,
         mdiContentSave,
         mdiClose,
-        mdiFileCompare
+        mdiFileCompare,
+        mdiArrowDown,
+        mdiArrowUp
       },
       isSelected: selectedPaths.includes(this.section.path),
       sectionText: '',
@@ -255,6 +268,9 @@ export default {
     },
     dispatchSelectionChange (selection) {
       this.$emit('selectionChange', selection)
+    },
+    dispatchChangeOrder (path, orderChange) {
+      this.$emit('changeOrder', path, orderChange)
     },
     cancelEditing () {
       this.sectionMarkdown = this.$md.parse(this.sectionText)
