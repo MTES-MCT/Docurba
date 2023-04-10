@@ -63,7 +63,7 @@
                 <nuxt-content class="pac-section-content mt-4" :document="sectionContent" />
               </v-col>
             </v-row>
-            <v-row v-if="section.children">
+            <v-row v-if="section.children && section.children.length">
               <v-col
                 v-for="child in section.children"
                 :key="child.path"
@@ -74,6 +74,7 @@
                   :git-ref="gitRef"
                   :project="project"
                   :editable="editable"
+                  @selectionChange="dispatchSelectionChange"
                 />
               </v-col>
             </v-row>
@@ -251,6 +252,9 @@ export default {
         path: this.section.path,
         selected: this.isSelected
       })
+    },
+    dispatchSelectionChange (selection) {
+      this.$emit('selectionChange', selection)
     },
     cancelEditing () {
       this.sectionMarkdown = this.$md.parse(this.sectionText)

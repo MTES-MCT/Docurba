@@ -62,10 +62,18 @@ export default {
 
     this.orderSections(sections, supSections)
 
-    this.sections = sections.map((section) => {
+    function parseSection (section) {
+      if (section.children) {
+        section.children = section.children.map(section => parseSection(section))
+      } else { section.children = [] }
+
       return Object.assign({
         diff: null
       }, section)
+    }
+
+    this.sections = sections.map((section) => {
+      return parseSection(section)
     })
 
     this.loading = false
