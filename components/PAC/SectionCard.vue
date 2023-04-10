@@ -1,12 +1,22 @@
 <template>
-  <v-card flat :color="isOpen ? 'primary lighten-4' : 'white'">
+  <v-card flat :color="backgroundColor">
     <v-card-text class="section-card">
       <v-expansion-panels v-model="openedSections" multiple flat>
         <v-expansion-panel>
-          <v-expansion-panel-header :color="isOpen ? 'primary lighten-4' : 'white'">
-            <v-row dense>
+          <v-expansion-panel-header :color="backgroundColor">
+            <v-row align="center" dense>
+              <v-col v-if="project.id && editable" cols="auto">
+                <v-checkbox
+                  v-model="isSelected"
+                  color="primary"
+                  hide-details
+                  class="mt-0"
+                  @click.prevent.stop
+                  @change="selectionChange"
+                />
+              </v-col>
               <v-col cols="">
-                <h2 class="section-title">
+                <h2 class="section-title d-flex align-center">
                   {{ section.name }}
                   <v-chip
                     v-if="section.diff && editable"
@@ -62,6 +72,7 @@
                 <PACSectionCard
                   :section="child"
                   :git-ref="gitRef"
+                  :project="project"
                   :editable="editable"
                 />
               </v-col>
@@ -136,6 +147,9 @@ export default {
     }
   },
   data () {
+    const selectedPaths = this.project.PAC || []
+    // const sectionPath = this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path
+
     return {
       icons: {
         mdiPlus,
@@ -144,6 +158,7 @@ export default {
         mdiClose,
         mdiFileCompare
       },
+      isSelected: selectedPaths.includes(this.section.path),
       sectionText: '',
       sectionContent: { body: null },
       sectionMarkdown: '',
@@ -158,6 +173,13 @@ export default {
   computed: {
     isOpen () {
       return this.openedSections.length
+    },
+    backgroundColor () {
+      if (this.project.id && !this.isSelected) {
+        return 'g300'
+      }
+
+      return this.isOpen ? 'primary lighten-4' : 'white'
     }
   },
   mounted () {
@@ -223,6 +245,12 @@ export default {
     sectionAdded (newSection) {
       // eslint-disable-next-line vue/no-mutating-props
       this.section.children.push(newSection)
+    },
+    selectionChange () {
+      this.$emit('selectionChange', {
+        path: this.section.path,
+        selected: this.isSelected
+      })
     },
     cancelEditing () {
       this.sectionMarkdown = this.$md.parse(this.sectionText)

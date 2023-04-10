@@ -11,7 +11,13 @@
     <v-container v-if="!loading">
       <v-row>
         <v-col v-for="section in sections" :key="section.path" cols="12">
-          <PACSectionCard :section="section" :git-ref="gitRef" editable />
+          <PACSectionCard
+            :section="section"
+            :git-ref="gitRef"
+            :project="project"
+            editable
+            @selectionChange="saveSelection"
+          />
         </v-col>
       </v-row>
     </v-container>
@@ -112,6 +118,17 @@ export default {
           this.setDiff(child, diffFiles, diffRef)
         })
       }
+    },
+    async saveSelection (selection) {
+      if (selection.selected) {
+        this.project.PAC.push(selection.path)
+      } else {
+        this.project.PAC = this.project.PAC.filter(path => path !== selection.path)
+      }
+
+      await this.$supabase.from('projects').update({
+        PAC: this.project.PAC
+      }).eq('id', this.project.id)
     }
   }
 }
