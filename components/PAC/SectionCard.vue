@@ -30,15 +30,30 @@
                 </h2>
               </v-col>
               <v-col v-if="isOpen && editable" cols="auto">
-                <v-btn icon @click.stop="$emit('changeOrder', section.path, -1)">
-                  <v-icon>{{ icons.mdiArrowUp }}</v-icon>
-                </v-btn>
-                <v-btn icon @click.stop="$emit('changeOrder', section.path, 1)">
-                  <v-icon>{{ icons.mdiArrowDown }}</v-icon>
-                </v-btn>
-                <v-btn v-if="!editEnabled" icon @click.stop="editEnabled = true">
-                  <v-icon>{{ icons.mdiPencil }}</v-icon>
-                </v-btn>
+                <v-tooltip bottom>
+                  <template #activator="{on}">
+                    <v-btn icon v-on="on" @click.stop="$emit('changeOrder', section.path, -1)">
+                      <v-icon>{{ icons.mdiArrowUp }}</v-icon>
+                    </v-btn>
+                  </template>
+                  Changer l'ordre
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template #activator="{on}">
+                    <v-btn icon v-on="on" @click.stop="$emit('changeOrder', section.path, 1)">
+                      <v-icon>{{ icons.mdiArrowDown }}</v-icon>
+                    </v-btn>
+                  </template>
+                  Changer l'ordre
+                </v-tooltip>
+                <v-tooltip v-if="!editEnabled" bottom>
+                  <template #activator="{on}">
+                    <v-btn icon v-on="on" @click.stop="editEnabled = true">
+                      <v-icon>{{ icons.mdiPencil }}</v-icon>
+                    </v-btn>
+                  </template>
+                  Editer la section
+                </v-tooltip>
                 <template v-else>
                   <PACEditingCancelDialog :section="section" @cancel="cancelEditing" />
                   <v-btn icon :loading="saving" @click.stop="saveSection">
@@ -55,13 +70,18 @@
                   <!-- <PACSectionsAttachementsDialog
                     :section="section"
                   /> -->
-                  <v-btn icon tile @click="toggleDiff">
-                    <v-icon>{{ icons.mdiFileCompare }}</v-icon>
-                  </v-btn>
+                  <v-tooltip bottom>
+                    <template #activator="{on}">
+                      <v-btn icon tile v-on="on" @click="toggleDiff">
+                        <v-icon>{{ icons.mdiFileCompare }}</v-icon>
+                      </v-btn>
+                    </template>
+                    Comparer à la {{ diff.label }}
+                  </v-tooltip>
                 </VTiptap>
               </v-col>
               <v-col v-if="diff.visible && diff.body" cols="6">
-                <PACEditingDiffCard class="mt-6" :diff="diff" :label="'Trame departementale'" />
+                <PACEditingDiffCard class="mt-6" :diff="diff" :label="diff.label" />
               </v-col>
             </v-row>
             <v-row v-else>
@@ -159,6 +179,19 @@ export default {
     }
   },
   data () {
+    let headRef = 'main'
+
+    if (this.project && this.project.id) {
+      headRef = `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`
+    }
+
+    if (this.gitRef.includes('dept-')) {
+      const dept = this.gitRef.replace('dept-', '')
+      // eslint-disable-next-line eqeqeq
+      const region = departements.find(d => d.code_departement == dept).code_region
+      headRef = `region-${region}`
+    }
+
     const selectedPaths = this.project.PAC || []
     // const sectionPath = this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path
 
@@ -181,7 +214,8 @@ export default {
       saving: false,
       errorSaving: false,
       errorDiff: false,
-      diff: { body: null, visible: false, label: '' }
+      headRef,
+      diff: { body: null, visible: false, label: `Trame ${headRef.includes('dept-') ? 'départementale' : 'régionale'}` }
     }
   },
   computed: {
@@ -277,20 +311,20 @@ export default {
       this.editEnabled = false
     },
     async fetchDiff () {
-      let headRef = 'main'
+      // let headRef = 'main'
 
-      if (this.project && this.project.id) {
-        headRef = `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`
-      }
+      // if (this.project && this.project.id) {
+      //   headRef = `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`
+      // }
 
-      if (this.gitRef.includes('dept-')) {
-        const dept = this.gitRef.replace('dept-', '')
-        // eslint-disable-next-line eqeqeq
-        const region = departements.find(d => d.code_departement == dept).code_region
-        headRef = `region-${region}`
-      }
+      // if (this.gitRef.includes('dept-')) {
+      //   const dept = this.gitRef.replace('dept-', '')
+      //   // eslint-disable-next-line eqeqeq
+      //   const region = departements.find(d => d.code_departement == dept).code_region
+      //   headRef = `region-${region}`
+      // }
 
-      this.diff.label = `Trame ${headRef.includes('dept-') ? 'départementale' : 'régionale'}`
+      // this.diff.label = `Trame ${headRef.includes('dept-') ? 'départemental' : 'régionale'}`
 
       try {
         const { data: diffSectionContent } = await axios({
@@ -298,7 +332,7 @@ export default {
           url: '/api/trames/file',
           params: {
             path: this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path,
-            ref: headRef
+            ref: this.headRef
           }
         })
 

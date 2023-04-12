@@ -83,6 +83,10 @@ export default {
         if (sameNameChild) { return 'Une section porte déjà ce nom.' }
       }
 
+      if (this.sectionName.includes('/')) {
+        return 'Le caractère / est interdit.'
+      }
+
       return null
     }
   },

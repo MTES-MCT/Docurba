@@ -57,15 +57,21 @@
       </v-toolbar-items>
       <VTiptapItems v-if="!dense" :editor="editor" />
       <v-toolbar-items>
-        <v-btn
-          depressed
-          tile
-          class="linkBtn"
-          icon
-          @click="openLinkMenu"
-        >
-          <v-icon>{{ icons.mdiLink }}</v-icon>
-        </v-btn>
+        <v-tooltip bottom>
+          <template #activator="{on}">
+            <v-btn
+              depressed
+              tile
+              class="linkBtn"
+              icon
+              v-on="on"
+              @click="openLinkMenu"
+            >
+              <v-icon>{{ icons.mdiLink }}</v-icon>
+            </v-btn>
+          </template>
+          Ajouter un lien hypertext
+        </v-tooltip>
         <v-tooltip
           :value="!selecitionValid"
           attach=".linkBtn"
@@ -73,14 +79,20 @@
         >
           Selectionnez du text pour ajouter un lien
         </v-tooltip>
-        <v-btn
-          depressed
-          tile
-          icon
-          @click="$refs['imageFileInput'].click()"
-        >
-          <v-icon>{{ icons.mdiFileImage }}</v-icon>
-        </v-btn>
+        <v-tooltip bottom>
+          <template #activator="{on}">
+            <v-btn
+              depressed
+              tile
+              icon
+              v-on="on"
+              @click="$refs['imageFileInput'].click()"
+            >
+              <v-icon>{{ icons.mdiFileImage }}</v-icon>
+            </v-btn>
+          </template>
+          Ajouter une image
+        </v-tooltip>
         <input :ref="'imageFileInput'" class="d-none" type="file" @change="inputImage">
         <slot />
       </v-toolbar-items>

@@ -112,7 +112,7 @@ export default {
         return file.filename === sectionPath
       })
 
-      const level = diffRef.includes('dept-') ? 'départementale' : 'régionale'
+      const level = diffRef.includes('dept-') ? 'départemental' : 'régionale'
 
       if (diffFile) {
         section.diff = {
