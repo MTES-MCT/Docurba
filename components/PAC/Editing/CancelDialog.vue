@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="open" width="300px">
     <template #activator="{on}">
-      <v-btn icon v-on="on">
+      <v-btn small icon v-on="on">
         <v-icon>{{ icons.mdiClose }}</v-icon>
       </v-btn>
     </template>

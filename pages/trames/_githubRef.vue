@@ -20,12 +20,11 @@
             @selectionChange="saveSelection"
             @changeOrder="saveOrder"
           />
-          </v-item>
         </v-col>
       </v-row>
     </v-container>
     <VGlobalLoader v-else />
-    <v-dialog v-model="beforeLeaveDialog.visible">
+    <v-dialog v-model="beforeLeaveDialog.visible" width="500">
       <v-card>
         <v-card-title>
           Changements non sauvegardés

@@ -2,112 +2,116 @@
   <v-card flat :color="backgroundColor">
     <v-card-text class="section-card">
       <v-expansion-panels v-model="openedSections" multiple flat>
-        <v-expansion-panel>
-          <v-expansion-panel-header :color="backgroundColor">
-            <v-row align="center" dense>
-              <v-col v-if="project.id && editable" cols="auto">
-                <v-checkbox
-                  v-model="isSelected"
-                  color="primary"
-                  hide-details
-                  class="mt-0"
-                  @click.prevent.stop
-                  @change="selectionChange"
-                />
-              </v-col>
-              <v-col cols="">
-                <h2 class="section-title d-flex align-center">
-                  {{ section.name }}
-                  <v-chip
-                    v-if="section.diff && editable"
-                    label
-                    color="bf200"
-                    text-color="primary lighten-2"
-                    class="ml-2"
-                  >
-                    {{ section.diff.label }}
-                  </v-chip>
-                </h2>
-              </v-col>
-              <v-col v-if="isOpen && editable" cols="auto">
-                <v-tooltip bottom>
-                  <template #activator="{on}">
-                    <v-btn icon v-on="on" @click.stop="$emit('changeOrder', section.path, -1)">
-                      <v-icon>{{ icons.mdiArrowUp }}</v-icon>
-                    </v-btn>
-                  </template>
-                  Changer l'ordre
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template #activator="{on}">
-                    <v-btn icon v-on="on" @click.stop="$emit('changeOrder', section.path, 1)">
-                      <v-icon>{{ icons.mdiArrowDown }}</v-icon>
-                    </v-btn>
-                  </template>
-                  Changer l'ordre
-                </v-tooltip>
-                <v-tooltip v-if="!editEnabled" bottom>
-                  <template #activator="{on}">
-                    <v-btn icon v-on="on" @click.stop="editEnabled = true">
-                      <v-icon>{{ icons.mdiPencil }}</v-icon>
-                    </v-btn>
-                  </template>
-                  Editer la section
-                </v-tooltip>
-                <template v-else>
-                  <PACEditingCancelDialog :section="section" @cancel="cancelEditing" />
-                  <v-btn icon :loading="saving" @click.stop="saveSection">
-                    <v-icon>{{ icons.mdiContentSave }}</v-icon>
-                  </v-btn>
-                </template>
-              </v-col>
-            </v-row>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content class="rounded">
-            <v-row v-if="editEnabled">
-              <v-col :cols="(diff.visible && diff.body) ? 6 : 12">
-                <VTiptap v-if="editEnabled" v-model="sectionMarkdown" class="mt-6">
-                  <!-- <PACSectionsAttachementsDialog
-                    :section="section"
-                  /> -->
+        <v-hover v-slot="{hover}">
+          <v-expansion-panel>
+            <v-expansion-panel-header :color="backgroundColor">
+              <v-row align="center" dense>
+                <v-col v-if="project.id && editable" cols="auto">
+                  <v-checkbox
+                    v-model="isSelected"
+                    color="primary"
+                    hide-details
+                    class="mt-0"
+                    @click.prevent.stop
+                    @change="selectionChange"
+                  />
+                </v-col>
+                <v-col cols="">
+                  <h2 class="section-title d-flex align-center">
+                    {{ section.name }}
+                    <v-chip
+                      v-if="section.diff && editable"
+                      label
+                      color="bf200"
+                      text-color="primary lighten-2"
+                      class="ml-2"
+                    >
+                      {{ section.diff.label }}
+                    </v-chip>
+                  </h2>
+                </v-col>
+                <v-col v-if="(isOpen || hover) && editable" cols="auto">
                   <v-tooltip bottom>
                     <template #activator="{on}">
-                      <v-btn icon tile v-on="on" @click="toggleDiff">
-                        <v-icon>{{ icons.mdiFileCompare }}</v-icon>
+                      <v-btn icon small v-on="on" @click.stop="$emit('changeOrder', section.path, -1)">
+                        <v-icon>{{ icons.mdiArrowUp }}</v-icon>
                       </v-btn>
                     </template>
-                    Comparer à la {{ diff.label }}
+                    Changer l'ordre
                   </v-tooltip>
-                </VTiptap>
-              </v-col>
-              <v-col v-if="diff.visible && diff.body" cols="6">
-                <PACEditingDiffCard class="mt-6" :diff="diff" :label="diff.label" />
-              </v-col>
-            </v-row>
-            <v-row v-else>
-              <v-col cols="12">
-                <nuxt-content class="pac-section-content mt-4" :document="sectionContent" />
-              </v-col>
-            </v-row>
-            <v-row v-if="section.children && section.children.length">
-              <v-col
-                v-for="child in section.children"
-                :key="child.path"
-                cols="12"
-              >
-                <PACSectionCard
-                  :section="child"
-                  :git-ref="gitRef"
-                  :project="project"
-                  :editable="editable"
-                  @edited="dispatchEdited"
-                  @selectionChange="dispatchSelectionChange"
-                  @changeOrder="dispatchChangeOrder"
-                />
-              </v-col>
-            </v-row>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
+                  <v-tooltip bottom>
+                    <template #activator="{on}">
+                      <v-btn icon small v-on="on" @click.stop="$emit('changeOrder', section.path, 1)">
+                        <v-icon>{{ icons.mdiArrowDown }}</v-icon>
+                      </v-btn>
+                    </template>
+                    Changer l'ordre
+                  </v-tooltip>
+                </v-col>
+                <v-col v-if="(isOpen || hover || editEnabled) && editable" cols="auto" class="ml-4">
+                  <v-tooltip v-if="!editEnabled" bottom>
+                    <template #activator="{on}">
+                      <v-btn icon small v-on="on" @click="editEnabled = true">
+                        <v-icon>{{ icons.mdiPencil }}</v-icon>
+                      </v-btn>
+                    </template>
+                    Editer la section
+                  </v-tooltip>
+                  <template v-else>
+                    <PACEditingCancelDialog :section="section" @cancel="cancelEditing" />
+                    <v-btn icon small :loading="saving" @click.stop="saveSection">
+                      <v-icon>{{ icons.mdiContentSave }}</v-icon>
+                    </v-btn>
+                  </template>
+                </v-col>
+              </v-row>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content class="rounded">
+              <v-row v-if="editEnabled">
+                <v-col :cols="(diff.visible && diff.body) ? 6 : 12">
+                  <VTiptap v-if="editEnabled" v-model="sectionMarkdown" class="mt-6">
+                    <!-- <PACSectionsAttachementsDialog
+                    :section="section"
+                  /> -->
+                    <v-tooltip bottom>
+                      <template #activator="{on}">
+                        <v-btn icon tile v-on="on" @click="toggleDiff">
+                          <v-icon>{{ icons.mdiFileCompare }}</v-icon>
+                        </v-btn>
+                      </template>
+                      Comparer à la {{ diff.label }}
+                    </v-tooltip>
+                  </VTiptap>
+                </v-col>
+                <v-col v-if="diff.visible && diff.body" cols="6">
+                  <PACEditingDiffCard class="mt-6" :diff="diff" :label="diff.label" />
+                </v-col>
+              </v-row>
+              <v-row v-else>
+                <v-col cols="12">
+                  <nuxt-content class="pac-section-content mt-4" :document="sectionContent" />
+                </v-col>
+              </v-row>
+              <v-row v-if="section.children && section.children.length">
+                <v-col
+                  v-for="child in section.children"
+                  :key="child.path"
+                  cols="12"
+                >
+                  <PACSectionCard
+                    :section="child"
+                    :git-ref="gitRef"
+                    :project="project"
+                    :editable="editable"
+                    @edited="dispatchEdited"
+                    @selectionChange="dispatchSelectionChange"
+                    @changeOrder="dispatchChangeOrder"
+                  />
+                </v-col>
+              </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-hover>
       </v-expansion-panels>
       <PACEditingGitAddSectionDialog
         v-if="editable && isOpen"
