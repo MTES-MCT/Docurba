@@ -16,13 +16,34 @@
             :git-ref="gitRef"
             :project="project"
             editable
+            @edited="toggleEdit"
             @selectionChange="saveSelection"
             @changeOrder="saveOrder"
           />
+          </v-item>
         </v-col>
       </v-row>
     </v-container>
     <VGlobalLoader v-else />
+    <v-dialog v-model="beforeLeaveDialog.visible">
+      <v-card>
+        <v-card-title>
+          Changements non sauvegardés
+        </v-card-title>
+        <v-card-text>
+          Vous avez des changements non sauvegardés. Etes vous sur de vouloir quitter la page ?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn outlined tile color="primary" @click="beforeLeaveDialog.visible = false">
+            Rester
+          </v-btn>
+          <v-btn tile color="primary" @click="beforeLeaveDialog.next">
+            Quitter
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </LayoutsCustomApp>
 </template>
 
@@ -33,13 +54,21 @@ import departements from '@/assets/data/departements-france.json'
 
 export default {
   mixins: [orderSections],
+  beforeRouteLeave (to, from, next) {
+    if (this.editedSections.length) {
+      this.beforeLeaveDialog.next = next
+      this.beforeLeaveDialog.visible = true
+    } else { next() }
+  },
   layout: 'app',
   data () {
     return {
       project: {},
       sections: [],
+      editedSections: [],
       gitRef: this.$route.params.githubRef,
-      loading: true
+      loading: true,
+      beforeLeaveDialog: { visible: false, next: null }
     }
   },
   async mounted () {
@@ -192,6 +221,16 @@ export default {
         })
 
         await this.$supabase.from('pac_sections').upsert(updatedSections).select()
+      }
+    },
+    toggleEdit (sectionPath, val) {
+      if (val) {
+        this.editedSections.push(sectionPath)
+      } else {
+        const sectionIndex = this.editedSections.indexOf(sectionPath)
+        if (sectionIndex >= 0) {
+          this.editedSections.splice(sectionIndex, 1)
+        }
       }
     }
   }

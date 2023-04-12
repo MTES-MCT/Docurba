@@ -100,6 +100,7 @@
                   :git-ref="gitRef"
                   :project="project"
                   :editable="editable"
+                  @edited="dispatchEdited"
                   @selectionChange="dispatchSelectionChange"
                   @changeOrder="dispatchChangeOrder"
                 />
@@ -230,6 +231,11 @@ export default {
       return this.isOpen ? 'primary lighten-4' : 'white'
     }
   },
+  watch: {
+    editEnabled () {
+      this.$emit('edited', this.section.path, this.editEnabled)
+    }
+  },
   mounted () {
     this.fetchSectionContent()
   },
@@ -306,26 +312,14 @@ export default {
     dispatchChangeOrder (path, orderChange) {
       this.$emit('changeOrder', path, orderChange)
     },
+    dispatchEdited (sectionPath, val) {
+      this.$emit('edited', sectionPath, val)
+    },
     cancelEditing () {
       this.sectionMarkdown = this.$md.parse(this.sectionText)
       this.editEnabled = false
     },
     async fetchDiff () {
-      // let headRef = 'main'
-
-      // if (this.project && this.project.id) {
-      //   headRef = `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`
-      // }
-
-      // if (this.gitRef.includes('dept-')) {
-      //   const dept = this.gitRef.replace('dept-', '')
-      //   // eslint-disable-next-line eqeqeq
-      //   const region = departements.find(d => d.code_departement == dept).code_region
-      //   headRef = `region-${region}`
-      // }
-
-      // this.diff.label = `Trame ${headRef.includes('dept-') ? 'départemental' : 'régionale'}`
-
       try {
         const { data: diffSectionContent } = await axios({
           method: 'get',
