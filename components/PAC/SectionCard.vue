@@ -318,6 +318,8 @@ export default {
           }
         })
 
+        console.log('data saved')
+
         if (this.project && this.project.id) {
           this.$notifications.notifyUpdate(this.project.id)
         }
@@ -331,6 +333,7 @@ export default {
         this.errorSaving = true
       }
 
+      console.log('stop saving')
       this.saving = false
     },
     sectionAdded (newSection) {

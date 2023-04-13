@@ -19,6 +19,7 @@
             @edited="toggleEdit"
             @selectionChange="saveSelection"
             @changeOrder="saveOrder"
+            @changeTree="updateTreeData"
           />
         </v-col>
       </v-row>
@@ -221,6 +222,38 @@ export default {
 
         await this.$supabase.from('pac_sections').upsert(updatedSections).select()
       }
+    },
+    async updateTreeData (section, newName) {
+      const changedSections = [section]
+
+      function updateSection (s) {
+        changedSections.push(s)
+
+        if (s.children) {
+          s.children.forEach(c => updateSection(c))
+        }
+      }
+
+      if (section.children) {
+        section.children.forEach(c => updateSection(c))
+      }
+
+      const { data, error } = await this.$supabase
+        .rpc('update_sections_path', {
+          payload: changedSections.map((s) => {
+            const nameIndex = s.path.lastIndexOf(s.name)
+            const newPath = `${s.path.substring(0, nameIndex)}${newName}${s.type === 'file' ? '.md' : ''}`
+
+            return {
+              path: s.path,
+              ref: this.gitRef,
+              new_path: newPath
+            }
+          })
+        })
+
+      console.log('newName', section.name, newName, changedSections.length)
+      console.log('update tree data', data, error)
     },
     toggleEdit (sectionPath, val) {
       if (val) {
