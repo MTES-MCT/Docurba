@@ -19,16 +19,16 @@
       </v-col>
     </v-row>
     <PrescriptionYouWantCard />
-    <v-row>
+    <!-- <v-row>
       <v-col cols="12">
         <div class="text-h6 font-weight-bold">
           Comment souhaitez-vous vous identifier ?
         </div>
       </v-col>
-    </v-row>
+    </v-row> -->
     <v-row>
       <v-col cols="12">
-        <div class="light-border pa-6">
+        <!-- <div class="light-border pa-6">
           <p class="text-h6">
             Connectez-vous pour déposer votre prescription
           </p>
@@ -41,19 +41,19 @@
         </div>
         <div class="my-4">
           Ou
-        </div>
+        </div> -->
         <div class="light-border pa-6">
           <p class="text-h6">
             Indiquez votre adresse mail
           </p>
           <p>Nos équipes vont vérifier votre identité avant de publier la prescription</p>
-          <v-text-field type="email" label="Email" filled />
+          <v-text-field v-model="email" type="email" label="Email" filled />
         </div>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-btn depressed color="primary" @click="nextPage">
+        <v-btn depressed color="primary" :disabled="!email" @click="nextPage">
           Valider
         </v-btn>
       </v-col>
@@ -87,7 +87,8 @@ export default {
     return {
       icons: {
         mdiArrowLeft
-      }
+      },
+      email: ''
     }
   },
   methods: {

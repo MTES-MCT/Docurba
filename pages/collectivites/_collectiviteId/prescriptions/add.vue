@@ -66,30 +66,35 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="11" offset="1">
-        <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
-          Tient lieu de PLUiH
-        </VBigRadio>
-      </v-col>
-      <v-col cols="11" offset="1">
-        <VBigRadio v-model="isPLUiM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
-          Tient lieu de PLUiM (ex PDU)
-        </VBigRadio>
-      </v-col>
-      <v-col v-if="isPLUiM === 'oui'" cols="11" offset="1">
-        <VBigRadio v-model="isRequiredPLUiM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
-          Si oui, le PLUiM est-il obligatoire ?
-        </VBigRadio>
-      </v-col>
-      <v-col cols="11" offset="1">
-        <VBigRadio v-model="isSCoT" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
-          Tient lieu de SCoT
-        </VBigRadio>
-      </v-col>
+      <template v-if="DUType === 'PLUi'">
+        <v-col cols="11" offset="1">
+          <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+            Tient lieu de PLUiH
+          </VBigRadio>
+        </v-col>
+        <v-col cols="11" offset="1">
+          <VBigRadio v-model="isPLUiM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+            Tient lieu de PLUiM (ex PDU)
+          </VBigRadio>
+        </v-col>
+        <v-col v-if="isPLUiM === 'oui'" cols="11" offset="1">
+          <VBigRadio v-model="isRequiredPLUiM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
+            Si oui, le PLUiM est-il obligatoire ?
+          </VBigRadio>
+        </v-col>
+        <v-col cols="11" offset="1">
+          <VBigRadio v-model="isSCoT" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+            Tient lieu de SCoT
+          </VBigRadio>
+        </v-col>
+      </template>
     </v-row>
     <v-row>
       <v-col cols="12" class="pt-0 pb-2">
         <v-select v-model="typeProcedure" filled placeholder="Selectionner une option" label="Type de procédure" :items="typesProcedure" />
+      </v-col>
+      <v-col v-if="typeProcedure === 'MS - Modification simplifiée'" cols="12" class="pt-0 pb-2">
+        <v-select v-model="MSScope" filled multiple label="Cette modification simplifiée concerne" :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']" />
       </v-col>
       <v-col cols="12" class="pt-0 pb-2 d-flex align-start">
         <v-text-field v-model="numberProcedure" style="max-width:25%;" filled placeholder="Ex. 4" label="Numéro de procédure" />
@@ -209,14 +214,16 @@ export default {
     return {
       typesProcedure: [{ header: 'Principale' }, { text: 'E - élaboration' }, { text: 'R - révision' }, { divider: true }, { header: 'Secondaire' }, { text: 'RMS - Révision à modalité simplifiée ou Revision allegée' }, { text: 'M - Modification' }, { text: 'MS - Modification simplifiée' }, { text: 'MC - Mise en compatibilité' }, { text: 'MJ - Mise à jour' }],
       confirmCollectivite: null,
-      DUType: null,
-      acteType: this.isEpci ? 'PLUi' : null,
+      DUType: this.isEpci ? 'PLUi' : null,
+      acteType: null,
+      otherActeType: null,
       perimetre: [],
       isPLUiH: null,
       isPLUiM: null,
       isRequiredPLUiM: null,
       isSCoT: null,
       typeProcedure: null,
+      MSScope: [],
       numberProcedure: '',
       town: null,
       epci: null,
@@ -298,7 +305,19 @@ export default {
           epci: null,
           towns: Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee],
           attachments: null,
-          type: this.docType
+          type: this.docType,
+          acte_type: '',
+          other_acte_type: '',
+          date: '',
+          du_type: '',
+          perimetre: [],
+          is_pluih: null,
+          is_pluim: null,
+          mandatory_pluim: null,
+          is_scot: null,
+          procedure_type: '',
+          ms_scope: '',
+          procedure_number: ''
 
         }
         if (this.docType === 'link') {

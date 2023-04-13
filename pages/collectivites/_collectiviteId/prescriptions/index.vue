@@ -9,13 +9,27 @@
       </v-col>
     </v-row>
     <v-row>
+      <v-col cols="12">
+        <v-alert v-if="$route.query.success" outlined color="success lighten-2" tile class="pa-0 my-8">
+          <div class="d-flex align-center ">
+            <div class="success lighten-2 py-4 px-3 fill-height">
+              <v-icon color="white">
+                {{ icons.mdiCheckCircle }}
+              </v-icon>
+            </div>
+            <div class="ml-4 black--text pa-4">
+              Votre document a bien été ajouté.
+            </div>
+          </div>
+        </v-alert>
+      </v-col>
       <v-col cols="8">
         <p class="text-h6 font-weight-bold">
           Déposer un nouvel acte
         </p>
 
         <p>
-          Si vous disposez de la prescription mise à jour, vous pouvez la déposer ici.
+          Si vous disposez d'un acte, vous pouvez le déposer ici.
         </p>
 
         <v-btn outlined color="primary" :to="{ name: 'collectivites-collectiviteId-prescriptions-signup', params: { collectiviteId: isEpci ? collectivite.EPCI : collectivite.code_commune_INSEE }, query: $route.query }">
@@ -34,7 +48,11 @@
             </v-row>
           </v-card-title>
           <v-card-text class="black--text">
-            <p>Ce versement vaut versement sur le géoportail national de l'urbanisme.</p>
+            <p>Le versement de votre acte sur Docurba vous donnera accès à un lien (URL) que vous pourrez copier pour l'indiquer :</p>
+            <ul>
+              <li>sur la Page territoire dans votre espace sur le Géoportail de l'urbanisme (GPU)</li>
+              <li>sur le site internet de votre collectivité</li>
+            </ul>
           </v-card-text>
         </v-card>
       </v-col>
@@ -55,18 +73,6 @@
           <p>Par ordre chronologie de dépôt :</p>
         </v-col>
       </v-row>
-      <v-alert v-if="$route.query.success" outlined color="success lighten-2" tile class="pa-0 mb-8 mt-12">
-        <div class="d-flex align-center ">
-          <div class="success lighten-2 py-4 px-3 fill-height">
-            <v-icon color="white">
-              {{ icons.mdiCheckCircle }}
-            </v-icon>
-          </div>
-          <div class="ml-4 black--text pa-4">
-            Votre document a bien été ajouté.
-          </div>
-        </div>
-      </v-alert>
       <PrescriptionItemListRead :value="prescription" />
       <v-row>
         <v-col cols="12">
@@ -81,7 +87,7 @@
           :key="`prescrData-${prescrHistory.id}`"
           cols="12"
         >
-          <PrescriptionItemListRead :value="prescrHistory" />
+          <PrescriptionItemListRead :value="prescrHistory" @snack="snackClip = true" />
         </v-col>
       </v-row>
     </template>
@@ -94,7 +100,7 @@
             </v-icon>
           </div>
           <div class="ml-4 black--text pa-4">
-            Il n’y a pas encore de prescription pour cette commune
+            Il n’y a pas encore d'acte pour cette commune
           </div>
         </div>
       </v-alert>
@@ -118,7 +124,6 @@
 
 <script>
 import { mdiDownload, mdiEye, mdiLink, mdiInformation, mdiCheckCircle, mdiInformationOutline } from '@mdi/js'
-// import axios from 'axios'
 
 export default {
   name: 'Prescriptions',
@@ -162,15 +167,10 @@ export default {
   },
   async mounted () {
     this.loading = true
-    //    this.$route.query.insee
-
-    // const inseeSearch = Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee]
     const inseeSearch = this.isEpci ? [this.collectivite.code_commune_INSEE] : [this.collectivite.code_commune_INSEE]
-    console.log('inseeSearch: ', inseeSearch)
     const { data: prescriptions } = await this.$supabase.from('prescriptions').select('*').contains('towns', inseeSearch).order('created_at', { ascending: false })
-    console.log('prescriptions: ', prescriptions)
     const [current, ...history] = prescriptions
-    this.prescription = current // prescriptions[0]
+    this.prescription = current
     this.history = history
     this.loading = false
   }
