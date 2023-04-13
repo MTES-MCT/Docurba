@@ -7,7 +7,6 @@
       <v-btn
         v-show="showActivator"
         depressed
-        tile
         small
         icon
         :loading="loading"
@@ -16,23 +15,21 @@
         <v-icon>{{ icons.mdiDelete }}</v-icon>
       </v-btn>
     </template>
-    <template #default>
-      <v-card>
-        <v-card-title>Supprimer {{ section.name }}</v-card-title>
-        <v-card-text>
-          Etes vous sur de vouloir supprimer cette section ? Attention, les sous-sections seront elles aussi suprimées.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn depressed tile color="primary" :loading="loading" @click="removeSection">
-            Supprimer
-          </v-btn>
-          <v-btn depressed tile color="primary" outlined @click="dialog = false">
-            Annuler
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </template>
+    <v-card>
+      <v-card-title>Supprimer {{ section.name }}</v-card-title>
+      <v-card-text>
+        Etes vous sur de vouloir supprimer cette section ? Attention, les sous-sections seront elles aussi suprimées.
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn depressed tile color="primary" :loading="loading" @click="removeSection">
+          Supprimer
+        </v-btn>
+        <v-btn depressed tile color="primary" outlined @click="dialog = false">
+          Annuler
+        </v-btn>
+      </v-card-actions>
+    </v-card>
   </v-dialog>
 </template>
 <script>
@@ -59,6 +56,11 @@ export default {
       icons: { mdiDelete },
       dialog: false,
       loading: false
+    }
+  },
+  watch: {
+    dialog () {
+      console.log('delete dialog', this.dialog)
     }
   },
   methods: {

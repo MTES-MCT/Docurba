@@ -18,7 +18,15 @@
                 </v-col>
                 <v-col cols="">
                   <h2 class="section-title d-flex align-center">
-                    {{ section.name }}
+                    <span v-if="!editEnabled">{{ section.name }}</span>
+                    <v-text-field
+                      v-else
+                      v-model="sectionName"
+                      dense
+                      filled
+                      hide-details
+                      @click.stop
+                    />
                     <v-chip
                       v-if="section.diff && editable"
                       label
@@ -51,7 +59,7 @@
                 <v-col v-if="(isOpen || hover || editEnabled) && editable" cols="auto" class="ml-4">
                   <v-tooltip v-if="!editEnabled" bottom>
                     <template #activator="{on}">
-                      <v-btn icon small v-on="on" @click="editEnabled = true">
+                      <v-btn icon small v-on="on" @click.stop="editEnabled = true; openedSections = [0]">
                         <v-icon>{{ icons.mdiPencil }}</v-icon>
                       </v-btn>
                     </template>
@@ -63,6 +71,9 @@
                       <v-icon>{{ icons.mdiContentSave }}</v-icon>
                     </v-btn>
                   </template>
+                </v-col>
+                <v-col v-if="(isOpen || hover || editEnabled) && editable && deletable" cols="auto">
+                  <PACEditingGitRemoveSectionDialog show-activator :section="section" :git-ref="gitRef" />
                 </v-col>
               </v-row>
             </v-expansion-panel-header>
@@ -103,9 +114,8 @@
                     :git-ref="gitRef"
                     :project="project"
                     :editable="editable"
-                    @edited="dispatchEdited"
-                    @selectionChange="dispatchSelectionChange"
-                    @changeOrder="dispatchChangeOrder"
+                    :deletable="editable"
+                    v-on="$listeners"
                   />
                 </v-col>
               </v-row>
@@ -178,6 +188,10 @@ export default {
       type: Boolean,
       default: false
     },
+    deletable: {
+      type: Boolean,
+      default: false
+    },
     project: {
       type: Object,
       default () { return {} }
@@ -211,6 +225,7 @@ export default {
         mdiArrowUp
       },
       isSelected: selectedPaths.includes(this.section.path),
+      sectionName: this.section.name,
       sectionText: '',
       sectionContent: { body: null },
       sectionMarkdown: '',
@@ -266,10 +281,28 @@ export default {
         console.log(err, sectionContent)
       }
     },
+    async updateName () {
+      await axios({
+        method: 'post',
+        url: `/api/trames/tree/${this.gitRef}`,
+        data: {
+          section: this.section,
+          newName: this.sectionName
+        }
+      })
+
+      this.$emit('changeTree', this.section, this.sectionName)
+    },
     async saveSection () {
       this.saving = true
 
+      if (this.section.name !== this.sectionName) {
+        await this.updateName() // This should emit a 'changeTree' event that shoud update section.path in props.
+      }
+
       try {
+        console.log('is path updated ?', this.sectionName, this.section.name, this.section.path)
+
         const filePath = this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path
 
         await axios({
@@ -309,15 +342,6 @@ export default {
         path: this.section.path,
         selected: this.isSelected
       })
-    },
-    dispatchSelectionChange (selection) {
-      this.$emit('selectionChange', selection)
-    },
-    dispatchChangeOrder (path, orderChange) {
-      this.$emit('changeOrder', path, orderChange)
-    },
-    dispatchEdited (sectionPath, val) {
-      this.$emit('edited', sectionPath, val)
     },
     cancelEditing () {
       this.sectionMarkdown = this.$md.parse(this.sectionText)
