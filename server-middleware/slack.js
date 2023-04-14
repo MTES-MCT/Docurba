@@ -9,6 +9,26 @@ const axios = require('axios')
 const admin = require('./modules/admin.js')
 const slack = require('./modules/slack.js')
 
+app.post('/notify/admin/acte', (req, res) => {
+  // eslint-disable-next-line no-console
+  console.log('Notify team in slack')
+  const { userData } = req.body
+
+  // try {
+  slack.requestDepotActe(userData).then((res) => {
+    // eslint-disable-next-line no-console
+    console.log('Slack then: ', res.data)
+  }).catch((err) => {
+    // eslint-disable-next-line no-console
+    console.log('Slack catch', err.response.data)
+  })
+  // } catch (err) {
+  //   console.log(err)
+  // }
+
+  res.status(200).send('OK')
+})
+
 app.post('/notify/admin', (req, res) => {
   // eslint-disable-next-line no-console
   console.log('Notify team in slack')

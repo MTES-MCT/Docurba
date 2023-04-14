@@ -167,8 +167,14 @@ export default {
   },
   async mounted () {
     this.loading = true
-    const inseeSearch = this.isEpci ? [this.collectivite.code_commune_INSEE] : [this.collectivite.code_commune_INSEE]
-    const { data: prescriptions } = await this.$supabase.from('prescriptions').select('*').contains('towns', inseeSearch).order('created_at', { ascending: false })
+    let prescriptions = null
+    if (this.isEpci) {
+      prescriptions = (await this.$supabase.from('prescriptions').select('*').eq('epci->EPCI', this.collectivite.EPCI)).data
+      console.log('prescriptions epci: ', prescriptions)
+    } else {
+      const inseeSearch = this.isEpci ? [this.collectivite.code_commune_INSEE] : [this.collectivite.code_commune_INSEE]
+      prescriptions = (await this.$supabase.from('prescriptions').select('*').contains('towns', inseeSearch).order('created_at', { ascending: false })).data
+    }
     const [current, ...history] = prescriptions
     this.prescription = current
     this.history = history

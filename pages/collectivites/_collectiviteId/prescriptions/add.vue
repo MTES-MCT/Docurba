@@ -186,7 +186,7 @@
 
 <script>
 import { mdiUpload, mdiPencil, mdiCheck, mdiAccountSearchOutline, mdiDelete, mdiInformationOutline } from '@mdi/js'
-// import axios from 'axios'
+import axios from 'axios'
 import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -263,6 +263,7 @@ export default {
     }
   },
   mounted () {
+    console.log('this query: ', this.$route.query.email)
     this.selectAllPerimetre()
   },
   methods: {
@@ -302,21 +303,21 @@ export default {
       try {
         this.loadingSave = true
         const prescription = {
-          epci: null,
+          epci: this.isEpci ? this.collectivite : null,
           towns: Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee],
           attachments: null,
           type: this.docType,
           acte_type: '',
           other_acte_type: '',
-          date: '',
+          // date: '',
           du_type: '',
-          perimetre: [],
+          perimetre: null,
           is_pluih: null,
           is_pluim: null,
           mandatory_pluim: null,
           is_scot: null,
           procedure_type: '',
-          ms_scope: '',
+          ms_scope: null,
           procedure_number: ''
 
         }
@@ -328,6 +329,19 @@ export default {
 
         await this.$supabase.from('prescriptions').insert([prescription])
         this.loadingSave = false
+
+        await axios({
+          url: '/api/slack/notify/admin/acte',
+          method: 'post',
+          data: {
+            userData: {
+              email: this.$route.query.email,
+              region: this.region,
+              collectivite: this.collectivite,
+              isEpci: this.isEpci
+            }
+          }
+        })
         this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
       } catch (error) {
         console.log(error)
