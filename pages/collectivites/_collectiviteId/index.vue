@@ -49,7 +49,7 @@
         </p>
         <div>
           <v-chip color="primary--text text--lighten-2 primary lighten-3 px-6">
-           Disponible bientôt
+            Disponible bientôt
           </v-chip>
         </div>
       </v-col>
@@ -83,9 +83,7 @@ export default {
         {
           title: 'Déposer un acte',
           text: 'Déposez une délibération de prescription ou un arrêté.',
-          tag: 'Disponible bientôt',
-          disabled: true,
-          to: { name: 'dashboard-collectivites-collectiviteId-index-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.id : this.collectivite.code_commune_INSEE } }
+          to: { name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: this.$route.query }
         },
         {
           title: 'Socle de Porter à connaissance',
@@ -95,18 +93,18 @@ export default {
         {
           title: 'Ressources',
           text: 'Consultez des guides ou sites internet utiles.',
-          to: { name: 'collectivites-collectiviteId-ressources', params: { collectiviteId: this.isEpci ? this.collectivite.id : this.collectivite.code_commune_INSEE } }
+          to: { name: 'collectivites-collectiviteId-ressources', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: this.$route.query }
         },
         {
           title: 'Données',
           text: 'Consultez les données de votre territoire.',
-          to: { name: 'collectivites-collectiviteId-donnees-georisques', params: { collectiviteId: this.isEpci ? this.collectivite.id : this.collectivite.code_commune_INSEE } }
+          to: { name: 'collectivites-collectiviteId-donnees-georisques', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: this.$route.query }
         }
       ]
     }
   },
   mounted () {
-    console.log('OK TEST')
+    console.log('OK TEST: ', this.collectivite)
   }
 }
 </script>

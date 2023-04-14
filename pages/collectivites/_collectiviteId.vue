@@ -7,7 +7,10 @@
         </v-col>
       </v-row>
     </v-container>
-    <nuxt-child :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
+    <nuxt-child :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" @snackMessage="Object.assign(snackbar, {visible: true, message: arguments[0]})" />
+    <v-snackbar v-model="snackbar.visible" top right color="success">
+      {{ snackbar.message }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -18,6 +21,10 @@ import regions from '@/assets/data/Regions.json'
 export default {
   data () {
     return {
+      snackbar: {
+        visible: false,
+        message: ''
+      },
       regions,
       communes: null,
       collectivite: null

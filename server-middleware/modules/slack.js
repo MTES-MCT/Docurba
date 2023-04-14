@@ -1,6 +1,15 @@
 const axios = require('axios')
 
 module.exports = {
+  requestDepotActe (userData) {
+    return axios({
+      url: process.env.SLACK_WEBHOOK,
+      method: 'post',
+      data: {
+        text: `Vérification de l'email ${userData.email} pour le depot d'acte de ${userData.isEpci ? 'l\'EPCI' : 'la commune'}:  ${userData.collectivite.name} (${userData.region.name})`
+      }
+    })
+  },
   requestDepartementAccess (userData) {
     return axios({
       url: process.env.SLACK_WEBHOOK,
