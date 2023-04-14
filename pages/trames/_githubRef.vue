@@ -84,6 +84,26 @@ export default {
       url: `/api/trames/tree/${this.gitRef}`
     })
 
+    // const cadreJuridique = sections.find(s => s.path.includes('Cadre-juridique-et-grands'))
+
+    // const juridiquePaths = [cadreJuridique.path]
+
+    // function addToJuridique (s) {
+    //   juridiquePaths.push(s.path)
+
+    //   if (s.children) {
+    //     s.children.forEach((c) => {
+    //       addToJuridique(c)
+    //     })
+    //   }
+    // }
+
+    // cadreJuridique.children.forEach((c) => {
+    //   addToJuridique(c)
+    // })
+
+    // console.log(JSON.stringify(juridiquePaths, null, 2))
+
     const { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,
         `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`,

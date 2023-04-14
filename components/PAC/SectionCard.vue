@@ -28,7 +28,7 @@
                       @click.stop
                     />
                     <v-chip
-                      v-if="section.diff && editable"
+                      v-if="section.diff && isEditable"
                       label
                       color="bf200"
                       text-color="primary lighten-2"
@@ -56,7 +56,7 @@
                     Changer l'ordre
                   </v-tooltip>
                 </v-col>
-                <v-col v-if="(isOpen || hover || editEnabled) && editable" cols="auto" class="ml-4">
+                <v-col v-if="(isOpen || hover || editEnabled) && isEditable" cols="auto" class="ml-4">
                   <v-tooltip v-if="!editEnabled" bottom>
                     <template #activator="{on}">
                       <v-btn icon small v-on="on" @click.stop="editEnabled = true; openedSections = [0]">
@@ -72,7 +72,7 @@
                     </v-btn>
                   </template>
                 </v-col>
-                <v-col v-if="(isOpen || hover || editEnabled || deleteDialog) && editable && deletable" cols="auto">
+                <v-col v-if="(isOpen || hover || editEnabled || deleteDialog) && isEditable && deletable" cols="auto">
                   <PACEditingGitRemoveSectionDialog
                     v-model="deleteDialog"
                     show-activator
@@ -181,6 +181,8 @@ import {
 import { encode } from 'js-base64'
 import departements from '@/assets/data/departements-france.json'
 
+import cadreJuridique from '@/assets/data/CadreJuridique.json'
+
 export default {
   props: {
     section: {
@@ -260,6 +262,13 @@ export default {
     sectionContent () {
       return {
         body: this.$md.compile(this.sectionMarkdown)
+      }
+    },
+    isEditable () {
+      if (this.gitRef === 'main') {
+        return this.editable
+      } else {
+        return this.editable && !cadreJuridique.includes(this.section.path)
       }
     }
   },
