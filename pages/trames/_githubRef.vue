@@ -10,7 +10,7 @@
     /> -->
     <v-container v-if="!loading">
       <v-row>
-        <v-col v-for="section in sections" :key="section.path" cols="12">
+        <v-col v-for="section in sections" :key="section.sha" cols="12">
           <PACSectionCard
             :section="section"
             :git-ref="gitRef"
@@ -224,36 +224,57 @@ export default {
       }
     },
     async updateTreeData (section, newName) {
+      const sectionPath = section.path // this ref could be modified so it's best to save it here.
       const changedSections = [section]
 
-      function updateSection (s) {
+      // First we need to identify each section that is impacted by a name change.
+      function findUpdatedSection (s) {
         changedSections.push(s)
 
         if (s.children) {
-          s.children.forEach(c => updateSection(c))
+          s.children.forEach(c => findUpdatedSection(c))
         }
       }
 
       if (section.children) {
-        section.children.forEach(c => updateSection(c))
+        section.children.forEach(c => findUpdatedSection(c))
       }
 
-      const { data, error } = await this.$supabase
+      const nameIndex = sectionPath.lastIndexOf(section.name)
+      // If it's a file, changedSections.length should be 1 and the .md should not impact any other sections.
+      const newPath = `${sectionPath.substring(0, nameIndex)}${newName}${section.type === 'file' ? '.md' : ''}`
+
+      // Then we need to edit the path in the table 'PAC_sections' for each impacted section
+      await this.$supabase
         .rpc('update_sections_path', {
           payload: changedSections.map((s) => {
-            const nameIndex = s.path.lastIndexOf(s.name)
-            const newPath = `${s.path.substring(0, nameIndex)}${newName}${s.type === 'file' ? '.md' : ''}`
-
             return {
               path: s.path,
               ref: this.gitRef,
-              new_path: newPath
+              new_path: s.path.replace(sectionPath, newPath)
             }
           })
         })
 
-      console.log('newName', section.name, newName, changedSections.length)
-      console.log('update tree data', data, error)
+      // This need to happend after bdd changes because old path will be lost.
+      // update the path localy for future saves.
+      changedSections.forEach((s) => {
+        s.path = s.path.replace(sectionPath, newPath)
+      })
+
+      // If it's a project, then selected sections need to be updated with the correct path.
+      if (this.project && this.project.id) {
+        this.project.PAC = this.project.PAC.map((path) => {
+          return path.replace(sectionPath, newPath)
+        })
+
+        await this.$supabase.from('projects').update({
+          PAC: this.project.PAC
+        }).eq('id', this.project.id)
+      }
+
+      // Finaly section.name need to be updated.
+      section.name = newName
     },
     toggleEdit (sectionPath, val) {
       if (val) {

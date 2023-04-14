@@ -22,9 +22,11 @@ module.exports = {
     let filesToDelete = []
 
     if (section.type === 'dir') {
-      const { data: { tree: subTree } } = await github(`GET /repos/{owner}/{repo}/git/trees/${section.sha}?recursive=1`, {
+      const { data } = await github(`GET /repos/{owner}/{repo}/git/trees/${section.sha}?recursive=1`, {
         tree_sha: section.sha
       })
+
+      const subTree = data.tree
 
       subTree.forEach((subSection) => {
         supabase.from('pac_sections').update({
@@ -38,6 +40,13 @@ module.exports = {
       filesToDelete = subTree.filter(f => f.type === 'blob').map((f) => {
         const { path, mode, type } = f
         return { path: `${section.path}/${path}`, mode, type, sha: null }
+      })
+    } else {
+      filesToDelete.push({
+        path: section.path,
+        mode: '100644',
+        type: 'blob',
+        sha: null
       })
     }
 

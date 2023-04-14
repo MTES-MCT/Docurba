@@ -106,7 +106,7 @@
               <v-row v-if="section.children && section.children.length">
                 <v-col
                   v-for="child in section.children"
-                  :key="child.path"
+                  :key="child.sha"
                   cols="12"
                 >
                   <PACSectionCard
@@ -227,7 +227,7 @@ export default {
       isSelected: selectedPaths.includes(this.section.path),
       sectionName: this.section.name,
       sectionText: '',
-      sectionContent: { body: null },
+      // sectionContent: { body: null },
       sectionMarkdown: '',
       editEnabled: false,
       openedSections: [],
@@ -248,6 +248,11 @@ export default {
       }
 
       return this.isOpen ? 'primary lighten-4' : 'white'
+    },
+    sectionContent () {
+      return {
+        body: this.$md.compile(this.sectionMarkdown)
+      }
     }
   },
   watch: {
@@ -274,7 +279,7 @@ export default {
       // console.log(sectionContent)
       try {
         this.sectionText = sectionContent.replace(/---([\s\S]*)---/, '')
-        this.sectionContent.body = this.$md.compile(this.sectionText)
+        // this.sectionContent.body = this.$md.compile(this.sectionText)
         this.sectionMarkdown = this.$md.parse(this.sectionText)
       } catch (err) {
         // eslint-disable-next-line no-console
@@ -295,15 +300,17 @@ export default {
     },
     async saveSection () {
       this.saving = true
+      let filePath = this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path
 
       if (this.section.name !== this.sectionName) {
+        const nameIndex = filePath.lastIndexOf(this.section.name)
+        filePath = `${filePath.substring(0, nameIndex)}${this.sectionName}${this.section.type === 'file' ? '.md' : ''}`
+
         await this.updateName() // This should emit a 'changeTree' event that shoud update section.path in props.
       }
 
       try {
-        console.log('is path updated ?', this.sectionName, this.section.name, this.section.path)
-
-        const filePath = this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path
+        console.log('is path updated ?', filePath)
 
         await axios({
           method: 'post',
@@ -318,13 +325,12 @@ export default {
           }
         })
 
-        console.log('data saved')
-
         if (this.project && this.project.id) {
           this.$notifications.notifyUpdate(this.project.id)
         }
 
-        this.sectionContent.body = this.$md.compile(this.sectionMarkdown)
+        // this.sectionContent.body = this.$md.compile(this.sectionMarkdown)
+        this.sectionText = this.sectionMarkdown
         this.editEnabled = false
       } catch (err) {
         // eslint-disable-next-line no-console
@@ -333,7 +339,6 @@ export default {
         this.errorSaving = true
       }
 
-      console.log('stop saving')
       this.saving = false
     },
     sectionAdded (newSection) {
