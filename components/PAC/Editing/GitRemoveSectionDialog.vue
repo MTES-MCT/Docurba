@@ -38,6 +38,10 @@ import { mdiDelete } from '@mdi/js'
 
 export default {
   props: {
+    value: {
+      type: Boolean,
+      default: false
+    },
     section: {
       type: Object,
       required: true
@@ -54,13 +58,13 @@ export default {
   data () {
     return {
       icons: { mdiDelete },
-      dialog: false,
+      dialog: this.value,
       loading: false
     }
   },
   watch: {
     dialog () {
-      console.log('delete dialog', this.dialog)
+      this.$emit('input', this.dialog)
     }
   },
   methods: {

@@ -10,7 +10,7 @@
     /> -->
     <v-container v-if="!loading">
       <v-row>
-        <v-col v-for="section in sections" :key="section.sha" cols="12">
+        <v-col v-for="section in sections" :key="section.url" cols="12">
           <PACSectionCard
             :section="section"
             :git-ref="gitRef"

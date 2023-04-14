@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const { createClient } = require('@supabase/supabase-js')
 const github = require('./github.js')
+const { getFileContent } = require('./files.js')
 
 const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
@@ -21,9 +22,12 @@ module.exports = {
 
     let filesToDelete = []
 
+    // need to fetch section again because section.sha cannot be trusted. Also, type could be updated to dir with path unchanged.
+    const currentFile = await getFileContent(section.type === 'dir' ? section.path.replace('.md', '') : section.path, ref, 'object')
+
     if (section.type === 'dir') {
-      const { data } = await github(`GET /repos/{owner}/{repo}/git/trees/${section.sha}?recursive=1`, {
-        tree_sha: section.sha
+      const { data } = await github(`GET /repos/{owner}/{repo}/git/trees/${currentFile.sha}?recursive=1`, {
+        tree_sha: currentFile.sha
       })
 
       const subTree = data.tree
@@ -43,35 +47,37 @@ module.exports = {
       })
     } else {
       filesToDelete.push({
-        path: section.path,
+        path: currentFile.path,
         mode: '100644',
         type: 'blob',
         sha: null
       })
     }
 
-    // https://docs.github.com/en/rest/git/trees?apiVersion=2022-11-28#create-a-tree
-    const { data: newTree } = await github('POST /repos/{owner}/{repo}/git/trees', {
-      base_tree: baseTree,
-      tree: [{
-        path: newPath,
-        mode: section.type === 'dir' ? '040000' : '100644',
-        type: section.type === 'dir' ? 'tree' : 'blob',
-        sha: section.sha // This will duplicate all subfiles.
-      }, ...filesToDelete]
-    })
-
-    // console.log('new tree:', newTree)
-
-    const { data: commit } = await github('POST /repos/{owner}/{repo}/git/commits', {
-      message: `Change ${section.path} to ${newPath}`,
-      tree: newTree.sha,
-      parents: [baseTree]
-    })
-
-    // console.log('commit:', commit)
-
     try {
+    // https://docs.github.com/en/rest/git/trees?apiVersion=2022-11-28#create-a-tree
+      const data = await github('POST /repos/{owner}/{repo}/git/trees', {
+        base_tree: baseTree,
+        tree: [{
+          path: newPath,
+          mode: section.type === 'dir' ? '040000' : '100644',
+          type: section.type === 'dir' ? 'tree' : 'blob',
+          sha: currentFile.sha // This will duplicate all subfiles.
+        }, ...filesToDelete]
+      })
+
+      const newTree = data.data
+
+      // console.log('new tree:', newTree)
+
+      const { data: commit } = await github('POST /repos/{owner}/{repo}/git/commits', {
+        message: `Change ${section.path} to ${newPath}`,
+        tree: newTree.sha,
+        parents: [baseTree]
+      })
+
+      // console.log('commit:', commit)
+
       const merge = await github(`PATCH /repos/{owner}/{repo}/git/refs/heads/${ref}`, {
         ref: `refs/heads/${ref}`,
         sha: commit.sha,

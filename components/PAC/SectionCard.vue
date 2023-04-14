@@ -72,8 +72,14 @@
                     </v-btn>
                   </template>
                 </v-col>
-                <v-col v-if="(isOpen || hover || editEnabled) && editable && deletable" cols="auto">
-                  <PACEditingGitRemoveSectionDialog show-activator :section="section" :git-ref="gitRef" />
+                <v-col v-if="(isOpen || hover || editEnabled || deleteDialog) && editable && deletable" cols="auto">
+                  <PACEditingGitRemoveSectionDialog
+                    v-model="deleteDialog"
+                    show-activator
+                    :section="section"
+                    :git-ref="gitRef"
+                    v-on="$listeners"
+                  />
                 </v-col>
               </v-row>
             </v-expansion-panel-header>
@@ -106,7 +112,7 @@
               <v-row v-if="section.children && section.children.length">
                 <v-col
                   v-for="child in section.children"
-                  :key="child.sha"
+                  :key="child.url"
                   cols="12"
                 >
                   <PACSectionCard
@@ -116,6 +122,7 @@
                     :editable="editable"
                     :deletable="editable"
                     v-on="$listeners"
+                    @removed="sectionRemoved"
                   />
                 </v-col>
               </v-row>
@@ -224,6 +231,7 @@ export default {
         mdiArrowDown,
         mdiArrowUp
       },
+      deleteDialog: false,
       isSelected: selectedPaths.includes(this.section.path),
       sectionName: this.section.name,
       sectionText: '',
@@ -310,7 +318,7 @@ export default {
       }
 
       try {
-        console.log('is path updated ?', filePath)
+        // console.log('is path updated ?', filePath)
 
         await axios({
           method: 'post',
@@ -342,8 +350,22 @@ export default {
       this.saving = false
     },
     sectionAdded (newSection) {
+      // This could probably go into parent with an event. But it's not a big issue to have it here.
+      // A Section card could also use a computed based on children length to determine if it's a dir or a file and adapt its path accordingly.
       // eslint-disable-next-line vue/no-mutating-props
       this.section.children.push(newSection)
+      if (this.section.type === 'file') {
+        // eslint-disable-next-line vue/no-mutating-props
+        this.section.type = 'dir'
+        // eslint-disable-next-line vue/no-mutating-props
+        this.section.path = this.section.path.replace('.md', '')
+      }
+    },
+    sectionRemoved (section) {
+      // eslint-disable-next-line vue/no-mutating-props
+      this.section.children = this.section.children.filter((c) => {
+        return c.path !== section.path
+      })
     },
     selectionChange () {
       this.$emit('selectionChange', {
