@@ -23,7 +23,7 @@
         <v-text-field v-model="otherActeType" filled label="Précisez" />
       </v-col>
       <v-col cols="12" class="pt-0 pb-2">
-        <v-text-field filled label="Date de l'acte" type="date" />
+        <v-text-field v-model="date" filled label="Date de l'acte" type="date" />
       </v-col>
       <v-col cols="12" class="pt-0 pb-2">
         <v-select v-model="DUType" filled placeholder="Selectionner une option" label="Type de document d'urbanisme" :items="['Carte Communale', 'PLU', 'PLUi']" />
@@ -217,6 +217,7 @@ export default {
       DUType: this.isEpci ? 'PLUi' : null,
       acteType: null,
       otherActeType: null,
+      date: null,
       perimetre: [],
       isPLUiH: null,
       isPLUiM: null,
@@ -307,18 +308,18 @@ export default {
           towns: Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee],
           attachments: null,
           type: this.docType,
-          acte_type: '',
-          other_acte_type: '',
-          // date: '',
-          du_type: '',
-          perimetre: null,
-          is_pluih: null,
-          is_pluim: null,
-          mandatory_pluim: null,
-          is_scot: null,
-          procedure_type: '',
-          ms_scope: null,
-          procedure_number: ''
+          acte_type: this.acteType,
+          other_acte_type: this.otherActeType,
+          date: this.date,
+          du_type: this.DUType,
+          perimetre: this.perimetre,
+          is_pluih: this.isPLUiH,
+          is_pluim: this.isPLUiM,
+          mandatory_pluim: this.isRequiredPLUiM,
+          is_scot: this.isSCoT,
+          procedure_type: this.typeProcedure,
+          ms_scope: this.MSScope,
+          procedure_number: this.numberProcedure
 
         }
         if (this.docType === 'link') {
