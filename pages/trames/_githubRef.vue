@@ -123,7 +123,8 @@ export default {
       } else { section.children = [] }
 
       return Object.assign({
-        diff: null
+        diff: null,
+        diffCount: 0
       }, section)
     }
 
@@ -176,10 +177,14 @@ export default {
         }
       }
 
-      if (section.children) {
-        section.children.forEach((child) => {
-          this.setDiff(child, diffFiles, diffRef)
-        })
+      if (section.children && section.children.length) {
+        section.diffCount = section.children.reduce((diffCount, child) => {
+          return diffCount + this.setDiff(child, diffFiles, diffRef)
+        }, 0)
+
+        return section.diffCount
+      } else {
+        return diffFile ? 1 : 0
       }
     },
     async saveSelection (selection) {

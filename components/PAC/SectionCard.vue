@@ -36,6 +36,7 @@
                     >
                       {{ section.diff.label }}
                     </v-chip>
+                    <v-badge v-if="section.diffCount" color="primary" inline :content="section.diffCount" />
                   </h2>
                 </v-col>
                 <v-col v-if="(isOpen || hover) && editable" cols="auto">
