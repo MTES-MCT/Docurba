@@ -1,9 +1,13 @@
 <template>
-  <v-card color="info" dark>
+  <v-card color="info" flat dark>
     <v-card-title>
-      Cette section n'est pas modifiable.
+      <span>Cette section n'est pas modifiable.</span>
+      <v-spacer />
+      <v-btn icon @click="expended = !expended">
+        <v-icon>{{ expended ? icons.mdiChevronUp : icons.mdiChevronDown }}</v-icon>
+      </v-btn>
     </v-card-title>
-    <v-card-text>
+    <v-card-text v-show="expended">
       <p>
         Si vous souhaitez ajouter du contenu nous vous conseillons de créer une sous section.
       </p>
@@ -11,7 +15,7 @@
         Vous pouvez aussi suggérer une modification que nous examinerons.
       </p>
     </v-card-text>
-    <v-card-actions>
+    <v-card-actions v-show="expended">
       <v-spacer />
       <v-dialog v-model="dialog" min-width="600px" max-width="600px">
         <template #activator="{on}">
@@ -53,6 +57,7 @@
 
 <script>
 import axios from 'axios'
+import { mdiChevronDown, mdiChevronUp } from '@mdi/js'
 
 export default {
   props: {
@@ -63,12 +68,16 @@ export default {
   },
   data () {
     return {
+      icons: {
+        mdiChevronDown, mdiChevronUp
+      },
       dialog: false,
       change: {
         email: this.$user.email,
         title: '',
         message: ''
       },
+      expended: false,
       snackbar: false
     }
   },
@@ -78,8 +87,8 @@ export default {
         url: '/api/admin/help',
         method: 'post',
         data: Object.assign({
-          section: this.section.titre,
-          dir: this.section.dir
+          section: this.section.name,
+          dir: this.section.path
         }, this.change)
       })
 

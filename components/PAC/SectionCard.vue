@@ -106,6 +106,7 @@
               </v-row>
               <v-row v-else>
                 <v-col cols="12">
+                  <PACEditingReadOnlyCard v-if="editable && !isEditable" :section="section" class="mt-4" />
                   <nuxt-content class="pac-section-content mt-4" :document="sectionContent" />
                 </v-col>
               </v-row>
