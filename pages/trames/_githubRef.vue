@@ -10,6 +10,11 @@
     /> -->
     <v-container v-if="!loading">
       <v-row>
+        <v-col cols="12">
+          <PACEditingAdvicesCard :avoided-tags="(project && project.id) ? [] : ['projet']" />
+        </v-col>
+      </v-row>
+      <v-row>
         <v-col v-for="section in sections" :key="section.url" cols="12">
           <PACSectionCard
             :section="section"
