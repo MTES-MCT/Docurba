@@ -54,6 +54,14 @@
             class="pa-0"
             outlined
             color="primary"
+            @click="getFileLink(prescrData)"
+          >
+            <v-icon>{{ icons.mdiLink }}</v-icon>
+          </v-btn>
+          <v-btn
+            class="pa-0"
+            outlined
+            color="primary"
             @click="downloadFile(prescrData)"
           >
             <v-icon>{{ icons.mdiDownload }}</v-icon>
@@ -85,6 +93,18 @@ export default {
     }
   },
   methods: {
+    getFileLink (file) {
+      console.log('file:', file)
+      const { data } = this.$supabase
+        .storage
+        .from('prescriptions')
+        .getPublicUrl(file.path)
+      console.log('data: ', data)
+      navigator.clipboard.writeText(data.publicUrl)
+      // this.snackClip = true
+      this.$emit('snack', true)
+      return data.publicUrl
+    },
     async downloadFile (file) {
       const { data } = await this.$supabase.storage.from('prescriptions').download(file.path)
       const link = this.$refs[`file-${file.id}`][0]
@@ -92,8 +112,9 @@ export default {
       link.click()
     },
     copyLinktoClip () {
-      navigator.clipboard.writeText(this.prescription.link_url)
-      this.snackClip = true
+      navigator.clipboard.writeText(this.value.link_url)
+      // this.snackClip = true
+      this.$emit('snack', true)
     }
   }
 }
