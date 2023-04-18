@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-row justify="space-around" class="py-5 mt-10 fill-height" align="strech">
+    <v-row justify="space-around" class="py-5 mt-10 fill-height" align="stretch">
       <v-col cols="12" sm="6" md="3" class="collapse-transition">
         <div class="pa-4 card-us">
           <h4 class="text-body-1 pb-3">
