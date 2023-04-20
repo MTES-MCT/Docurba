@@ -14,9 +14,11 @@
 
 [⚙️ Comment configurer sa trame de PAC](#headConfigPAC)
 
-[📋 Les fonctionnalités d’édition du PAC](#headEditor)
+[📋 La composition de la trame et les fonctionnalités de traitement de texte](#headEditor)
 
 [🧑🏻‍💻 Créer un nouveau projet de PAC](#headCreateProject)
+
+[🏻‍💻 Modifications sur la trame et conséquences sur les projets de PAC](#headGestionVersion) 
 
 [📤 Le partage du PAC](#headSharing)
 
@@ -100,7 +102,7 @@ Lors de votre première connexion, vous verrez que votre trame comporte déjà d
 
 
 <a class="anchor" name="headEditor"></a>
-## 📋 Les fonctionnalités d’édition dans votre trame départementale
+## 📋 Les fonctionnalités de traitement de texte
 
 <div class="d-flex align-center">
   <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/24.png">
@@ -165,8 +167,8 @@ Cliquez sur 💾 pour chaque section éditée afin de sauvegarder vos changement
 
 **Vous pouvez ensuite éditer et compléter votre projet de PAC,** grâce aux fonctionnalités d'édition de texte classiques et d'ajout de sous-sections, vues plus haut dans la partie "Configurer sa trame - les fonctionnalités d'édition".
 
-
-# Modifications de la trame départementale et conséquences sur les projets de PAC.
+<a class="anchor" name="headGestionVersion"></a>
+# Modifications sur la trame et conséquences sur les projets de PAC.
 
 **Comment évoluent vos PAC lorsque votre trame départementale est modifiée ?**
 
