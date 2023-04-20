@@ -42,7 +42,7 @@
 # ➕ Créer son compte sur Docurba en tant que DDT/DEAL
 
 <div class="d-flex align-center">
-  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/13.png">
+  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/17.png">
   <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
   Une fois sur la page <a href="https://docurba.beta.gouv.fr/](https://docurba.incubateur.net/" target="_blank">https://docurba.beta.gouv.fr/</a>, cliquez sur le bouton <code>connexion</code> en haut à droite.
   </div>
@@ -72,20 +72,23 @@ Cela ouvrira vos droits d'accès à l'outil d’édition des PAC de Docurba. **C
 💡 La trame de PAC est la <b>base commune pour vos futurs PAC au sein de votre département</b>. Une fois votre trame personnalisée au niveau de votre département, vous pourrez vous en servir pour élaborer de nouveaux PAC. (Voir la partie "Créer son projet de PAC" de ce guide)
 </div>
 
-Vous pouvez **compléter la trame initiale en cliquant sur `Trame du PAC`**. 
+Vous pouvez **compléter la trame initiale en cliquant sur `le nom de votre département - ici : "Ardennes"`**. 
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/18.png">
+
 Lors de votre première connexion, vous verrez que votre trame comporte déjà des éléments rédigés : ils correspondent aux éléments harmonisés à l'échelle nationale et régionale (lorsque cela a été complété). 
 
-  <img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/03.png">
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/22.png">
+  
 
-⚠️ **Le cadre juridique proposé n'est pas modifiable car il est validé et mis à jour régulièrement par QV4.** Cependant, vous pouvez : 
+⚠️ **Le cadre juridique proposé n'est pas modifiable car il est validé et mis à jour régulièrement par le National (QV4).** Cependant, vous pouvez : 
 - ajouter de nouvelles sections et sous sections qui seront alors vérifiées lors de la validation du document dans son ensemble, 
 - cliquer sur le bouton `Proposer un changement`, lorsque vous estimez qu'une modification dans la rédaction devrait être faite. Ces propositions seront partagées avec QV4 qui les validera, ou non. 
 
 <a class="anchor" name="headEditor"></a>
-## 📋 Les fonctionnalités d’édition
+## 📋 La composition de la trame : les sections et sous-sections. 
 
 <div class="d-flex align-center">
-  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/14.png">
+  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/24.png">
   <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
   <ul>
     <li>retour à la version précédente,</li>
@@ -93,8 +96,28 @@ Lors de votre première connexion, vous verrez que votre trame comporte déjà d
     <li>mise en forme,</li>
     <li>ajout de pièces-jointes,</li>
     <li>ajout d’image,</li>
-    <li>insertion d'un lien (section du PAC ou page internet),</li>
-    <li>insertion de jeux de données.</li>
+    <li>insertion d'un lien internet.</li>
+  </ul>
+  </div>
+</div>
+
+Vous pouvez **`créer de nouvelles sous-sections`** pour agrémenter le contenu de votre trame départementale. Astuce : plus elle sera fournie, moins de temps vous passerez à élaborer le PAC pour une collectivité définit. (Voir la partie "créer un nouveau projet de PAC". Vous pouvez créer autant de sous-sections que vous souhaitez. 
+
+Exemple ici : en cliquant sur `ajouter une sous-section`, je crée une sous-section dans "Les documents locaux" qui apparaitra au même niveau que la sous-section "Le SCoT".
+
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/25.png">
+
+
+<a class="anchor" name="headEditor"></a>
+## 📋 Les fonctionnalités d’édition dans votre trame départementale
+
+<div class="d-flex align-center">
+  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/23.png">
+  <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
+  <ul>
+    <li>les flèches vers le haut et vers le bas : pour modifier l'ordre des sections,</li>
+    <li>le crayon : pour éditer le texte. Ici : éditer l'introdution de la section "Dispositions de documents [...]" ,</li>
+    <li>les chevrons : pour ouvrir ou fermer la section ou sous-section.</li>
   </ul>
   </div>
 </div>
@@ -103,24 +126,13 @@ Lors de votre première connexion, vous verrez que votre trame comporte déjà d
 
 **Bon à savoir:** 
 
-- **Pour ajouter un lien**, `sélectionnez le texte` auquel vous souhaitez lier le lien puis cliquez sur l’`icône de lien`, copiez le lien dans la fenêtre et validez. Pour supprimer un lien, sélectionnez de nouveau le texte puis l’icône et supprimer le lien dans la fenêtre.
+- **Pour ajouter un lien**, `sélectionnez le texte` auquel vous souhaitez lier le lien puis cliquez sur l’`icône de lien`, copiez le lien dans la fenêtre et cliquez sur la coche. Pour supprimer un lien, surligner à nouveau le texte puis cliquez sur l’`icône de lien` et supprimer le lien dans la fenêtre, validez en cliquant sur la coche.
 
-- **Pour ajouter une image**, vous pouvez également `sélectionner l’image` sur votre ordinateur et la faire glisser dans la fenêtre d’édition.
+- **Pour ajouter une image**, vous pouvez également `sélectionner l’image` sur votre ordinateur et valider l'insertion dans la fenêtre.
 
-- **Pour ajouter des données**, sélectionnez le trombone dans la barre d'édition de texte, puis sur `data`, identifiez la donnée à insérer dans le PAC et cliquez sur le `+` de la donnée, retourner dans le PAC et elle apparaitra juste en bas de la section sur laquelle vous étiez en train de travailler.
-
-### Fonctionnalités additionnelles:
-
-- Vous pouvez également **`créer de nouvelles sous-parties`** en cliquant sur le `+` à côté du titre. Vous pourrez également les supprimer par la suite.
-
-- Vous pouvez **`modifier l’ordre des sous-parties`** en cliquant sur les chevrons “haut” et “bas” à droite du texte.
-
-- Vous pouvez **`rechercher un terme dans le sommaire`** à l’aide de la barre de recherche qui se situe entre le titre et le sommaire.
-
-- Vous pouvez **`agrandir la fenêtre d’édition`** en cliquant sur la petite flèche à côté de la barre de recherche.
 
 <div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
-Cliquez sur 💾 en bas à droite pour sauvegarder vos changements. En cas d’oubli, une fenêtre de rappel apparaîtra.
+Cliquez sur 💾 pour chaque section éditée afin de sauvegarder vos changements. En cas d’oubli, une fenêtre de rappel apparaîtra.
 </div>
 
 <a class="anchor" name="headCreateProject"></a>
@@ -134,31 +146,51 @@ Cliquez sur 💾 en bas à droite pour sauvegarder vos changements. En cas d’o
 **Revenez sur la page d’accueil** en cliquant sur `Mes documents`
 
 <div class="d-flex align-center">
-  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/05.png">
+  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/26.png">
   <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
   
   **Créez votre projet de PAC** en cliquant sur le `➕` en bas à droite de l’écran.  
 
   Cette fenêtre s’ouvre. Vous pouvez alors choisir d’utiliser votre trame départementale et donc élaborer le PAC à partir de celle-ci. (Recommandé)
 
-  **Si vous décochez cette option, vous pourrez charger un PDF déjà existant. (Utile en cas de procédure en cours).**
+  **Si vous décochez cette option, vous pourrez charger le PDF d'un PAC existant. (Utile en cas de procédure en cours).**
   </div>
 </div>
 
 <div class="d-flex align-center">
   <div class=" background--text text--lighten-2  mr-8 rounded g300 rounded-lg pa-4">
 
-  **Une fois le projet de PAC créé**, et si vous avez choisi d'utiliser votre trame départementale, vous pourrez modifier le PAC en cliquant sur `Modifier` et **définir votre projet de PAC en sélectionnant les parties de la trame appropriées au territoire et/ou au type de document**.
+  **Une fois le projet de PAC créé pour une certaine collectivité**, et si vous avez choisi d'utiliser votre trame départementale, vous pourrez élaborer le PAC en décochant les sections et sous-sections qui ne concernent pas la commune.
 
-  *Exemple*: Au préalable dans cette trame, le choix a été fait de lister les différents SCoT du département sous la section "SCoT". Maintenant au niveau projet, il est possible de cocher et décocher les différents SCoT qui ne correspondent pas à la collectivité pour laquelle est élaboré de PAC.
+  *Exemple*: Au préalable dans cette trame, le choix a été fait de lister les différents SCoT du département sous la section "SCoT". Maintenant au niveau projet, il est possible de décocher les différents SCoT qui ne concernent pas la collectivité pour laquelle est élaboré de PAC.
   </div>
-  <img class="elevation-3  my-8" style="max-width:50%" src="/images/guide/11.png">
+  <img class="elevation-3  my-8" style="max-width:50%" src="/images/guide/27.png">
 
 </div>
 
 
 
-**Vous pouvez ensuite éditer et compléter votre projet de PAC,** grâce aux fonctionnalités d'édition classiques et vues plus haut dans la partie "Configurer sa trame - les fonctionnalités d'édition".
+**Vous pouvez ensuite éditer et compléter votre projet de PAC,** grâce aux fonctionnalités d'édition de texte classiques et d'ajout de sous-sections, vues plus haut dans la partie "Configurer sa trame - les fonctionnalités d'édition".
+
+
+# Modifications de la trame départementale et conséquences sur les projets de PAC.
+
+**Comment évoluent vos PAC lorsque votre trame départementale est modifiée ?**
+
+
+<div class="d-flex align-center">
+  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/29.png">
+  <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
+  
+  Votre trame départementale peut évoluer suite aux modifications apportées par la National (sur Le cadre juridique et les grands principes de la planifications) et dans ce cas **vous serez notifiés en face de chaque section pour prendre connaissance des améliorations**. 
+    -> **Exemple avec des modifications apportées dans Les dispositions de documents supre-territoriaux et doctrines**.
+  </div>
+</div>
+
+Votre trame peut également être modifiée au niveau régional (par la DREAL par exemple) et au niveau départemental (par vous même et vos collègues). **Dans ce cas vous pourrez choisir d'intégrer, ou non, le nouveau contenu dans les PAC.** Pour cela, retrouvez dans votre PAC la section concernée par la propositon de changement et cliquez sur l'icone `Comparer à la trame régionale` dans l'encadré de traitement de texte. Si vous estimez que le contenu est cohérent pour le PAC en question, vous pouvez copier le texte puis le coller dans le PAC. 
+
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/30.png">
+
 
 <a class="anchor" name="headSharing"></a>
 # 📤 Le partage du PAC
@@ -172,13 +204,15 @@ Cliquez sur 💾 en bas à droite pour sauvegarder vos changements. En cas d’o
 
 En revenant sur la page d’accueil en cliquant sur `Mes documents` vous avez accès à d’autres fonctionnalités:
 
-<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/15.png">
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/28.png">
+
+- **continuer l'élaboration du PAC** (`modifier`),
 
 - **consulter le PAC en mode lecture** (`consulter`) - comme le verra la collectivité depuis Docurba,
 
-- et `partager` **votre projet de PAC** (avec vos collègues et/ou la collectivité, par exemple),
+- `partager` **votre projet de PAC** (avec vos collègues en DDT et/ ou avec la collectivité concernée). Notez que vous pouvez supprimer le partage à tout moment.
 
-- **modifier son titre et ses paramètres principaux** (`icône crayon en haut à droite`)
+- **modifier son titre et ses paramètres principaux** (`icône crayon à droite`)
 
 
 
@@ -187,7 +221,7 @@ En revenant sur la page d’accueil en cliquant sur `Mes documents` vous avez ac
   <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/08.png">
   <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
 
-Vous pouvez `partager votre PAC` et choisir qui pourra **collaborer et éditer le PAC** (vos collègues de DDT par exemple) ou **seulement consulter le projet** (la collectivité concernée par le document par exemple). 
+Vous pouvez `partager votre PAC` et choisir qui pourra **collaborer et éditer le PAC** (vos collègues de DDT par exemple) ou **seulement consulter le projet de PAC** (la collectivité concernée par le document par exemple). 
   </div>
 </div>
 
@@ -197,19 +231,11 @@ Vous pouvez `partager votre PAC` et choisir qui pourra **collaborer et éditer l
 *NB : Vous avez toujours possibilité de supprimer le partage en cliquant sur la croix en face de la personne à supprimer.*
 
 <a class="anchor" name="headPrint"></a>
-# 🖨 Imprimer  **le PAC**
+# 🖨 Imprimer  **le PAC**
 
-Une fois votre projet finalisé, vous pouvez **exporter votre PAC en format PDF** depuis le `mode consultation` de votre PAC à l’aide de l’`icône de téléchargement` en bas à droite.
+Focntionnalité qui sera disponible courant mai 2023.
 
-ATTENTION : l'export .PDF depuis le moteur de recherche Firefox présente des bugs que nous ne sommes pas en mesure de résoudre pour le moment. Privilégiez donc Google Chrome et Edge.
 
-<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/09.png">
-
-Il est recommandé de décocher les entêtes et pied de page.
-
-<div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
-
-☝ ***Remarque**: Docurba n’a pas pour objectif la création de PAC en version papier et nous vous encourageons à partager votre PAC directement via Docurba et son option de partage via email. (Voir comment [Partager son PAC](Guide%20d%E2%80%99utilisation%20de%20Docurba%20db7d56e906f94223a6bf52e3d8063e5d.md))*
 
 </div>
 
@@ -220,7 +246,7 @@ Il est recommandé de décocher les entêtes et pied de page.
 <div class="d-flex align-center">
   <div class=" background--text text--lighten-2  mr-8 rounded g300 rounded-lg pa-4">
 
-  Vous pouvez également **archiver vos projets de PAC** (utile pour faire disparaitre les essais de PAC que vous serez amenés à faire lors de la prise en main de l'outil. Depuis les paramètres principaux de votre projet de PAC, cliquez sur l’icône du crayon pour faire apparaitre la fenêtre suivante et cliquez sur *`archiver`.* 
+  Vous pouvez également **archiver vos projets de PAC** (utile pour faire disparaitre les essais de PAC que vous ferez éventuellement lors de la prise en main de l'outil. Depuis les paramètres principaux de votre projet de PAC, cliquez sur l’icône du crayon pour faire apparaitre la fenêtre suivante et cliquez sur *`archiver`.* 
 
   </div>
   <img class="elevation-3  my-8" style="max-width:50%" src="/images/guide/16.png">
@@ -235,6 +261,7 @@ Via les évènements proposés dans l'outil, les collectivités auront notamment
 Cette feuille de route est partagée entre les services de l'État, la collectivité et son bureau d'études, dans l'optique de **fluidifier les échanges et vous permettre d'avoir plus de visibilité sur le calendrier des collectivités que vous accompagnez.** 
 
 Nous collaborons également avec différents outils (le GPU et Sudocuh notamment) pour intégrer Docurba dans les pratiques. 
+
 
 <div class="text-center my-16">
 
