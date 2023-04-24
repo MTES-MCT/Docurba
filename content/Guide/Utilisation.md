@@ -14,9 +14,11 @@
 
 [⚙️ Comment configurer sa trame de PAC](#headConfigPAC)
 
-[📋 Les fonctionnalités d’édition du PAC](#headEditor)
+[📋 La composition de la trame et les fonctionnalités de traitement de texte](#headEditor)
 
 [🧑🏻‍💻 Créer un nouveau projet de PAC](#headCreateProject)
+
+[🏻‍💻 Modifications sur la trame et conséquences sur les projets de PAC](#headGestionVersion) 
 
 [📤 Le partage du PAC](#headSharing)
 
@@ -75,17 +77,32 @@ Cela ouvrira vos droits d'accès à l'outil d’édition des PAC de Docurba. **C
 Vous pouvez **compléter la trame initiale en cliquant sur `le nom de votre département - ici : "Ardennes"`**. 
 <img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/18.png">
 
-Lors de votre première connexion, vous verrez que votre trame comporte déjà des éléments rédigés : ils correspondent aux éléments harmonisés à l'échelle nationale et régionale (lorsque cela a été complété). 
+Lors de votre première connexion, vous verrez que votre trame comporte déjà des éléments rédigés : ils correspondent aux éléments harmonisés à l'échelle nationale, régionale et locale (avec une introduction et un sommaire proposé pour chaque fiche thématique). 
 
 <img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/22.png">
   
 
 ⚠️ **Le cadre juridique proposé n'est pas modifiable car il est validé et mis à jour régulièrement par le National (QV4).** Cependant, vous pouvez : 
-- ajouter de nouvelles sections et sous sections qui seront alors vérifiées lors de la validation du document dans son ensemble, 
-- cliquer sur le bouton `Proposer un changement`, lorsque vous estimez qu'une modification dans la rédaction devrait être faite. Ces propositions seront partagées avec QV4 qui les validera, ou non. 
+- ajouter de nouvelles sections et sous sections qui seront alors vérifées lors de la validation du document par le préfet, 
+- deppuis le cadre jurique, cliquer sur `Proposer un changement`, lorsque vous estimez qu'une modification ou un ajout dans la rédaction devrait être faite. Ces propositions seront partagées avec QV4 qui choisira de les intégrer ou non. 
 
 <a class="anchor" name="headEditor"></a>
 ## 📋 La composition de la trame : les sections et sous-sections. 
+
+<div class="d-flex align-center">
+  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/23.png">
+  <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
+  <ul>
+    <li>les flèches vers le haut et vers le bas : pour modifier l'ordre des sections,</li>
+    <li>le crayon : pour éditer le texte. Ici : éditer l'introdution de la section "Dispositions de documents [...]" ,</li>
+    <li>les chevrons : pour ouvrir ou fermer la section ou sous-section.</li>
+  </ul>
+  </div>
+</div>
+
+
+<a class="anchor" name="headEditor"></a>
+## 📋 Les fonctionnalités de traitement de texte
 
 <div class="d-flex align-center">
   <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/24.png">
@@ -101,34 +118,12 @@ Lors de votre première connexion, vous verrez que votre trame comporte déjà d
   </div>
 </div>
 
-Vous pouvez **`créer de nouvelles sous-sections`** pour agrémenter le contenu de votre trame départementale. Astuce : plus elle sera fournie, moins de temps vous passerez à élaborer le PAC pour une collectivité définit. (Voir la partie "créer un nouveau projet de PAC". Vous pouvez créer autant de sous-sections que vous souhaitez. 
+Vous pouvez **`créer de nouvelles sous-sections`** pour agrémenter le contenu de votre trame départementale. 
+Astuce : plus votre trame sera fournie, moins de temps vous passerez à élaborer le PAC pour une collectivité définie. (Voir la partie "créer un nouveau projet de PAC". Vous pouvez créer autant de sous-sections que vous souhaitez. 
 
 Exemple ici : en cliquant sur `ajouter une sous-section`, je crée une sous-section dans "Les documents locaux" qui apparaitra au même niveau que la sous-section "Le SCoT".
 
 <img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/25.png">
-
-
-<a class="anchor" name="headEditor"></a>
-## 📋 Les fonctionnalités d’édition dans votre trame départementale
-
-<div class="d-flex align-center">
-  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/23.png">
-  <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
-  <ul>
-    <li>les flèches vers le haut et vers le bas : pour modifier l'ordre des sections,</li>
-    <li>le crayon : pour éditer le texte. Ici : éditer l'introdution de la section "Dispositions de documents [...]" ,</li>
-    <li>les chevrons : pour ouvrir ou fermer la section ou sous-section.</li>
-  </ul>
-  </div>
-</div>
-
-
-
-**Bon à savoir:** 
-
-- **Pour ajouter un lien**, `sélectionnez le texte` auquel vous souhaitez lier le lien puis cliquez sur l’`icône de lien`, copiez le lien dans la fenêtre et cliquez sur la coche. Pour supprimer un lien, surligner à nouveau le texte puis cliquez sur l’`icône de lien` et supprimer le lien dans la fenêtre, validez en cliquant sur la coche.
-
-- **Pour ajouter une image**, vous pouvez également `sélectionner l’image` sur votre ordinateur et valider l'insertion dans la fenêtre.
 
 
 <div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
@@ -172,8 +167,8 @@ Cliquez sur 💾 pour chaque section éditée afin de sauvegarder vos changement
 
 **Vous pouvez ensuite éditer et compléter votre projet de PAC,** grâce aux fonctionnalités d'édition de texte classiques et d'ajout de sous-sections, vues plus haut dans la partie "Configurer sa trame - les fonctionnalités d'édition".
 
-
-# Modifications de la trame départementale et conséquences sur les projets de PAC.
+<a class="anchor" name="headGestionVersion"></a>
+# Modifications sur la trame et conséquences sur les projets de PAC.
 
 **Comment évoluent vos PAC lorsque votre trame départementale est modifiée ?**
 
@@ -182,12 +177,12 @@ Cliquez sur 💾 pour chaque section éditée afin de sauvegarder vos changement
   <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/29.png">
   <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
   
-  Votre trame départementale peut évoluer suite aux modifications apportées par la National (sur Le cadre juridique et les grands principes de la planifications) et dans ce cas **vous serez notifiés en face de chaque section pour prendre connaissance des améliorations**. 
-    -> **Exemple avec des modifications apportées dans Les dispositions de documents supre-territoriaux et doctrines**.
+  Votre trame départementale peut par exemple évoluer suite aux modifications apportées par le National (sur _Le cadre juridique et les grands principes de la planification_) et dans ce cas **vous serez notifiés en face de chaque section pour prendre connaissance des améliorations**. 
+    -> **Exemple avec des modifications apportées dans Les dispositions de documents supra-territoriaux et doctrines**.
   </div>
 </div>
 
-Votre trame peut également être modifiée au niveau régional (par la DREAL par exemple) et au niveau départemental (par vous même et vos collègues). **Dans ce cas vous pourrez choisir d'intégrer, ou non, le nouveau contenu dans les PAC.** Pour cela, retrouvez dans votre PAC la section concernée par la propositon de changement et cliquez sur l'icone `Comparer à la trame régionale` dans l'encadré de traitement de texte. Si vous estimez que le contenu est cohérent pour le PAC en question, vous pouvez copier le texte puis le coller dans le PAC. 
+Votre trame peut également être modifiée au niveau régional (par la DREAL par exemple) et au niveau départemental (par vous même et vos collègues). **Dans ce cas, vous pourrez choisir d'intégrer, ou non, le nouveau contenu dans les PAC.** Pour cela, depuis votre PAC, retrouvez la section concernée par la propositon de changement et cliquez sur l'icone `Comparer à la trame régionale` dans l'encadré de traitement de texte. Si vous estimez que le contenu proposé est cohérent pour le PAC en question, vous pouvez copier le texte puis le coller dans votre PAC (dans l'encadré de gauche). 
 
 <img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/30.png">
 
@@ -199,7 +194,7 @@ Votre trame peut également être modifiée au niveau régional (par la DREAL pa
 
 <div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
 
-💡 ** Avant même de partager le PAC complet à la collectivité, Docurba vous permet de lui **partager les premiers éléments contitutifs de son PAC via le "socle de PAC"**, qu'elle trouvera depuis la page d'accueil de notre site en faisant une recherche pour sa commune/EPCI. Nous vous invitons donc à partager le site de [Docurba](https://docurba.beta.gouv.fr/) à toute collectivité en début de procédure, et dans l'idée de la faire patienter d'ici la réception de son PAC complet. Concernant `le partage du PAC complet`, voici la marche à suivre:
+💡 ** Avant même de partager le PAC complet à la collectivité et son bureau d'étude, Docurba vous permet leur **partager les premiers éléments contitutifs du PAC via le "socle de PAC"**, qu'elle trouvera depuis la page d'accueil de notre site en faisant une recherche pour sa commune/EPCI. Nous vous invitons donc à partager le site de [Docurba](https://docurba.beta.gouv.fr/) à toute collectivité en début de procédure, et dans l'idée de la faire patienter d'ici la réception de son PAC complet. Concernant `le partage du PAC complet`, voici la marche à suivre:
 </div>
 
 En revenant sur la page d’accueil en cliquant sur `Mes documents` vous avez accès à d’autres fonctionnalités:
@@ -233,7 +228,7 @@ Vous pouvez `partager votre PAC` et choisir qui pourra **collaborer et éditer l
 <a class="anchor" name="headPrint"></a>
 # 🖨 Imprimer  **le PAC**
 
-Focntionnalité qui sera disponible courant mai 2023.
+Fonctionnalité en cours de construction. Disponible courant mai 2023.
 
 
 
@@ -256,7 +251,7 @@ Focntionnalité qui sera disponible courant mai 2023.
 <a class="anchor" name="headFRP"></a>
 # Feuille de route partagée entre services de l'État et collectivités
 
-Nous travaillons avec un groupe de DDT dans la construction de cette nouvelle fonctionnalité qui a la volonté de **servir de guide pour la collectivité** dans sa procédure d'élaboration de DU. 
+Nous travaillons avec un groupe de DDT à la construction de cette nouvelle fonctionnalité qui a la volonté de **servir de guide pour la collectivité** dans sa procédure d'élaboration de DU. 
 Via les évènements proposés dans l'outil, les collectivités auront notamment à disposition des informations sur les étapes de la procédure, les articles du code de l'urbanisme (s'il y a lieu), les échéances à respecter, etc. 
 Cette feuille de route est partagée entre les services de l'État, la collectivité et son bureau d'études, dans l'optique de **fluidifier les échanges et vous permettre d'avoir plus de visibilité sur le calendrier des collectivités que vous accompagnez.** 
 
