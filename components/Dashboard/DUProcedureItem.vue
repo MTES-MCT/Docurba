@@ -11,7 +11,9 @@
           Statut
         </div>
         <div>
-          <v-chip>{{ status }}</v-chip>
+          <v-chip :color="status.color">
+            {{ status.text }}
+          </v-chip>
         </div>
       </v-col>
       <v-col>
@@ -45,13 +47,15 @@
       <v-col cols="12" class="pb-0">
         <v-divider />
       </v-col>
-      <v-col cols="12">
+      <v-col cols="12" class="pb-0">
         <span class="primary--text text-decoration-underline mr-4">
           Liste des communes concernées
         </span>
-        <span class="primary--text text-decoration-underline mr-4">
-          Feuille de route partagée
-        </span>
+        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-duId', params: {collectiviteId: $route.params.collectiviteId, duId: firstEvent.idProcedure}}">
+          <span class="primary--text text-decoration-underline mr-4">
+            Feuille de route partagée
+          </span>
+        </nuxt-link>
         <span class="primary--text text-decoration-underline mr-4">
           PAC
         </span>
@@ -82,13 +86,13 @@ export default {
     status () {
       // TODO: Attention, il faut surement comparer les précédents pour ne pas mettre précédent sur les procédure principales opposable qui n'ont pas eu de révision
       if (this.firstEvent.dateExecutoire && this.firstEvent.idProcedurePrincipal) {
-        return 'opposable'
+        return { text: 'opposable', color: 'success lighten-2' }
       } else if (this.firstEvent.dateExecutoire && !this.firstEvent.idProcedurePrincipal) {
-        return 'précédent'
+        return { text: 'précédent', color: '' }
       } else if (this.firstEvent.dateLancement || this.firstEvent.dateApprobation) {
-        return 'en cours'
+        return { text: 'en cours', color: '' }
       } else {
-        return 'abandonné'
+        return { text: 'abandonné', color: 'error' }
       }
     },
     step () {

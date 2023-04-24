@@ -5,7 +5,7 @@
         <h1>Bienvenue DDT {{ $route.params.departement }}</h1>
       </v-col>
       <v-col cols="12">
-        <v-btn depressed color="primary" :to="{name:'dashboard-departement-collectivites', params:{departement: '47'}}">
+        <v-btn depressed color="primary" :to="{name:'ddt-departement-collectivites', params:{departement: '47'}}">
           Aller à mon tableau de bord
         </v-btn>
         <v-btn depressed color="primary" class="ml-8">
