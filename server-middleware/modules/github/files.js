@@ -2,6 +2,8 @@
 const github = require('./github.js')
 
 async function getFileContent (path, ref, format = 'raw') {
+  console.log('Get File', format, path)
+
   try {
     const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
       path,
@@ -10,7 +12,7 @@ async function getFileContent (path, ref, format = 'raw') {
       }
     })
 
-    // console.log('no error', file)
+    console.log('no error', file)
 
     return file
   } catch (err) {
@@ -23,7 +25,7 @@ async function getFileContent (path, ref, format = 'raw') {
       }
     })
 
-    // console.log('error', file)
+    console.log('error', file)
 
     return file
   }
@@ -39,7 +41,7 @@ async function getFiles (path, ref, fetchContent = false) {
       file.name = file.name.replace('.md', '')
 
       if (file.type === 'dir') {
-        file.children = await getFiles(file.path, ref)
+        file.children = await getFiles(file.path, ref, fetchContent === 'all' ? fetchContent : false)
         const intro = file.children.find(child => child.name === 'intro')
 
         // if intro is not found. It might be impossible to delete the folder in the UI.

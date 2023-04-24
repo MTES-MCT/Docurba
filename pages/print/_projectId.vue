@@ -116,7 +116,7 @@ export default {
     async setPACFromTrame () {
       const { data: sections } = await axios({
         method: 'get',
-        url: `/api/trames/tree/projet-${this.project.id}?content=true`
+        url: `/api/trames/tree/projet-${this.project.id}?content=all`
       })
 
       // console.log(sections)

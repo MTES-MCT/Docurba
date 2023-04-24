@@ -399,6 +399,8 @@ export default {
           }
         })
 
+        console.log('diffSectionContent', diffSectionContent)
+
         this.diff.body = this.$md.compile(diffSectionContent.replace(/---([\s\S]*)---/, ''))
       } catch (err) {
         this.diff.body = null

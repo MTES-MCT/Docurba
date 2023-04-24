@@ -15,7 +15,7 @@ module.exports = async function (path, options = {}) {
 
   const format = (options.mediaType ? options.mediaType.format : 'default') || 'default'
 
-  // console.log('github request format', format)
+  console.log('github request format', format, path)
 
   if (path.includes('GET') && !path.includes('/compare/')) {
     const { data: cache } = await supabase.from('github_cache').select('*').match({
