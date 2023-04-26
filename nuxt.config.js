@@ -172,6 +172,22 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     standalone: true
+    // filenames: {
+    //   app: ({ isDev }) => '[name].js',
+    //   chunk: ({ isDev }) => '[name].js',
+    //   css: ({ isDev }) => '[name].css',
+    //   img: ({ isDev }) => 'img/[name].[ext]',
+    //   font: ({ isDev }) => 'fonts/[name].[ext]',
+    //   video: ({ isDev }) => 'videos/[name].[ext]'
+    // }
+    // filenames: {
+    //   app: ({ isDev }) => isDev ? '[name].js' : '[contenthash].js',
+    //   chunk: ({ isDev }) => isDev ? '[name].js' : '[contenthash].js',
+    //   css: ({ isDev }) => isDev ? '[name].css' : '[contenthash].css',
+    //   img: ({ isDev }) => isDev ? '[path][name].[ext]' : 'img/[contenthash:7].[ext]',
+    //   font: ({ isDev }) => isDev ? '[path][name].[ext]' : 'fonts/[contenthash:7].[ext]',
+    //   video: ({ isDev }) => isDev ? '[path][name].[ext]' : 'videos/[contenthash:7].[ext]'
+    // }
     // transpile: ['d3', 'd3-geo', 'internmap']
   }
 }
