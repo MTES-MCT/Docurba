@@ -11,7 +11,7 @@
           <v-expansion-panels flat>
             <v-expansion-panel>
               <v-expansion-panel-header>
-                Procédures secondaires
+                <span class="font-weight-bold">Procédures secondaires</span>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
                 <DashboardDUSubProcedureItem
