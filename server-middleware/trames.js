@@ -195,6 +195,23 @@ app.get('/file', async (req, res) => {
   }
 })
 
+app.get('/history', async (req, res) => {
+  try {
+    const { path, ref } = req.query
+
+    const { data: commits } = await github('GET /repos/{owner}/{repo}/commits', {
+      path,
+      sha: ref,
+      per_page: 1
+    })
+
+    res.status(200).send(commits[0])
+  } catch (err) {
+    console.log('error getting history', err)
+    res.status(400).send(err)
+  }
+})
+
 app.get('/compare', async (req, res) => {
   try {
     const { basehead } = req.query

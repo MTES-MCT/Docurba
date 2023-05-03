@@ -12,7 +12,7 @@ async function getFileContent (path, ref, format = 'raw') {
       }
     })
 
-    console.log('no error', file)
+    // console.log('no error', file)
 
     return file
   } catch (err) {
@@ -25,7 +25,7 @@ async function getFileContent (path, ref, format = 'raw') {
       }
     })
 
-    console.log('error', file)
+    // console.log('error', file)
 
     return file
   }

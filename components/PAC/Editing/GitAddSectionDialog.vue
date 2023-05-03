@@ -20,6 +20,9 @@
       <v-card-text>
         <v-row>
           <v-col cols="12">
+            Cette section sera une sous-section de: <b>{{ parent.name }}</b>
+          </v-col>
+          <v-col cols="12">
             <v-text-field v-model="sectionName" label="Nom" :error-messages="errorMessage" />
           </v-col>
         </v-row>
