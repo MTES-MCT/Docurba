@@ -152,6 +152,10 @@ export default {
       method: 'get'
     })
 
+    this.getEvents()
+
+    console.log(visits)
+
     if (!err) {
       const days = Object.keys(visits).sort((d1, d2) => {
         return this.$dayjs(d1, 'YYYY-MM-DD') - this.$dayjs(d2, 'YYYY-MM-DD')
@@ -159,12 +163,14 @@ export default {
 
       // console.log(visits)
 
-      this.nbVisits = days.map(day => visits[day].nb_visits)
-      this.nbVisitors = days.map(day => visits[day].nb_uniq_visitors)
+      this.nbVisits = days.map(day => visits[day].nb_visits || 0)
+      this.nbVisitors = days.map(day => visits[day].nb_uniq_visitors || 0)
 
       this.getEdits()
       this.getNbAdmins()
       this.getNbProjects()
+      this.getPACsDiff()
+      this.getFDR()
     }
   },
   methods: {
@@ -184,7 +190,9 @@ export default {
         method: 'get'
       })
 
-      this.nbAgents = data.nbAgents
+      console.log(data)
+
+      this.nbAgents = data.nbAdmins
     },
     async getNbProjects () {
       const { data: nbProjects } = await axios({
@@ -193,6 +201,38 @@ export default {
       })
 
       console.log(nbProjects)
+    },
+    async getEvents () {
+      const date = this.$dayjs().subtract(30, 'day')
+      const lastMonth = date.subtract(90, 'day')
+
+      const dateRange = `${lastMonth.format('YYYY-MM-DD')},${date.format('YYYY-MM-DD')}`
+
+      const { data: eventsData, err } = await axios({
+        url: `https://stats.data.gouv.fr/index.php?module=API&format=JSON&idSite=235&period=day&date=${dateRange}&method=Events.getCategory&secondaryDimension=eventAction&flat=1&token_auth=anonymous&force_api_session=1`
+      })
+
+      if (!err) {
+        console.log(eventsData)
+      } else {
+        console.log(err)
+      }
+    },
+    async getPACsDiff () {
+      const { data: diffs } = await axios({
+        url: '/api/stats/diff',
+        method: 'get'
+      })
+
+      console.log('diff', diffs)
+    },
+    async getFDR () {
+      const { data: fdr } = await axios({
+        url: '/api/stats/fdr',
+        method: 'get'
+      })
+
+      console.log('fdr', fdr)
     },
     sum (values) {
       return values.reduce((total, val) => {
