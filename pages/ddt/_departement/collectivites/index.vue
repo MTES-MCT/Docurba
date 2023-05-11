@@ -2,7 +2,26 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <h1>Tableau de bord {{ $route.params.departement }}</h1>
+        <h1>Tableau de bord - {{ $route.params.departement }}</h1>
+      </v-col>
+      <v-col cols="12">
+        <div style="background-color: #F6F6F6;border: 1px solid #DDDDDD;border-radius:4px;" class="pa-6">
+          <v-text-field
+            v-model="search"
+            filled
+            hide-details=""
+            dense
+            style="max-width:500px"
+            label="Rechercher"
+          />
+          <v-divider class="my-4" />
+          <div class="d-flex">
+            <v-select flat solo label="Compétence" :items="['Peut-importe', 'Oui', 'Non']" />
+            <v-select flat solo label="Toutes procédures principales" :items="['Peut-importe', 'Oui', 'Non']" />
+            <v-select flat solo label="Tous les status" :items="['Peut-importe', 'Oui', 'Non']" />
+            <v-select flat solo label="Tous SCoT" :items="['Peut-importe', 'Oui', 'Non']" />
+          </div>
+        </div>
       </v-col>
       <v-col cols="12">
         <v-tabs v-model="scope">
@@ -18,13 +37,7 @@
               class="elevation-1"
               :search="search"
             >
-              <template #top>
-                <v-text-field
-                  v-model="search"
-                  label="Rechercher"
-                  class="mx-4"
-                />
-              </template>
+              <template #top />
               <!-- eslint-disable-next-line -->
             <template #item.actions="{ item }">
                 <div>
@@ -43,13 +56,15 @@
               class="elevation-1"
               :search="search"
             >
-              <template #top>
+              <!-- <template #top>
                 <v-text-field
                   v-model="search"
                   label="Rechercher"
                   class="mx-4"
                 />
-              </template>
+                <v-divider />
+                <v-select :items="['Peut-importe', 'Oui', 'Non']" />
+              </template> -->
               <!-- eslint-disable-next-line -->
             <template #item.actions="{ item }">
                 <div>
@@ -73,7 +88,6 @@ export default {
   data () {
     return {
       search: '',
-      calories: '',
       epci: null,
       communes: null,
       scope: 0
