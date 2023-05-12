@@ -34,30 +34,6 @@ const departements = require('./Data/departements-france.json')
 
 // const cache = {}
 
-app.get('/edits', async (req, res) => {
-  // eslint-disable-next-line prefer-const
-  let { data: deptEdits } = await supabase.from('pac_sections_dept').select('created_at')
-  // eslint-disable-next-line prefer-const
-  let { data: projectsEdits } = await supabase.from('pac_sections_project').select('created_at')
-
-  // console.log(deptEdits, errDept)
-  // console.log(projectsEdits, errProjects)
-
-  deptEdits = _.groupBy(deptEdits, edit => dayjs(edit.created_at).format('MM/YY'))
-  projectsEdits = _.groupBy(projectsEdits, edit => dayjs(edit.created_at).format('MM/YY'))
-
-  const agregate = _.uniq(Object.keys(deptEdits).concat(Object.keys(projectsEdits))).map((month) => {
-    return {
-      month,
-      value: (deptEdits[month] ? deptEdits[month].length : 0) + (projectsEdits[month] ? projectsEdits[month].length : 0)
-    }
-  }).sort((d1, d2) => {
-    return dayjs(`01/${d1.month}`, 'DD/MM/YY') - dayjs(`01/${d2.month}`, 'DD/MM/YY')
-  })
-
-  res.status(200).send(agregate)
-})
-
 app.get('/projects', async (req, res) => {
   // eslint-disable-next-line prefer-const
   let { data: projects } = await supabase.from('projects').select('id, name, created_at, owner, towns')
@@ -97,40 +73,65 @@ app.get('/fdr', async (req, res) => {
 })
 
 app.get('/ddt', async (req, res) => {
-  let { data: admins } = await supabase.from('github_ref_roles').select('user_id, created_at').eq('role', 'admin')
+  let { data: admins } = await supabase.from('github_ref_roles').select('user_id, ref, created_at').eq('role', 'admin')
 
   admins = admins.filter(admin => !docurbaTeamIds.includes(admin.user_id))
+  admins = _.uniqBy(admins, admin => admin.user_id)
 
-  const nbAdmins = _.uniqBy(admins, admin => admin.user_id).length
+  const nbAdmins = admins.length
 
-  res.status(200).send({ nbAdmins })
+  res.status(200).send({ nbAdmins, byDept: _.groupBy(admins, admin => admin.ref.replace('dept-', '')) })
 })
 
+const cachedDiff = { timestamp: 0 }
+const hour = 60 * 60 * 1000
+
 app.get('/diff', async (req, res) => {
-  const changes = { total: 0 }
+  if (cachedDiff.timestamp + hour < Date.now()) {
+    const changes = { }
 
-  for (let index = 0; index < departements.length; index++) {
-    const dept = departements[index]
+    for (let index = 0; index < departements.length; index++) {
+      const dept = departements[index]
 
-    const basehead = `main...dept-${dept.code_departement}`
+      const basehead = `main...dept-${dept.code_departement}`
 
-    const { data: diff } = await github(`GET /repos/UngererFabien/France-PAC/compare/${basehead}`, {
-      basehead,
-      per_page: 10,
-      page: 1
+      const { data: diff } = await github(`GET /repos/UngererFabien/France-PAC/compare/${basehead}`, {
+        basehead,
+        per_page: 10,
+        page: 1
+      })
+
+      const nbChanges = diff.files.reduce((total, file) => {
+        const nb = file.changes
+
+        return total + (nb > 0 ? nb : 0)
+      }, 0)
+
+      changes[dept.code_departement] = nbChanges
+    }
+
+    const min = Object.values(changes).sort((a, b) => a - b)[0]
+
+    console.log('Min changes', min)
+
+    departements.forEach((dept) => {
+      const code = dept.code_departement
+      changes[code] -= min
     })
 
-    const nbChanges = diff.files.reduce((total, file) => {
-      return total + ((file.changes - 1) || 0)
+    changes.total = Object.values(changes).reduce((sum, val) => {
+      return sum + val
     }, 0)
 
-    changes[dept.code_departement] = nbChanges
-    changes.total += nbChanges
+    changes.timestamp = Date.now()
+
+    Object.assign(cachedDiff, changes)
+    res.status(200).send(changes)
+  } else {
+    res.status(200).send(cachedDiff)
   }
 
   // console.log(data)
-
-  res.status(200).send(changes)
 })
 
 module.exports = app
