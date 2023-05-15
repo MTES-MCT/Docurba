@@ -32,7 +32,7 @@ export default {
   computed: {
     monthPoints () {
       if (this.stats.byMonth) {
-        return Object.keys(this.stats.byMonth).sort((d1, d2) => {
+        const months = Object.keys(this.stats.byMonth).sort((d1, d2) => {
           return this.$dayjs(d1, 'MM/YY') - this.$dayjs(d2, 'MM/YY')
         }).map((month, index) => {
           return {
@@ -40,6 +40,10 @@ export default {
             label: month
           }
         })
+
+        // console.log(JSON.stringify(months))
+
+        return months
       } else {
         return []
       }
