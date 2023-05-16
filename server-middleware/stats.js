@@ -38,8 +38,12 @@ app.get('/projects', async (req, res) => {
   // eslint-disable-next-line prefer-const
   let { data: projects } = await supabase.from('projects').select('id, name, created_at, owner, towns')
 
-  projects = projects.filter(p => !p.name.toLowerCase().includes('test') && !p.name.toLowerCase().includes('essai'))
-  projects = projects.filter(p => p.towns.length && p.towns[0])
+  projects = projects.filter((p) => {
+    const name = p.name ? p.name.toLowerCase() : ''
+    return !name.includes('test') && !name.includes('essai')
+  })
+
+  projects = projects.filter(p => p.towns && p.towns.length && p.towns[0])
   projects = projects.filter(p => !docurbaTeamIds.includes(p.owner))
 
   const projectsByDept = _.groupBy(projects, p => +p.towns[0].code_departement)
