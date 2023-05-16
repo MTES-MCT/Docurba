@@ -39,3 +39,14 @@ $ gcloud app deploy app.yaml --project docurba
 
 $ gcloud app deploy app_dev.yaml --project docurba
 ```
+
+## Run PDF Localy
+
+You need to have docker installed.
+Refer to https://gotenberg.dev/ for more options.
+
+```bash
+$ docker run --rm -p 8080:8080 gotenberg/gotenberg:7 \
+       gotenberg \
+       --api-port=8080
+```

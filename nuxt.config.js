@@ -25,12 +25,13 @@ export default {
     { src: '~/plugins/isDev.js' },
     { src: '~/plugins/composition.js' },
     { src: '~/plugins/supabase.js' },
+    { src: '~/plugins/supabaseAdmin.js', mode: 'server' },
     { src: '~/plugins/user.js' }, // Need to be after supabase plugin
     { src: '~/plugins/auth.js' }, // Need to be after user plugin
     { src: '~/plugins/pac.js' },
     { src: '~/plugins/daturba.js' },
     { src: '~/plugins/matomo.js', mode: 'client' },
-    { src: '~/plugins/mdParser.js', mode: 'client' },
+    { src: '~/plugins/mdParser.js' },
     { src: '~/plugins/print.js', mode: 'client' },
     { src: '~/plugins/rules.js' },
     { src: '~/plugins/notifications.js', mode: 'client' },

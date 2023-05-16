@@ -2,7 +2,7 @@
 const github = require('./github.js')
 
 async function getFileContent (path, ref, format = 'raw') {
-  console.log('Get File', format, path)
+  // console.log('Get File', format, path)
 
   try {
     const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {

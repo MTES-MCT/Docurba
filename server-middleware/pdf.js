@@ -1,6 +1,4 @@
 /* eslint-disable no-console */
-const fs = require('fs')
-
 const express = require('express')
 const app = express()
 app.use(express.json())
@@ -8,17 +6,26 @@ app.use(express.json())
 const axios = require('axios')
 const FormData = require('form-data')
 
+const isDev = process.env.NODE_ENV === 'development'
+
+const gotenbergUrl = isDev ? 'http://localhost:8080' : 'https://gotenberg-5hkjqo623a-od.a.run.app'
+const printUrl = isDev ? 'https://dev-dot-docurba.ew.r.appspot.com' : 'https://docurba.beta.gouv.fr'
+
 app.get('/:ref', (req, res) => {
+  const { ref } = req.params
+
+  console.log('PRINTING URL: ', `${printUrl}/print/${ref}`)
+
   try {
     const form = new FormData()
-    form.append('url', 'https://www.google.com/')
+    form.append('url', `${printUrl}/print/${ref}`)
     form.append('marginTop', '0')
     form.append('marginBottom', '0')
     form.append('marginLeft', '0')
     form.append('marginRight', '0')
 
     axios.post(
-      'https://gotenberg-5hkjqo623a-od.a.run.app/forms/chromium/convert/url',
+      `${gotenbergUrl}/forms/chromium/convert/url`,
       form,
       {
         headers: {
@@ -30,9 +37,11 @@ app.get('/:ref', (req, res) => {
       res.setHeader('Content-Type', 'application/pdf')
       res.setHeader('Content-Disposition', 'attachment; filename="pac.pdf"')
       response.data.pipe(res)
+    }).catch((err) => {
+      console.log('err pdf', err)
     })
   } catch (err) {
-    console.log(err)
+    console.log('err pdf', err)
     // res.status(400).send(err.toJSON())
   }
 })
