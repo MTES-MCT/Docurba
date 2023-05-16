@@ -24,8 +24,17 @@ export default {
     this.loadCommuneEvents(this.collectivite)
   },
   methods: {
+    //     getProcedure(procedureId){
+    // this.procedure.filter(e => e.events.)
+    //     },
     async loadCommuneEvents (commune) {
-      const rawEvents = (await this.$supabase.from('sudocu_events').select().eq('codeinseecommune', commune.code_commune_INSEE.toString().padStart(5, '0'))).data
+      // .eq('codeinseecommune', commune.code_commune_INSEE.toString().padStart(5, '0'))).data
+      let codecollectivite
+      if (!this.isEpci) {
+        codecollectivite = commune.code_commune_INSEE.toString().padStart(5, '0')
+      } else { codecollectivite = commune.EPCI }
+
+      const rawEvents = (await this.$supabase.from('sudocu_procedure_events').select().eq('codecollectivite', codecollectivite)).data
       console.log('rawEvents: ', rawEvents)
       const formattedEvents = rawEvents.map((e) => {
         return {
@@ -91,7 +100,16 @@ export default {
         return null
       }
 
-      this.procedures = _.chain(cleanedProcs).map(e => ({ ...e, procSecs: _.chain(e.procSecs).map(i => ({ ...i, lastStepDate: lastStepDate({ events: i }) })).orderBy('lastStepDate', 'desc').value(), lastStepDate: lastStepDate(e) })).orderBy('lastStepDate', 'desc').value()
+      this.procedures = _.chain(cleanedProcs)
+        .map(e => ({
+          ...e,
+          procSecs: _.chain(e.procSecs)
+            .map(i => ({ ...i, lastStepDate: lastStepDate({ events: i }) }))
+            .orderBy('lastStepDate', 'desc').value(),
+          lastStepDate: lastStepDate(e),
+          idProcedure: e.events[0].idProcedure
+        }))
+        .orderBy('lastStepDate', 'desc').value()
 
       console.log('eventsByProc after: ', this.procedures)
     }

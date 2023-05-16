@@ -95,13 +95,15 @@
 
 <script>
 import { mdiTrashCan } from '@mdi/js'
+import SudocuEvents from '@/mixins/SudocuEvents.js'
 
 export default {
+  mixins: [SudocuEvents],
   props: {
     projectId: {
       type: String,
       default () {
-        return this.$route.params.projectId
+        return this.$route.params.procedureId
       }
     },
     eventId: {
@@ -167,6 +169,26 @@ export default {
     async saveEvent () {
       this.saving = true
 
+      // Check if there is a previous Sudocu history
+      const { data: procedureDocurba, error: errorProcedureDocurba } = await this.$supabase.from('projects').select('*').eq('sudocuh_procedure_id', this.$route.params.procedureId)
+      if (errorProcedureDocurba) {
+        console.log('errorProcedureDocurba: ', errorProcedureDocurba)
+      }
+
+      this.event.project_id = procedureDocurba[0].id
+      if (procedureDocurba.length === 0) {
+        const procedureSudocu = this.procedures.find(e => e.idProcedure.toString() === this.projectId)
+        const newProject = Object.assign({
+          owner: this.$user.id,
+          doc_type: procedureSudocu.events[0].docType,
+          sudocuh_procedure_id: procedureSudocu.idProcedure
+        })
+        const { data: newProjectDocurba } = await this.$supabase.from('projects').insert([newProject]).select()
+        this.event.project_id = newProjectDocurba[0].id
+      }
+
+      // end
+
       this.event.attachements = this.attachements.filter((attachement) => {
         return attachement.state !== 'removed'
       }).map((attachement) => {
@@ -178,11 +200,13 @@ export default {
         await this.$supabase.from('doc_frise_events').update(this.event).eq('id', this.eventId)
         await this.saveAttachements(this.eventId)
       } else {
+        console.log('this.event: ', this.event)
         const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert([this.event]).select()
         await this.saveAttachements(savedEvents[0].id)
       }
 
       this.saving = false
+      this.$router.push({ name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: { departement: this.$route.params.departement, collectiviteId: this.$route.params.collectiviteId, procedureId: this.$route.params.procedureId }, query: this.$route.query })
       this.$emit('saved')
     },
     async deleteEvent () {

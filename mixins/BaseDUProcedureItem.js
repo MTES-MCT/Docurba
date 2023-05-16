@@ -5,11 +5,11 @@ export default {
     },
     status () {
       // TODO: Attention, il faut surement comparer les précédents pour ne pas mettre précédent sur les procédure principales opposable qui n'ont pas eu de révision
-      if (this.firstEvent.dateExecutoire && this.firstEvent.idProcedurePrincipal) {
+      if ((this.firstEvent.dateExecutoire || this.firstEvent.dateApprobation) && this.firstEvent.idProcedurePrincipal) {
         return { text: 'opposable', color: 'success lighten-2' }
       } else if (this.firstEvent.dateExecutoire && !this.firstEvent.idProcedurePrincipal) {
         return { text: 'précédent', color: '' }
-      } else if (this.firstEvent.dateLancement || this.firstEvent.dateApprobation) {
+      } else if (this.firstEvent.dateLancement) {
         return { text: 'en cours', color: '' }
       } else {
         return { text: 'abandonné', color: 'error' }

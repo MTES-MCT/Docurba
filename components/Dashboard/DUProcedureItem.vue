@@ -2,7 +2,8 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        {{ firstEvent.docType }} - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
+        {{ firstEvent.docType }}{{ $route.query.isEpci && firstEvent.docType === 'PLU'? 'i' : '' }}
+        <!-- - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }} -->
       </v-col>
     </v-row>
     <v-row class="mt-0">
@@ -48,18 +49,18 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="pb-0">
-        <span class="primary--text text-decoration-underline mr-4">
+        <span class="primary--text text-decoration-underline mr-4 text--disabled">
           Liste des communes concernées
         </span>
-        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-duId', params: {collectiviteId: $route.params.collectiviteId, duId: firstEvent.idProcedure}}">
+        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: firstEvent.idProcedure}, query: $route.query}">
           <span class="primary--text text-decoration-underline mr-4">
             Feuille de route partagée
           </span>
         </nuxt-link>
-        <span class="primary--text text-decoration-underline mr-4">
+        <span class="primary--text text-decoration-underline mr-4 text--disabled">
           PAC
         </span>
-        <span class="primary--text text-decoration-underline">
+        <span class="primary--text text-decoration-underline text--disabled">
           Note d'enjeux
         </span>
       </v-col>
