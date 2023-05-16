@@ -56,15 +56,6 @@
               class="elevation-1"
               :search="search"
             >
-              <!-- <template #top>
-                <v-text-field
-                  v-model="search"
-                  label="Rechercher"
-                  class="mx-4"
-                />
-                <v-divider />
-                <v-select :items="['Peut-importe', 'Oui', 'Non']" />
-              </template> -->
               <!-- eslint-disable-next-line -->
             <template #item.actions="{ item }">
                 <div>

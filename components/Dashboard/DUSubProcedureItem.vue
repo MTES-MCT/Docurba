@@ -2,7 +2,8 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        {{ firstEvent.typeProcedure }} - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
+        {{ firstEvent.typeProcedure }}
+        <!-- - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }} -->
       </v-col>
     </v-row>
     <v-row class="mt-0">
@@ -48,18 +49,18 @@
         <v-divider />
       </v-col>
       <v-col cols="12">
-        <span class="primary--text text-decoration-underline mr-4">
+        <span class="primary--text text-decoration-underline mr-4 text--disabled">
           Liste des communes concernées
         </span>
-        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-duId', params: {collectiviteId: $route.params.collectiviteId, duId: firstEvent.idProcedure}}">
-          <span class="primary--text text-decoration-underline mr-4">
+        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement, collectiviteId: $route.params.collectiviteId, procedureId: firstEvent.idProcedure}}">
+          <span class="primary--text text-decoration-underline mr-4 text--disabled">
             Feuille de route partagée
           </span>
         </nuxt-link>
-        <span class="primary--text text-decoration-underline mr-4">
+        <span class="primary--text text-decoration-underline mr-4 text--disabled">
           PAC
         </span>
-        <span class="primary--text text-decoration-underline">
+        <span class="primary--text text-decoration-underline text--disabled">
           Note d'enjeux
         </span>
       </v-col>
