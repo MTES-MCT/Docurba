@@ -77,20 +77,24 @@ Cela ouvrira vos droits d'accès à l'outil d’édition des PAC de Docurba. **C
 Vous pouvez **compléter la trame initiale en cliquant sur `le nom de votre département - ici : "Ardennes"`**. 
 <img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/18.png">
 
-Lors de votre première connexion, vous verrez que votre trame comporte déjà des éléments rédigés : ils correspondent aux éléments harmonisés à l'échelle nationale, régionale et locale (avec une introduction et un sommaire proposé pour chaque fiche thématique). 
+Lors de votre première connexion, vous verrez que votre trame comporte déjà des éléments rédigés : ils correspondent aux éléments harmonisés à l'échelle : 
+- nationale, avec le "Cadre Juridique et les grands principes de la planification", co-rédigé avec le National (QV4),
+- régionale, avec les "Documents supra-territoriaux et doctrines", éléments proposés par la DREAL et dans un travail commun avec les DDT de chaque région,
+- locale, avec les "Politiques publiques s'applicant sur votre territoire" regroupées en 12 fiches thématiques où une introduction et un sommaire ont été proposés pour chacune des fiches. 
 
 <img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/22.png">
   
 
-⚠️ **Le cadre juridique proposé n'est pas modifiable car il est validé et mis à jour régulièrement par le National (QV4).** Cependant, vous pouvez : 
-- ajouter de nouvelles sections et sous sections qui seront alors vérifées lors de la validation du document par le préfet, 
-- deppuis le cadre jurique, cliquer sur `Proposer un changement`, lorsque vous estimez qu'une modification ou un ajout dans la rédaction devrait être faite. Ces propositions seront partagées avec QV4 qui choisira de les intégrer ou non. 
+⚠️ **Le cadre juridique proposé n'est pas modifiable car il est validé et mis à jour régulièrement par le National (QV4).** 
+Cependant, vous pouvez : 
+- **ajouter de nouvelles sections et sous sections** qui seront alors vérifées lors de la validation du document par le préfet, 
+- **proposer des changements** : depuis le cadre jurique, cliquer sur `Proposer un changement`, lorsque vous estimez qu'une modification ou un ajout dans la rédaction devrait être faite. Ces propositions seront partagées par notre équipe à QV4, qui choisira de les intégrer ou non. 
 
 <a class="anchor" name="headEditor"></a>
 ## 📋 La composition de la trame : les sections et sous-sections. 
 
 <div class="d-flex align-center">
-  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/23.png">
+  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/24.png">
   <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
   <ul>
     <li>les flèches vers le haut et vers le bas : pour modifier l'ordre des sections,</li>
@@ -105,7 +109,7 @@ Lors de votre première connexion, vous verrez que votre trame comporte déjà d
 ## 📋 Les fonctionnalités de traitement de texte
 
 <div class="d-flex align-center">
-  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/24.png">
+  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/23.png">
   <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
   <ul>
     <li>retour à la version précédente,</li>
@@ -118,8 +122,9 @@ Lors de votre première connexion, vous verrez que votre trame comporte déjà d
   </div>
 </div>
 
-Vous pouvez **`créer de nouvelles sous-sections`** pour agrémenter le contenu de votre trame départementale. 
-Astuce : plus votre trame sera fournie, moins de temps vous passerez à élaborer le PAC pour une collectivité définie. (Voir la partie "créer un nouveau projet de PAC". Vous pouvez créer autant de sous-sections que vous souhaitez. 
+
+Aussi, vous pouvez **`créer de nouvelles sous-sections`** pour agrémenter le contenu de votre trame départementale. 
+**Astuce** : plus votre trame sera fournie, moins de temps vous passerez à élaborer le PAC pour une collectivité définie. (Voir la partie "créer un nouveau projet de PAC". Vous pouvez créer autant de sous-sections que vous souhaitez. 
 
 Exemple ici : en cliquant sur `ajouter une sous-section`, je crée une sous-section dans "Les documents locaux" qui apparaitra au même niveau que la sous-section "Le SCoT".
 
@@ -134,7 +139,7 @@ Cliquez sur 💾 pour chaque section éditée afin de sauvegarder vos changement
 # 🧑🏻‍💻 Créer un nouveau projet de PAC
 
 <div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
-☝ *Notez que les modifications apportées au niveau projet de PAC sont prioritaires sur votre trame de PAC. C'est-à-dire que les modifications ne seront pas appliquées à votre trame départementale lorsque vous éditez un PAC pour une collectivité.*
+☝ *Notez que les modifications apportées au niveau projet de PAC sont prioritaires sur votre trame de PAC. C'est-à-dire que **les modifications ne seront pas appliquées à votre trame départementale lorsque vous éditez un PAC pour une collectivité**.*
 </div>
 
 
@@ -194,7 +199,7 @@ Votre trame peut également être modifiée au niveau régional (par la DREAL pa
 
 <div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
 
-💡 ** Avant même de partager le PAC complet à la collectivité et son bureau d'étude, Docurba vous permet leur **partager les premiers éléments contitutifs du PAC via le "socle de PAC"**, qu'elle trouvera depuis la page d'accueil de notre site en faisant une recherche pour sa commune/EPCI. Nous vous invitons donc à partager le site de [Docurba](https://docurba.beta.gouv.fr/) à toute collectivité en début de procédure, et dans l'idée de la faire patienter d'ici la réception de son PAC complet. Concernant `le partage du PAC complet`, voici la marche à suivre:
+💡 Avant même de partager le PAC complet à la collectivité et son bureau d'étude, Docurba vous permet de leur **partager les premiers éléments contitutifs du PAC via le "socle de PAC"**, qu'elle trouvera depuis la page d'accueil de notre site en faisant une recherche pour sa commune/EPCI. Nous vous invitons donc à partager le site de [Docurba](https://docurba.beta.gouv.fr/) à toute collectivité en début de procédure, et dans l'idée de la faire patienter d'ici la réception de son PAC complet. Concernant `le partage du PAC complet`, voici la marche à suivre:
 </div>
 
 En revenant sur la page d’accueil en cliquant sur `Mes documents` vous avez accès à d’autres fonctionnalités:
@@ -223,7 +228,12 @@ Vous pouvez `partager votre PAC` et choisir qui pourra **collaborer et éditer l
 
 
 
-*NB : Vous avez toujours possibilité de supprimer le partage en cliquant sur la croix en face de la personne à supprimer.*
+*NB : Vous avez toujours la possibilité de supprimer le partage en cliquant sur la croix en face de la personne à supprimer.*
+
+<div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
+
+💡 PARTAGER LE PAC PAR SECTION : **Docurba vous permet de mettre à disposition certaines sections du PAC que vous souhaiteriez déjà proposer à la collectivité**. Pour cela ; depuis le projet de PAC de la collectivité concernée, cocher les sections que vous voulez rendre visibles à la collectivité puis suivez les instructions précédentes pour le partage du PAC via Docurba. Vous pouvez continuer à travailler sur les autres sections décochées du PAC et petit à petit donner de la visbilité aux sections rédigées en les cochant simplement. 
+</div>
 
 <a class="anchor" name="headPrint"></a>
 # 🖨 Imprimer  **le PAC**
@@ -256,6 +266,7 @@ Via les évènements proposés dans l'outil, les collectivités auront notamment
 Cette feuille de route est partagée entre les services de l'État, la collectivité et son bureau d'études, dans l'optique de **fluidifier les échanges et vous permettre d'avoir plus de visibilité sur le calendrier des collectivités que vous accompagnez.** 
 
 Nous collaborons également avec différents outils (le GPU et Sudocuh notamment) pour intégrer Docurba dans les pratiques. 
+La fonctionnalité est en cours d'expérimentation et sera disponible prochainement. 
 
 
 <div class="text-center my-16">

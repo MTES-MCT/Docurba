@@ -26,15 +26,15 @@
         Guide d'utilisation
       </v-btn>
     </template>
-    <!-- <v-container fluid>
+    <v-container fluid>
       <v-row justify="center" align="center" class="primary mt-2">
         <v-col cols="auto">
-          <a class="white--text" href="https://docs.google.com/forms/d/e/1FAIpQLSdF_RReBRp99_1QYzsGLeVjTp-chWrAa8JiPfn3---c1FHOZw/viewform" target="_blank">
-            <b>Prochain Flash Info le jeudi 30 mars à 14h. Inscrivez-vous ici pour participer à la visioconférence.</b>
+          <a class="white--text" href="https://docs.google.com/forms/d/e/1FAIpQLScTVGV6xt1Tjewx6v3CGa-Qyt6BSc7DVtGC8hoEgsdJGBHLYQ/viewform?usp=sf_link" target="_blank">
+            <b>Prochain Flash Info spécial présentation de la nouvelle interface. Inscrivez-vous via ce lien.</b>
           </a>
         </v-col>
       </v-row>
-    </v-container> -->
+    </v-container>
     <v-container v-if="projectListLoaded">
       <v-row>
         <v-col cols="12">

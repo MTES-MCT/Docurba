@@ -116,9 +116,6 @@ export default {
       adminAccess: null
     }
   },
-  mounted () {
-    console.log('connected user: ', this.$user)
-  },
   methods: {
     // There is a lot of dupliaceted code here.
     // This component should be using the auth.js plugin to get admin access.

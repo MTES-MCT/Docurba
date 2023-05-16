@@ -6,15 +6,6 @@
     <v-card-text v-if="userDeptCode">
       <v-row>
         <v-col cols="12">
-          <v-text-field
-            v-model="newProject.name"
-            filled
-            hide-details
-            placeholder="Nom du projet"
-            dense
-          />
-        </v-col>
-        <v-col cols="12">
           <v-select
             v-model="userDeptCode"
             filled
@@ -30,10 +21,19 @@
           <VDocumentSelect v-model="newProject.doc_type" />
         </v-col>
         <v-col v-if="newProject.doc_type.includes('i') && EPCIs.length" cols="12">
-          <VEpciAutocomplete v-model="projectForm.epci" :epci-list="EPCIs" />
+          <VEpciAutocomplete v-model="projectForm.epci" :epci-list="EPCIs" @input="updateDefaultName" />
         </v-col>
         <v-col v-else cols="12">
-          <VTownAutocomplete v-model="projectForm.town" :default-departement-code="userDeptCode" hide-dept />
+          <VTownAutocomplete v-model="projectForm.town" :default-departement-code="userDeptCode" hide-dept @input="updateDefaultName" />
+        </v-col>
+        <v-col cols="12">
+          <v-text-field
+            v-model="newProject.name"
+            filled
+            hide-details
+            placeholder="Nom du projet"
+            dense
+          />
         </v-col>
         <v-col cols="12">
           <v-switch v-model="projectForm.useTrame" :label="`Utiliser la trame de PAC du ${userDeptCode}`" />
@@ -123,6 +123,14 @@ export default {
 
     this.fetchEPCIs()
   },
+  // wathc: {
+  //   'projectForm.epci' () {
+  //     this.updateDefaultName()
+  //   },
+  //   'projectForm.town' () {
+  //     this.updateDefaultName()
+  //   }
+  // },
   methods: {
     async fetchEPCIs () {
       const EPCIs = (await axios({
@@ -151,6 +159,17 @@ export default {
         })
 
         return { data, err }
+      }
+    },
+    updateDefaultName () {
+      if (!this.newProject.name) {
+        console.log('updateName')
+
+        if (this.newProject.doc_type.includes('i')) {
+          this.newProject.name = `${this.projectForm.epci.label} - ${new Date().getFullYear()}`
+        } else {
+          this.newProject.name = `${this.projectForm.town.nom_commune} - ${new Date().getFullYear()}`
+        }
       }
     },
     async upsertProject () {
@@ -207,8 +226,10 @@ export default {
     getRegion (isEpci) {
       if (isEpci) {
         const regionCode = this.projectForm.epci.towns[0].code_region
+        console.log(this.projectForm.epci.towns)
+
         // eslint-disable-next-line eqeqeq
-        return regions.find(r => r.code == regionCode).iso
+        return regions.find(r => r.code == +regionCode).iso
       } else {
         return regions.find(r => r.name === this.projectForm.town.nom_region).iso
       }

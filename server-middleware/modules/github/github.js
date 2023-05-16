@@ -15,7 +15,7 @@ module.exports = async function (path, options = {}) {
 
   const format = (options.mediaType ? options.mediaType.format : 'default') || 'default'
 
-  console.log('github request format', format, path)
+  // console.log('github request format', format, path)
 
   if (path.includes('GET') && !path.includes('/compare/')) {
     const { data: cache } = await supabase.from('github_cache').select('*').match({
@@ -36,6 +36,8 @@ module.exports = async function (path, options = {}) {
       repo: 'France-PAC'
     }, options))
 
+    // console.log('github res --> ', res)
+
     if (path.includes('GET') && !path.includes('/compare/')) {
       supabase.from('github_cache').upsert([{
         path,
@@ -53,7 +55,7 @@ module.exports = async function (path, options = {}) {
       // console.log('Cache Working')
       return cachedRes.data
     } else {
-      // console.log('error in github', err)
+      console.log('error in github', err)
     }
   }
 }

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nuxt",
-    "gcp-build":"",
+    "gcp-build": "",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
