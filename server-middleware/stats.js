@@ -8,56 +8,134 @@ dayjs.extend(customParseFormat)
 const _ = require('lodash')
 
 const { createClient } = require('@supabase/supabase-js')
+const github = require('./modules/github/github.js')
+
 const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+
+const docurbaTeamIds = [
+  '66a506fd-100c-44e3-bab0-252874d5482b',
+  'c02a319e-a643-4a86-89a4-1afb90948aef',
+  'bfa135a3-ce38-4c3b-8c92-6edd679f150c',
+  '40a8b2f6-a99e-4045-acc7-fa55351aab6e',
+  '8ef1e197-4b45-453a-8200-a150056ca826',
+  '3be46d2d-a238-40b7-b075-9cfb60b3ab6f',
+  'c423a586-62ad-4eb7-a07b-affbb1668c17',
+  '5c03447a-132e-47c1-bb78-eeba77e26a1d',
+  '5a57bd93-7364-4658-bc58-37bcaa720b23',
+  '55ac66c8-f28a-4877-b937-e6aa89766752',
+  '79e3d56a-89f4-410b-9166-8fbb4e997ce5',
+  'b6af627a-420c-4a2e-98e7-2984f200d1e1',
+  'fb144a50-c145-4c28-a03c-de65021add01',
+  'b4a3e179-2a04-4032-a196-31c3ddb9b99b',
+  'e7e6d0b2-7b55-43f6-bcd5-d3c3369052b4'
+]
+
+const departements = require('./Data/departements-france.json')
 
 // const cache = {}
 
-app.get('/edits', async (req, res) => {
-  // eslint-disable-next-line prefer-const
-  let { data: deptEdits } = await supabase.from('pac_sections_dept').select('created_at')
-  // eslint-disable-next-line prefer-const
-  let { data: projectsEdits } = await supabase.from('pac_sections_project').select('created_at')
-
-  // console.log(deptEdits, errDept)
-  // console.log(projectsEdits, errProjects)
-
-  deptEdits = _.groupBy(deptEdits, edit => dayjs(edit.created_at).format('MM/YY'))
-  projectsEdits = _.groupBy(projectsEdits, edit => dayjs(edit.created_at).format('MM/YY'))
-
-  const agregate = _.uniq(Object.keys(deptEdits).concat(Object.keys(projectsEdits))).map((month) => {
-    return {
-      month,
-      value: (deptEdits[month] ? deptEdits[month].length : 0) + (projectsEdits[month] ? projectsEdits[month].length : 0)
-    }
-  }).sort((d1, d2) => {
-    return dayjs(`01/${d1.month}`, 'DD/MM/YY') - dayjs(`01/${d2.month}`, 'DD/MM/YY')
-  })
-
-  res.status(200).send(agregate)
-})
-
 app.get('/projects', async (req, res) => {
   // eslint-disable-next-line prefer-const
-  let { data: projects } = await supabase.from('projects').select('id, name, created_at')
-  // eslint-disable-next-line prefer-const
-  let { data: projectsEdits } = await supabase.from('pac_sections_project').select('created_at, project_id')
+  let { data: projects } = await supabase.from('projects').select('id, name, created_at, owner, towns')
 
-  projects = projects.filter(p => !p.name.toLowerCase().includes('test'))
   projects = projects.filter((p) => {
-    const edits = projectsEdits.filter(e => e.project_id === p.id)
-
-    return edits.length > 4
+    const name = p.name ? p.name.toLowerCase() : ''
+    return !name.includes('test') && !name.includes('essai')
   })
 
-  res.status(200).send({ nbProjects: projects.length })
+  projects = projects.filter(p => p.towns && p.towns.length && p.towns[0])
+  projects = projects.filter(p => !docurbaTeamIds.includes(p.owner))
+
+  const projectsByDept = _.groupBy(projects, p => +p.towns[0].code_departement)
+  const projectsByMonth = _.groupBy(projects, p => dayjs(p.created_at).format('MM/YY'))
+
+  _.forEach(projectsByDept, (projects, dept) => { projectsByDept[dept] = projects.length })
+  _.forEach(projectsByMonth, (projects, month) => { projectsByMonth[month] = projects.length })
+
+  res.status(200).send({
+    nbProjects: projects.length,
+    byDept: projectsByDept,
+    byMonth: projectsByMonth
+  })
+})
+
+app.get('/fdr', async (req, res) => {
+  let { data: events } = await supabase.from('doc_frise_events').select('project: project_id (id, owner)')
+
+  events = events.filter(e => !docurbaTeamIds.includes(e.project.owner))
+
+  const groupedEvents = _.groupBy(events, e => e.project.id)
+
+  const nbProjects = _.reduce(groupedEvents, (total, projectEvents) => {
+    return total + (projectEvents.length >= 3 ? 1 : 0)
+  }, 0)
+
+  res.status(200).send({
+    nbEvents: events.length,
+    nbProjects
+  })
 })
 
 app.get('/ddt', async (req, res) => {
-  const { data: admins } = await supabase.from('admin_users_dept').select('user_email, created_at').eq('role', 'ddt')
+  let { data: admins } = await supabase.from('github_ref_roles').select('user_id, ref, created_at').eq('role', 'admin')
 
-  const nbAgents = _.uniqBy(admins, admin => admin.user_email).length - 5
+  admins = admins.filter(admin => !docurbaTeamIds.includes(admin.user_id))
+  admins = _.uniqBy(admins, admin => admin.user_id)
 
-  res.status(200).send({ nbAgents })
+  const nbAdmins = admins.length
+
+  res.status(200).send({ nbAdmins, byDept: _.groupBy(admins, admin => admin.ref.replace('dept-', '')) })
+})
+
+const cachedDiff = { timestamp: 0 }
+const hour = 60 * 60 * 1000
+
+app.get('/diff', async (req, res) => {
+  if (cachedDiff.timestamp + hour < Date.now()) {
+    const changes = { }
+
+    for (let index = 0; index < departements.length; index++) {
+      const dept = departements[index]
+
+      const basehead = `main...dept-${dept.code_departement}`
+
+      const { data: diff } = await github(`GET /repos/UngererFabien/France-PAC/compare/${basehead}`, {
+        basehead,
+        per_page: 10,
+        page: 1
+      })
+
+      const nbChanges = diff.files.reduce((total, file) => {
+        const nb = file.changes
+
+        return total + (nb > 0 ? nb : 0)
+      }, 0)
+
+      changes[dept.code_departement] = nbChanges
+    }
+
+    const min = Object.values(changes).sort((a, b) => a - b)[0]
+
+    console.log('Min changes', min)
+
+    departements.forEach((dept) => {
+      const code = dept.code_departement
+      changes[code] -= min
+    })
+
+    changes.total = Object.values(changes).reduce((sum, val) => {
+      return sum + val
+    }, 0)
+
+    changes.timestamp = Date.now()
+
+    Object.assign(cachedDiff, changes)
+    res.status(200).send(changes)
+  } else {
+    res.status(200).send(cachedDiff)
+  }
+
+  // console.log(data)
 })
 
 module.exports = app

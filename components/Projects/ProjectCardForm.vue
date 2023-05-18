@@ -226,8 +226,10 @@ export default {
     getRegion (isEpci) {
       if (isEpci) {
         const regionCode = this.projectForm.epci.towns[0].code_region
+        console.log(this.projectForm.epci.towns)
+
         // eslint-disable-next-line eqeqeq
-        return regions.find(r => r.code == regionCode).iso
+        return regions.find(r => r.code == +regionCode).iso
       } else {
         return regions.find(r => r.name === this.projectForm.town.nom_region).iso
       }

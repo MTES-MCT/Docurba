@@ -21,7 +21,6 @@ export default ({ $supabase, route }, inject) => {
       })
       if (data && data[0]) {
         user.scope = data[0]
-        console.log('user: ', user)
       }
     }
   }
