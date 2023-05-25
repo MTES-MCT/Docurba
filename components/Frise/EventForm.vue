@@ -139,6 +139,7 @@ export default {
     }
   },
   async mounted () {
+    await this.init()
     if (this.eventId) {
       // fetch event
       const { data: events } = await this.$supabase.from('doc_frise_events').select('*').eq('id', this.eventId)
@@ -175,9 +176,10 @@ export default {
         console.log('errorProcedureDocurba: ', errorProcedureDocurba)
       }
 
-      this.event.project_id = procedureDocurba[0].id
+      this.event.project_id = procedureDocurba?.[0]?.id
       if (procedureDocurba.length === 0) {
         const procedureSudocu = this.procedures.find(e => e.idProcedure.toString() === this.projectId)
+        console.log('procedureSudocu: ', procedureSudocu)
         const newProject = Object.assign({
           owner: this.$user.id,
           doc_type: procedureSudocu.events[0].docType,

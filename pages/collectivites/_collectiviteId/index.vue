@@ -53,12 +53,22 @@
           </v-chip>
         </div>
       </v-col>
+      <v-col cols="12">
+        <DashboardDUItem
+          v-for="(procedure,i) in procedures"
+          :key="'du_' + i"
+          :procedure="procedure"
+        />
+      </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
+import SudocuEvents from '@/mixins/SudocuEvents.js'
+
 export default {
+  mixins: [SudocuEvents],
   props: {
     isEpci: {
       type: Boolean,

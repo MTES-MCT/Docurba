@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
         {{ firstEvent.typeProcedure }}
-        <!-- - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }} -->
+        - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
       </v-col>
     </v-row>
     <v-row class="mt-0">

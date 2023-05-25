@@ -39,6 +39,17 @@
             >
               <template #top />
               <!-- eslint-disable-next-line -->
+            <template #item.name="{ item }">
+                <div class="d-flex">
+                  <div class="competence-tag mr-2" :style="{visibility: item.hasCompetence ? 'visible' : 'hidden'}">
+                    C
+                  </div>
+                  <div class="">
+                    {{ item.name }}
+                  </div>
+                </div>
+              </template>
+              <!-- eslint-disable-next-line -->
             <template #item.actions="{ item }">
                 <div>
                   <v-btn depressed color="primary" :to="item.detailsPath">
@@ -56,6 +67,17 @@
               class="elevation-1"
               :search="search"
             >
+              <!-- eslint-disable-next-line -->
+            <template #item.name="{ item }">
+                <div class="d-flex">
+                  <div class="competence-tag mr-2" :style="{visibility: item.hasCompetence ? 'visible' : 'hidden'}">
+                    C
+                  </div>
+                  <div class="">
+                    {{ item.name }}
+                  </div>
+                </div>
+              </template>
               <!-- eslint-disable-next-line -->
             <template #item.actions="{ item }">
                 <div>
@@ -87,7 +109,7 @@ export default {
   computed: {
     headers () {
       return [
-        { text: 'Collec. porteuse', align: 'start', value: 'name' },
+        { text: 'Nom', align: 'start', value: 'name' },
         { text: 'Type', value: 'type' },
         { text: 'Dernière proc.', value: 'lastProc' },
         { text: 'Status', value: 'status' },
@@ -99,6 +121,7 @@ export default {
       return this.epci.map((e) => {
         return {
           name: e.label,
+          hasCompetence: e.hasCompetence,
           type: `EPCI (${e.towns.length})`,
           lastProc: '',
           status: '',
@@ -125,12 +148,39 @@ export default {
       }
     })
 
-    this.epci = epcis
-
+    const collecsInsee = communes.map(e => e.code_commune_INSEE.toString().padStart(5, '0')).concat(epcis.map(e => e.EPCI.toString()))
+    const { data: sudocuCollectivites, error: errorSudocuCollectivites } = await this.$supabase.from('sudocu_collectivites').select().in('codecollectivite', collecsInsee)
+    if (errorSudocuCollectivites) {
+      console.log('errorSudocuCollectivites: ', errorSudocuCollectivites)
+    }
+    console.log('epcis.map(e.EPCI): ', epcis.map(e => e.EPCI))
+    console.log('collecsInsee: ', collecsInsee)
+    this.epci = epcis.map((e) => {
+      const sudoEpci = sudocuCollectivites.find((i) => {
+        console.log('i : ', i.codecollectivite.toString(), ' e: ', e.EPCI.toString())
+        return i.codecollectivite === e.EPCI.toString()
+      })
+      if (!sudoEpci) {
+        console.log('not found sudoEpci: ', e)
+      }
+      // console.log('HERE: ', sudoEpci?.sicompetenceplan)
+      return {
+        ...e,
+        hasCompetence: sudoEpci?.sicompetenceplan ?? false
+      }
+    })
+    console.log('epcis: ', epcis)
     console.log('communes: ', communes)
-    this.communes = communes.map((e) => {
+
+    const communesUniq = [...new Map(communes.map(item => [item.code_commune_INSEE, item])).values()]
+    this.communes = communesUniq.map((e) => {
+      const sudoCom = sudocuCollectivites.find(i => i.codecollectivite === e.code_commune_INSEE.toString().padStart(5, '0'))
+      if (!sudoCom) {
+        console.log('not found: ', e)
+      }
       return {
         name: e.nom_commune_complet,
+        hasCompetence: sudoCom?.sicompetenceplan ?? false,
         type: 'Commune',
         lastProc: '',
         status: '',
@@ -143,3 +193,18 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.competence-tag{
+  background: #FEECC2;
+  border-radius: 4px;
+  text-transform: uppercase;
+  color: #716043;
+  font-family: 'Marianne';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 24px;
+  padding: 0px 8px;
+}
+
+</style>

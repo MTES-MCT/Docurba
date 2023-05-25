@@ -2,8 +2,8 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        {{ firstEvent.docType }}{{ $route.query.isEpci && firstEvent.docType === 'PLU'? 'i' : '' }}
-        <!-- - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }} -->
+        {{ firstEvent.docType }}{{ $route.query.isEpci === 'true' && firstEvent.docType === 'PLU'? 'i' : '' }}
+        - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
       </v-col>
     </v-row>
     <v-row class="mt-0">

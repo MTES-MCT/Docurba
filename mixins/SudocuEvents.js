@@ -14,21 +14,20 @@ export default {
     }
   },
   async mounted () {
-    const { data: collectivite } = await axios({
-      url: `/api/${this.isEpci ? 'epci' : 'communes'}/${this.$route.params.collectiviteId}`,
-      method: 'get'
-    })
-    collectivite.name = this.isEpci ? collectivite.label : collectivite.nom_commune
-    this.collectivite = collectivite
-    console.log('collectivite: ', this.collectivite)
-    this.loadCommuneEvents(this.collectivite)
+    await this.init()
   },
   methods: {
-    //     getProcedure(procedureId){
-    // this.procedure.filter(e => e.events.)
-    //     },
+    async init () {
+      const { data: collectivite } = await axios({
+        url: `/api/${this.isEpci ? 'epci' : 'communes'}/${this.$route.params.collectiviteId}`,
+        method: 'get'
+      })
+      collectivite.name = this.isEpci ? collectivite.label : collectivite.nom_commune
+      this.collectivite = collectivite
+      console.log('collectivite: ', this.collectivite)
+      this.loadCommuneEvents(this.collectivite)
+    },
     async loadCommuneEvents (commune) {
-      // .eq('codeinseecommune', commune.code_commune_INSEE.toString().padStart(5, '0'))).data
       let codecollectivite
       if (!this.isEpci) {
         codecollectivite = commune.code_commune_INSEE.toString().padStart(5, '0')
@@ -63,7 +62,6 @@ export default {
         return r
       }, Object.create(null))
       console.log('eventsByProc: ', eventsByProc)
-
       const tempProcs = {}
       for (const [k, v] of Object.entries(eventsByProc)) {
         let procSecs = _.filter(eventsByProc, (e, i) => {
@@ -79,13 +77,14 @@ export default {
 
         tempProcs[k] = { events: v, procSecs }
       }
-
-      const cleanedProcs = {}
-      for (const [k, v] of Object.entries(tempProcs)) {
-        if (v.procSecs) { cleanedProcs[k] = v }
-      }
-      console.log('HERE tempProcs: ', tempProcs)
-      console.log('HERE cleanedProcs: ', cleanedProcs)
+      console.log('tempProcs: ', tempProcs)
+      // TODO: Issue wit hcleanded proc
+      // const cleanedProcs = {}
+      const cleanedProcs = tempProcs
+      // for (const [k, v] of Object.entries(tempProcs)) {
+      //   console.log(' k: ', k, ' v: ', v)
+      //   if (v.procSecs) { cleanedProcs[k] = v }
+      // }
 
       function lastStepDate (procedure) {
         if (procedure.events[0].dateAbandon) {
@@ -99,7 +98,7 @@ export default {
         }
         return null
       }
-
+      console.log('cleanedProcs: ', cleanedProcs)
       this.procedures = _.chain(cleanedProcs)
         .map(e => ({
           ...e,
@@ -112,6 +111,8 @@ export default {
         .orderBy('lastStepDate', 'desc').value()
 
       console.log('eventsByProc after: ', this.procedures)
+
+      // _.(this.procedures).sorte
     }
   }
 }
