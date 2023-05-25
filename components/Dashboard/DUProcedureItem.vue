@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
         {{ firstEvent.docType }}{{ $route.query.isEpci === 'true' && firstEvent.docType === 'PLU'? 'i' : '' }}
-        - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
+        <!-- - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }} -->
       </v-col>
     </v-row>
     <v-row class="mt-0">
@@ -34,7 +34,7 @@
         </div>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-if="!censored">
       <v-col cols="12" class="pb-0">
         <v-divider />
       </v-col>
@@ -65,9 +65,23 @@
         </span>
       </v-col>
     </v-row>
+    <v-row v-else>
+      <v-col cols="12" class="pb-0">
+        <v-divider />
+      </v-col>
+      <v-col cols="12" class="d-flex align-end justify-end pb-0">
+        <v-btn text color="primary" :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: firstEvent.idProcedure}, query: $route.query}">
+          <v-icon small color="primary" class="mr-2">
+            {{ icons.mdiArrowRight }}
+          </v-icon>
+          Feuille de route publique
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 <script>
+import { mdiArrowRight } from '@mdi/js'
 import BaseDUProcedureItem from '@/mixins/BaseDUProcedureItem.js'
 
 export default {
@@ -76,11 +90,17 @@ export default {
     procedure: {
       type: Object,
       required: true
+    },
+    censored: {
+      type: Boolean,
+      default: () => false
     }
   },
   data () {
     return {
-
+      icons: {
+        mdiArrowRight
+      }
     }
   }
 }

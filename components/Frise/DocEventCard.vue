@@ -49,7 +49,9 @@
     <v-card-title>
       {{ event.type }}
     </v-card-title>
-    <v-card-text>{{ event.description }}</v-card-text>
+    <v-card-text v-if="event.description">
+      {{ event.description }}
+    </v-card-text>
     <v-card-actions>
       <v-chip
         v-for="attachement in event.attachements"

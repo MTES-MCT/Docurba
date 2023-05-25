@@ -179,13 +179,16 @@ export default {
       this.event.project_id = procedureDocurba?.[0]?.id
       if (procedureDocurba.length === 0) {
         const procedureSudocu = this.procedures.find(e => e.idProcedure.toString() === this.projectId)
-        console.log('procedureSudocu: ', procedureSudocu)
+        console.log('procedureSudocu: ', procedureSudocu.events[0])
         const newProject = Object.assign({
           owner: this.$user.id,
           doc_type: procedureSudocu.events[0].docType,
           sudocuh_procedure_id: procedureSudocu.idProcedure
         })
-        const { data: newProjectDocurba } = await this.$supabase.from('projects').insert([newProject]).select()
+        const { data: newProjectDocurba, error: errorNewProjectDocurba } = await this.$supabase.from('projects').insert([newProject]).select()
+        if (errorNewProjectDocurba) {
+          console.log('errorNewProjectDocurba: ', errorNewProjectDocurba)
+        }
         this.event.project_id = newProjectDocurba[0].id
       }
 
@@ -213,6 +216,7 @@ export default {
     },
     async deleteEvent () {
       await this.$supabase.from('doc_frise_events').delete().eq('id', this.eventId)
+      this.$router.push({ name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: { departement: this.$route.params.departement, collectiviteId: this.$route.params.collectiviteId, procedureId: this.$route.params.procedureId }, query: this.$route.query })
       this.$emit('saved')
     }
   }

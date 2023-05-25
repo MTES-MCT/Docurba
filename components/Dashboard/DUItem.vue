@@ -2,10 +2,10 @@
   <div class="mb-4">
     <v-card outlined class="no-border-radius-bottom">
       <v-container>
-        <DashboardDUProcedureItem :procedure="procedure" />
+        <DashboardDUProcedureItem :procedure="procedure" :censored="censored" />
       </v-container>
     </v-card>
-    <v-container>
+    <v-container v-if="procedure.procSecs.length > 0">
       <v-row>
         <v-col cols="11" offset="1" class="border-sub-procedure">
           <v-expansion-panels flat>
@@ -18,6 +18,7 @@
                   v-for="procSec in procedure.procSecs"
                   :key="'procSec_' + procSec[0].idProcedure"
                   :procedure="{events: procSec}"
+                  :censored="censored"
                 />
               </v-expansion-panel-content>
             </v-expansion-panel>
@@ -33,6 +34,10 @@ export default {
     procedure: {
       type: Object,
       required: true
+    },
+    censored: {
+      type: Boolean,
+      default: () => false
     }
   },
   data () {

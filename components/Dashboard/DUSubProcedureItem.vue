@@ -76,6 +76,10 @@ export default {
     procedure: {
       type: Object,
       required: true
+    },
+    censored: {
+      type: Boolean,
+      default: () => false
     }
   },
   data () {
