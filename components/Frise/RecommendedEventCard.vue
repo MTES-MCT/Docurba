@@ -1,6 +1,6 @@
 <template>
   <v-card
-    :to="`/projets/${projectId}/frise/add?eventType=${eventType.name}`"
+    :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId-add', params: {departement: $route.params.departement, collectiviteId: $route.params.collectiviteId, procedureId: $route.params.procedureId}, query: {...$route.query, eventType: eventType.name}}"
     nuxt
     flat
     class="recommended-card"

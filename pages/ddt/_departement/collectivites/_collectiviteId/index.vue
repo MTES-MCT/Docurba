@@ -8,7 +8,7 @@
       </v-col>
       <v-col cols="12">
         <div class="d-flex">
-          <div class="d-flex align-center primary--text text-decoration-underline" @click="$router.back()">
+          <div style="cursor:pointer;" class="d-flex align-center primary--text text-decoration-underline" @click="back">
             <v-icon small color="primary" class="mr-2">
               {{ icons.mdiArrowLeft }}
             </v-icon>
@@ -16,7 +16,7 @@
             <span v-else>Revenir à l'EPCI</span>
           </div>
           <div class="ml-8">
-            <span v-if="!isEpci" class="text-h5">Nom de l'EPCI lié</span>
+            <span v-if="linkedEpci" class="text-h5">Appartient à {{ linkedEpci.label }}</span>
           </div>
         </div>
       </v-col>
@@ -35,8 +35,8 @@
                     cols="4"
                     class="pt-0 pl-0"
                   >
-                    <nuxt-link :to="{ name: 'dashboard-departement-collectivites-collectiviteId', params: { departement: $route.params.departement, collectiviteId: town.code_commune_INSEE }, query: { isEpci: false } }">
-                      {{ town.nom_commune }}
+                    <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId', params: { departement: $route.params.departement, collectiviteId: town.code_commune_INSEE }, query: { isEpci: false } }">
+                      {{ town.nom_commune }} ({{ town.code_commune_INSEE }})
                     </nuxt-link>
                     <v-divider class="mt-3" />
                   </v-col>
@@ -53,7 +53,7 @@
           Documents d'urbanisme
         </p>
         <p class="text-h6">
-          Documents d’urbanismes disponibles pour la commune recherchée :
+          Documents d’urbanisme disponibles pour la commune recherchée :
         </p>
       </v-col>
       <v-col cols="12">
@@ -69,15 +69,47 @@
 <script>
 
 import { mdiArrowLeft } from '@mdi/js'
+import axios from 'axios'
 import SudocuEvents from '@/mixins/SudocuEvents.js'
 
 export default {
   mixins: [SudocuEvents],
   data () {
     return {
+      linkedEpci: null,
       icons: {
         mdiArrowLeft
       }
+    }
+  },
+  async mounted () {
+    if (!this.isEpci) {
+      await this.getLinkedEpci(this.$route.params.collectiviteId)
+    }
+    // this.$route.params.collectiviteId.toString().padStart(5, '0')
+    // .eq('towns->>code_commune_INSEE', 30140)
+    // .contains('towns', [{ code_commune_INSEE: 30140 }])
+    // const { data: test, error } = await this.$supabase.from('projects').select('*').contains('towns', JSON.stringify([{ code_commune_INSEE: 73001 }]))
+    // console.log('TEST LASALLE: ', test)
+    // if (error) {
+    //   console.log('TEST error: ', error)
+    // }
+  },
+  methods: {
+    back () {
+      if (this.isEpci || !this.linkedEpci) {
+        this.$router.push({ name: 'ddt-departement-collectivites', params: { departement: this.$route.params.departement } })
+      } else {
+        this.$router.push({ name: 'ddt-departement-collectivites-collectiviteId', params: { departement: this.$route.params.departement, collectiviteId: this.linkedEpci.EPCI }, query: { isEpci: true } })
+      }
+    },
+    async getLinkedEpci (communeId) {
+      const { data: epci } = await axios({
+        url: `/api/epci?communeId=${communeId}`,
+        method: 'get'
+      })
+      this.linkedEpci = epci[0]
+      console.log('EPCI LINKED: ', epci)
     }
   }
 }
