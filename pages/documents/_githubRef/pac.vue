@@ -56,17 +56,51 @@ export default {
 
     this.orderSections(sections, supSections)
 
-    function parseSection (section) {
-      return Object.assign({
-        children: section.children ? section.children.map(section => parseSection(section)) : []
-      }, section)
+    if (this.project && this.project.id) {
+      this.sections = this.filterSectionsForProject(sections)
+    } else {
+      this.sections = this.filterPublicsections(sections)
     }
 
-    this.sections = sections.map((section) => {
-      return parseSection(section)
-    })
-
     this.loading = false
+  },
+  methods: {
+    filterSectionsForProject (sections) {
+      const paths = this.project.PAC
+
+      const filteredSections = sections.filter(section => paths.includes(section.path))
+
+      return filteredSections.map((section) => {
+        return Object.assign({}, section, {
+          children: section.children ? this.filterSectionsForProject(section.children) : []
+        })
+      })
+    },
+    filterPublicsections (sections) {
+      const docType = this.$route.query.document || 'CC'
+
+      const filteredSections = sections.filter((section) => {
+        const isAllowed = (!section.path.includes('PAC/Introduction/PAC valid') &&
+          !section.path.includes('PP-du-territoire') &&
+          !section.path.includes('PAC/Annexes'))
+
+        if (!isAllowed) {
+          return false
+        } else if (docType === 'PLU') {
+          return !section.name.includes('PLUi') && !section.name.includes('carte communale')
+        } else if (docType.includes('PLUi')) {
+          return !section.name.includes(' PLU ') && !section.name.includes('carte communale')
+        } else {
+          return !section.name.includes('PLU')
+        }
+      })
+
+      return filteredSections.map((section) => {
+        return Object.assign({}, section, {
+          children: section.children ? this.filterPublicsections(section.children) : []
+        })
+      })
+    }
   }
 }
 </script>
