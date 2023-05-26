@@ -12,12 +12,12 @@
     >
       {{ counter.text }}
     </div>
-    <div v-for="debugLine in debugLines" :key="debugLine.top" :style="debugLine" class="debug-line">
+    <!-- <div v-for="debugLine in debugLines" :key="debugLine.top" :style="debugLine" class="debug-line">
       <b>{{ debugLine.accumulatedHeight }}</b>
     </div>
     <div :style="{top: finalLine}" class="debug-line final-line">
       <b>{{ finalLine }}</b>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -80,7 +80,7 @@ export default {
       const endSpaceLeft = getSpaceLeft()
 
       // eslint-disable-next-line no-console
-      console.log('add break point', from, accumulatedHeight % pageHeight, initialSpaceLeft, accumulatedHeight)
+      // console.log('add break point', from, accumulatedHeight % pageHeight, initialSpaceLeft, accumulatedHeight)
 
       return endSpaceLeft
     }
@@ -147,23 +147,11 @@ export default {
       const contentEl = document.getElementById(this.contentId)
       traverseElements(contentEl)
 
-      const nbContentPages = Math.ceil(accumulatedHeight / (pageHeight))
-
-      // accumulatedHeight += nbContentPages * marginHeight
-
       const nbPages = Math.ceil(accumulatedHeight / (pageHeight))
 
       const nbTopPages = Math.ceil(document.getElementById('toc').offsetHeight / (pageHeight + marginHeight)) + 1
 
       this.finalLine = `calc(${accumulatedHeight + (nbPages * marginHeight)}px + ${(nbTopPages * 263)}mm)`
-
-      // eslint-disable-next-line no-console
-      console.log('content pages', nbContentPages, 'pages', nbPages, 'top pages', nbTopPages, 'debugLines', debugLines)
-      // console.log('contentEl height', contentEl)
-      // eslint-disable-next-line no-console
-      // console.log('actual height', 131 * pageHeight)
-      // eslint-disable-next-line no-console
-      // console.log('missing', 131 * pageHeight - accumulatedHeight, pageHeight)
 
       this.debugLines = debugLines.map((line, i) => {
         return {
