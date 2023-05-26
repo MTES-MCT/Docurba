@@ -78,6 +78,7 @@
 
 <script>
 import axios from 'axios'
+import orderSections from '@/mixins/orderSections.js'
 
 export default {
   layout: 'print',
@@ -89,14 +90,21 @@ export default {
         const { data: projects } = await $supAdmin.from('projects').select('*').eq('id', projectId)
         const project = projects[0]
 
-        console.log('PRINTING')
-
         const baseUrl = $isDev ? 'http://localhost:3000' : 'https://docurba.beta.gouv.fr'
 
         const { data: sections } = await axios({
           method: 'get',
           url: `${baseUrl}/api/trames/tree/projet-${projectId}?content=all`
         })
+
+        const { data: supSections } = await $supAdmin.from('pac_sections').select('*').in('ref', [
+          `projet-${project.id}`,
+          `dept-${project.towns ? project.towns[0].code_departement : ''}`,
+          `region-${project.towns ? project.towns[0].code_region : ''}`,
+          'main'
+        ])
+
+        orderSections.methods.orderSections(sections, supSections)
 
         function parseSection (section, paths) {
           if (section.content) { section.body = $md.compile(section.content) }
@@ -116,58 +124,11 @@ export default {
           loaded: true
         }
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.log('error printing', err)
       }
     }
   }
-  // data () {
-  //   return {
-  //     project: null,
-  //     loaded: false,
-  //   }
-  // },
-  // head () {
-  //   return {
-  //     title: this.project ? this.project.name : 'PAC',
-  //     titleTemplate: ''
-  //   }
-  // },
-  // async mounted () {
-  //   const projectId = this.$route.params.projectId
-
-  //   const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-  //   this.project = projects[0]
-
-  //   await this.setPACFromTrame()
-
-  //   this.loaded = true
-  // },
-  // methods: {
-  //   parseSection (section, paths) {
-  //     if (section.content) { section.body = this.$md.compile(section.content) }
-
-  //     if (section.children) {
-  //       section.children = section.children.filter(c => paths.includes(c.path))
-  //       section.children.forEach(c => this.parseSection(c, paths))
-  //     }
-  //   },
-  //   async setPACFromTrame () {
-  //     const { data: sections } = await axios({
-  //       method: 'get',
-  //       url: `/api/trames/tree/projet-${this.project.id}?content=all`
-  //     })
-
-  //     // console.log(sections)
-
-  //     const sectionsPaths = this.project.PAC.map(p => p)
-  //     this.project.PAC = sections.filter(s => sectionsPaths.includes(s.path))
-  //     this.project.PAC.forEach(s => this.parseSection(s, sectionsPaths))
-
-  //     // this.$nextTick(() => {
-  //     //   window.parent.postMessage('print', '*')
-  //     // })
-  //   }
-  // }
 }
 </script>
 
