@@ -41,7 +41,7 @@
                 depressed
                 tile
                 color="primary"
-                :to="`/projets/${projectData.id}/content`"
+                :to="`/documents/projet-${projectData.id}/pac`"
                 nuxt
               >
                 Consulter
