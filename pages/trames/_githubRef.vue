@@ -65,6 +65,7 @@ export default {
       this.beforeLeaveDialog.visible = true
     } else { next() }
   },
+  layout: 'app',
   data () {
     return {
       project: {},

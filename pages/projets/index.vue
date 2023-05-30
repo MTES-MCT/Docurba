@@ -29,8 +29,8 @@
     <v-container fluid>
       <v-row justify="center" align="center" class="primary mt-2">
         <v-col cols="auto">
-          <a class="white--text" href="https://docs.google.com/forms/d/e/1FAIpQLScTVGV6xt1Tjewx6v3CGa-Qyt6BSc7DVtGC8hoEgsdJGBHLYQ/viewform?usp=sf_link" target="_blank">
-            <b>Prochain Flash Info spécial présentation de la nouvelle interface. Inscrivez-vous via ce lien.</b>
+          <a class="white--text" href="https://docs.google.com/forms/d/e/1FAIpQLSf24HCAIHLTq4kRU7eMCKLEJA6zUemIizOMU3RH0qp4ZzbxXA/viewform?usp=sf_link" target="_blank">
+            <b>Flash Info du mois de juin : inscrivez-vous via ce lien.</b>
           </a>
         </v-col>
       </v-row>
