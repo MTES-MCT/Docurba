@@ -4,12 +4,11 @@ import _ from 'lodash'
 export default {
   data () {
     return {
-      collectivite: null,
       procedures: null
     }
   },
   computed: {
-    isEpci () {
+    routeIsEpci () {
       return this.$route.query.isEpci === true || (this.$route.query.isEpci === 'true')
     }
   },
@@ -19,17 +18,16 @@ export default {
   methods: {
     async init () {
       const { data: collectivite } = await axios({
-        url: `/api/${this.isEpci ? 'epci' : 'communes'}/${this.$route.params.collectiviteId}`,
+        url: `/api/${this.routeIsEpci ? 'epci' : 'communes'}/${this.$route.params.collectiviteId}`,
         method: 'get'
       })
-      collectivite.name = this.isEpci ? collectivite.label : collectivite.nom_commune
-      this.collectivite = collectivite
-      console.log('collectivite: ', this.collectivite)
-      this.loadCommuneEvents(this.collectivite)
+      collectivite.name = this.routeIsEpci ? collectivite.label : collectivite.nom_commune
+
+      this.loadCommuneEvents(collectivite)
     },
     async loadCommuneEvents (commune) {
       let codecollectivite
-      if (!this.isEpci) {
+      if (!this.routeIsEpci) {
         codecollectivite = commune.code_commune_INSEE.toString().padStart(5, '0')
       } else { codecollectivite = commune.EPCI }
 

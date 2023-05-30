@@ -38,22 +38,22 @@ export default {
       },
       links: [{
         name: 'Tableau de bord',
-        to: { path: `/collectivites/${this.$route.params.collectiviteId}` }
+        to: { path: `/collectivites/${this.$route.params.collectiviteId}/`, query: this.$route.query }
       }, {
         name: 'Prescription',
-        to: { path: `/collectivites/${this.$route.params.collectiviteId}/prescriptions` }
+        to: { path: `/collectivites/${this.$route.params.collectiviteId}/prescriptions`, query: this.$route.query }
       }, {
         name: 'Socle de PAC',
         to: {
           path: `/collectivites/${this.$route.params.collectiviteId}/pac`,
-          query: { document: this.isEpci ? 'PLUi' : 'PLU' }
+          query: Object.assign({ document: this.isEpci ? 'PLUi' : 'PLU' }, this.$route.query)
         }
       }, {
         name: 'Données',
-        to: { path: `/collectivites/${this.$route.params.collectiviteId}/donnees/georisques` }
+        to: { path: `/collectivites/${this.$route.params.collectiviteId}/donnees/georisques`, query: this.$route.query }
       }, {
         name: 'Glossaire',
-        to: { path: `/collectivites/${this.$route.params.collectiviteId}/glossaire` }
+        to: { path: `/collectivites/${this.$route.params.collectiviteId}/glossaire`, query: this.$route.query }
       }]
     }
   }

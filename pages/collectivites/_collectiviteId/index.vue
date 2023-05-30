@@ -99,7 +99,7 @@ export default {
           to: {
             name: 'collectivites-collectiviteId-pac',
             params: { collectiviteId },
-            query: { document: this.isEpci ? 'PLUi' : 'PLU' }
+            query: Object.assign({ document: this.isEpci ? 'PLUi' : 'PLU' }, this.$route.query)
           }
         },
         {
