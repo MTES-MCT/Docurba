@@ -52,7 +52,15 @@ export default {
     })
     // End Analytics
 
-    const { dataset, themes } = await this.$daturba.getData(this.region.iso, this.collectivite.id)
+    const collectiviteId = this.isEpci
+      ? this.communes.map((c) => {
+        return c.code_commune_INSEE
+      })
+      : this.collectivite.id
+
+    console.log('collectiviteId', collectiviteId)
+
+    const { dataset, themes } = await this.$daturba.getData(this.region.iso, collectiviteId)
 
     this.dataset = dataset
     this.themes = themes

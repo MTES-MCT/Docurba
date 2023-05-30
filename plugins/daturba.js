@@ -5,8 +5,8 @@ export default ({ route }, inject) => {
   // MAP permet d'afficher les onglet de source
   const sourceMap = {
     'FR-ARA': {
-      url: 'https://catalogue.datara.gouv.fr/base_territoriale/results?_format=json',
-      themesUrl: 'https://catalogue.datara.gouv.fr/base_territoriale/themes',
+      url: 'https://bdterr.datara.gouv.fr/base_territoriale/results?_format=json',
+      themesUrl: 'https://bdterr.datara.gouv.fr/base_territoriale/themes',
       data: {
         limit: -1,
         list: false,
@@ -81,7 +81,7 @@ export default ({ route }, inject) => {
 
   const cardSourceUrl = {
     'FR-ARA' (cardData) {
-      return `https://catalogue.datara.gouv.fr/base_territoriale/fiche?_format=json&id=${cardData.id}&nom_table=${cardData.nom_table}`
+      return `https://bdterr.datara.gouv.fr/base_territoriale/fiche?_format=json&id=${cardData.id}&nom_table=${cardData.nom_table}`
     },
     'FR-PDL' (cardData) {
       return `https://catalogue.sigloire.fr/base_territoriale/fiche?_format=json&id=${cardData.id}&nom_table=${cardData.nom_table}`
