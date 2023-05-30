@@ -44,7 +44,10 @@ export default {
         to: { path: `/collectivites/${this.$route.params.collectiviteId}/prescriptions` }
       }, {
         name: 'Socle de PAC',
-        to: { path: '/pacsec/content', query: { region: this.region.iso, document: 'PLU' } }
+        to: {
+          path: `/collectivites/${this.$route.params.collectiviteId}/pac`,
+          query: { document: this.isEpci ? 'PLUi' : 'PLU' }
+        }
       }, {
         name: 'Données',
         to: { path: `/collectivites/${this.$route.params.collectiviteId}/donnees/georisques` }

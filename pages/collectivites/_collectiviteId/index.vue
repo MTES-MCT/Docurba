@@ -84,27 +84,33 @@ export default {
     }
   },
   data () {
+    const collectiviteId = this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE
+
     return {
       actionsCards: [
         {
           title: 'Déposer un acte',
           text: 'Déposez une délibération de prescription ou un arrêté.',
-          to: { name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: this.$route.query }
+          to: { name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId }, query: this.$route.query }
         },
         {
           title: 'Socle de Porter à connaissance',
           text: 'Consultez ou modifiez votre socle de Porter à Connaissance.',
-          to: { path: '/pacsec/content', query: { region: this.region.iso, document: 'PLU' } }
+          to: {
+            name: 'collectivites-collectiviteId-pac',
+            params: { collectiviteId },
+            query: { document: this.isEpci ? 'PLUi' : 'PLU' }
+          }
         },
         {
           title: 'Ressources',
           text: 'Consultez des guides ou sites internet utiles.',
-          to: { name: 'collectivites-collectiviteId-ressources', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: this.$route.query }
+          to: { name: 'collectivites-collectiviteId-ressources', params: { collectiviteId }, query: this.$route.query }
         },
         {
           title: 'Données',
           text: 'Consultez les données de votre territoire.',
-          to: { name: 'collectivites-collectiviteId-donnees-georisques', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: this.$route.query }
+          to: { name: 'collectivites-collectiviteId-donnees-georisques', params: { collectiviteId }, query: this.$route.query }
         }
       ]
     }
