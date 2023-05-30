@@ -48,23 +48,14 @@
           Documents d’urbanismes disponibles pour la commune recherchée :
         </p>
       </v-col>
-      <v-col cols="12">
-        <DashboardDUItem
-          v-for="(procedure,i) in procedures"
-          :key="'du_' + i"
-          :procedure="procedure"
-          censored
-        />
-      </v-col>
     </v-row>
+    <DashboardDUItemList />
   </v-container>
 </template>
 
 <script>
-import SudocuEvents from '@/mixins/SudocuEvents.js'
 
 export default {
-  mixins: [SudocuEvents],
   props: {
     isEpci: {
       type: Boolean,
