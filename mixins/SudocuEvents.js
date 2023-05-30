@@ -4,6 +4,7 @@ import _ from 'lodash'
 export default {
   data () {
     return {
+      collectivite: null,
       procedures: null
     }
   },
@@ -22,6 +23,7 @@ export default {
         method: 'get'
       })
       collectivite.name = this.routeIsEpci ? collectivite.label : collectivite.nom_commune
+      this.collectivite = collectivite
 
       this.loadCommuneEvents(collectivite)
     },

@@ -6,10 +6,12 @@ app.use(express.json())
 const axios = require('axios')
 const FormData = require('form-data')
 
-const isDev = process.env.NODE_ENV === 'development'
+// const isDev = process.env.NODE_ENV === 'development'
 
-const gotenbergUrl = isDev ? 'http://localhost:8080' : 'https://gotenberg-5hkjqo623a-od.a.run.app'
-const printUrl = isDev ? 'https://dev-dot-docurba.ew.r.appspot.com' : 'https://docurba.beta.gouv.fr'
+const gotenbergUrl = 'https://gotenberg-5hkjqo623a-od.a.run.app'
+// const gotenbergUrl = isDev ? 'http://localhost:8080' : 'https://gotenberg-5hkjqo623a-od.a.run.app'
+const printUrl = 'https://docurba.beta.gouv.fr'
+// const printUrl = isDev ? 'https://dev-dot-docurba.ew.r.appspot.com' : 'https://docurba.beta.gouv.fr'
 
 app.get('/:ref', (req, res) => {
   const { ref } = req.params
@@ -19,6 +21,7 @@ app.get('/:ref', (req, res) => {
   try {
     const form = new FormData()
     form.append('url', `${printUrl}/print/${ref}`)
+    form.append('preferCssPageSize', true)
     form.append('marginTop', '0')
     form.append('marginBottom', '0')
     form.append('marginLeft', '0')
