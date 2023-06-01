@@ -22,7 +22,7 @@
     "@supabase/supabase-js": "^2.1.1",
     "@tiptap/extension-image": "^2.0.0-beta.27",
     "@tiptap/extension-link": "^2.0.0-beta.36",
-    "@tiptap/extension-underline": "^2.0.0-beta.22",
+    "@tiptap/extension-underline": "^2.0.3",
     "@tiptap/starter-kit": "^2.0.0-beta.163",
     "@tiptap/vue-2": "^2.0.0-beta.72",
     "@vue/composition-api": "^1.4.0-beta.0",
