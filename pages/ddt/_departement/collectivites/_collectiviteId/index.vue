@@ -12,7 +12,7 @@
             <v-icon small color="primary" class="mr-2">
               {{ icons.mdiArrowLeft }}
             </v-icon>
-            <span v-if="isEpci">Revenir à mon tableau de bord</span>
+            <span v-if="routeIsEpci">Revenir à mon tableau de bord</span>
             <span v-else>Revenir à l'EPCI</span>
           </div>
           <div class="ml-8">
@@ -21,7 +21,7 @@
         </div>
       </v-col>
       <v-col cols="12">
-        <v-expansion-panels v-if="isEpci" flat>
+        <v-expansion-panels v-if="routeIsEpci" flat>
           <v-expansion-panel class="beige">
             <v-expansion-panel-header>
               <h3>{{ collectivite.towns.length }} communes dans votre EPCI</h3>
@@ -83,7 +83,7 @@ export default {
     }
   },
   async mounted () {
-    if (!this.isEpci) {
+    if (!this.routeIsEpci) {
       await this.getLinkedEpci(this.$route.params.collectiviteId)
     }
     // this.$route.params.collectiviteId.toString().padStart(5, '0')
@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     back () {
-      if (this.isEpci || !this.linkedEpci) {
+      if (this.routeIsEpci || !this.linkedEpci) {
         this.$router.push({ name: 'ddt-departement-collectivites', params: { departement: this.$route.params.departement } })
       } else {
         this.$router.push({ name: 'ddt-departement-collectivites-collectiviteId', params: { departement: this.$route.params.departement, collectiviteId: this.linkedEpci.EPCI }, query: { isEpci: true } })
