@@ -155,7 +155,8 @@ export default {
 
  .footer-space {
    /* height: calc(68px + 8.5mm); */
-   height: calc(10mm);
+   /* height: calc(10mm); */
+   height: 17mm;
  }
 
 .fr-header .fr-header__body-row, .fr-header .fr-header__logo, .fr-header .fr-logo {
