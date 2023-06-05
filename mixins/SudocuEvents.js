@@ -27,6 +27,22 @@ export default {
 
       this.loadCommuneEvents(collectivite)
     },
+    async loadPerimetre (procedures) {
+      const proceduresIds = procedures.map(e => e.idProcedure)
+      console.log('proceduresIds: ', proceduresIds)
+      const allPerim = (await this.$supabase.from('sudocu_procedures_perimetres').select().in('procedure_id', proceduresIds)).data
+      console.log('TEST PERIMETRE: ', allPerim)
+
+      const proceduresEnrich = procedures.map((e) => {
+        const collecPerim = allPerim.find(i => i.procedure_id === e.idProcedure)
+        e.perimetre = collecPerim.communes_insee.reduce((acc, curr, idx) => {
+          acc.push({ inseeCode: collecPerim.communes_insee[idx], name: collecPerim.name_communes[idx] })
+          return acc
+        }, [])
+        return e
+      })
+      return proceduresEnrich
+    },
     async loadCommuneEvents (commune) {
       let codecollectivite
       if (!this.routeIsEpci) {
@@ -99,7 +115,8 @@ export default {
         return null
       }
       console.log('cleanedProcs: ', cleanedProcs)
-      this.procedures = _.chain(cleanedProcs)
+      // this.procedures
+      const procedures = _.chain(cleanedProcs)
         .map(e => ({
           ...e,
           procSecs: _.chain(e.procSecs)
@@ -110,9 +127,8 @@ export default {
         }))
         .orderBy('lastStepDate', 'desc').value()
 
+      this.procedures = await this.loadPerimetre(procedures)
       console.log('eventsByProc after: ', this.procedures)
-
-      // _.(this.procedures).sorte
     }
   }
 }
