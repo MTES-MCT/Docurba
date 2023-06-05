@@ -17,7 +17,7 @@
         <v-tab>
           Fichiers
         </v-tab>
-        <v-tab :disabled="!isProject">
+        <v-tab disabled>
           Data
         </v-tab>
       </v-tabs>
@@ -81,12 +81,16 @@
 
 <script>
 import { mdiPlus, mdiPaperclip, mdiClose } from '@mdi/js'
-import slugify from 'slugify'
+import { v4 as uuidv4 } from 'uuid'
 
 export default {
   props: {
     section: {
       type: Object,
+      required: true
+    },
+    gitRef: {
+      type: String,
       required: true
     }
   },
@@ -109,9 +113,6 @@ export default {
     }
   },
   computed: {
-    folder () {
-      return this.section.project_id || this.section.dept
-    },
     isProject () {
       return !!this.section.project_id
     },
@@ -166,19 +167,35 @@ export default {
       this.loading = true
 
       if (this.files.length) {
-        // this.files.forEach((file) => {
-        //   console.log(file)
-        // })
+        const { data: sectionsData } = await this.$supabase.from('pac_sections').select('attachements').match({
+          path: this.section.path,
+          ref: this.gitRef
+        })
 
-        // console.log(this.files[0], this.section)
+        const attachements = sectionsData[0] ? sectionsData[0].attachements : []
 
         for (let fileIndex = 0; fileIndex < this.files.length; fileIndex++) {
           const file = this.files[fileIndex]
 
+          const fileId = uuidv4()
+
+          attachements.push({
+            id: fileId,
+            name: file.name
+          })
+
+          console.log(`${this.gitRef}/${this.section.path}/${fileId}`)
+
           await this.$supabase.storage
             .from('project-annexes')
-            .upload(`${this.folder}${this.section.path}/${slugify(file.name, '_').substring(0, 30)}`, file)
+            .upload(`${this.gitRef}/${this.section.path}/${fileId}`, file)
         }
+
+        await this.$supabase.from('pac_sections').upsert({
+          path: this.section.path,
+          ref: this.gitRef,
+          attachements
+        })
       }
 
       this.$emit('upload')

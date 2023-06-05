@@ -67,7 +67,8 @@ export default {
         // 'default-src': ["'self'"],
         'script-src': [
           // "'self'",
-          'https://stats.data.gouv.fr/piwik.js'
+          'https://stats.data.gouv.fr/piwik.js',
+          'https://tally.so/widgets/embed.js'
         ]
       }
       // addMeta: true

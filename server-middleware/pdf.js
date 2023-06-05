@@ -21,7 +21,8 @@ app.get('/:ref', (req, res) => {
   try {
     const form = new FormData()
     form.append('url', `${printUrl}/print/${ref}`)
-    form.append('preferCssPageSize', true)
+    form.append('preferCssPageSize', 'true')
+    form.append('emulatedMediaType', 'screen')
     form.append('marginTop', '0')
     form.append('marginBottom', '0')
     form.append('marginLeft', '0')
@@ -45,7 +46,7 @@ app.get('/:ref', (req, res) => {
     })
   } catch (err) {
     console.log('err pdf', err)
-    // res.status(400).send(err.toJSON())
+    res.status(400).send(err.toJSON())
   }
 })
 
