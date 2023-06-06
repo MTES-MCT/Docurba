@@ -4,13 +4,13 @@
       <h2 class="text-h2">
         Net Promoter Score
       </h2>
-      <p>Le Net Promoter Score (NPS) demande aux utilisateurs d’évaluer de 1 à 10 la probabilité de recommander le service numérique à un ami ou à un collègue.</p>
+      <p>Le Net Promoter Score (NPS) est un outil de satisfaction qui mesure la tendance qu’ont les utilisateurs à recommander un produit à leurs collègues. Le score s'étend de -100 à +100. Un "bon NPS" est un résultat supérieur à 30 ; les utilisateurs sont alors considérés comme satisfaits et sont les promoteurs du produit. Plus d’informations sur le barème : <a href="https://feedier.com/fr/blog/bon-nps-net-promoter-score" target="_blank">net promoter score/</a></p>
     </v-col>
     <v-col cols="12" md="6">
-      <StatsBignumberCard title="NPS des DDT" number="8,8" />
+      <StatsBignumberCard title="NPS des DDT" number="50" />
     </v-col>
-    <v-col cols="12" md="6">
+    <!-- <v-col cols="12" md="6">
       <StatsBignumberCard title="NPS des collectivités" number="7,6" />
-    </v-col>
+    </v-col> -->
   </v-row>
 </template>

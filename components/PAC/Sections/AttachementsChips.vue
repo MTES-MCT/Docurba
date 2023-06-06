@@ -114,13 +114,14 @@ export default {
         attachements.forEach((attachement) => {
           files.push({
             name: attachement.name,
-            path: `${ref}/${this.section.path}/${attachement.id}`
+            path: `${ref}/${attachement.id}`
           })
         })
       })
 
       if (files.length) {
-        const { data: signedUrls } = await this.$supabase.storage.from('project-annexes').createSignedUrls(files.map(a => a.path), 3600)
+        const { data: signedUrls } = await this.$supabase.storage.from('project-annexes')
+          .createSignedUrls(files.map(a => a.path), 3600)
 
         this.files = files.map((attachement, i) => {
           const signedData = signedUrls.find(o => o.path === attachement.path)

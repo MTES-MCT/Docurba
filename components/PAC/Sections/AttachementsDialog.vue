@@ -188,7 +188,7 @@ export default {
 
           await this.$supabase.storage
             .from('project-annexes')
-            .upload(`${this.gitRef}/${this.section.path}/${fileId}`, file)
+            .upload(`${this.gitRef}/${fileId}`, file)
         }
 
         await this.$supabase.from('pac_sections').upsert({
