@@ -5,6 +5,7 @@ const defaultUser = {
   email: null,
   role: null,
   scope: null,
+  isAdmin: false,
   user_metadata: {}
 }
 
@@ -19,8 +20,19 @@ export default ({ $supabase, route }, inject) => {
         user_id: session.user.id,
         user_email: session.user.email
       })
+
       if (data && data[0]) {
         user.scope = data[0]
+      }
+
+      const { data: roles } = await $supabase.from('github_ref_roles').select('*')
+        .match({
+          user_id: user.id,
+          role: 'admin'
+        })
+
+      if (roles.length) {
+        Object.assign(user, { isAdmin: true })
       }
     }
   }

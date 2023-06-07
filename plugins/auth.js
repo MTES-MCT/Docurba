@@ -1,11 +1,11 @@
 export default ({ $supabase, $user }, inject) => {
   inject('auth', {
-    async getRefsRoles () {
+    async getRefsRoles (userId) {
       // console.log('userId', $user.id)
 
       const { data: roles } = await $supabase.from('github_ref_roles').select('*')
         .match({
-          user_id: $user.id,
+          user_id: userId || $user.id,
           role: 'admin'
         })
 

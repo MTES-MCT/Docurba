@@ -150,7 +150,11 @@ export default {
         console.log('success sign in', user)
 
         if (this.$route.path === '/') {
-          this.$router.push('/projets')
+          const userAdminRoles = await this.$auth.getRefsRoles(user.id)
+
+          if (userAdminRoles.length) {
+            this.$router.push('/projets')
+          }
         }
 
         this.$emit('input', false)

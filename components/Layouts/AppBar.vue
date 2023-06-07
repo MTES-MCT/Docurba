@@ -48,7 +48,7 @@
         <v-btn v-if="$user.id && $user.scope && $user.scope.dept" depressed tile text :to="{name: 'ddt-departement-collectivites', params: {departement: $user.scope.dept}}">
           Tableau de bord
         </v-btn>
-        <v-btn v-if="$user.id" depressed tile text @click="clickMyDocs">
+        <v-btn v-if="$user.id && $user.isAdmin" depressed tile text @click="clickMyDocs">
           Mes documents
         </v-btn>
         <v-menu v-if="$user.id" offset-y>

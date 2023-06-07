@@ -6,7 +6,10 @@
       </v-col>
       <v-col cols="8">
         <p>Vous êtes l’un des élu, technicien de collectivité, ou bureau d’étude qui gérez cette collectivité.</p>
-        <AuthCollectiviteAccessDialog label="Demander l'accès" />
+        <AuthCollectiviteAccessDialog v-if="!$user.id" label="Demander l'accès" />
+        <v-btn v-else :to="actionsCards[0].to" nuxt color="primary">
+          Démarer une procédure
+        </v-btn>
       </v-col>
     </v-row>
     <v-row>
@@ -86,6 +89,7 @@ export default {
   data () {
     const collectiviteId = this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE
 
+    console.log('USER', this.$user)
     return {
       actionsCards: [
         {
