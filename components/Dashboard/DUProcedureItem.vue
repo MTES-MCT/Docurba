@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="firstEvent">
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
         {{ firstEvent.docType }}{{ $route.query.isEpci === 'true' && firstEvent.docType === 'PLU'? 'i' : '' }}
