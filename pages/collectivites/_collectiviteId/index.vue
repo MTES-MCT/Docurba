@@ -1,6 +1,15 @@
 <template>
   <v-container>
     <v-row>
+      <v-col cols="auto">
+        <div class="divider-vertical ml-6" />
+      </v-col>
+      <v-col cols="8">
+        <p>Vous êtes l’un des élu, technicien de collectivité, ou bureau d’étude qui gérez cette collectivité.</p>
+        <AuthCollectiviteAccessDialog label="Demander l'accès" />
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col>
         <h2>Actions rapides</h2>
       </v-col>
@@ -111,3 +120,23 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.divider-vertical {
+  width: 4px;
+height: 100%;
+
+  /* light/border/default-blue-france
+
+  $blue-france-main-525
+  */
+  background: #6A6AF4;
+
+  /* Inside auto layout */
+
+  /* flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0; */
+}
+</style>

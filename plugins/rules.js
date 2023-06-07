@@ -6,6 +6,9 @@ export default (_, inject) => {
           return v.length > 0
         } else { return Object.keys(v).length > 0 }
       } else { return !!v }
+    },
+    email (v) {
+      return /.+@.+\..+/.test(v) || 'L\'e-mail doit être valide'
     }
   })
 }
