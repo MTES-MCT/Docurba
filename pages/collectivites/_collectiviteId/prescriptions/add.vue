@@ -329,6 +329,35 @@ export default {
         }
 
         await this.$supabase.from('prescriptions').insert([prescription])
+
+        // TODO
+
+        const newProject = Object.assign({
+          // owner: this.$user.id,
+          doc_type: this.DUType,
+          towns: this.isEpci ? this.collectivite.towns : [this.collectivite],
+          epci: this.isEpci ? { EPCI: this.collectivite.EPCI } : null
+        })
+        const { data: newProjectDocurba, error: errorNewProjectDocurba } = await this.$supabase.from('projects').insert([newProject]).select()
+        if (errorNewProjectDocurba) {
+          console.log('errorNewProjectDocurba: ', errorNewProjectDocurba)
+        }
+
+        const newEvents = [{
+          type: this.typeProcedure,
+          date_iso: this.$dayjs().format('YYYY-MM-DD'),
+          description: '',
+          actors: [],
+          attachements: [],
+          project_id: newProjectDocurba[0].id
+        }]
+        const { data: savedEvents, error: errorSavedEvents } = await this.$supabase.from('doc_frise_events').insert(newEvents).select()
+        if (errorSavedEvents) {
+          console.log('errorSavedEvents: ', errorSavedEvents)
+        }
+        console.log('savedEvents: ', savedEvents)
+        // ENDTODO
+
         this.loadingSave = false
 
         await axios({

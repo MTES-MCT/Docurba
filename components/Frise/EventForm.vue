@@ -170,14 +170,19 @@ export default {
     async saveEvent () {
       this.saving = true
 
+      let procedureDocurba
       // Check if there is a previous Sudocu history
-      const { data: procedureDocurba, error: errorProcedureDocurba } = await this.$supabase.from('projects').select('*').eq('sudocuh_procedure_id', this.$route.params.procedureId)
-      if (errorProcedureDocurba) {
-        console.log('errorProcedureDocurba: ', errorProcedureDocurba)
+      if (!isNaN(this.$route.params.procedureId)) {
+        procedureDocurba = await this.$supabase.from('projects').select('*').eq('sudocuh_procedure_id', this.$route.params.procedureId)
+        if (procedureDocurba.error) {
+          console.log('errorProcedureDocurba: ', procedureDocurba.error)
+        }
+      } else {
+        procedureDocurba = await this.$supabase.from('projects').select('*, doc_frise_events(*)').eq('id', this.$route.params.procedureId)
       }
 
-      this.event.project_id = procedureDocurba?.[0]?.id
-      if (procedureDocurba.length === 0) {
+      this.event.project_id = procedureDocurba?.data?.[0]?.id
+      if (procedureDocurba.data.length === 0) {
         const procedureSudocu = this.procedures.find(e => e.idProcedure.toString() === this.projectId)
         console.log('procedureSudocu: ', procedureSudocu.events[0])
         const newProject = Object.assign({

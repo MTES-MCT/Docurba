@@ -227,7 +227,7 @@ export default {
         }
 
         await this.$supabase.from('prescriptions').insert([prescription])
-        // TODO
+
         this.loadingSave = false
         this.$router.push({ name: 'prescriptions', query: { ...this.$route.query, success: true } })
       } catch (error) {
