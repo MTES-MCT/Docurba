@@ -76,6 +76,16 @@
         class="d-none"
         :download="attachement.name"
       />
+      <v-btn
+        v-if="event.type === 'Socle de PAC' && soclePACLink"
+        color="primary"
+        tile
+        depressed
+        :to="soclePACLink"
+        nuxt
+      >
+        Consulter
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -94,6 +104,17 @@ export default {
   data () {
     return {
       icons: { mdiDotsHorizontal, mdiPencil, mdiFile, mdiDownload }
+    }
+  },
+  computed: {
+    soclePACLink () {
+      if (this.$route.params.collectiviteId) {
+        return {
+          name: 'collectivites-collectiviteId-pac',
+          params: { collectiviteId: this.$route.params.collectiviteId },
+          query: Object.assign({ document: this.$route.query.isEpci ? 'PLUi' : 'PLU' }, this.$route.query)
+        }
+      } else { return '' }
     }
   },
   methods: {

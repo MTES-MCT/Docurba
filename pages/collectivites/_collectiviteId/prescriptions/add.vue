@@ -350,7 +350,15 @@ export default {
           actors: [],
           attachements: [],
           project_id: newProjectDocurba[0].id
+        }, {
+          type: 'Socle de PAC',
+          date_iso: this.$dayjs().format('YYYY-MM-DD'),
+          description: 'Vous pouvez consulter votre Socle de PAC',
+          actors: [],
+          attachements: [],
+          project_id: newProjectDocurba[0].id
         }]
+
         const { data: savedEvents, error: errorSavedEvents } = await this.$supabase.from('doc_frise_events').insert(newEvents).select()
         if (errorSavedEvents) {
           console.log('errorSavedEvents: ', errorSavedEvents)
