@@ -333,7 +333,7 @@ export default {
         // TODO
 
         const newProject = Object.assign({
-          // owner: this.$user.id,
+          owner: this.$user.id,
           doc_type: this.DUType,
           towns: this.isEpci ? this.collectivite.towns : [this.collectivite],
           epci: this.isEpci ? { EPCI: this.collectivite.EPCI } : null

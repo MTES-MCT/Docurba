@@ -5,10 +5,10 @@
         <div class="divider-vertical ml-6" />
       </v-col>
       <v-col cols="8">
-        <p>Vous êtes l’un des élu, technicien de collectivité, ou bureau d’étude qui gérez cette collectivité.</p>
+        <p>Vous êtes l’un des élus, technicien de collectivité, ou bureau d’étude qui gérez cette collectivité.</p>
         <AuthCollectiviteAccessDialog v-if="!$user.id" label="Demander l'accès" />
         <v-btn v-else :to="actionsCards[0].to" nuxt color="primary">
-          Démarer une procédure
+          Démarrer une procédure
         </v-btn>
       </v-col>
     </v-row>

@@ -23,7 +23,7 @@ export default {
   },
   computed: {
     mixedProcedures () {
-      const sudocuProcedures = this.procedure ?? []
+      const sudocuProcedures = this.procedures ?? []
       return sudocuProcedures.concat(this.docurbaDU ?? [])
     }
   },
@@ -32,7 +32,10 @@ export default {
   },
   methods: {
     async loadDocurbaProcedures () {
-      const query = this.$supabase.from('projects').select('*, doc_frise_events(*)')
+      const query = this.$supabase.from('projects').select('*, doc_frise_events(*)').match({
+        owner: this.$user.id
+      })
+
       let DUs
       if (this.$route.query.isEpci === 'true') {
         console.log('Loading EPCI Ducorba DU')
@@ -41,13 +44,15 @@ export default {
         DUs = await query.contains('towns', JSON.stringify([{ code_commune_INSEE: this.$route.params.collectiviteId }]))
       }
 
-      this.docurbaDU = DUs.data.map(e => ({
-        idProcedure: e.id,
-        docType: e.doc_type,
-        events: e.doc_frise_events.map(i => ({ ...i, docType: e.doc_type, idProcedure: e.id })),
-        date_iso: this.$dayjs(e.created_at).format('YYYY-MM-DD'),
-        procSecs: []
-      }))
+      if (DUs.data) {
+        this.docurbaDU = DUs.data.map(e => ({
+          idProcedure: e.id,
+          docType: e.doc_type,
+          events: e.doc_frise_events.map(i => ({ ...i, docType: e.doc_type, idProcedure: e.id })),
+          date_iso: this.$dayjs(e.created_at).format('YYYY-MM-DD'),
+          procSecs: []
+        }))
+      }
       console.log('DUs: ', this.docurbaDU)
     }
   }
