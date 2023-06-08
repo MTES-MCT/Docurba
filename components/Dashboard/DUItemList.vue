@@ -27,6 +27,11 @@ export default {
       return sudocuProcedures.concat(this.docurbaDU ?? [])
     }
   },
+  watch: {
+    '$user.id' () {
+      this.loadDocurbaProcedures()
+    }
+  },
   async mounted () {
     await this.loadDocurbaProcedures()
   },
