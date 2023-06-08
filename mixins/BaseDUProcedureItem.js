@@ -12,7 +12,8 @@ export default {
       } else if (this.firstEvent.dateLancement) {
         return { text: 'en cours', color: '' }
       } else {
-        return { text: 'abandonné', color: 'error' }
+        // return { text: 'abandonné', color: 'error' }
+        return { text: 'en cours', color: '' }
       }
     },
     step () {
@@ -25,7 +26,8 @@ export default {
       } else if (this.firstEvent.dateLancement) {
         return `Lancement (${this.firstEvent.dateLancement})`
       }
-      return '-'
+      // return '-'
+      return 'Lancement'
     }
   }
 }

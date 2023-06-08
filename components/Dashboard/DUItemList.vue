@@ -48,7 +48,7 @@ export default {
         this.docurbaDU = DUs.data.map(e => ({
           idProcedure: e.id,
           docType: e.doc_type,
-          events: e.doc_frise_events.map(i => ({ ...i, docType: e.doc_type, idProcedure: e.id })),
+          events: e.doc_frise_events.map(i => ({ ...i, docType: e.doc_type, idProcedure: e.id, typeProcedure: i.type })),
           date_iso: this.$dayjs(e.created_at).format('YYYY-MM-DD'),
           procSecs: []
         }))
