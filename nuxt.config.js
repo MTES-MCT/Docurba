@@ -168,6 +168,7 @@ export default {
       }
     },
     defaultAssets: {
+      font: false,
       icons: false
     }
   },

@@ -12,7 +12,8 @@
       <StatsBignumberCard title="Total de procédures guidées par Docurba" :number="stats.nbProjects" />
     </v-col>
     <v-col cols="12" lg="8" order="1" order-lg="2">
-      <StatsSparklineCard title="Nombre de procedures par mois" :points="monthPoints" />
+      <!-- <StatsSparklineCard title="Nombre de procedures par mois" :points="monthPoints" /> -->
+      <StatsBarsCard title="Nombre de procedures par mois" :points="monthPoints" />
     </v-col>
     <v-col v-if="stats.byDept" cols="12" md="8" lg="6" order="3">
       <StatsDeptsMapCard title="Repartition des procedures" :points="stats.byDept" />
@@ -36,14 +37,16 @@ export default {
           return this.$dayjs(d1, 'MM/YY') - this.$dayjs(d2, 'MM/YY')
         }).map((month, index) => {
           return {
-            value: this.stats.byMonth[month],
-            label: month
+            y: this.stats.byMonth[month],
+            x: index,
+            xLabel: month,
+            yLabel: this.stats.byMonth[month]
           }
         })
 
         // console.log(JSON.stringify(months))
 
-        return months
+        return months.slice(months.length - 12)
       } else {
         return []
       }

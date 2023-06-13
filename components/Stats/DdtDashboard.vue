@@ -12,7 +12,17 @@
       <StatsBignumberCard title="nb d’agents de DDT/DEAL inscrits sur Docurba" :number="stats.nbAdmins" />
     </v-col>
     <v-col cols="12" md="8">
-      <StatsDeptsMapCard v-if="mapPoints" title="Carte des DDT" :points="mapPoints" />
+      <StatsDeptsMapCard
+        v-if="mapPoints"
+        title="Carte des DDT"
+        :points="mapPoints"
+        :scale-points="[
+          {value: 1, label: 'Démonstration de l’outil'},
+          {value: 2, label: 'Création de compte'},
+          {value: 3, label: 'Paramétrage de trame'},
+          {value: 4, label: 'Réalisation de projets'}
+        ]"
+      />
     </v-col>
   </v-row>
 </template>

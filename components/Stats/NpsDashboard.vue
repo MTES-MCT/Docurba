@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row justify="center">
     <v-col cols="12">
       <h2 class="text-h2">
         Net Promoter Score
