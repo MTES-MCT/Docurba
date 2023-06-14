@@ -4,13 +4,20 @@
       <h2 class="text-h2">
         Accès au contenu du socle de PAC :
       </h2>
-      <p>
+      <!-- <p>
         Indicateur sur les collectivités guidées grâce au contenu disponible en amont, dès leur lancement dans l’élaboration de leur document d’urbanisme. Contenu à 2 niveaux : cadre juridique national, éléments régionaux (SRADDET & doctrine régionale).
-      </p>
+      </p> -->
+    </v-col>
+    <v-col cols="12" md="3">
+      <StatsBignumberCard title="Nombre de consultations du socle de PAC" :number="stats.nbContent" />
     </v-col>
     <v-col cols="12" md="6">
-      <!-- <StatsBignumberCard title="Nombre de consultations du cadre juridique" :number="stats.nbContent" /> -->
       <StatsBarsCard title="Répartition des contenus consultés" :points="stats.pacBars" />
+    </v-col>
+    <v-col cols="12" md="3">
+      <StatsTextCard
+        :text="`Indicateur sur les collectivités guidées grâce au contenu disponible en amont, dès leur lancement dans l’élaboration de leur document d’urbanisme. Contenu à 2 niveaux : cadre juridique national, éléments régionaux (SRADDET & doctrine régionale).`"
+      />
     </v-col>
     <v-col cols="12" md="6">
       <!-- <StatsDonutCard title="Répartition des contenus consultés : Cadre juridique" :number="percentContent" /> -->

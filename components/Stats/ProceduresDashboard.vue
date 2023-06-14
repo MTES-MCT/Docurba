@@ -4,18 +4,21 @@
       <h2 class="text-h2">
         Nombre de procédures de document d’urbanisme guidées par Docurba
       </h2>
-      <p>
+      <!-- <p>
         Indicateur clé d’accompagnement des collectivités dans l’élaboration de leur document d’urbanisme. Il est calculé via la somme des feuilles de route initiées et des projets de PAC en cours.
-      </p>
+      </p> -->
     </v-col>
-    <v-col cols="12" md="4" lg="4" order="2" order-lg="1">
-      <StatsBignumberCard title="Total de procédures guidées par Docurba" :number="stats.nbProjects" />
+    <v-col cols="12" md="4">
+      <StatsTextCard text="Indicateur clé d’accompagnement des collectivités dans l’élaboration de leur document d’urbanisme. Il est calculé via la somme des feuilles de route initiées et des projets de PAC en cours." />
     </v-col>
-    <v-col cols="12" lg="8" order="1" order-lg="2">
+    <v-col cols="12" lg="8">
       <!-- <StatsSparklineCard title="Nombre de procedures par mois" :points="monthPoints" /> -->
       <StatsBarsCard title="Nombre de procedures par mois" :points="monthPoints" />
     </v-col>
-    <v-col v-if="stats.byDept" cols="12" md="8" lg="6" order="3">
+    <v-col cols="12" md="4" lg="4">
+      <StatsBignumberCard title="Total de procédures guidées par Docurba" :number="stats.nbProjects" />
+    </v-col>
+    <v-col v-if="stats.byDept" cols="12" md="8" lg="8">
       <StatsDeptsMapCard title="Repartition des procedures" :points="stats.byDept" />
     </v-col>
   </v-row>
