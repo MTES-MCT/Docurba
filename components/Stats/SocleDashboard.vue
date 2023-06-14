@@ -47,6 +47,10 @@ export default {
         url: `https://stats.data.gouv.fr/index.php?module=API&format=JSON&idSite=235&period=day&date=${dateRange}&method=Events.getCategory&secondaryDimension=eventAction&flat=1&token_auth=anonymous&force_api_session=1`
       })
 
+      const { data: categData } = await axios({
+        url: `https://stats.data.gouv.fr/index.php?module=API&format=JSON&idSite=235&period=day&date=${dateRange}&method=Events.getCategory&secondaryDimension=eventName&flat=1&token_auth=anonymous&force_api_session=1`
+      })
+
       const days = Object.keys(eventsData).sort((d1, d2) => {
         return this.$dayjs(d1, 'YYYY-MM-DD') - this.$dayjs(d2, 'YYYY-MM-DD')
       })
@@ -65,7 +69,65 @@ export default {
         })
       })
 
-      console.log(eventsCounts)
+      const categCounts = {}
+
+      days.forEach((day) => {
+        const events = categData[day]
+
+        events.forEach((eventData) => {
+          if (!categCounts[eventData.label]) {
+            categCounts[eventData.label] = 0
+          }
+
+          categCounts[eventData.label] += (eventData.nb_events || 0)
+        })
+      })
+
+      const pacBars = Object.keys(eventsCounts).filter(key => key.includes('Socle de PAC')).map((key) => {
+        return {
+          x: key.replace('Socle de PAC - ', ''),
+          xLabel: key.replace('Socle de PAC - ', ''),
+          y: eventsCounts[key],
+          yLabel: eventsCounts[key]
+        }
+      })
+
+      const dataBars = Object.keys(categCounts).filter(key => key.includes('PAC Content -')).map((key) => {
+        return {
+          x: key.replace('PAC Content - ', ''),
+          xLabel: key.replace('PAC Content - ', ''),
+          y: categCounts[key],
+          yLabel: categCounts[key]
+        }
+      })
+
+      console.log('events', eventsCounts, categCounts, eventsData, categData)
+
+      const soclePoints = days.map((day) => {
+        const events = eventsData[day]
+
+        const y = events.reduce((yVal, e) => {
+          return yVal + (e.label.includes('Content') ? e.nb_events : 0)
+        }, 0)
+
+        return {
+          x: new Date(this.$dayjs(day, 'YYYY-MM-DD').format()),
+          y
+        }
+      })
+
+      const dataPoints = days.map((day) => {
+        const events = eventsData[day]
+
+        const y = events.reduce((yVal, e) => {
+          return yVal + (e.label.includes('Data') ? e.nb_events : 0)
+        }, 0)
+
+        return {
+          x: new Date(this.$dayjs(day, 'YYYY-MM-DD').format()),
+          y
+        }
+      })
 
       const nbContent = eventsCounts['PAC Content - Open Section'] + eventsCounts['Socle de PAC - Content']
       const nbData = eventsCounts['Data Source - Carte'] + eventsCounts['Projet PAC - Data']
@@ -76,6 +138,10 @@ export default {
       // this.nbVisitors = days.map(day => visits[day].nb_uniq_visitors || 0)
 
       this.stats = {
+        pacBars,
+        dataBars,
+        soclePoints,
+        dataPoints,
         nbContent,
         nbData
       }

@@ -54,7 +54,7 @@ export default {
     const max = this.scale.domain()[1]
     const quarter = max / 4
 
-    console.log('scales', this.scale.domain(), this.scale.range())
+    // console.log('scales', this.scale.domain(), this.scale.range())
 
     return {
       ticks: this.scalePoints.length
