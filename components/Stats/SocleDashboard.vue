@@ -9,17 +9,20 @@
       </p>
     </v-col>
     <v-col cols="12" md="6">
-      <StatsBignumberCard title="Nombre de consultations du cadre juridique" :number="stats.nbContent" />
+      <!-- <StatsBignumberCard title="Nombre de consultations du cadre juridique" :number="stats.nbContent" /> -->
+      <StatsBarsCard title="Répartition des contenus consultés" :points="stats.pacBars" />
     </v-col>
     <v-col cols="12" md="6">
-      <StatsDonutCard title="Répartition des contenus consultés : Cadre juridique" :number="percentContent" />
+      <!-- <StatsDonutCard title="Répartition des contenus consultés : Cadre juridique" :number="percentContent" /> -->
+      <StatsLineCard title="Nombre de consultations des contenus du PAC" :points="stats.soclePoints" />
     </v-col>
     <v-col cols="12" md="6">
-      <StatsBignumberCard title="Nombre de consultations des jeux de données" :number="stats.nbData" />
+      <!-- <StatsBignumberCard title="Nombre de consultations des jeux de données" :number="stats.nbData" /> -->
+      <StatsLineCard title="Nombre de consultations des jeux de données" :points="stats.dataPoints" />
     </v-col>
-    <v-col cols="12" md="6">
+    <!-- <v-col cols="12" md="6">
       <StatsDonutCard title="Répartition des contenus consultés : Jeux de données" :number="100-percentContent" />
-    </v-col>
+    </v-col> -->
   </v-row>
 </template>
 
@@ -101,7 +104,7 @@ export default {
         }
       })
 
-      console.log('events', eventsCounts, categCounts, eventsData, categData)
+      // console.log('events', eventsCounts, categCounts, eventsData, categData)
 
       const soclePoints = days.map((day) => {
         const events = eventsData[day]
