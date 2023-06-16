@@ -140,7 +140,7 @@ export default {
         ref: this.gitRef
       })
 
-      const attachements = sectionsData[0].attachements.filter(attachement => attachement.path === file.path)
+      const attachements = sectionsData[0].attachements.filter(attachement => !file.path.includes(attachement.id))
 
       await this.$supabase.from('pac_sections').upsert({
         path: this.section.path,
