@@ -11,9 +11,9 @@ export default {
         supSections = Object.keys(groupedSupSections).map((path) => {
           return groupedSupSections[path].find(s => s.ref.includes('projet')) ||
           groupedSupSections[path].find(s => s.ref.includes('dept')) ||
+          groupedSupSections[path].find(s => s.ref.includes('test')) ||
           groupedSupSections[path].find(s => s.ref.includes('region')) ||
-          groupedSupSections[path].find(s => s.ref.includes('main')) ||
-          groupedSupSections[path].find(s => s.ref.includes('test'))
+          groupedSupSections[path].find(s => s.ref.includes('main'))
         })
 
         sections.forEach((section) => {
