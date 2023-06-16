@@ -32,8 +32,24 @@ export default {
       console.log('proceduresIds: ', proceduresIds)
       const allPerim = (await this.$supabase.from('sudocu_procedures_perimetres').select().in('procedure_id', proceduresIds)).data
       console.log('TEST PERIMETRE: ', allPerim)
-
+      console.log('JSON.stringify(proceduresIds): ', JSON.stringify(proceduresIds))
+      const ongoingProceduresStates = (await this.$supabase.from('sudocu_procedures_etats').select().in('id_procedure_ongoing', proceduresIds)).data
+      console.log('ongoingProceduresStates: ', ongoingProceduresStates)
+      const approvedProceduresStates = (await this.$supabase.from('sudocu_procedures_etats').select().in('id_procedure_approved', proceduresIds)).data
+      console.log('approvedProceduresStates: ', approvedProceduresStates)
       const proceduresEnrich = procedures.map((e) => {
+        e.approvedInTowns = []
+        e.ongoingInTowns = []
+        const approvedInTowns = approvedProceduresStates.filter(i => i.id_procedure_approved === e.idProcedure)
+        if (approvedInTowns.length > 0) {
+          e.approvedInTowns = approvedInTowns.map(i => i.insee_code)
+        }
+
+        const ongoingInTowns = ongoingProceduresStates.filter(i => i.id_procedure_ongoing === e.idProcedure)
+        if (ongoingInTowns.length > 0) {
+          e.ongoingInTowns = ongoingInTowns.map(i => i.insee_code)
+        }
+
         const collecPerim = allPerim.find(i => i.procedure_id === e.idProcedure)
         e.perimetre = collecPerim.communes_insee.reduce((acc, curr, idx) => {
           acc.push({ inseeCode: collecPerim.communes_insee[idx], name: collecPerim.name_communes[idx] })
@@ -43,6 +59,12 @@ export default {
       })
       return proceduresEnrich
     },
+    // async loadState (procedures) {
+    //   const proceduresIds = procedures.map(e => e.idProcedure)
+
+    //   const allProcedureState = (await this.$supabase.from('sudocu_procedures_states').select().in('procedure_id', proceduresIds)).data
+    //   console.log('allProcedureState: ', allProcedureState)
+    // },
     async loadCommuneEvents (commune) {
       let codecollectivite
       if (!this.routeIsEpci) {
@@ -71,7 +93,7 @@ export default {
 
         }
       })
-
+      const typePrincipalProcedures = ['Elaboration', 'Révision', 'Abrogation', 'Engagement', 'Réengagement']
       const eventsByProc = formattedEvents.reduce(function (r, a) {
         r[a.idProcedure] = r[a.idProcedure] || []
         r[a.idProcedure].push(a)
@@ -81,17 +103,22 @@ export default {
       const tempProcs = {}
       for (const [k, v] of Object.entries(eventsByProc)) {
         let procSecs = _.filter(eventsByProc, (e, i) => {
-          return e[0].idProcedurePrincipal?.toString() === k
+          console.log('TESTING: ', e[0])
+          return e[0].idProcedurePrincipal?.toString() === k && !typePrincipalProcedures.includes(e[0].typeProcedure)
         })
 
         if (procSecs && procSecs.length > 0) {
           procSecs = procSecs.reduce((acc, curr) => {
-            acc[curr[0].idProcedure] = curr
+            console.log('curr: ', curr)
+            if (curr[0].dateApprobation) {
+              acc[curr[0].idProcedure] = curr
+            }
             return acc
           }, {})
         } else { procSecs = null }
-
-        tempProcs[k] = { events: v, procSecs }
+        if (typePrincipalProcedures.includes(v[0].typeProcedure)) {
+          tempProcs[k] = { type: v[0].typeProcedure, events: v, procSecs }
+        }
       }
       console.log('tempProcs: ', tempProcs)
       // TODO: Issue wit hcleanded proc
@@ -115,7 +142,6 @@ export default {
         return null
       }
       console.log('cleanedProcs: ', cleanedProcs)
-      // this.procedures
       const procedures = _.chain(cleanedProcs)
         .map(e => ({
           ...e,
@@ -128,6 +154,7 @@ export default {
         .orderBy('lastStepDate', 'desc').value()
 
       this.procedures = await this.loadPerimetre(procedures)
+
       console.log('eventsByProc after: ', this.procedures)
     }
   }

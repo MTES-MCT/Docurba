@@ -56,12 +56,43 @@
           Documents d’urbanisme disponibles pour la commune recherchée :
         </p>
       </v-col>
-      <v-col cols="12">
+      <v-col v-if="!routeIsEpci" cols="12">
         <DashboardDUItem
           v-for="(procedure,i) in procedures"
           :key="'du_' + i"
           :procedure="procedure"
         />
+      </v-col>
+      <v-col v-else>
+        <v-tabs
+          v-model="tab"
+          background-color="primary"
+          dark
+        >
+          <v-tab>
+            DU intercommunaux
+          </v-tab>
+          <v-tab>
+            DU communaux
+          </v-tab>
+        </v-tabs>
+
+        <v-tabs-items v-model="tab">
+          <v-tab-item>
+            <DashboardDUItem
+              v-for="(procedure,i) in DUInter"
+              :key="'du_' + i"
+              :procedure="procedure"
+            />
+          </v-tab-item>
+          <v-tab-item>
+            <DashboardDUItem
+              v-for="(procedure,i) in DUCommunaux"
+              :key="'du_' + i"
+              :procedure="procedure"
+            />
+          </v-tab-item>
+        </v-tabs-items>
       </v-col>
     </v-row>
   </v-container>
@@ -77,9 +108,18 @@ export default {
   data () {
     return {
       linkedEpci: null,
+      tab: null,
       icons: {
         mdiArrowLeft
       }
+    }
+  },
+  computed: {
+    DUCommunaux () {
+      return this.procedures?.filter(e => e.perimetre.length === 1)
+    },
+    DUInter () {
+      return this.procedures?.filter(e => e.perimetre.length > 1)
     }
   },
   async mounted () {

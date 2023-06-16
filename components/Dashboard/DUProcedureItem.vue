@@ -2,8 +2,11 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        {{ firstEvent.docType }}{{ $route.query.isEpci === 'true' && firstEvent.docType === 'PLU'? 'i' : '' }}
-        <!-- - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }} -->
+        <span v-if="firstEvent.docType === 'PLU'">{{ isPlui ? 'PLUi' : 'PLU' }}</span>
+        <span v-else>{{ firstEvent.docType }}</span>
+        <span> {{ procedure.perimetre.length === 1 ? procedure.perimetre[0].name + ' (' + procedure.perimetre[0].inseeCode + ')' : '' }}</span>
+        <br>
+        id - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
       </v-col>
     </v-row>
     <v-row class="mt-0">
@@ -98,6 +101,35 @@ export default {
     return {
       icons: {
         mdiArrowRight
+      }
+    }
+  },
+  computed: {
+    isPlui () {
+      return this.procedure.perimetre.length > 1
+    },
+    status () {
+      if (this.firstEvent.dateAbandon) {
+        return { text: 'abandonné', color: 'error' }
+      }
+      // si ce n'est pas un PLU
+      if (!this.isPlui) {
+        if (this.procedure.approvedInTowns.includes(this.procedure.perimetre[0].inseeCode)) {
+          return { text: 'opposable', color: 'success lighten-2' }
+        } else if (this.procedure.ongoingInTowns.includes(this.procedure.perimetre[0].inseeCode)) {
+          return { text: 'en cours', color: '' }
+        } else {
+          return { text: 'précédent', color: '' }
+        }
+      } else {
+        // Si on est dans un cas de PLUi
+        if ((this.firstEvent.dateExecutoire || this.firstEvent.dateApprobation) && this.firstEvent.idProcedurePrincipal) {
+          return { text: 'opposable', color: 'success lighten-2' }
+        } else if (this.firstEvent.dateExecutoire && !this.firstEvent.idProcedurePrincipal) {
+          return { text: 'précédent', color: '' }
+        }
+        // implicite si date de lancement
+        return { text: 'en cours', color: '' }
       }
     }
   }
