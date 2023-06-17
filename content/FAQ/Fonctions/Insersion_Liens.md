@@ -1,6 +1,5 @@
 ---
-question: "Peut-on insérer des liens?"
+question: "Comment insérer des liens hypertexte ?"
 visible: true
 ---
-Oui, il faut au préalable séléctionner le texte que vous voulez lier à une page, sélectionner  l'icône de lien hypertexe puis copier le lien de la page et valider. 
-Note: vous avez la possibilité de lier une page internet ou bien une section de votre PAC.
+Il faut au préalable séléctionner le texte que vous voulez lier à une page internet, sélectionner  l'icône de lien hypertexe (trombone) puis copier/coller le lien de la page et valider. 
