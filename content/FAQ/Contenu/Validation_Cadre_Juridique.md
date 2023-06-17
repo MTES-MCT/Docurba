@@ -2,6 +2,9 @@
 question: "Le cadre juridique est-il validé ? Si oui, par qui? Et comment s'assurer qu'il est à jour?"
 visible: true
 ---
-Le cadre juridique a été validé par QV4. Des points mensuels sont également organisés avec QV4 afin de maintenir le cadre juridique à jour. Le reste de la trame, c'est-à-dire le niveau régional et/ou départemental, est mis à jour à la main. 
+Le cadre juridique a été rédigé et validé en collaboration avec le national (DHUP/QV4). Des points mensuels sont organisés afin de le maintenir à jour. 
+Des notification en face des sections mises à jour sont prévues pour vous tenir au courant. 
+
+Nous communiquons également les mises à jour du cadre juridique via notre newsletter : _s’inscrire à la newsletter de Docurba_. 
 
 
