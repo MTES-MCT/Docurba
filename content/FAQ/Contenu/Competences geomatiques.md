@@ -2,4 +2,4 @@
 question: "A-t-on besoin de compétences géomatiques pour utiliser Docurba?"
 visible: true
 ---
-Non, pas plus que dans la création du Porter à Connaissance actuelle.
+Il n'est pas nécessaire de disposer de plus de compétences géomatiques que lors de l'élaboration de PAC hors Docurba. 
