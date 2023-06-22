@@ -184,11 +184,11 @@ export default {
             name: file.name
           })
 
-          console.log(`${this.gitRef}/${this.section.path}/${fileId}`)
+          // console.log(`${this.gitRef}/${this.section.path}/${fileId}`)
 
           await this.$supabase.storage
             .from('project-annexes')
-            .upload(`${this.gitRef}/${this.section.path}/${fileId}`, file)
+            .upload(`${this.gitRef}/${fileId}`, file)
         }
 
         await this.$supabase.from('pac_sections').upsert({
@@ -200,6 +200,7 @@ export default {
 
       this.$emit('upload')
 
+      this.files = []
       this.loading = false
       this.dialog = false
     },

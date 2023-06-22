@@ -26,7 +26,7 @@
         Guide d'utilisation
       </v-btn>
     </template>
-    <v-container fluid>
+    <!-- <v-container fluid>
       <v-row justify="center" align="center" class="primary mt-2">
         <v-col cols="auto">
           <a class="white--text" href="https://docs.google.com/forms/d/e/1FAIpQLSf24HCAIHLTq4kRU7eMCKLEJA6zUemIizOMU3RH0qp4ZzbxXA/viewform?usp=sf_link" target="_blank">
@@ -34,7 +34,7 @@
           </a>
         </v-col>
       </v-row>
-    </v-container>
+    </v-container> -->
     <v-container v-if="projectListLoaded">
       <v-row>
         <v-col cols="12">

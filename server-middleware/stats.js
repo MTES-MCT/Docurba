@@ -91,6 +91,10 @@ const cachedDiff = { timestamp: 0 }
 const hour = 60 * 60 * 1000
 
 app.get('/diff', async (req, res) => {
+  if (cachedDiff.timestamp > 0) {
+    res.status(200).send(cachedDiff)
+  }
+
   if (cachedDiff.timestamp + hour < Date.now()) {
     const changes = { }
 
@@ -129,10 +133,11 @@ app.get('/diff', async (req, res) => {
 
     changes.timestamp = Date.now()
 
+    if (cachedDiff.timestamp === 0) {
+      res.status(200).send(changes)
+    }
+
     Object.assign(cachedDiff, changes)
-    res.status(200).send(changes)
-  } else {
-    res.status(200).send(cachedDiff)
   }
 
   // console.log(data)

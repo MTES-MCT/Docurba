@@ -6,6 +6,7 @@
     <v-card-text v-if="Object.keys(points).length">
       <ChartsLayout>
         <ChartsMap :topology="newTopo" features-key="FRA" color="rgb(0, 0, 0)" />
+        <ChartsScales :scale="colorScale" :scale-points="scalePoints" />
       </ChartsLayout>
     </v-card-text>
     <v-card-text v-else>
@@ -17,7 +18,10 @@
 </template>
 
 <script>
-import { max, scaleOrdinal, interpolateRgbBasis, quantize } from 'd3'
+import {
+  max, scaleLinear
+  // interpolateRgbBasis, quantize
+} from 'd3'
 import franceDepts from '@/assets/data/GeoJSON/FRA.json'
 
 export default {
@@ -29,17 +33,22 @@ export default {
     points: {
       type: Object,
       default () { return {} }
+    },
+    scalePoints: {
+      type: Array,
+      default () { return [] }
     }
   },
   data () {
     const values = Object.values(this.points)
     const maxValue = max(values)
-    const colorInterpolator = interpolateRgbBasis(['rgb(255, 255, 255)', 'rgb(0, 0, 145)'])
+    // const colorInterpolator = interpolateRgbBasis(['rgb(255, 255, 255)', 'rgb(0, 0, 145)'])
 
     // console.log(quantize(t => colorInterpolator(t), maxValue))
 
-    const colorScale = scaleOrdinal().domain(Array.from(Array(maxValue + 1).keys()))
-      .range(quantize(t => colorInterpolator(t), maxValue + 1))
+    const colorScale = scaleLinear().domain([0, maxValue])
+      .range(['rgb(255, 255, 255)', 'rgb(0, 0, 145)'])
+    // .range(quantize(t => colorInterpolator(t), maxValue + 1))
 
     // This code is maybe not optimal but it's here to avoid sharing references on .fill
     const newTopo = Object.assign({}, franceDepts)
@@ -51,14 +60,15 @@ export default {
         newGeometry.properties = Object.assign({}, geometry.properties)
 
         const dept = newGeometry.properties.iso_3166_2.replace('FR-0', '').replace('FR-', '')
-        newGeometry.properties.fill = colorScale(this.points[dept])
+        newGeometry.properties.fill = colorScale(this.points[dept] || 0)
       }
 
       return newGeometry
     })
 
     return {
-      newTopo
+      newTopo,
+      colorScale
     }
   }
 }

@@ -113,8 +113,8 @@ export default {
         `projet-${this.project.id}`,
         `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`,
         `region-${this.project.towns ? this.project.towns[0].code_region : ''}`,
-        'main',
-        this.gitRef
+        this.gitRef,
+        'main'
     ])
 
     this.orderSections(sections, supSections)

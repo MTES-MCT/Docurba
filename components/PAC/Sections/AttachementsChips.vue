@@ -114,13 +114,14 @@ export default {
         attachements.forEach((attachement) => {
           files.push({
             name: attachement.name,
-            path: `${ref}/${this.section.path}/${attachement.id}`
+            path: `${ref}/${attachement.id}`
           })
         })
       })
 
       if (files.length) {
-        const { data: signedUrls } = await this.$supabase.storage.from('project-annexes').createSignedUrls(files.map(a => a.path), 3600)
+        const { data: signedUrls } = await this.$supabase.storage.from('project-annexes')
+          .createSignedUrls(files.map(a => a.path), 3600)
 
         this.files = files.map((attachement, i) => {
           const signedData = signedUrls.find(o => o.path === attachement.path)
@@ -139,7 +140,7 @@ export default {
         ref: this.gitRef
       })
 
-      const attachements = sectionsData[0].attachements.filter(attachement => attachement.path === file.path)
+      const attachements = sectionsData[0].attachements.filter(attachement => !file.path.includes(attachement.id))
 
       await this.$supabase.from('pac_sections').upsert({
         path: this.section.path,

@@ -10,6 +10,7 @@ app.post('/help', (req, res) => {
 
   sendgrid.sendEmail({
     to: ['fabien@quantedsquare.com', 'celia.vermicelli@beta.gouv.fr', 'celia.vermicelli@docurba.beta.gouv.fr', 'hermance.gauthier@docurba.beta.gouv.fr'],
+    cc: [email],
     replyTo: email,
     template_id: 'd-23a3309075ab4710af6028e4639bf6dc',
     dynamic_template_data: {

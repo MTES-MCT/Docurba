@@ -18,13 +18,13 @@ export default {
       }
     },
     xMin: {
-      type: [Number, Date],
+      type: [Number, Date, String],
       default () {
         return this.$parent._xMin
       }
     },
     xMax: {
-      type: [Number, Date],
+      type: [Number, Date, String],
       default () {
         return this.$parent._xMax
       }
@@ -116,7 +116,7 @@ export default {
 
         if (!fixed) {
           let maxVal = max(this.points, point => point[axis])
-          if (this.isTime) { maxVal = new Date(maxVal) }
+          if (this.isTime && axis !== 'y') { maxVal = new Date(maxVal) }
 
           return maxVal
         } else { return this[axis + 'Max'] }

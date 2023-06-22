@@ -4,15 +4,34 @@
       <h2 class="text-h2">
         Utilisation du PAC côté DDT/DEAL
       </h2>
-      <p>
+      <!-- <p>
         Indicateur sur les DDT/DEAL Adoptant progressivement l’outil d’édition du PAC pour transmettre plus rapidement le contenu aux collectivités
-      </p>
+      </p> -->
     </v-col>
     <v-col cols="12" md="4">
-      <StatsBignumberCard title="nb d’agents de DDT/DEAL inscrits sur Docurba" :number="stats.nbAdmins" />
+      <v-row>
+        <v-col cols="12">
+          <StatsBignumberCard title="nb d’agents de DDT/DEAL inscrits sur Docurba" :number="stats.nbAdmins" />
+        </v-col>
+        <v-col cols="12">
+          <StatsTextCard
+            :text="`Indicateur sur les DDT/DEAL Adoptant progressivement l’outil d’édition du PAC pour transmettre plus rapidement le contenu aux collectivités`"
+          />
+        </v-col>
+      </v-row>
     </v-col>
     <v-col cols="12" md="8">
-      <StatsDeptsMapCard v-if="mapPoints" title="Carte des DDT" :points="mapPoints" />
+      <StatsDeptsMapCard
+        v-if="mapPoints"
+        title="Carte des DDT"
+        :points="mapPoints"
+        :scale-points="[
+          {value: 1, label: 'Démonstration de l’outil'},
+          {value: 2, label: 'Création de compte'},
+          {value: 3, label: 'Paramétrage de trame'},
+          {value: 4, label: 'Réalisation de projets'}
+        ]"
+      />
     </v-col>
   </v-row>
 </template>
