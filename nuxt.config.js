@@ -57,9 +57,12 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     // https://go.nuxtjs.dev/content
-    '@nuxt/content'
+    '@nuxt/content',
+    '@nuxtjs/sentry'
   ],
-
+  sentry: {
+    dsn: 'https://f6730834cb3a4f14988bdf86b2e0b8bd@o4505403744649216.ingest.sentry.io/4505403746877440'
+  },
   render: {
     csp: {
       // hashAlgorithm: 'sha256',
