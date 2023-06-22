@@ -186,12 +186,14 @@
 
 <script>
 import { mdiUpload, mdiPencil, mdiCheck, mdiAccountSearchOutline, mdiDelete, mdiInformationOutline } from '@mdi/js'
-import axios from 'axios'
+// import axios from 'axios'
 import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
+import FormInput from '@/mixins/FormInput.js'
 
 export default {
   name: 'PrescriptionsAdd',
+  mixins: [FormInput],
   props: {
     isEpci: {
       type: Boolean,
@@ -209,6 +211,7 @@ export default {
       type: Object,
       required: true
     }
+
   },
   data () {
     return {
@@ -218,7 +221,7 @@ export default {
       acteType: null,
       otherActeType: null,
       date: null,
-      perimetre: [],
+      perimetre: this.isEpci ? [] : [this.$route.collectiviteId],
       isPLUiH: null,
       isPLUiM: null,
       isRequiredPLUiM: null,
@@ -305,7 +308,8 @@ export default {
         this.loadingSave = true
         const prescription = {
           epci: this.isEpci ? this.collectivite : null,
-          towns: Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee],
+          // towns: Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee],
+          towns: this.isEpci ? this.collectivite.towns.map(e => e.code_commune_INSEE) : [this.collectivite.id],
           attachments: null,
           type: this.docType,
           acte_type: this.acteType,
@@ -327,23 +331,23 @@ export default {
         } else if (this.docType === 'attachments') {
           prescription.attachments = await this.uploadFiles()
         }
-
+        console.log('PRESCRIPTION POST: ', prescription)
         await this.$supabase.from('prescriptions').insert([prescription])
         this.loadingSave = false
 
-        await axios({
-          url: '/api/slack/notify/admin/acte',
-          method: 'post',
-          data: {
-            userData: {
-              email: this.$route.query.email,
-              region: this.region,
-              collectivite: this.collectivite,
-              isEpci: this.isEpci
-            }
-          }
-        })
-        this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
+        // await axios({
+        //   url: '/api/slack/notify/admin/acte',
+        //   method: 'post',
+        //   data: {
+        //     userData: {
+        //       email: this.$route.query.email,
+        //       region: this.region,
+        //       collectivite: this.collectivite,
+        //       isEpci: this.isEpci
+        //     }
+        //   }
+        // })
+        // this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
       } catch (error) {
         console.log(error)
       }
