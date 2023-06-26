@@ -1,12 +1,12 @@
 <a class="anchor" name="headTop"></a>
-# Guide d’utilisation
+# Guide d’utilisation.
 
-*Outil pour faciliter l’élaboration et le suivi des documents d’urbanisme.*
+*Docurba, outil pour faciliter l’élaboration et le suivi des documents d’urbanisme.*
  
 
 <div class="my-8 background--text text--lighten-2 font-weight-bold rounded g300 rounded-lg pa-4">
  
- 📖 Bienvenue dans le tutoriel d’utilisation de [Docurba](https://docurba.beta.gouv.fr/) **spécial agents de DDT**. Vous trouverez dans ce guide:
+ 📖 Bienvenue dans le tutoriel d’utilisation de l'outil d'élaboration des PAC de [Docurba](https://docurba.beta.gouv.fr/) **spécial agents de DDT(M)/DEAL**. Vous trouverez dans ce guide:
 </div>
 
 
@@ -26,7 +26,7 @@
 
 [🗃️ Archiver ses projets de PAC](#headArchive) 
 
-[Feuille de route partagée - fonctionnalité en cours de construction](#headFRP) 
+[Feuille de route partagée - fonctionnalité en cours d'expérimentation](#headFRP) 
 
 ---
 
@@ -123,8 +123,9 @@ Cependant, vous pouvez :
 </div>
 
 
-Aussi, vous pouvez **`créer de nouvelles sous-sections`** pour agrémenter le contenu de votre trame départementale. 
-**Astuce** : plus votre trame sera fournie, moins de temps vous passerez à élaborer le PAC pour une collectivité définie. (Voir la partie "créer un nouveau projet de PAC". Vous pouvez créer autant de sous-sections que vous souhaitez. 
+Aussi, vous pouvez **`créer de nouvelles sous-sections`** pour agrémenter le contenu de votre trame départementale. Vous pouvez en créer autant que vous souhaitez. Sachant que plus votre trame sera fournie, moins de temps vous passerez à élaborer le PAC pour une collectivité définie. (Voir la partie "créer un nouveau projet de PAC".  
+
+**Point d'attention pour insérer un lien internet sur du texte** : sélectionnez le texte voulu, cliquez sur l'icône corrspondante à l'insertion de lien, collez le lien à joindre puis confirmer. 
 
 Exemple ici : en cliquant sur `ajouter une sous-section`, je crée une sous-section dans "Les documents locaux" qui apparaitra au même niveau que la sous-section "Le SCoT".
 
@@ -232,14 +233,19 @@ Vous pouvez `partager votre PAC` et choisir qui pourra **collaborer et éditer l
 
 <div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
 
-💡 PARTAGER LE PAC PAR SECTION : **Docurba vous permet de mettre à disposition certaines sections du PAC que vous souhaiteriez déjà proposer à la collectivité**. Pour cela ; depuis le projet de PAC de la collectivité concernée, cocher les sections que vous voulez rendre visibles à la collectivité puis suivez les instructions précédentes pour le partage du PAC via Docurba. Vous pouvez continuer à travailler sur les autres sections décochées du PAC et petit à petit donner de la visbilité aux sections rédigées en les cochant simplement. 
+💡 PARTAGER LE PAC PAR SECTION : **Docurba vous permet de mettre à disposition certaines sections du PAC que vous souhaiteriez déjà proposer à la collectivité**. Pour cela ; depuis le projet de PAC de la collectivité concernée, cochez les sections que vous voulez rendre visibles à la collectivité puis suivez les instructions précédentes pour le partage du PAC à la collectivité via Docurba. Vous pouvez continuer à travailler sur les autres sections décochées du PAC, et au fur et à mesure de leur rédaction et dès que vous souhaitez en partager une nouvelle à la collectivité, cochez cette section simplement et elle y aura accès.
 </div>
 
 <a class="anchor" name="headPrint"></a>
 # 🖨 Imprimer  **le PAC**
 
-Fonctionnalité en cours de construction. Disponible courant mai 2023.
+Vous pouvez **exporter votre PAC en format PDF** depuis le `mode consultation` de votre PAC à l’aide de l’`icône de téléchargement` en bas à droite.
+Le document PDF sera automatiquement téléchargé sur votre ordinateur, cela peut prendre quelques minutes suivant la taille du document, merci de votre patience. (Ce temps de téléchargement est en cours d'amélioration)
+Aujourd'hui l'outil ne permet pas l'édition de la page de garde du pdf du PAC, nous recommandons alors de créer la page de garde à part puis d'unir les deux PDF ; celui de votre page de garde personnalisée et celui du PAC extrait de Docurba. 
 
+<div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
+
+☝ ***Remarque**: Docurba n’a pas pour objectif la création de PAC en version papier et nous vous encourageons à partager votre PAC directement via Docurba et son option de partage via email. (Voir comment [Partager son PAC](Guide%20d%E2%80%99utilisation%20de%20Docurba%20db7d56e906f94223a6bf52e3d8063e5d.md))*
 
 
 </div>
@@ -261,12 +267,16 @@ Fonctionnalité en cours de construction. Disponible courant mai 2023.
 <a class="anchor" name="headFRP"></a>
 # Feuille de route partagée entre services de l'État et collectivités
 
-Nous travaillons avec un groupe de DDT à la construction de cette nouvelle fonctionnalité qui a la volonté de **servir de guide pour la collectivité** dans sa procédure d'élaboration de DU. 
-Via les évènements proposés dans l'outil, les collectivités auront notamment à disposition des informations sur les étapes de la procédure, les articles du code de l'urbanisme (s'il y a lieu), les échéances à respecter, etc. 
-Cette feuille de route est partagée entre les services de l'État, la collectivité et son bureau d'études, dans l'optique de **fluidifier les échanges et vous permettre d'avoir plus de visibilité sur le calendrier des collectivités que vous accompagnez.** 
+Nous travaillons avec un groupe de DDT à la construction de cette nouvelle fonctionnalité qui a la volonté de **servir de guide pour la collectivité** dans sa procédure d'élaboration de DU. Via les évènements proposés dans l'outil, les collectivités auront notamment à disposition des informations sur les étapes de la procédure, les articles du code de l'urbanisme (s'il y a lieu), les échéances à respecter, etc. 
 
-Nous collaborons également avec différents outils (le GPU et Sudocuh notamment) pour intégrer Docurba dans les pratiques. 
-La fonctionnalité est en cours d'expérimentation et sera disponible prochainement. 
+Cette feuille de route est partagée entre les services de l'État, la collectivité et son bureau d'études, dans l'optique de **fluidifier les échanges et vous permettre d'avoir plus de visibilité sur le calendrier des collectivités que vous accompagnez.** Nous collaborons également avec le GPU et Sudocuh pour veiller à la cohérence des différents outils.
+
+Aujourd'hui, une collectivité peut *`déposer sa délibération de prescription`* sur Docurba, et consulter son socle de PAC et des données territorialisées. 
+Prochainement, la collectivité et son bureau d'études pourront accéder à l'**outil dynamique de la Feuille de Route Partagée**.
+
+_Extrait du formulaire de dépôt d'acte de Docurba :_
+
+<img class="elevation-3  my-8" style="max-width:50%" src="/images/guide/31.png">
 
 
 <div class="text-center my-16">
