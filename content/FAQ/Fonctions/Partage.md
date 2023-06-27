@@ -1,6 +1,12 @@
 ---
-question: "Je souhaite partager mon PAC/projet en cours pour le travailler avec mes collègues, comment faire? Et comment partager le PAC complet à la collectivité et/ou son bureau d'études concerné?"
+question: "Comment partager le PAC à la collectivité ? "
 visible: true
 ---
-La personne qui a créé le projet a la possibilité de le partager en allant sur "Mes documents", "Partage" et en ajoutant l'email de vos collègues dans la liste des emails autorisés à voir votre projet. Vous pouvez décider de leur accorder la lecture seule ou l'édition du projet. 
-Pour partager votre PAC avec une collectivité ou un bureau d'études, vous pouvez procéder de la même manière. 
+Rendez-vous dans “mes documents” et retrouvez le PAC que vous souhaitez partager à la collectivité : 
+Cliquez sur “partager”, renseignez l’adresse email concernée et confirmez. Le partage en mode lecture est configuré par défaut. 
+Note : Autorisez le partage en mode édition dans le cas du partage du PAC à un(e) collègue.
+
+Export PDF : téléchargez le PDF du PAC depuis “consulter”, en cliquant sur la flèche de téléchargement en bas à droite. 
+
+
+Voir aussi _comment partager le PAC par section_.
