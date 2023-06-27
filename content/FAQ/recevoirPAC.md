@@ -1,6 +1,6 @@
 ---
 question: "Je souhaite recevoir mon PAC via Docurba, comment faire ?"
-tags: ['PAC : outil d'élaboration et partage du PAC']
+tags: ["PAC : outil d'élaboration et partage du PAC"]
 visible: true
 ---
 Vous êtes dans l’attente de votre PAC et vous souhaitez le recevoir sur Docurba ; contactez-nous en précisant votre collectivité et département à : equipe@docurba.beta.gouv.fr 

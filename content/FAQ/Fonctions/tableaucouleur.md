@@ -1,6 +1,6 @@
 ---
 question: "Traitement de texte : comment insérer un tableau et surligner en couleur ?"
-tags: ['PAC : outil d'élaboration et partage des PAC']
+tags: ["PAC : outil d'élaboration et partage des PAC"]
 visible: true
 ---
 * Fonctionnalités prochainement disponibles *

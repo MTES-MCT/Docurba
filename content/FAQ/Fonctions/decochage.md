@@ -1,6 +1,6 @@
 ---
 question: "Fonctionnalité de cocher/décocher les sections du PAC communal/intercommunal : comment procéder ?"
-tags: ['PAC : outil d'élaboration et partage du PAC']
+tags: ["PAC : outil d'élaboration et partage du PAC"]
 visible: true
 ---
 Nous préconisons trois niveaux d’utilisation : 

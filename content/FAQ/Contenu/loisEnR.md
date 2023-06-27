@@ -1,6 +1,6 @@
 ---
 question: "Pourquoi la loi EnR n’apparait pas dans le cadre juridique ?"
-tags: ['PAC : outil d'élaboration et partage du PAC']
+tags: ["PAC : outil d'élaboration et partage du PAC"]
 visible: true
 ---
 Les implications de la loi ENR ont été intégrées directement dans les différentes sections concernées du socle de PAC.

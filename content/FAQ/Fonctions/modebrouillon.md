@@ -1,6 +1,6 @@
 ---
 question: "Existe-t-il un “mode brouillon” pour élaborer mon PAC communal/intercommunal avant de le partager à la collectivité ? "
-tags: ['PAC : outil d'élaboration et de partage des PAC']
+tags: ["PAC : outil d'élaboration et de partage des PAC"]
 visible: true
 ---
 Le mode brouillon est possible via le cochage et décochage des sections du PAC en cours : 

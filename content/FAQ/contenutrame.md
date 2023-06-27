@@ -1,6 +1,6 @@
 ---
 question: "Qui est à l’origine des éléments déjà présents dans ma trame départementale ? Ce contenu est-il à jour ?"
-tags: ['PAC : outil d'élaboration et partage des PAC']
+tags: ["PAC : outil d'élaboration et partage des PAC"]
 visible: true
 ---
 **Le cadre juridique** : rédigé et validé en collaboration avec le national (DHUP/QV4). Des points mensuels sont organisés avec la centrale afin de le maintenir à jour, les pastilles bleues en face des sections vous notifient des mises à jour du contenu. 
