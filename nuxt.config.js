@@ -25,12 +25,13 @@ export default {
     { src: '~/plugins/isDev.js' },
     { src: '~/plugins/composition.js' },
     { src: '~/plugins/supabase.js' },
+    { src: '~/plugins/supabaseAdmin.js', mode: 'server' },
     { src: '~/plugins/user.js' }, // Need to be after supabase plugin
     { src: '~/plugins/auth.js' }, // Need to be after user plugin
     { src: '~/plugins/pac.js' },
     { src: '~/plugins/daturba.js' },
     { src: '~/plugins/matomo.js', mode: 'client' },
-    { src: '~/plugins/mdParser.js', mode: 'client' },
+    { src: '~/plugins/mdParser.js' },
     { src: '~/plugins/print.js', mode: 'client' },
     { src: '~/plugins/rules.js' },
     { src: '~/plugins/notifications.js', mode: 'client' },
@@ -56,9 +57,12 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     // https://go.nuxtjs.dev/content
-    '@nuxt/content'
+    '@nuxt/content',
+    '@nuxtjs/sentry'
   ],
-
+  sentry: {
+    dsn: 'https://f6730834cb3a4f14988bdf86b2e0b8bd@o4505403744649216.ingest.sentry.io/4505403746877440'
+  },
   render: {
     csp: {
       // hashAlgorithm: 'sha256',
@@ -66,7 +70,8 @@ export default {
         // 'default-src': ["'self'"],
         'script-src': [
           // "'self'",
-          'https://stats.data.gouv.fr/piwik.js'
+          'https://stats.data.gouv.fr/piwik.js',
+          'https://tally.so/widgets/embed.js'
         ]
       }
       // addMeta: true
@@ -81,6 +86,7 @@ export default {
     { path: '/api/epci', handler: '~/server-middleware/EPCI.js' },
     { path: '/api/geoide', handler: '~/server-middleware/geoide.js' },
     { path: '/api/georisques', handler: '~/server-middleware/georisques.js' },
+    { path: '/api/pdf', handler: '~/server-middleware/pdf.js' },
     { path: '/api/pipedrive', handler: '~/server-middleware/pipedrive.js' },
     { path: '/api/projects', handler: '~/server-middleware/projects.js' },
     { path: '/api/slack', handler: '~/server-middleware/slack.js' },
@@ -165,6 +171,7 @@ export default {
       }
     },
     defaultAssets: {
+      font: false,
       icons: false
     }
   },
@@ -172,6 +179,22 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     standalone: true
+    // filenames: {
+    //   app: ({ isDev }) => '[name].js',
+    //   chunk: ({ isDev }) => '[name].js',
+    //   css: ({ isDev }) => '[name].css',
+    //   img: ({ isDev }) => 'img/[name].[ext]',
+    //   font: ({ isDev }) => 'fonts/[name].[ext]',
+    //   video: ({ isDev }) => 'videos/[name].[ext]'
+    // }
+    // filenames: {
+    //   app: ({ isDev }) => isDev ? '[name].js' : '[contenthash].js',
+    //   chunk: ({ isDev }) => isDev ? '[name].js' : '[contenthash].js',
+    //   css: ({ isDev }) => isDev ? '[name].css' : '[contenthash].css',
+    //   img: ({ isDev }) => isDev ? '[path][name].[ext]' : 'img/[contenthash:7].[ext]',
+    //   font: ({ isDev }) => isDev ? '[path][name].[ext]' : 'fonts/[contenthash:7].[ext]',
+    //   video: ({ isDev }) => isDev ? '[path][name].[ext]' : 'videos/[contenthash:7].[ext]'
+    // }
     // transpile: ['d3', 'd3-geo', 'internmap']
   }
 }

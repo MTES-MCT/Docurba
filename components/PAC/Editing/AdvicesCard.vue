@@ -31,7 +31,7 @@ export default {
   computed: {
     currentAdvice () {
       return this.advices.find((advice) => {
-        return !this.displayedAdvices.includes(advice.name)
+        return !this.displayedAdvices.includes(`${this.$route.path} - ${advice.name}`)
       })
     }
   },
@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     markAsRed (advice) {
-      this.displayedAdvices.push(advice.name)
+      this.displayedAdvices.push(`${this.$route.path} - ${advice.name}`)
       localStorage.setItem(storageKey, JSON.stringify(this.displayedAdvices))
     }
   }

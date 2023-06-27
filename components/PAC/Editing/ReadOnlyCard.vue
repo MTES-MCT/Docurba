@@ -1,7 +1,7 @@
 <template>
   <v-card color="info" flat dark>
     <v-card-title>
-      <span>Cette section n'est pas modifiable.</span>
+      <span>Vous souhaitez modifier cette section ?</span>
       <v-spacer />
       <v-btn icon @click="expended = !expended">
         <v-icon>{{ expended ? icons.mdiChevronUp : icons.mdiChevronDown }}</v-icon>

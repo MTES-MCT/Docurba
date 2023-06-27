@@ -18,7 +18,7 @@
         right
         :loading="printing"
         color="primary"
-        @click="print"
+        :href="`/api/pdf/${project.id}`"
       >
         <v-icon>{{ icons.mdiDownload }}</v-icon>
       </v-btn>
@@ -109,13 +109,21 @@ export default {
       // console.log(pacItem, projectPacItem)
 
       // await this.$supabase.from('projects').update({ PAC }).eq('id', this.project.id)
-    },
-    print () {
-      this.$print(`/print/${this.project.id}`).then(() => {
-        this.printing = false
-      })
-      this.printing = true
     }
+    // async print () {
+    //   this.printing = true
+    //   // this.$print(`/print/${this.project.id}`).then(() => {
+    //   //   this.printing = false
+    //   // })
+    //   const pdf = await axios({
+    //     url: `/api/pdf/${this.project.id}`,
+    //     method: 'get'
+    //   })
+
+    //   console.log(pdf)
+
+    //   this.printing = false
+    // }
   }
 }
 </script>

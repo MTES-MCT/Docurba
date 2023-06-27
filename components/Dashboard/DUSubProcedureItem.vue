@@ -2,7 +2,8 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        {{ firstEvent.typeProcedure }} - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
+        {{ firstEvent.typeProcedure }}
+        - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
       </v-col>
     </v-row>
     <v-row class="mt-0">
@@ -11,7 +12,9 @@
           Statut
         </div>
         <div>
-          <v-chip>{{ status }}</v-chip>
+          <v-chip :color="status.color">
+            {{ status.text }}
+          </v-chip>
         </div>
       </v-col>
       <v-col>
@@ -46,16 +49,18 @@
         <v-divider />
       </v-col>
       <v-col cols="12">
-        <span class="primary--text text-decoration-underline mr-4">
+        <span class="primary--text text-decoration-underline mr-4 text--disabled">
           Liste des communes concernées
         </span>
-        <span class="primary--text text-decoration-underline mr-4">
-          Feuille de route partagée
-        </span>
-        <span class="primary--text text-decoration-underline mr-4">
+        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement, collectiviteId: $route.params.collectiviteId, procedureId: firstEvent.idProcedure}}">
+          <span class="primary--text text-decoration-underline mr-4 text--disabled">
+            Feuille de route partagée
+          </span>
+        </nuxt-link>
+        <span class="primary--text text-decoration-underline mr-4 text--disabled">
           PAC
         </span>
-        <span class="primary--text text-decoration-underline">
+        <span class="primary--text text-decoration-underline text--disabled">
           Note d'enjeux
         </span>
       </v-col>
@@ -63,42 +68,23 @@
   </v-container>
 </template>
 <script>
+import BaseDUProcedureItem from '@/mixins/BaseDUProcedureItem.js'
+
 export default {
+  mixins: [BaseDUProcedureItem],
   props: {
     procedure: {
       type: Object,
       required: true
+    },
+    censored: {
+      type: Boolean,
+      default: () => false
     }
   },
   data () {
     return {
 
-    }
-  },
-  computed: {
-    firstEvent () {
-      return this.procedure.events[0]
-    },
-    status () {
-      if (this.firstEvent.dateExecutoire) {
-        return 'opposable'
-      } else if (this.firstEvent.dateLancement || this.firstEvent.dateApprobation) {
-        return 'en cours'
-      } else {
-        return 'abandonné'
-      }
-    },
-    step () {
-      if (this.firstEvent.dateAbandon) {
-        return `Abandon (${this.firstEvent.dateAbandon})`
-      } else if (this.firstEvent.dateExecutoire) {
-        return `Executoire (${this.firstEvent.dateExecutoire})`
-      } else if (this.firstEvent.dateApprobation) {
-        return `Approbation (${this.firstEvent.dateApprobation})`
-      } else if (this.firstEvent.dateLancement) {
-        return `Lancement (${this.firstEvent.dateLancement})`
-      }
-      return '-'
     }
   }
 }

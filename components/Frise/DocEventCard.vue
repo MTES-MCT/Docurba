@@ -1,13 +1,13 @@
 <template>
   <v-card flat class="event-card">
-    <v-menu>
+    <v-menu v-if="!event.from_sudocuh">
       <template #activator="{on}">
         <v-btn absolute top right icon v-on="on">
           <v-icon>{{ icons.mdiDotsHorizontal }}</v-icon>
         </v-btn>
       </template>
       <v-list>
-        <v-list-item nuxt :to="`/projets/${event.project_id}/frise/${event.id}`">
+        <v-list-item nuxt :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId-eventId', params: {departement: $route.params.departement, collectiviteId: $route.params.collectiviteId, procedureId: $route.params.procedureId, eventId: event.id}}">
           <v-list-item-action>
             <v-icon color="primary">
               {{ icons.mdiPencil }}
@@ -30,6 +30,9 @@
       </v-list>
     </v-menu>
     <v-card-subtitle class="pb-0">
+      <v-chip v-if="event.from_sudocuh" small color="success lighten-3">
+        Sudocuh
+      </v-chip>
       <v-chip
         v-for="actor in event.actors"
         :key="actor"
@@ -43,8 +46,12 @@
         {{ actor }}
       </v-chip>
     </v-card-subtitle>
-    <v-card-title>{{ event.type }}</v-card-title>
-    <v-card-text>{{ event.description }}</v-card-text>
+    <v-card-title>
+      {{ event.type }}
+    </v-card-title>
+    <v-card-text v-if="event.description">
+      {{ event.description }}
+    </v-card-text>
     <v-card-actions>
       <v-chip
         v-for="attachement in event.attachements"

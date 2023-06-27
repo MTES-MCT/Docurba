@@ -1,5 +1,7 @@
 <template>
-  <div class="print-section">
+  <div
+    class="print-section"
+  >
     <nuxt-content :document="enrichedSection" />
     <PACPDFSectionTemplate v-for="s in section.children" :key="s.path" :section="s" />
   </div>

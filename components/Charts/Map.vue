@@ -1,6 +1,6 @@
 <template>
   <g>
-    <path :d="geoDrawer(getFeatures())" :style="mapStyle" />
+    <path v-for="(feature, i) in features" :key="i" :d="geoDrawer(feature)" :style="pathStyle(feature)" :fill="feature.properties.fill" />
     <slot v-bind="{geoProjection}" />
   </g>
 </template>
@@ -21,11 +21,11 @@ export default {
     },
     projection: {
       type: String,
-      default: 'geoOrthographic'
+      default: 'geoMercator'
     },
     featuresKey: {
-      required: true,
-      type: String
+      type: String,
+      required: true
     }
   },
   data () {
@@ -42,6 +42,7 @@ export default {
     return {
       geoDrawer,
       geoProjection,
+      features: this.getFeatures().features,
       isMap: true
     }
   },
@@ -70,8 +71,14 @@ export default {
   },
   methods: {
     getFeatures () {
-      // console.log(this.topology, this.featuresKey)
       return topojson.feature(this.topology, this.featuresKey)
+    },
+    pathStyle (feature) {
+      return {
+        stroke: this.color,
+        fill: feature.properties ? feature.properties.fill : '',
+        'stroke-width': '1px'
+      }
     }
   }
 }

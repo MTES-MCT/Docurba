@@ -9,7 +9,7 @@
                 <v-col v-if="project.id && editable" cols="auto">
                   <v-checkbox
                     v-model="isSelected"
-                    color="primary"
+                    :color="isVisible ? 'primary' : 'g600'"
                     hide-details
                     class="mt-0"
                     @click.prevent.stop
@@ -38,6 +38,7 @@
                     </v-chip>
                     <v-badge v-if="section.diffCount" color="primary" inline :content="section.diffCount" />
                   </h2>
+                  <!-- <span v-show="lastEditDate" class="text-caption">Modifié le: {{ lastEditDate }}</span> -->
                 </v-col>
                 <v-col v-if="(isOpen || hover) && editable" cols="auto">
                   <v-tooltip bottom>
@@ -61,16 +62,25 @@
                   <v-tooltip v-if="!editEnabled" bottom>
                     <template #activator="{on}">
                       <v-btn icon small v-on="on" @click.stop="editEnabled = true; openedSections = [0]">
-                        <v-icon>{{ icons.mdiPencil }}</v-icon>
+                        <v-icon color="primary lighten-2">
+                          {{ icons.mdiPencil }}
+                        </v-icon>
                       </v-btn>
                     </template>
                     Editer la section
                   </v-tooltip>
                   <template v-else>
                     <PACEditingCancelDialog :section="section" @cancel="cancelEditing" />
-                    <v-btn icon small :loading="saving" @click.stop="saveSection">
-                      <v-icon>{{ icons.mdiContentSave }}</v-icon>
-                    </v-btn>
+                    <v-tooltip bottom>
+                      <template #activator="{on}">
+                        <v-btn icon small :loading="saving" v-on="on" @click.stop="saveSection">
+                          <v-icon color="primary lighten-2">
+                            {{ icons.mdiContentSave }}
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      Enregistrer
+                    </v-tooltip>
                   </template>
                 </v-col>
                 <v-col v-if="(isOpen || hover || editEnabled || deleteDialog) && isEditable && deletable" cols="auto">
@@ -88,9 +98,10 @@
               <v-row v-if="editEnabled">
                 <v-col :cols="(diff.visible && diff.body) ? 6 : 12">
                   <VTiptap v-if="editEnabled" v-model="sectionMarkdown" class="mt-6">
-                    <!-- <PACSectionsAttachementsDialog
-                    :section="section"
-                  /> -->
+                    <PACSectionsAttachementsDialog
+                      :section="section"
+                      :git-ref="gitRef"
+                    />
                     <v-tooltip bottom>
                       <template #activator="{on}">
                         <v-btn icon tile v-on="on" @click="toggleDiff">
@@ -111,6 +122,12 @@
                   <nuxt-content class="pac-section-content mt-4" :document="sectionContent" />
                 </v-col>
               </v-row>
+              <PACSectionsAttachementsChips
+                :section="section"
+                :git-ref="gitRef"
+                :project="project"
+                :editable="editable"
+              />
               <v-row v-if="section.children && section.children.length">
                 <v-col
                   v-for="child in section.children"
@@ -123,6 +140,7 @@
                     :project="project"
                     :editable="editable"
                     :deletable="editable"
+                    :parent-selected="isVisible"
                     v-on="$listeners"
                     @removed="sectionRemoved"
                   />
@@ -143,8 +161,8 @@
             <v-col cols="">
               <v-divider />
             </v-col>
-            <v-col cols="auto">
-              <span><v-icon>{{ icons.mdiPlus }}</v-icon> Ajouter une sous-section </span>
+            <v-col cols="auto" class="text-center">
+              <span><v-icon>{{ icons.mdiPlus }}</v-icon> Ajouter une sous-section dans <br> <b>{{ section.name }}</b> </span>
             </v-col>
             <v-col cols="">
               <v-divider />
@@ -206,6 +224,10 @@ export default {
     project: {
       type: Object,
       default () { return {} }
+    },
+    parentSelected: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
@@ -241,6 +263,7 @@ export default {
       sectionText: '',
       // sectionContent: { body: null },
       sectionMarkdown: '',
+      sectionHistory: null,
       editEnabled: false,
       openedSections: [],
       saving: false,
@@ -254,8 +277,11 @@ export default {
     isOpen () {
       return this.openedSections.length
     },
+    isVisible () {
+      return this.isSelected && this.parentSelected
+    },
     backgroundColor () {
-      if (this.project.id && !this.isSelected) {
+      if (this.project.id && (!this.isSelected || !this.parentSelected)) {
         return 'g300'
       }
 
@@ -271,6 +297,13 @@ export default {
         return this.editable
       } else {
         return this.editable && !cadreJuridique.includes(this.section.path)
+      }
+    },
+    lastEditDate () {
+      if (this.sectionHistory) {
+        return this.$dayjs(this.sectionHistory.commit.author.date).format('DD MMM YYYY')
+      } else {
+        return ''
       }
     }
   },
@@ -303,6 +336,19 @@ export default {
       } catch (err) {
         // eslint-disable-next-line no-console
         console.log(err, sectionContent)
+      }
+
+      if (this.editable) {
+        const { data: sectionHistory } = await axios({
+          method: 'get',
+          url: '/api/trames/history',
+          params: {
+            path,
+            ref: this.gitRef
+          }
+        })
+
+        this.sectionHistory = sectionHistory
       }
     },
     async updateName () {
@@ -398,6 +444,8 @@ export default {
             ref: this.headRef
           }
         })
+
+        console.log('diffSectionContent', diffSectionContent)
 
         this.diff.body = this.$md.compile(diffSectionContent.replace(/---([\s\S]*)---/, ''))
       } catch (err) {

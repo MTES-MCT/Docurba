@@ -26,12 +26,12 @@
         </div>
       </div>
       <v-spacer />
-      <div v-if="project && loaded" class="ddt-text text-right">
+      <div class="ddt-text text-right">
         Direction départementale des territoires <br>
         {{ project.towns[0].nom_departement }}
       </div>
     </v-app-bar>
-    <PACPDFPagesCounters v-if="project && loaded" :pac-data="project.PAC" content-id="pac-content-pdf" />
+    <PACPDFPagesCounters :pac-data="project.PAC" content-id="pac-content-pdf" />
     <table>
       <thead>
         <tr>
@@ -43,7 +43,7 @@
       <tbody>
         <tr>
           <td>
-            <PACPDFGardeTemplate v-if="project && loaded" :project="project" />
+            <PACPDFGardeTemplate :project="project" />
           </td>
         </tr>
       </tbody>
@@ -52,7 +52,7 @@
       <tbody>
         <tr>
           <td>
-            <PACPDFTableOfContent v-if="project && loaded" :pac-data="project.PAC" />
+            <PACPDFTableOfContent :pac-data="project.PAC" />
           </td>
         </tr>
       </tbody>
@@ -61,7 +61,7 @@
       <tbody>
         <tr>
           <td>
-            <PACPDFPagesTemplate v-if="project && loaded" :pac-data="project.PAC" />
+            <PACPDFPagesTemplate :pac-data="project.PAC" />
           </td>
         </tr>
       </tbody>
@@ -78,56 +78,55 @@
 
 <script>
 import axios from 'axios'
+import orderSections from '@/mixins/orderSections.js'
 
 export default {
   layout: 'print',
-  data () {
-    return {
-      project: null,
-      loaded: false,
-      PACroots: []
-    }
-  },
-  head () {
-    return {
-      title: this.project ? this.project.name : 'PAC',
-      titleTemplate: ''
-    }
-  },
-  async mounted () {
-    const projectId = this.$route.params.projectId
+  async asyncData ({ $supAdmin, $md, route, $isDev }) {
+    const projectId = route.params.projectId
 
-    const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-    this.project = projects[0]
+    if (process.server) {
+      try {
+        const { data: projects } = await $supAdmin.from('projects').select('*').eq('id', projectId)
+        const project = projects[0]
 
-    await this.setPACFromTrame()
+        const baseUrl = $isDev ? 'http://localhost:3000' : 'https://docurba.beta.gouv.fr'
 
-    this.loaded = true
-  },
-  methods: {
-    parseSection (section, paths) {
-      if (section.content) { section.body = this.$md.compile(section.content) }
+        const { data: sections } = await axios({
+          method: 'get',
+          url: `${baseUrl}/api/trames/tree/projet-${projectId}?content=all`
+        })
 
-      if (section.children) {
-        section.children = section.children.filter(c => paths.includes(c.path))
-        section.children.forEach(c => this.parseSection(c, paths))
+        const { data: supSections } = await $supAdmin.from('pac_sections').select('*').in('ref', [
+          `projet-${project.id}`,
+          `dept-${project.towns ? project.towns[0].code_departement : ''}`,
+          `region-${project.towns ? project.towns[0].code_region : ''}`,
+          'main'
+        ])
+
+        orderSections.methods.orderSections(sections, supSections)
+
+        function parseSection (section, paths) {
+          if (section.content) { section.body = $md.compile(section.content) }
+
+          if (section.children) {
+            section.children = section.children.filter(c => paths.includes(c.path))
+            section.children.forEach(c => parseSection(c, paths))
+          }
+        }
+
+        const sectionsPaths = project.PAC.map(p => p)
+        project.PAC = sections.filter(s => sectionsPaths.includes(s.path))
+        project.PAC.forEach(s => parseSection(s, sectionsPaths))
+
+        return {
+          project,
+          loaded: true
+        }
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.log('error printing', err)
       }
-    },
-    async setPACFromTrame () {
-      const { data: sections } = await axios({
-        method: 'get',
-        url: `/api/trames/tree/projet-${this.project.id}?content=true`
-      })
-
-      // console.log(sections)
-
-      const sectionsPaths = this.project.PAC.map(p => p)
-      this.project.PAC = sections.filter(s => sectionsPaths.includes(s.path))
-      this.project.PAC.forEach(s => this.parseSection(s, sectionsPaths))
-
-      this.$nextTick(() => {
-        window.parent.postMessage('print', '*')
-      })
     }
   }
 }
@@ -156,7 +155,8 @@ export default {
 
  .footer-space {
    /* height: calc(68px + 8.5mm); */
-   height: calc(10mm);
+   /* height: calc(10mm); */
+   height: 17mm;
  }
 
 .fr-header .fr-header__body-row, .fr-header .fr-header__logo, .fr-header .fr-logo {

@@ -18,7 +18,7 @@
       <p class="font-weight-bold">
         Consultez un exemple de socle de PAC déjà disponible
       </p>
-      <nuxt-link :to="{path:'/pacsec/content', query:{region:'FR-ARA',document:'PLU'}}" class="primary--text text-decoration-underline">
+      <nuxt-link :to="{path:'/documents/region-84/pac'}" class="primary--text text-decoration-underline">
         <v-icon small color="primary">
           {{ icons.mdiArrowRight }}
         </v-icon>

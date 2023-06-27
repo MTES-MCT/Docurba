@@ -19,15 +19,6 @@ export default {
   components: {
     RessourcesList
   },
-  async asyncData ({ $content }) {
-    const ressources = await $content('Ressources', {
-      deep: true
-    }).fetch()
-
-    return {
-      ressources
-    }
-  },
   props: {
     isEpci: {
       type: Boolean,
@@ -44,6 +35,15 @@ export default {
     region: {
       type: Object,
       required: true
+    }
+  },
+  async asyncData ({ $content }) {
+    const ressources = await $content('Ressources', {
+      deep: true
+    }).fetch()
+
+    return {
+      ressources
     }
   },
   mounted () {

@@ -3,13 +3,13 @@
     <v-col cols="12">
       <v-chip
         v-for="file in files"
-        :key="file.name"
+        :key="file.id"
         class="mr-1 mb-1"
         color="primary"
-        :href="file.url"
+        :href="file.link"
         target="_blank"
         :small="small"
-        :close="editable && file.editable"
+        :close="editable && file.path.includes(gitRef)"
         @click:close="openDialog(file)"
       >
         {{ file.name }}
@@ -23,11 +23,11 @@
 
         <v-card-actions>
           <v-spacer />
-          <v-btn depressed tile color="primary" @click="removeFile(selectedFile)">
-            Supprimer
-          </v-btn>
           <v-btn depressed tile text color="primary" @click="dialog = false">
             Annuler
+          </v-btn>
+          <v-btn depressed tile color="primary" @click="removeFile(selectedFile)">
+            Supprimer
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -51,79 +51,102 @@ export default {
       type: Boolean,
       default: false
     },
-    attachementsFolders: {
-      type: Array,
-      default () { return [] }
+    gitRef: {
+      type: String,
+      required: true
+    },
+    project: {
+      type: Object,
+      default () { return {} }
     }
   },
   data () {
     return {
       files: [],
       dialog: false,
-      selectedFile: {}
+      selectedFile: {},
+      subscription: null
     }
   },
-  watch: {
-    'section.path' () {
-      this.fetchAttachements()
-    }
-  },
+  // watch: {
+  //   'section.path' () {
+  //     this.fetchAttachements()
+  //   }
+  // },
   mounted () {
     this.fetchAttachements()
+
+    if (this.editable) {
+      this.subscription = this.$supabase
+        .channel(`public:pac_sections:ref=eq.${this.gitRef}`)
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'pac_sections',
+          filter: `ref=eq.${this.gitRef}`
+        }, (payload) => {
+          if (payload.new.path === this.section.path) {
+            this.fetchAttachements()
+          }
+        }).subscribe()
+    }
+  },
+  beforeDestroy () {
+    this.$supabase.removeChannel(this.subscription)
   },
   methods: {
     openDialog (file) {
       this.dialog = true
       this.selectedFile = file
     },
-    fetchAttachements () {
-      this.attachements = []
+    async fetchAttachements () {
+      const { data: sectionsData } = await this.$supabase.from('pac_sections').select('attachements, ref').match({
+        path: this.section.path
+      }).in('ref', [
+        `projet-${this.project.id}`,
+        `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`,
+        this.gitRef
+      ])
 
-      this.attachementsFolders.forEach((folder) => {
-        this.fetchFolderFiles(folder)
-      })
-    },
-    async fetchFolderFiles (folder) {
-      // const folder = this.section.project_id || this.section.dept
+      const files = []
 
-      const { data: attachements, err } = await this.$supabase
-        .storage
-        .from('project-annexes')
-        .list(`${folder}${this.section.path}`, {
-          limit: 100,
-          offset: 0,
-          sortBy: { column: 'name', order: 'asc' }
+      sectionsData.forEach(({ ref, attachements }) => {
+        attachements.forEach((attachement) => {
+          files.push({
+            name: attachement.name,
+            path: `${ref}/${attachement.id}`
+          })
         })
+      })
 
-      if (!err) {
-        for (let i = 0; i < attachements.length; i++) {
-          const file = attachements[i]
-          const filePath = `${folder}${this.section.path}/${file.name}`
+      if (files.length) {
+        const { data: signedUrls } = await this.$supabase.storage.from('project-annexes')
+          .createSignedUrls(files.map(a => a.path), 3600)
 
-          const { data, fileError } = await this.$supabase
-            .storage
-            .from('project-annexes')
-            .createSignedUrl(filePath, 60 * 60)
+        this.files = files.map((attachement, i) => {
+          const signedData = signedUrls.find(o => o.path === attachement.path)
 
-          if (data && !fileError) {
-            // console.log(data)
-
-            file.url = data.signedURL
-            file.path = filePath
-            // File is not editable if user is working on project and file was uploaded for the departmenet.
-            file.editable = this.editable ? (folder === this.section.project_id) : true
-
-            this.files.push(file)
-          } else {
-            // console.log('fileError', filePath)
-            // console.log(data, fileError)
+          return {
+            name: attachement.name,
+            link: signedData.signedUrl,
+            path: attachement.path
           }
-        }
-      }
+        })
+      } else { this.files = [] }
     },
-    removeFile (file) {
-      this.$supabase.storage.from('project-annexes')
-        .remove([file.path])
+    async removeFile (file) {
+      const { data: sectionsData } = await this.$supabase.from('pac_sections').select('attachements, ref').match({
+        path: this.section.path,
+        ref: this.gitRef
+      })
+
+      const attachements = sectionsData[0].attachements.filter(attachement => !file.path.includes(attachement.id))
+
+      await this.$supabase.from('pac_sections').upsert({
+        path: this.section.path,
+        ref: this.gitRef,
+        attachements
+      })
 
       this.$emit('removed', file)
       this.dialog = false

@@ -2,7 +2,11 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        {{ firstEvent.docType }} - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
+        <span v-if="firstEvent.docType === 'PLU'">{{ isPlui ? 'PLUi' : 'PLU' }}</span>
+        <span v-else>{{ firstEvent.docType }}</span>
+        <span> {{ procedure.perimetre.length === 1 ? procedure.perimetre[0].name + ' (' + procedure.perimetre[0].inseeCode + ')' : '' }}</span>
+        <br>
+        id - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
       </v-col>
     </v-row>
     <v-row class="mt-0">
@@ -11,7 +15,9 @@
           Statut
         </div>
         <div>
-          <v-chip>{{ status }}</v-chip>
+          <v-chip :color="status.color">
+            {{ status.text }}
+          </v-chip>
         </div>
       </v-col>
       <v-col>
@@ -31,7 +37,7 @@
         </div>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-if="!censored">
       <v-col cols="12" class="pb-0">
         <v-divider />
       </v-col>
@@ -45,63 +51,86 @@
       <v-col cols="12" class="pb-0">
         <v-divider />
       </v-col>
-      <v-col cols="12">
-        <span class="primary--text text-decoration-underline mr-4">
-          Liste des communes concernées
-        </span>
-        <span class="primary--text text-decoration-underline mr-4">
-          Feuille de route partagée
-        </span>
-        <span class="primary--text text-decoration-underline mr-4">
+      <v-col cols="12" class="pb-0">
+        <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
+        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: firstEvent.idProcedure}, query: $route.query}">
+          <span class="primary--text text-decoration-underline mr-4">
+            Feuille de route partagée
+          </span>
+        </nuxt-link>
+        <span class="primary--text text-decoration-underline mr-4 text--disabled">
           PAC
         </span>
-        <span class="primary--text text-decoration-underline">
+        <span class="primary--text text-decoration-underline text--disabled">
           Note d'enjeux
         </span>
+      </v-col>
+    </v-row>
+    <v-row v-else>
+      <v-col cols="12" class="pb-0">
+        <v-divider />
+      </v-col>
+      <v-col cols="12" class="d-flex align-end justify-end pb-0">
+        <v-btn text color="primary" :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: firstEvent.idProcedure}, query: $route.query}">
+          <v-icon small color="primary" class="mr-2">
+            {{ icons.mdiArrowRight }}
+          </v-icon>
+          Feuille de route publique
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>
 </template>
 <script>
+import { mdiArrowRight } from '@mdi/js'
+import BaseDUProcedureItem from '@/mixins/BaseDUProcedureItem.js'
+
 export default {
+  mixins: [BaseDUProcedureItem],
   props: {
     procedure: {
       type: Object,
       required: true
+    },
+    censored: {
+      type: Boolean,
+      default: () => false
     }
   },
   data () {
     return {
-
+      icons: {
+        mdiArrowRight
+      }
     }
   },
   computed: {
-    firstEvent () {
-      return this.procedure.events[0]
+    isPlui () {
+      return this.procedure.perimetre.length > 1
     },
     status () {
-      // TODO: Attention, il faut surement comparer les précédents pour ne pas mettre précédent sur les procédure principales opposable qui n'ont pas eu de révision
-      if (this.firstEvent.dateExecutoire && this.firstEvent.idProcedurePrincipal) {
-        return 'opposable'
-      } else if (this.firstEvent.dateExecutoire && !this.firstEvent.idProcedurePrincipal) {
-        return 'précédent'
-      } else if (this.firstEvent.dateLancement || this.firstEvent.dateApprobation) {
-        return 'en cours'
-      } else {
-        return 'abandonné'
-      }
-    },
-    step () {
       if (this.firstEvent.dateAbandon) {
-        return `Abandon (${this.firstEvent.dateAbandon})`
-      } else if (this.firstEvent.dateExecutoire) {
-        return `Executoire (${this.firstEvent.dateExecutoire})`
-      } else if (this.firstEvent.dateApprobation) {
-        return `Approbation (${this.firstEvent.dateApprobation})`
-      } else if (this.firstEvent.dateLancement) {
-        return `Lancement (${this.firstEvent.dateLancement})`
+        return { text: 'abandonné', color: 'error' }
       }
-      return '-'
+      // si ce n'est pas un PLU
+      if (!this.isPlui) {
+        if (this.procedure.approvedInTowns.includes(this.procedure.perimetre[0].inseeCode)) {
+          return { text: 'opposable', color: 'success lighten-2' }
+        } else if (this.procedure.ongoingInTowns.includes(this.procedure.perimetre[0].inseeCode)) {
+          return { text: 'en cours', color: '' }
+        } else {
+          return { text: 'précédent', color: '' }
+        }
+      } else {
+        // Si on est dans un cas de PLUi
+        if ((this.firstEvent.dateExecutoire || this.firstEvent.dateApprobation) && this.firstEvent.idProcedurePrincipal) {
+          return { text: 'opposable', color: 'success lighten-2' }
+        } else if (this.firstEvent.dateExecutoire && !this.firstEvent.idProcedurePrincipal) {
+          return { text: 'précédent', color: '' }
+        }
+        // implicite si date de lancement
+        return { text: 'en cours', color: '' }
+      }
     }
   }
 }

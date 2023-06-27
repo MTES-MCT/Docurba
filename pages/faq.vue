@@ -167,7 +167,7 @@ export default {
           link: ''
         }
       ],
-      search: ''
+      search: this.$route.query.recherche || ''
     }
   },
   computed: {
@@ -183,6 +183,11 @@ export default {
       if (this.search.length) {
         return this.filteredQuestions
       } else { return this.FAQ }
+    }
+  },
+  watch: {
+    search () {
+      this.$router.replace({ path: '/faq', query: { recherche: this.search } })
     }
   }
 }

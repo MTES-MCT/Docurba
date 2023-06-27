@@ -45,6 +45,9 @@
           Connexion
         </v-btn>
         <AuthLoginDialog v-model="openLogin" />
+        <v-btn v-if="$user.id && $user.scope && $user.scope.dept" depressed tile text :to="{name: 'ddt-departement-collectivites', params: {departement: $user.scope.dept}}">
+          Tableau de bord
+        </v-btn>
         <v-btn v-if="$user.id" depressed tile text @click="clickMyDocs">
           Mes documents
         </v-btn>

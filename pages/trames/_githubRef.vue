@@ -112,7 +112,9 @@ export default {
     const { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,
         `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`,
-        this.gitRef
+        `region-${this.project.towns ? this.project.towns[0].code_region : ''}`,
+        this.gitRef,
+        'main'
     ])
 
     this.orderSections(sections, supSections)
@@ -167,7 +169,7 @@ export default {
         return file.filename === sectionPath
       })
 
-      const level = diffRef.includes('dept-') ? 'départemental' : 'régionale'
+      const level = diffRef.includes('dept-') ? 'départemental' : 'régional'
 
       if (diffFile) {
         section.diff = {

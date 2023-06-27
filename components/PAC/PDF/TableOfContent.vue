@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container id="toc">
     <v-row>
       <v-col>
         <v-treeview
@@ -87,7 +87,7 @@ export default {
       return slugify(str)
     },
     getTitle (item) {
-      return `${item.tocCounter ? item.tocCounter.join('.') : ''} ${item.titre}`
+      return `${item.tocCounter ? item.tocCounter.join('.') : ''} ${item.name}`
     },
     getPage (item) {
       // const contentHeight = this.$refs.content.offsetHeight
