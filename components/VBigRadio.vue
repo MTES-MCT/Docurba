@@ -5,9 +5,10 @@
     </div>
     <v-radio-group
       v-model="docType"
-      class="mt-0"
+      class="mb-2"
       hide-details
       row
+      :error="!!errorMessages[0]"
       @change="$emit('input', docType)"
     >
       <v-radio
@@ -19,6 +20,9 @@
         :value="item.value"
       />
     </v-radio-group>
+    <div class="error--text v-messages pl-3">
+      {{ errorMessages[0] }}
+    </div>
   </div>
 </template>
 
@@ -31,6 +35,10 @@ export default {
       default: () => null
     },
     items: {
+      type: Array,
+      default: () => []
+    },
+    errorMessages: {
       type: Array,
       default: () => []
     }

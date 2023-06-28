@@ -10,184 +10,239 @@
     </v-row>
 
     <PrescriptionYouWantCard />
-    <v-row>
-      <v-col cols="12" class="mb-6">
-        <VBigRadio v-model="confirmCollectivite" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
-          Est-ce que l’acte en question concerne bien  <b>{{ collectivite.name }} ({{ region.name }})</b> ?
-        </VBigRadio>
-      </v-col>
-      <v-col cols="12" class="pt-0 pb-2">
-        <v-select v-model="acteType" filled label="Type d'acte" :items="['Délibération de prescription', 'Délibération du débat sur le PADD', 'Délibération d\'arrêt du projet', 'Délibération de lancement de l\'enquête publique', 'Délibération d\'approbation', 'Arrêté', 'Notification aux personnes publiques associées', 'Autre']" />
-      </v-col>
-      <v-col v-if="acteType === 'Autre'" offset="1" cols="11" class="pt-0 pb-2">
-        <v-text-field v-model="otherActeType" filled label="Précisez" />
-      </v-col>
-      <v-col cols="12" class="pt-0 pb-2">
-        <v-text-field v-model="date" filled label="Date de l'acte" type="date" />
-      </v-col>
-      <v-col cols="12" class="pt-0 pb-2">
-        <v-select v-model="DUType" filled placeholder="Selectionner une option" label="Type de document d'urbanisme" :items="['Carte Communale', 'PLU', 'PLUi']" />
-      </v-col>
-    </v-row>
-    <v-row v-if="isEpci" class="mb-6">
-      <v-col cols="11" offset="1">
+
+    <v-alert v-if="error" type="error">
+      {{ error }}
+    </v-alert>
+    <validation-observer ref="observerActePrescription" v-slot="{ handleSubmit }">
+      <form @submit.prevent="handleSubmit(submitPrescription)">
         <v-row>
+          <v-col cols="12" class="mb-6">
+            <validation-provider v-slot="{ errors }" name="Vérification" rules="required">
+              <VBigRadio v-model="confirmCollectivite" :error-messages="errors" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
+                Est-ce que l’acte en question concerne bien  <b>{{ collectivite.name }} ({{ region.name }})</b> ?
+              </VBigRadio>
+            </validation-provider>
+          </v-col>
+          <v-col cols="12" class="pt-0 pb-2">
+            <validation-provider v-slot="{ errors }" name="Type d'acte" rules="required">
+              <v-select v-model="acteType" :error-messages="errors" filled label="Type d'acte" :items="['Délibération de prescription', 'Délibération du débat sur le PADD', 'Délibération d\'arrêt du projet', 'Délibération de lancement de l\'enquête publique', 'Délibération d\'approbation', 'Arrêté', 'Notification aux personnes publiques associées', 'Autre']" />
+            </validation-provider>
+          </v-col>
+          <v-col v-if="acteType === 'Autre'" offset="1" cols="11" class="pt-0 pb-2">
+            <validation-provider v-slot="{ errors }" name="Details de l'acte" rules="required">
+              <v-text-field v-model="otherActeType" :error-messages="errors" filled label="Précisez" />
+            </validation-provider>
+          </v-col>
+          <v-col cols="12" class="pt-0 pb-2">
+            <validation-provider v-slot="{ errors }" name="Date de l'acte" rules="required">
+              <v-text-field v-model="date" :error-messages="errors" filled label="Date de l'acte" type="date" />
+            </validation-provider>
+          </v-col>
+          <v-col cols="12" class="pt-0 pb-2">
+            <validation-provider v-slot="{ errors }" name="Type du DU" rules="required">
+              <v-select
+                v-model="DUType"
+                :error-messages="errors"
+                filled
+                placeholder="Selectionner une option"
+                label="Type de document d'urbanisme"
+                :items="['Carte Communale', 'PLU', 'PLUi']"
+              />
+            </validation-provider>
+          </v-col>
+        </v-row>
+        <v-row v-if="isEpci" class="mb-6">
+          <v-col cols="11" offset="1">
+            <v-row>
+              <v-col cols="12" class="pt-0">
+                <p>Périmètre de l’acte dans le territoire sélectionné</p>
+                <v-btn
+                  color="primary"
+                  class="mr-4"
+                  outlined
+                  @click="selectAllPerimetre"
+                >
+                  Selectionner toutes
+                </v-btn>
+                <v-btn
+                  color="primary"
+                  outlined
+                  @click="perimetre = []"
+                >
+                  Déselectionner toutes
+                </v-btn>
+              </v-col>
+              <v-col v-for="(commune, i) in communes" :key="i" cols="4">
+                <v-checkbox
+                  v-model="perimetre"
+                  hide-details
+                  class="mt-0"
+                  :label="`${commune.nom_commune} (${commune.code_commune_INSEE})`"
+                  :value="commune.code_commune_INSEE"
+                />
+              </v-col>
+              <v-col cols="12" class="my-2">
+                <div class="black-border pa-3 d-inline">
+                  Nombre de communes concernées : <b>{{ perimetre.length }}</b>
+                </div>
+              </v-col>
+            </v-row>
+          </v-col>
+          <template v-if="DUType === 'PLUi'">
+            <v-col cols="11" offset="1">
+              <validation-provider v-slot="{ errors }" name="Status PLUiH" rules="required">
+                <VBigRadio v-model="isPLUiH" :error-messages="errors" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+                  Tient lieu de PLUiH
+                </VBigRadio>
+              </validation-provider>
+            </v-col>
+            <v-col cols="11" offset="1">
+              <validation-provider v-slot="{ errors }" name="Status PLUiM" rules="required">
+                <VBigRadio v-model="isPLUiM" :error-messages="errors" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+                  Tient lieu de PLUiM (ex PDU)
+                </VBigRadio>
+              </validation-provider>
+            </v-col>
+            <v-col v-if="isPLUiM === 'oui'" cols="11" offset="1">
+              <validation-provider v-slot="{ errors }" name="Obligation du PLUiM" rules="required">
+                <VBigRadio v-model="isRequiredPLUiM" :error-messages="errors" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
+                  Si oui, le PLUiM est-il obligatoire ?
+                </VBigRadio>
+              </validation-provider>
+            </v-col>
+            <v-col cols="11" offset="1">
+              <validation-provider v-slot="{ errors }" name="Status SCoT" rules="required">
+                <VBigRadio v-model="isSCoT" :error-messages="errors" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
+                  Tient lieu de SCoT
+                </VBigRadio>
+              </validation-provider>
+            </v-col>
+          </template>
+        </v-row>
+        <v-row>
+          <v-col cols="12" class="pt-0 pb-2">
+            <validation-provider v-slot="{ errors }" name="Type de la procédure" rules="required">
+              <v-select
+                v-model="typeProcedure"
+                :error-messages="errors"
+                filled
+                placeholder="Selectionner une option"
+                label="Type de procédure"
+                :items="typesProcedure"
+              />
+            </validation-provider>
+          </v-col>
+          <v-col v-if="typeProcedure === 'MS - Modification simplifiée'" cols="12" class="pt-0 pb-2">
+            <v-select v-model="MSScope" filled multiple label="Cette modification simplifiée concerne" :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']" />
+          </v-col>
+          <v-col cols="12" class="pt-0 pb-2 d-flex align-start">
+            <v-text-field v-model="numberProcedure" style="max-width:25%;" filled placeholder="Ex. 4" label="Numéro de procédure" />
+
+            <v-tooltip right>
+              <template #activator="{ on, attrs }">
+                <v-icon
+                  color="primary"
+                  class="ml-4"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  {{ icons.mdiInformationOutline }}
+                </v-icon>
+              </template>
+              <div>Le numéro est dans l’acte (ex : modification simplifiée n°4)</div>
+            </v-tooltip>
+          </v-col>
           <v-col cols="12" class="pt-0">
-            <p>Périmètre de l’acte dans le territoire sélectionné</p>
-            <v-btn
-              color="primary"
-              class="mr-4"
-              outlined
-              @click="selectAllPerimetre"
-            >
-              Selectionner toutes
-            </v-btn>
-            <v-btn
-              color="primary"
-              outlined
-              @click="perimetre = []"
-            >
-              Déselectionner toutes
-            </v-btn>
+            <validation-provider v-slot="{ errors }" name="Choix du mode de transmission" rules="required">
+              <VBigRadio v-model="docType" :error-messages="errors" :items="[{label: 'Téléverser un fichier', value:'attachments'}, {label: 'Insérer un lien', value:'link'}]">
+                Comment souhaitez-vous déposer votre fichier ?
+              </VBigRadio>
+            </validation-provider>
           </v-col>
-          <v-col v-for="(commune, i) in communes" :key="i" cols="4">
-            <v-checkbox
-              v-model="perimetre"
-              hide-details
-              class="mt-0"
-              :label="`${commune.nom_commune} (${commune.code_commune_INSEE})`"
-              :value="commune.code_commune_INSEE"
-            />
-          </v-col>
-          <v-col cols="12" class="my-2">
-            <div class="black-border pa-3 d-inline">
-              Nombre de communes concernées : <b>{{ perimetre.length }}</b>
+          <v-col v-if="docType" cols="12">
+            <div class=" black--text">
+              Déposez ici votre document de prescription
             </div>
           </v-col>
         </v-row>
-      </v-col>
-      <template v-if="DUType === 'PLUi'">
-        <v-col cols="11" offset="1">
-          <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
-            Tient lieu de PLUiH
-          </VBigRadio>
-        </v-col>
-        <v-col cols="11" offset="1">
-          <VBigRadio v-model="isPLUiM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
-            Tient lieu de PLUiM (ex PDU)
-          </VBigRadio>
-        </v-col>
-        <v-col v-if="isPLUiM === 'oui'" cols="11" offset="1">
-          <VBigRadio v-model="isRequiredPLUiM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
-            Si oui, le PLUiM est-il obligatoire ?
-          </VBigRadio>
-        </v-col>
-        <v-col cols="11" offset="1">
-          <VBigRadio v-model="isSCoT" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
-            Tient lieu de SCoT
-          </VBigRadio>
-        </v-col>
-      </template>
-    </v-row>
-    <v-row>
-      <v-col cols="12" class="pt-0 pb-2">
-        <v-select v-model="typeProcedure" filled placeholder="Selectionner une option" label="Type de procédure" :items="typesProcedure" />
-      </v-col>
-      <v-col v-if="typeProcedure === 'MS - Modification simplifiée'" cols="12" class="pt-0 pb-2">
-        <v-select v-model="MSScope" filled multiple label="Cette modification simplifiée concerne" :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']" />
-      </v-col>
-      <v-col cols="12" class="pt-0 pb-2 d-flex align-start">
-        <v-text-field v-model="numberProcedure" style="max-width:25%;" filled placeholder="Ex. 4" label="Numéro de procédure" />
-
-        <v-tooltip right>
-          <template #activator="{ on, attrs }">
-            <v-icon
-              color="primary"
-              class="ml-4"
-              v-bind="attrs"
-              v-on="on"
-            >
-              {{ icons.mdiInformationOutline }}
-            </v-icon>
-          </template>
-          <div>Le numéro est dans l’acte (ex : modification simplifiée n°4)</div>
-        </v-tooltip>
-      </v-col>
-      <v-col cols="12" class="pt-0">
-        <VBigRadio v-model="docType" :items="[{label: 'Téléverser un fichier', value:'attachments'}, {label: 'Insérer un lien', value:'link'}]">
-          Comment souhaitez-vous déposer votre fichier ?
-        </VBigRadio>
-      </v-col>
-      <v-col v-if="docType" cols="12">
-        <div class=" black--text">
-          Déposez ici votre document de prescription
-        </div>
-      </v-col>
-    </v-row>
-    <v-row v-if="docType === 'attachments'">
-      <v-col cols="12">
-        <div class="mb-8">
-          <v-row
-            v-for="(file, i) in files"
-            :key="`${file.name}--${i}`"
-            align="center"
-          >
-            <v-col cols="8" class="py-1">
-              <div>
-                {{ file.name }}
-              </div>
-            </v-col>
-            <v-col cols="4" class="py-1">
-              <v-btn
-                class="pa-0"
-                outlined
-                color="primary"
-                small
-                @click="removeFile(file)"
+        <v-row v-if="docType === 'attachments'">
+          <v-col cols="12">
+            <div class="mb-8">
+              <v-row
+                v-for="(file, i) in files"
+                :key="`${file.name}--${i}`"
+                align="center"
               >
-                <v-icon>{{ icons.mdiDelete }}</v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </div>
-        <VFileDropzone class="drop-zone" @change="setFiles">
-          <div class="dropzone text-center text--secondary rounded pa-8">
-            <v-icon class="pb-6" color="primary">
-              {{ icons.mdiUpload }}
-            </v-icon>
-
-            <div>Glisser le fichier dans cette zone ou cliquez sur le bouton pour ajouter un document</div>
-            <div class="py-8">
-              <!-- Taille maximale : xx Mo.
-              <br> -->
-              Formats acceptés : jpg, png, pdf.
+                <v-col cols="8" class="py-1">
+                  <div>
+                    {{ file.name }}
+                  </div>
+                </v-col>
+                <v-col cols="4" class="py-1">
+                  <v-btn
+                    class="pa-0"
+                    outlined
+                    color="primary"
+                    small
+                    @click="removeFile(file)"
+                  >
+                    <v-icon>{{ icons.mdiDelete }}</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
             </div>
-            <v-btn color="primary" outlined>
-              Ajout un document
+            <VFileDropzone class="drop-zone" @change="setFiles">
+              <div class="dropzone text-center text--secondary rounded pa-8">
+                <v-icon class="pb-6" color="primary">
+                  {{ icons.mdiUpload }}
+                </v-icon>
+
+                <div>Glisser le fichier dans cette zone ou cliquez sur le bouton pour ajouter un document</div>
+                <div class="py-8">
+                  Formats acceptés : jpg, png, pdf.
+                </div>
+                <v-btn color="primary" outlined>
+                  Ajout un document
+                </v-btn>
+              </div>
+            </VFileDropzone>
+          </v-col>
+        </v-row>
+        <v-row v-if="docType === 'link'">
+          <v-col cols="12" md="10">
+            <validation-provider v-slot="{ errors }" name="URL du document" rules="required">
+              <v-text-field
+                ref="urlTextfield"
+                v-model="link"
+                :error-messages="errors"
+                filled
+                placeholder="documentprescription.com"
+                :rules="urlRules"
+              />
+            </validation-provider>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" class="d-flex mb-16">
+            <v-btn
+              type="submit"
+              color="primary"
+              depressed
+              :loading="loadingSave"
+            >
+              {{ docType === 'link'? 'Lier le document' : 'Déposer' }}
             </v-btn>
-          </div>
-        </VFileDropzone>
-      </v-col>
-    </v-row>
-    <v-row v-if="docType === 'link'">
-      <v-col cols="12" md="10">
-        <v-text-field ref="urlTextfield" v-model="link" filled placeholder="documentprescription.com" :rules="urlRules" />
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12" class="d-flex mb-16">
-        <v-btn color="primary" depressed :disabled="!choiceDone" :loading="loadingSave" @click="submitPrescription">
-          {{ docType === 'link'? 'Lier le document' : 'Déposer' }}
-        </v-btn>
-      </v-col>
-    </v-row>
+          </v-col>
+        </v-row>
+      </form>
+    </validation-observer>
   </v-container>
 </template>
 
 <script>
 import { mdiUpload, mdiPencil, mdiCheck, mdiAccountSearchOutline, mdiDelete, mdiInformationOutline } from '@mdi/js'
-// import axios from 'axios'
-import slugify from 'slugify'
+import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 import FormInput from '@/mixins/FormInput.js'
 
@@ -215,6 +270,7 @@ export default {
   },
   data () {
     return {
+      error: null,
       typesProcedure: [{ header: 'Principale' }, { text: 'E - élaboration' }, { text: 'R - révision' }, { divider: true }, { header: 'Secondaire' }, { text: 'RMS - Révision à modalité simplifiée ou Revision allegée' }, { text: 'M - Modification' }, { text: 'MS - Modification simplifiée' }, { text: 'MC - Mise en compatibilité' }, { text: 'MJ - Mise à jour' }],
       confirmCollectivite: null,
       DUType: this.isEpci ? 'PLUi' : null,
@@ -232,7 +288,6 @@ export default {
       town: null,
       epci: null,
       type: 'commune',
-      // loading: true,
       loadingSave: false,
       docType: null,
       link: null,
@@ -267,7 +322,6 @@ export default {
     }
   },
   mounted () {
-    console.log('this query: ', this.$route.query.email)
     this.selectAllPerimetre()
   },
   methods: {
@@ -275,8 +329,6 @@ export default {
       this.perimetre = this.communes.map(e => e.code_commune_INSEE)
     },
     removeFile (file) {
-      console.log('File to delete: ', file)
-      console.log('this.files: ', this.files)
       this.files = [...this.files].filter(e => e !== file)
     },
     setFiles (files) {
@@ -284,14 +336,14 @@ export default {
     },
 
     async uploadFiles () {
-      if (this.files.length) {
+      if (this.files?.length) {
         const uploadTimestamp = Date.now()
         const filesData = []
         for (let fileIndex = 0; fileIndex < this.files.length; fileIndex++) {
           const file = this.files[fileIndex]
-
           // <type_epci_commune>/<insee_or_code>/<date>/files
-          const path = `${this.$route.query.epci_code ? 'epci' : 'commune'}/${this.$route.query.epci_code ? this.$route.query.epci_code : this.$route.query.insee}/${uploadTimestamp}/${slugify(file.name, '_')}`
+          const idFile = uuidv4()
+          const path = `${this.$route.query.isEpci ? 'epci' : 'commune'}/${this.$route.params.collectiviteId}/${uploadTimestamp}/${idFile}`
           await this.$supabase.storage
             .from('prescriptions')
             .upload(path, file)
@@ -308,7 +360,6 @@ export default {
         this.loadingSave = true
         const prescription = {
           epci: this.isEpci ? this.collectivite : null,
-          // towns: Array.isArray(this.$route.query.insee) ? this.$route.query.insee : [this.$route.query.insee],
           towns: this.isEpci ? this.collectivite.towns.map(e => e.code_commune_INSEE) : [this.collectivite.id],
           attachments: null,
           type: this.docType,
@@ -331,24 +382,26 @@ export default {
         } else if (this.docType === 'attachments') {
           prescription.attachments = await this.uploadFiles()
         }
-        console.log('PRESCRIPTION POST: ', prescription)
         await this.$supabase.from('prescriptions').insert([prescription])
         this.loadingSave = false
 
-        // await axios({
-        //   url: '/api/slack/notify/admin/acte',
-        //   method: 'post',
-        //   data: {
-        //     userData: {
-        //       email: this.$route.query.email,
-        //       region: this.region,
-        //       collectivite: this.collectivite,
-        //       isEpci: this.isEpci
-        //     }
-        //   }
-        // })
-        // this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
+        await axios({
+          url: '/api/slack/notify/admin/acte',
+          method: 'post',
+          data: {
+            userData: {
+              email: this.$route.query.email,
+              region: this.region,
+              collectivite: this.collectivite,
+              isEpci: this.isEpci
+            }
+          }
+        })
+        this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
       } catch (error) {
+        this.error = error
+        this.$vuetify.goTo(0)
+        this.loadingSave = false
         console.log(error)
       }
     }
