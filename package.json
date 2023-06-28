@@ -46,7 +46,8 @@
     "topojson-client": "^3.1.0",
     "topojson-server": "^3.0.1",
     "unified": "^9.2.2",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "vee-validate": "^3.4.15"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^6.0.0",

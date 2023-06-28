@@ -1,6 +1,10 @@
 import { required, email, min, regex, integer } from 'vee-validate/dist/rules'
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
+<<<<<<< HEAD
 import test from '@/assets/data/testInputs.json'
+=======
+// import test from '@/assets/data/testInputs.json'
+>>>>>>> fixPrescription
 
 // eslint-disable-next-line
 setInteractionMode('eager')
@@ -64,6 +68,7 @@ export default {
     value: {
       type: Object,
       default () { return {} }
+<<<<<<< HEAD
     },
     test: {
       type: Object,
@@ -71,6 +76,15 @@ export default {
         return process.env.NODE_ENV === 'development' ? test : {}
       }
     }
+=======
+    }
+    // test: {
+    //   type: Object,
+    //   default () {
+    //     return process.env.NODE_ENV === 'development' ? test : {}
+    //   }
+    // }
+>>>>>>> fixPrescription
   },
   methods: {
     input (data) {
