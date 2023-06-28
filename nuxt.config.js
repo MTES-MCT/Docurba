@@ -61,7 +61,8 @@ export default {
     '@nuxtjs/sentry'
   ],
   sentry: {
-    dsn: 'https://f6730834cb3a4f14988bdf86b2e0b8bd@o4505403744649216.ingest.sentry.io/4505403746877440'
+    dsn: 'https://f6730834cb3a4f14988bdf86b2e0b8bd@o4505403744649216.ingest.sentry.io/4505403746877440',
+    clientIntegrations: ['CaptureConsole']
   },
   render: {
     csp: {

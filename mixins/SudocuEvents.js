@@ -103,16 +103,15 @@ export default {
       const tempProcs = {}
       for (const [k, v] of Object.entries(eventsByProc)) {
         let procSecs = _.filter(eventsByProc, (e, i) => {
-          console.log('TESTING: ', e[0])
           return e[0].idProcedurePrincipal?.toString() === k && !typePrincipalProcedures.includes(e[0].typeProcedure)
         })
 
         if (procSecs && procSecs.length > 0) {
           procSecs = procSecs.reduce((acc, curr) => {
             console.log('curr: ', curr)
-            if (curr[0].dateApprobation) {
-              acc[curr[0].idProcedure] = curr
-            }
+            // if (curr[0].dateApprobation) {
+            acc[curr[0].idProcedure] = curr
+            // }
             return acc
           }, {})
         } else { procSecs = null }
