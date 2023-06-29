@@ -95,7 +95,7 @@ export default {
         },
         {
           title: 'Ressources',
-          text: 'Consultez des guides ou sites internet utiles.',
+          text: 'Consultez des ressources autour de vos documents d’urbanisme.',
           to: { name: 'collectivites-collectiviteId-ressources', params: { collectiviteId }, query: this.$route.query }
         },
         {

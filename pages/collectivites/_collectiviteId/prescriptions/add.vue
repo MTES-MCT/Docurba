@@ -271,7 +271,7 @@ export default {
   data () {
     return {
       error: null,
-      typesProcedure: [{ header: 'Principale' }, { text: 'E - élaboration' }, { text: 'R - révision' }, { divider: true }, { header: 'Secondaire' }, { text: 'RMS - Révision à modalité simplifiée ou Revision allegée' }, { text: 'M - Modification' }, { text: 'MS - Modification simplifiée' }, { text: 'MC - Mise en compatibilité' }, { text: 'MJ - Mise à jour' }],
+      typesProcedure: [{ header: 'Principale' }, { text: 'E - élaboration' }, { text: 'R - révision' }, { divider: true }, { header: 'Secondaire' }, { text: 'RMS - Révision à modalité simplifiée ou Revision allegée' }, { text: 'M - Modification' }, { text: 'MS - Modification simplifiée' }, { text: 'MC - Déclaration préalable valant mise en compatibilité' }, { text: 'MJ - Mise à jour' }],
       confirmCollectivite: null,
       DUType: this.isEpci ? 'PLUi' : null,
       acteType: null,

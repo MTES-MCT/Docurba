@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12">
         <h1 class="text-h1">
-          {{ collectivite.name }}
+          {{ collectivite.name }} <span v-if="collectivite.code_commune_INSEE">({{ collectivite.code_commune_INSEE }})</span>
         </h1>
       </v-col>
       <v-col cols="12">
