@@ -13,6 +13,7 @@
         </v-col>
       </v-row>
       <v-row v-if="communes">
+        {{}}
         <v-col cols="12">
           <v-data-table
             :headers="headers"
@@ -127,12 +128,12 @@ export default {
     // End Analytics
 
     let communesData
-    if (this.Epci) {
+    if (this.isEpci) {
       communesData = this.collectivite.towns
     } else {
       communesData = [this.collectivite]
     }
-
+    console.log('COMMUNESDATA: ', communesData)
     communesData = communesData.map((e) => {
       const enriched = {
         ...e,

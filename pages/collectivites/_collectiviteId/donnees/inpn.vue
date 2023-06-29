@@ -133,7 +133,7 @@ export default {
     // End Analytics
 
     let communesData
-    if (this.Epci) {
+    if (this.isEpci) {
       communesData = this.collectivite.towns
     } else {
       communesData = [this.collectivite]
