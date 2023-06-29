@@ -26,7 +26,7 @@
           </v-col>
           <v-col cols="12" class="pt-0 pb-2">
             <validation-provider v-slot="{ errors }" name="Type d'acte" rules="required">
-              <v-select v-model="acteType" :error-messages="errors" filled label="Type d'acte" :items="['Délibération de prescription', 'Délibération du débat sur le PADD', 'Délibération d\'arrêt du projet', 'Délibération de lancement de l\'enquête publique', 'Délibération d\'approbation', 'Arrêté', 'Notification aux personnes publiques associées', 'Autre']" />
+              <v-select v-model="acteType" :error-messages="errors" filled label="Type d'acte" :items="['Délibération de prescription', 'Délibération du débat sur le PADD', 'Délibération d\'arrêt du projet', 'Délibération de lancement de l\'enquête publique', 'Délibération d\'approbation', 'Arrêté de lancement de la procédure', 'Notification aux personnes publiques associées', 'Autre']" />
             </validation-provider>
           </v-col>
           <v-col v-if="acteType === 'Autre'" offset="1" cols="11" class="pt-0 pb-2">

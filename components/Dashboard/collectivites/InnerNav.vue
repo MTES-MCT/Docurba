@@ -40,7 +40,7 @@ export default {
         name: 'Tableau de bord',
         to: { path: `/collectivites/${this.$route.params.collectiviteId}/`, query: this.$route.query }
       }, {
-        name: 'Prescription',
+        name: 'Actes',
         to: { path: `/collectivites/${this.$route.params.collectiviteId}/prescriptions`, query: this.$route.query }
       }, {
         name: 'Socle de PAC',

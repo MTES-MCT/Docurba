@@ -51,7 +51,7 @@
             <p class="text-h6">
               Indiquez votre adresse mail
             </p>
-            <p>Nos équipes vont vérifier votre identité avant de publier la prescription</p>
+            <p>Nos équipes vont vérifier votre identité avant de publier l'acte</p>
             <v-text-field
               v-model="email"
               :rules="emailRules"
