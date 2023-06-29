@@ -18,7 +18,7 @@
       <form @submit.prevent="handleSubmit(submitPrescription)">
         <v-row>
           <v-col cols="12" class="mb-6">
-            <validation-provider v-slot="{ errors }" name="Vérification" rules="required">
+            <validation-provider v-slot="{ errors }" name="Vérification" rules="required|needToBeOui">
               <VBigRadio v-model="confirmCollectivite" :error-messages="errors" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
                 Est-ce que l’acte en question concerne bien  <b>{{ collectivite.name }} ({{ region.name }})</b> ?
               </VBigRadio>
@@ -166,87 +166,6 @@
             </div>
           </v-col>
         </v-row>
-<<<<<<< HEAD
-      </v-col>
-      <template v-if="DUType === 'PLUi'">
-        <v-col cols="11" offset="1">
-          <VBigRadio v-model="isPLUiH" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
-            Tient lieu de PLUiH
-          </VBigRadio>
-        </v-col>
-        <v-col cols="11" offset="1">
-          <VBigRadio v-model="isPLUiM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
-            Tient lieu de PLUiM (ex PDU)
-          </VBigRadio>
-        </v-col>
-        <v-col v-if="isPLUiM === 'oui'" cols="11" offset="1">
-          <VBigRadio v-model="isRequiredPLUiM" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
-            Si oui, le PLUiM est-il obligatoire ?
-          </VBigRadio>
-        </v-col>
-        <v-col cols="11" offset="1">
-          <VBigRadio v-model="isSCoT" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}, {label: 'Je ne sais pas', value:'jsp'}]">
-            Tient lieu de SCoT
-          </VBigRadio>
-        </v-col>
-      </template>
-    </v-row>
-    <v-row>
-      <v-col cols="12" class="pt-0 pb-2">
-        <v-select v-model="typeProcedure" filled placeholder="Selectionner une option" label="Type de procédure" :items="typesProcedure" />
-      </v-col>
-      <v-col v-if="typeProcedure === 'MS - Modification simplifiée'" cols="12" class="pt-0 pb-2">
-        <v-select v-model="MSScope" filled multiple label="Cette modification simplifiée concerne" :items="['Consommation d’ENAF et/ou trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']" />
-      </v-col>
-      <v-col cols="12" class="pt-0 pb-2 d-flex align-start">
-        <v-text-field v-model="numberProcedure" style="max-width:25%;" filled placeholder="Ex. 4" label="Numéro de procédure" />
-
-        <v-tooltip right>
-          <template #activator="{ on, attrs }">
-            <v-icon
-              color="primary"
-              class="ml-4"
-              v-bind="attrs"
-              v-on="on"
-            >
-              {{ icons.mdiInformationOutline }}
-            </v-icon>
-          </template>
-          <div>Le numéro est dans l’acte (ex : modification simplifiée n°4)</div>
-        </v-tooltip>
-      </v-col>
-      <v-col cols="12" class="pt-0">
-        <VBigRadio v-model="docType" :items="[{label: 'Téléverser un fichier', value:'attachments'}, {label: 'Insérer un lien', value:'link'}]">
-          Comment souhaitez-vous déposer votre fichier ?
-        </VBigRadio>
-      </v-col>
-      <v-col v-if="docType" cols="12">
-        <div class=" black--text">
-          Déposez ici votre document de prescription
-        </div>
-      </v-col>
-    </v-row>
-    <v-row v-if="docType === 'attachments'">
-      <v-col cols="12">
-        <div class="mb-8">
-          <v-row
-            v-for="(file, i) in files"
-            :key="`${file.name}--${i}`"
-            align="center"
-          >
-            <v-col cols="8" class="py-1">
-              <div>
-                {{ file.name }}
-              </div>
-            </v-col>
-            <v-col cols="4" class="py-1">
-              <v-btn
-                class="pa-0"
-                outlined
-                color="primary"
-                small
-                @click="removeFile(file)"
-=======
         <v-row v-if="docType === 'attachments'">
           <v-col cols="12">
             <div class="mb-8">
@@ -254,7 +173,6 @@
                 v-for="(file, i) in files"
                 :key="`${file.name}--${i}`"
                 align="center"
->>>>>>> fixPrescription
               >
                 <v-col cols="8" class="py-1">
                   <div>

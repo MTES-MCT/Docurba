@@ -1,10 +1,6 @@
 import { required, email, min, regex, integer } from 'vee-validate/dist/rules'
 import { extend, ValidationObserver, ValidationProvider, setInteractionMode } from 'vee-validate'
-<<<<<<< HEAD
-import test from '@/assets/data/testInputs.json'
-=======
 // import test from '@/assets/data/testInputs.json'
->>>>>>> fixPrescription
 
 // eslint-disable-next-line
 setInteractionMode('eager')
@@ -22,6 +18,14 @@ extend('email', {
 extend('min', {
   ...min,
   message: '{_field_} may be greater than {length} characters'
+})
+
+extend('needToBeOui', {
+  params: ['target'],
+  validate (value, { target }) {
+    return value === 'oui'
+  },
+  message: 'Vous n\'êtes pas sur la bonne collectivité.'
 })
 
 extend('password', {
@@ -68,15 +72,6 @@ export default {
     value: {
       type: Object,
       default () { return {} }
-<<<<<<< HEAD
-    },
-    test: {
-      type: Object,
-      default () {
-        return process.env.NODE_ENV === 'development' ? test : {}
-      }
-    }
-=======
     }
     // test: {
     //   type: Object,
@@ -84,7 +79,6 @@ export default {
     //     return process.env.NODE_ENV === 'development' ? test : {}
     //   }
     // }
->>>>>>> fixPrescription
   },
   methods: {
     input (data) {
