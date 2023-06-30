@@ -62,7 +62,25 @@ export default {
   ],
   sentry: {
     dsn: 'https://f6730834cb3a4f14988bdf86b2e0b8bd@o4505403744649216.ingest.sentry.io/4505403746877440',
-    clientIntegrations: ['CaptureConsole']
+    tracing: {
+      tracesSampleRate: 1.0
+    },
+    serverIntegrations: {
+      ProfilingIntegration: {}
+    },
+    serverConfig: {
+      // Set sampling rate for profiling - this is relative to tracesSampleRate
+      profilesSampleRate: 1.0
+    },
+    clientIntegrations: ['CaptureConsole', 'Replay'],
+    clientConfig: {
+      // This sets the sample rate to be 10%. You may want this to be 100% while
+      // in development and sample at a lower rate in production
+      replaysSessionSampleRate: 0.1,
+      // If the entire session is not sampled, use the below sample rate to sample
+      // sessions when an error occurs.
+      replaysOnErrorSampleRate: 1.0
+    }
   },
   render: {
     csp: {
@@ -179,7 +197,13 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    standalone: true
+    standalone: true,
+    extend (config, { isClient }) {
+      // Extend only webpack config for client-bundle
+      if (isClient) {
+        config.devtool = 'source-map'
+      }
+    }
     // filenames: {
     //   app: ({ isDev }) => '[name].js',
     //   chunk: ({ isDev }) => '[name].js',
