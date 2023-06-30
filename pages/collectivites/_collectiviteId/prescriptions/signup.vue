@@ -3,6 +3,7 @@
     ref="form"
     v-model="valid"
     lazy-validation
+    @submit.prevent="nextPage"
   >
     <v-container id="prescription" class="mb-16">
       <v-row>
@@ -65,7 +66,7 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-btn depressed color="primary" :disabled="!valid" @click="nextPage">
+          <v-btn depressed color="primary" :disabled="!valid" type="submit">
             Valider
           </v-btn>
         </v-col>
