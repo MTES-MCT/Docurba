@@ -242,7 +242,7 @@
 
 <script>
 import { mdiUpload, mdiPencil, mdiCheck, mdiAccountSearchOutline, mdiDelete, mdiInformationOutline } from '@mdi/js'
-// import axios from 'axios'
+import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 import FormInput from '@/mixins/FormInput.js'
 
@@ -390,19 +390,19 @@ export default {
         await this.$supabase.from('prescriptions').insert([prescription])
         this.loadingSave = false
 
-        // await axios({
-        //   url: '/api/slack/notify/admin/acte',
-        //   method: 'post',
-        //   data: {
-        //     userData: {
-        //       email: this.$route.query.email,
-        //       region: this.region,
-        //       collectivite: this.collectivite,
-        //       isEpci: this.isEpci
-        //     }
-        //   }
-        // })
-        // this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
+        await axios({
+          url: '/api/slack/notify/admin/acte',
+          method: 'post',
+          data: {
+            userData: {
+              email: this.$route.query.email,
+              region: this.region,
+              collectivite: this.collectivite,
+              isEpci: this.isEpci
+            }
+          }
+        })
+        this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
       } catch (error) {
         this.error = error
         this.$vuetify.goTo(0)
