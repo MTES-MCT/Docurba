@@ -98,6 +98,7 @@ export default {
   },
   data () {
     return {
+      valid: false,
       icons: {
         mdiArrowLeft
       },
