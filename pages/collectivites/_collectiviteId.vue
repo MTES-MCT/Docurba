@@ -19,6 +19,7 @@ import axios from 'axios'
 import regions from '@/assets/data/Regions.json'
 
 export default {
+  name: 'Collectivite',
   data () {
     return {
       snackbar: {
@@ -53,7 +54,6 @@ export default {
     } else {
       this.communes = [collectivite]
     }
-    console.log(' this.communes: ', this.communes)
   }
 }
 </script>

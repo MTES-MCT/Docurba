@@ -242,7 +242,7 @@
 
 <script>
 import { mdiUpload, mdiPencil, mdiCheck, mdiAccountSearchOutline, mdiDelete, mdiInformationOutline } from '@mdi/js'
-import axios from 'axios'
+// import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 import FormInput from '@/mixins/FormInput.js'
 
@@ -343,10 +343,15 @@ export default {
           const file = this.files[fileIndex]
           // <type_epci_commune>/<insee_or_code>/<date>/files
           const idFile = uuidv4()
-          const path = `${this.$route.query.isEpci ? 'epci' : 'commune'}/${this.$route.params.collectiviteId}/${uploadTimestamp}/${idFile}`
-          await this.$supabase.storage
+          const path = `${this.isEpci ? 'epci' : 'commune'}/${this.$route.params.collectiviteId}/${uploadTimestamp}/${idFile}`
+          console.log('path: ', path)
+          const { error } = await this.$supabase.storage
             .from('prescriptions')
             .upload(path, file)
+          if (error) {
+            console.log('error on upload: ', error)
+            throw new Error('Erreur d\'upload')
+          }
           filesData.push({ path, name: file.name, id: uuidv4() })
         }
         return filesData
@@ -385,19 +390,19 @@ export default {
         await this.$supabase.from('prescriptions').insert([prescription])
         this.loadingSave = false
 
-        await axios({
-          url: '/api/slack/notify/admin/acte',
-          method: 'post',
-          data: {
-            userData: {
-              email: this.$route.query.email,
-              region: this.region,
-              collectivite: this.collectivite,
-              isEpci: this.isEpci
-            }
-          }
-        })
-        this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
+        // await axios({
+        //   url: '/api/slack/notify/admin/acte',
+        //   method: 'post',
+        //   data: {
+        //     userData: {
+        //       email: this.$route.query.email,
+        //       region: this.region,
+        //       collectivite: this.collectivite,
+        //       isEpci: this.isEpci
+        //     }
+        //   }
+        // })
+        // this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
       } catch (error) {
         this.error = error
         this.$vuetify.goTo(0)

@@ -56,6 +56,7 @@
 <script>
 
 export default {
+  name: 'CollectiviteDetails',
   props: {
     isEpci: {
       type: Boolean,
@@ -105,9 +106,6 @@ export default {
         }
       ]
     }
-  },
-  mounted () {
-    console.log('OK TEST: ', this.collectivite)
   }
 }
 </script>

@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <h1>Tableau de bord - {{ $route.params.departement }}</h1>
+        <h1>Mes collectivités - {{ $route.params.departement }}</h1>
       </v-col>
       <v-col cols="12">
         <div style="background-color: #F6F6F6;border: 1px solid #DDDDDD;border-radius:4px;" class="pa-6">
@@ -98,6 +98,7 @@
 import axios from 'axios'
 
 export default {
+  layout: 'ddt',
   data () {
     return {
       search: '',
@@ -153,11 +154,8 @@ export default {
     if (errorSudocuCollectivites) {
       console.log('errorSudocuCollectivites: ', errorSudocuCollectivites)
     }
-    console.log('epcis.map(e.EPCI): ', epcis.map(e => e.EPCI))
-    console.log('collecsInsee: ', collecsInsee)
     this.epci = epcis.map((e) => {
       const sudoEpci = sudocuCollectivites.find((i) => {
-        console.log('i : ', i.codecollectivite.toString(), ' e: ', e.EPCI.toString())
         return i.codecollectivite === e.EPCI.toString()
       })
       if (!sudoEpci) {
@@ -169,8 +167,6 @@ export default {
         hasCompetence: sudoEpci?.sicompetenceplan ?? false
       }
     })
-    console.log('epcis: ', epcis)
-    console.log('communes: ', communes)
 
     const communesUniq = [...new Map(communes.map(item => [item.code_commune_INSEE, item])).values()]
     this.communes = communesUniq.map((e) => {
@@ -188,8 +184,6 @@ export default {
         frpProcPrincipalPath: { name: 'foo' }
       }
     })
-
-    console.log('EPCIs: ', this.epci)
   }
 }
 </script>

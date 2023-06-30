@@ -22,7 +22,7 @@
       </v-col>
       <v-col cols="12">
         <v-expansion-panels v-if="routeIsEpci" flat>
-          <v-expansion-panel class="beige">
+          <v-expansion-panel class="border-light">
             <v-expansion-panel-header>
               <h3>{{ collectivite.towns.length }} communes dans votre EPCI</h3>
             </v-expansion-panel-header>
@@ -56,6 +56,8 @@
           Documents d’urbanisme disponibles pour la commune recherchée :
         </p>
       </v-col>
+    </v-row>
+    <v-row v-if="procedures && procedures.length > 0">
       <v-col v-if="!routeIsEpci" cols="12">
         <DashboardDUItem
           v-for="(procedure,i) in procedures"
@@ -77,7 +79,7 @@
           </v-tab>
         </v-tabs>
 
-        <v-tabs-items v-model="tab">
+        <v-tabs-items v-model="tab" class="beige">
           <v-tab-item>
             <DashboardDUItem
               v-for="(procedure,i) in DUInter"
@@ -95,6 +97,18 @@
         </v-tabs-items>
       </v-col>
     </v-row>
+    <v-row v-else-if="procedures && procedures.length === 0">
+      <v-col cols="12">
+        <div class="text--secondary beige pa-6 mb-12 rounded">
+          Cette collectivité n'a pas de documents d'urbanisme sous ca compétence.
+        </div>
+      </v-col>
+    </v-row>
+    <v-row v-else>
+      <v-col cols="12">
+        <VGlobalLoader />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 <script>
@@ -105,6 +119,7 @@ import SudocuEvents from '@/mixins/SudocuEvents.js'
 
 export default {
   mixins: [SudocuEvents],
+  layout: 'ddt',
   data () {
     return {
       linkedEpci: null,
@@ -153,3 +168,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.border-light{
+  border: solid 1px var(--v-primary-lighten1) !important;
+}
+</style>

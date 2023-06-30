@@ -15,7 +15,7 @@
           Statut
         </div>
         <div>
-          <v-chip :color="status.color">
+          <v-chip :color="status.color" small label class="text-uppercase mr-2">
             {{ status.text }}
           </v-chip>
         </div>
