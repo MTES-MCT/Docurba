@@ -170,9 +170,8 @@ export default {
     let prescriptions = null
     if (this.isEpci) {
       prescriptions = (await this.$supabase.from('prescriptions').select('*').eq('epci->EPCI', this.collectivite.EPCI).order('created_at', { ascending: false })).data
-      console.log('prescriptions epci: ', prescriptions)
     } else {
-      const inseeSearch = this.isEpci ? [this.collectivite.code_commune_INSEE] : [this.collectivite.code_commune_INSEE]
+      const inseeSearch = [this.collectivite.code_commune_INSEE.toString().padStart(5, '0')]
       prescriptions = (await this.$supabase.from('prescriptions').select('*').contains('towns', inseeSearch).order('created_at', { ascending: false })).data
     }
     const [current, ...history] = prescriptions

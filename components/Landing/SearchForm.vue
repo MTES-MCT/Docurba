@@ -63,7 +63,7 @@ export default {
         this.$router.push({
           name: 'collectivites-collectiviteId',
           params: {
-            collectiviteId
+            collectiviteId: collectiviteId.toString().padStart(5, '0')
           },
           query: {
             isEpci: this.selectedCollectivite.type === 'epci'
