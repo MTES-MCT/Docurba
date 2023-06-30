@@ -10,7 +10,7 @@ export default {
       } else if (this.firstEvent.dateExecutoire && !this.firstEvent.idProcedurePrincipal) {
         return { text: 'précédent', color: '' }
       } else if (this.firstEvent.dateLancement) {
-        return { text: 'en cours', color: '' }
+        return { text: 'en cours', color: 'ongoing lighten-1' }
       } else {
         return { text: 'abandonné', color: 'error' }
       }

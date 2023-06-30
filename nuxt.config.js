@@ -65,14 +65,10 @@ export default {
     tracing: {
       tracesSampleRate: 1.0
     },
-    serverIntegrations: {
-      ProfilingIntegration: {}
+    clientIntegrations: {
+      CaptureConsole: {},
+      Replay: {}
     },
-    serverConfig: {
-      // Set sampling rate for profiling - this is relative to tracesSampleRate
-      profilesSampleRate: 1.0
-    },
-    clientIntegrations: ['CaptureConsole', 'Replay'],
     clientConfig: {
       // This sets the sample rate to be 10%. You may want this to be 100% while
       // in development and sample at a lower rate in production
@@ -147,6 +143,10 @@ export default {
       options: { customProperties: true },
       themes: {
         light: {
+          ongoing: {
+            base: '#745B47',
+            lighten1: '#F7ECE4'
+          },
           primary: {
             base: '#000091',
             lighten1: '#E3E3FD',

@@ -2,12 +2,15 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
+        <v-chip :color="status.color" label class="text-uppercase mr-2">
+          {{ status.text }}
+        </v-chip>
         {{ firstEvent.typeProcedure }}
         - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
       </v-col>
     </v-row>
     <v-row class="mt-0">
-      <v-col>
+      <!-- <v-col>
         <div class="text-caption g600--text">
           Statut
         </div>
@@ -16,7 +19,7 @@
             {{ status.text }}
           </v-chip>
         </div>
-      </v-col>
+      </v-col> -->
       <v-col>
         <div class="text-caption g600--text">
           Type de procédure
@@ -42,8 +45,13 @@
         <p class="font-weight-bold">
           Commentaire / Note
         </p>
-        <p>{{ firstEvent.commentaireProcedure }} </p>
-        <p>{{ firstEvent.commentaireDgd }} </p>
+        <div v-if="firstEvent.commentaireProcedure || firstEvent.commentaireDgd">
+          <p>{{ firstEvent.commentaireProcedure }} </p>
+          <p>{{ firstEvent.commentaireDgd }} </p>
+        </div>
+        <div v-else class="text--disabled">
+          Pas de commentaire
+        </div>
       </v-col>
       <v-col cols="12" class="pb-0">
         <v-divider />

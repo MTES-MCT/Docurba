@@ -149,7 +149,6 @@ export default {
         method: 'get'
       })
       this.linkedEpci = epci[0]
-      console.log('EPCI LINKED: ', epci)
     }
   }
 }

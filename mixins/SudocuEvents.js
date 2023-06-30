@@ -29,14 +29,9 @@ export default {
     },
     async loadPerimetre (procedures) {
       const proceduresIds = procedures.map(e => e.idProcedure)
-      console.log('proceduresIds: ', proceduresIds)
       const allPerim = (await this.$supabase.from('sudocu_procedures_perimetres').select().in('procedure_id', proceduresIds)).data
-      console.log('TEST PERIMETRE: ', allPerim)
-      console.log('JSON.stringify(proceduresIds): ', JSON.stringify(proceduresIds))
       const ongoingProceduresStates = (await this.$supabase.from('sudocu_procedures_etats').select().in('id_procedure_ongoing', proceduresIds)).data
-      console.log('ongoingProceduresStates: ', ongoingProceduresStates)
       const approvedProceduresStates = (await this.$supabase.from('sudocu_procedures_etats').select().in('id_procedure_approved', proceduresIds)).data
-      console.log('approvedProceduresStates: ', approvedProceduresStates)
       const proceduresEnrich = procedures.map((e) => {
         e.approvedInTowns = []
         e.ongoingInTowns = []
@@ -59,12 +54,6 @@ export default {
       })
       return proceduresEnrich
     },
-    // async loadState (procedures) {
-    //   const proceduresIds = procedures.map(e => e.idProcedure)
-
-    //   const allProcedureState = (await this.$supabase.from('sudocu_procedures_states').select().in('procedure_id', proceduresIds)).data
-    //   console.log('allProcedureState: ', allProcedureState)
-    // },
     async loadCommuneEvents (commune) {
       let codecollectivite
       if (!this.routeIsEpci) {
@@ -72,7 +61,6 @@ export default {
       } else { codecollectivite = commune.EPCI }
 
       const rawEvents = (await this.$supabase.from('sudocu_procedure_events').select().eq('codecollectivite', codecollectivite)).data
-      console.log('rawEvents: ', rawEvents)
       const formattedEvents = rawEvents.map((e) => {
         return {
           date_iso: e.dateevenement,
@@ -99,7 +87,6 @@ export default {
         r[a.idProcedure].push(a)
         return r
       }, Object.create(null))
-      console.log('eventsByProc: ', eventsByProc)
       const tempProcs = {}
       for (const [k, v] of Object.entries(eventsByProc)) {
         let procSecs = _.filter(eventsByProc, (e, i) => {
@@ -108,10 +95,7 @@ export default {
 
         if (procSecs && procSecs.length > 0) {
           procSecs = procSecs.reduce((acc, curr) => {
-            console.log('curr: ', curr)
-            // if (curr[0].dateApprobation) {
             acc[curr[0].idProcedure] = curr
-            // }
             return acc
           }, {})
         } else { procSecs = null }
@@ -119,14 +103,7 @@ export default {
           tempProcs[k] = { type: v[0].typeProcedure, events: v, procSecs }
         }
       }
-      console.log('tempProcs: ', tempProcs)
-      // TODO: Issue wit hcleanded proc
-      // const cleanedProcs = {}
       const cleanedProcs = tempProcs
-      // for (const [k, v] of Object.entries(tempProcs)) {
-      //   console.log(' k: ', k, ' v: ', v)
-      //   if (v.procSecs) { cleanedProcs[k] = v }
-      // }
 
       function lastStepDate (procedure) {
         if (procedure.events[0].dateAbandon) {
@@ -140,7 +117,6 @@ export default {
         }
         return null
       }
-      console.log('cleanedProcs: ', cleanedProcs)
       const procedures = _.chain(cleanedProcs)
         .map(e => ({
           ...e,
@@ -153,8 +129,6 @@ export default {
         .orderBy('lastStepDate', 'desc').value()
 
       this.procedures = await this.loadPerimetre(procedures)
-
-      console.log('eventsByProc after: ', this.procedures)
     }
   }
 }

@@ -7,16 +7,17 @@
     </v-card>
     <v-container v-if="procedure.procSecs.length > 0">
       <v-row>
-        <v-col cols="11" offset="1" class="border-sub-procedure">
+        <v-col cols="11" offset="1" class="sub-procedure">
           <v-expansion-panels flat>
             <v-expansion-panel>
-              <v-expansion-panel-header>
+              <v-expansion-panel-header class="primary lighten-4">
                 <span class="font-weight-bold">Procédures secondaires</span>
               </v-expansion-panel-header>
-              <v-expansion-panel-content>
+              <v-expansion-panel-content class="primary lighten-4">
                 <DashboardDUSubProcedureItem
                   v-for="procSec in procedure.procSecs"
                   :key="'procSec_' + procSec[0].idProcedure"
+                  class="grey-border mb-8"
                   :procedure="{events: procSec}"
                   :censored="censored"
                 />
@@ -77,15 +78,22 @@ export default {
 </script>
 
 <style lang="scss">
-.border-sub-procedure{
-  border-left: 1px solid #DDDDDD;
-  border-right: 1px solid #DDDDDD;
-  border-bottom: 1px solid #DDDDDD;
+.sub-procedure{
+  border-left: 1px solid #DDDDDD !important;
+  border-right: 1px solid #DDDDDD !important;
+  border-bottom: 1px solid #DDDDDD !important;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
+  background-color: var(--v-primary-lighten4);
 }
 
 .no-border-radius-bottom{
   border-bottom-right-radius: 0px !important;
+}
+
+.grey-border{
+  border-radius: 4px;
+  border: 1px solid #DDDDDD !important;
+  background: #FFF;
 }
 </style>
