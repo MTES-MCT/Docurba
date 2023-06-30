@@ -2,7 +2,7 @@
   <div class="page-counters-container">
     <div ref="page" class="page-sizer">
       <div ref="margin" class="margin-sizer" />
-      <div ref="content" class="content-sizer" />
+      <div ref="content" class="content-sizer" :style="{top: `${topPos}mm`}" />
     </div>
     <div
       v-for="(counter, i) in pageCounters"
@@ -12,8 +12,11 @@
     >
       {{ counter.text }}
     </div>
-    <!-- <div v-for="debugLine in debugLines" :key="debugLine.top" :style="debugLine" class="debug-line">
-      <b>{{ debugLine.accumulatedHeight }}</b>
+    <!-- <div v-for="(debugLine, i) in debugLines" :key="`${debugLine.top} ${i}`" :style="Object.assign({}, debugLine, {marginTop: `-${debugLine.initialSpaceLeft}px`, borderColor: 'blue', color: 'blue' })" class="debug-line break-line">
+      <b>{{ debugLine.accumulatedHeight - debugLine.initialSpaceLeft }} - {{ debugLine.from }}</b>
+    </div>
+    <div v-for="debugLine in debugLines" :key="debugLine.top" :style="debugLine" class="debug-line">
+      <b>{{ debugLine.accumulatedHeight }} - {{ debugLine.from }}</b>
     </div>
     <div :style="{top: finalLine}" class="debug-line final-line">
       <b>{{ finalLine }}</b>
@@ -39,7 +42,8 @@ export default {
     return {
       pageCounters: [],
       debugLines: [],
-      finalLine: 0
+      finalLine: 0,
+      topPos: 0
     }
   },
   mounted () {
@@ -55,7 +59,7 @@ export default {
       const margins = parseFloat(paddingTop) + parseFloat(paddingBottom) +
         parseFloat(marginTop) + parseFloat(marginBottom)
 
-      return { height: contentHeight + margins, margins }
+      return { height: contentHeight + margins, margins, marginBottom: parseFloat(marginBottom) }
     }
 
     const initialHeight = 0 // + 10
@@ -71,8 +75,10 @@ export default {
       accumulatedHeight += (initialSpaceLeft === pageHeight ? 0 : initialSpaceLeft)
 
       debugLines.push({
+        initialSpaceLeft,
         top: accumulatedHeight,
-        borderColor: 'green'
+        borderColor: 'green',
+        from
       })
 
       // console.log(accumulatedHeight, accumulatedHeight % pageHeight, Math.ceil(accumulatedHeight / (pageHeight)))
@@ -86,9 +92,16 @@ export default {
     }
 
     function traverseElements (element) {
-      const { height, margins } = calculateElementHeight(element)
+      const {
+        height, margins
+        // marginBottom
+      } = calculateElementHeight(element)
       const isRoot = element.classList.value.includes('print-root')
       let spaceLeft = getSpaceLeft()
+
+      if (element.tagName === 'TEXTAREA') { return }
+
+      // console.log(height, margins)
 
       // ROOT HANDLING
       if (isRoot && accumulatedHeight > initialHeight) {
@@ -97,7 +110,8 @@ export default {
       }
       // END ROOT HANDLING
 
-      if (height < spaceLeft) {
+      if (element.tagName !== 'DIV' && height < spaceLeft) {
+        // console.log('skip', element, height, margins)
         accumulatedHeight += height
       } else {
         const children = element.children
@@ -110,25 +124,44 @@ export default {
           spaceLeft = getSpaceLeft()
 
           if (margins >= spaceLeft) {
-            spaceLeft = addBreakPoint(element)
+            spaceLeft = addBreakPoint(`${element.tagName} - ${element.innerText.slice(0, 30)}`)
           }
 
           accumulatedHeight += margins
         } else if (element.tagName === 'IMG' || element.tagName[0] === 'H') {
-          addBreakPoint('IMG & H')
+          if (element.tagName === 'IMG') { console.log('image', height) }
+          addBreakPoint(`IMG & H - ${element.src || element.innerText.slice(0, 30)}`)
           accumulatedHeight += height
         } else {
-          let textSpace = getSpaceLeft()
-          textSpace = textSpace - (textSpace % 23)
-          accumulatedHeight += textSpace
-          addBreakPoint(element)
-          accumulatedHeight += height - textSpace
+          if (element.tagName === 'DIV') {
+            return
+          }
+
+          // This should always be round.
+          const nbTextLines = (height - margins) / 24
+          const textSpace = getSpaceLeft()
+          const nbFittingLines = Math.floor(textSpace / 24)
+
+          let countedTextSpace = 0
+
+          // Last lines will need to fit margin as well so it will go next page.
+          if (nbTextLines === nbFittingLines) {
+            countedTextSpace = (nbTextLines - 1) * 24
+          } else {
+            countedTextSpace = nbFittingLines * 24
+          }
+
+          // console.log(nbTextLines, nbFittingLines, textSpace, countedTextSpace, accumulatedHeight)
+
+          accumulatedHeight += countedTextSpace
+          addBreakPoint(`${element.tagName} - ${element.innerText.slice(0, 30)}`)
+          accumulatedHeight += height - countedTextSpace
         }
       }
     }
 
     this.$nextTick(async () => {
-      await Promise.all(Array.from(document.getElementsByTagName('img')).map((img) => {
+      const imagesLoading = Array.from(document.getElementsByTagName('img')).map((img) => {
         if (img.complete) {
           return true
         } else {
@@ -142,7 +175,9 @@ export default {
             }
           })
         }
-      }))
+      })
+
+      await Promise.all([...imagesLoading, document.fonts.ready])
 
       const contentEl = document.getElementById(this.contentId)
       traverseElements(contentEl)
@@ -151,14 +186,18 @@ export default {
 
       const nbTopPages = Math.ceil(document.getElementById('toc').offsetHeight / (pageHeight + marginHeight)) + 1
 
+      this.topPos = (nbTopPages * 263)
+
       this.finalLine = `calc(${accumulatedHeight + (nbPages * marginHeight)}px + ${(nbTopPages * 263)}mm)`
 
       this.debugLines = debugLines.map((line, i) => {
         return {
-          top: `calc(${line.top + (i * marginHeight)}px + ${(nbTopPages * 263)}mm`,
+          top: `calc(${line.top + (i * marginHeight)}px + ${(nbTopPages * 263)}mm)`,
+          initialSpaceLeft: line.initialSpaceLeft,
           accumulatedHeight: line.top,
           color: line.borderColor,
-          borderColor: line.borderColor
+          borderColor: line.borderColor,
+          from: line.from
         }
       })
 
@@ -191,6 +230,8 @@ export default {
   height: 297mm; */
   min-height: 254.5mm;
   height: 254.5mm;
+  width: 150px;
+  /* background-color: blueviolet; */
   position: absolute;
 }
 
