@@ -154,9 +154,10 @@ export default {
  }
 
  .footer-space {
+  /* background-color: aqua; */
    /* height: calc(68px + 8.5mm); */
-   /* height: calc(10mm); */
-   height: 17mm;
+   height: calc(8.5mm);
+   /* height: 17mm; */
  }
 
 .fr-header .fr-header__body-row, .fr-header .fr-header__logo, .fr-header .fr-logo {

@@ -10,7 +10,15 @@
 import '@gouvfr/dsfr/dist/css/header.css'
 import '@gouvfr/dsfr/dist/css/logo.css'
 export default {
-
+  // head () {
+  //   return {
+  //     link: [
+  //       { rel: 'preload', href: '/_nuxt/assets/fonts/Marianne/fontes_desktop/Marianne-Regular.otf', as: 'font', type: 'font/otf' },
+  //       { rel: 'preload', href: '/_nuxt/assets/fonts/Marianne/fontes_web/Marianne-Regular.woff', as: 'font', type: 'font/woff' },
+  //       { rel: 'preload', href: '/_nuxt/assets/fonts/Marianne/fontes_web/Marianne-Regular.woff2', as: 'font', type: 'font/woff2' }
+  //     ]
+  //   }
+  // }
 }
 </script>
 
@@ -53,6 +61,7 @@ export default {
   .print-container h3, .print-container h4,
   .print-container h5, .print-container h6,
   .print-container ul {
+    /* background-color: brown; */
     margin-bottom: 16px !important;
   }
 

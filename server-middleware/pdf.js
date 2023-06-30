@@ -22,7 +22,7 @@ app.get('/:ref', (req, res) => {
     const form = new FormData()
     form.append('url', `${printUrl}/print/${ref}`)
     form.append('preferCssPageSize', 'true')
-    form.append('emulatedMediaType', 'screen')
+    // form.append('emulatedMediaType', 'screen')
     form.append('marginTop', '0')
     form.append('marginBottom', '0')
     form.append('marginLeft', '0')
