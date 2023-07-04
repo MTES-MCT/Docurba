@@ -31,6 +31,7 @@ export default {
         },
         hideTitle: true,
         autoClose: 2000,
+        showOnce: true,
         doNotShowAfterSubmit: true
       }
     }
