@@ -85,11 +85,15 @@
     </client-only>
     <template #extension>
       <v-tabs align-with-title class="double-border">
-        <v-tab>Mes collectivites</v-tab>
+        <v-tab :to="{name: 'ddt-departement-collectivites', params: {departement: $route.params.departement}}">
+          Mes collectivites
+        </v-tab>
         <v-tab :to="{name: 'projets'}">
           Trame de PAC départementale
         </v-tab>
-        <v-tab>Validation des procédures</v-tab>
+        <v-tab :to="{name: 'ddt-departement-collectivites-enquete', params: {departement: $route.params.departement}}">
+          Validation des procédures
+        </v-tab>
         <v-tab>Une question ?</v-tab>
       </v-tabs>
     </template>
