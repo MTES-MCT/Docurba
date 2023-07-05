@@ -95,10 +95,10 @@
 
 <script>
 import { mdiTrashCan } from '@mdi/js'
-import SudocuEvents from '@/mixins/SudocuEvents.js'
+// import SudocuEvents from '@/mixins/SudocuEvents.js'
 
 export default {
-  mixins: [SudocuEvents],
+  // mixins: [SudocuEvents],
   props: {
     projectId: {
       type: String,
@@ -123,6 +123,8 @@ export default {
     }
 
     return {
+      collectivite: null,
+      procedure: null,
       defaultEvent,
       event: Object.assign({}, defaultEvent, {
         description: this.$isDev ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' : '',
@@ -139,7 +141,10 @@ export default {
     }
   },
   async mounted () {
-    await this.init()
+    // TODO: Find a better way to determine Commune ou EPCI
+    const collecType = this.$route.params.collectiviteId.length > 5 ? 'epci' : 'commune'
+    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, collecType)
+    this.procedures = await this.$sudocu.getProcedures(this.collectivite, collecType)
     if (this.eventId) {
       // fetch event
       const { data: events } = await this.$supabase.from('doc_frise_events').select('*').eq('id', this.eventId)
@@ -151,11 +156,11 @@ export default {
   },
   methods: {
     async saveAttachements (eventId) {
-      const modifiedAtatchements = this.attachements.filter((attachement) => {
+      const modifiedAttachements = this.attachements.filter((attachement) => {
         return attachement.state !== 'old'
       })
 
-      await Promise.all(modifiedAtatchements.map((attachement) => {
+      await Promise.all(modifiedAttachements.map((attachement) => {
         if (attachement.state === 'new') {
           return this.$supabase.storage
             .from('doc-events-attachements')

@@ -126,7 +126,7 @@ export default {
 
   // Vue router
   router: {
-    middleware: ['matomo', 'router']
+    middleware: ['matomo']
   },
 
   // Content module configuration: https://go.nuxtjs.dev/config-content

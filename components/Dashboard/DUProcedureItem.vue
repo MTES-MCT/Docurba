@@ -53,7 +53,7 @@
       </v-col>
       <v-col cols="12" class="pb-0">
         <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
-        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}, query: $route.query}">
+        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
           <span class="primary--text text-decoration-underline mr-4">
             Feuille de route partagée
           </span>
@@ -71,7 +71,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="d-flex align-end justify-end pb-0">
-        <v-btn text color="primary" :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}, query: $route.query}">
+        <v-btn text color="primary" :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
           <v-icon small color="primary" class="mr-2">
             {{ icons.mdiArrowRight }}
           </v-icon>
