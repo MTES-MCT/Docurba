@@ -3,25 +3,24 @@
     <v-row>
       <v-col cols="12">
         <h1 class="text-h1">
-          {{ collectivite.name }} <span v-if="collectivite.code_commune_INSEE">({{ collectivite.code_commune_INSEE }})</span>
+          {{ collectivite.name }}
         </h1>
       </v-col>
       <v-col cols="12">
         <div class="d-flex">
-          <div style="cursor:pointer;" class="d-flex align-center primary--text text-decoration-underline" @click="back">
+          <nuxt-link
+
+            :to="{ name: 'ddt-departement-collectivites', params: { departement: $route.params.departement }}"
+          >
             <v-icon small color="primary" class="mr-2">
               {{ icons.mdiArrowLeft }}
             </v-icon>
-            <span v-if="$store.getters.routeIsEpci">Revenir à mon tableau de bord</span>
-            <span v-else>Revenir à l'EPCI</span>
-          </div>
-          <div class="ml-8">
-            <span v-if="linkedEpci" class="text-h5">Appartient à {{ linkedEpci.label }}</span>
-          </div>
+            <span>Revenir à mon tableau de bord</span>
+          </nuxt-link>
         </div>
       </v-col>
       <v-col cols="12">
-        <v-expansion-panels v-if="$store.getters.routeIsEpci" flat>
+        <v-expansion-panels flat>
           <v-expansion-panel class="border-light">
             <v-expansion-panel-header>
               <h3>{{ collectivite.towns?.length }} communes dans votre EPCI</h3>
@@ -35,7 +34,7 @@
                     cols="4"
                     class="pt-0 pl-0"
                   >
-                    <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId', params: { departement: $route.params.departement, collectiviteId: town.code_commune_INSEE }, query: { isEpci: false } }">
+                    <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: $route.params.departement, collectiviteId: town.code_commune_INSEE }}">
                       {{ town.nom_commune }} ({{ town.code_commune_INSEE }})
                     </nuxt-link>
                     <v-divider class="mt-3" />
@@ -58,14 +57,7 @@
       </v-col>
     </v-row>
     <v-row v-if="procedures && procedures.length > 0">
-      <v-col v-if="!$store.getters.routeIsEpci" cols="12">
-        <DashboardDUItem
-          v-for="(procedure,i) in procedures"
-          :key="'du_' + i"
-          :procedure="procedure"
-        />
-      </v-col>
-      <v-col v-else>
+      <v-col>
         <v-tabs
           v-model="tab"
           background-color="primary"
@@ -114,7 +106,6 @@
 <script>
 
 import { mdiArrowLeft } from '@mdi/js'
-import axios from 'axios'
 
 export default {
   name: 'Collectivite',
@@ -140,29 +131,8 @@ export default {
   },
 
   async mounted () {
-    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId)
-    this.procedures = await this.$sudocu.getProcedures(this.collectivite)
-    if (!this.$store.getters.routeIsEpci) {
-      await this.getLinkedEpci(this.$route.params.collectiviteId)
-    }
-  },
-  methods: {
-    back () {
-      console.log('BACK: ', this.$store.getters.routeIsEpci, ' !this.linkedEpci: ', !this.linkedEpci)
-      if (this.$store.getters.routeIsEpci || !this.linkedEpci) {
-        console.log('BACK TO LIST')
-        this.$router.push({ name: 'ddt-departement-collectivites', params: { departement: this.$route.params.departement } })
-      } else {
-        this.$router.push({ name: 'ddt-departement-collectivites-collectiviteId', params: { departement: this.$route.params.departement, collectiviteId: this.linkedEpci.EPCI }, query: { isEpci: true } })
-      }
-    },
-    async getLinkedEpci (communeId) {
-      const { data: epci } = await axios({
-        url: `/api/epci?communeId=${communeId}`,
-        method: 'get'
-      })
-      this.linkedEpci = epci[0]
-    }
+    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, 'epci')
+    this.procedures = await this.$sudocu.getProcedures(this.collectivite, 'epci')
   }
 }
 </script>

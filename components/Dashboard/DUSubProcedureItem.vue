@@ -57,11 +57,9 @@
         <v-divider />
       </v-col>
       <v-col cols="12">
-        <span class="primary--text text-decoration-underline mr-4 text--disabled">
-          Liste des communes concernées
-        </span>
+        <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
         <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement, collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
-          <span class="primary--text text-decoration-underline mr-4 text--disabled">
+          <span class="primary--text text-decoration-underline mr-4">
             Feuille de route partagée
           </span>
         </nuxt-link>

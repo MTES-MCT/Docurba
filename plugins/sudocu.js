@@ -3,24 +3,23 @@ import _ from 'lodash'
 
 export default ({ route, store, $supabase }, inject) => {
   inject('sudocu', {
-    async getCurrentCollectivite (collectiviteId) {
+    async getCurrentCollectivite (collectiviteId, type) {
       try {
-        console.log('BEFORE: ', collectiviteId, ' store.getters.routeIsEpci: ', store.getters.routeIsEpci)
         const { data: collectivite } = await axios({
-          url: `/api/${store.getters.routeIsEpci ? 'epci' : 'communes'}/${collectiviteId}`,
+          url: `/api/${type === 'epci' ? 'epci' : 'communes'}/${collectiviteId}`,
           method: 'get'
         })
-        console.log('AFTER')
-        collectivite.name = store.getters.routeIsEpci ? collectivite.label : collectivite.nom_commune
+        collectivite.name = type === 'epci' ? collectivite.label : collectivite.nom_commune
+        collectivite.type = type === 'epci' ? 'epci' : 'commune'
         return collectivite
       } catch (error) {
         console.log('Error getCurrentCollectivite: ', error)
       }
     },
-    async getProcedures (commune) {
+    async getProcedures (commune, type) {
       try {
         let codecollectivite
-        if (!store.getters.routeIsEpci) {
+        if (type !== 'epci') {
           codecollectivite = commune.code_commune_INSEE.toString().padStart(5, '0')
         } else { codecollectivite = commune.EPCI }
         const { data: rawProcedures, error: rawProceduresError } = await $supabase.from('distinct_procedures_events').select('*').eq('codecollectivite', codecollectivite)
