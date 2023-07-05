@@ -12,7 +12,7 @@
             <v-icon small color="primary" class="mr-2">
               {{ icons.mdiArrowLeft }}
             </v-icon>
-            <span v-if="routeIsEpci">Revenir à mon tableau de bord</span>
+            <span v-if="$store.getters.routeIsEpci">Revenir à mon tableau de bord</span>
             <span v-else>Revenir à l'EPCI</span>
           </div>
           <div class="ml-8">
@@ -21,10 +21,10 @@
         </div>
       </v-col>
       <v-col cols="12">
-        <v-expansion-panels v-if="routeIsEpci" flat>
+        <v-expansion-panels v-if="$store.getters.routeIsEpci" flat>
           <v-expansion-panel class="border-light">
             <v-expansion-panel-header>
-              <h3>{{ collectivite.towns.length }} communes dans votre EPCI</h3>
+              <h3>{{ collectivite.towns?.length }} communes dans votre EPCI</h3>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-container>
@@ -58,7 +58,7 @@
       </v-col>
     </v-row>
     <v-row v-if="procedures && procedures.length > 0">
-      <v-col v-if="!routeIsEpci" cols="12">
+      <v-col v-if="!$store.getters.routeIsEpci" cols="12">
         <DashboardDUItem
           v-for="(procedure,i) in procedures"
           :key="'du_' + i"
@@ -115,15 +115,16 @@
 
 import { mdiArrowLeft } from '@mdi/js'
 import axios from 'axios'
-import SudocuEvents from '@/mixins/SudocuEvents.js'
 
 export default {
-  mixins: [SudocuEvents],
+  name: 'Collectivite',
   layout: 'ddt',
   data () {
     return {
       linkedEpci: null,
       tab: null,
+      collectivite: null,
+      procedures: null,
       icons: {
         mdiArrowLeft
       }
@@ -137,22 +138,19 @@ export default {
       return this.procedures?.filter(e => e.perimetre.length > 1)
     }
   },
+
   async mounted () {
-    if (!this.routeIsEpci) {
+    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId)
+    this.procedures = await this.$sudocu.getProcedures(this.collectivite)
+    if (!this.$store.getters.routeIsEpci) {
       await this.getLinkedEpci(this.$route.params.collectiviteId)
     }
-    // this.$route.params.collectiviteId.toString().padStart(5, '0')
-    // .eq('towns->>code_commune_INSEE', 30140)
-    // .contains('towns', [{ code_commune_INSEE: 30140 }])
-    // const { data: test, error } = await this.$supabase.from('projects').select('*').contains('towns', JSON.stringify([{ code_commune_INSEE: 73001 }]))
-    // console.log('TEST LASALLE: ', test)
-    // if (error) {
-    //   console.log('TEST error: ', error)
-    // }
   },
   methods: {
     back () {
-      if (this.routeIsEpci || !this.linkedEpci) {
+      console.log('BACK: ', this.$store.getters.routeIsEpci, ' !this.linkedEpci: ', !this.linkedEpci)
+      if (this.$store.getters.routeIsEpci || !this.linkedEpci) {
+        console.log('BACK TO LIST')
         this.$router.push({ name: 'ddt-departement-collectivites', params: { departement: this.$route.params.departement } })
       } else {
         this.$router.push({ name: 'ddt-departement-collectivites-collectiviteId', params: { departement: this.$route.params.departement, collectiviteId: this.linkedEpci.EPCI }, query: { isEpci: true } })

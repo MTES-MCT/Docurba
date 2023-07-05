@@ -98,6 +98,7 @@
 import axios from 'axios'
 
 export default {
+  name: 'CollectiviteDU',
   layout: 'ddt',
   data () {
     return {

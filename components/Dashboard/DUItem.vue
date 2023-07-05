@@ -5,7 +5,7 @@
         <DashboardDUProcedureItem :procedure="procedure" :censored="censored" />
       </v-container>
     </v-card>
-    <v-container v-if="procedure.procSecs.length > 0">
+    <v-container v-if="procedure.procSecs?.length > 0">
       <v-row>
         <v-col cols="11" offset="1" class="sub-procedure">
           <v-expansion-panels flat>
@@ -16,9 +16,9 @@
               <v-expansion-panel-content class="primary lighten-4">
                 <DashboardDUSubProcedureItem
                   v-for="procSec in procedure.procSecs"
-                  :key="'procSec_' + procSec[0].idProcedure"
+                  :key="'procSec_' +procSec.idProcedure"
                   class="grey-border mb-8"
-                  :procedure="{events: procSec}"
+                  :procedure="procSec"
                   :censored="censored"
                 />
               </v-expansion-panel-content>
@@ -47,29 +47,26 @@ export default {
     }
   },
   computed: {
-    firstEvent () {
-      return this.procedure.events[0]
-    },
     status () {
-      if (this.firstEvent.dateExecutoire && !this.firstEvent.idProcedurePrincipal) {
+      if (this.procedure.dateExecutoire && !this.procedure.idProcedurePrincipal) {
         return 'opposable'
-      } else if (this.firstEvent.dateExecutoire && this.firstEvent.idProcedurePrincipal) {
+      } else if (this.procedure.dateExecutoire && this.procedure.idProcedurePrincipal) {
         return 'précédent'
-      } else if (this.firstEvent.dateLancement || this.firstEvent.dateApprobation) {
+      } else if (this.procedure.dateLancement || this.procedure.dateApprobation) {
         return 'en cours'
       } else {
         return 'abandonné'
       }
     },
     step () {
-      if (this.firstEvent.dateAbandon) {
-        return `Abandon (${this.firstEvent.dateAbandon})`
-      } else if (this.firstEvent.dateExecutoire) {
-        return `Executoire (${this.firstEvent.dateExecutoire})`
-      } else if (this.firstEvent.dateApprobation) {
-        return `Approbation (${this.firstEvent.dateApprobation})`
-      } else if (this.firstEvent.dateLancement) {
-        return `Lancement (${this.firstEvent.dateLancement})`
+      if (this.procedure.dateAbandon) {
+        return `Abandon (${this.procedure.dateAbandon})`
+      } else if (this.procedure.dateExecutoire) {
+        return `Executoire (${this.procedure.dateExecutoire})`
+      } else if (this.procedure.dateApprobation) {
+        return `Approbation (${this.procedure.dateApprobation})`
+      } else if (this.procedure.dateLancement) {
+        return `Lancement (${this.procedure.dateLancement})`
       }
       return '-'
     }

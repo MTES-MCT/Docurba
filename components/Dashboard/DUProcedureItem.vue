@@ -2,11 +2,11 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        <span v-if="firstEvent.docType === 'PLU'">{{ isPlui ? 'PLUi' : 'PLU' }}</span>
-        <span v-else>{{ firstEvent.docType }}</span>
+        <span v-if="procedure.docType === 'PLU'">{{ isPlui ? 'PLUi' : 'PLU' }}</span>
+        <span v-else>{{ procedure.docType }}</span>
         <span> {{ procedure.perimetre.length === 1 ? procedure.perimetre[0].name + ' (' + procedure.perimetre[0].inseeCode + ')' : '' }}</span>
         <br>
-        id - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
+        id - {{ procedure.idProcedure }} - parent: {{ procedure.idProcedurePrincipal }}
       </v-col>
     </v-row>
     <v-row class="mt-0">
@@ -25,7 +25,7 @@
           Type de procédure
         </div>
         <div>
-          {{ firstEvent.typeProcedure }}
+          {{ procedure.typeProcedure }}
         </div>
       </v-col>
       <v-col>
@@ -45,15 +45,15 @@
         <p class="font-weight-bold">
           Commentaire / Note
         </p>
-        <p>{{ firstEvent.commentaireProcedure }} </p>
-        <p>{{ firstEvent.commentaireDgd }} </p>
+        <p>{{ procedure.commentaireProcedure }} </p>
+        <p>{{ procedure.commentaireDgd }} </p>
       </v-col>
       <v-col cols="12" class="pb-0">
         <v-divider />
       </v-col>
       <v-col cols="12" class="pb-0">
         <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
-        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: firstEvent.idProcedure}, query: $route.query}">
+        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}, query: $route.query}">
           <span class="primary--text text-decoration-underline mr-4">
             Feuille de route partagée
           </span>
@@ -71,7 +71,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="d-flex align-end justify-end pb-0">
-        <v-btn text color="primary" :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: firstEvent.idProcedure}, query: $route.query}">
+        <v-btn text color="primary" :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}, query: $route.query}">
           <v-icon small color="primary" class="mr-2">
             {{ icons.mdiArrowRight }}
           </v-icon>
@@ -109,7 +109,7 @@ export default {
       return this.procedure.perimetre.length > 1
     },
     status () {
-      if (this.firstEvent.dateAbandon) {
+      if (this.procedure.dateAbandon) {
         return { text: 'abandonné', color: 'error' }
       }
       // si ce n'est pas un PLU
@@ -123,9 +123,9 @@ export default {
         }
       } else {
         // Si on est dans un cas de PLUi
-        if ((this.firstEvent.dateExecutoire || this.firstEvent.dateApprobation) && this.firstEvent.idProcedurePrincipal) {
+        if ((this.procedure.dateExecutoire || this.procedure.dateApprobation) && this.procedure.idProcedurePrincipal) {
           return { text: 'opposable', color: 'success lighten-2' }
-        } else if (this.firstEvent.dateExecutoire && !this.firstEvent.idProcedurePrincipal) {
+        } else if (this.procedure.dateExecutoire && !this.procedure.idProcedurePrincipal) {
           return { text: 'précédent', color: '' }
         }
         // implicite si date de lancement

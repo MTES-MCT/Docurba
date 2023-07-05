@@ -88,10 +88,19 @@
         <v-tab :to="{name: 'ddt-departement-collectivites', params: {departement: $route.params.departement}}">
           Mes collectivites
         </v-tab>
-        <v-tab :to="{name: 'projets'}">
+        <v-tab
+          :to="{name: 'trames-githubRef', params: {githubRef: `dept-${$route.params.departement}`} }"
+        >
           Trame de PAC départementale
         </v-tab>
-        <v-tab :to="{name: 'ddt-departement-collectivites-enquete', params: {departement: $route.params.departement}}">
+        <v-tab
+          :to="
+            {name:
+               'ddt-departement-collectivites-enquete',
+             params:
+               {departement:
+                 $route.params.departement}}"
+        >
           Validation des procédures
         </v-tab>
         <v-tab>Une question ?</v-tab>

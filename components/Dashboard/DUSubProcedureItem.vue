@@ -5,8 +5,8 @@
         <v-chip :color="status.color" label class="text-uppercase mr-2">
           {{ status.text }}
         </v-chip>
-        {{ firstEvent.typeProcedure }}
-        - {{ firstEvent.idProcedure }} - parent: {{ firstEvent.idProcedurePrincipal }}
+        {{ procedure.typeProcedure }}
+        - {{ procedure.idProcedure }} - parent: {{ procedure.idProcedurePrincipal }}
       </v-col>
     </v-row>
     <v-row class="mt-0">
@@ -25,7 +25,7 @@
           Type de procédure
         </div>
         <div>
-          {{ firstEvent.typeProcedure }}
+          {{ procedure.typeProcedure }}
         </div>
       </v-col>
       <v-col>
@@ -45,9 +45,9 @@
         <p class="font-weight-bold">
           Commentaire / Note
         </p>
-        <div v-if="firstEvent.commentaireProcedure || firstEvent.commentaireDgd">
-          <p>{{ firstEvent.commentaireProcedure }} </p>
-          <p>{{ firstEvent.commentaireDgd }} </p>
+        <div v-if="procedure.commentaireProcedure || procedure.commentaireDgd">
+          <p>{{ procedure.commentaireProcedure }} </p>
+          <p>{{ procedure.commentaireDgd }} </p>
         </div>
         <div v-else class="text--disabled">
           Pas de commentaire
@@ -60,7 +60,7 @@
         <span class="primary--text text-decoration-underline mr-4 text--disabled">
           Liste des communes concernées
         </span>
-        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement, collectiviteId: $route.params.collectiviteId, procedureId: firstEvent.idProcedure}}">
+        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement, collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
           <span class="primary--text text-decoration-underline mr-4 text--disabled">
             Feuille de route partagée
           </span>
