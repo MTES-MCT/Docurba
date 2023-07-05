@@ -58,8 +58,10 @@ app.post('/deals', async (req, res) => {
 
   const { data: owner, error } = await supabase.auth.admin.getUserById(ownerId)
 
+  console.log(owner)
+
   if (!error) {
-    const email = owner.email
+    const email = owner.user.email
 
     let { person } = await pipedrive.findPerson(email)
 
