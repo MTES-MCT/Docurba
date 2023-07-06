@@ -70,7 +70,9 @@
       <v-col cols="12" class="pb-0">
         <v-divider />
       </v-col>
-      <v-col cols="12" class="d-flex align-end justify-end pb-0">
+      <v-col cols="12" class="d-flex align-center justify-end pb-0">
+        <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
+        <v-spacer />
         <v-btn text color="primary" :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
           <v-icon small color="primary" class="mr-2">
             {{ icons.mdiArrowRight }}
