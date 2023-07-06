@@ -54,7 +54,7 @@ export default ({ route, store, $supabase }, inject) => {
 
         const groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.idProcedurePrincipal?.toString())
         const fullProcs = _.map(procsPrincipales, (procedurePrincipale) => {
-          procedurePrincipale.procSecs = groupedProcsSecondaires[procedurePrincipale.idProcedurePrincipal]
+          procedurePrincipale.procSecs = groupedProcsSecondaires[procedurePrincipale.idProcedure]
           return procedurePrincipale
         })
         console.log('fullProcs: ', fullProcs)
