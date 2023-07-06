@@ -95,10 +95,8 @@
 
 <script>
 import { mdiTrashCan } from '@mdi/js'
-// import SudocuEvents from '@/mixins/SudocuEvents.js'
 
 export default {
-  // mixins: [SudocuEvents],
   props: {
     projectId: {
       type: String,

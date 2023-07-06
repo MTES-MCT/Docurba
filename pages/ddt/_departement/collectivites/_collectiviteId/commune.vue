@@ -33,7 +33,8 @@
         </p>
       </v-col>
     </v-row>
-    <v-row v-if="procedures && procedures.length > 0">
+    <DashboardDUItemsList :procedures="procedures" collectivite-type="commune" />
+    <!-- <v-row v-if="procedures && procedures.length > 0">
       <v-col cols="12">
         <DashboardDUItem
           v-for="(procedure,i) in procedures"
@@ -53,7 +54,7 @@
       <v-col cols="12">
         <VGlobalLoader />
       </v-col>
-    </v-row>
+    </v-row> -->
   </v-container>
 </template>
 <script>

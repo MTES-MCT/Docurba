@@ -37,7 +37,7 @@
         </div>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-if="!censored">
       <v-col cols="12" class="pb-0">
         <v-divider />
       </v-col>
@@ -71,9 +71,23 @@
         </span>
       </v-col>
     </v-row>
+    <v-row v-else>
+      <v-col cols="12" class="pb-0">
+        <v-divider />
+      </v-col>
+      <v-col cols="12" class="d-flex align-end justify-end ">
+        <v-btn text color="primary" :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
+          <v-icon small color="primary" class="mr-2">
+            {{ icons.mdiArrowRight }}
+          </v-icon>
+          Feuille de route publique
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 <script>
+import { mdiArrowRight } from '@mdi/js'
 import BaseDUProcedureItem from '@/mixins/BaseDUProcedureItem.js'
 
 export default {
@@ -90,7 +104,9 @@ export default {
   },
   data () {
     return {
-
+      icons: {
+        mdiArrowRight
+      }
     }
   }
 }

@@ -1,6 +1,10 @@
 import axios from 'axios'
 import _ from 'lodash'
 
+// const { data: rawEvents, error: rawEventsError, ...args } = await this.$supabase.from('sudocu_procedure_events').select('*', { count: 'exact' }).eq('codecollectivite', codecollectivite)
+// console.log('args: ', args)
+// if (rawEventsError) { throw rawEventsError }
+
 export default ({ route, store, $supabase }, inject) => {
   inject('sudocu', {
     async getCurrentCollectivite (collectiviteId, type) {

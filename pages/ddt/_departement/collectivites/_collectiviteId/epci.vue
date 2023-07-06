@@ -56,7 +56,8 @@
         </p>
       </v-col>
     </v-row>
-    <v-row v-if="procedures && procedures.length > 0">
+    <DashboardDUItemsList :procedures="procedures" collectivite-type="epci" />
+    <!-- <v-row v-if="procedures && procedures.length > 0">
       <v-col>
         <v-tabs
           v-model="tab"
@@ -100,7 +101,7 @@
       <v-col cols="12">
         <VGlobalLoader />
       </v-col>
-    </v-row>
+    </v-row> -->
   </v-container>
 </template>
 <script>
@@ -113,7 +114,7 @@ export default {
   data () {
     return {
       linkedEpci: null,
-      tab: null,
+      // tab: null,
       collectivite: null,
       procedures: null,
       icons: {
@@ -121,14 +122,14 @@ export default {
       }
     }
   },
-  computed: {
-    DUCommunaux () {
-      return this.procedures?.filter(e => e.perimetre.length === 1)
-    },
-    DUInter () {
-      return this.procedures?.filter(e => e.perimetre.length > 1)
-    }
-  },
+  // computed: {
+  //   DUCommunaux () {
+  //     return this.procedures?.filter(e => e.perimetre.length === 1)
+  //   },
+  //   DUInter () {
+  //     return this.procedures?.filter(e => e.perimetre.length > 1)
+  //   }
+  // },
 
   async mounted () {
     this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, 'epci')
