@@ -139,10 +139,8 @@ export default {
     }
   },
   async mounted () {
-    // TODO: Find a better way to determine Commune ou EPCI
-    const collecType = this.$route.params.collectiviteId.length > 5 ? 'epci' : 'commune'
-    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, collecType)
-    this.procedures = await this.$sudocu.getProcedures(this.collectivite, collecType)
+    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId)
+    this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
     if (this.eventId) {
       // fetch event
       const { data: events } = await this.$supabase.from('doc_frise_events').select('*').eq('id', this.eventId)

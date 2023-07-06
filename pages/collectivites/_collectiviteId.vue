@@ -62,8 +62,8 @@ export default {
     } else {
       this.communes = [collectivite]
     }
-    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, this.isEpci ? 'epci' : 'commune')
-    this.procedures = await this.$sudocu.getProcedures(this.collectivite, this.isEpci ? 'epci' : 'commune')
+    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId)
+    this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
   }
 }
 </script>

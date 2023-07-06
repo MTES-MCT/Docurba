@@ -7,25 +7,31 @@ import _ from 'lodash'
 
 export default ({ route, store, $supabase }, inject) => {
   inject('sudocu', {
-    async getCurrentCollectivite (collectiviteId, type) {
+    isEpci (collectiviteId) {
+      return !(collectiviteId.length <= 5)
+    },
+    async getCurrentCollectivite (collectiviteId) {
       try {
         const { data: collectivite } = await axios({
-          url: `/api/${type === 'epci' ? 'epci' : 'communes'}/${collectiviteId}`,
+          url: `/api/${this.isEpci(collectiviteId) ? 'epci' : 'communes'}/${collectiviteId}`,
           method: 'get'
         })
-        collectivite.name = type === 'epci' ? collectivite.label : collectivite.nom_commune
-        collectivite.type = type === 'epci' ? 'epci' : 'commune'
+        collectivite.name = this.isEpci(collectiviteId) ? collectivite.label : collectivite.nom_commune
+        collectivite.type = this.isEpci(collectiviteId) ? 'epci' : 'commune'
         return collectivite
       } catch (error) {
         console.log('Error getCurrentCollectivite: ', error)
       }
     },
-    async getProcedures (commune, type) {
+    async getProcedures (communeId) {
       try {
         let codecollectivite
-        if (type !== 'epci') {
-          codecollectivite = commune.code_commune_INSEE.toString().padStart(5, '0')
-        } else { codecollectivite = commune.EPCI }
+        if (this.isEpci(communeId)) {
+          codecollectivite = communeId
+        } else {
+          codecollectivite = communeId.toString().padStart(5, '0')
+        }
+
         const { data: rawProcedures, error: rawProceduresError } = await $supabase.from('distinct_procedures_events').select('*').eq('codecollectivite', codecollectivite)
         if (rawProceduresError) { throw rawProceduresError }
         const formattedProcedures = rawProcedures.map((e) => {

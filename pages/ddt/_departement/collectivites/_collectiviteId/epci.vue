@@ -122,18 +122,9 @@ export default {
       }
     }
   },
-  // computed: {
-  //   DUCommunaux () {
-  //     return this.procedures?.filter(e => e.perimetre.length === 1)
-  //   },
-  //   DUInter () {
-  //     return this.procedures?.filter(e => e.perimetre.length > 1)
-  //   }
-  // },
-
   async mounted () {
-    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, 'epci')
-    this.procedures = await this.$sudocu.getProcedures(this.collectivite, 'epci')
+    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId)
+    this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
   }
 }
 </script>
