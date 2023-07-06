@@ -119,19 +119,26 @@ export default {
 
     this.orderSections(sections, supSections)
 
-    function parseSection (section) {
+    function parseSection (section, supSections) {
+      // console.log(section, section.ref)
+
       if (section.children) {
-        section.children = section.children.map(section => parseSection(section))
+        section.children = section.children.map(section => parseSection(section, supSections))
       } else { section.children = [] }
+
+      const supSection = supSections.find((supSection) => {
+        return section.path === supSection.path
+      })
 
       return Object.assign({
         diff: null,
-        diffCount: 0
+        diffCount: 0,
+        parentSha: supSection ? supSection.parent_sha : ''
       }, section)
     }
 
     this.sections = sections.map((section) => {
-      return parseSection(section)
+      return parseSection(section, supSections)
     })
 
     this.loading = false
@@ -139,6 +146,12 @@ export default {
     this.getDiff()
   },
   methods: {
+    findSection (path) {
+      return this.sections.find((section) => {
+        const sectionPath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
+        return sectionPath === path
+      })
+    },
     async getDiff () {
       let headRef = 'main'
 
@@ -154,8 +167,13 @@ export default {
       }
 
       // https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits
-      const { data: diffFiles } = await axios({
+      const { data } = await axios({
         url: `/api/trames/compare?basehead=${this.gitRef}...${headRef}`
+      })
+
+      const diffFiles = data.files.filter((file) => {
+        const section = this.findSection(file.filename)
+        return file.changes > 0 && (!section || section.parentSha !== file.sha)
       })
 
       this.sections.forEach((section) => {
@@ -175,6 +193,7 @@ export default {
         section.diff = {
           path: diffFile.filename,
           ref: diffRef,
+          sha: diffFile.sha,
           label: `Modifications au niveau ${level}`
         }
       }

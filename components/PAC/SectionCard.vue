@@ -27,16 +27,20 @@
                       hide-details
                       @click.stop
                     />
-                    <v-chip
-                      v-if="section.diff && isEditable"
-                      label
-                      color="bf200"
-                      text-color="primary lighten-2"
-                      class="ml-2"
-                    >
-                      {{ section.diff.label }}
-                    </v-chip>
-                    <v-badge v-if="section.diffCount" color="primary" inline :content="section.diffCount" />
+                    <PACEditingParentDiffDialog v-if="section.diff && isEditable" :section="section" :git-ref="gitRef">
+                      <template #default="{on}">
+                        <v-chip
+                          label
+                          color="bf200"
+                          text-color="primary lighten-2"
+                          class="ml-2"
+                          v-on="on"
+                        >
+                          {{ section.diff.label }}
+                        </v-chip>
+                      </template>
+                    </PACEditingParentDiffDialog>
+                    <v-badge v-if="section.diffCount" color="primary" class="ml-2" inline :content="section.diffCount" />
                   </h2>
                   <!-- <span v-show="lastEditDate" class="text-caption">Modifié le: {{ lastEditDate }}</span> -->
                 </v-col>

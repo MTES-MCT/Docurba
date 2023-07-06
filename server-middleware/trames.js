@@ -156,7 +156,7 @@ app.get('/compare', async (req, res) => {
       page: 1
     })
 
-    res.send(data.files)
+    res.send(data)
   } catch (err) {
     console.log('err in compare', err)
   }
