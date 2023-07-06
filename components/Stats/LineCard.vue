@@ -33,8 +33,6 @@ export default {
     }
   },
   data () {
-    console.log('points', this.points)
-
     return {}
   }
 }
