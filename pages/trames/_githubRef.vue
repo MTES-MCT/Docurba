@@ -14,6 +14,16 @@
           <PACEditingAdvicesCard :avoided-tags="(project && project.id) ? [] : ['projet']" />
         </v-col>
       </v-row>
+      <!-- <v-row>
+        <v-spacer />
+        <v-col cols="auto">
+          <v-switch
+            hide-details
+            label="Afficher les sections présentes dans la trame parente"
+            @change="toggleParentSectionsDisplay"
+          />
+        </v-col>
+      </v-row> -->
       <v-row>
         <v-col v-for="section in sections" :key="section.url" cols="12">
           <PACSectionCard
@@ -170,6 +180,12 @@ export default {
       const { data } = await axios({
         url: `/api/trames/compare?basehead=${this.gitRef}...${headRef}`
       })
+
+      const { data: missing } = await axios({
+        url: `/api/trames/compare?basehead=${headRef}...${this.gitRef}`
+      })
+
+      console.log(data, missing)
 
       const diffFiles = data.files.filter((file) => {
         const section = this.findSection(file.filename)
@@ -336,6 +352,9 @@ export default {
           this.editedSections.splice(sectionIndex, 1)
         }
       }
+    },
+    toggleParentSectionsDisplay () {
+      console.log('toggleParentSectionsDisplay')
     }
   }
 }

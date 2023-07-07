@@ -16,7 +16,18 @@
                     @change="selectionChange"
                   />
                 </v-col>
-                <v-col cols="">
+                <v-col cols="" class="p-relative">
+                  <v-btn
+                    v-show="lastEditDate && editable"
+                    absolute
+                    text
+                    disabled
+                    small
+                    class="text-caption text-right px-1"
+                    :style="{left: '0px', bottom: '-20px'}"
+                  >
+                    Modifié le: {{ lastEditDate }}
+                  </v-btn>
                   <h2 class="section-title d-flex align-center">
                     <span v-if="!editEnabled">{{ section.name }}</span>
                     <v-text-field
@@ -42,7 +53,6 @@
                     </PACEditingParentDiffDialog>
                     <v-badge v-if="section.diffCount" color="primary" class="ml-2" inline :content="section.diffCount" />
                   </h2>
-                  <!-- <span v-show="lastEditDate" class="text-caption">Modifié le: {{ lastEditDate }}</span> -->
                 </v-col>
                 <v-col v-if="(isOpen || hover) && editable" cols="auto">
                   <v-tooltip bottom>
@@ -121,7 +131,7 @@
                 </v-col>
               </v-row>
               <v-row v-else>
-                <v-col cols="12">
+                <v-col cols="12" :style="{position: 'relative'}">
                   <PACEditingReadOnlyCard v-if="editable && !isEditable" :section="section" class="mt-4" />
                   <nuxt-content class="pac-section-content mt-4" :document="sectionContent" />
                 </v-col>

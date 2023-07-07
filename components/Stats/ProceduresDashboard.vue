@@ -26,6 +26,7 @@
 
 <script>
 import axios from 'axios'
+// import departements from '@/assets/data/departements-france.json'
 
 export default {
   data () {
@@ -65,7 +66,22 @@ export default {
         method: 'get'
       })
 
-      // console.log('data', data)
+      // console.log('Projects Data', data)
+
+      // const ARA = departements.filter((dept) => {
+      //   return dept.code_region === 84
+      // })
+
+      // const ARAprojects = { total: 0 }
+
+      // ARA.forEach((dept) => {
+      //   const nbProjects = data.byDept[dept.code_departement]
+
+      //   ARAprojects[dept.nom_departement] = nbProjects
+      //   ARAprojects.total += nbProjects
+      // })
+
+      // console.log(JSON.stringify(ARAprojects, null, 2))
 
       this.stats = data
     }
