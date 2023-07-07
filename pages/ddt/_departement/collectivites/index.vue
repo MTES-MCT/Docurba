@@ -36,6 +36,8 @@
               :items="collectivites"
               class="elevation-1"
               :search="search"
+              :loading="!epci"
+              loading-text="Chargement des collectivités..."
             >
               <template #top />
               <!-- eslint-disable-next-line -->
@@ -65,6 +67,8 @@
               :headers="headers"
               :items="communes"
               class="elevation-1"
+              :loading="!communes"
+              loading-text="Chargement des collectivités..."
               :search="search"
             >
               <!-- eslint-disable-next-line -->
@@ -98,6 +102,7 @@
 import axios from 'axios'
 
 export default {
+  name: 'CollectiviteDU',
   layout: 'ddt',
   data () {
     return {
@@ -126,7 +131,7 @@ export default {
           type: `EPCI (${e.towns.length})`,
           lastProc: '',
           status: '',
-          detailsPath: { name: 'ddt-departement-collectivites-collectiviteId', params: { departement: this.$route.params.departement, collectiviteId: e.EPCI }, query: { isEpci: true } },
+          detailsPath: { name: 'ddt-departement-collectivites-collectiviteId-epci', params: { departement: this.$route.params.departement, collectiviteId: e.EPCI } },
           frpProcPrincipalPath: { name: 'foo' }
         }
       })
@@ -180,7 +185,7 @@ export default {
         type: 'Commune',
         lastProc: '',
         status: '',
-        detailsPath: { name: 'ddt-departement-collectivites-collectiviteId', params: { departement: this.$route.params.departement, collectiviteId: e.code_commune_INSEE }, query: { isEpci: false } },
+        detailsPath: { name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: this.$route.params.departement, collectiviteId: e.code_commune_INSEE } },
         frpProcPrincipalPath: { name: 'foo' }
       }
     })

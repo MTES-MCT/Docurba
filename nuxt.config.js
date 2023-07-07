@@ -21,6 +21,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+
     { src: '~/plugins/dayjs.js' },
     { src: '~/plugins/isDev.js' },
     { src: '~/plugins/composition.js' },
@@ -35,7 +36,8 @@ export default {
     { src: '~/plugins/print.js', mode: 'client' },
     { src: '~/plugins/rules.js' },
     { src: '~/plugins/notifications.js', mode: 'client' },
-    { src: '~/plugins/githubRefs.js', mode: 'client' }
+    { src: '~/plugins/githubRefs.js', mode: 'client' },
+    { src: '~/plugins/sudocu.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

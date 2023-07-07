@@ -7,7 +7,14 @@
         </v-col>
       </v-row>
     </v-container>
-    <nuxt-child :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" @snackMessage="Object.assign(snackbar, {visible: true, message: arguments[0]})" />
+    <nuxt-child
+      :is-epci="isEpci"
+      :collectivite="collectivite"
+      :procedures="procedures"
+      :communes="communes"
+      :region="region"
+      @snackMessage="Object.assign(snackbar, {visible: true, message: arguments[0]})"
+    />
     <v-snackbar v-model="snackbar.visible" top right color="success">
       {{ snackbar.message }}
     </v-snackbar>
@@ -28,7 +35,8 @@ export default {
       },
       regions,
       communes: null,
-      collectivite: null
+      collectivite: null,
+      procedures: null
     }
   },
   computed: {
@@ -54,6 +62,8 @@ export default {
     } else {
       this.communes = [collectivite]
     }
+    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, this.isEpci ? 'epci' : 'commune')
+    this.procedures = await this.$sudocu.getProcedures(this.collectivite, this.isEpci ? 'epci' : 'commune')
   }
 }
 </script>

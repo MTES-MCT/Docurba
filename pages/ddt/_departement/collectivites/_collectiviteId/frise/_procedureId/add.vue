@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <v-btn text exact-path color="primary" nuxt :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: $route.params.procedureId}, query: $route.query}">
+        <v-btn text exact-path color="primary" nuxt :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: $route.params.procedureId}}">
           <v-icon>{{ icons.mdiChevronLeft }}</v-icon> Revenir à la frise
         </v-btn>
       </v-col>
