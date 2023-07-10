@@ -166,7 +166,6 @@ export default {
       if (!sudoEpci) {
         console.log('not found sudoEpci: ', e)
       }
-      // console.log('HERE: ', sudoEpci?.sicompetenceplan)
       return {
         ...e,
         hasCompetence: sudoEpci?.sicompetenceplan ?? false

@@ -8,7 +8,18 @@ import _ from 'lodash'
 export default ({ route, store, $supabase }, inject) => {
   inject('sudocu', {
     isEpci (collectiviteId) {
-      return !(collectiviteId.length <= 5)
+      return collectiviteId.toString().length > 5
+    },
+    async getProcedureInfosDgd (procedureId) {
+      try {
+        if (typeof procedureId === 'string') { procedureId = parseInt(procedureId) }
+        console.log('procedureId: ', procedureId)
+        const { data: rawDetailsProcedure, error: rawDetailsProcedureError } = await $supabase.from('sudocu_procedures_infosdgd').select('*').eq('procedure_id', procedureId)
+        if (rawDetailsProcedureError) { throw rawDetailsProcedureError }
+        return rawDetailsProcedure
+      } catch (error) {
+        console.log('ERROR getProcedureInfosDgd: ', error)
+      }
     },
     async getCurrentCollectivite (collectiviteId) {
       try {

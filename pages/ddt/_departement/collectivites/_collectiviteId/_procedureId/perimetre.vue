@@ -19,19 +19,11 @@
         </div>
       </v-col>
     </v-row>
+    <DashboardDdtInfosTabs />
     <v-row>
       <v-col cols="12">
         <div class="text-h2">
           Description
-        </div>
-        <div class="text-h2">
-          Maîtrise d'oeuvre
-        </div>
-        <div class="text-h2">
-          Historique Sudocuh
-        </div>
-        <div class="text-h2">
-          Commentaire/Note
         </div>
       </v-col>
     </v-row>

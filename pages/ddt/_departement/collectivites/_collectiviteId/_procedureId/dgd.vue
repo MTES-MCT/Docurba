@@ -26,7 +26,36 @@
         </h1>
       </v-col>
     </v-row>
-
+    <v-row>
+      <v-col cols="12">
+        <div v-for="(dgdItem) in rawDetails" :key="'dgd_' + dgdItem.dgd_noseriedgd" class="d-flex">
+          <div>
+            <div>année</div>
+            <div>
+              {{ dgdItem.dgd_anneedgd }}
+            </div>
+          </div>
+          <div class="ml-4">
+            <div>cat.</div>
+            <div>
+              {{ dgdItem.dgd_categoriedgd }}
+            </div>
+          </div>
+          <div class="ml-4">
+            <div>commentaire</div>
+            <div>
+              {{ dgdItem.dgd_commentaire }}
+            </div>
+          </div>
+          <div class="ml-4">
+            <div>montant</div>
+            <div>
+              {{ dgdItem.dgd_montantdgd }}
+            </div>
+          </div>
+        </div>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col cols="12">
         <div>
@@ -50,6 +79,7 @@ export default {
       icons: {
         mdiArrowLeft
       },
+      rawDetails: null,
       versements: [
         {
           done: true,
@@ -63,6 +93,8 @@ export default {
   },
   async mounted () {
     this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
+    this.rawDetails = await this.$sudocu.getProcedureInfosDgd(this.$route.params.procedureId)
+    console.log('details: ', this.rawDetails)
   }
 }
 </script>

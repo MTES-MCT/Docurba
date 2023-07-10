@@ -57,51 +57,6 @@
       </v-col>
     </v-row>
     <DashboardDUItemsList :procedures="procedures" collectivite-type="epci" />
-    <!-- <v-row v-if="procedures && procedures.length > 0">
-      <v-col>
-        <v-tabs
-          v-model="tab"
-          background-color="primary"
-          dark
-        >
-          <v-tab>
-            DU intercommunaux
-          </v-tab>
-          <v-tab>
-            DU communaux
-          </v-tab>
-        </v-tabs>
-
-        <v-tabs-items v-model="tab" class="beige">
-          <v-tab-item>
-            <DashboardDUItem
-              v-for="(procedure,i) in DUInter"
-              :key="'du_' + i"
-              :procedure="procedure"
-            />
-          </v-tab-item>
-          <v-tab-item>
-            <DashboardDUItem
-              v-for="(procedure,i) in DUCommunaux"
-              :key="'du_' + i"
-              :procedure="procedure"
-            />
-          </v-tab-item>
-        </v-tabs-items>
-      </v-col>
-    </v-row>
-    <v-row v-else-if="procedures && procedures.length === 0">
-      <v-col cols="12">
-        <div class="text--secondary beige pa-6 mb-12 rounded">
-          Cette collectivité n'a pas de documents d'urbanisme sous ca compétence.
-        </div>
-      </v-col>
-    </v-row>
-    <v-row v-else>
-      <v-col cols="12">
-        <VGlobalLoader />
-      </v-col>
-    </v-row> -->
   </v-container>
 </template>
 <script>

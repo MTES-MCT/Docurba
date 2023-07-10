@@ -59,21 +59,21 @@
           </span>
         </nuxt-link>
         <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-procedureId-dgd', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
-          <span class="primary--text text-decoration-underline mr-4">
+          <span class="primary--text text-decoration-underline mr-4 text--disabled">
             DGD
           </span>
         </nuxt-link>
         <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-procedureId-infos', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
-          <span class="primary--text text-decoration-underline mr-4">
+          <span class="primary--text text-decoration-underline mr-4 text--disabled">
             Info. générales
           </span>
         </nuxt-link>
         <span class="primary--text text-decoration-underline mr-4 text--disabled">
           PAC
         </span>
-        <span class="primary--text text-decoration-underline text--disabled">
+        <!-- <span class="primary--text text-decoration-underline text--disabled">
           Note d'enjeux
-        </span>
+        </span> -->
       </v-col>
     </v-row>
     <v-row v-else>
