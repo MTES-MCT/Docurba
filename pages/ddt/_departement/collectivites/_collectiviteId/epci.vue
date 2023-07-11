@@ -83,9 +83,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.border-light{
-  border: solid 1px var(--v-primary-lighten1) !important;
-}
-</style>
