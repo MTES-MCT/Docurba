@@ -107,6 +107,7 @@ export default {
   data () {
     return {
       search: '',
+      lastProcedures: null,
       epci: null,
       communes: null,
       scope: 0
@@ -188,6 +189,12 @@ export default {
         frpProcPrincipalPath: { name: 'foo' }
       }
     })
+  },
+  methods: {
+    async getProcedures () {
+      this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
+      return null
+    }
   }
 }
 </script>

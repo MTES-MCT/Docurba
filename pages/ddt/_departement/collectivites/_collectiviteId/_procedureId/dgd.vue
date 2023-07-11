@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="collectivite">
+  <v-container v-if="collectivite && procedure">
     <v-row>
       <v-col cols="12">
         <h1 class="text-h1">
@@ -60,7 +60,7 @@
       <v-col cols="12">
         <div>
           <p>Commentaire / Note</p>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim magni necessitatibus corrupti! Vel sequi enim delectus deleniti est et quas, suscipit hic in molestiae minima placeat accusantium molestias esse ipsum!</p>
+          <p>{{ procedure.commentaireDgd }}</p>
         </div>
       </v-col>
     </v-row>
@@ -75,6 +75,7 @@ export default {
   layout: 'ddt',
   data () {
     return {
+      procedure: null,
       collectivite: null,
       icons: {
         mdiArrowLeft
@@ -94,6 +95,7 @@ export default {
   async mounted () {
     this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
     this.rawDetails = await this.$sudocu.getProcedureInfosDgd(this.$route.params.procedureId)
+    this.procedure = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
     console.log('details: ', this.rawDetails)
   }
 }
