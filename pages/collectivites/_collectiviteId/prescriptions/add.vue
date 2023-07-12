@@ -5,7 +5,7 @@
         <h2>Actes</h2>
       </v-col>
       <v-col>
-        <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
+        <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" />
       </v-col>
     </v-row>
 
@@ -20,7 +20,7 @@
           <v-col cols="12" class="mb-6">
             <validation-provider v-slot="{ errors }" name="Vérification" rules="required|needToBeOui">
               <VBigRadio v-model="confirmCollectivite" :error-messages="errors" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
-                Est-ce que l’acte en question concerne bien  <b>{{ collectivite.name }} ({{ region.name }})</b> ?
+                Est-ce que l’acte en question concerne bien  <b>{{ collectivite.name }} ({{ collectivite.region.name }})</b> ?
               </VBigRadio>
             </validation-provider>
           </v-col>
@@ -261,12 +261,7 @@ export default {
     communes: {
       type: Array,
       required: true
-    },
-    region: {
-      type: Object,
-      required: true
     }
-
   },
   data () {
     return {
@@ -396,7 +391,7 @@ export default {
           data: {
             userData: {
               email: this.$route.query.email,
-              region: this.region,
+              region: this.collectivite.region.name,
               collectivite: this.collectivite,
               isEpci: this.isEpci
             }

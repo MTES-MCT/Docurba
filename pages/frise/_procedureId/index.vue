@@ -2,12 +2,13 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <nuxt-link :to="back">
+        <!-- <nuxt-link :to="back">
           Retour
-        </nuxt-link>
+        </nuxt-link> -->
         <h1 class="text-h1">
           Feuille de route partagée
         </h1>
+        {{ collectivite }}
       </v-col>
     </v-row>
     <v-row v-if="loaded">
@@ -47,6 +48,7 @@ export default {
   data () {
     return {
       loaded: false,
+      collectivite: null,
       events: []
     }
   },
@@ -66,6 +68,8 @@ export default {
         this.$nuxt.setLayout('ddt')
       }
     })
+    // this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.procedureId)
+
     // const { data: eventsDocruba, error: errorDocurba } = await this.$supabase.from('doc_frise_events').select('*').eq('project_id', this.projectId)
 
     const eventsSudocu = await this.$sudocu.getProcedureEvents(this.$route.params.procedureId)
@@ -106,7 +110,7 @@ export default {
     // this.events = events
 
     this.loaded = true
-    console.log('$user: ', this.$user)
+    console.log('EVENTS: ', this.events)
   }
 }
 </script>

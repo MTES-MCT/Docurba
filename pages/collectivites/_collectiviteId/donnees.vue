@@ -5,7 +5,7 @@
         <h2>Données</h2>
       </v-col>
       <v-col>
-        <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
+        <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" />
       </v-col>
     </v-row>
     <v-row>
@@ -23,7 +23,7 @@
         </v-tabs>
       </v-col>
     </v-row>
-    <NuxtChild :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
+    <NuxtChild :is-epci="isEpci" :collectivite="collectivite" :communes="communes" />
   </v-container>
 </template>
 
@@ -44,10 +44,6 @@ export default {
     communes: {
       type: Array,
       required: true
-    },
-    region: {
-      type: Object,
-      required: true
     }
   },
   data () {
@@ -61,11 +57,6 @@ export default {
       ]
     }
   }
-  // mounted () {
-  //   if (this.$route.query.region === 'FR-BRE') {
-  //     this.tabs.splice(2, 0, { text: 'GéoBretagne', to: '/pacsec/geobretagne' })
-  //     this.tabs = this.tabs.filter(e => e.to !== '/pacsec/data')
-  //   }
-  // }
+
 }
 </script>

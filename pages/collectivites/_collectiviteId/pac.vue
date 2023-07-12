@@ -5,7 +5,7 @@
         <h2>Socle de Porter à connaissance (PAC)</h2>
       </v-col>
       <v-col>
-        <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
+        <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" />
       </v-col>
     </v-row>
     <v-row>
@@ -40,17 +40,13 @@ export default {
     communes: {
       type: Array,
       required: true
-    },
-    region: {
-      type: Object,
-      required: true
     }
   },
   data () {
     return {
       project: {},
       sections: [],
-      gitRef: `region-${this.region.code}`,
+      gitRef: `region-${this.collectivite.region.code}`,
       loading: true
     }
   },

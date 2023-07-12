@@ -1,5 +1,5 @@
 <template>
-  <GeoIDECardList v-if="!loading && communes" :region="region.iso" :cards="dataset" :themes="themes" />
+  <GeoIDECardList v-if="!loading && communes" :region="collectivite.region.iso" :cards="dataset" :themes="themes" />
   <v-container v-else-if="!loading" class="fill-height">
     <v-row class="fill-height" justify="center" align="center">
       <v-col cols="12">
@@ -29,10 +29,6 @@ export default {
     },
     communes: {
       type: Array,
-      required: true
-    },
-    region: {
-      type: Object,
       required: true
     }
   },

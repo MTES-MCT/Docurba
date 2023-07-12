@@ -1,5 +1,5 @@
 <template>
-  <div v-if="communes && collectivite && region">
+  <div v-if="collectivite">
     <v-container>
       <v-row>
         <v-col cols="12">
@@ -11,8 +11,7 @@
       :is-epci="isEpci"
       :collectivite="collectivite"
       :procedures="procedures"
-      :communes="communes"
-      :region="region"
+      :communes="isEpci ? collectivite.towns : collectivite"
       @snackMessage="Object.assign(snackbar, {visible: true, message: arguments[0]})"
     />
     <v-snackbar v-model="snackbar.visible" top right color="success">
@@ -22,9 +21,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-import regions from '@/assets/data/Regions.json'
-
 export default {
   name: 'Collectivite',
   data () {
@@ -33,35 +29,16 @@ export default {
         visible: false,
         message: ''
       },
-      regions,
-      communes: null,
       collectivite: null,
       procedures: null
     }
   },
   computed: {
     isEpci () {
-      return this.$route.query.isEpci === true || (this.$route.query.isEpci === 'true')
-    },
-    region () {
-      return this.regions.find(e => e.code === this.communes[0].code_region.toString())
+      return this.$urbanisator.isEpci(this.$route.params.collectiviteId)
     }
   },
   async mounted () {
-    const { data: collectivite } = await axios({
-      url: `/api/${this.isEpci ? 'epci' : 'communes'}/${this.$route.params.collectiviteId}`,
-      method: 'get'
-    })
-
-    collectivite.name = this.isEpci ? collectivite.label : collectivite.nom_commune
-    collectivite.id = this.isEpci ? '' : collectivite.code_commune_INSEE.toString().padStart(5, '0')
-
-    this.collectivite = collectivite
-    if (this.isEpci) {
-      this.communes = collectivite.towns
-    } else {
-      this.communes = [collectivite]
-    }
     this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId)
     this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
   }

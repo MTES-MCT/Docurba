@@ -73,10 +73,6 @@ export default {
     communes: {
       type: Array,
       required: true
-    },
-    region: {
-      type: Object,
-      required: true
     }
   },
   data () {
