@@ -1,4 +1,6 @@
+
 <template>
+  <!-- UNUSED and need update on /pacsec path -->
   <v-card color="beige" flat class="position-relative">
     <VFloatingShape src="/images/landing/ellipse_blue.svg" :size="72" :right="15" :top="-50" />
     <v-card-title>

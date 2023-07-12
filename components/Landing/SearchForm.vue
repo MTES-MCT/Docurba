@@ -32,12 +32,6 @@
 import { mdiMagnify } from '@mdi/js'
 
 export default {
-  props: {
-    path: {
-      type: String,
-      default: '/pacsec/content'
-    }
-  },
   data () {
     return {
       valid: false,

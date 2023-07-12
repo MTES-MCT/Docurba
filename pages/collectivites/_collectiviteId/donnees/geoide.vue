@@ -1,16 +1,5 @@
 <template>
   <GeoIDECardList v-if="!loading && communes" :region="collectivite.region.iso" :cards="dataset" :themes="themes" />
-  <v-container v-else-if="!loading" class="fill-height">
-    <v-row class="fill-height" justify="center" align="center">
-      <v-col cols="12">
-        <v-card rounded="lg" class="pa-6">
-          <v-card-text>
-            <LandingSearchForm path="/pacsec/geoide" />
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
   <VGlobalLoader v-else />
 </template>
 
