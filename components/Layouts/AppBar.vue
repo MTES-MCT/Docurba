@@ -26,7 +26,7 @@
     </div>
     <nuxt-link to="/" title="Accueil - Docurba" class="text-decoration-none g800--text align-self-center ml-10">
       <v-toolbar-title>
-        Docurba
+        Docurba - {{ userEamil }}
         <slot name="pageTitle" />
       </v-toolbar-title>
     </nuxt-link>
@@ -114,6 +114,17 @@ export default {
       openDocs: false,
       openDDT: false,
       adminAccess: null
+    }
+  },
+  computed: {
+    userEamil () {
+      console.log('user eamil', this.$user.email)
+      return this.$user.email
+    }
+  },
+  watch: {
+    $user () {
+      console.log('user updated')
     }
   },
   methods: {
