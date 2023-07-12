@@ -122,7 +122,7 @@ export default {
 
     return {
       collectivite: null,
-      procedure: null,
+      eventsSudocu: null,
       defaultEvent,
       event: Object.assign({}, defaultEvent, {
         description: this.$isDev ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' : '',
@@ -139,10 +139,9 @@ export default {
     }
   },
   async mounted () {
-    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId)
-    this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
+    this.eventsSudocu = await this.$sudocu.getProcedureEvents(this.$route.params.procedureId)
     if (this.eventId) {
-      // fetch event
+      // fetch event Docurba
       const { data: events } = await this.$supabase.from('doc_frise_events').select('*').eq('id', this.eventId)
       this.event = Object.assign({}, events[0])
       this.attachements = this.event.attachements || []
@@ -179,12 +178,10 @@ export default {
 
       this.event.project_id = procedureDocurba?.[0]?.id
       if (procedureDocurba.length === 0) {
-        const procedureSudocu = this.procedures.find(e => e.idProcedure.toString() === this.projectId)
-        console.log('procedureSudocu: ', procedureSudocu.events[0])
         const newProject = Object.assign({
           owner: this.$user.id,
-          doc_type: procedureSudocu.events[0].docType,
-          sudocuh_procedure_id: procedureSudocu.idProcedure
+          doc_type: this.eventsSudocu[0].codetypedocument,
+          sudocuh_procedure_id: this.eventsSudocu[0].noserieprocedure
         })
         const { data: newProjectDocurba, error: errorNewProjectDocurba } = await this.$supabase.from('projects').insert([newProject]).select()
         if (errorNewProjectDocurba) {
@@ -206,18 +203,17 @@ export default {
         await this.$supabase.from('doc_frise_events').update(this.event).eq('id', this.eventId)
         await this.saveAttachements(this.eventId)
       } else {
-        console.log('this.event: ', this.event)
         const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert([this.event]).select()
         await this.saveAttachements(savedEvents[0].id)
       }
 
       this.saving = false
-      this.$router.push({ name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: { departement: this.$route.params.departement, collectiviteId: this.$route.params.collectiviteId, procedureId: this.$route.params.procedureId }, query: this.$route.query })
+      this.$router.push({ name: 'frise-procedureId', params: { procedureId: this.$route.params.procedureId }, query: this.$route.query })
       this.$emit('saved')
     },
     async deleteEvent () {
       await this.$supabase.from('doc_frise_events').delete().eq('id', this.eventId)
-      this.$router.push({ name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: { departement: this.$route.params.departement, collectiviteId: this.$route.params.collectiviteId, procedureId: this.$route.params.procedureId }, query: this.$route.query })
+      this.$router.push({ name: 'frise-procedureId', params: { procedureId: this.$route.params.procedureId }, query: this.$route.query })
       this.$emit('saved')
     }
   }

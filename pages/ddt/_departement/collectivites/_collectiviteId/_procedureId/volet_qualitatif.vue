@@ -224,7 +224,7 @@ export default {
     }
   },
   async mounted () {
-    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
+    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
     console.log('this.$route.params: ', this.$route.params)
     this.rawDetails = await this.$sudocu.getProcedureInfosDgd(this.$route.params.procedureId)
     console.log('details: ', this.rawDetails)

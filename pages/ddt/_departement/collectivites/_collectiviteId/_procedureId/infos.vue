@@ -51,7 +51,7 @@ export default {
     }
   },
   async mounted () {
-    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
+    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
   }
 }
 </script>

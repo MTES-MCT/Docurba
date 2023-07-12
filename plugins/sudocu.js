@@ -1,15 +1,11 @@
-import axios from 'axios'
 import _ from 'lodash'
 
 // const { data: rawEvents, error: rawEventsError, ...args } = await this.$supabase.from('sudocu_procedure_events').select('*', { count: 'exact' }).eq('codecollectivite', codecollectivite)
 // console.log('args: ', args)
 // if (rawEventsError) { throw rawEventsError }
 
-export default ({ route, store, $supabase }, inject) => {
+export default ({ route, store, $supabase, $urbanisator }, inject) => {
   inject('sudocu', {
-    isEpci (collectiviteId) {
-      return collectiviteId.toString().length > 5
-    },
     async getProcedureInfosDgd (procedureId) {
       try {
         if (typeof procedureId === 'string') { procedureId = parseInt(procedureId) }
@@ -21,23 +17,24 @@ export default ({ route, store, $supabase }, inject) => {
         console.log('ERROR getProcedureInfosDgd: ', error)
       }
     },
-    async getCurrentCollectivite (collectiviteId) {
+    async getProcedureEvents (procedureId) {
       try {
-        const { data: collectivite } = await axios({
-          url: `/api/${this.isEpci(collectiviteId) ? 'epci' : 'communes'}/${collectiviteId}`,
-          method: 'get'
-        })
-        collectivite.name = this.isEpci(collectiviteId) ? collectivite.label : collectivite.nom_commune
-        collectivite.type = this.isEpci(collectiviteId) ? 'epci' : 'commune'
-        return collectivite
+        if (typeof procedureId === 'string') { procedureId = parseInt(procedureId) }
+        const { data: events, error: errEvents } = await $supabase.from('sudocu_procedure_events').select('*').eq('noserieprocedure', procedureId)
+        if (errEvents) {
+          console.log('Frise errEvents: ', errEvents)
+          throw new Error(errEvents)
+        }
+        return events
       } catch (error) {
-        console.log('Error getCurrentCollectivite: ', error)
+        console.log('ERROR getProcedureEvents:', error)
       }
     },
+
     async getProcedures (communeId) {
       try {
         let codecollectivite
-        if (this.isEpci(communeId)) {
+        if ($urbanisator.isEpci(communeId)) {
           codecollectivite = communeId
         } else {
           codecollectivite = communeId.toString().padStart(5, '0')

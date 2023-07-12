@@ -7,7 +7,7 @@
         </v-btn>
       </template>
       <v-list>
-        <v-list-item nuxt :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId-eventId', params: {departement: $route.params.departement, collectiviteId: $route.params.collectiviteId, procedureId: $route.params.procedureId, eventId: event.id}}">
+        <v-list-item nuxt :to="{name: 'frise-procedureId-eventId', params: {procedureId: $route.params.procedureId, eventId: event.id}}">
           <v-list-item-action>
             <v-icon color="primary">
               {{ icons.mdiPencil }}

@@ -9,7 +9,7 @@
       <v-col cols="12">
         <div class="d-flex">
           <nuxt-link
-            :to="{ name: `ddt-departement-collectivites-collectiviteId-${$sudocu.isEpci($route.params.collectiviteId) ? 'epci' : 'commune'}`, params: { departement: $route.params.departement, collectiviteId: $route.params.collectiviteId }}"
+            :to="{ name: `ddt-departement-collectivites-collectiviteId-${$urbanisator.isEpci($route.params.collectiviteId) ? 'epci' : 'commune'}`, params: { departement: $route.params.departement, collectiviteId: $route.params.collectiviteId }}"
           >
             <v-icon small color="primary" class="mr-2">
               {{ icons.mdiArrowLeft }}
@@ -97,7 +97,7 @@ export default {
     }
   },
   async mounted () {
-    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
+    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
     this.rawDetails = (await this.$sudocu.getProcedureInfosDgd(this.$route.params.procedureId)).sort((a, b) => b.dgd_anneedgd - a.dgd_anneedgd)
     this.procedure = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
     console.log('details: ', this.rawDetails)

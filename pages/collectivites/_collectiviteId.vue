@@ -62,7 +62,7 @@ export default {
     } else {
       this.communes = [collectivite]
     }
-    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId)
+    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId)
     this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
   }
 }
