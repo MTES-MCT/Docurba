@@ -1,31 +1,45 @@
-import axios from 'axios'
 import _ from 'lodash'
 
 // const { data: rawEvents, error: rawEventsError, ...args } = await this.$supabase.from('sudocu_procedure_events').select('*', { count: 'exact' }).eq('codecollectivite', codecollectivite)
 // console.log('args: ', args)
 // if (rawEventsError) { throw rawEventsError }
 
-export default ({ route, store, $supabase }, inject) => {
+export default ({ route, store, $supabase, $urbanisator }, inject) => {
   inject('sudocu', {
-    async getCurrentCollectivite (collectiviteId, type) {
+    async getProcedureInfosDgd (procedureId) {
       try {
-        const { data: collectivite } = await axios({
-          url: `/api/${type === 'epci' ? 'epci' : 'communes'}/${collectiviteId}`,
-          method: 'get'
-        })
-        collectivite.name = type === 'epci' ? collectivite.label : collectivite.nom_commune
-        collectivite.type = type === 'epci' ? 'epci' : 'commune'
-        return collectivite
+        if (typeof procedureId === 'string') { procedureId = parseInt(procedureId) }
+        console.log('procedureId: ', procedureId)
+        const { data: rawDetailsProcedure, error: rawDetailsProcedureError } = await $supabase.from('sudocu_procedures_infosdgd').select('*').eq('procedure_id', procedureId)
+        if (rawDetailsProcedureError) { throw rawDetailsProcedureError }
+        return rawDetailsProcedure
       } catch (error) {
-        console.log('Error getCurrentCollectivite: ', error)
+        console.log('ERROR getProcedureInfosDgd: ', error)
       }
     },
-    async getProcedures (commune, type) {
+    async getProcedureEvents (procedureId) {
+      try {
+        if (typeof procedureId === 'string') { procedureId = parseInt(procedureId) }
+        const { data: events, error: errEvents } = await $supabase.from('sudocu_procedure_events').select('*').eq('noserieprocedure', procedureId)
+        if (errEvents) {
+          console.log('Frise errEvents: ', errEvents)
+          throw new Error(errEvents)
+        }
+        return events
+      } catch (error) {
+        console.log('ERROR getProcedureEvents:', error)
+      }
+    },
+
+    async getProcedures (communeId) {
       try {
         let codecollectivite
-        if (type !== 'epci') {
-          codecollectivite = commune.code_commune_INSEE.toString().padStart(5, '0')
-        } else { codecollectivite = commune.EPCI }
+        if ($urbanisator.isEpci(communeId)) {
+          codecollectivite = communeId
+        } else {
+          codecollectivite = communeId.toString().padStart(5, '0')
+        }
+
         const { data: rawProcedures, error: rawProceduresError } = await $supabase.from('distinct_procedures_events').select('*').eq('codecollectivite', codecollectivite)
         if (rawProceduresError) { throw rawProceduresError }
         const formattedProcedures = rawProcedures.map((e) => {

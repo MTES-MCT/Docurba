@@ -4,11 +4,12 @@
 
 <script>
 export default {
-  watch: {
-    '$user.id' () {
-      this.redirectUser()
-    }
-  },
+  // watch: {
+  //   '$user.id' () {
+  //     console.log('TEST SETUP USER OK')
+  //     this.redirectUser()
+  //   }
+  // },
   async mounted () {
     this.redirectUser()
 

@@ -1,6 +1,6 @@
 [
   {
-    "name": "1. Délibération du conseil municipal ou communautaire",
+    "name": "Délibération du conseil municipal ou communautaire",
     "order": 1,
     "recommended": 2,
     "required": true,
@@ -20,7 +20,7 @@
     "phases": "Définition des modalités"
   },
   {
-    "name": "2. Recrutement d'un bureau d'études",
+    "name": "Recrutement d'un bureau d'études",
     "order": 3,
     "recommended": 2,
     "required": false,
@@ -30,7 +30,7 @@
     "phases": "Définition des modalités"
   },
   {
-    "name": "2.bis Recrutement d'un AMO",
+    "name": "Recrutement d'un AMO",
     "order": 4,
     "recommended": 1,
     "required": false,
@@ -80,7 +80,7 @@
     "phases": "Toutes phases"
   },
   {
-    "name": "6. Présentation du diagnostic aux PPA",
+    "name": "Présentation du diagnostic aux PPA",
     "order": 9,
     "recommended": 2,
     "required": false,
@@ -90,7 +90,7 @@
     "phases": "Diagnostic"
   },
   {
-    "name": "7. Phase de construction du projet de territoire (PADD)",
+    "name": "Phase de construction du projet de territoire (PADD)",
     "order": 10,
     "recommended": 0,
     "required": false,
@@ -100,7 +100,7 @@
     "phases": "PADD"
   },
   {
-    "name": "8. Présentation du PADD aux PPA et retours",
+    "name": "Présentation du PADD aux PPA et retours",
     "order": 11,
     "recommended": 1,
     "required": false,
@@ -110,7 +110,7 @@
     "phases": "PADD"
   },
   {
-    "name": "9. Intégration des retours sur le PADD",
+    "name": "Intégration des retours sur le PADD",
     "order": 12,
     "recommended": 1,
     "required": false,
@@ -120,7 +120,7 @@
     "phases": "PADD"
   },
   {
-    "name": "10. Débat sur le PADD en conseil municipal ou communautaire",
+    "name": "Débat sur le PADD en conseil municipal ou communautaire",
     "order": 13,
     "recommended": 2,
     "required": true,
@@ -130,7 +130,7 @@
     "phases": "PADD"
   },
   {
-    "name": "10.A Débat sur le PADD en conseils communaux",
+    "name": "Débat sur le PADD en conseils communaux",
     "order": 14,
     "recommended": 2,
     "required": true,
@@ -140,7 +140,7 @@
     "phases": "PADD"
   },
   {
-    "name": "11.A Construction du rapport de présentation",
+    "name": "Construction du rapport de présentation",
     "order": 15,
     "recommended": 0,
     "required": false,
@@ -150,7 +150,7 @@
     "phases": "Rapport de présentation"
   },
   {
-    "name": "11.B Construction du règlement écrit et graphique",
+    "name": "Construction du règlement écrit et graphique",
     "order": 16,
     "recommended": 2,
     "required": true,
@@ -160,7 +160,7 @@
     "phases": "Règlement"
   },
   {
-    "name": "11.C Construction des OAP",
+    "name": "Construction des OAP",
     "order": 17,
     "recommended": 1,
     "required": false,
@@ -170,7 +170,7 @@
     "phases": "OAP"
   },
   {
-    "name": "11.D Construction du POA",
+    "name": "Construction du POA",
     "order": 18,
     "recommended": 2,
     "required": true,
@@ -180,7 +180,7 @@
     "phases": "POA"
   },
   {
-    "name": "11.E Evaluation environnementale du projet",
+    "name": "Evaluation environnementale du projet",
     "order": 19,
     "recommended": 2,
     "required": true,
@@ -190,7 +190,7 @@
     "phases": "EE"
   },
   {
-    "name": "12. Présentation du projet complet de PLU finalisé aux PPA avant l'arrêt et retours",
+    "name": "Présentation du projet complet de PLU finalisé aux PPA avant l'arrêt et retours",
     "order": 20,
     "recommended": 2,
     "required": false,
@@ -200,7 +200,7 @@
     "phases": "Pré-arrêt"
   },
   {
-    "name": "13. Intégration des derniers retours sur le PLU",
+    "name": "Intégration des derniers retours sur le PLU",
     "order": 21,
     "recommended": 0,
     "required": false,
@@ -240,7 +240,7 @@
     "phases": "Concertation"
   },
   {
-    "name": "14. Délibération du conseil municipal qui arrête le projet de PLU et transmission du projet pour avis officiel aux PPA",
+    "name": "Délibération du conseil municipal qui arrête le projet de PLU et transmission du projet pour avis officiel aux PPA",
     "order": 25,
     "recommended": 2,
     "required": true,
@@ -250,7 +250,7 @@
     "phases": "Arrêt du projet"
   },
   {
-    "name": "14.A Présentation des OAP et règlement aux communes du territoire",
+    "name": "Présentation des OAP et règlement aux communes du territoire",
     "order": 26,
     "recommended": 2,
     "required": true,
@@ -260,7 +260,7 @@
     "phases": "Arrêt du projet"
   },
   {
-    "name": "15. Consultation et avis",
+    "name": "Consultation et avis",
     "order": 27,
     "recommended": 2,
     "required": true,
@@ -410,7 +410,7 @@
     "phases": "Enquête publique"
   },
   {
-    "name": "17. Intégration des retours faits pendant l'EP",
+    "name": "Intégration des retours faits pendant l'EP",
     "order": 42,
     "recommended": 0,
     "required": false,
@@ -420,7 +420,7 @@
     "phases": "Enquête publique"
   },
   {
-    "name": "18. Délibération du conseil municipal ou communautaire qui approuve le PLU",
+    "name": "Délibération du conseil municipal ou communautaire qui approuve le PLU",
     "order": 43,
     "recommended": 2,
     "required": true,
@@ -450,7 +450,7 @@
     "phases": "Caractère exécutoire"
   },
   {
-    "name": "20. caractère exécutoire",
+    "name": "Caractère exécutoire",
     "order": 46,
     "recommended": 2,
     "required": true,
@@ -500,7 +500,7 @@
     "phases": "?"
   },
   {
-    "name": "21.A Retirer la délibération",
+    "name": "Retirer la délibération",
     "order": 51,
     "recommended": 0,
     "required": false,
@@ -520,17 +520,7 @@
     "phases": ""
   },
   {
-    "name": "22.",
-    "order": 53,
-    "recommended": 0,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
-    "law": "",
-    "phases": ""
-  },
-  {
-    "name": "22.A Annulation partielle",
+    "name": "Annulation partielle",
     "order": 54,
     "recommended": 0,
     "required": false,
@@ -540,7 +530,7 @@
     "phases": ""
   },
   {
-    "name": "22.B Annulation totale",
+    "name": "Annulation totale",
     "order": 55,
     "recommended": 0,
     "required": false,
@@ -560,7 +550,7 @@
     "phases": "?"
   },
   {
-    "name": "23.A Bilan à 3 ans sur le volet habitat",
+    "name": "Bilan à 3 ans sur le volet habitat",
     "order": 57,
     "recommended": 2,
     "required": true,
@@ -570,7 +560,7 @@
     "phases": "Bilan/évaluation"
   },
   {
-    "name": "23.B Rapport d'artificialisation des sols",
+    "name": "Rapport d'artificialisation des sols",
     "order": 58,
     "recommended": 0,
     "required": false,
@@ -580,7 +570,7 @@
     "phases": "Bilan/évaluation"
   },
   {
-    "name": "23.C Evaluation du PLU au bout de 6 ans ou révision substantielle si besoin",
+    "name": "Evaluation du PLU au bout de 6 ans ou révision substantielle si besoin",
     "order": 59,
     "recommended": 2,
     "required": true,
@@ -610,7 +600,7 @@
     "phases": "?"
   },
   {
-    "name": "3. Phase de diagnostic / tout au long du doc / \n4. Présentation du diagnostic aux personnes publiques associées (PPA) //",
+    "name": "Phase de diagnostic / tout au long du doc / \n4. Présentation du diagnostic aux personnes publiques associées (PPA) //",
     "order": 62,
     "recommended": 1,
     "required": false,

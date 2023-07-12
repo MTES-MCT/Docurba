@@ -1,5 +1,5 @@
 <template>
-  <DataSourcesList v-if="!loading && communes" :region="region.iso" :data-sources="dataset" :themes="themes" />
+  <DataSourcesList v-if="!loading && communes" :region="collectivite.region.iso" :data-sources="dataset" :themes="themes" />
   <v-container v-else-if="!loading" class="fill-height">
     <v-row class="fill-height" justify="center" align="center">
       <v-col cols="12">
@@ -29,10 +29,6 @@ export default {
     communes: {
       type: Array,
       required: true
-    },
-    region: {
-      type: Object,
-      required: true
     }
   },
   data () {
@@ -58,9 +54,7 @@ export default {
       })
       : this.collectivite.id
 
-    console.log('collectiviteId', collectiviteId)
-
-    const { dataset, themes } = await this.$daturba.getData(this.region.iso, collectiviteId)
+    const { dataset, themes } = await this.$daturba.getData(this.collectivite.region.iso, collectiviteId)
 
     this.dataset = dataset
     this.themes = themes

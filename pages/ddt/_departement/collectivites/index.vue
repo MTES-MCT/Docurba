@@ -107,6 +107,7 @@ export default {
   data () {
     return {
       search: '',
+      lastProcedures: null,
       epci: null,
       communes: null,
       scope: 0
@@ -166,7 +167,6 @@ export default {
       if (!sudoEpci) {
         console.log('not found sudoEpci: ', e)
       }
-      // console.log('HERE: ', sudoEpci?.sicompetenceplan)
       return {
         ...e,
         hasCompetence: sudoEpci?.sicompetenceplan ?? false
@@ -189,6 +189,12 @@ export default {
         frpProcPrincipalPath: { name: 'foo' }
       }
     })
+  },
+  methods: {
+    async getProcedures () {
+      this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
+      return null
+    }
   }
 }
 </script>

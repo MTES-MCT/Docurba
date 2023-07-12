@@ -3,7 +3,7 @@
     <v-col cols="12">
       <v-timeline v-if="!noProject" align-top class="doc-timeline pt-0 mt-6">
         <v-timeline-item color="#E3E3FD" small>
-          <v-btn nuxt color="primary" :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId-add', params: {departement: $route.params.departement, collectiviteId: $route.params.collectiviteId, procedureId: $route.params.procedureId}, query: {...$route.query}}">
+          <v-btn nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}}">
             Ajouter un événement
           </v-btn>
         </v-timeline-item>

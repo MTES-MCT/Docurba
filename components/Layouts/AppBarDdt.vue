@@ -46,7 +46,7 @@
           Connexion
         </v-btn>
         <AuthLoginDialog v-model="openLogin" />
-        <v-btn v-if="$user.id && $user.scope && $user.scope.dept" depressed tile text :to="{name: 'ddt-departement-collectivites', params: {departement: $user.scope.dept}}">
+        <v-btn v-if="$user.id && $user?.scope && $user?.scope?.dept" depressed tile text :to="{name: 'ddt-departement-collectivites', params: {departement: $user?.scope?.dept}}">
           Tableau de bord
         </v-btn>
         <v-btn v-if="$user.id" depressed tile text @click="clickMyDocs">
@@ -85,11 +85,11 @@
     </client-only>
     <template #extension>
       <v-tabs align-with-title class="double-border">
-        <v-tab :to="{name: 'ddt-departement-collectivites', params: {departement: $route.params.departement}}">
+        <v-tab :to="{name: 'ddt-departement-collectivites', params: {departement: $user?.scope?.dept}}">
           Mes collectivites
         </v-tab>
         <v-tab
-          :to="{name: 'trames-githubRef', params: {githubRef: `dept-${$route.params.departement}`} }"
+          :to="{name: 'trames-githubRef', params: {githubRef: `dept-${$user.scope?.dept}`} }"
         >
           Trame de PAC départementale
         </v-tab>
@@ -99,7 +99,7 @@
                'ddt-departement-collectivites-enquete',
              params:
                {departement:
-                 $route.params.departement}}"
+                 $user.scope?.dept}}"
         >
           Validation des procédures
         </v-tab>
@@ -136,6 +136,10 @@ export default {
       openDDT: false,
       adminAccess: null
     }
+  },
+  async mounted () {
+    await this.$user.isReady
+    console.log('this.$user: ', this.$user)
   },
   methods: {
     // There is a lot of dupliaceted code here.

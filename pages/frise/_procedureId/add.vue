@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <v-btn text exact-path color="primary" nuxt :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: $route.params.procedureId}}">
+        <v-btn text exact-path color="primary" nuxt :to="{name: 'frise-procedureId', params: { procedureId: $route.params.procedureId}}">
           <v-icon>{{ icons.mdiChevronLeft }}</v-icon> Revenir à la frise
         </v-btn>
       </v-col>
@@ -22,6 +22,14 @@
 import { mdiChevronLeft } from '@mdi/js'
 
 export default {
+  name: 'AddTimelineEvent',
+  layout ({ $user }) {
+    if ($user?.id && $user?.scope && $user?.scope.dept) {
+      return 'ddt'
+    } else {
+      return 'default'
+    }
+  },
   props: {
     projectId: {
       type: String,
@@ -36,6 +44,13 @@ export default {
         mdiChevronLeft
       }
     }
+  },
+  mounted () {
+    this.$user.isReady.then(() => {
+      if (this.$user.id && this.$user.scope && this.$user.scope.dept) {
+        this.$nuxt.setLayout('ddt')
+      }
+    })
   }
 }
 </script>

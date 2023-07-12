@@ -151,7 +151,6 @@ export default {
   computed: {
     filteredChamps () {
       if (this.champs) {
-        console.log('this.champs: ', this.champs)
         return this.champs.filter((c) => {
           // console.log(c, c.valeur, c.url)
           // if (c.type === 'url') { console.log(c) }

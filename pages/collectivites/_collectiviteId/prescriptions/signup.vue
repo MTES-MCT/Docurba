@@ -21,7 +21,7 @@
           <h2>Actes</h2>
         </v-col>
         <v-col>
-          <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" :region="region" />
+          <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" />
         </v-col>
       </v-row>
       <PrescriptionYouWantCard />
@@ -90,10 +90,6 @@ export default {
     },
     communes: {
       type: Array,
-      required: true
-    },
-    region: {
-      type: Object,
       required: true
     }
   },

@@ -53,17 +53,27 @@
       </v-col>
       <v-col cols="12" class="pb-0">
         <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
-        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
+        <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.idProcedure}}">
           <span class="primary--text text-decoration-underline mr-4">
             Feuille de route partagée
+          </span>
+        </nuxt-link>
+        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-procedureId-dgd', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
+          <span class="primary--text text-decoration-underline mr-4 ">
+            DGD
+          </span>
+        </nuxt-link>
+        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-procedureId-infos', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
+          <span class="primary--text text-decoration-underline mr-4 ">
+            Info. générales
           </span>
         </nuxt-link>
         <span class="primary--text text-decoration-underline mr-4 text--disabled">
           PAC
         </span>
-        <span class="primary--text text-decoration-underline text--disabled">
+        <!-- <span class="primary--text text-decoration-underline text--disabled">
           Note d'enjeux
-        </span>
+        </span> -->
       </v-col>
     </v-row>
     <v-row v-else>
@@ -73,7 +83,7 @@
       <v-col cols="12" class="d-flex align-center justify-end pb-0">
         <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
         <v-spacer />
-        <v-btn text color="primary" :to="{name: 'ddt-departement-collectivites-collectiviteId-frise-procedureId', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
+        <v-btn text color="primary" :to="{name: 'frise-procedureId', params: {procedureId: procedure.idProcedure}}">
           <v-icon small color="primary" class="mr-2">
             {{ icons.mdiArrowRight }}
           </v-icon>

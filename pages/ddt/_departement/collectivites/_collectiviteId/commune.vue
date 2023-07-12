@@ -34,27 +34,6 @@
       </v-col>
     </v-row>
     <DashboardDUItemsList :procedures="procedures" collectivite-type="commune" />
-    <!-- <v-row v-if="procedures && procedures.length > 0">
-      <v-col cols="12">
-        <DashboardDUItem
-          v-for="(procedure,i) in procedures"
-          :key="'du_' + i"
-          :procedure="procedure"
-        />
-      </v-col>
-    </v-row>
-    <v-row v-else-if="procedures && procedures.length === 0">
-      <v-col cols="12">
-        <div class="text--secondary beige pa-6 mb-12 rounded">
-          Cette collectivité n'a pas de documents d'urbanisme sous ca compétence.
-        </div>
-      </v-col>
-    </v-row>
-    <v-row v-else>
-      <v-col cols="12">
-        <VGlobalLoader />
-      </v-col>
-    </v-row> -->
   </v-container>
 </template>
 <script>
@@ -77,8 +56,8 @@ export default {
     }
   },
   async mounted () {
-    this.collectivite = await this.$sudocu.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
-    this.procedures = await this.$sudocu.getProcedures(this.collectivite, 'commune')
+    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId)
+    this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
     await this.getLinkedEpci(this.$route.params.collectiviteId)
   },
   methods: {
