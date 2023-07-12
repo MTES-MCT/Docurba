@@ -116,17 +116,6 @@ export default {
       adminAccess: null
     }
   },
-  computed: {
-    userEamil () {
-      console.log('user eamil', this.$user.email)
-      return this.$user.email
-    }
-  },
-  watch: {
-    $user () {
-      console.log('user updated')
-    }
-  },
   methods: {
     // There is a lot of dupliaceted code here.
     // This component should be using the auth.js plugin to get admin access.
