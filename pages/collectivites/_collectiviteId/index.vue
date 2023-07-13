@@ -1,6 +1,27 @@
 <template>
   <v-container>
     <v-row>
+      <!-- <v-col cols="auto">
+        <div class="divider-vertical ml-6" />
+      </v-col> -->
+      <v-col cols="8">
+        <v-alert border="left" colored-border color="focus" elevation="1">
+          <div class="ml-2">
+            <p>Vous êtes l’un des élus, technicien de collectivité, ou bureau d’étude qui gérez cette collectivité.</p>
+            <AuthCollectiviteAccessDialog v-if="!$user.id" label="Demander l'accès" />
+            <v-btn v-else :to="actionsCards[0].to" nuxt color="primary">
+              Démarrer une procédure
+            </v-btn>
+          </div>
+        </v-alert>
+        <!-- <p>Vous êtes l’un des élus, technicien de collectivité, ou bureau d’étude qui gérez cette collectivité.</p>
+        <AuthCollectiviteAccessDialog v-if="!$user.id" label="Demander l'accès" />
+        <v-btn v-else :to="actionsCards[0].to" nuxt color="primary">
+          Démarrer une procédure
+        </v-btn> -->
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col>
         <h2>Actions rapides</h2>
       </v-col>
@@ -110,3 +131,11 @@ export default {
 
 }
 </script>
+
+<style scoped>
+.divider-vertical {
+  width: 4px;
+height: 100%;
+  background: #6A6AF4;
+}
+</style>
