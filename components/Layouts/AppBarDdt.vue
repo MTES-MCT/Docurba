@@ -35,13 +35,9 @@
     <!-- This client only could be removed with proper user management server side -->
     <client-only>
       <div class="align-self-center">
-        <!-- <v-btn depressed tile text href="/news" nuxt>
-          News
-        </v-btn> -->
-        <AdminHelpDialog v-model="helpDialog" @helpSent="helpSnackbar = true; helpDialog = false" />
-        <v-snackbar v-model="helpSnackbar" absolute>
-          Votre message à été envoyé !
-        </v-snackbar>
+        <v-btn depressed tile text :to="{name: 'faq'}">
+          Besoin d'aide ?
+        </v-btn>
         <v-btn v-if="!$user.id" depressed tile text @click="openLogin = true">
           Connexion
         </v-btn>
@@ -103,7 +99,6 @@
         >
           Validation des procédures
         </v-tab>
-        <v-tab>Une question ?</v-tab>
       </v-tabs>
     </template>
   </v-app-bar>
@@ -129,8 +124,6 @@ export default {
       icons: {
         mdiDotsVertical
       },
-      helpDialog: false,
-      helpSnackbar: false,
       openLogin: false,
       openDocs: false,
       openDDT: false,
