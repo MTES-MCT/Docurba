@@ -1,8 +1,11 @@
 ---
-question: "Pourquoi les jeux de données ne sont pas intégrés dans le PAC ?"
-visible: false
+question: "Je ne trouve pas de données spécifiques à la commune dans mon PAC récemment créé, pourquoi ?"
+visible: true
 ---
-Aujourd’hui les jeux de données sont à part du PAC pour pouvoir donner l’information rapidement aux collectivités. 
-Nous invitons les agents de DDT/DEAL à y faire référence dans les fiches thématiques de votre Socle de PAC.
 
-Travail en cours: à terme, nous prévoyons de faire référence aux jeux de données dans les fiches thématiques en y ajoutant des fichiers.
+Docurba ne permet pas l'insertion automatique de données territorialisées dans les PAC. Cela permet effectivement : 
+- de laisser une certaine flexibilité à la DDT(M)/DEAL qui élabore le PAC,
+- une prise en main plus accessible de l'outil,
+- de ne pas répliquer d'éventuelles données non à jour.
+
+Cela dit, vous avez la possibilité de retrouver les données territorialisées depuis la barre de recherche de la page d’accueil, et au moment de l'élaboration du PAC, vous avez la possibilité d'insérer des fichiers et des images dans le traitement de texte.
