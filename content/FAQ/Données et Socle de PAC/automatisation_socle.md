@@ -1,5 +1,5 @@
 ---
-question:"Une collectivité qui explore le socle de PAC a-t-elle accès à toutes les lois, même celles qui ne la concerne pas ? 
+question: "Une collectivité qui explore le socle de PAC a-t-elle accès à toutes les lois, même celles qui ne la concerne pas ?" 
 visible: true
 ---
 
