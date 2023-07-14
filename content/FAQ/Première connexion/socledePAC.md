@@ -11,6 +11,6 @@ Le **Socle de PAC** est constitué comme suit :
 - _Dispositions de documents supra-territoriaux et Doctrines_ : éléments généraux d’échelle régionale qui peuvent concerner votre territoire. 
 
  
-Dans le PAC délivré par la suite par la DDT(M)/DEAL via Docurba, vous retrouverez des éléments du Socle de PAC et **la DDT(M)/DEAL orientera plus précisément sur les éléments spécifiques au territoire, et notamment sur les enjeux environnementaux à prendre en compte. **
+Dans le PAC délivré par la suite par la DDT(M)/DEAL via Docurba, vous retrouverez des éléments du Socle de PAC et **la DDT(M)/DEAL orientera plus précisément sur les éléments spécifiques au territoire, et notamment sur les enjeux environnementaux à prendre en compte.**
 
 Des sections du socle de PAC ne vous concernent pas ? Par exemple ; vous avez accès la section sur _la loi montagne_ alors que la collectivité recherchée n’est pas concernée par cette loi. Effectivement, Docurba ne permet pas encore l'accès à un socle de PAC personnalisé suivant la commune recherchée.
