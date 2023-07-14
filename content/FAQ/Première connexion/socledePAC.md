@@ -3,7 +3,7 @@ question: "Qu’est-ce que le Socle de PAC ?"
 visible: true
 ---
 
-**Le socle de PAC contient les premiers éléments d'information constitutifs du Porter À Connaissance qui sera délivré par la DDT(M)/DEAL. **
+**Le socle de PAC contient les premiers éléments d'information constitutifs du Porter À Connaissance qui sera délivré par la DDT(M)/DEAL.**
 Mettre à disposition ces éléments à la collectivité dès la prescription lui permet de se préparer au mieux à l’élaboration de son document d’urbanisme. Cela contribue aussi à la volonté commune de rendre la lecture des PAC plus accessible en les partageant au fil de l’eau par section, et dès le début de la procédure. 
 
 Le **Socle de PAC** est constitué comme suit : 
