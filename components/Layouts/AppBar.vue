@@ -26,7 +26,7 @@
     </div>
     <nuxt-link to="/" title="Accueil - Docurba" class="text-decoration-none g800--text align-self-center ml-10">
       <v-toolbar-title>
-        Docurba - {{ userEamil }}
+        Docurba
         <slot name="pageTitle" />
       </v-toolbar-title>
     </nuxt-link>
