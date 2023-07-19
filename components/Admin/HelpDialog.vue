@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" min-width="600px" max-width="600px">
     <template #activator="{ on }">
-      <slot>
+      <slot :on="on">
         <v-btn depressed tile text v-on="on">
           Besoin d'aide ?
         </v-btn>

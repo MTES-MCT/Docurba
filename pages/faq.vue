@@ -41,6 +41,37 @@
           <div class="primary bottom-border" />
         </div>
       </v-col>
+      <v-col
+        cols="12"
+        sm="6"
+        md="3"
+        class="d-flex justify-center"
+      >
+        <AdminHelpDialog v-slot="{on}" v-model="helpDialog" @helpSent="helpSnackbar = true; helpDialog = false">
+          <div style="position: relative; display:inline-block;">
+            <v-card
+              outlined
+              tile
+              color="white"
+              width="200"
+              min-height="220"
+              class="faq-card"
+              v-on="on"
+            >
+              <v-img
+                contain
+                class="mt-4"
+                max-height="100"
+                src="/images/faq/community.png"
+              />
+              <v-card-title class="text-body-1 font-weight-bold text-center justify-center break-word" style="line-height:24px">
+                Contacter l'équipe
+              </v-card-title>
+            </v-card>
+            <div class="primary bottom-border" />
+          </div>
+        </AdminHelpDialog>
+      </v-col>
     </v-row>
     <v-row>
       <v-col cols="12">
@@ -112,6 +143,9 @@
         </v-col>
       </v-row>
     </v-row> -->
+    <v-snackbar v-model="helpSnackbar">
+      Votre message à été envoyé !
+    </v-snackbar>
   </v-container>
 </template>
 <script>
@@ -128,6 +162,8 @@ export default {
   data () {
     return {
       tab: null,
+      helpDialog: false,
+      helpSnackbar: false,
       breadItems: [
         {
           text: 'Accueil',
@@ -159,11 +195,6 @@ export default {
         {
           title: 'Premiers pas',
           img: '/images/faq/leaf.png',
-          link: ''
-        },
-        {
-          title: 'Contacter l\'équipe',
-          img: '/images/faq/community.png',
           link: ''
         }
       ],
