@@ -33,7 +33,11 @@
         </p>
       </v-col>
     </v-row>
-    <DashboardDUItemsList :procedures="procedures" collectivite-type="commune" />
+    <DashboardDUItemsList
+      :procedures="procedures"
+      :collectivite="collectivite"
+      collectivite-type="commune"
+    />
   </v-container>
 </template>
 <script>

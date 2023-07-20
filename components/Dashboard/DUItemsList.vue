@@ -12,6 +12,8 @@
         <v-tab>
           DU communaux
         </v-tab>
+        <v-spacer />
+        <DashboardDUInsertDialog :collectivite="collectivite" />
       </v-tabs>
 
       <v-tabs-items v-model="tab" :class="{beige: !isPublic}">
@@ -65,6 +67,10 @@ export default {
     procedures: {
       type: Array,
       default: () => null
+    },
+    collectivite: {
+      type: Object,
+      required: true
     },
     collectiviteType: {
       type: String,

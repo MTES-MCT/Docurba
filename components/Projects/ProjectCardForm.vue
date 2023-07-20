@@ -151,7 +151,7 @@ export default {
 
         await axios({
           method: 'post',
-          url: `api/trames/projects/dept-${dept}`,
+          url: `/api/trames/projects/dept-${dept}`,
           data: {
             userId: this.$user.id,
             projectId

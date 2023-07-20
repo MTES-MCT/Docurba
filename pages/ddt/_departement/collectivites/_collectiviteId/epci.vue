@@ -56,7 +56,11 @@
         </p>
       </v-col>
     </v-row>
-    <DashboardDUItemsList :procedures="procedures" collectivite-type="epci" />
+    <DashboardDUItemsList
+      :procedures="procedures"
+      collectivite-type="epci"
+      :collectivite="collectivite"
+    />
   </v-container>
 </template>
 <script>
