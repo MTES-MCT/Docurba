@@ -67,7 +67,7 @@ export default {
     }
   },
   data () {
-    console.log('DUInsertDialog collectivite', this.collectivite)
+    // console.log('DUInsertDialog collectivite', this.collectivite)
 
     const collectiviteId = this.collectivite.id ? this.collectivite.id.toString() : this.collectivite.code_commune_INSEE.tostring()
     const isEpci = collectiviteId.length === 9

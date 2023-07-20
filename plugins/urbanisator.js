@@ -46,6 +46,7 @@ export default ({ route, store, $supabase, $user, $dayjs }, inject) => {
         if (errorSavedEvents) { throw new Error(errorSavedEvents) }
         return { project: newProject, events: savedEvents }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('Error createProject: ', error)
       }
     },
@@ -64,6 +65,7 @@ export default ({ route, store, $supabase, $user, $dayjs }, inject) => {
         collectivite.region = this.getRegionDetails(regionCode)
         return collectivite
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('Error getCurrentCollectivite: ', error)
       }
     }
