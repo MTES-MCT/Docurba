@@ -108,10 +108,10 @@ export default {
     async insertProject () {
       this.saving = true
 
-      const { data: projects, err } = await this.$supabase.from('projects')
+      const { data: projects, error } = await this.$supabase.from('projects')
         .insert(this.newProject).select()
 
-      if (!err) {
+      if (!error) {
         const project = projects[0]
 
         await axios({
