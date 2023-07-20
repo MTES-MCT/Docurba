@@ -62,7 +62,8 @@ export default {
   },
   methods: {
     saveParentSha () {
-      this.$supabase.from('pac_sections').update({ parent_sha: this.section.diff.sha }).match({
+      this.$supabase.from('pac_sections').upsert({
+        parent_sha: this.section.diff.sha,
         path: this.section.path,
         ref: this.gitRef
       }).then(() => {

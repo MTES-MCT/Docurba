@@ -64,6 +64,7 @@
 
 <script>
 import axios from 'axios'
+import { groupBy } from 'lodash'
 import orderSections from '@/mixins/orderSections.js'
 import departements from '@/assets/data/departements-france.json'
 
@@ -119,13 +120,27 @@ export default {
 
     // console.log(JSON.stringify(juridiquePaths, null, 2))
 
-    const { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
+    let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,
         `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`,
         `region-${this.project.towns ? this.project.towns[0].code_region : ''}`,
         this.gitRef,
         'main'
     ])
+
+    // This code should prevent using multiple value when parsing.
+    const groupedSupSections = groupBy(supSections, s => s.path)
+    supSections = Object.keys(groupedSupSections).map((path) => {
+      return groupedSupSections[path].find(s => s.ref.includes('projet')) ||
+          groupedSupSections[path].find(s => s.ref.includes('dept')) ||
+          groupedSupSections[path].find(s => s.ref.includes('test')) ||
+          groupedSupSections[path].find(s => s.ref.includes('region')) ||
+          groupedSupSections[path].find(s => s.ref.includes('main'))
+    })
+
+    // console.log(supSections.find(s => s.path.includes('Les risques')))
+
+    // console.log(supSections.filter(s => s.ref.includes('projet')))
 
     this.orderSections(sections, supSections)
 
@@ -153,16 +168,27 @@ export default {
 
     this.loading = false
 
-    this.getDiff()
+    this.getDiff(supSections)
   },
   methods: {
-    findSection (path) {
-      return this.sections.find((section) => {
-        const sectionPath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
-        return sectionPath === path
-      })
-    },
-    async getDiff () {
+    // findSection (path, sections) {
+    //   const searchedSection = sections.find((section) => {
+    //     const sectionPath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
+    //     return sectionPath === path
+    //   })
+
+    //   sections.forEach()
+
+    //   return sections.find((section) => {
+    //     const sectionPath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
+    //     if (sectionPath === path) {
+    //       return true
+    //     } else if (section.children) {
+    //       return this.findSection(path)
+    //     }
+    //   })
+    // },
+    async getDiff (supSections) {
       let headRef = 'main'
 
       if (this.project && this.project.id) {
@@ -181,15 +207,19 @@ export default {
         url: `/api/trames/compare?basehead=${this.gitRef}...${headRef}`
       })
 
-      const { data: missing } = await axios({
-        url: `/api/trames/compare?basehead=${headRef}...${this.gitRef}`
-      })
+      // This is to be used for gostSections
+      // const { data: missing } = await axios({
+      //   url: `/api/trames/compare?basehead=${headRef}...${this.gitRef}`
+      // })
 
-      console.log(data, missing)
+      // console.log(data, missing)
 
       const diffFiles = data.files.filter((file) => {
-        const section = this.findSection(file.filename)
-        return file.changes > 0 && (!section || section.parentSha !== file.sha)
+        const section = supSections.find((s) => {
+          return file.filename === s.path
+        })
+
+        return file.changes > 0 && (!section || section.parent_sha !== file.sha)
       })
 
       this.sections.forEach((section) => {
