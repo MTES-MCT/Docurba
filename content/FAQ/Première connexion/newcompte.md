@@ -1,6 +1,7 @@
 ---
 question: "Comment s'inscrire en tant qu'agent de DDT(M)/DEAL?"
 visible: true
+scope: ['ddt']
 ---
 
 Cliquez en haut à droite de [notre site](https://docurba.beta.gouv.fr/)), sur le bouton “connexion”, renseignez vos informations en prenant le soin de  sélectionner votre département et de cocher la case “DDT/DEAL”. Notre équipe se chargera de valider vos droits d’accès en tant qu’agent de l’État (cela prend en général quelques minutes). 

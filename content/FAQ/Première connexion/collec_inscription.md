@@ -1,6 +1,8 @@
 ---
 question: "Je suis une personne de collectivité ou bureau d'études, ai-je besoin de m'inscrire pour profiter de Docurba ?"
 visible: true
+scope: ['collectivite', 'be']
+order: 1
 ---
 La consultation des premiers éléments à disposition (données territorialisées et Socle de PAC) ne nécessitent pas l’inscription sur Docurba. → Recherchez simplement votre commune ou EPCI dans la barre de recherche de [notre page d’accueil](https://docurba.beta.gouv.fr/) et laissez-vous guider. 
 

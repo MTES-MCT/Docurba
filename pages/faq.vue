@@ -108,7 +108,8 @@
           >
             <v-card flat color="white">
               <v-expansion-panels focusable accordion class="pa-1">
-                <v-expansion-panel v-for="(q, i) in displayedQuestions" :key="'question-' +i">
+                <!-- <v-expansion-panel v-for="(q, i) in displayedQuestions" :key="'question-' +i"> -->
+                <v-expansion-panel v-for="(q, i) in filteredQuestions" :key="'question-' +i">
                   <v-expansion-panel-header>
                     <h6 class="text-body-1">
                       {{ q.question }}
@@ -124,25 +125,6 @@
         </v-tabs-items>
       </v-col>
     </v-row>
-
-    <!-- <v-row>
-      <v-row>
-        <v-col cosl="12">
-          <v-expansion-panels flat focusable popout>
-            <v-expansion-panel v-for="(q, i) in displayedQuestions" :key="'question-' +i">
-              <v-expansion-panel-header>
-                <h6 class="text-h6">
-                  {{ q.question }}
-                </h6>
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <nuxt-content :document="q" />
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-        </v-col>
-      </v-row>
-    </v-row> -->
     <v-snackbar v-model="helpSnackbar">
       Votre message à été envoyé !
     </v-snackbar>
@@ -161,7 +143,7 @@ export default {
   },
   data () {
     return {
-      tab: null,
+      tab: this.$route.query.scope ? parseInt(this.$route.query.scope) : 1,
       helpDialog: false,
       helpSnackbar: false,
       breadItems: [
@@ -202,11 +184,22 @@ export default {
     }
   },
   computed: {
+    categorizedQuestions () {
+      // 0 -> DDT, 1 -> Collectivites, 2 -> BE
+      const mapping = { ddt: 0, collectivite: 1, be: 2 }
+      const cats = [[], [], []]
+      this.FAQ.forEach((question) => {
+        question.scope?.forEach((scp) => {
+          cats[mapping[scp]].push(question)
+        })
+      })
+      return cats
+    },
     filteredQuestions () {
       const searchText = this.search.normalize('NFD').replace(/[\u0300-\u036F]/g, '').toLocaleLowerCase()
 
-      return this.FAQ.filter((q) => {
-        const question = q.question.normalize('NFD').replace(/[\u0300-\u036F]/g, '').toLocaleLowerCase()
+      return this.categorizedQuestions[this.tab].filter((q) => {
+        const question = q?.question.normalize('NFD').replace(/[\u0300-\u036F]/g, '').toLocaleLowerCase()
         return question.includes(searchText)
       })
     },
@@ -217,8 +210,11 @@ export default {
     }
   },
   watch: {
+    tab (newVal) {
+      this.$router.replace({ path: '/faq', query: { ...this.$route.query, scope: newVal } })
+    },
     search () {
-      this.$router.replace({ path: '/faq', query: { recherche: this.search } })
+      this.$router.replace({ path: '/faq', query: { ...this.$route.query, recherche: this.search } })
     }
   }
 }

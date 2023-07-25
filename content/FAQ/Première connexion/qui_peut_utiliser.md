@@ -1,6 +1,7 @@
 ---
 question: "Qui peut utiliser Docurba ?"
 visible: true
+scope: ['ddt', 'be', 'collectivite']
 ---
 
 **Docurba est utile aux :**
