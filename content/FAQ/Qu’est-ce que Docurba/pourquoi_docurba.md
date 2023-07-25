@@ -1,6 +1,8 @@
 ---
 question: "Docurba : qui, quoi, comment ?"
 visible: true
+scope: ['collectivité','be','dreal','ddt']
+order: 1
 ---
 
 Docurba est **porté par le Ministère de la Transition Écologique, la Direction Général de l'Aménagement du Logement et de la Nature (DGALN) et la Direction interministérielle du numérique**. 
