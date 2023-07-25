@@ -1,6 +1,7 @@
 ---
 question: "Y-a-t-il un lien entre Sudocuh, le Géo-portail de l'urbanisme (GPU) et Docurba ?"
-visible: true
+visible: false
+scope: ['ddt']
 order: 1
 ---
 
