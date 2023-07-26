@@ -1,6 +1,8 @@
 ---
-question: "Je ne trouve pas de données spécifiques à la commune dans mon PAC récemment créé, pourquoi ?"
+question: "Je ne trouve pas de données spécifiques à la collectivité dans le PAC récemment créé, pourquoi ?"
 visible: true
+scope: ['ddt']
+order: 
 ---
 
 Docurba ne permet pas l'insertion automatique de données territorialisées dans les PAC. Cela permet effectivement : 
