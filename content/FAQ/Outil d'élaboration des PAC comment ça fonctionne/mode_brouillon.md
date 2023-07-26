@@ -1,7 +1,8 @@
 ---
 question: "Existe-t-il un “mode brouillon” pour élaborer les PAC ? "
-tags: ["PAC : outil d'élaboration et de partage des PAC"]
 visible: true
+scope: ['ddt']
+order: 
 ---
 
 
