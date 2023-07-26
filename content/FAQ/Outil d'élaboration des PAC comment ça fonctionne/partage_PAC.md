@@ -1,6 +1,8 @@
 ---
 question: "Comment partager le PAC à la collectivité ? "
 visible: true
+scope: ['ddt']
+order: 
 ---
 
 1. Depuis “mes documents” et retrouvez le PAC que vous souhaitez partager à la collectivité,
