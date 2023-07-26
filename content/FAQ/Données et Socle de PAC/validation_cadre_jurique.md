@@ -1,6 +1,8 @@
 ---
 question: "Le cadre juridique national (lois sur la planification) est-il à jour ? Qui le rédige ?"
 visible: true
+scope: ['ddt','dreal','collectivite','be']
+order: 
 ---
 
 Le cadre juridique a été rédigé et validé en collaboration avec le National (la Direction de l'Habitat de l'Urbanisme et des Paysages (DHUP), bureau Qualité de Vie (QV4). Des points mensuels sont organisés afin de le maintenir à jour. 
