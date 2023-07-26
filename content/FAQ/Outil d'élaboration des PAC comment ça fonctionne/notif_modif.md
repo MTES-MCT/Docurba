@@ -1,7 +1,8 @@
 ---
 question: "Les pastilles bleues en face des sections ne s’enlèvent pas, pourquoi ? "
-tags: ["PAC : outil d'élaboration et partage des PAC"]
 visible: true
+scope: ['ddt']
+order: 
 ---
 ***Fonctionnalité en cours d’amélioration***
 
