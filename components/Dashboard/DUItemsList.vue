@@ -52,6 +52,13 @@
         Cette collectivité n'a pas de documents d'urbanisme sous ca compétence.
       </div>
     </v-col>
+    <v-col cols="auto">
+      <DashboardDUInsertDialog v-model="insertDialog" :collectivite="collectivite">
+        <v-btn tile color="primary" @click="insertDialog = true">
+          Ajouter un document d'urbanisme
+        </v-btn>
+      </DashboardDUInsertDialog>
+    </v-col>
   </v-row>
   <v-row v-else>
     <v-col cols="12">
@@ -83,7 +90,8 @@ export default {
   },
   data () {
     return {
-      tab: null
+      tab: null,
+      insertDialog: false
     }
   },
   computed: {

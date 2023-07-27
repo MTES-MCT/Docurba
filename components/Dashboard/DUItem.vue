@@ -16,7 +16,7 @@
               <v-expansion-panel-content class="primary lighten-4">
                 <DashboardDUSubProcedureItem
                   v-for="procSec in procedure.procSecs"
-                  :key="'procSec_' +procSec.idProcedure"
+                  :key="'procSec_' +procSec.id"
                   class="grey-border mb-8"
                   :procedure="procSec"
                   :censored="censored"
@@ -48,25 +48,25 @@ export default {
   },
   computed: {
     status () {
-      if (this.procedure.dateExecutoire && !this.procedure.idProcedurePrincipal) {
+      if (this.procedure.enforceable_date && !this.procedure.procedure_id) {
         return 'opposable'
-      } else if (this.procedure.dateExecutoire && this.procedure.idProcedurePrincipal) {
+      } else if (this.procedure.enforceable_date && this.procedure.procedure_id) {
         return 'précédent'
-      } else if (this.procedure.dateLancement || this.procedure.dateApprobation) {
+      } else if (this.procedure.launch_date || this.procedure.approval_date) {
         return 'en cours'
       } else {
         return 'abandonné'
       }
     },
     step () {
-      if (this.procedure.dateAbandon) {
-        return `Abandon (${this.procedure.dateAbandon})`
-      } else if (this.procedure.dateExecutoire) {
-        return `Executoire (${this.procedure.dateExecutoire})`
-      } else if (this.procedure.dateApprobation) {
-        return `Approbation (${this.procedure.dateApprobation})`
-      } else if (this.procedure.dateLancement) {
-        return `Lancement (${this.procedure.dateLancement})`
+      if (this.procedure.abort_date) {
+        return `Abandon (${this.procedure.abort_date})`
+      } else if (this.procedure.enforceable_date) {
+        return `Executoire (${this.procedure.enforceable_date})`
+      } else if (this.procedure.approval_date) {
+        return `Approbation (${this.procedure.approval_date})`
+      } else if (this.procedure.launch_date) {
+        return `Lancement (${this.procedure.launch_date})`
       }
       return '-'
     }

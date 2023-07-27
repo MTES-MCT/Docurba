@@ -1,9 +1,11 @@
 <template>
   <v-dialog v-model="isOpen" max-width="800px">
     <template #activator="{on}">
-      <v-btn text class="align-self-center" v-on="on">
-        Ajouter un DU
-      </v-btn>
+      <slot>
+        <v-btn text class="align-self-center" v-on="on">
+          Ajouter un DU
+        </v-btn>
+      </slot>
     </template>
     <v-card>
       <v-card-title>Création d'un nouveau documents d'urbanisme</v-card-title>
@@ -61,6 +63,10 @@ import axios from 'axios'
 
 export default {
   props: {
+    value: {
+      type: Boolean,
+      default: false
+    },
     collectivite: {
       type: Object,
       required: true
@@ -74,7 +80,6 @@ export default {
     const towns = isEpci ? this.collectivite.towns : [this.collectivite]
 
     return {
-      isOpen: false,
       saving: false,
       snackbar: false,
       isEpci,
@@ -94,6 +99,14 @@ export default {
     }
   },
   computed: {
+    isOpen: {
+      get () {
+        return this.value
+      },
+      set (val) {
+        this.$emit('input', val)
+      }
+    },
     docTypes () {
       return this.isEpci
         ? [
