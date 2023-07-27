@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="12" class="white pt-0 px-0">
+    <v-col cols="12" class="white pt-0 px-0 pb-0">
       <v-tabs
         background-color="transparent"
       >
