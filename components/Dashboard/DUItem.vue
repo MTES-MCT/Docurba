@@ -1,9 +1,9 @@
 <template>
   <div class="mb-4">
     <v-card outlined class="no-border-radius-bottom">
-      <v-container>
+      <v-card-text>
         <DashboardDUProcedureItem :procedure="procedure" :censored="censored" />
-      </v-container>
+      </v-card-text>
     </v-card>
     <v-container v-if="procedure.procSecs?.length > 0">
       <v-row>
