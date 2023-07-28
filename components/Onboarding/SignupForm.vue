@@ -12,15 +12,10 @@
     <v-col cols="6">
       <v-text-field v-model="userData.lastname" hide-details filled label="Nom" />
     </v-col>
-    <template v-if="userData.email.includes('gouv.fr')">
-      <!-- <template> -->
-      <v-col cols="">
-        <VDeptAutocomplete v-model="userData.dept" />
-      </v-col>
-      <v-col cols="auto">
-        <v-checkbox v-model="userData.isDDT" label="Agent de DDT/DEAL" />
-      </v-col>
-    </template>
+
+    <v-col cols="">
+      <VDeptAutocomplete v-model="userData.dept" />
+    </v-col>
   </v-row>
 </template>
 
@@ -62,7 +57,7 @@ export default {
         lastname: this.$isDev ? 'Test' : '',
         password: this.$isDev ? 'docurba12345' : '',
         dept: null,
-        isDDT: false
+        isDDT: true
       }
     }
   }

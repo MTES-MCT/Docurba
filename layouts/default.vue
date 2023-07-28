@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <LayoutsAppBar />
-    <v-main>
+    <v-main :class="$route.name.startsWith('login') ? 'beige' : ''">
       <nuxt />
     </v-main>
     <LayoutsFooter />
