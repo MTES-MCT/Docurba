@@ -1,5 +1,5 @@
 ---
-question: "Es-ce obligatoire de déposer l'acte de délibération de prescription sur Docurba ?"
+question: "Est-ce obligatoire de déposer l'acte de délibération de prescription sur Docurba ?"
 visible: false
 scope: ['ddt','collectivite','be']
 order: 2
