@@ -5,3 +5,5 @@ scope: ['ddt','be','collectivite']
 order: 
 ---
 BLABLABLA
+
+Attendre lien FRP avec dépot de nouvelle prescription. 
