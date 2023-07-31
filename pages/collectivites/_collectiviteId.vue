@@ -11,7 +11,7 @@
       :is-epci="isEpci"
       :collectivite="collectivite"
       :procedures="procedures"
-      :communes="isEpci ? collectivite.towns : collectivite"
+      :communes="isEpci ? collectivite.towns : [collectivite]"
       @snackMessage="Object.assign(snackbar, {visible: true, message: arguments[0]})"
     />
     <v-snackbar v-model="snackbar.visible" top right color="success">

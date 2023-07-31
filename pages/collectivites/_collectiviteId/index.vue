@@ -70,7 +70,11 @@
         </p>
       </v-col>
     </v-row>
-    <DashboardDUItemsList :procedures="procedures" :collectivite-type="isEpci ? 'epci' : 'commune'" is-public />
+    <DashboardDUItemsList
+      :collectivite="collectivite"
+      :collectivite-type="isEpci ? 'epci' : 'commune'"
+      is-public
+    />
   </v-container>
 </template>
 
@@ -90,10 +94,6 @@ export default {
     procedures: {
       type: Array,
       default: () => null
-    },
-    communes: {
-      type: Array,
-      required: true
     }
   },
   data () {

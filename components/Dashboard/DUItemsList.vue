@@ -13,7 +13,7 @@
           DU communaux
         </v-tab>
         <v-spacer />
-        <DashboardDUInsertDialog :collectivite="collectivite" />
+        <DashboardDUInsertDialog v-if="!isPublic" :collectivite="collectivite" />
       </v-tabs>
 
       <v-tabs-items v-model="tab" :class="{beige: !isPublic}">
@@ -54,7 +54,7 @@
         Cette collectivité n'a pas de documents d'urbanisme sous ca compétence.
       </div>
     </v-col>
-    <v-col cols="auto">
+    <v-col v-if="!isPublic" cols="auto">
       <DashboardDUInsertDialog v-model="insertDialog" :collectivite="collectivite">
         <v-btn tile color="primary" @click="insertDialog = true">
           Ajouter un document d'urbanisme
@@ -120,7 +120,7 @@ export default {
   async mounted () {
     const [sudocuProcedures, { procedures, projects }] = await Promise.all([
       this.$sudocu.getProcedures(this.collectivite.id),
-      this.$urbanisator.getProjectsProcedures(this.collectivite.id)
+      !this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }
     ])
 
     this.procedures = [...sudocuProcedures, ...procedures]
