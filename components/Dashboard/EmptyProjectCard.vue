@@ -15,7 +15,7 @@
       </v-row>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="primary" tile disable>
+      <v-btn color="primary" tile disabled>
         Ajouter une procedure
       </v-btn>
     </v-card-actions>

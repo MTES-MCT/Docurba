@@ -56,13 +56,7 @@
         </p>
       </v-col>
     </v-row>
-    <v-row>
-      <v-col v-for="emptyProject in emptyProjects" :key="emptyProject.id">
-        <DashboardEmptyProjectCard :project="emptyProject" />
-      </v-col>
-    </v-row>
     <DashboardDUItemsList
-      :procedures="procedures"
       collectivite-type="epci"
       :collectivite="collectivite"
     />
@@ -80,8 +74,6 @@ export default {
       linkedEpci: null,
       // tab: null,
       collectivite: null,
-      procedures: null,
-      emptyProjects: [],
       icons: {
         mdiArrowLeft
       }
@@ -89,15 +81,14 @@ export default {
   },
   async mounted () {
     this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId)
-    this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
 
-    const [sudocuProcedures, { procedures, projects }] = await Promise.all([
-      this.$sudocu.getProcedures(this.$route.params.collectiviteId),
-      this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
-    ])
+    // const [sudocuProcedures, { procedures, projects }] = await Promise.all([
+    //   this.$sudocu.getProcedures(this.$route.params.collectiviteId),
+    //   this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
+    // ])
 
-    this.procedures = [...sudocuProcedures, ...procedures]
-    this.emptyProjects = projects.filter(project => !project.procedures.length)
+    // this.procedures = [...sudocuProcedures, ...procedures]
+    // this.emptyProjects = projects.filter(project => !project.procedures.length)
   }
 }
 </script>

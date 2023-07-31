@@ -34,7 +34,6 @@
       </v-col>
     </v-row>
     <DashboardDUItemsList
-      :procedures="procedures"
       :collectivite="collectivite"
       collectivite-type="commune"
     />

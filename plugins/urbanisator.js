@@ -73,9 +73,9 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
     async getProjectsProcedures (collectiviteId) {
       // Fetching user procedure for now. Should also fetch public projects at some point.
       // Or more simply fetch based on collectivite column but need to make a script to update projects.
-      const { data: projects } = await $supabase.from('projects').select('id, name, doc_type, towns').match({
-        owner: $user.id,
-        collectivite: collectiviteId
+      const { data: projects } = await $supabase.from('projects').select('id, name, doc_type, towns, collectivite_id').match({
+        owner: $user.id, // TODO: fetch shared projects.
+        collectivite_id: collectiviteId
       })
 
       const projectsIds = projects.map(p => p.id)
