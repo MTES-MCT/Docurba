@@ -18,6 +18,9 @@
       <v-btn color="primary" tile disabled>
         Ajouter une procedure
       </v-btn>
+      <v-btn color="primary" tile depressed nuxt :to="`/trames/projet-${project.id}`">
+        Modifier le PAC
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>

@@ -80,6 +80,7 @@ export default {
     const towns = isEpci ? this.collectivite.towns : [this.collectivite]
 
     return {
+      isOpen: this.value,
       saving: false,
       snackbar: false,
       isEpci,
@@ -87,7 +88,7 @@ export default {
       newProject: {
         name: '',
         doc_type: '',
-        collectivite: collectiviteId,
+        collectivite_id: collectiviteId,
         owner: this.$user.id,
         towns, // idealy this is done automatically by the DB
         epci: isEpci ? this.collectivite : null, // Same here, this should be made by the DB
@@ -99,14 +100,6 @@ export default {
     }
   },
   computed: {
-    isOpen: {
-      get () {
-        return this.value
-      },
-      set (val) {
-        this.$emit('input', val)
-      }
-    },
     docTypes () {
       return this.isEpci
         ? [
@@ -115,6 +108,11 @@ export default {
         : [
             'CC', 'PLU'
           ]
+    }
+  },
+  watch: {
+    isOpen () {
+      this.$emit('input', this.isOpen)
     }
   },
   methods: {
@@ -137,10 +135,10 @@ export default {
         })
 
         this.isOpen = false
+        this.$emit('insert')
       } else {
         this.snackbar = true
       }
-      this.isOpen = false
 
       this.saving = false
     }

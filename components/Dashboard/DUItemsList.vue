@@ -13,7 +13,11 @@
           DU communaux
         </v-tab>
         <v-spacer />
-        <DashboardDUInsertDialog v-if="!isPublic" :collectivite="collectivite" />
+        <DashboardDUInsertDialog
+          v-if="!isPublic"
+          :collectivite="collectivite"
+          @insert="fetchProjects"
+        />
       </v-tabs>
 
       <v-tabs-items v-model="tab" :class="{beige: !isPublic}">
@@ -55,7 +59,11 @@
       </div>
     </v-col>
     <v-col v-if="!isPublic" cols="auto">
-      <DashboardDUInsertDialog v-model="insertDialog" :collectivite="collectivite">
+      <DashboardDUInsertDialog
+        v-model="insertDialog"
+        :collectivite="collectivite"
+        @insert="fetchProjects"
+      >
         <v-btn tile color="primary" @click="insertDialog = true">
           Ajouter un document d'urbanisme
         </v-btn>
@@ -91,6 +99,7 @@ export default {
       loadingProcedures: true,
       tab: null,
       insertDialog: false,
+      sudocuProcedures: [],
       procedures: [],
       projects: []
     }
@@ -123,10 +132,19 @@ export default {
       !this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }
     ])
 
+    this.sudocuProcedures = sudocuProcedures
     this.procedures = [...sudocuProcedures, ...procedures]
     this.projects = projects
 
     this.loadingProcedures = false
+  },
+  methods: {
+    async fetchProjects () {
+      const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.collectivite.id)
+
+      this.procedures = [...this.sudocuProcedures, ...procedures]
+      this.projects = projects
+    }
   }
 }
 </script>
