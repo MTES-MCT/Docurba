@@ -1,13 +1,15 @@
 ---
-question: "Je ne trouve pas de données spécifiques à la collectivité dans le PAC récemment créé, pourquoi ?"
+question: "Je ne trouve pas de données spécifiques à la collectivité dans le PAC que je viens de créer, pourquoi ?"
 visible: true
 scope: ['ddt']
-order: 
+order: 4
 ---
 
-Docurba ne permet pas l'insertion automatique de données territorialisées dans les PAC. Cela permet effectivement : 
+**Docurba ne permet pas l'insertion automatique de données territorialisées dans les PAC.** 
+
+Cela permet effectivement : 
 - de laisser une certaine flexibilité à la DDT(M)/DEAL qui élabore le PAC,
 - une prise en main plus accessible de l'outil,
 - de ne pas répliquer d'éventuelles données non à jour.
 
-Cela dit, vous avez la possibilité de retrouver les données territorialisées depuis la barre de recherche de la page d’accueil, et au moment de l'élaboration du PAC, vous avez la possibilité d'insérer des fichiers et des images dans le traitement de texte.
+Cela dit, vous avez la possibilité de retrouver les données territorialisées depuis la barre de recherche de la page d’accueil de Docurba. Et au moment de l'élaboration du PAC, le traitement de texte vous permet d'insérer des fichers, des images et des liens pour faire référence à des données.
