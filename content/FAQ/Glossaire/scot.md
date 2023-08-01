@@ -2,6 +2,6 @@
 question: "SCoT"
 visible: true
 scope: ['ddt','dreal','collectivite','be']
-order: 12
+order: 13
 ---
 SCoT : Schéma de Cohérence Territoriale.
