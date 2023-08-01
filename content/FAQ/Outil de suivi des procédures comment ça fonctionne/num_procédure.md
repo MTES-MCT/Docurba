@@ -1,8 +1,8 @@
 ---
 question: "À quoi correspond le numéro de procédure demandé dans le formulaire de dépôt d'acte?"
-visible: false
+visible: true
 scope: ['ddt','collectivite','be']
-order: 5
+order: 2
 ---
 
 Ce numéro est visbile sur le courrier de délibération de prescription: 
