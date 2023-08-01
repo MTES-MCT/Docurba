@@ -1,7 +1,7 @@
 ---
 question: "Qui peut utiliser Docurba ?"
 visible: true
-scope: ['collectivité','be','dreal','ddt']
+scope: ['collectivite','be','dreal','ddt']
 order: 2
 ---
 

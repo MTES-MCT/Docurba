@@ -1,7 +1,7 @@
 ---
 question: "Feuille de Route Publique : qui peut la consulter et la modifier ?"
 visible: true
-scope: ['ddt''collectivite','be']
+scope: ['ddt','collectivite','be']
 order: 1
 ---
 

@@ -1,7 +1,7 @@
 ---
 question: "Une collectivité qui explore le socle de PAC a-t-elle accès à toutes les lois, même celles qui ne la concernent pas ?" 
 visible: true
-scope: ['collectivité','be','ddt']
+scope: ['collectivite','be','ddt']
 order: 5
 ---
 

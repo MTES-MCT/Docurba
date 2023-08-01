@@ -131,6 +131,8 @@
   </v-container>
 </template>
 <script>
+import _ from 'lodash'
+
 export default {
   async asyncData ({ $content }) {
     const FAQ = await $content('FAQ', {
@@ -162,7 +164,8 @@ export default {
       items: [
         { tab: 'Je suis une DDT', content: 'Tab 1 Content' },
         { tab: 'Je suis une collectivité', content: 'Tab 2 Content' },
-        { tab: 'Je suis un Bureau d\'étude', content: 'Tab 3 Content' }],
+        { tab: 'Je suis un Bureau d\'étude', content: 'Tab 3 Content' },
+        { tab: 'Je suis de la DREAL', content: 'Tab 3 Content' }],
       faqCards: [
         {
           title: 'Qu\'est ce que Docurba ?',
@@ -186,13 +189,14 @@ export default {
   computed: {
     categorizedQuestions () {
       // 0 -> DDT, 1 -> Collectivites, 2 -> BE
-      const mapping = { ddt: 0, collectivite: 1, be: 2 }
-      const cats = [[], [], []]
+      const mapping = { ddt: 0, collectivite: 1, be: 2, dreal: 3 }
+      let cats = [[], [], [], []]
       this.FAQ.forEach((question) => {
         question.scope?.forEach((scp) => {
           cats[mapping[scp]].push(question)
         })
       })
+      cats = cats.map(cat => _.orderBy(cat, ['order'], ['desc']))
       return cats
     },
     filteredQuestions () {

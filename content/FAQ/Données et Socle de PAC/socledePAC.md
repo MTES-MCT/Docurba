@@ -1,7 +1,7 @@
 ---
 question: "Qu’est-ce que le Socle de PAC ?"
 visible: true
-scope: ['collectivité','be','dreal','ddt']
+scope: ['collectivite','be','dreal','ddt']
 order: 1
 ---
 
