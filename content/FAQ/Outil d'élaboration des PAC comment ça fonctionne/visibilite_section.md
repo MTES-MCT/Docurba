@@ -2,7 +2,7 @@
 question: "Si j'ajoute une section ou sous-section à la Trame de PAC de mon département, sera-t-elle visible pour tout le département?"
 visible: true
 scope: ['ddt']
-order: 
+order: 4
 ---
 
 Les sections ajoutées par un agent de DDT(M)/DEAL dans sa trame de PAC seront uniquement visibles pour son département et partagées avec tous les rédacteurs des PAC de son département.
