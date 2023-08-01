@@ -1,18 +1,19 @@
 ---
 question: "Qui peut utiliser Docurba ?"
 visible: true
+scope: ['collectivité','be','dreal','ddt']
+order: 2
 ---
 
 **Docurba est utile aux :**
-
-- collectivités qui sont en phase de prescrire ou ont déjà prescrit leur document d'urbanisme,
-- bureaux d'études qui accompagnent ses collectivités,
-- agents des services aménagement et planification en DDT(M)/DEAL et DREAL. 
+- collectivités à la compétence urbanisme,
+- bureaux d'études qui accompagnent les collectivités dans leur procédure de document d'urbanisme,
+- agents des services aménagement et planification en DDT(M)/DEAL et DREAL.
 
 
 
 Sur Docurba, **les collectivités et leur bureau d'études** ; 
-- consultent les ressources utiles à l'élaboration du document d'urbanisme : disponibles à tout moment, ils trouveront des données territorialisées, le socle de PAC avec des éléments reglementaires mis à jour mensuellement,
+- consultent les ressources utiles à l'élaboration du document d'urbanisme : disponibles à tout moment, ils trouveront des données territorialisées, le socle de PAC avec des éléments législatifs et reglementaires mis à jour mensuellement,
 - déposent l'acte de délibération de prescription,
 - consultent le PAC,
 - bénéficient d'une Feuille de Route Partagée qui maérialise l'état d'avancement de la procédure et permet de centraliser les échanges de documents entre les différentes parties prenantes (dont la DDT(M)/DEAL. _Fonctionnalité bientôt disponible_.

@@ -3,9 +3,12 @@ name: sharingPAC_v1
 tag: projet
 ---
 
-## Comment partager le PAC à la collectivité 
+## Astuce pour partager le PAC à la collectivité 
 
-Depuis “Mes documents”, retrouvez le PAC que vous souhaitez partager, cliquez sur le bouton “partager” puis renseignez le(s) email(s) de la collectivité. 
-Le partage en mode lecture est sélectionné par défaut ; laissez-le ainsi. Retenez qu’une fois le PAC partagé à la collectivité, cette dernière pourra naviguer dans les sections cochées de son PAC. 
+Depuis “Mes documents”, retrouvez le PAC en question, cliquez sur le bouton “partager” puis renseignez le(s) email(s) de la collectivité, elle recevra une notification à son email et pourra consulter le PAC directement sur Docurba. 
+Le partage en mode lecture est sélectionné par défaut ; laissez-le ainsi. Retenez qu’une fois le PAC partagé à la collectivité, cette dernière pourra consulter en continu les sections que vous aurez préalablement cochées dans son PAC. 
+Vous pouvez également faire un export .PDF du PAC depuis Docurba et le mode consultation du PAC. 
 
-Astuce : donnez de la visibilité sur les sections déjà rédigées à la collectivité ; partagez le PAC par section (voir conseil précédent).
+**Remarque** : avec Docurba, vous pouvez ainsi donner de la visibilité aux sections du PAC que vous avez déjà rédigées en cochant ces sections depuis le mode édition du PAC. La collectivité sera notifiée automatiquement et pourra les consulter. 
+La volonté est d'aller vers la mise à disposition du PAC au fil de l'eau, et dès les premières semaines de la procédure.
+

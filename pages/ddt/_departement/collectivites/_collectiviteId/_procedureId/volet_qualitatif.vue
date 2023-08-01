@@ -20,32 +20,61 @@
       </v-col>
     </v-row>
     <DashboardDdtInfosTabs />
-    <v-row class="white">
-      <v-col cols="12">
+
+    <v-row>
+      <v-col cols="12 pl-0 mb-4">
+        <div class="text-h2 mt-8">
+          Volet qualitatif
+        </div>
+      </v-col>
+    </v-row>
+    <v-row class="white-bordered-card pa-8 mb-4">
+      <v-col v-if="rawDetails" cols="12">
+        <div>
+          <div class="font-weight-bold ">
+            Evaluation environnementale : {{ rawDetails[0].vq_sievaluationenvironnementale }}
+          </div>
+        </div>
+      </v-col>
+      <!-- <v-col v-if="rawDetails" cols="6">
+        <div>
+          {{ rawDetails[0].vq_sievaluationenvironnementale }}
+        </div>
+      </v-col> -->
+    </v-row>
+
+    <v-row>
+      <v-col cols="12" class=" pl-0 mb-4">
         <div class="text-h2">
-          Table Loi ENE
+          Loi ENE
         </div>
       </v-col>
     </v-row>
     <template v-if="loienes">
-      <v-row class="white">
-        <!-- <v-col cols="12">
-        <div class="text-h5 font-weight-bold">
-          Disposition d’aménagement des OAP
-        </div>
-      </v-col> -->
+      <v-row class="white-bordered-card  pa-8 ">
         <v-col cols="12">
-          <v-row v-for="(loiene, i) in loienes" :key="'le_' + i">
+          <v-row>
+            <v-col cols="12" class="text-h5 font-weight-bold">
+              Disposition d’aménagement des OAP
+            </v-col>
+          </v-row>
+          <v-row v-for="(oap, i) in loienes.oaps" :key="'le_' + i">
             <v-col cols="6">
               <div class="justify-text-end">
                 <div class="font-weight-bold d-flex justify-end">
-                  {{ loiene.title }} :
+                  {{ oap.title }} :
                 </div>
               </div>
             </v-col>
             <v-col cols="6">
               <div>
-                {{ loiene.value }}
+                <v-chip v-if="typeof oap.value === 'boolean'" :color="oap.value ? 'success' : 'error'" small label class="text-uppercase mr-2">
+                  {{ oap.value ? 'Oui' : 'Non' }}
+                </v-chip>
+                <div v-else>
+                  {{ oap.value }}
+                </div>
+
                 <v-tooltip bottom>
                   <template #activator="{ on, attrs }">
                     <v-icon
@@ -58,8 +87,70 @@
                       {{ icons.mdiInformationOutline }}
                     </v-icon>
                   </template>
-                  <span>{{ loiene.hint }}</span>
+                  <span>{{ oap.hint }}</span>
                 </v-tooltip>
+              </div>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row class="white-bordered-card pa-8 mt-12">
+        <v-col cols="12">
+          <v-row>
+            <v-col cols="12" class="text-h5 font-weight-bold">
+              Règlement
+            </v-col>
+          </v-row>
+          <v-row v-for="(reglement, i) in loienes.reglements" :key="'le_' + i">
+            <v-col cols="6">
+              <div class="justify-text-end">
+                <div class="font-weight-bold d-flex justify-end">
+                  {{ reglement.title }} :
+                </div>
+              </div>
+            </v-col>
+            <v-col cols="6">
+              <div>
+                <v-chip v-if="typeof reglement.value === 'boolean'" :color="reglement.value ? 'success' : 'error'" small label class="text-uppercase mr-2">
+                  {{ reglement.value ? 'Oui' : 'Non' }}
+                </v-chip>
+                <div v-else>
+                  {{ reglement.value }}
+                </div>
+
+                <v-tooltip bottom>
+                  <template #activator="{ on, attrs }">
+                    <v-icon
+                      color="primary"
+                      class="ml-1"
+                      dark
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      {{ icons.mdiInformationOutline }}
+                    </v-icon>
+                  </template>
+                  <span>{{ reglement.hint }}</span>
+                </v-tooltip>
+              </div>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row class="white-bordered-card pa-8  my-12">
+        <v-col cols="12">
+          <v-row>
+            <v-col cols="12" class="text-h5 font-weight-bold">
+              Commentaire
+            </v-col>
+          </v-row>
+          <v-row v-if="loienes.commentaire">
+            <v-col cols="12">
+              <div v-if="loienes.commentaire.value">
+                {{ loienes.commentaire.value }}
+              </div>
+              <div v-else class="text--disabled">
+                Pas de commentaire
               </div>
             </v-col>
           </v-row>
@@ -72,7 +163,7 @@
       </v-col>
     </v-row>
 
-    <v-row class="white">
+    <!-- <v-row class="white">
       <v-col cols="12">
         <div class="text-h2">
           Table Volet Qualitatif
@@ -81,11 +172,6 @@
     </v-row>
     <template v-if="voletQualitatif">
       <v-row class="white">
-        <!-- <v-col cols="12">
-        <div class="text-h5 font-weight-bold">
-          Disposition d’aménagement des OAP
-        </div>
-      </v-col> -->
         <v-col cols="12">
           <v-row v-for="(vq, i) in voletQualitatif" :key="'vq_' + i">
             <v-col cols="6">
@@ -122,7 +208,7 @@
       <v-col cols="12">
         <VGlobalLoader />
       </v-col>
-    </v-row>
+    </v-row> -->
   </v-container>
 </template>
 
@@ -184,41 +270,77 @@ export default {
     loienes () {
       if (this.rawDetails) {
         const details = this.rawDetails[0]
-        return [
-          { title: 'Maximum aires stationnement', value: !!details.le_sinbrmaxairestationnement, hint: 'siNbrMaxAireStationnement - Nombre maximal d\'aires de stationnement' },
-          { title: 'Plan de secteur', value: !!details.le_siplansecteur, hint: 'siPlanSecteur - Plan de secteur' },
-          { title: 'siDensiteMin', value: !!details.le_sidensitemin, hint: 'siDensiteMin - Densité minimale' },
-          { title: 'siSecteurProjet', value: !!details.le_sisecteurprojet, hint: 'siSecteurProjet - Secteur de projets' },
-          { title: 'siEnvironnement', value: !!details.le_sienvironnement, hint: 'siEnvironnement - Environnement' },
-          { title: 'siPysage', value: !!details.le_sipaysage, hint: 'siPysage - Paysage' },
-          { title: 'siEntreeville', value: !!details.le_sientreeville, hint: 'siEntreeville - Entrée de ville' },
-          { title: 'siPatrimoine', value: !!details.le_sipatrimoine, hint: 'siPatrimoine - Patrimoine' },
-          { title: 'siLutteInsaLubrite', value: !!details.le_silutteinsalubrite, hint: 'siLutteInsaLubrite - Lutte contre l\'insalubrité' },
-          { title: 'siRenouvellementUrbain', value: !!details.le_sirenouvellementurbain, hint: 'siRenouvellementUrbain - Renouvellement urbain' },
-          { title: 'siDeveloppement', value: !!details.le_sideveloppement, hint: 'siDeveloppement - Développement' },
-          { title: 'siEcheancierOuvertureUrba', value: !!details.le_siecheancierouvertureurba, hint: 'siEcheancierOuvertureUrba - Echéancier d\'ouverture à l\'urbanisation' },
-          { title: 'siSchemasAmenagements', value: !!details.le_sischemasamenagements, hint: 'siSchemasAmenagements - Schémas d\'aménagement' },
-          { title: 'siZonesNaturelles', value: !!details.le_sizonesnaturelles, hint: 'siZonesNaturelles - Zones naturelles' },
-          { title: 'siZonesAgricoles', value: !!details.le_sizonesagricoles, hint: 'siZonesAgricoles - Zones agricoles' },
-          { title: 'siPrescriptions', value: !!details.le_siprescriptions, hint: 'siPrescriptions - Prescriptions' },
-          { title: 'siObjConsoEspaceParSecteur', value: !!details.le_siobjconsoespaceparsecteur, hint: 'siObjConsoEspaceParSecteur - Objectifs de consommation d\'espace par secteur' },
-          { title: 'siUtilisationTerrainAvantUrba', value: !!details.le_siutilisationterrainavanturba, hint: 'siUtilisationTerrainAvantUrba - Utilisation de terrains équipés avant urbanisation nouvelle' },
-          { title: 'siEtudeImpacteUrbanisation', value: !!details.le_sietudeimpacteurbanisation, hint: 'siEtudeImpacteUrbanisation - Etude d\'impact préalable à l\'urbanisation' },
-          { title: 'siEtudeDensification', value: !!details.le_sietudedensification, hint: 'siEtudeDensification - Etude de densification' },
-          { title: 'siSecteurDensiteMin', value: !!details.le_sisecteurdensitemin, hint: 'siSecteurDensiteMin - Secteurs à densité minimale de construction à proximitée des TC' },
-          { title: 'siObligationStationnement', value: !!details.le_siobligationstationnement, hint: 'siObligationStationnement - Obligation (minimale ou maximale) d\'aire de stationnement' },
-          { title: 'siObligationPluStationnement', value: !!details.le_siobligationplustationnement, hint: 'siObligationPluStationnement - Obligation pour PLU d\'aires de stationnement de véhicules non motorisés' },
-          { title: 'siSecteurEnergieEnvironnement', value: !!details.le_sisecteurenergieenvironnement, hint: 'siSecteurEnergieEnvironnement - Secteurs à performances énergétiques et environnementales renforcées' },
-          { title: 'siSecteurCommunicationElectro', value: !!details.le_sisecteurcommunicationelectro, hint: 'siSecteurCommunicationElectro - Secteurs à qualité de communications électroniques renforcées' },
-          { title: 'siSecteurAvecNorme', value: !!details.le_sisecteuravecnorme, hint: 'siSecteurAvecNorme - Secteurs avec normes de qualité urbaine, architecturale et paysagère' },
-          { title: 'siEspaceVert', value: !!details.le_siespacevert, hint: 'siEspaceVert - Maintien ou création d\'espaces verts' },
-          { title: 'siModaliteRepartitionLogementEpci', value: !!details.le_simodaliterepartitionlogementepci, hint: 'siModaliteRepartitionLogementEpci - Modalité de répartition des nouveaux logements' },
-          { title: 'siModaliteRepartitionlogementCommune', value: !!details.le_simodaliterepartitionlogementcommune, hint: 'siModaliteRepartitionlogementCommune - Modalité de répartition des nouveaux logements' },
-          { title: 'siObjectifAmeliorationParc', value: !!details.le_siobjectifameliorationparc, hint: 'siObjectifAmeliorationParc - Objectifs d\'amélioration du parc existant' },
-          { title: 'siPublicationAnalyse', value: !!details.le_sipublicationanalyse, hint: 'siPublicationAnalyse - Publication de l\'analyse à ans' },
-          { title: 'dateVoletQualitatif', value: details.le_datevoletqualitatif, hint: 'dateVoletQualitatif - Date volet qualitatif' }, // DATE TYPE A CHANGER
-          { title: 'commentaire', value: details.le_commentaire, hint: 'commentaire - Commentaire' } // TEXTE
-        ]
+        return {
+          oaps: [
+            { title: 'Environnement', value: !!details.le_sienvironnement, hint: 'siEnvironnement - Environnement' },
+            { title: 'Paysage', value: !!details.le_sipaysage, hint: 'siPysage - Paysage' },
+            { title: 'Entrée en ville', value: !!details.le_sientreeville, hint: 'siEntreeville - Entrée de ville' },
+            { title: 'Patrimoine', value: !!details.le_sipatrimoine, hint: 'siPatrimoine - Patrimoine' },
+            { title: 'Lutte contre l\'insalubrité', value: !!details.le_silutteinsalubrite, hint: 'siLutteInsaLubrite - Lutte contre l\'insalubrité' },
+            { title: 'Renouvellement urbain', value: !!details.le_sirenouvellementurbain, hint: 'siRenouvellementUrbain - Renouvellement urbain' },
+            { title: 'Développement', value: !!details.le_sideveloppement, hint: 'siDeveloppement - Développement' },
+            // MIXITE FONCITONNELLE
+            { title: 'Échéancier d’ouverture à l’urbanisation', value: !!details.le_siecheancierouvertureurba, hint: 'siEcheancierOuvertureUrba - Echéancier d\'ouverture à l\'urbanisation' }
+          // Adaptation du périmètre de plafonnement du stationnement
+          ],
+          reglements: [
+            // STECAL
+          // Nb STECAL
+            { title: 'STECAL', value: !!details.vq_sistecal, hint: 'sistecal --' }, // NO IN SCHEMA
+            { title: 'Nombre de STECAL', value: details.vq_nombrestecal, hint: 'nombrestecal' }, // NO IN SCHEMA
+
+            { title: 'Densité minimale', value: !!details.le_sidensitemin, hint: 'siDensiteMin - Densité minimale' },
+            { title: 'Nombre maximal d’aires de stationnement', value: !!details.le_sinbrmaxairestationnement, hint: 'siNbrMaxAireStationnement - Nombre maximal d\'aires de stationnement' },
+            // Prescriptions pour communications électroniques
+            // RNU
+            { title: 'Obligation de réalisation d’aires de stationnement', value: !!details.le_siobligationstationnement, hint: 'siObligationStationnement - Obligation (minimale ou maximale) d\'aire de stationnement' }
+          ],
+          commentaire: { title: 'commentaire', value: details.le_commentaire, hint: 'commentaire - Commentaire' }
+        }
+        // return [
+        //   { title: 'Environnement', value: !!details.le_sienvironnement, hint: 'siEnvironnement - Environnement' },
+        //   { title: 'Paysage', value: !!details.le_sipaysage, hint: 'siPysage - Paysage' },
+        //   { title: 'Entrée en ville', value: !!details.le_sientreeville, hint: 'siEntreeville - Entrée de ville' },
+        //   { title: 'Patrimoine', value: !!details.le_sipatrimoine, hint: 'siPatrimoine - Patrimoine' },
+        //   { title: 'Lutte contre l\'insalubrité', value: !!details.le_silutteinsalubrite, hint: 'siLutteInsaLubrite - Lutte contre l\'insalubrité' },
+        //   { title: 'Renouvellement urbain', value: !!details.le_sirenouvellementurbain, hint: 'siRenouvellementUrbain - Renouvellement urbain' },
+        //   { title: 'Développement', value: !!details.le_sideveloppement, hint: 'siDeveloppement - Développement' },
+        //   // MIXITE FONCITONNELLE
+        //   { title: 'Échéancier d’ouverture à l’urbanisation', value: !!details.le_siecheancierouvertureurba, hint: 'siEcheancierOuvertureUrba - Echéancier d\'ouverture à l\'urbanisation' },
+        //   // Adaptation du périmètre de plafonnement du stationnement
+
+        //   // Reglement
+        //   // STECAL
+        //   // Nb STECAL
+        //   { title: 'Densité minimale', value: !!details.le_sidensitemin, hint: 'siDensiteMin - Densité minimale' },
+        //   { title: 'Nombre maximal d’aires de stationnement', value: !!details.le_sinbrmaxairestationnement, hint: 'siNbrMaxAireStationnement - Nombre maximal d\'aires de stationnement' },
+        //   // Prescriptions pour communications électroniques
+        //   // RNU
+        //   { title: 'Obligation de réalisation d’aires de stationnement', value: !!details.le_siobligationstationnement, hint: 'siObligationStationnement - Obligation (minimale ou maximale) d\'aire de stationnement' },
+
+        //   { title: 'Plan de secteur', value: !!details.le_siplansecteur, hint: 'siPlanSecteur - Plan de secteur' },
+        //   { title: 'siSecteurProjet', value: !!details.le_sisecteurprojet, hint: 'siSecteurProjet - Secteur de projets' },
+        //   { title: 'siSchemasAmenagements', value: !!details.le_sischemasamenagements, hint: 'siSchemasAmenagements - Schémas d\'aménagement' },
+        //   { title: 'siZonesNaturelles', value: !!details.le_sizonesnaturelles, hint: 'siZonesNaturelles - Zones naturelles' },
+        //   { title: 'siZonesAgricoles', value: !!details.le_sizonesagricoles, hint: 'siZonesAgricoles - Zones agricoles' },
+        //   { title: 'siPrescriptions', value: !!details.le_siprescriptions, hint: 'siPrescriptions - Prescriptions' },
+        //   { title: 'siObjConsoEspaceParSecteur', value: !!details.le_siobjconsoespaceparsecteur, hint: 'siObjConsoEspaceParSecteur - Objectifs de consommation d\'espace par secteur' },
+        //   { title: 'siUtilisationTerrainAvantUrba', value: !!details.le_siutilisationterrainavanturba, hint: 'siUtilisationTerrainAvantUrba - Utilisation de terrains équipés avant urbanisation nouvelle' },
+        //   { title: 'siEtudeImpacteUrbanisation', value: !!details.le_sietudeimpacteurbanisation, hint: 'siEtudeImpacteUrbanisation - Etude d\'impact préalable à l\'urbanisation' },
+        //   { title: 'siEtudeDensification', value: !!details.le_sietudedensification, hint: 'siEtudeDensification - Etude de densification' },
+        //   { title: 'siSecteurDensiteMin', value: !!details.le_sisecteurdensitemin, hint: 'siSecteurDensiteMin - Secteurs à densité minimale de construction à proximitée des TC' },
+        //   { title: 'siObligationPluStationnement', value: !!details.le_siobligationplustationnement, hint: 'siObligationPluStationnement - Obligation pour PLU d\'aires de stationnement de véhicules non motorisés' },
+        //   { title: 'siSecteurEnergieEnvironnement', value: !!details.le_sisecteurenergieenvironnement, hint: 'siSecteurEnergieEnvironnement - Secteurs à performances énergétiques et environnementales renforcées' },
+        //   { title: 'siSecteurCommunicationElectro', value: !!details.le_sisecteurcommunicationelectro, hint: 'siSecteurCommunicationElectro - Secteurs à qualité de communications électroniques renforcées' },
+        //   { title: 'siSecteurAvecNorme', value: !!details.le_sisecteuravecnorme, hint: 'siSecteurAvecNorme - Secteurs avec normes de qualité urbaine, architecturale et paysagère' },
+        //   { title: 'siEspaceVert', value: !!details.le_siespacevert, hint: 'siEspaceVert - Maintien ou création d\'espaces verts' },
+        //   { title: 'siModaliteRepartitionLogementEpci', value: !!details.le_simodaliterepartitionlogementepci, hint: 'siModaliteRepartitionLogementEpci - Modalité de répartition des nouveaux logements' },
+        //   { title: 'siModaliteRepartitionlogementCommune', value: !!details.le_simodaliterepartitionlogementcommune, hint: 'siModaliteRepartitionlogementCommune - Modalité de répartition des nouveaux logements' },
+        //   { title: 'siObjectifAmeliorationParc', value: !!details.le_siobjectifameliorationparc, hint: 'siObjectifAmeliorationParc - Objectifs d\'amélioration du parc existant' },
+        //   { title: 'siPublicationAnalyse', value: !!details.le_sipublicationanalyse, hint: 'siPublicationAnalyse - Publication de l\'analyse à ans' },
+        //   { title: 'dateVoletQualitatif', value: details.le_datevoletqualitatif, hint: 'dateVoletQualitatif - Date volet qualitatif' }, // DATE TYPE A CHANGER
+        //   { title: 'commentaire', value: details.le_commentaire, hint: 'commentaire - Commentaire' } // TEXTE
+        // ]
       }
       return []
     }
@@ -231,3 +353,11 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.white-bordered-card{
+  border: solid 1px var(--v-primary-lighten1) !important;
+  background: white;
+  border-radius: 4px;
+}
+</style>

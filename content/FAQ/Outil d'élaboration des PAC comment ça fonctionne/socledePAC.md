@@ -1,6 +1,8 @@
 ---
 question: "Qu’est-ce que le Socle de PAC ?"
 visible: true
+scope: ['ddt']
+order: 15
 ---
 
 **Le socle de PAC contient les premiers éléments d'information constitutifs du Porter À Connaissance qui sera délivré par la DDT(M)/DEAL.**

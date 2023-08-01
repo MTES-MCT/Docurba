@@ -1,6 +1,8 @@
 ---
 question: "Pourquoi la loi EnR n’apparait pas dans le cadre juridique national ?"
 visible: true
+scope: ['ddt']
+order: 
 ---
 
 Les implications de la loi ENR ont été intégrées directement dans les différentes sections concernées du socle de PAC.
