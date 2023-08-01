@@ -2,7 +2,7 @@
 question: "Plusieurs personnes peuvent-elles modifier la trame de PAC départementale en simultané ?"
 visible: true
 scope: ['ddt']
-order: 2
+order: 6
 ---
 
 Il est possible d'éditer la trame de PAC (ou un PAC) en simultané. 
