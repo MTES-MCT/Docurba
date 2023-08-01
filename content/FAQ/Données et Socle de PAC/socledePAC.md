@@ -17,4 +17,4 @@ Dans le PAC délivré par la suite par la DDT(M)/DEAL via Docurba, la collectivi
 
 
 Des sections du socle de PAC ne vous concernent pas ? 
-Par exemple ; vous avez accès la section sur _la loi montagne_ alors que la collectivité recherchée n’est pas concernée par cette loi. Effectivement, Docurba ne permet pas encore l'accès à un socle de PAC personnalisé suivant la commune recherchée. Pour en savoir plus, consultez la question [xxxx](lien). 
+Par exemple ; vous avez accès la section sur _la loi montagne_ alors que la collectivité recherchée n’est pas concernée par cette loi. Effectivement, Docurba ne permet pas encore l'accès à un socle de PAC personnalisé suivant la commune recherchée. Pour en savoir plus, consultez la question [Une collectivité qui explore le socle de PAC a-t-elle accès à toutes les lois, même celles qui ne la concernent pas ?](https://docurba.beta.gouv.fr/faq?recherche=Une%20collectivit%C3%A9%20qui%20explore%20le%20socle%20de%20PAC%20a-t-elle%20acc%C3%A8s%20%C3%A0%20toutes%20les%20lois,%20m%C3%AAme%20celles%20qui%20ne%20la%20concernent%20pas%20%3F) 
