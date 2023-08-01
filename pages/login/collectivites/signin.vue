@@ -11,7 +11,7 @@
               Retour
             </nuxt-link>
           </div>
-          <v-card>
+          <v-card flat class="border-light">
             <v-card-title>
               <div class="text-h1">
                 Recevoir mon lien de connexion d'accès Collectivité
@@ -26,7 +26,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer />
-              <v-btn text tile color="primary" :to="{name: 'login-collectivites-signup'}">
+              <v-btn outlined tile color="primary" :to="{name: 'login-collectivites-signup'}">
                 Pas de compte ? Créer en un
               </v-btn>
               <v-btn depressed tile color="primary" @click="signInCollectivite">

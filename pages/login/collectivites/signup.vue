@@ -11,7 +11,7 @@
               Retour
             </nuxt-link>
           </div>
-          <v-card>
+          <v-card flat class="border-light">
             <v-card-title>
               <div class="text-h1">
                 Inscription Collectivité
@@ -34,10 +34,10 @@
                   <v-text-field v-model="userData.lastname" hide-details filled label="Nom" />
                 </v-col>
                 <v-col cols="6">
-                  <v-select v-model="userData.firstname" :items="roles" hide-details filled label="Role" />
+                  <v-select v-model="userData.role" :items="roles" hide-details filled label="Rôle" />
                 </v-col>
                 <v-col cols="6">
-                  <v-text-field v-model="userData.lastname" hide-details filled label="Role libre" />
+                  <v-text-field v-model="userData.descriptionRole" hide-details filled label="Poste" />
                 </v-col>
                 <v-col cols="12">
                   <div class="text-h2">
@@ -79,17 +79,15 @@
 </template>
 
 <script>
-import { mdiEye, mdiEyeOff, mdiArrowLeft } from '@mdi/js'
+import { mdiArrowLeft } from '@mdi/js'
 
 import axios from 'axios'
 
 export default {
-  name: 'LoginDialog',
+  name: 'SignupCollectivite',
   data () {
     return {
       icons: {
-        mdiEye,
-        mdiEyeOff,
         mdiArrowLeft
       },
       roles: [
@@ -99,13 +97,14 @@ export default {
       ],
       isLoginValid: false,
       showPassword: false,
+      selectedCollectivite: null,
       userData: {
         firstname: '',
         lastname: '',
         email: '',
-        password: '',
-        dept: null,
-        isDDT: false
+        role: '',
+        poste: '',
+        dept: null
       },
       snackbar: {
         text: '',
@@ -124,24 +123,9 @@ export default {
       } = await this.$auth.signUp(this.userData)
 
       if (!error) {
-        // eslint-disable-next-line no-console
-        // console.log('success sign up', user, session)
-
-        if (this.userData.isDDT && this.userData.dept) {
-          const { data: { session: { user } } } = await this.$supabase.auth.getSession()
-
-          await this.$supabase.from('github_ref_roles').insert([{
-            role: 'user',
-            ref: `dept-${this.userData.dept.code_departement}`,
-            user_id: user.id
-          }])
-
-          this.userData.id = user.id
-        }
-
         axios({
           method: 'post',
-          url: '/api/auth/signup',
+          url: '/api/auth/signupCollectivite',
           data: {
             email: this.userData.email,
             userData: this.userData,

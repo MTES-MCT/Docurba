@@ -12,7 +12,7 @@
             </nuxt-link>
           </div>
 
-          <v-card>
+          <v-card flat class="border-light">
             <v-card-title>
               <div class="text-h1">
                 Connexion agent de l'Etat
@@ -43,7 +43,7 @@
 
             <v-card-actions>
               <v-spacer />
-              <v-btn v-show="!forgotPassword" text tile color="primary" :to="{name: 'login-ddt-signup'}">
+              <v-btn v-show="!forgotPassword" outlined tile color="primary" :to="{name: 'login-ddt-signup'}">
                 Pas de compte ? Créer en un
               </v-btn>
               <v-btn v-show="!forgotPassword" depressed tile color="primary" @click="signIn()">

@@ -11,7 +11,7 @@
               Retour
             </nuxt-link>
           </div>
-          <v-card>
+          <v-card flat class="border-light">
             <v-card-title>
               <div class="text-h1">
                 Inscription agent de l'Etat
@@ -26,7 +26,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer />
-              <v-btn class="no-text-transform" text tile color="primary" :to="{name: 'login-ddt-signin'}">
+              <v-btn class="no-text-transform" outlined tile color="primary" :to="{name: 'login-ddt-signin'}">
                 J'ai déjà un compte
               </v-btn>
               <v-btn depressed tile color="primary" @click="signUp()">

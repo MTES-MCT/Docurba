@@ -23,17 +23,17 @@
         </div>
       </v-col>
       <v-col cols="5.5">
-        <v-card elevation="2">
+        <v-card flat class="border-light">
           <v-card-title>Une collectivité ou assimilé</v-card-title>
           <v-card-text>
             Je suis un élu, un employé de mairie ou un bureau d'étude. Acceder simplement à toute vos démarche d'ubanisme via Docurba.
             Après une étape de validation de votre statut vous pourrez accéder a votre tableau de bord personalisé.
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" depressed :to="{name:'login-collectivites-signup'}">
+            <v-btn color="primary" depressed tile :to="{name:'login-collectivites-signup'}">
               Créer un compte
             </v-btn>
-            <v-btn text color="primary" :to="{name:'login-collectivites-signin'}">
+            <v-btn outlined tile color="primary" :to="{name:'login-collectivites-signin'}">
               Me connecter
             </v-btn>
           </v-card-actions>
@@ -45,16 +45,14 @@
         </div>
       </v-col>
       <v-col cols="5.5">
-        <v-card
-          elevation="2"
-        >
+        <v-card flat class="border-light">
           <v-card-title>Un agent de l'Etat</v-card-title>
           <v-card-text>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Suscipit dicta perferendis fugiat harum quos aliquam id voluptatibus, vel aperiam tempore porro expedita qui. Inventore doloremque aliquam iste quia? Maiores, exercitationem?</v-card-text>
           <v-card-actions>
-            <v-btn color="primary" depressed :to="{name:'login-ddt-signup'}">
+            <v-btn color="primary" tile depressed :to="{name:'login-ddt-signup'}">
               Creer un compte
             </v-btn>
-            <v-btn text color="primary" :to="{name:'login-ddt-signin'}">
+            <v-btn outlined tile color="primary" :to="{name:'login-ddt-signin'}">
               Me connecter
             </v-btn>
           </v-card-actions>
