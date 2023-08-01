@@ -126,7 +126,7 @@ export default {
   },
   watch: {
     signupMode (newVal) {
-      console.log('signupMode: ', newVal)
+      // console.log('signupMode: ', newVal)
       if (newVal) {
         this.loginTemplate = 'Inscription'
       } else {

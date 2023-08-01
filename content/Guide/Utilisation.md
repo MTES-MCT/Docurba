@@ -3,10 +3,14 @@
 
 *Docurba, outil pour faciliter l’élaboration et le suivi des documents d’urbanisme.*
  
+💡>>**Sessions de prise en main de l'outil d'élaboration des PAC, en visioconférence.** [inscriptions via ce lien](https://tally.so/r/w54l6Z).<<
+_Prochaines dates : 3 août et 5 septembre._
+
 
 <div class="my-8 background--text text--lighten-2 font-weight-bold rounded g300 rounded-lg pa-4">
  
- 📖 Bienvenue dans le tutoriel d’utilisation de l'outil d'élaboration des PAC de [Docurba](https://docurba.beta.gouv.fr/) **spécial agents de DDT(M)/DEAL**. Vous trouverez dans ce guide:
+ 📖 Bienvenue dans le tutoriel d’utilisation de l'outil d'élaboration des PAC de [Docurba](https://docurba.beta.gouv.fr/) **spécial agents de DDT(M)/DEAL**. 
+ Vous trouverez dans ce guide:
 </div>
 
 

@@ -55,7 +55,7 @@
   <v-row v-else-if="!loadingProcedures && procedures.length === 0 && emptyProjects.length === 0">
     <v-col cols="12">
       <div class="text--secondary beige pa-6 mb-12 rounded">
-        Cette collectivité n'a pas de documents d'urbanisme sous ca compétence.
+        Cette collectivité n'a pas de documents d'urbanisme sous sa compétence.
       </div>
     </v-col>
     <v-col v-if="!isPublic" cols="auto">
