@@ -2,6 +2,6 @@
 question: "SRU"
 visible: true
 scope: ['ddt','dreal','collectivite','be']
-order: 11
+order: 12
 ---
 Loi SRU : Solidarité et Renouvellement Urbain. 
