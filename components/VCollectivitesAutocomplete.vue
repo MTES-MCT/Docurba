@@ -9,7 +9,7 @@
         hide-details
         filled
         return-object
-        dense
+        :dense="!large"
         @change="fetchCollectivites"
       />
     </v-col>
@@ -25,7 +25,7 @@
         filled
         placeholder="Commune ou EPCI"
         :loading="loading"
-        dense
+        :dense="!large"
         @change="$emit('input', arguments[0])"
       />
     </v-col>
@@ -38,6 +38,10 @@ import departements from '@/assets/data/departements-france.json'
 
 export default {
   props: {
+    large: {
+      type: Boolean,
+      default: false
+    },
     value: {
       type: Object,
       default () {

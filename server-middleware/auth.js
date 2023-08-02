@@ -41,28 +41,56 @@ app.post('/password', async (req, res) => {
   }
 })
 
-app.post('/signupCollectivite', async (req, res) => {
+async function magicLinkSignIn (email) {
   const { data: user, error } = await supabase.auth.admin.generateLink(
     {
       type: 'magiclink',
-      email: req.body.email,
-      redirectTo: req.body.redirectTo
+      email,
+      options: {
+        redirectTo: 'https://docurba.beta.gouv.fr/faq'
+      }
     }
   )
+  if (error) { throw error }
+  console.log('user: ', user)
 
-  console.log(user, error)
-  // if (!error && user && user.action_link) {
-  //   sendgrid.sendEmail({
-  //     to: req.body.email,
-  //     template_id: 'd-766d017b51124a108cabc985d0dbf451',
-  //     dynamic_template_data: {
-  //       redirectURL: user.action_link
-  //     }
-  //   })
-  // } else {
-  //   // eslint-disable-next-line no-console
-  //   console.log('error sending verifycation email', error, user)
-  // }
+  if (user && user.properties && user.properties.action_link) {
+    sendgrid.sendEmail({
+      to: email,
+      template_id: 'd-766d017b51124a108cabc985d0dbf451',
+      dynamic_template_data: {
+        redirectURL: user.properties.action_link
+      }
+    })
+  }
+  return user
+}
+
+app.post('/signinCollectivite', async (req, res) => {
+  try {
+    const user = await magicLinkSignIn(req.body.email)
+    res.status(200).send(user)
+  } catch (error) {
+    console.log(error)
+    res.status(400).send(error)
+  }
+})
+
+app.post('/signupCollectivite', async (req, res) => {
+  try {
+    const user = await magicLinkSignIn(req.body.userData.email)
+
+    if (!user.user.confirmation_sent_at) {
+      const { error: errorInsertProfile } = await supabase.from('profiles').insert(req.body.userData)
+      if (errorInsertProfile) { throw errorInsertProfile }
+    } else {
+      throw new Error('Vous avez déjà enregistrer un compte, nous vous avons renvoyer un mail de connexion.')
+    }
+    res.status(200).send(user)
+  } catch (error) {
+    console.log(error)
+    res.status(400).send(error)
+  }
 })
 
 app.post('/signup', async (req, res) => {

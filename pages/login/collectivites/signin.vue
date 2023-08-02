@@ -47,34 +47,17 @@
 </template>
 
 <script>
-import { mdiEye, mdiEyeOff, mdiArrowLeft } from '@mdi/js'
-
+import { mdiArrowLeft } from '@mdi/js'
 import axios from 'axios'
 
 export default {
-  name: 'LoginDialog',
+  name: 'SigninCollectivite',
   data () {
     return {
       icons: {
-        mdiEye,
-        mdiEyeOff,
         mdiArrowLeft
       },
-      roles: [
-        { text: 'Bureau d\'étude', value: 'BE' },
-        { text: 'Maire', value: 'Commune' },
-        { text: 'EPCI', value: 'EPCI' }
-      ],
-      isLoginValid: false,
-      showPassword: false,
-      userData: {
-        firstname: '',
-        lastname: '',
-        email: '',
-        password: '',
-        dept: null,
-        isDDT: false
-      },
+      email: '',
       snackbar: {
         text: '',
         val: false
@@ -83,42 +66,19 @@ export default {
     }
   },
   methods: {
-
-    async signInCollectivite () {
-      const {
-        // user,
-        // session,
-        error
-      } = await this.$auth.signUp(this.userData)
-
-      if (!error) {
-        // eslint-disable-next-line no-console
-        // console.log('success sign up', user, session)
-
-        if (this.userData.isDDT && this.userData.dept) {
-          const { data: { session: { user } } } = await this.$supabase.auth.getSession()
-
-          await this.$supabase.from('github_ref_roles').insert([{
-            role: 'user',
-            ref: `dept-${this.userData.dept.code_departement}`,
-            user_id: user.id
-          }])
-
-          this.userData.id = user.id
-        }
-
-        axios({
+    async signIn () {
+      try {
+        const ret = await axios({
           method: 'post',
-          url: '/api/auth/signup',
+          url: '/api/auth/signinCollectivite',
           data: {
-            email: this.userData.email,
-            userData: this.userData,
-            redirectTo: window.location.origin
+            email: this.email
           }
         })
-
+        console.log('ret: ', ret)
         this.$emit('input', false)
-      } else {
+      } catch (error) {
+        console.log(error)
         this.error = error
       }
     }

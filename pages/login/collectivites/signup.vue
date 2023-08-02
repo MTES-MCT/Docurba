@@ -3,6 +3,9 @@
     <v-row>
       <v-col cols="12">
         <div>
+          <v-alert v-if="error" type="error">
+            {{ error }}
+          </v-alert>
           <div class="mb-2">
             <nuxt-link :to="{name: 'login'}">
               <v-icon small color="primary" class="mr-2">
@@ -18,7 +21,7 @@
               </div>
             </v-card-title>
             <v-card-text>
-              <v-row justify="center">
+              <v-row>
                 <v-col cols="12">
                   <v-text-field v-model="userData.email" hide-details filled label="Email" />
                 </v-col>
@@ -34,10 +37,20 @@
                   <v-text-field v-model="userData.lastname" hide-details filled label="Nom" />
                 </v-col>
                 <v-col cols="6">
-                  <v-select v-model="userData.role" :items="roles" hide-details filled label="Rôle" />
+                  <v-select v-model="userData.poste" :items="postes" hide-details filled label="Poste" />
+                </v-col>
+                <v-col>
+                  <v-text-field
+                    v-show="userData.poste === 'autre'"
+                    v-model="userData.other_poste"
+                    cols="6"
+                    hide-details
+                    filled
+                    label="Intitulé"
+                  />
                 </v-col>
                 <v-col cols="6">
-                  <v-text-field v-model="userData.descriptionRole" hide-details filled label="Poste" />
+                  <v-text-field v-model="userData.tel" hide-details filled label="Téléphone professionel" />
                 </v-col>
                 <v-col cols="12">
                   <div class="text-h2">
@@ -47,6 +60,7 @@
                 <v-col cols="12">
                   <VCollectivitesAutocomplete
                     v-model="selectedCollectivite"
+                    large
                     :cols-dep="4"
                     :cols-town="8"
                     :input-props="{
@@ -61,7 +75,7 @@
               <v-btn text tile color="primary" :to="{name: 'login-collectivites-signin'}">
                 J'ai déjà un compte
               </v-btn>
-              <v-btn depressed tile color="primary" @click="signUp">
+              <v-btn depressed tile color="primary" :loading="loading" @click="signUp">
                 Créer mon compte
               </v-btn>
             </v-card-actions>
@@ -80,31 +94,31 @@
 
 <script>
 import { mdiArrowLeft } from '@mdi/js'
-
 import axios from 'axios'
 
 export default {
   name: 'SignupCollectivite',
   data () {
     return {
-      icons: {
-        mdiArrowLeft
-      },
-      roles: [
-        { text: 'Bureau d\'étude', value: 'BE' },
-        { text: 'Maire', value: 'Commune' },
-        { text: 'EPCI', value: 'EPCI' }
+      icons: { mdiArrowLeft },
+      postes: [
+        { text: 'Bureau d\'étude', value: 'be' },
+        { text: 'Elu(e)', value: 'elu' },
+        { text: 'Technicien(ne) ou employé(e)', value: 'employe_mairie' },
+        { text: 'Agence d\'urbanisme', value: 'agence_urba' },
+        { text: 'Autre', value: 'autre' }
       ],
-      isLoginValid: false,
-      showPassword: false,
       selectedCollectivite: null,
+      loading: false,
       userData: {
-        firstname: '',
-        lastname: '',
-        email: '',
-        role: '',
-        poste: '',
-        dept: null
+        firstname: 'jul',
+        lastname: 'ler',
+        email: 'test_jul@gmail.com',
+        poste: 'elu',
+        other_poste: 'test',
+        tel: '0669487499',
+        departement: '47',
+        collectivite_id: '45678'
       },
       snackbar: {
         text: '',
@@ -114,28 +128,24 @@ export default {
     }
   },
   methods: {
-
     async signUp () {
-      const {
-        // user,
-        // session,
-        error
-      } = await this.$auth.signUp(this.userData)
-
-      if (!error) {
-        axios({
+      try {
+        this.loading = true
+        const ret = await axios({
           method: 'post',
           url: '/api/auth/signupCollectivite',
           data: {
-            email: this.userData.email,
             userData: this.userData,
             redirectTo: window.location.origin
           }
         })
-
-        this.$emit('input', false)
-      } else {
+        console.log('ret: ', ret)
+        // this.$router.push({ name: 'login-collectivites-explain' })
+      } catch (error) {
+        console.log(error)
         this.error = error
+      } finally {
+        this.loading = false
       }
     }
   }
