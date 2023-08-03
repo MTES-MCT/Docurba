@@ -47,7 +47,7 @@
       <v-col cols="5.5">
         <v-card flat class="border-light">
           <v-card-title>Un agent de l'Etat</v-card-title>
-          <v-card-text>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Suscipit dicta perferendis fugiat harum quos aliquam id voluptatibus, vel aperiam tempore porro expedita qui. Inventore doloremque aliquam iste quia? Maiores, exercitationem?</v-card-text>
+          <v-card-text>Je suis un agent d'une DDT/DEAL ou d'une DREAL en charge du suivi des procédures d'élaboration et d'évolution des documents d'urbanisme et/ou de la production des documents de l'Etat (PAC, ..) liées à ces procédures. Après une étape de validation de votre compte Etat, vous pourrez paramétrer votre trame de PAC départementale ou régionale et suivre vos procédures.</v-card-text>
           <v-card-actions>
             <v-btn color="primary" tile depressed :to="{name:'login-ddt-signup'}">
               Creer un compte

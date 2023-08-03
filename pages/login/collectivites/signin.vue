@@ -20,14 +20,14 @@
             <v-card-text>
               <v-row justify="center">
                 <v-col cols="12">
-                  <v-text-field v-model="userData.email" hide-details filled label="Email" />
+                  <v-text-field v-model="email" hide-details filled label="Email" />
                 </v-col>
               </v-row>
             </v-card-text>
             <v-card-actions>
               <v-spacer />
               <v-btn outlined tile color="primary" :to="{name: 'login-collectivites-signup'}">
-                Pas de compte ? Créer en un
+                Pas de compte ? Créez en un
               </v-btn>
               <v-btn depressed tile color="primary" @click="signInCollectivite">
                 Recevoir mon lien de connexion par email
@@ -66,7 +66,7 @@ export default {
     }
   },
   methods: {
-    async signIn () {
+    async signInCollectivite () {
       try {
         const ret = await axios({
           method: 'post',
@@ -78,7 +78,7 @@ export default {
         console.log('ret: ', ret)
         this.$emit('input', false)
       } catch (error) {
-        console.log(error)
+        console.log('TEST EROR: ', error)
         this.error = error
       }
     }

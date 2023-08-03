@@ -44,7 +44,7 @@
             <v-card-actions>
               <v-spacer />
               <v-btn v-show="!forgotPassword" outlined tile color="primary" :to="{name: 'login-ddt-signup'}">
-                Pas de compte ? Créer en un
+                Pas de compte ? Créez en un
               </v-btn>
               <v-btn v-show="!forgotPassword" depressed tile color="primary" @click="signIn()">
                 Se connecter

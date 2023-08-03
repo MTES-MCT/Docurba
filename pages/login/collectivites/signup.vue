@@ -54,7 +54,7 @@
                 </v-col>
                 <v-col cols="12">
                   <div class="text-h2">
-                    Quel est votre collectivité ?
+                    Quelle est votre collectivité ?
                   </div>
                 </v-col>
                 <v-col cols="12">
@@ -113,7 +113,7 @@ export default {
       userData: {
         firstname: 'jul',
         lastname: 'ler',
-        email: 'test_jul@gmail.com',
+        email: 'testjulien1@yopmail.com',
         poste: 'elu',
         other_poste: 'test',
         tel: '0669487499',
@@ -142,8 +142,7 @@ export default {
         console.log('ret: ', ret)
         // this.$router.push({ name: 'login-collectivites-explain' })
       } catch (error) {
-        console.log(error)
-        this.error = error
+        this.error = error.response.data.message
       } finally {
         this.loading = false
       }

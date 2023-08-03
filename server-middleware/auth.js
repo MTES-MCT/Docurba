@@ -51,7 +51,10 @@ async function magicLinkSignIn (email) {
       }
     }
   )
-  if (error) { throw error }
+  if (error) {
+    console.log('ERROR magicLinkSignIn: ', error)
+    throw error
+  }
   console.log('user: ', user)
 
   if (user && user.properties && user.properties.action_link) {
@@ -84,12 +87,12 @@ app.post('/signupCollectivite', async (req, res) => {
       const { error: errorInsertProfile } = await supabase.from('profiles').insert(req.body.userData)
       if (errorInsertProfile) { throw errorInsertProfile }
     } else {
-      throw new Error('Vous avez déjà enregistrer un compte, nous vous avons renvoyer un mail de connexion.')
+      throw new Error('Vous avez déjà enregistrer un compte, nous vous avons renvoyé un email de connexion.')
     }
     res.status(200).send(user)
   } catch (error) {
-    console.log(error)
-    res.status(400).send(error)
+    console.log('ERROR /auth/signupCollectivite : ', error.message)
+    res.status(500).send({ message: error.message })
   }
 })
 
