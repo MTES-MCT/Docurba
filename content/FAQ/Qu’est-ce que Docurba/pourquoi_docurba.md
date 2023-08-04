@@ -1,7 +1,7 @@
 ---
 question: "Docurba : qui, quoi, comment ?"
 visible: true
-scope: ['collectivité','be','dreal','ddt']
+scope: ['collectivite','be','dreal','ddt']
 order: 1
 ---
 **Docurba outille la relation entre les services de l'État, les collectivités et leurs bureaux d'études lors de l'élaboration et du suivi des documents d'urbanisme. L'impact long terme souhaité est une meilleure et plus rapide prise en compte des enjeux environnementaux et politiques publiques sur le territoire.** 

@@ -1,7 +1,7 @@
 ---
 question: "D’autres services de l’État ont-ils accès à Docurba ? "
 visible: true
-scope: ['collectivité','be','dreal','ddt']
+scope: ['collectivite','be','dreal','ddt']
 order: 4
 ---
 **Pour le moment, Docurba est accessible aux services aménagement en DDT(M)/DEAL et DREAL uniquement.**

@@ -1,7 +1,7 @@
 ---
 question: "Pourquoi la loi EnR n’apparait pas dans le cadre juridique national ?"
 visible: true
-scope: ['collectivité','be','ddt']
+scope: ['collectivite','be','ddt']
 order: 6
 ---
 
