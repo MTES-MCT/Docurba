@@ -6,7 +6,13 @@ export default () => {
   Vue.filter('githubRef', function (ref) {
     if (ref.includes('dept-')) {
       const deptCode = ref.replace('dept-', '')
-      const dept = departements.find(d => d.code_departement === +deptCode)
+      const dept = departements.find((d) => {
+        if (deptCode.includes('A') || deptCode.includes('B')) {
+          return d.code_departement === deptCode
+        } else {
+          return d.code_departement === +deptCode
+        }
+      })
 
       return dept.nom_departement
     }
