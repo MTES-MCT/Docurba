@@ -92,6 +92,8 @@ export default {
   },
   methods: {
     async fetchCollectivites () {
+      console.log(this.selectedDepartement, this.selectedDepartement.code_departement)
+
       if (this.selectedDepartement) {
         this.loading = true
         let towns = (await axios({

@@ -5,12 +5,17 @@ app.use(express.json())
 const EPCI = require('./Data/EPCI.json')
 
 app.get('/', (req, res) => {
-  const dep = req.query.departement
+  // const dep = req.query.departement
+  let dep = req.query.departement
+  if (dep !== '2A' && dep !== '2B') {
+    dep = parseInt(req.query.departement)
+  }
+
   const communeId = req.query.communeId
   if (dep) {
     const epciByDep = EPCI.filter((e) => {
     // eslint-disable-next-line eqeqeq
-      return !!e.towns.find(t => +t.code_departement == dep)
+      return !!e.towns.find(t => t.code_departement == dep)
     }) || []
     res.status(epciByDep.length ? 200 : 404).send(epciByDep)
   } else if (communeId) {
