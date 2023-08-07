@@ -4,8 +4,8 @@
     filled
     :type="showPassword ? 'text' : 'password'"
     :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
-    hide-details
     v-bind="inputProps"
+    :error-messages="errorMessages"
     @click:append="showPassword = !showPassword"
   />
 </template>
@@ -18,6 +18,10 @@ export default {
     value: {
       type: String,
       default: ''
+    },
+    errorMessages: {
+      type: Array,
+      default: () => []
     },
     inputProps: {
       type: Object,

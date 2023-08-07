@@ -41,13 +41,13 @@ app.post('/password', async (req, res) => {
   }
 })
 
-async function magicLinkSignIn (email) {
+async function magicLinkSignIn (email, shouldExist) {
   const { data: user, error } = await supabase.auth.admin.generateLink(
     {
       type: 'magiclink',
       email,
       options: {
-        redirectTo: 'https://docurba.beta.gouv.fr/faq'
+        redirectTo: 'http://localhost:3000/' // https://docurba.beta.gouv.fr/faq'
       }
     }
   )
@@ -57,6 +57,9 @@ async function magicLinkSignIn (email) {
   }
   console.log('user: ', user)
 
+  if (shouldExist && !user.email_confirmed_at) {
+    throw new Error('Vous devez créer un compte avant de pouvoir vous connecter.')
+  }
   if (user && user.properties && user.properties.action_link) {
     sendgrid.sendEmail({
       to: email,
@@ -71,11 +74,11 @@ async function magicLinkSignIn (email) {
 
 app.post('/signinCollectivite', async (req, res) => {
   try {
-    const user = await magicLinkSignIn(req.body.email)
+    const user = await magicLinkSignIn(req.body.email, magicLinkSignIn)
     res.status(200).send(user)
   } catch (error) {
-    console.log(error)
-    res.status(400).send(error)
+    console.log('ERROR /auth/signinCollectivite : ', error.message)
+    res.status(500).send({ message: error.message })
   }
 })
 
@@ -83,7 +86,7 @@ app.post('/signupCollectivite', async (req, res) => {
   try {
     const user = await magicLinkSignIn(req.body.userData.email)
 
-    if (!user.user.confirmation_sent_at) {
+    if (!user.user.email_confirmed_at) {
       const { error: errorInsertProfile } = await supabase.from('profiles').insert(req.body.userData)
       if (errorInsertProfile) { throw errorInsertProfile }
     } else {

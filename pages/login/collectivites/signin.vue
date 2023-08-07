@@ -3,6 +3,9 @@
     <v-row>
       <v-col cols="12">
         <div>
+          <v-alert v-if="error" type="error">
+            {{ error }}
+          </v-alert>
           <div class="mb-2">
             <nuxt-link :to="{name: 'login'}">
               <v-icon small color="primary" class="mr-2">
@@ -76,10 +79,11 @@ export default {
           }
         })
         console.log('ret: ', ret)
-        this.$emit('input', false)
+        this.$router.push({ name: 'login-collectivites-explain' })
       } catch (error) {
-        console.log('TEST EROR: ', error)
-        this.error = error
+        this.error = error.response.data.message
+      } finally {
+        this.loading = false
       }
     }
   }

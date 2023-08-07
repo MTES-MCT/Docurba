@@ -28,6 +28,14 @@ extend('needToBeOui', {
   message: 'Vous n\'êtes pas sur la bonne collectivité.'
 })
 
+extend('requiredCollectivite', {
+  validate (value) {
+    console.log('requiredCollectivite:', value)
+    return false
+  },
+  message: 'Vous devez choisir une collectivité'
+})
+
 extend('password', {
   params: ['target'],
   validate (value, { target }) {

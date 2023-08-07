@@ -1,103 +1,128 @@
 <template>
-  <v-container class="fill-height">
-    <v-row>
-      <v-col cols="12">
-        <div>
-          <v-alert v-if="error" type="error">
-            {{ error }}
-          </v-alert>
-          <div class="mb-2">
-            <nuxt-link :to="{name: 'login'}">
-              <v-icon small color="primary" class="mr-2">
-                {{ icons.mdiArrowLeft }}
-              </v-icon>
-              Retour
-            </nuxt-link>
-          </div>
-          <v-card flat class="border-light">
-            <v-card-title>
-              <div class="text-h1">
-                Inscription Collectivité
+  <validation-observer ref="observerSignupCollectivite" v-slot="{ handleSubmit }">
+    <form @submit.prevent="handleSubmit(signUp)">
+      <v-container class="fill-height">
+        <v-row>
+          <v-col cols="12">
+            <div>
+              <v-alert v-if="error" type="info">
+                {{ error }}
+              </v-alert>
+              <div class="mb-2">
+                <nuxt-link :to="{name: 'login'}">
+                  <v-icon small color="primary" class="mr-2">
+                    {{ icons.mdiArrowLeft }}
+                  </v-icon>
+                  Retour
+                </nuxt-link>
               </div>
-            </v-card-title>
-            <v-card-text>
-              <v-row>
-                <v-col cols="12">
-                  <v-text-field v-model="userData.email" hide-details filled label="Email" />
-                </v-col>
-                <v-col cols="12">
-                  <div class="text-h2">
-                    Qui êtes vous ?
+              <v-card flat class="border-light">
+                <v-card-title>
+                  <div class="text-h1">
+                    Inscription Collectivité
                   </div>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field v-model="userData.firstname" hide-details filled label="Prénom" />
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field v-model="userData.lastname" hide-details filled label="Nom" />
-                </v-col>
-                <v-col cols="6">
-                  <v-select v-model="userData.poste" :items="postes" hide-details filled label="Poste" />
-                </v-col>
-                <v-col>
-                  <v-text-field
-                    v-show="userData.poste === 'autre'"
-                    v-model="userData.other_poste"
-                    cols="6"
-                    hide-details
-                    filled
-                    label="Intitulé"
-                  />
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field v-model="userData.tel" hide-details filled label="Téléphone professionel" />
-                </v-col>
-                <v-col cols="12">
-                  <div class="text-h2">
-                    Quelle est votre collectivité ?
-                  </div>
-                </v-col>
-                <v-col cols="12">
-                  <VCollectivitesAutocomplete
-                    v-model="selectedCollectivite"
-                    large
-                    :cols-dep="4"
-                    :cols-town="8"
-                    :input-props="{
-                      rules: [$rules.required]
-                    }"
-                  />
-                </v-col>
-              </v-row>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer />
-              <v-btn text tile color="primary" :to="{name: 'login-collectivites-signin'}">
-                J'ai déjà un compte
-              </v-btn>
-              <v-btn depressed tile color="primary" :loading="loading" @click="signUp">
-                Créer mon compte
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-          <v-snackbar
-            v-model="snackbar.val"
-            :timeout="4000"
-          >
-            {{ snackbar.text }}
-          </v-snackbar>
-        </div>
-      </v-col>
-    </v-row>
-  </v-container>
+                </v-card-title>
+                <v-card-text>
+                  <v-row>
+                    <v-col cols="12">
+                      <validation-provider v-slot="{ errors }" name="Email" rules="required|email">
+                        <v-text-field v-model="userData.email" :error-messages="errors" filled label="Email" />
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="12">
+                      <div class="text-h2">
+                        Qui êtes vous ?
+                      </div>
+                    </v-col>
+                    <v-col cols="6">
+                      <validation-provider v-slot="{ errors }" name="Prénom" rules="required">
+                        <v-text-field v-model="userData.firstname" :error-messages="errors" filled label="Prénom" />
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="6">
+                      <validation-provider v-slot="{ errors }" name="Nom" rules="required">
+                        <v-text-field v-model="userData.lastname" :error-messages="errors" filled label="Nom" />
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="6">
+                      <validation-provider v-slot="{ errors }" name="Poste" rules="required">
+                        <v-select
+                          v-model="userData.poste"
+                          :error-messages="errors"
+                          :items="postes"
+                          filled
+                          label="Poste"
+                        />
+                      </validation-provider>
+                    </v-col>
+                    <v-col>
+                      <validation-provider v-slot="{ errors }" name="Intitulé" rules="required">
+                        <v-text-field
+                          v-show="userData.poste === 'autre'"
+                          v-model="userData.other_poste"
+                          cols="6"
+                          :error-messages="errors"
+                          filled
+                          label="Intitulé"
+                        />
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="6">
+                      <validation-provider v-slot="{ errors }" name="Téléphone professionel" rules="required">
+                        <v-text-field v-model="userData.tel" :error-messages="errors" filled label="Téléphone professionel" />
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="12">
+                      <div class="text-h2">
+                        Quelle est votre collectivité ?
+                      </div>
+                    </v-col>
+                    <v-col cols="12">
+                      <validation-provider v-slot="{ errors }" name="Collectivité" rules="requiredCollectivite">
+                        <VCollectivitesAutocomplete
+                          v-model="selectedCollectivite"
+                          :error-messages="errors"
+                          large
+                          :cols-dep="4"
+                          :cols-town="8"
+                        />
+                      </validation-provider>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer />
+                  <v-btn text tile color="primary" :to="{name: 'login-collectivites-signin'}">
+                    J'ai déjà un compte
+                  </v-btn>
+                  <v-btn depressed tile color="primary" :loading="loading" type="submit">
+                    Créer mon compte
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+              <v-snackbar
+                v-model="snackbar.val"
+                :timeout="4000"
+              >
+                {{ snackbar.text }}
+              </v-snackbar>
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+    </form>
+  </validation-observer>
 </template>
 
 <script>
 import { mdiArrowLeft } from '@mdi/js'
 import axios from 'axios'
 
+import FormInput from '@/mixins/FormInput.js'
+
 export default {
   name: 'SignupCollectivite',
+  mixins: [FormInput],
   data () {
     return {
       icons: { mdiArrowLeft },
@@ -140,9 +165,11 @@ export default {
           }
         })
         console.log('ret: ', ret)
-        // this.$router.push({ name: 'login-collectivites-explain' })
+        this.$router.push({ name: 'login-collectivites-explain' })
       } catch (error) {
+        console.log(error)
         this.error = error.response.data.message
+        this.$vuetify.goTo(0)
       } finally {
         this.loading = false
       }

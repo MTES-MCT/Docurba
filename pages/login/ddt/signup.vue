@@ -17,22 +17,26 @@
                 Inscription agent de l'Etat
               </div>
             </v-card-title>
-            <v-card-text>
-              <v-row justify="center">
-                <v-col cols="12">
-                  <OnboardingSignupForm v-model="userData" />
-                </v-col>
-              </v-row>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer />
-              <v-btn class="no-text-transform" outlined tile color="primary" :to="{name: 'login-ddt-signin'}">
-                J'ai déjà un compte
-              </v-btn>
-              <v-btn depressed tile color="primary" @click="signUp()">
-                Créer mon compte
-              </v-btn>
-            </v-card-actions>
+            <validation-observer ref="observerSignupEtat" v-slot="{ handleSubmit }" slim>
+              <form @submit.prevent="handleSubmit(signUp)">
+                <v-card-text>
+                  <v-row justify="center">
+                    <v-col cols="12">
+                      <OnboardingSignupForm v-model="userData" />
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer />
+                  <v-btn class="no-text-transform" outlined tile color="primary" :to="{name: 'login-ddt-signin'}">
+                    J'ai déjà un compte
+                  </v-btn>
+                  <v-btn depressed tile color="primary" @click="signUp()">
+                    Créer mon compte
+                  </v-btn>
+                </v-card-actions>
+              </form>
+            </validation-observer>
           </v-card>
           <v-snackbar
             v-model="snackbar.val"
@@ -48,11 +52,14 @@
 
 <script>
 import { mdiEye, mdiEyeOff, mdiArrowLeft } from '@mdi/js'
-
+import { ValidationObserver } from 'vee-validate'
 import axios from 'axios'
 
 export default {
   name: 'LoginDialog',
+  components: {
+    ValidationObserver
+  },
   data () {
     return {
       icons: {

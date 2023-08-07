@@ -37,10 +37,10 @@
         <v-btn depressed tile text :to="{name: 'faq'}">
           Besoin d'aide ?
         </v-btn>
-        <v-btn v-if="!$user.id" depressed tile text @click="openLogin = true">
+        <v-btn v-if="!$user.id" depressed tile text :to="{name: 'login'}">
           Connexion
         </v-btn>
-        <AuthLoginDialog v-model="openLogin" />
+        <!-- <AuthLoginDialog v-model="openLogin" /> -->
         <v-btn v-if="$user.id && $user.scope && $user.scope.dept" depressed tile text :to="{name: 'ddt-departement-collectivites', params: {departement: $user.scope.dept}}">
           Tableau de bord
         </v-btn>

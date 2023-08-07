@@ -28,6 +28,9 @@
         :dense="!large"
         @change="$emit('input', arguments[0])"
       />
+      <div class="error--text v-messages pl-3">
+        {{ errorMessages[0] }}
+      </div>
     </v-col>
   </v-row>
 </template>
@@ -37,16 +40,19 @@ import axios from 'axios'
 import departements from '@/assets/data/departements-france.json'
 
 export default {
+  name: 'VCollectiviteAutocomplete',
   props: {
+    errorMessages: {
+      type: Array,
+      default: () => []
+    },
     large: {
       type: Boolean,
       default: false
     },
     value: {
       type: Object,
-      default () {
-        return {}
-      }
+      default: () => null
     },
     inputProps: {
       type: Object,
@@ -78,7 +84,7 @@ export default {
 
     if (this.defaultDepartementCode) {
       defaultDepartement = enrichedDepartements.find((d) => {
-        // eslint-disable-next-line eqeqeq
+        // eslint-disable-next-line
         return d.code_departement == this.defaultDepartementCode
       })
     }
