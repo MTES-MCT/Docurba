@@ -73,31 +73,36 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
     async getProjectsProcedures (collectiviteId) {
       // Fetching user procedure for now. Should also fetch public projects at some point.
       // Or more simply fetch based on collectivite column but need to make a script to update projects.
+      const ret = {
+        projects: [],
+        procedures: []
+      }
+
       const { data: projects } = await $supabase.from('projects').select('id, name, doc_type, towns, collectivite_id').match({
         owner: $user.id, // TODO: fetch shared projects.
         collectivite_id: collectiviteId
       })
+      ret.projects = projects ?? []
+      console.log('projects: ', projects)
+      if (projects) {
+        const projectsIds = projects.map(p => p.id)
+        const { data: procedures } = await $supabase.from('procedures').select('*').in('project_id', projectsIds)
 
-      const projectsIds = projects.map(p => p.id)
+        procedures.forEach((procedure) => {
+          procedure.project = projects.find(p => p.id === procedure.project_id)
 
-      const { data: procedures } = await $supabase.from('procedures').select('*').in('project_id', projectsIds)
-
-      procedures.forEach((procedure) => {
-        procedure.project = projects.find(p => p.id === procedure.project_id)
-
-        procedure.procSecs = procedures.filter(proc => proc.procedure_id === procedure.id)
-      })
-
-      projects.forEach((project) => {
-        project.procedures = procedures.filter((proc) => {
-          return proc.project_id === project.id
+          procedure.procSecs = procedures.filter(proc => proc.procedure_id === procedure.id)
         })
-      })
 
-      return {
-        projects,
-        procedures
+        projects.forEach((project) => {
+          project.procedures = procedures.filter((proc) => {
+            return proc.project_id === project.id
+          })
+        })
+
+        ret.procedures = procedures ?? []
       }
+      return ret
     }
   })
 }
