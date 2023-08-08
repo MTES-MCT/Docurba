@@ -6,11 +6,7 @@
       </validation-provider>
     </v-col>
     <v-col cols="12">
-      <validation-provider v-slot="{ errors }" name="Mot de passe" rules="required|min:6">
-        <InputsPasswordTextField v-model="userData.password" :error-messages="errors" />
-        test{{ errors }}
-        <!-- NE march pas car le V-model n'est pas direct comparé a VBiGRadio -->
-      </validation-provider>
+      <InputsPasswordTextField v-model="userData.password" />
     </v-col>
     <v-col cols="6">
       <validation-provider v-slot="{ errors }" name="Prénom" rules="required">
@@ -35,7 +31,7 @@
     </v-col>
 
     <v-col v-if="userData.poste === 'ddt'" cols="12">
-      <VDeptAutocomplete v-model="userData.dept" />
+      <VDeptAutocomplete v-model="userData.departement" />
     </v-col>
     <v-col v-if="userData.poste === 'dreal'" cols="12">
       <VRegionAutocomplete v-model="userData.region" label="Votre region" />
@@ -88,9 +84,8 @@ export default {
         lastname: this.$isDev ? 'Test' : '',
         password: this.$isDev ? 'docurba12345' : '',
         poste: null,
-        dept: null,
-        region: null,
-        isDDT: true
+        departement: null,
+        region: null
       }
     }
   }

@@ -41,13 +41,13 @@ app.post('/password', async (req, res) => {
   }
 })
 
-async function magicLinkSignIn (email, shouldExist) {
+async function magicLinkSignIn ({ email, shouldExist, redirectBasePath }) {
   const { data: user, error } = await supabase.auth.admin.generateLink(
     {
       type: 'magiclink',
       email,
       options: {
-        redirectTo: 'http://localhost:3000/' // https://docurba.beta.gouv.fr/faq'
+        redirectTo: redirectBasePath // 'http://localhost:3000/' // https://docurba.beta.gouv.fr/faq'
       }
     }
   )
@@ -74,7 +74,7 @@ async function magicLinkSignIn (email, shouldExist) {
 
 app.post('/signinCollectivite', async (req, res) => {
   try {
-    const user = await magicLinkSignIn(req.body.email, magicLinkSignIn)
+    const user = await magicLinkSignIn({ email: req.body.email, shouldExist: true, redirectBasePath: req.body.redirectTo })
     res.status(200).send(user)
   } catch (error) {
     console.log('ERROR /auth/signinCollectivite : ', error.message)
@@ -84,11 +84,11 @@ app.post('/signinCollectivite', async (req, res) => {
 
 app.post('/signupCollectivite', async (req, res) => {
   try {
-    const user = await magicLinkSignIn(req.body.userData.email)
-
-    if (!user.user.email_confirmed_at) {
-      const { error: errorInsertProfile } = await supabase.from('profiles').insert({ ...req.body.userData, side: 'collectivite' })
+    const { user } = await magicLinkSignIn({ email: req.body.userData.email, redirectBasePath: req.body.redirectTo })
+    if (!user.email_confirmed_at) {
+      const { error: errorInsertProfile } = await supabase.from('profiles').insert({ ...req.body.userData, side: 'collectivite', user_id: user.id })
       if (errorInsertProfile) { throw errorInsertProfile }
+      // TODO: Envoyer le Slack de verification pour valider la personne.
     } else {
       throw new Error('Vous avez déjà enregistrer un compte, nous vous avons renvoyé un email de connexion.')
     }
@@ -100,13 +100,11 @@ app.post('/signupCollectivite', async (req, res) => {
 })
 
 app.post('/hooksSignupStateAgent', async (req, res) => {
-  const { userData } = req.body
-
-  await slack.requestDepartementAccess(userData)
+  await slack.requestDepartementAccess(req.body)
   // TODO: Send Welcome Email
   // Push in the good pipedrive
 
-  await pipedrive.signup(userData)
+  await pipedrive.signup(req.body)
 
   res.status(200).send('OK')
 })

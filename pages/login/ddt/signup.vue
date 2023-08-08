@@ -3,6 +3,9 @@
     <v-row>
       <v-col cols="12">
         <div>
+          <v-alert v-if="error" type="error">
+            {{ error }}
+          </v-alert>
           <div class="mb-2">
             <nuxt-link :to="{name: 'login'}">
               <v-icon small color="primary" class="mr-2">
@@ -17,7 +20,7 @@
                 Inscription agent de l'Etat
               </div>
             </v-card-title>
-            <validation-observer ref="observerSignupEtat" v-slot="{ handleSubmit }" slim>
+            <validation-observer ref="observerSignupEtat" v-slot="{ handleSubmit }">
               <form @submit.prevent="handleSubmit(signUp)">
                 <v-card-text>
                   <v-row justify="center">
@@ -31,7 +34,7 @@
                   <v-btn class="no-text-transform" outlined tile color="primary" :to="{name: 'login-ddt-signin'}">
                     J'ai déjà un compte
                   </v-btn>
-                  <v-btn depressed tile color="primary" @click="signUp()">
+                  <v-btn depressed tile color="primary" :loading="loading" @click="signUp()">
                     Créer mon compte
                   </v-btn>
                 </v-card-actions>
@@ -48,6 +51,7 @@
 import { mdiEye, mdiEyeOff, mdiArrowLeft } from '@mdi/js'
 import { ValidationObserver } from 'vee-validate'
 import axios from 'axios'
+import { omit } from 'lodash'
 
 export default {
   name: 'SignupStateAgent',
@@ -62,15 +66,15 @@ export default {
         mdiArrowLeft
       },
       showPassword: false,
+      loading: false,
       userData: {
         firstname: '',
         lastname: '',
         email: '',
         password: '',
-        dept: null,
+        departement: null,
         poste: null,
-        region: null,
-        isDDT: false
+        region: null
       },
       error: null
     }
@@ -78,20 +82,25 @@ export default {
   methods: {
     async signUp () {
       try {
-        const { user } = await this.$auth.signUpStateAgent({
+        this.loading = true
+        await this.$auth.signUpStateAgent({
           ...this.userData,
-          dept: this.userData.dept.toString().padStart(2, '0'),
-          region: this.userData.region.code.padStart(2, '0')
+          departement: this.userData.departement?.code_departement.toString().padStart(2, '0'),
+          region: this.userData.region?.code.padStart(2, '0')
         })
 
+        const sanitizedUserData = omit(this.userData, ['password'])
         axios({
           method: 'post',
           url: '/api/auth/hooksSignupStateAgent',
-          data: { ...this.userData, id: user.id }
+          data: sanitizedUserData
         })
+        this.$router.push({ name: 'login-ddt-explain' })
       } catch (error) {
-        console.log(error)
-        this.error = error
+        this.error = error.message
+        this.$vuetify.goTo(0)
+      } finally {
+        this.loading = false
       }
     }
   }

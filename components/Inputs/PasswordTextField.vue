@@ -1,28 +1,28 @@
 <template>
-  <v-text-field
-    v-model="password"
-    filled
-    :type="showPassword ? 'text' : 'password'"
-    :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
-    v-bind="inputProps"
-    :error-messages="errorMessages"
-    @click:append="showPassword = !showPassword"
-    @blur="$emit('blur')"
-  />
+  <validation-provider v-slot="{ errors }" name="Mot de passe" rules="required|min:6">
+    <v-text-field
+      v-model="password"
+      filled
+      :error-messages="errors"
+      :type="showPassword ? 'text' : 'password'"
+      :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
+      v-bind="inputProps"
+      @click:append="showPassword = !showPassword"
+    />
+  </validation-provider>
 </template>
 
 <script>
 import { mdiEye, mdiEyeOff } from '@mdi/js'
-
+import { ValidationProvider } from 'vee-validate'
 export default {
+  components: {
+    ValidationProvider
+  },
   props: {
     value: {
       type: String,
       default: ''
-    },
-    errorMessages: {
-      type: Array,
-      default: () => []
     },
     inputProps: {
       type: Object,

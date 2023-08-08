@@ -78,15 +78,12 @@
                       </div>
                     </v-col>
                     <v-col cols="12">
-                      <validation-provider v-slot="{ errors }" name="Collectivité" rules="requiredCollectivite">
-                        <VCollectivitesAutocomplete
-                          v-model="selectedCollectivite"
-                          :error-messages="errors"
-                          large
-                          :cols-dep="4"
-                          :cols-town="8"
-                        />
-                      </validation-provider>
+                      <VCollectivitesAutocomplete
+                        v-model="selectedCollectivite"
+                        large
+                        :cols-dep="4"
+                        :cols-town="8"
+                      />
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -133,7 +130,7 @@ export default {
         { text: 'Agence d\'urbanisme', value: 'agence_urba' },
         { text: 'Autre', value: 'autre' }
       ],
-      selectedCollectivite: null,
+      selectedCollectivite: {},
       loading: false,
       userData: {
         firstname: 'jul',
@@ -152,6 +149,11 @@ export default {
       error: null
     }
   },
+  computed: {
+    selectedCollectiviteId () {
+      return this.selectedCollectivite.EPCI || this.selectedCollectivite.code_commune_INSEE || null
+    }
+  },
   methods: {
     async signUp () {
       try {
@@ -160,7 +162,7 @@ export default {
           method: 'post',
           url: '/api/auth/signupCollectivite',
           data: {
-            userData: this.userData,
+            userData: { ...this.userData, collectivite_id: this.selectedCollectiviteId },
             redirectTo: window.location.origin
           }
         })

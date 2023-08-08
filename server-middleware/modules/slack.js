@@ -28,7 +28,7 @@ module.exports = {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `- departement: ${userData.dept.nom_departement} - ${userData.dept.code_departement} \n - email: ${userData.email}`
+              text: `- departement: ${userData.departement.nom_departement} - ${userData.departement.code_departement} \n - email: ${userData.email}`
             }
           },
           {

@@ -15,40 +15,36 @@
       />
     </v-col>
     <v-col cols="12" :sm="colsTown">
-      <!-- @change="$emit('input', arguments[0])"
-            :value="selectedCollectivite" -->
-      <v-autocomplete
-        :value="selectedCollectivite"
-        v-bind="inputProps"
-        :no-data-text="loading ? 'Chargement ...' : 'Selectionnez un département'"
-        :items="collectivites"
-        item-text="name"
-        return-object
-        filled
-        placeholder="Commune ou EPCI"
-        :loading="loading"
-        :dense="!large"
-        @blur="$emit('input', selectedCollectivite)"
-        @change="$emit('input', arguments[0])"
-      />
-      <div class="error--text v-messages pl-3">
-        {{ errorMessages[0] }}
-      </div>
+      <validation-provider v-slot="{ errors }" name="Collectivité" rules="requiredCollectivite">
+        <v-autocomplete
+          v-model="selectedCollectivite"
+          v-bind="inputProps"
+          :no-data-text="loading ? 'Chargement ...' : 'Selectionnez un département'"
+          :items="collectivites"
+          item-text="name"
+          :error-messages="errors"
+          return-object
+          filled
+          placeholder="Commune ou EPCI"
+          :loading="loading"
+          :dense="!large"
+        />
+      </validation-provider>
     </v-col>
   </v-row>
 </template>
 
 <script>
 import axios from 'axios'
+import { ValidationProvider } from 'vee-validate'
 import departements from '@/assets/data/departements-france.json'
 
 export default {
   name: 'VCollectiviteAutocomplete',
+  components: {
+    ValidationProvider
+  },
   props: {
-    errorMessages: {
-      type: Array,
-      default: () => []
-    },
     large: {
       type: Boolean,
       default: false
@@ -98,6 +94,11 @@ export default {
       departements: enrichedDepartements,
       collectivites: (this.value && this.value.name) ? [Object.assign({}, this.value)] : [],
       loading: false
+    }
+  },
+  watch: {
+    selectedCollectivite () {
+      this.$emit('input', this.selectedCollectivite)
     }
   },
   mounted () {
