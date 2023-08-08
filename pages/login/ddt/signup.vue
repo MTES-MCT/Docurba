@@ -38,12 +38,6 @@
               </form>
             </validation-observer>
           </v-card>
-          <v-snackbar
-            v-model="snackbar.val"
-            :timeout="4000"
-          >
-            {{ snackbar.text }}
-          </v-snackbar>
         </div>
       </v-col>
     </v-row>
@@ -56,7 +50,7 @@ import { ValidationObserver } from 'vee-validate'
 import axios from 'axios'
 
 export default {
-  name: 'LoginDialog',
+  name: 'SignupStateAgent',
   components: {
     ValidationObserver
   },
@@ -67,7 +61,6 @@ export default {
         mdiEyeOff,
         mdiArrowLeft
       },
-      isLoginValid: false,
       showPassword: false,
       userData: {
         firstname: '',
@@ -75,39 +68,27 @@ export default {
         email: '',
         password: '',
         dept: null,
+        poste: null,
+        region: null,
         isDDT: false
-      },
-      snackbar: {
-        text: '',
-        val: false
       },
       error: null
     }
   },
   methods: {
-
     async signUp () {
       try {
-        const { user, profile } = await this.$auth.signUp(this.userData)
-        await this.$supabase.from('github_ref_roles').insert([{
-          role: 'user',
-          ref: `dept-${profile.departement}`,
-          user_id: user.id
-        }])
-
-        this.userData.id = user.id
+        const { user } = await this.$auth.signUpStateAgent({
+          ...this.userData,
+          dept: this.userData.dept.toString().padStart(2, '0'),
+          region: this.userData.region.code.padStart(2, '0')
+        })
 
         axios({
           method: 'post',
-          url: '/api/auth/signup',
-          data: {
-            email: this.userData.email,
-            userData: this.userData,
-            redirectTo: window.location.origin
-          }
+          url: '/api/auth/hooksSignupStateAgent',
+          data: { ...this.userData, id: user.id }
         })
-
-        this.$emit('input', false)
       } catch (error) {
         console.log(error)
         this.error = error

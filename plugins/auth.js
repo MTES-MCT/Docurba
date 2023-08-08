@@ -46,8 +46,15 @@ export default ({ $supabase, $user }, inject) => {
           }
         })
 
-        const { data: profile, error: errorInsertProfile } = await $supabase.from('profiles').insert(userData).select()
+        const { data: profile, error: errorInsertProfile } = await $supabase.from('profiles').insert({ ...userData, side: 'etat' }).select()
         if (errorInsertProfile) { throw errorInsertProfile }
+
+        await $supabase.from('github_ref_roles').insert([{
+          role: 'user',
+          ref: `dept-${profile.departement}`,
+          user_id: user.id
+        }])
+
         return { user, profile }
       } catch (error) {
         console.log(error)

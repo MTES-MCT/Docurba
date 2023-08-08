@@ -87,7 +87,7 @@ app.post('/signupCollectivite', async (req, res) => {
     const user = await magicLinkSignIn(req.body.userData.email)
 
     if (!user.user.email_confirmed_at) {
-      const { error: errorInsertProfile } = await supabase.from('profiles').insert(req.body.userData)
+      const { error: errorInsertProfile } = await supabase.from('profiles').insert({ ...req.body.userData, side: 'collectivite' })
       if (errorInsertProfile) { throw errorInsertProfile }
     } else {
       throw new Error('Vous avez déjà enregistrer un compte, nous vous avons renvoyé un email de connexion.')
@@ -99,7 +99,7 @@ app.post('/signupCollectivite', async (req, res) => {
   }
 })
 
-app.post('/signupEtat', async (req, res) => {
+app.post('/hooksSignupStateAgent', async (req, res) => {
   const { userData } = req.body
 
   await slack.requestDepartementAccess(userData)

@@ -38,11 +38,9 @@
       <VDeptAutocomplete v-model="userData.dept" />
     </v-col>
     <v-col v-if="userData.poste === 'dreal'" cols="12">
-      <VRegionAutocomplete v-model="userData.region" label="Votre region" return-iso />
+      <VRegionAutocomplete v-model="userData.region" label="Votre region" />
     </v-col>
   </v-row>
-  </form>
-  </validation-observer>
 </template>
 
 <script>
