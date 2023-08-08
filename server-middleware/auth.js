@@ -99,37 +99,12 @@ app.post('/signupCollectivite', async (req, res) => {
   }
 })
 
-app.post('/signup', async (req, res) => {
-  // No email verifycation at the moment
-  // Need to test the type of link generated -> https://supabase.com/docs/reference/javascript/auth-api-generatelink
-  // const { data: user, error } = await supabase.auth.api.generateLink(
-  //   'email_change_current',
-  //   req.body.email,
-  //   {
-  //     redirectTo: req.body.redirectTo
-  //   }
-  // )
-
-  // // console.log('auth signup', user, error)
-
-  // if (!error && user && user.action_link) {
-  //   sendgrid.sendEmail({
-  //     to: req.body.email,
-  //     template_id: 'd-766d017b51124a108cabc985d0dbf451',
-  //     dynamic_template_data: {
-  //       redirectURL: user.action_link
-  //     }
-  //   })
-  // } else {
-  //   // eslint-disable-next-line no-console
-  //   console.log('error sending verifycation email', error, user)
-  // }
-
+app.post('/signupEtat', async (req, res) => {
   const { userData } = req.body
 
-  if (userData.isDDT) {
-    await slack.requestDepartementAccess(userData)
-  }
+  await slack.requestDepartementAccess(userData)
+  // TODO: Send Welcome Email
+  // Push in the good pipedrive
 
   await pipedrive.signup(userData)
 

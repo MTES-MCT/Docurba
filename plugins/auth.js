@@ -34,16 +34,24 @@ export default ({ $supabase, $user }, inject) => {
         return adminAccess
       } else { return adminAccess[0] || null }
     },
-    signUp (userData) {
-      return $supabase.auth.signUp({
-        email: userData.email,
-        password: userData.password
-      }, {
-        data: {
-          firstname: userData.firstname,
-          lastname: userData.lastname
-        }
-      })
+    async signUp (userData) {
+      try {
+        const user = $supabase.auth.signUp({
+          email: userData.email,
+          password: userData.password
+        }, {
+          data: {
+            firstname: userData.firstname,
+            lastname: userData.lastname
+          }
+        })
+
+        const { data: profile, error: errorInsertProfile } = await $supabase.from('profiles').insert(userData).select()
+        if (errorInsertProfile) { throw errorInsertProfile }
+        return { user, profile }
+      } catch (error) {
+        console.log(error)
+      }
     },
     async signIn (userData) {
       const { data: { user }, error } = await $supabase.auth.signInWithPassword({

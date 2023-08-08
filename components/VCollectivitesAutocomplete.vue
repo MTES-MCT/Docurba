@@ -10,10 +10,13 @@
         filled
         return-object
         :dense="!large"
+        @blur="$emit('blur')"
         @change="fetchCollectivites"
       />
     </v-col>
     <v-col cols="12" :sm="colsTown">
+      <!-- @change="$emit('input', arguments[0])"
+            :value="selectedCollectivite" -->
       <v-autocomplete
         :value="selectedCollectivite"
         v-bind="inputProps"
@@ -21,11 +24,11 @@
         :items="collectivites"
         item-text="name"
         return-object
-        hide-details
         filled
         placeholder="Commune ou EPCI"
         :loading="loading"
         :dense="!large"
+        @blur="$emit('input', selectedCollectivite)"
         @change="$emit('input', arguments[0])"
       />
       <div class="error--text v-messages pl-3">

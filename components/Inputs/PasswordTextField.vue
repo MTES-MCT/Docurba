@@ -7,6 +7,7 @@
     v-bind="inputProps"
     :error-messages="errorMessages"
     @click:append="showPassword = !showPassword"
+    @blur="$emit('blur')"
   />
 </template>
 

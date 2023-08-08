@@ -23,13 +23,17 @@
         </div>
       </v-col>
       <v-col cols="5.5">
-        <v-card flat class="border-light">
+        <v-card flat class="border-light fill-height d-flex flex-column">
           <v-card-title>Une collectivité ou assimilé</v-card-title>
           <v-card-text>
-            Je suis un élu, un employé de mairie ou un bureau d'étude. Acceder simplement à toute vos démarche d'ubanisme via Docurba.
-            Après une étape de validation de votre statut vous pourrez accéder a votre tableau de bord personalisé.
+            <p>
+              Je suis un élu, un employé de mairie ou un bureau d'étude. Acceder simplement à toute vos démarche d'ubanisme via Docurba.
+            </p>
+            <div>
+              Après une étape de validation de votre statut vous pourrez accéder a votre tableau de bord personalisé.
+            </div>
           </v-card-text>
-          <v-card-actions>
+          <v-card-actions class="mt-auto">
             <v-btn color="primary" depressed tile :to="{name:'login-collectivites-signup'}">
               Créer un compte
             </v-btn>
@@ -47,7 +51,14 @@
       <v-col cols="5.5">
         <v-card flat class="border-light">
           <v-card-title>Un agent de l'Etat</v-card-title>
-          <v-card-text>Je suis un agent d'une DDT/DEAL ou d'une DREAL en charge du suivi des procédures d'élaboration et d'évolution des documents d'urbanisme et/ou de la production des documents de l'Etat (PAC, ..) liées à ces procédures. Après une étape de validation de votre compte Etat, vous pourrez paramétrer votre trame de PAC départementale ou régionale et suivre vos procédures.</v-card-text>
+          <v-card-text>
+            <p>
+              Je suis un agent d'une DDT/DEAL ou d'une DREAL en charge du suivi des procédures d'élaboration et d'évolution des documents d'urbanisme et/ou de la production des documents de l'Etat (PAC, ...) liées à ces procédures.
+            </p>
+            <div>
+              Après une étape de validation de votre compte Etat, vous pourrez paramétrer votre trame de PAC départementale ou régionale et suivre vos procédures.
+            </div>
+          </v-card-text>
           <v-card-actions>
             <v-btn color="primary" tile depressed :to="{name:'login-ddt-signup'}">
               Creer un compte

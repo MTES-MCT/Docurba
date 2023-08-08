@@ -89,6 +89,7 @@ export default {
         firstname: this.$isDev ? 'Test' : '',
         lastname: this.$isDev ? 'Test' : '',
         password: this.$isDev ? 'docurba12345' : '',
+        poste: null,
         dept: null,
         region: null,
         isDDT: true

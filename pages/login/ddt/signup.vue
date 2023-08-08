@@ -87,27 +87,15 @@ export default {
   methods: {
 
     async signUp () {
-      const {
-        // user,
-        // session,
-        error
-      } = await this.$auth.signUp(this.userData)
+      try {
+        const { user, profile } = await this.$auth.signUp(this.userData)
+        await this.$supabase.from('github_ref_roles').insert([{
+          role: 'user',
+          ref: `dept-${profile.departement}`,
+          user_id: user.id
+        }])
 
-      if (!error) {
-        // eslint-disable-next-line no-console
-        // console.log('success sign up', user, session)
-
-        if (this.userData.isDDT && this.userData.dept) {
-          const { data: { session: { user } } } = await this.$supabase.auth.getSession()
-
-          await this.$supabase.from('github_ref_roles').insert([{
-            role: 'user',
-            ref: `dept-${this.userData.dept.code_departement}`,
-            user_id: user.id
-          }])
-
-          this.userData.id = user.id
-        }
+        this.userData.id = user.id
 
         axios({
           method: 'post',
@@ -120,7 +108,8 @@ export default {
         })
 
         this.$emit('input', false)
-      } else {
+      } catch (error) {
+        console.log(error)
         this.error = error
       }
     }

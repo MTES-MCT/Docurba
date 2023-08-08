@@ -17,7 +17,7 @@ extend('email', {
 
 extend('min', {
   ...min,
-  message: '{_field_} may be greater than {length} characters'
+  message: '{_field_} doit contenir au moins {length} caractères.'
 })
 
 extend('needToBeOui', {
