@@ -10,6 +10,49 @@ module.exports = {
       }
     })
   },
+  requestCollectiviteAccess (userData) {
+    return axios({
+      url: process.env.SLACK_WEBHOOK,
+      method: 'post',
+      data: {
+        text: `Demande d'accès Collectivité de ${userData.firstname} ${userData.lastname} ayant pour poste ${userData.poste}`,
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: `Demande d'accès Collectivité de ${userData.firstname} ${userData.lastname} ayant pour poste ${userData.poste}`
+            }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `- collectivité code INSEE: ${userData.collectivite_id} (departement: ${userData.departement}) \n - email: ${userData.email}`
+            }
+          },
+          {
+            type: 'actions',
+            block_id: 'actions1',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: `Valider ${userData.email}`
+                },
+                value: JSON.stringify(userData),
+                action_id: 'collectivite_validation'
+              }
+            ]
+          },
+          {
+            type: 'divider'
+          }
+        ]
+      }
+    })
+  },
   requestDepartementAccess (userData) {
     return axios({
       url: process.env.SLACK_WEBHOOK,

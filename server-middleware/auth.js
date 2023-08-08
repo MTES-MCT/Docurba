@@ -86,9 +86,10 @@ app.post('/signupCollectivite', async (req, res) => {
   try {
     const { user } = await magicLinkSignIn({ email: req.body.userData.email, redirectBasePath: req.body.redirectTo })
     if (!user.email_confirmed_at) {
-      const { error: errorInsertProfile } = await supabase.from('profiles').insert({ ...req.body.userData, side: 'collectivite', user_id: user.id })
+      const { data: insertedProfile, error: errorInsertProfile } = await supabase.from('profiles').insert({ ...req.body.userData, side: 'collectivite', user_id: user.id }).select()
       if (errorInsertProfile) { throw errorInsertProfile }
       // TODO: Envoyer le Slack de verification pour valider la personne.
+      slack.requestCollectiviteAccess(insertedProfile[0])
     } else {
       throw new Error('Vous avez déjà enregistrer un compte, nous vous avons renvoyé un email de connexion.')
     }
@@ -104,6 +105,8 @@ app.post('/hooksSignupStateAgent', async (req, res) => {
   // TODO: Send Welcome Email
   // Push in the good pipedrive
 
+  // TODO: Attention au changement de nom dept / departement dans Signin() (pipedrive.js) & dans la fonction updateUserRole() (admin.js)
+  // Verifier le validation Slack par la suite
   await pipedrive.signup(req.body)
 
   res.status(200).send('OK')

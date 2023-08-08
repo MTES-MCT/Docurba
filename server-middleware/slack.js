@@ -1,5 +1,7 @@
 const express = require('express')
 const app = express()
+const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -49,6 +51,24 @@ app.post('/notify/admin', (req, res) => {
   res.status(200).send('OK')
 })
 
+async function collectiviteValidation (data, responseUrl) {
+  try {
+    console.log('collectiviteValidation data: ', data)
+    const { error: errorUpdateProfile } = await supabase.from('profiles').update({ verified: true }).eq('id', data.id)
+    if (errorUpdateProfile) { throw errorUpdateProfile }
+    axios({
+      url: responseUrl,
+      method: 'post',
+      data: {
+        text: `${data.firstname} ${data.lastname} (${data.email})
+        pour la collectivité de code INSEE ${data.collectivite_id} est vérifier et validé.`
+      }
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 // Webhook  from slack
 app.post('/webhook/interactivity', async (req, res) => {
   const payload = JSON.parse(req.body.payload)
@@ -63,10 +83,9 @@ app.post('/webhook/interactivity', async (req, res) => {
 
     // eslint-disable-next-line no-console
     console.log('slack action: ', action)
+    const userData = JSON.parse(action.value)
 
     if (action.action_id === 'ddt_validation') {
-      const userData = JSON.parse(action.value)
-
       // eslint-disable-next-line no-console
       console.log('userData:', userData)
 
@@ -85,6 +104,9 @@ app.post('/webhook/interactivity', async (req, res) => {
         // eslint-disable-next-line no-console
         console.log('err updating role', error)
       }
+    } else if (action.action_id === 'collectivite_validation') {
+      console.log('collectivite_validation')
+      collectiviteValidation(userData, responseUrl)
     }
   }
 })
