@@ -9,6 +9,7 @@
     </v-row>
     <v-row>
       <v-col cols="12">
+        <p> Nous devons valider votre status d'agent de l'Etat</p>
         <p>Après une étape de validation (au maximum 48h), vous pourrez accéder à votre tableau de bord pour votre departement.</p>
       </v-col>
     </v-row>

@@ -34,8 +34,9 @@
             </div>
           </v-card-text>
           <v-card-actions class="mt-auto">
+            <v-spacer />
             <v-btn color="primary" depressed tile :to="{name:'login-collectivites-signup'}">
-              Créer un compte
+              Créer un compte collectivité
             </v-btn>
             <v-btn outlined tile color="primary" :to="{name:'login-collectivites-signin'}">
               Me connecter
@@ -60,8 +61,9 @@
             </div>
           </v-card-text>
           <v-card-actions>
+            <v-spacer />
             <v-btn color="primary" tile depressed :to="{name:'login-ddt-signup'}">
-              Creer un compte
+              Creer un compte agent de l'Etat
             </v-btn>
             <v-btn outlined tile color="primary" :to="{name:'login-ddt-signin'}">
               Me connecter
