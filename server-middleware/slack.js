@@ -1,5 +1,7 @@
 const express = require('express')
 const app = express()
+const { createClient } = require('@supabase/supabase-js')
+
 const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 app.use(express.json())
@@ -37,7 +39,7 @@ app.post('/notify/admin', (req, res) => {
   const { userData } = req.body
 
   // try {
-  slack.requestDepartementAccess(userData).then((res) => {
+  slack.requestStateAgentAccess(userData).then((res) => {
     // eslint-disable-next-line no-console
     console.log('Slack then: ', res.data)
   }).catch((err) => {
@@ -90,7 +92,8 @@ app.post('/webhook/interactivity', async (req, res) => {
       console.log('userData:', userData)
 
       const { data, error } = await admin.updateUserRole(userData, 'admin')
-
+      const { error: errorUpdateProfile } = await supabase.from('profiles').update({ verified: true }).eq('id', userData.id)
+      if (errorUpdateProfile) { throw errorUpdateProfile }
       if (data && !error) {
         res.status(200).send('OK')
         axios({

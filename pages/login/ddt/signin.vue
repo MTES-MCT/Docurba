@@ -12,48 +12,76 @@
             </nuxt-link>
           </div>
 
-          <v-card flat class="border-light">
-            <v-card-title>
-              <div class="text-h1">
-                Connexion agent de l'Etat
-              </div>
-            </v-card-title>
-
-            <v-card-text>
-              <v-form ref="loginForm" v-model="isLoginValid">
-                <v-row justify="end">
-                  <v-col cols="12">
-                    <v-text-field v-model="userData.email" :rules="[$rules.required]" hide-details filled label="Email" />
-                  </v-col>
-                  <v-col v-show="!forgotPassword" cols="12">
-                    <InputsPasswordTextField v-model="userData.password" />
-                  </v-col>
-                  <v-col v-if="error && error.status === 400" cols="12">
-                    <span class="error--text">Email ou mot de passe incorrecte.</span>
-                  </v-col>
+          <v-card v-if="!forgotPassword" flat class="border-light">
+            <validation-observer ref="observerSignInEtat" v-slot="{ handleSubmit }">
+              <form @submit.prevent="handleSubmit(signIn)">
+                <v-card-title>
+                  <div class="text-h1">
+                    Connexion agent de l'Etat
+                  </div>
+                </v-card-title>
+                <v-card-text>
+                  <v-row justify="end">
+                    <v-col cols="12">
+                      <validation-provider v-slot="{ errors }" name="E-mail" rules="required|email">
+                        <v-text-field v-model="email" :error-messages="errors" filled label="Email" />
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="12">
+                      <InputsPasswordTextField v-model="password" />
+                    </v-col>
+                    <v-col v-if="error && error.status === 400" cols="12">
+                      <span class="error--text">Email ou mot de passe incorrecte.</span>
+                    </v-col>
+                    <v-spacer />
+                    <v-col cols="auto" class="pt-0">
+                      <a href="#" class="primary--text" @click="forgotPassword = true">Mot de passe oublié ? Cliquez ici</a>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+                <v-card-actions>
                   <v-spacer />
-                  <v-col v-show="!forgotPassword" cols="auto">
-                    <v-btn depressed tile text small @click="sendResetPassword">
-                      Mot de passe oublié ?
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-form>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer />
-              <v-btn v-show="!forgotPassword" outlined tile color="primary" :to="{name: 'login-ddt-signup'}">
-                Pas de compte ? Créez en un
-              </v-btn>
-              <v-btn v-show="!forgotPassword" depressed tile color="primary" @click="signIn()">
-                Se connecter
-              </v-btn>
-              <v-btn v-show="forgotPassword" depressed tile color="primary" @click="sendResetPassword">
-                Envoyer
-              </v-btn>
-            </v-card-actions>
+                  <v-btn class=" no-text-transform" outlined tile color="primary" :to="{name: 'login-ddt-signup'}">
+                    Pas de compte ? Créez en un
+                  </v-btn>
+                  <v-btn depressed tile color="primary" type="submit">
+                    Se connecter
+                  </v-btn>
+                </v-card-actions>
+              </form>
+            </validation-observer>
           </v-card>
+
+          <v-card v-else flat class="border-light">
+            <validation-observer ref="observerResetPassword" v-slot="{ handleSubmit }">
+              <form @submit.prevent="handleSubmit(sendResetPassword)">
+                <v-card-title>
+                  <div class="text-h1">
+                    Récupération de mot de passe
+                  </div>
+                </v-card-title>
+                <v-card-text>
+                  <v-row justify="end">
+                    <v-col cols="12">
+                      <validation-provider v-slot="{ errors }" name="E-mail" rules="required|email">
+                        <v-text-field v-model="email" :error-messages="errors" filled label="Email" />
+                      </validation-provider>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer />
+                  <v-btn outlined tile color="primary" @click="forgotPassword = false">
+                    Retour
+                  </v-btn>
+                  <v-btn depressed tile color="primary" @click="sendResetPassword">
+                    Envoyer
+                  </v-btn>
+                </v-card-actions>
+              </form>
+            </validation-observer>
+          </v-card>
+
           <v-snackbar
             v-model="snackbar.val"
             :timeout="4000"
@@ -70,15 +98,11 @@
 import { mdiEye, mdiEyeOff, mdiArrowLeft } from '@mdi/js'
 
 import axios from 'axios'
+import FormInput from '@/mixins/FormInput.js'
 
 export default {
   name: 'SignInDdt',
-  props: {
-    value: {
-      type: Boolean,
-      default: false
-    }
-  },
+  mixins: [FormInput],
   data () {
     return {
       icons: {
@@ -86,18 +110,10 @@ export default {
         mdiEyeOff,
         mdiArrowLeft
       },
-      isLoginValid: false,
       forgotPassword: false,
-      sendingRecoveryEmail: false,
       showPassword: false,
-      userData: {
-        firstname: '',
-        lastname: '',
-        email: '',
-        password: '',
-        dept: null,
-        isDDT: false
-      },
+      email: '',
+      password: '',
       snackbar: {
         text: '',
         val: false
@@ -107,50 +123,35 @@ export default {
   },
   methods: {
     async signIn () {
-      // console.log('signIn', this.$supabase)
-      const { user, error } = await this.$auth.signIn(this.userData)
-
-      if (!error) {
-        // eslint-disable-next-line no-console
-        console.log('success sign in', user)
-
-        if (this.$route.path === '/') {
-          this.$router.push('/projets')
-        }
-
-        this.$emit('input', false)
-      } else {
-        this.error = error
+      try {
+        const { error } = await this.$auth.signIn({
+          email: this.email,
+          password: this.password
+        })
+        if (error) { throw error }
+      } catch (error) {
+        this.error = error.message
       }
     },
     async sendResetPassword () {
-      this.forgotPassword = true
+      try {
+        await axios({
+          method: 'post',
+          url: '/api/auth/password',
+          data: {
+            email: this.email,
+            redirectTo: window.location.origin
+          }
+        })
 
-      if (!this.isLoginValid) {
-        this.$refs.loginForm.validate()
-        return
-      }
-
-      // this.$supabase.auth.api
-      //   .resetPasswordForEmail(this.userData.email, {
-      //     redirectTo: window.location.origin
-      //   })
-      this.sendingRecoveryEmail = true
-
-      await axios({
-        method: 'post',
-        url: '/api/auth/password',
-        data: {
-          email: this.userData.email,
-          redirectTo: window.location.origin
+        this.snackbar = {
+          val: true,
+          text: `Un email de changement de mot de passe à été envoyé à ${this.userData.email}`
         }
-      })
-
-      this.snackbar.text = `Un email de changement de mot de passe à été envoyé à ${this.userData.email}`
-      this.snackbar.val = true
-
-      this.sendingRecoveryEmail = false
-      this.forgotPassword = false
+        this.forgotPassword = false
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 }

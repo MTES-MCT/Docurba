@@ -41,7 +41,7 @@
         <v-btn v-if="!$user.id" depressed tile text :to="{name: 'login'}">
           Connexion
         </v-btn>
-        <v-btn v-if="$user.id && $user?.scope && $user?.scope?.dept" depressed tile text :to="{name: 'ddt-departement-collectivites', params: {departement: $user?.scope?.dept}}">
+        <v-btn v-if="$user?.profile?.poste === 'ddt'" depressed tile text :to="{name: 'ddt-departement-collectivites', params: {departement: $user.profile.departement}}">
           Tableau de bord
         </v-btn>
         <v-btn v-if="$user.id" depressed tile text @click="clickMyDocs">
@@ -80,11 +80,11 @@
     </client-only>
     <template #extension>
       <v-tabs align-with-title class="double-border">
-        <v-tab :to="{name: 'ddt-departement-collectivites', params: {departement: $user?.scope?.dept}}">
+        <v-tab :to="{name: 'ddt-departement-collectivites', params: {departement: $user?.profile?.departement}}">
           Mes collectivites
         </v-tab>
         <v-tab
-          :to="{name: 'trames-githubRef', params: {githubRef: `dept-${$user.scope?.dept}`} }"
+          :to="{name: 'trames-githubRef', params: {githubRef: `dept-${$user?.profile?.departement}`} }"
         >
           Trame de PAC départementale
         </v-tab>
@@ -94,7 +94,7 @@
                'ddt-departement-collectivites-enquete',
              params:
                {departement:
-                 $user.scope?.dept}}"
+                 $user?.profile?.departement}}"
         >
           Validation des procédures
         </v-tab>

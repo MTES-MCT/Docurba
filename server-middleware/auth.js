@@ -42,30 +42,30 @@ app.post('/password', async (req, res) => {
 })
 
 async function magicLinkSignIn ({ email, shouldExist, redirectBasePath }) {
-  const { data: user, error } = await supabase.auth.admin.generateLink(
+  const { data: { user, properties }, error } = await supabase.auth.admin.generateLink(
     {
       type: 'magiclink',
       email,
       options: {
-        redirectTo: redirectBasePath // 'http://localhost:3000/' // https://docurba.beta.gouv.fr/faq'
+        redirectTo: redirectBasePath
       }
     }
   )
+  console.log('redirectBasePath: ', redirectBasePath)
   if (error) {
     console.log('ERROR magicLinkSignIn: ', error)
     throw error
   }
-  console.log('user: ', user)
 
   if (shouldExist && !user.email_confirmed_at) {
     throw new Error('Vous devez créer un compte avant de pouvoir vous connecter.')
   }
-  if (user && user.properties && user.properties.action_link) {
+  if (properties && properties.action_link) {
     sendgrid.sendEmail({
       to: email,
       template_id: 'd-766d017b51124a108cabc985d0dbf451',
       dynamic_template_data: {
-        redirectURL: user.properties.action_link
+        redirectURL: properties.action_link
       }
     })
   }
@@ -85,10 +85,10 @@ app.post('/signinCollectivite', async (req, res) => {
 app.post('/signupCollectivite', async (req, res) => {
   try {
     const { user } = await magicLinkSignIn({ email: req.body.userData.email, redirectBasePath: req.body.redirectTo })
+    console.log('signupCollectivite user: ', user)
     if (!user.email_confirmed_at) {
       const { data: insertedProfile, error: errorInsertProfile } = await supabase.from('profiles').insert({ ...req.body.userData, side: 'collectivite', user_id: user.id }).select()
       if (errorInsertProfile) { throw errorInsertProfile }
-      // TODO: Envoyer le Slack de verification pour valider la personne.
       slack.requestCollectiviteAccess(insertedProfile[0])
     } else {
       throw new Error('Vous avez déjà enregistrer un compte, nous vous avons renvoyé un email de connexion.')
@@ -101,10 +101,8 @@ app.post('/signupCollectivite', async (req, res) => {
 })
 
 app.post('/hooksSignupStateAgent', async (req, res) => {
-  await slack.requestDepartementAccess(req.body)
-  // TODO: Send Welcome Email
+  await slack.requestStateAgentAccess(req.body)
   // Push in the good pipedrive
-
   // TODO: Attention au changement de nom dept / departement dans Signin() (pipedrive.js) & dans la fonction updateUserRole() (admin.js)
   // Verifier le validation Slack par la suite
   await pipedrive.signup(req.body)

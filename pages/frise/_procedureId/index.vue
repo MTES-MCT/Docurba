@@ -39,7 +39,7 @@ import _ from 'lodash'
 export default {
   name: 'ProcedureTimelineEvents',
   layout ({ $user }) {
-    if ($user?.id && $user?.scope && $user?.scope.dept) {
+    if ($user?.profile?.poste === 'ddt' || $user?.profile?.poste === 'dreal') {
       return 'ddt'
     } else {
       return 'default'
@@ -64,7 +64,8 @@ export default {
   },
   async mounted () {
     this.$user.isReady.then(() => {
-      if (this.$user.id && this.$user.scope && this.$user.scope.dept) {
+      console.log('TEST IS READY: ', (this.$user))
+      if (this.$user?.profile?.poste === 'ddt' || this.$user?.profile?.poste === 'dreal') {
         this.$nuxt.setLayout('ddt')
       }
     })

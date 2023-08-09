@@ -53,25 +53,32 @@ module.exports = {
       }
     })
   },
-  requestDepartementAccess (userData) {
+  requestStateAgentAccess (userData) {
+    console.log('requestStateAgentAccess userData: ', userData)
+    let textContent = ''
+    if (userData.poste === 'ddt') {
+      textContent = `- departement: ${userData.departement.nom_departement} - ${userData.departement.code_departement} \n - email: ${userData.email}`
+    } else if (userData.poste === 'dreal') {
+      textContent = `- region: ${userData.region.name} - ${userData.region.code} \n - email: ${userData.email}`
+    }
     return axios({
       url: process.env.SLACK_WEBHOOK,
       method: 'post',
       data: {
-        text: `Demande d'accès DDT de ${userData.firstname} ${userData.lastname}`,
+        text: `Demande d'accès ${userData.poste === 'dreal' ? 'DREAL' : 'DDT'} de ${userData.firstname} ${userData.lastname}`,
         blocks: [
           {
             type: 'header',
             text: {
               type: 'plain_text',
-              text: `Demande d'accès DDT de ${userData.firstname} ${userData.lastname}`
+              text: `Demande d'accès ${userData.poste === 'dreal' ? 'DREAL' : 'DDT'} de ${userData.firstname} ${userData.lastname}`
             }
           },
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `- departement: ${userData.departement.nom_departement} - ${userData.departement.code_departement} \n - email: ${userData.email}`
+              text: textContent
             }
           },
           {

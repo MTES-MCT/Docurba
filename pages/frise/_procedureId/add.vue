@@ -24,7 +24,7 @@ import { mdiChevronLeft } from '@mdi/js'
 export default {
   name: 'AddTimelineEvent',
   layout ({ $user }) {
-    if ($user?.id && $user?.scope && $user?.scope.dept) {
+    if ($user?.profile?.poste === 'ddt' || $user?.profile?.poste === 'dreal') {
       return 'ddt'
     } else {
       return 'default'
@@ -47,7 +47,7 @@ export default {
   },
   mounted () {
     this.$user.isReady.then(() => {
-      if (this.$user.id && this.$user.scope && this.$user.scope.dept) {
+      if (this.$user?.profile?.poste === 'ddt' || this.$user?.profile?.poste === 'dreal') {
         this.$nuxt.setLayout('ddt')
       }
     })

@@ -70,10 +70,10 @@ export default ({ $supabase, $user }, inject) => {
         }
       }
     },
-    async signIn (userData) {
+    async signIn ({ email, password }) {
       const { data: { user }, error } = await $supabase.auth.signInWithPassword({
-        email: userData.email,
-        password: userData.password
+        email,
+        password
       })
 
       return { user, error }
