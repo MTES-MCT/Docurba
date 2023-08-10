@@ -43,7 +43,7 @@
       <v-col cols="12">
         <p>
           Veuillez noter qu'une étape de validation manuelle pour nous assurer que vous êtes bien en droit d'agir en tant que collectivité.
-          Vous recevrez un email pour vous informer de votre validation de compte dès que notre équipe (sous moins de 48h généralement).
+          Vous recevrez un email pour vous informer de votre validation de compte dès que notre équipe aura procéder à la vérification (sous moins de 48h généralement).
         </p>
         <v-alert type="info">
           En cas de problème technique ou de question, n'hésitez pas à contacter l'équipe de Docurba par email: contact@docurba.com
