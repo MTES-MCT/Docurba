@@ -8,6 +8,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 const axios = require('axios')
+const sendgrid = require('./modules/sendgrid.js')
 
 // modules
 const admin = require('./modules/admin.js')
@@ -26,9 +27,24 @@ app.post('/notify/admin/acte', (req, res) => {
     // eslint-disable-next-line no-console
     console.log('Slack catch', err.response.data)
   })
-  // } catch (err) {
-  //   console.log(err)
-  // }
+
+  const dynamic_template_data = {
+    collectiviteName: userData.label ?? userData.name,
+    collectiviteId: userData.EPCI ?? userData.collectivite_id,
+    docs: userData.attachements
+  }
+  console.log("'Notify team in slack userData: ", userData, ' dynamic_template_data: ', dynamic_template_data)
+
+  sendgrid.sendEmail(
+    {
+      to: userData.email,
+      template_id: 'd-ff4df2141eda4723800cae1f0a63982c',
+      dynamic_template_data: {
+        collectiviteName: userData.collectivite.label ?? userData.collectivite.name,
+        collectiviteId: userData.collectivite.EPCI ?? userData.collectivite.collectivite_id,
+        docs: userData.attachements
+      }
+    })
 
   res.status(200).send('OK')
 })

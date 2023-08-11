@@ -340,15 +340,20 @@ export default {
           const idFile = uuidv4()
           const path = `${this.isEpci ? 'epci' : 'commune'}/${this.$route.params.collectiviteId}/${uploadTimestamp}/${idFile}`
           console.log('path: ', path)
-          const { error } = await this.$supabase.storage
+          const { data: dataUpload, error } = await this.$supabase.storage
             .from('prescriptions')
             .upload(path, file)
           if (error) {
             console.log('error on upload: ', error)
             throw new Error('Erreur d\'upload')
           }
-          filesData.push({ path, name: file.name, id: uuidv4() })
+
+          const { data: dataUrl, error: errorUrl } = this.$supabase.storage.from('prescriptions').getPublicUrl(dataUpload.path)
+          if (errorUrl) { throw new Error('Erreur de récuparation de l\'url') }
+          filesData.push({ path, name: file.name, id: uuidv4(), url: dataUrl.publicUrl })
+          console.log('TEST DATA: ', filesData)
         }
+
         return filesData
       } else {
         throw new Error('Pas de fichier à téléverser')
@@ -393,7 +398,8 @@ export default {
               email: this.$route.query.email,
               region: this.collectivite.region.name,
               collectivite: this.collectivite,
-              isEpci: this.isEpci
+              isEpci: this.isEpci,
+              attachements: prescription.attachments || [{ name: 'lien', url: prescription.link_url }]
             }
           }
         })

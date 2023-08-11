@@ -30,7 +30,6 @@ extend('needToBeOui', {
 
 extend('requiredCollectivite', {
   validate (value) {
-    console.log('requiredCollectivite:', value)
     return (value.EPCI || value.code_commune_INSEE)
   },
   message: 'Vous devez choisir une collectivité'
