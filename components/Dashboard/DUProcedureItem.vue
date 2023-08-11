@@ -2,11 +2,10 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        <span v-if="procedure.docType === 'PLU'">{{ isPlui ? 'PLUi' : 'PLU' }}</span>
-        <span v-else>{{ procedure.docType }}</span>
+        <span>{{ procedure.project.doc_type }}</span>
         <span> {{ procedure.perimetre.length === 1 ? procedure.perimetre[0].name + ' (' + procedure.perimetre[0].inseeCode + ')' : '' }}</span>
         <br>
-        id - {{ procedure.idProcedure }} - parent: {{ procedure.idProcedurePrincipal }}
+        id - {{ procedure.id }} - parent: {{ procedure.procedure_id }}
       </v-col>
     </v-row>
     <v-row class="mt-0">
@@ -25,7 +24,7 @@
           Type de procédure
         </div>
         <div>
-          {{ procedure.typeProcedure }}
+          {{ procedure.type }}
         </div>
       </v-col>
       <v-col>
@@ -45,25 +44,47 @@
         <p class="font-weight-bold">
           Commentaire / Note
         </p>
-        <p>{{ procedure.commentaireProcedure }} </p>
-        <p>{{ procedure.commentaireDgd }} </p>
+        <p v-if="procedure.commentaireProcedure">
+          {{ procedure.commentaireProcedure }}
+        </p>
+        <p v-if="procedure.commentaireDgd">
+          {{ procedure.commentaireDgd }}
+        </p>
       </v-col>
       <v-col cols="12" class="pb-0">
         <v-divider />
       </v-col>
       <v-col cols="12" class="pb-0">
-        <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
-        <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.idProcedure}}">
+        <DashboardDUModalPerimetre v-if="procedure.project.towns" :towns="procedure.project.towns" />
+        <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <span class="primary--text text-decoration-underline mr-4">
             Feuille de route partagée
           </span>
         </nuxt-link>
-        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-procedureId-dgd', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
+        <nuxt-link
+          :to="{
+            name: 'ddt-departement-collectivites-collectiviteId-procedureId-dgd',
+            params: {
+              departement: $route.params.departement,
+              collectiviteId: $route.params.collectiviteId,
+              procedureId: procedure.id
+            }
+          }"
+        >
           <span class="primary--text text-decoration-underline mr-4 ">
             DGD
           </span>
         </nuxt-link>
-        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-procedureId-infos', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
+        <nuxt-link
+          :to="{
+            name: 'ddt-departement-collectivites-collectiviteId-procedureId-infos',
+            params: {
+              departement: $route.params.departement,
+              collectiviteId: $route.params.collectiviteId,
+              procedureId: procedure.id
+            }
+          }"
+        >
           <span class="primary--text text-decoration-underline mr-4 ">
             Info. générales
           </span>
@@ -81,9 +102,9 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="d-flex align-center justify-end pb-0">
-        <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
+        <DashboardDUModalPerimetre v-if="procedure.project.towns" :towns="procedure.project.towns" />
         <v-spacer />
-        <v-btn text color="primary" :to="{name: 'frise-procedureId', params: {procedureId: procedure.idProcedure}}">
+        <v-btn text color="primary" :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <v-icon small color="primary" class="mr-2">
             {{ icons.mdiArrowRight }}
           </v-icon>
@@ -118,14 +139,15 @@ export default {
   },
   computed: {
     isPlui () {
-      return this.procedure.perimetre.length > 1
+      return this.procedure.project.towns.length > 1
     },
     status () {
-      if (this.procedure.dateAbandon) {
+      if (this.procedure.abort_date) {
         return { text: 'abandonné', color: 'error' }
       }
       // si ce n'est pas un PLU
       if (!this.isPlui) {
+        // TODO: managed approved in towns for docurba model ?
         if (this.procedure.approvedInTowns.includes(this.procedure.perimetre[0].inseeCode)) {
           return { text: 'opposable', color: 'success lighten-2' }
         } else if (this.procedure.ongoingInTowns.includes(this.procedure.perimetre[0].inseeCode)) {
@@ -135,9 +157,9 @@ export default {
         }
       } else {
         // Si on est dans un cas de PLUi
-        if ((this.procedure.dateExecutoire || this.procedure.dateApprobation) && this.procedure.idProcedurePrincipal) {
+        if ((this.procedure.enforceable_date || this.procedure.approval_date) && this.procedure.procedure_id) {
           return { text: 'opposable', color: 'success lighten-2' }
-        } else if (this.procedure.dateExecutoire && !this.procedure.idProcedurePrincipal) {
+        } else if (this.procedure.enforceable_date && !this.procedure.procedure_id) {
           return { text: 'précédent', color: '' }
         }
         // implicite si date de lancement

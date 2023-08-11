@@ -28,20 +28,15 @@ app.post('/notify/admin/acte', (req, res) => {
     console.log('Slack catch', err.response.data)
   })
 
-  const dynamic_template_data = {
-    collectiviteName: userData.label ?? userData.name,
-    collectiviteId: userData.EPCI ?? userData.collectivite_id,
-    docs: userData.attachements
-  }
-  console.log("'Notify team in slack userData: ", userData, ' dynamic_template_data: ', dynamic_template_data)
+  console.log("'Notify team in slack userData: ", userData)
 
   sendgrid.sendEmail(
     {
       to: userData.email,
       template_id: 'd-ff4df2141eda4723800cae1f0a63982c',
       dynamic_template_data: {
-        collectiviteName: userData.collectivite.label ?? userData.collectivite.name,
-        collectiviteId: userData.collectivite.EPCI ?? userData.collectivite.collectivite_id,
+        collectiviteName: userData.collectivite.label ?? userData.collectivite.nom_commune,
+        collectiviteId: userData.collectivite.EPCI ?? userData.collectivite.code_commune_INSEE,
         docs: userData.attachements
       }
     })

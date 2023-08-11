@@ -2,7 +2,7 @@
 question: "Je souhaite recevoir mon PAC via Docurba, comment faire ?"
 visible: true
 scope: ['collectivite','be']
-order: 
+order: 1
 ---
 Vous êtes dans l’attente de votre PAC et vous souhaitez le recevoir sur Docurba ; contactez-nous en précisant votre collectivité et département à : equipe@docurba.beta.gouv.fr 
 

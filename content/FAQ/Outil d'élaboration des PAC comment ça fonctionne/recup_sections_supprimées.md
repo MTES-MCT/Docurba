@@ -2,7 +2,7 @@
 question: "Est-il possible de récupérer une section que je viens de supprimer de mon PAC communal/intercommunal?"
 visible: true
 scope: ['ddt']
-order: 
+order: 11
 ---
 
 Il n’est pas possible de récupérer une section supprimée. 

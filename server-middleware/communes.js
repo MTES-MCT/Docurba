@@ -17,13 +17,14 @@ function getCommunesByDepartements (code) {
 }
 
 function getCommunesDetails (inseeArray) {
-  console.log('inseeArray: ', inseeArray)
+  // console.log('inseeArray: ', inseeArray)
   return communes.filter(e => inseeArray.includes(e.code_commune_INSEE.toString()))
 }
 
 app.get('/:inseeId', (req, res) => {
   try {
-    const inseeCode = parseInt(req.params.inseeId)
+    const isCorse = (req.params.inseeId.includes('A') || req.params.inseeId.includes('B'))
+    const inseeCode = isCorse ? req.params.inseeId : parseInt(req.params.inseeId)
     const commune = communes.find(e => e.code_commune_INSEE === inseeCode)
     if (!commune) { throw new Error(`Le code commune INSEE ${req.params.inseeId} n'existe pas.`) }
     res.status(200).send(commune)
@@ -35,11 +36,15 @@ app.get('/:inseeId', (req, res) => {
 // query params:
 // departement - Departement code. eg. 22, 47
 app.get('/', (req, res) => {
-  console.log('/communes ', req.query)
+  // console.log('/communes ', req.query)
   if (req.query.communes && req.query.communes.length > 0) {
     res.status(200).send(getCommunesDetails(req.query.communes))
   } else {
-    res.status(200).send(getCommunesByDepartements(parseInt(req.query.departements)))
+    let departementCode = req.query.departements
+    if (departementCode !== '2A' && departementCode !== '2B') {
+      departementCode = parseInt(req.query.departements)
+    }
+    res.status(200).send(getCommunesByDepartements(departementCode))
   }
 })
 

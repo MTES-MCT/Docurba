@@ -23,10 +23,12 @@
           <v-card
             outlined
             tile
-            color="white"
+            :color="!faqCard.active ? 'white' : 'primary lighten-1'"
             width="200"
             min-height="220"
             class="faq-card"
+
+            @click="selectTopic(faqCard)"
           >
             <v-img
               contain
@@ -131,7 +133,10 @@
   </v-container>
 </template>
 <script>
+import _ from 'lodash'
+
 export default {
+  name: 'FAQ',
   async asyncData ({ $content }) {
     const FAQ = await $content('FAQ', {
       deep: true
@@ -162,37 +167,67 @@ export default {
       items: [
         { tab: 'Je suis une DDT', content: 'Tab 1 Content' },
         { tab: 'Je suis une collectivité', content: 'Tab 2 Content' },
-        { tab: 'Je suis un Bureau d\'étude', content: 'Tab 3 Content' }],
+        { tab: 'Je suis un Bureau d\'étude', content: 'Tab 3 Content' },
+        { tab: 'Je suis de la DREAL', content: 'Tab 3 Content' }],
       faqCards: [
         {
           title: 'Qu\'est ce que Docurba ?',
           img: '/images/faq/graph.png',
-          link: ''
+          folder: '/FAQ/Qu’est-ce que Docurba',
+          active: true
         },
         {
-          title: 'Comment ça fonctionne ?',
+          title: 'Outil de suivi des procédures',
           img: '/images/faq/technical-error.png',
-          link: ''
+          folder: '/FAQ/Outil de suivi des procédures comment ça fonctionne',
+          active: false
         },
         {
-          title: 'Premiers pas',
+          title: 'Outil d\'élaboration des PAC',
           img: '/images/faq/leaf.png',
-          link: ''
+          folder: '/FAQ/Outil d\'élaboration des PAC comment ça fonctionne',
+          active: false
+        },
+        {
+          title: 'Première connexion',
+          img: '/images/faq/leaf.png',
+          folder: '/FAQ/Données et Socle de PAC',
+          active: false
+        },
+        {
+          title: 'Glossaire',
+          img: '/images/faq/leaf.png',
+          folder: '/FAQ/Glossaire',
+          active: false
+        },
+        {
+          title: 'Nous contacter',
+          img: '/images/faq/leaf.png',
+          folder: '/FAQ/Nous contacter',
+          active: false
         }
       ],
       search: this.$route.query.recherche || ''
     }
   },
   computed: {
+    activeCard () {
+      return this.faqCards.filter(e => e.active)[0]
+    },
     categorizedQuestions () {
       // 0 -> DDT, 1 -> Collectivites, 2 -> BE
-      const mapping = { ddt: 0, collectivite: 1, be: 2 }
-      const cats = [[], [], []]
-      this.FAQ.forEach((question) => {
+      const mapping = { ddt: 0, collectivite: 1, be: 2, dreal: 3 }
+      let cats = [[], [], [], []]
+      const topicFAQ = this.FAQ.filter((e) => {
+        return e.dir === this.activeCard.folder
+      })
+      topicFAQ.forEach((question) => {
         question.scope?.forEach((scp) => {
           cats[mapping[scp]].push(question)
         })
       })
+
+      cats = cats.map(cat => _.orderBy(cat, ['order'], ['asc']))
       return cats
     },
     filteredQuestions () {
@@ -215,6 +250,17 @@ export default {
     },
     search () {
       this.$router.replace({ path: '/faq', query: { ...this.$route.query, recherche: this.search } })
+    }
+  },
+  methods: {
+    selectTopic (item) {
+      this.faqCards = this.faqCards.map((e) => {
+        if (item.title === e.title) {
+          return { ...e, active: true }
+        }
+        return { ...e, active: false }
+      })
+      item.active = true
     }
   }
 }

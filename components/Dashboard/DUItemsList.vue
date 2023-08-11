@@ -1,21 +1,33 @@
 <template>
-  <v-row v-if="procedures && procedures.length > 0 && collectiviteType === 'epci'">
+  <v-row v-if="procedures.length > 0 || emptyProjects.length > 0">
     <v-col>
       <v-tabs
         v-model="tab"
         background-color="primary"
         dark
       >
-        <v-tab>
+        <v-tab v-if="isEpci">
           DU intercommunaux
         </v-tab>
         <v-tab>
           DU communaux
         </v-tab>
+        <v-spacer />
+        <DashboardDUInsertDialog
+          v-if="!isPublic"
+          :collectivite="collectivite"
+          @insert="fetchProjects"
+        />
       </v-tabs>
 
       <v-tabs-items v-model="tab" :class="{beige: !isPublic}">
-        <v-tab-item>
+        <v-tab-item v-if="isEpci">
+          <DashboardEmptyProjectCard
+            v-for="emptyProject in emptyProjectsInter"
+            :key="emptyProject.id"
+            :project="emptyProject"
+            class="mb-4"
+          />
           <DashboardDUItem
             v-for="(procedure,i) in DUInter"
             :key="'du_' + i"
@@ -24,6 +36,12 @@
           />
         </v-tab-item>
         <v-tab-item>
+          <DashboardEmptyProjectCard
+            v-for="emptyProject in emptyProjectsCommunaux"
+            :key="emptyProject.id"
+            :project="emptyProject"
+            class="mb-4"
+          />
           <DashboardDUItem
             v-for="(procedure,i) in DUCommunaux"
             :key="'du_' + i"
@@ -34,21 +52,22 @@
       </v-tabs-items>
     </v-col>
   </v-row>
-  <v-row v-else-if="procedures && procedures.length > 0 && collectiviteType === 'commune'">
-    <v-col cols="12">
-      <DashboardDUItem
-        v-for="(procedure,i) in procedures"
-        :key="'du_' + i"
-        :procedure="procedure"
-        :censored="isPublic"
-      />
-    </v-col>
-  </v-row>
-  <v-row v-else-if="procedures && procedures.length === 0 ">
+  <v-row v-else-if="!loadingProcedures && procedures.length === 0 && emptyProjects.length === 0">
     <v-col cols="12">
       <div class="text--secondary beige pa-6 mb-12 rounded">
         Cette collectivité n'a pas de documents d'urbanisme sous sa compétence.
       </div>
+    </v-col>
+    <v-col v-if="!isPublic" cols="auto">
+      <DashboardDUInsertDialog
+        v-model="insertDialog"
+        :collectivite="collectivite"
+        @insert="fetchProjects"
+      >
+        <v-btn tile color="primary" @click="insertDialog = true">
+          Ajouter un document d'urbanisme
+        </v-btn>
+      </DashboardDUInsertDialog>
     </v-col>
   </v-row>
   <v-row v-else>
@@ -62,9 +81,9 @@
 export default {
   name: 'DUItemsList',
   props: {
-    procedures: {
-      type: Array,
-      default: () => null
+    collectivite: {
+      type: Object,
+      required: true
     },
     collectiviteType: {
       type: String,
@@ -77,15 +96,54 @@ export default {
   },
   data () {
     return {
-      tab: null
+      loadingProcedures: true,
+      tab: null,
+      insertDialog: false,
+      sudocuProcedures: [],
+      procedures: [],
+      projects: []
     }
   },
   computed: {
+    isEpci () {
+      return this.collectiviteType === 'epci'
+    },
     DUCommunaux () {
-      return this.procedures?.filter(e => e.perimetre.length === 1)
+      if (this.isEpci) {
+        return this.procedures?.filter(e => e.perimetre.length === 1)
+      } else { return this.procedures }
     },
     DUInter () {
       return this.procedures?.filter(e => e.perimetre.length > 1)
+    },
+    emptyProjects () {
+      return this.projects.filter(project => !project.procedures.length)
+    },
+    emptyProjectsInter () {
+      return this.emptyProjects.filter(project => project.collectivite_id.length === 9)
+    },
+    emptyProjectsCommunaux () {
+      return this.emptyProjects.filter(project => project.collectivite_id.length !== 9)
+    }
+  },
+  async mounted () {
+    const [sudocuProcedures, { procedures, projects }] = await Promise.all([
+      this.$sudocu.getProcedures(this.collectivite.id),
+      !this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }
+    ])
+
+    this.sudocuProcedures = sudocuProcedures
+    this.procedures = [...sudocuProcedures, ...procedures]
+    this.projects = projects
+
+    this.loadingProcedures = false
+  },
+  methods: {
+    async fetchProjects () {
+      const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.collectivite.id)
+
+      this.procedures = [...this.sudocuProcedures, ...procedures]
+      this.projects = projects
     }
   }
 }

@@ -5,8 +5,8 @@
         <v-chip :color="status.color" label class="text-uppercase mr-2">
           {{ status.text }}
         </v-chip>
-        {{ procedure.typeProcedure }}
-        - {{ procedure.idProcedure }} - parent: {{ procedure.idProcedurePrincipal }}
+        {{ procedure.type }}
+        - {{ procedure.id }} - parent: {{ procedure.procedure_id }}
       </v-col>
     </v-row>
     <v-row class="mt-0">
@@ -25,7 +25,7 @@
           Type de procédure
         </div>
         <div>
-          {{ procedure.typeProcedure }}
+          {{ procedure.type }}
         </div>
       </v-col>
       <v-col>
@@ -58,7 +58,7 @@
       </v-col>
       <v-col cols="12">
         <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
-        <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.idProcedure}}">
+        <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <span class="primary--text text-decoration-underline mr-4">
             Feuille de route partagée
           </span>
@@ -88,7 +88,7 @@
       <v-col cols="12" class="d-flex align-center justify-end ">
         <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
         <v-spacer />
-        <v-btn text color="primary" :to="{name: 'frise-procedureId', params: {procedureId: procedure.idProcedure}}">
+        <v-btn text color="primary" :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <v-icon small color="primary" class="mr-2">
             {{ icons.mdiArrowRight }}
           </v-icon>

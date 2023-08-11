@@ -5,5 +5,6 @@ scope: ['dreal']
 order: 2
 ---
 
-Pas nécessairement, nous suggérons de vous mettre d’accord avec les DDT(M) de votre région. 
-Éventuellement, avoir "une DDT(M) pilote" de cette partie DES "Docuement locaux" permettrait d'identifier lesquels sont attendus de la part des DDT(M) et donc pertinents à intégrer aux trames de PAC pour l'ensemble de la région. 
+Pas nécessairement, nous suggérons de vous mettre d’accord avec les DDT(M) de votre région afin d'identifier les éléments à mutualiser au niveau régional. 
+
+Exemple en Auvergne-Rhône-Alpes : une DDT est dédignée "DDT pilote" de ce chantier de mutualisation du contenu. Avec la collaboration de la DREAL, des points trimestriels sont organisés afin d'identifier les besoins au sein de l'ensemble des DDT de la région : nouvelles rédactions et/ou mises à jour de l'existant. 

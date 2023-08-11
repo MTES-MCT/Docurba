@@ -1,7 +1,7 @@
 ---
 question: "Nous suivre"
 visible: false
-scope: ['collectivité','be','dreal','ddt']
+scope: ['collectivite','be','dreal','ddt']
 order: 2
 ---
 

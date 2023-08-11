@@ -56,7 +56,10 @@
         </p>
       </v-col>
     </v-row>
-    <DashboardDUItemsList :procedures="procedures" collectivite-type="epci" />
+    <DashboardDUItemsList
+      collectivite-type="epci"
+      :collectivite="collectivite"
+    />
   </v-container>
 </template>
 <script>
@@ -71,7 +74,6 @@ export default {
       linkedEpci: null,
       // tab: null,
       collectivite: null,
-      procedures: null,
       icons: {
         mdiArrowLeft
       }
@@ -79,7 +81,14 @@ export default {
   },
   async mounted () {
     this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId)
-    this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
+
+    // const [sudocuProcedures, { procedures, projects }] = await Promise.all([
+    //   this.$sudocu.getProcedures(this.$route.params.collectiviteId),
+    //   this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
+    // ])
+
+    // this.procedures = [...sudocuProcedures, ...procedures]
+    // this.emptyProjects = projects.filter(project => !project.procedures.length)
   }
 }
 </script>

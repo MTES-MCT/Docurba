@@ -2,7 +2,7 @@
 question: "Si je modifie ma trame départementale de PAC, ces modifications sont-elles appliquées automatiquement sur mes PAC communaux/intercommunaux ?"
 visible: true
 scope: ['ddt']
-order: 
+order: 5
 ---
 Si votre PAC communal/intercommunal a été créé **avant** de modifier votre trame départementale, le PAC en question ne profitera pas automatiquement des éléments modifiés sur votre trame. 
 

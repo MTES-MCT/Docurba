@@ -63,12 +63,14 @@ export default {
     }
   },
   async mounted () {
-    this.$user.isReady.then(() => {
-      console.log('TEST IS READY: ', (this.$user))
-      if (this.$user?.profile?.poste === 'ddt' || this.$user?.profile?.poste === 'dreal') {
-        this.$nuxt.setLayout('ddt')
-      }
-    })
+    if (this.$user && this.$user.isReady) {
+      this.$user.isReady.then(() => {
+        console.log('TEST IS READY: ', (this.$user))
+        if (this.$user?.profile?.poste === 'ddt' || this.$user?.profile?.poste === 'dreal') {
+          this.$nuxt.setLayout('ddt')
+        }
+      })
+    }
     // this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.procedureId)
 
     // const { data: eventsDocruba, error: errorDocurba } = await this.$supabase.from('doc_frise_events').select('*').eq('project_id', this.projectId)
