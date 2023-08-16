@@ -12,6 +12,9 @@
         <v-tab>
           DU communaux
         </v-tab>
+        <v-tab>
+          SCoT
+        </v-tab>
         <v-spacer />
         <DashboardDUInsertDialog
           v-if="!isPublic"
@@ -44,6 +47,20 @@
           />
           <DashboardDUItem
             v-for="(procedure,i) in DUCommunaux"
+            :key="'du_' + i"
+            :procedure="procedure"
+            :censored="isPublic"
+          />
+        </v-tab-item>
+        <v-tab-item>
+          <DashboardEmptyProjectCard
+            v-for="emptyProject in emptyProjectsCommunaux"
+            :key="emptyProject.id"
+            :project="emptyProject"
+            class="mb-4"
+          />
+          <DashboardDUItem
+            v-for="(procedure,i) in schemas"
             :key="'du_' + i"
             :procedure="procedure"
             :censored="isPublic"
@@ -101,6 +118,7 @@ export default {
       insertDialog: false,
       sudocuProcedures: [],
       procedures: [],
+      schemas: [],
       projects: []
     }
   },
@@ -127,6 +145,8 @@ export default {
     }
   },
   async mounted () {
+    this.schemas = await this.$sudocu.getSchemaProcedures(this.collectivite.id)
+
     const [sudocuProcedures, { procedures, projects }] = await Promise.all([
       this.$sudocu.getProcedures(this.collectivite.id),
       !this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }

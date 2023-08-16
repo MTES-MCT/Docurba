@@ -30,7 +30,15 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         console.log('ERROR getProcedureEvents:', error)
       }
     },
-
+    async getSchemaProcedures (collectiviteId) {
+      try {
+        const { data: rawProcedures, error: rawProceduresError } = await $supabase.from('distinct_procedures_schema_events').select('*').eq('codecollectivite', collectiviteId)
+        if (rawProceduresError) { throw rawProceduresError }
+        console.log('rawProceduresSchema: ', rawProcedures)
+      } catch (error) {
+        console.log(error)
+      }
+    },
     async getProcedures (communeId) {
       try {
         let codecollectivite
