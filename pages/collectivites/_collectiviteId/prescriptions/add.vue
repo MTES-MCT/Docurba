@@ -362,7 +362,11 @@ export default {
 
     async submitPrescription () {
       try {
+        await this.$user.isReady
+
         this.loadingSave = true
+
+        // TODO: Add column verified or accepted sur les prescription with fill automatically if the user posting is a verified connected one.
         const prescription = {
           epci: this.isEpci ? this.collectivite : null,
           towns: this.isEpci ? this.collectivite.towns.map(e => e.code_commune_INSEE) : [this.collectivite.id],
@@ -379,8 +383,8 @@ export default {
           is_scot: this.isSCoT,
           procedure_type: this.typeProcedure,
           ms_scope: this.MSScope,
-          procedure_number: this.numberProcedure
-
+          procedure_number: this.numberProcedure,
+          profile_id: this.$user?.profile?.id || this.$route.query.user_id
         }
         if (this.docType === 'link') {
           prescription.link_url = this.link

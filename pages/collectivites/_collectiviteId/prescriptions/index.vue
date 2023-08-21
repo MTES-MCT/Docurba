@@ -32,7 +32,7 @@
           Si vous disposez d'un acte, vous pouvez le déposer ici.
         </p>
 
-        <v-btn outlined color="primary" :to="{ name: 'collectivites-collectiviteId-prescriptions-signup', params: { collectiviteId: isEpci ? collectivite.EPCI : collectivite.code_commune_INSEE }, query: $route.query }">
+        <v-btn outlined color="primary" @click="nextStep">
           Déposer
         </v-btn>
       </v-col>
@@ -173,6 +173,16 @@ export default {
     this.prescription = current
     this.history = history
     this.loading = false
+  },
+  methods: {
+    async nextStep () {
+      let path = { name: 'collectivites-collectiviteId-prescriptions-signup', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: this.$route.query }
+      await this.$user.isReady
+      if (this.$user?.profile?.email) {
+        path = { name: 'collectivites-collectiviteId-prescriptions-add', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: this.$route.query }
+      }
+      return this.$router.push(path)
+    }
   }
 }
 
