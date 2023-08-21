@@ -65,7 +65,6 @@ export default {
   async mounted () {
     if (this.$user && this.$user.isReady) {
       this.$user.isReady.then(() => {
-        console.log('TEST IS READY: ', (this.$user))
         if (this.$user?.profile?.poste === 'ddt' || this.$user?.profile?.poste === 'dreal') {
           this.$nuxt.setLayout('ddt')
         }
