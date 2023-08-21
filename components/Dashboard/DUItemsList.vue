@@ -60,7 +60,7 @@
             class="mb-4"
           />
           <DashboardDUItem
-            v-for="(procedure,i) in schemas"
+            v-for="(procedure,i) in DUSchemas"
             :key="'du_' + i"
             :procedure="procedure"
             :censored="isPublic"
@@ -118,7 +118,6 @@ export default {
       insertDialog: false,
       sudocuProcedures: [],
       procedures: [],
-      schemas: [],
       projects: []
     }
   },
@@ -134,6 +133,9 @@ export default {
     DUInter () {
       return this.procedures?.filter(e => e.perimetre.length > 1)
     },
+    DUSchemas () {
+      return this.procedures?.filter(e => e.docType === 'SCOT')
+    },
     emptyProjects () {
       return this.projects.filter(project => !project.procedures.length)
     },
@@ -145,8 +147,6 @@ export default {
     }
   },
   async mounted () {
-    this.schemas = await this.$sudocu.getSchemaProcedures(this.collectivite.id)
-
     const [sudocuProcedures, { procedures, projects }] = await Promise.all([
       this.$sudocu.getProcedures(this.collectivite.id),
       !this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }

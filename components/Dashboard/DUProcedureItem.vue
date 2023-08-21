@@ -2,8 +2,14 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        <span>{{ procedure.project.doc_type }}</span>
-        <span> {{ procedure.perimetre.length === 1 ? procedure.perimetre[0].name + ' (' + procedure.perimetre[0].inseeCode + ')' : '' }}</span>
+        <span v-if=" procedure.project.doc_type === 'SCOT'">
+          {{ procedure.name }}
+        </span>
+        <div v-else>
+          <span>{{ procedure.project.doc_type }}</span>
+          <span> {{ procedure.perimetre.length === 1 ? procedure.perimetre[0].name + ' (' + procedure.perimetre[0].inseeCode + ')' : '' }}</span>
+        </div>
+
         <br>
         id - {{ procedure.id }} - parent: {{ procedure.procedure_id }}
       </v-col>

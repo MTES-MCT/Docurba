@@ -84,6 +84,7 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
       })
       ret.projects = projects ?? []
       console.log('projects: ', projects)
+      // TODO: Should be a join, no need to double select
       if (projects) {
         const projectsIds = projects.map(p => p.id)
         const { data: procedures } = await $supabase.from('procedures').select('*').in('project_id', projectsIds)
