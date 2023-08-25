@@ -15,7 +15,7 @@
       <v-col cols="8">
         <v-card outlined>
           <v-card-text>
-            <FriseDocTimeline :events="events" />
+            <FriseDocTimeline :events="events" :censored="!connected" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -60,12 +60,14 @@ export default {
       // } else {
       //   return { name: 'ddt-departement-collectivites-collectiviteId', params: { departement: $route.params.departement, collectiviteId: $route.params.collectiviteId } }
       // }
+    },
+    connected () {
+      return this.$user?.profile?.side
     }
   },
   async mounted () {
     if (this.$user && this.$user.isReady) {
       this.$user.isReady.then(() => {
-        console.log('TEST IS READY: ', (this.$user))
         if (this.$user?.profile?.poste === 'ddt' || this.$user?.profile?.poste === 'dreal') {
           this.$nuxt.setLayout('ddt')
         }
@@ -97,23 +99,21 @@ export default {
         type: e.libtypeevenement, // + ' - ',  + e.libstatutevenement,
         description: '', // e.commentaire + ' - Document sur le reseau: ' + e.nomdocument,
         actors: [],
-        attachements: [],
+        attachements: e.attachements,
         docType: e.codetypedocument,
         idProcedure: e.noserieprocedure,
         typeProcedure: e.libtypeprocedure,
         idProcedurePrincipal: e.noserieprocedureratt,
         commentaireDgd: e.commentairedgd,
         commentaireProcedure: e.commentaireproc,
+        commentaire: e.commentaire,
         dateLancement: e.datelancement,
         dateApprobation: e.dateapprobation,
         dateAbandon: e.dateabandon,
         dateExecutoire: e.dateexecutoire
       }
     }).concat(eventsDocurba), 'date_iso', 'desc')
-    // this.events = events
-
     this.loaded = true
-    console.log('EVENTS: ', this.events)
   }
 }
 </script>
