@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
 
 const { createClient } = require('@supabase/supabase-js')
-const communes = require('./Data/EnrichedCommunes.json')
-const intercommunalites = require('./Data/EnrichedIntercomunalites.json')
-const regions = require('./Data/INSEE/regions.json')
-const departements = require('./Data/INSEE/departements.json')
+const communes = require('../Data/EnrichedCommunes.json')
+const intercommunalites = require('../Data/EnrichedIntercommunalites.json')
+// const regions = require('../Data/INSEE/regions.json')
+const departements = require('../Data/INSEE/departements.json')
 
 const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
@@ -43,18 +43,27 @@ module.exports = {
     const { data: [{ id_procedure_approved, id_procedure_ongoing }] } = await supabase.from('sudocu_procedures_etats')
       .select('id_procedure_approved, id_procedure_ongoing').eq('insee_code', commune.code)
 
-    const {
-      data: [
-        { codetypedocument: approvedDuType },
-        { codetypedocument: ongoingDuType }
-      ]
-    } = await supabase.from('distinct_procedures_events')
-      .select('codetypedocument').in('noserieprocedure', [id_procedure_approved, id_procedure_ongoing])
+    // console.log('id_procedure_approved', id_procedure_approved, 'id_procedure_ongoing', id_procedure_ongoing)
 
-    const { data: [{ nb_communes: perimeterLength }] } = await supabase.from('sudocu_procedures_perimetres')
-      .select('nb_communes')
+    const { data: codetypedocuments } = await supabase.from('distinct_procedures_events')
+      .select('noserieprocedure, codetypedocument').in('noserieprocedure', [id_procedure_approved, id_procedure_ongoing].filter(i => !!i))
 
-    const state_code = codeEtaMap[approvedDuType || 'RNU'] + codeEtaMap[ongoingDuType || 'RNU']
+    // console.log('codetypedocuments', codetypedocuments)
+
+    const approvedDu = codetypedocuments.find(d => d.noserieprocedure === id_procedure_approved)
+    const ongoingDu = codetypedocuments.find(d => d.noserieprocedure === id_procedure_ongoing)
+
+    const approvedDuType = approvedDu.codetypedocument || 'RNU'
+    const ongoingDuType = ongoingDu ? ongoingDu.codetypedocument : ''
+
+    const { data: ongoingPerimeters } = await supabase.from('sudocu_procedures_perimetres')
+      .select('nb_communes').eq('procedure_id', id_procedure_ongoing)
+
+    // console.log('perimeter', id_procedure_ongoing, ongoingPerimeters)
+
+    const perimeterLength = ongoingPerimeters ? ongoingPerimeters[0].nb_communes : null
+
+    const state_code = codeEtaMap[approvedDuType] + codeEtaMap[ongoingDuType || 'RNU']
 
     return {
       // Missing: ANNE_COG
@@ -68,9 +77,35 @@ module.exports = {
       interco_competence_secteur: intercomunalite.competences.secteur, // ADDED
       interco_competence_plu: intercomunalite.competences.plu, // ADDED
       commune_du_opposable: approvedDuType || 'RNU', // eq: DU_OPPOSABLE
-      commune_du_in_progress: ongoingDuType || '', // ADDED
+      commune_du_in_progress: (ongoingDuType + (perimeterLength ? 'i' : '')) || '', // ADDED
       state_code, // eq: DU_CODE_ETATS
       state_label: codeEtatsLabels[state_code] // eq: DU_LIBELLE_ETATS
+    }
+  },
+  async getIntercomunaliteState (intercoCode) {
+    const intercomunalite = intercommunalites.find(i => i.code === intercoCode)
+    const communes = intercomunalite.filter(c => c.type === 'Commune')
+    const departement = departements.find(d => d.code === intercomunalite.departementCode)
+
+    for (let index = 0; index < communes.length; index++) {
+      const commune = communes[index]
+
+      if (!commune.state) {
+        commune.state = await this.getCommuneState(commune.code)
+      }
+    }
+
+    return {
+      region_name: departement.region.intitule, // eq: Région de l'EPCI
+      departement_code: intercomunalite.departementCode, // eq: Dépt EPCI
+      juridique_type: intercomunalite.labelJuridique, // eq: Type EPCI
+      intercomunalite_namme: intercomunalite.intitule, // eq: Nom EPCI
+      intercomunalite_code: intercomunalite.code, // eq: SIREN EPCI
+      intercomunalite_nb_communes: communes.length // eq: Nb communes
+      // Missing Superficies
+      // Missing PLUiH true/false
+      // Missing Tien lieu de PDU
+
     }
   }
 }
