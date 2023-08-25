@@ -26,7 +26,23 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         if (errPlanEvents) { throw new Error(errPlanEvents) }
         if (errSchemaEvents) { throw new Error(errSchemaEvents) }
 
-        return planEvents.concat(schemaEvents)
+        function parseAttachment (path) {
+          if (path) {
+            const attachment = { id: '', name: '', type: 'file' }
+            let temp = ''
+            const semiSplit = path.split(':')
+            if (semiSplit[0] === 'link') { attachment.type = 'link' }
+            semiSplit.length > 1 ? temp = semiSplit[1] : temp = semiSplit[0]
+            attachment.name = temp
+            attachment.id = 'sudocu/' + temp.split('_').slice(1).join('/')
+            return [attachment]
+          } else {
+            return []
+          }
+        }
+        const formattedEvs = planEvents.map(e => ({ ...e, attachements: parseAttachment(e.nomdocument) }))
+
+        return formattedEvs.concat(schemaEvents)
       } catch (error) {
         console.log('ERROR getProcedureEvents:', error)
       }

@@ -27,15 +27,27 @@
               </v-row>
             </v-col>
             <v-col cols="6">
-              <span class="label">Partie prenantes</span>
-              <v-checkbox
-                v-for="actor in actorsList"
-                :key="actor"
-                v-model="event.actors"
-                :value="actor"
-                :label="actor"
-                hide-details
-              />
+              <div>
+                <span class="label">Partie prenantes</span>
+                <v-checkbox
+                  v-for="actor in actorsList"
+                  :key="actor"
+                  v-model="event.actors"
+                  :value="actor"
+                  :label="actor"
+                  hide-details
+                />
+              </div>
+              <div class="mt-6">
+                <v-select
+                  v-model="event.visibility"
+                  persistent-hint
+                  hint="Si vous voulez uniquement afficher cet évènements aux agents de l'Etat et acteurs de collectivités, choissez 'Privé'"
+                  label="Visibilité de l'évènement"
+                  filled
+                  :items="[{value: 'public', text: 'Publique'}, {value: 'private', text: 'Privé'}]"
+                />
+              </div>
             </v-col>
           </v-row>
         </v-card-text>
@@ -117,7 +129,8 @@ export default {
       date_iso: this.$dayjs().format('YYYY-MM-DD'),
       description: '',
       actors: [],
-      attachements: []
+      attachements: [],
+      visibility: 'public'
     }
 
     return {

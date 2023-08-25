@@ -49,8 +49,9 @@
     <v-card-title>
       {{ event.type }}
     </v-card-title>
-    <v-card-text v-if="event.description">
-      {{ event.description }}
+    <div />
+    <v-card-text v-if="event.commentaire">
+      {{ event.commentaire }}
     </v-card-text>
     <v-card-actions>
       <v-chip
@@ -96,6 +97,13 @@ export default {
       icons: { mdiDotsHorizontal, mdiPencil, mdiFile, mdiDownload }
     }
   },
+  computed: {
+    // attachements(){
+    //   if(this.event.from_sudocuh)
+    //   if( this.event.type === '' )
+    //     return this.event.attachements.filter(e => )
+    // }
+  },
   methods: {
     getActor (val) {
       return actors.find((actor) => {
@@ -103,8 +111,11 @@ export default {
       })
     },
     async downloadFile (attachement) {
-      const { data } = await this.$supabase.storage.from('doc-events-attachements')
-        .download(`${this.event.project_id}/${this.event.id}/${attachement.id}`)
+      // TODO: Handle link type
+      console.log('this.event.from_sudocuh: ', this.event.from_sudocuh)
+      const path = this.event.from_sudocuh ? attachement.id : `${this.event.project_id}/${this.event.id}/${attachement.id}`
+      console.log('CHOSEN: ', path)
+      const { data } = await this.$supabase.storage.from('doc-events-attachements').download(path)
 
       const link = this.$refs[`file-${attachement.id}`][0]
       link.href = URL.createObjectURL(data)

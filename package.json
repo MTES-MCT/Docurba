@@ -7,6 +7,7 @@
     "gcp-build": "",
     "build": "nuxt build",
     "start": "nuxt start",
+    "enrich": "node scripts/enrich_procedures_status.js",
     "generate": "nuxt generate",
     "lint:js": "eslint --ext \".js,.vue\" --ignore-path .gitignore .",
     "lint": "npm run lint:js"
