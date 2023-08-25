@@ -75,6 +75,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
             last_updated_at: e.last_event_date // Probably need to parse date to correct format.
           }
         })
+
         const allProceduresEnriched = await this.loadPerimetre(formattedProcedures)
 
         const typePrincipalProcedures = ['Elaboration', 'Révision', 'Abrogation', 'Engagement', 'Réengagement']

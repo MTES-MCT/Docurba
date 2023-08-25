@@ -5,7 +5,7 @@ app.use(express.json())
 const _ = require('lodash')
 
 const communes = require('./Data/EnrichedCommunes.json')
-const intercommunalites = require('./Data/EnrichedIntercomunalites.json')
+const intercommunalites = require('./Data/EnrichedIntercommunalites.json')
 
 app.get('/communes', (req, res) => {
   const queryKeys = Object.keys(req.query)
