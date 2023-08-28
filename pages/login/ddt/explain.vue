@@ -18,14 +18,14 @@
         <p>Après une étape de validation (au maximum 48h), vous pourrez accéder à votre tableau de bord pour votre departement.</p>
 
         <p>
-          Veuillez noter qu'une étape de validation manuelle pour nous assurer que vous êtes bien en droit d'agir en tant qu'agent de l'Etat.
-          Vous recevrez un email pour vous informer de la validation de votre compte dès que notre équipe aura procéder à la vérification (sous moins de 48h généralement).
+          Veuillez noter qu'une étape de validation manuelle pour nous assurer que vous êtes bien en droit d'agir en tant qu'agent de l'Etat est nécessaire.
+          Vous recevrez un email pour vous informer de la validation de votre compte dès que notre équipe aura procédé à la vérification (sous moins de 48h généralement).
         </p>
         <v-alert type="info">
-          En cas de problème technique ou de question, n'hésitez pas à contacter l'équipe de Docurba par email: contact@docurba.com
+          En cas de problème technique ou de question, n'hésitez pas à contacter l'équipe de Docurba par email: contact@docurba.beta.gouv.fr
         </v-alert>
         <p>
-          Vous pourrez alors accéder à votre tableau de bord, en cliquant sur le bouton "tableau de bord" depuis la page d'accueil ou directement depuis l'email vous informant de votre acceptation d'accès.
+          Vous pourrez alors accéder à votre tableau de bord, en cliquant sur le bouton "tableau de bord" depuis la page d'accueil ou directement depuis l'email vous informant de la validation de votre accès.
         </p>
       </v-col>
     </v-row>

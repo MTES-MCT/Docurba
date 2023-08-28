@@ -15,7 +15,7 @@
       <v-col cols="8">
         <v-card outlined>
           <v-card-text>
-            <FriseDocTimeline :events="events" :censored="!connected" />
+            <FriseDocTimeline :events="events" :censored="!isVerified" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -39,7 +39,8 @@ import _ from 'lodash'
 export default {
   name: 'ProcedureTimelineEvents',
   layout ({ $user }) {
-    if ($user?.profile?.poste === 'ddt' || $user?.profile?.poste === 'dreal') {
+    console.log('$user?.profile: ', $user?.profile)
+    if ($user?.profile?.side === 'etat' && $user?.profile?.verified) {
       return 'ddt'
     } else {
       return 'default'
@@ -61,14 +62,14 @@ export default {
       //   return { name: 'ddt-departement-collectivites-collectiviteId', params: { departement: $route.params.departement, collectiviteId: $route.params.collectiviteId } }
       // }
     },
-    connected () {
-      return this.$user?.profile?.side
+    isVerified () {
+      return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     }
   },
   async mounted () {
     if (this.$user && this.$user.isReady) {
       this.$user.isReady.then(() => {
-        if (this.$user?.profile?.poste === 'ddt' || this.$user?.profile?.poste === 'dreal') {
+        if (this.isVerified) {
           this.$nuxt.setLayout('ddt')
         }
       })
