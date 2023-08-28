@@ -4,6 +4,42 @@ import _ from 'lodash'
 // console.log('args: ', args)
 // if (rawEventsError) { throw rawEventsError }
 
+function formatSudocuProcedure (rawProcedures) {
+  return rawProcedures.map((e) => {
+    return {
+      // This keys are only for backward comatibility but should not be used.
+      // Use new keys below that match procedure table in bdd.
+      date_iso: e.last_event_date,
+      // type: e.libtypeevenement + ' - ' + e.last_event_statut, // Maybe we dont need this.
+      // description: e.commentaire + ' - Document sur le reseau: ' + e.nomdocument,
+      actors: [],
+      attachements: [],
+      docType: e.codetypedocument,
+      idProcedure: e.noserieprocedure || e.id_procedure,
+      name: e.nomschema,
+      typeProcedure: e.libtypeprocedure,
+      idProcedurePrincipal: e.noserieprocedureratt,
+      commentaireDgd: e.commentairedgd, // This should be kep always for historic data
+      commentaireProcedure: e.commentaireproc, // This should be kep always for historic data
+      dateLancement: e.datelancement,
+      dateApprobation: e.dateapprobation,
+      dateAbandon: e.dateabandon,
+      dateExecutoire: e.dateexecutoire,
+      // new keys from procedure table on supabase
+      id: e.noserieprocedure || e.id_procedure,
+      type: e.libtypeprocedure,
+      description: e.commentaire + ' - Document sur le reseau: ' + e.nomdocument,
+      procedure_id: e.noserieprocedureratt,
+      launch_date: e.datelancement,
+      approval_date: e.dateapprobation, // Probably need to parse date to correct format.
+      abort_date: e.dateabandon, // Probably need to parse date to correct format.
+      enforceable_date: e.dateexecutoire, // Probably need to parse date to correct format.
+      created_at: e.datelancement, // Probably need to parse date to correct format.
+      last_updated_at: e.last_event_date // Probably need to parse date to correct format.
+    }
+  })
+}
+
 export default ({ route, store, $supabase, $urbanisator }, inject) => {
   inject('sudocu', {
     async getProcedureInfosDgd (procedureId) {
@@ -64,39 +100,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         if (rawSchemaProceduresError) { throw rawSchemaProceduresError }
         const rawProcedures = rawPlanProcedures.concat(rawSchemaProcedures)
 
-        const formattedProcedures = rawProcedures.map((e) => {
-          return {
-            // This keys are only for backward comatibility but should not be used.
-            // Use new keys below that match procedure table in bdd.
-            date_iso: e.last_event_date,
-            // type: e.libtypeevenement + ' - ' + e.last_event_statut, // Maybe we dont need this.
-            // description: e.commentaire + ' - Document sur le reseau: ' + e.nomdocument,
-            actors: [],
-            attachements: [],
-            docType: e.codetypedocument,
-            idProcedure: e.noserieprocedure || e.id_procedure,
-            name: e.nomschema,
-            typeProcedure: e.libtypeprocedure,
-            idProcedurePrincipal: e.noserieprocedureratt,
-            commentaireDgd: e.commentairedgd, // This should be kep always for historic data
-            commentaireProcedure: e.commentaireproc, // This should be kep always for historic data
-            dateLancement: e.datelancement,
-            dateApprobation: e.dateapprobation,
-            dateAbandon: e.dateabandon,
-            dateExecutoire: e.dateexecutoire,
-            // new keys from procedure table on supabase
-            id: e.noserieprocedure || e.id_procedure,
-            type: e.libtypeprocedure,
-            description: e.commentaire + ' - Document sur le reseau: ' + e.nomdocument,
-            procedure_id: e.noserieprocedureratt,
-            launch_date: e.datelancement,
-            approval_date: e.dateapprobation, // Probably need to parse date to correct format.
-            abort_date: e.dateabandon, // Probably need to parse date to correct format.
-            enforceable_date: e.dateexecutoire, // Probably need to parse date to correct format.
-            created_at: e.datelancement, // Probably need to parse date to correct format.
-            last_updated_at: e.last_event_date // Probably need to parse date to correct format.
-          }
-        })
+        const formattedProcedures = formatSudocuProcedure(rawProcedures)
         const allProceduresEnriched = await this.loadPerimetre(formattedProcedures)
 
         const typePrincipalProcedures = ['Elaboration', 'Révision', 'Abrogation', 'Engagement', 'Réengagement']

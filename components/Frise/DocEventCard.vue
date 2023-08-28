@@ -55,7 +55,7 @@
     </v-card-text>
     <v-card-actions>
       <v-chip
-        v-for="attachement in event.attachements"
+        v-for="attachement in attachements"
         :key="attachement.id"
         outlined
         color="primary"
@@ -71,7 +71,7 @@
         </v-icon>
       </v-chip>
       <a
-        v-for="attachement in event.attachements"
+        v-for="attachement in attachements"
         :key="`file-link-${attachement.id}`"
         :ref="`file-${attachement.id}`"
         class="d-none"
@@ -90,6 +90,10 @@ export default {
     event: {
       type: Object,
       required: true
+    },
+    censored: {
+      type: Boolean,
+      default: () => true
     }
   },
   data () {
@@ -98,11 +102,17 @@ export default {
     }
   },
   computed: {
-    // attachements(){
-    //   if(this.event.from_sudocuh)
-    //   if( this.event.type === '' )
-    //     return this.event.attachements.filter(e => )
-    // }
+    attachements () {
+      if (this.event.from_sudocuh) {
+        if (!this.censored || this.event.type === 'Prescription' || this.event.type === "Délibération d'approbation") {
+          return this.event.attachements
+        } else {
+          return []
+        }
+      } else {
+        return this.event.attachements
+      }
+    }
   },
   methods: {
     getActor (val) {

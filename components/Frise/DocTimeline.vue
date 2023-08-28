@@ -33,7 +33,7 @@
           <template #opposite>
             <v-chip>{{ formatDate(event.date_iso) }}</v-chip>
           </template>
-          <FriseDocEventCard :event="event" />
+          <FriseDocEventCard :event="event" :censored="censored" />
         </v-timeline-item>
       </v-timeline>
     </v-col>
