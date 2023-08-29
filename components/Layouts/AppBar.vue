@@ -41,7 +41,19 @@
           Connexion
         </v-btn>
         <!-- <AuthLoginDialog v-model="openLogin" /> -->
-        <v-btn v-if="$user?.profile?.poste === 'ddt'" depressed tile text :to="{name: 'ddt-departement-collectivites', params: {departement: $user.profile.departement}}">
+        <v-btn
+          v-if="$user.profile.side === 'etat'"
+          depressed
+          tile
+          text
+          :to="{
+            name: $user.profile.poste === 'ddt' ? 'ddt-departement-collectivites' : 'trames-githubRef',
+            params: {
+              departement: $user.profile.departement,
+              githubRef: trameRef
+            }
+          }"
+        >
           Tableau de bord
         </v-btn>
         <v-btn v-if="$user.id" depressed tile text @click="clickMyDocs">
@@ -110,6 +122,15 @@ export default {
       openDocs: false,
       openDDT: false,
       adminAccess: null
+    }
+  },
+  computed: {
+    trameRef () {
+      const scopes = { ddt: 'dept', dreal: 'region' }
+      const poste = this.$user.profile.poste
+      const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
+
+      return `${scopes[poste]}-${code}`
     }
   },
   methods: {
