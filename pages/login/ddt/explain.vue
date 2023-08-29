@@ -25,7 +25,7 @@
           En cas de problème technique ou de question, n'hésitez pas à contacter l'équipe de Docurba par email: contact@docurba.beta.gouv.fr
         </v-alert>
         <p>
-          Vous pourrez alors accéder à votre tableau de bord, en cliquant sur le bouton "tableau de bord" depuis la page d'accueil ou directement depuis l'email vous informant de la validation de votre accès.
+          Vous pourrez alors accéder à votre tableau de bord et à votre trame départementale, en cliquant sur le bouton "tableau de bord" depuis la page d'accueil ou directement depuis l'email vous informant de la validation de votre accès.
         </p>
       </v-col>
     </v-row>

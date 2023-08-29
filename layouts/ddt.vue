@@ -49,6 +49,8 @@ export default {
   },
   async mounted () {
     await this.$user.isReady
+    if (this.$user.profile.side !== 'etat') { this.$router.push('/') }
+
     if (this.$route.query.contact) {
       axios({
         url: '/api/pipedrive/contacted',
