@@ -8,6 +8,7 @@
         placeholder="Departement"
         hide-details
         filled
+        autocomplete="off"
         return-object
         :dense="!large"
         @blur="$emit('blur')"
@@ -22,6 +23,7 @@
           :no-data-text="loading ? 'Chargement ...' : 'Selectionnez un département'"
           :items="collectivites"
           item-text="name"
+          autocomplete="off"
           :error-messages="errors"
           return-object
           filled
