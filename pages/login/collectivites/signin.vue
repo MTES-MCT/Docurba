@@ -48,7 +48,7 @@
     </v-row>
     <v-snackbar
       v-model="snackbar.val"
-      :timeout="4000"
+      :timeout="-1"
     >
       {{ snackbar.text }}
     </v-snackbar>

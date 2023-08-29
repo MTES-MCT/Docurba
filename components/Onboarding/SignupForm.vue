@@ -25,7 +25,7 @@
           :error-messages="errors"
           :items="postes"
           filled
-          label="Poste"
+          label="Rôle"
         />
       </validation-provider>
     </v-col>

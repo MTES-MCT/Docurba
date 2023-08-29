@@ -86,7 +86,9 @@ app.post('/signupCollectivite', async (req, res) => {
   try {
     const user = await magicLinkSignIn({ email: req.body.userData.email, redirectBasePath: req.body.redirectTo })
     console.log('signupCollectivite user: ', user)
-    if (!user.email_confirmed_at) {
+
+    // SI pas de recovery_sent_at et pas de email_confirmed_at -> first co
+    if (!user.email_confirmed_at && !user.recovery_sent_at) {
       const { data: insertedProfile, error: errorInsertProfile } = await supabase.from('profiles').insert({ ...req.body.userData, side: 'collectivite', user_id: user.id }).select()
       if (errorInsertProfile) { throw errorInsertProfile }
       slack.requestCollectiviteAccess(insertedProfile[0])
