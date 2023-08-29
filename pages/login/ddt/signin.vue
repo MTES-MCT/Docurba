@@ -3,6 +3,9 @@
     <v-row>
       <v-col cols="12">
         <div>
+          <v-alert v-if="error" type="error">
+            {{ error }}
+          </v-alert>
           <div class="mb-2">
             <nuxt-link :to="{name: 'login'}">
               <v-icon small color="primary" class="mr-2">
@@ -30,9 +33,9 @@
                     <v-col cols="12">
                       <InputsPasswordTextField v-model="password" />
                     </v-col>
-                    <v-col v-if="error && error.status === 400" cols="12">
+                    <!-- <v-col v-if="error && error.status === 400" cols="12">
                       <span class="error--text">Email ou mot de passe incorrecte.</span>
-                    </v-col>
+                    </v-col> -->
                     <v-spacer />
                     <v-col cols="auto" class="pt-0">
                       <a href="#" class="primary--text" @click="forgotPassword = true">Mot de passe oublié ? Cliquez ici</a>
@@ -129,8 +132,14 @@ export default {
           password: this.password
         })
         if (error) { throw error }
+
+        // TODO: REdirect
+        await this.$user.isReady
+        console.log('DEPARTEMENT USER: ', this.$user.profile.departement)
+        this.$router.push({ name: 'ddt-departement-collectivites', params: { departement: this.$user.profile.departement } })
       } catch (error) {
-        this.error = error.message
+        console.log('error: ', error)
+        this.error = 'Email ou mot de passe incorrecte.'
       }
     },
     async sendResetPassword () {

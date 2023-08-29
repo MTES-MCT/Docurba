@@ -56,7 +56,7 @@ async function magicLinkSignIn ({ email, shouldExist, redirectBasePath }) {
     console.log('ERROR magicLinkSignIn: ', error)
     throw error
   }
-
+  console.log('USER: ', user)
   if (shouldExist && !user.email_confirmed_at) {
     throw new Error('Vous devez créer un compte avant de pouvoir vous connecter.')
   }
@@ -84,7 +84,7 @@ app.post('/signinCollectivite', async (req, res) => {
 
 app.post('/signupCollectivite', async (req, res) => {
   try {
-    const { user } = await magicLinkSignIn({ email: req.body.userData.email, redirectBasePath: req.body.redirectTo })
+    const user = await magicLinkSignIn({ email: req.body.userData.email, redirectBasePath: req.body.redirectTo })
     console.log('signupCollectivite user: ', user)
     if (!user.email_confirmed_at) {
       const { data: insertedProfile, error: errorInsertProfile } = await supabase.from('profiles').insert({ ...req.body.userData, side: 'collectivite', user_id: user.id }).select()

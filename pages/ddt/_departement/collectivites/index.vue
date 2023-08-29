@@ -14,13 +14,13 @@
             style="max-width:500px"
             label="Rechercher"
           />
-          <v-divider class="my-4" />
+          <!-- <v-divider class="my-4" />
           <div class="d-flex">
             <v-select flat solo label="Compétence" :items="['Peut-importe', 'Oui', 'Non']" />
             <v-select flat solo label="Toutes procédures principales" :items="['Peut-importe', 'Oui', 'Non']" />
             <v-select flat solo label="Tous les status" :items="['Peut-importe', 'Oui', 'Non']" />
             <v-select flat solo label="Tous SCoT" :items="['Peut-importe', 'Oui', 'Non']" />
-          </div>
+          </div> -->
         </div>
       </v-col>
       <v-col cols="12">
