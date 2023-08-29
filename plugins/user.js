@@ -4,13 +4,13 @@ const defaultUser = {
   id: null,
   email: null,
   role: null,
-  profile: null,
+  profile: {},
   scope: null,
   isReady: false,
   user_metadata: {}
 }
 
-export default ({ $supabase, route }, inject) => {
+export default ({ $supabase }, inject) => {
   const user = Vue.observable(Object.assign({}, defaultUser))
 
   async function updateUser () {

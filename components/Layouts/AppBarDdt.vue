@@ -41,7 +41,19 @@
         <v-btn v-if="!$user.id" depressed tile text :to="{name: 'login'}">
           Connexion
         </v-btn>
-        <v-btn v-if="$user?.profile?.poste === 'ddt'" depressed tile text :to="{name: 'ddt-departement-collectivites', params: {departement: $user.profile.departement}}">
+        <v-btn
+          v-if="$user.profile.side === 'etat'"
+          depressed
+          tile
+          text
+          :to="{
+            name: $user.profile.poste === 'ddt' ? 'ddt-departement-collectivites' : 'trames-githubRef',
+            params: {
+              departement: $user.profile.departement,
+              githubRef: trameRef
+            }
+          }"
+        >
           Tableau de bord
         </v-btn>
         <v-btn v-if="$user.id" depressed tile text @click="clickMyDocs">
@@ -80,21 +92,28 @@
     </client-only>
     <template #extension>
       <v-tabs align-with-title class="double-border">
-        <v-tab :to="{name: 'ddt-departement-collectivites', params: {departement: $user?.profile?.departement}}">
+        <v-tab
+          v-if="$user.profile.poste === 'ddt'"
+          :to="{
+            name: 'ddt-departement-collectivites',
+            params: {departement: $user.profile.departement}
+          }"
+        >
           Mes collectivites
         </v-tab>
         <v-tab
-          :to="{name: 'trames-githubRef', params: {githubRef: `dept-${$user?.profile?.departement}`} }"
+          :to="{
+            name: 'trames-githubRef',
+            params: {githubRef: trameRef}
+          }"
         >
-          Trame de PAC départementale
+          Trame de PAC {{ trameRef.includes('region') ? 'regionale' : 'départementale' }}
         </v-tab>
         <v-tab
-          :to="
-            {name:
-               'ddt-departement-collectivites-enquete',
-             params:
-               {departement:
-                 $user?.profile?.departement}}"
+          :to="{
+            name:'ddt-departement-collectivites-enquete',
+            params: {departement: $user.profile.departement}
+          }"
         >
           Validation des procédures
         </v-tab>
@@ -129,9 +148,18 @@ export default {
       adminAccess: null
     }
   },
+  computed: {
+    trameRef () {
+      const scopes = { ddt: 'dept', dreal: 'region' }
+      const poste = this.$user.profile.poste
+      const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
+
+      return `${scopes[poste]}-${code}`
+    }
+  },
   async mounted () {
     await this.$user.isReady
-    console.log('this.$user: ', this.$user)
+    // console.log('this.$user: ', this.$user)
   },
   methods: {
     // There is a lot of dupliaceted code here.
