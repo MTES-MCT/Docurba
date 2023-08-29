@@ -124,6 +124,15 @@ export default {
       adminAccess: null
     }
   },
+  computed: {
+    trameRef () {
+      const scopes = { ddt: 'dept', dreal: 'region' }
+      const poste = this.$user.profile.poste
+      const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
+
+      return `${scopes[poste]}-${code}`
+    }
+  },
   methods: {
     // There is a lot of dupliaceted code here.
     // This component should be using the auth.js plugin to get admin access.
