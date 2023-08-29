@@ -124,6 +124,15 @@ export default {
       error: null
     }
   },
+  computed: {
+    trameRef () {
+      const scopes = { ddt: 'dept', dreal: 'region' }
+      const poste = this.$user.profile.poste
+      const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
+
+      return `${scopes[poste]}-${code}`
+    }
+  },
   methods: {
     async signIn () {
       try {
@@ -134,9 +143,14 @@ export default {
         if (error) { throw error }
 
         // TODO: REdirect
-        await this.$user.isReady
-        console.log('DEPARTEMENT USER: ', this.$user.profile.departement)
-        this.$router.push({ name: 'ddt-departement-collectivites', params: { departement: this.$user.profile.departement } })
+        await this.$user.isReady.then((result) => {
+          console.log('TESSTT: ', this.$user.profile.poste)
+          if (this.$user.profile.poste === 'dreal') {
+            this.$router.push({ name: 'trames-githubRef', params: { githubRef: this.trameRef } })
+          } else {
+            this.$router.push({ name: 'ddt-departement-collectivites', params: { departement: this.$user.profile.departement } })
+          }
+        })
       } catch (error) {
         console.log('error: ', error)
         this.error = 'Email ou mot de passe incorrecte.'
