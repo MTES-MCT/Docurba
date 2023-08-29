@@ -21,7 +21,7 @@
     "@nuxtjs/pwa": "^3.3.5",
     "@nuxtjs/sentry": "^7.3.0",
     "@sendgrid/mail": "^7.7.0",
-    "@supabase/supabase-js": "^2.1.1",
+    "@supabase/supabase-js": "^2.33",
     "@tiptap/extension-image": "^2.0.0-beta.27",
     "@tiptap/extension-link": "^2.0.0-beta.36",
     "@tiptap/extension-underline": "^2.0.0-beta.22",
