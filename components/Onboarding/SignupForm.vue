@@ -19,17 +19,27 @@
       </validation-provider>
     </v-col>
     <v-col cols="6">
-      <validation-provider v-slot="{ errors }" name="Poste" rules="required">
+      <validation-provider v-slot="{ errors }" name="Rôle" rules="required">
         <v-select
           v-model="userData.poste"
           :error-messages="errors"
-          :items="postes"
+          :items="roles"
           filled
           label="Rôle"
         />
       </validation-provider>
     </v-col>
-
+    <v-col v-if="userData.poste === 'ddt'" cols="6">
+      <validation-provider v-slot="{ errors }" name="Poste" rules="required">
+        <v-select
+          v-model="userData.other_poste"
+          :error-messages="errors"
+          :items="postes"
+          filled
+          label="Poste"
+        />
+      </validation-provider>
+    </v-col>
     <v-col v-if="userData.poste === 'ddt'" cols="12">
       <VDeptAutocomplete v-model="userData.departement" />
     </v-col>
@@ -57,9 +67,14 @@ export default {
   },
   data () {
     return {
-      postes: [
-        { text: 'DDT', value: 'ddt' },
+      roles: [
+        { text: 'DDT/DEAL', value: 'ddt' },
         { text: 'DREAL', value: 'dreal' }
+      ],
+      postes: [
+        { text: 'Rédacteur de PAC', value: 'redacteur' },
+        { text: 'Suivi des procédures', value: 'suivi_procedures' },
+        { text: 'Référent sudocuh (au sein des DDT)', value: 'referent_sudocuh' }
       ],
       icons: {
         mdiEye,
@@ -84,6 +99,7 @@ export default {
         lastname: this.$isDev ? 'Test' : '',
         password: this.$isDev ? 'docurba12345' : '',
         poste: null,
+        other_poste: null,
         departement: null,
         region: null
       }

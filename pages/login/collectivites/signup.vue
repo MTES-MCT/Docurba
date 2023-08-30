@@ -74,7 +74,8 @@
                     </v-col>
                     <v-col cols="12">
                       <div class="text-h2">
-                        Quelle est votre collectivité ?
+                        <span v-if="userData.poste !== 'be' && userData.poste !== 'agence_urba'">Quelle est votre collectivité ?</span>
+                        <span v-else>Quelles collectivités accompagnez-vous ?*</span>
                       </div>
                     </v-col>
                     <v-col cols="12">
@@ -84,6 +85,9 @@
                         :cols-dep="4"
                         :cols-town="8"
                       />
+                      <span v-if="userData.poste === 'be' || userData.poste === 'agence_urba'">
+                        *Notez qu’il sera toujours possible d’élargir et modifier votre périmètre par la suite
+                      </span>
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -167,7 +171,7 @@ export default {
           }
         })
         console.log('ret: ', ret)
-        this.$router.push({ name: 'login-collectivites-explain' })
+        this.$router.push({ name: 'login-collectivites-explain', query: { collectivite_id: this.selectedCollectiviteId } })
       } catch (error) {
         console.log(error)
         this.error = error.response.data.message

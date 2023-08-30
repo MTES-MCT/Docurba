@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12">
         <div class="text-h1">
-          Inscription réussie ! 🎉
+          Inscription réussie ! 🎉 Activation en cours
         </div>
       </v-col>
       <v-col cols="12">
@@ -20,10 +20,10 @@
         <p>
           Pour simplifier la gestion de vos accès, nous avons opté pour la connexion sécurisée dite "Lien magique".
           Vous avez reçu un mail qui vous permettra de vous connecter directement, sans mot de passe.
-        </p>contact@docurba.beta.gouv.fr
+        </p>
         <p>
-          Chaque lien est à usage unique et à une durée de vie avant expiration de 1 heure.
-          Rendez-vous dès maintenant dans votre boîte email et cliquez sur le lien "Me connecter sur Docurba".
+          <b>Chaque lien est à usage unique et à une durée de vie avant expiration de 1 heure seulement.
+            Rendez-vous dès maintenant dans votre boîte email et cliquez sur le lien "Me connecter sur Docurba".</b>
           <br>
           Vous n'avez rien d'autre à faire !
         </p>
@@ -35,13 +35,13 @@
     <v-row>
       <v-col cols="12">
         <div class="text-h2">
-          Temps d'activation
+          Activation de votre compte
         </div>
       </v-col>
       <v-col cols="12">
         <p>
-          Veuillez noter qu'une étape de validation manuelle pour nous assurer que vous êtes bien en droit d'agir en tant que collectivité est nécessaire.
-          Vous recevrez un email pour vous informer de votre validation de compte dès que notre équipe aura procéder à la vérification.
+          Veuillez noter qu'une étape de validation manuelle de notre part est nécessaire, afin de nous assurer que vous êtes bien en droit d’agir en tant que collectivité/bureaux d’études/agence d’urbanisme.
+          Vous recevrez un email pour vous informer de votre validation de compte dès que notre équipe aura procédé à la vérification.
         </p>
         <v-alert type="info">
           En cas de problème technique ou de question, n'hésitez pas à contacter l'équipe de Docurba par email: contact@docurba.beta.gouv.fr
@@ -54,7 +54,7 @@
     </v-row>
     <v-row class="mb-12">
       <v-col cols="12" class="d-flex justify-center">
-        <v-btn depressed color="primary" tile x-large>
+        <v-btn depressed color="primary" tile x-large :to="`/collectivites/${$route.query.collectivite_id}?isEpci=${$route.query.collectivite_id.length > 5}`">
           Voir ma collectivité en mode public
         </v-btn>
       </v-col>

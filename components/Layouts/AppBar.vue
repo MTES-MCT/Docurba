@@ -56,7 +56,7 @@
         >
           Tableau de bord
         </v-btn>
-        <v-btn v-if="$user.id" depressed tile text @click="clickMyDocs">
+        <v-btn v-if="$user.profile.side === 'etat'" depressed tile text @click="clickMyDocs">
           Mes documents
         </v-btn>
         <v-menu v-if="$user.id" offset-y>

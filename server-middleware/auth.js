@@ -51,12 +51,10 @@ async function magicLinkSignIn ({ email, shouldExist, redirectBasePath }) {
       }
     }
   )
-  console.log('redirectBasePath: ', redirectBasePath)
   if (error) {
     console.log('ERROR magicLinkSignIn: ', error)
     throw error
   }
-  console.log('USER: ', user)
   if (shouldExist && !user.email_confirmed_at) {
     throw new Error('Vous devez créer un compte avant de pouvoir vous connecter.')
   }
@@ -72,9 +70,18 @@ async function magicLinkSignIn ({ email, shouldExist, redirectBasePath }) {
   return user
 }
 
+async function getRedirectPath (emailProfile) {
+  const { data: rawProfile, error: errorProfile } = await supabase.from('profiles').select().eq('email', emailProfile)
+  if (errorProfile) { throw errorProfile }
+  if (rawProfile.length < 1) { throw new Error("Nous n'avons pas trouvé d'utilisateur enregistrer avec cet adresse email. Veuillez créer un compte.") }
+  const profile = rawProfile[0]
+  return `/collectivites/${profile.collectivite_id}?isEpci=${profile.collectivite_id.length > 5}`
+}
+
 app.post('/signinCollectivite', async (req, res) => {
   try {
-    const user = await magicLinkSignIn({ email: req.body.email, shouldExist: true, redirectBasePath: req.body.redirectTo })
+    const path = await getRedirectPath(req.body.email)
+    const user = await magicLinkSignIn({ email: req.body.email, shouldExist: true, redirectBasePath: req.body.redirectTo + path })
     res.status(200).send(user)
   } catch (error) {
     console.log('ERROR /auth/signinCollectivite : ', error.message)
@@ -85,7 +92,6 @@ app.post('/signinCollectivite', async (req, res) => {
 app.post('/signupCollectivite', async (req, res) => {
   try {
     const user = await magicLinkSignIn({ email: req.body.userData.email, redirectBasePath: req.body.redirectTo })
-    console.log('signupCollectivite user: ', user)
 
     // SI pas de recovery_sent_at et pas de email_confirmed_at -> first co
     if (!user.email_confirmed_at && !user.recovery_sent_at) {
