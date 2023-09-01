@@ -161,6 +161,7 @@ export default {
     async signUp () {
       try {
         this.loading = true
+        this.userData.other_poste = this.userData.other_poste ? [this.userData.other_poste] : null
         const ret = await axios({
           method: 'post',
           url: '/api/auth/signupCollectivite',

@@ -40,7 +40,7 @@ export default {
   name: 'DdtLayout',
   computed: {
     isLoading () {
-      return !this.$user.profile
+      return !this.$user.profile.email
     },
     isAllowed () {
       console.log('this.$user?.profile: ', this.$user.profile)

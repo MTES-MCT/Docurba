@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import axios from 'axios'
 
 const defaultUser = {
   id: null,
@@ -10,7 +11,8 @@ const defaultUser = {
   user_metadata: {}
 }
 
-function handleRedirect (event, user, router) {
+async function handleRedirect ($supabase, event, user, router) {
+  console.log('handleRedirect: ', event, user)
   if (event === 'SIGNED_IN') {
     if (user.profile.poste === 'dreal') {
       function trameRef (user) {
@@ -23,6 +25,12 @@ function handleRedirect (event, user, router) {
       router.push({ name: 'trames-githubRef', params: { githubRef: trameRef(user) } })
     } else if (user.profile.poste === 'ddt') {
       router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
+    }
+    if (user.profile.side === 'collectivite') {
+      if (!user.profile.successfully_logged_once) {
+        axios({ url: '/api/pipedrive/collectivite_inscrite', method: 'post', data: { userData: { email: user.email } } })
+        await $supabase.from('profiles').update({ successfully_logged_once: true }).eq('user_id', user.id)
+      }
     }
   }
 }
@@ -49,6 +57,7 @@ export default ({ $supabase, app }, inject) => {
         })
       })
     }
+    await user.isReady
     return user
   }
 
@@ -58,7 +67,7 @@ export default ({ $supabase, app }, inject) => {
     $supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
         const user = await updateUser()
-        handleRedirect(event, user, app.router)
+        handleRedirect($supabase, event, user, app.router)
       } else {
         Object.assign(user, defaultUser)
       }

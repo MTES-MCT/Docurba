@@ -8,13 +8,19 @@ const { createClient } = require('@supabase/supabase-js')
 const pipedrive = require('./modules/pipedrive.js')
 const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
+app.post('/collectivite_inscrite', async (req, res) => {
+  console.log('-- COLLECTIVITE INSCRITE PIPEDRIVE --')
+  const userData = req.body.userData
+  await pipedrive.movePersonDealTo(userData.email, pipedrive.COLLECTIVITE_DEAL.TRY_INSCRIPTION, pipedrive.COLLECTIVITE_DEAL.INSCRIT)
+  res.status(200).send('OK')
+})
+
 app.post('/depot_acte', async (req, res) => {
   console.log('-- DEPOT D\'ACTE COLLECTIVITE PIPEDRIVE --')
 
   const userData = req.body.userData
 
   const { person } = await pipedrive.findPerson(userData.email)
-  // title: `${data.poste} de ${data.detailsCollectivite.name} (${data.detailsCollectivite.departement})`,
 
   if (!person) {
     const deal = {

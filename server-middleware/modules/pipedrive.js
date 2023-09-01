@@ -30,34 +30,27 @@ const dealsApi = new pipedrive.DealsApi()
 // Chargé(e) de l'accompagnement des collectivités    -> Suivi            -> id: 54
 // Référent(e) Sudocuh                                -> Référent Sudocuh -> id: 189
 
-// const COLLECTIVITE_DEAL = {
-//   INSCRIT: 79,
-//   DEPOT_ACTE: 68
-// }
-
 // // TODO: remplacer les id en dur par les enums
-// const STATE_DEAL = {
-
-// }
-
-// const CUSTOM_FIELDS = {
-//   CHARGE_DE: {
-//     key: '55b3f75345d2b8ee9851d6d743062f125678cc76',
-//     options: [
-//       { id: 188, appLabel: 'chef_unite' },
-//       { id: 53, appLabel: 'redacteur_pac' },
-//       { id: 54, appLabel: 'suivi_procedures' },
-//       { id: 189, appLabel: 'referent_sudocuh' }
-//     ]
-//   }
-// }
 
 module.exports = {
   COLLECTIVITE_DEAL: {
+    TRY_INSCRIPTION: 81,
     INSCRIT: 79,
     DEPOT_ACTE: 68
   },
-  STATE_DEAL: {},
+  STATE_DEAL: {
+    DREAL: {
+      LISTE: 31,
+      CONTACTE: 32,
+      DEMO: 49,
+      EMBARQUE: 33,
+      OK_REDAC: 34,
+      PROCESS_MAJ: 35
+    },
+    EMBARQUEMENT: {
+      A_TRAITE: 80
+    }
+  },
   CUSTOM_FIELDS: {
     CHARGE_DE: {
       key: '55b3f75345d2b8ee9851d6d743062f125678cc76',
@@ -166,6 +159,11 @@ module.exports = {
     const newPersonData = pipedrive.UpdatePerson.constructFromObject(data)
     return personsApi.updatePerson(personId, newPersonData)
   },
+  async searchDeal (term) {
+    const { data: { items } } = await dealsApi.searchDeals(term)
+    console.log('ITEMS SEARCHED: ', items)
+    return items
+  },
   async addDeal (dealData) {
     const newDealData = pipedrive.NewDeal.constructFromObject(dealData)
     const { success, data } = await dealsApi.addDeal(newDealData)
@@ -182,73 +180,90 @@ module.exports = {
     if (!person) {
       console.log('Person not found, creating one')
       person = await this.addPerson(data)
-      await this.addDeal({
+      const deal = {
         title: `${data.poste} de ${data.detailsCollectivite.name} (${data.detailsCollectivite.departement})`,
         personId: person.id,
-        stageId: this.COLLECTIVITE_DEAL.INSCRIT
-      })
+        stageId: this.COLLECTIVITE_DEAL.TRY_INSCRIPTION
+      }
+      console.log('deal, :', deal)
+      await this.addDeal(deal)
     }
+  },
+  async movePersonDealTo (email, from, to) {
+    const { person } = await this.findPerson(email)
+    const personDeals = await this.getPersonDeals(person.id)
+    console.log('personDeals: ', personDeals)
+    const dealIdToUpdate = personDeals.filter(e => e.stage_id === from)[0]?.id
+    console.log('dealIdToUpdate: ', dealIdToUpdate)
+    await this.updateDeal(dealIdToUpdate, { stage_id: to })
   },
   async signupStateAgent (userData) {
     try {
       console.log('-- SIGNUP STATE AGENT PIPEDRIVE --')
+      const self = this
       let { person } = await this.findPerson(userData.email)
 
       if (!person) {
-        userData.customRoles = this.CUSTOM_FIELDS.CHARGE_DE.options.filter(e => userData.other_poste.includes(e.appLabel)).map(e => e.id)
+        if (userData.poste !== 'dreal') {
+          userData.customRoles = this.CUSTOM_FIELDS.CHARGE_DE.options.filter(e => userData.other_poste.includes(e.appLabel)).map(e => e.id)
+        }
         person = await this.addPerson(userData)
       }
 
-      // eslint-disable-next-line prefer-const
-      let { organization, deals: organizationDeals } = await this.findOrganization(userData.departement.code_departement)
-      if (!organization) { organization = await this.addOrganization(userData.departement.code_departement) }
+      // Handle DREAL
+      if (userData.poste === 'dreal') {
+        const drealDeal = await this.searchDeal(userData.region.code)
+        const drealDealId = drealDeal.map(e => e.item).find(e => Object.values(this.STATE_DEAL.DREAL).includes(e.stage.id)).id
 
-      this.updatePerson(person.id, { orgId: organization.id })
-
-      // Add new user 'Elaboration PAC' pipeline
-      const deal = {
-        title: `${userData.departement.code_departement} ${userData.departement.nom_departement}`,
-        personId: person.id
-      }
-      // Élaboration PAC - 55
-      if (userData.other_poste.includes('redacteur')) {
-        const { data } = await this.addDeal({ ...deal, stageId: 55 })
-        console.log('Deal New Redacteur Created', data)
-      }
-      // Suivi des procédures (DDT) - 61
-      if (userData.other_poste.includes('suivi_procedures') || userData.other_poste.includes('referent_sudocuh')) {
-        const { data } = await this.addDeal({ ...deal, stageId: 61 })
-        console.log('Deal New Suivi de procedure Created', data)
-      }
-
-      // embarquement département et régions - ?
-      // if (userData.other_poste.includes('chef_unite')) {
-      //   const { data } = await this.addDeal({ ...deal, stageId: 55 })
-      //   console.log('Deal New chef d\'unité Created', data)
-      // }
-
-      // // DREAL - ?
-      // if (userData.poste.includes('dreal')) {
-      //   const { data } = await this.addDeal({ ...deal, stageId: 55 })
-      //   console.log('Deal New DREAL Created', data)
-      // }
-
-      // Deal in prospect or Contacted goes to Inscrits
-      if (organizationDeals && organizationDeals.length) {
-        const deal = organizationDeals.find(d => d.stage_id === 10 || d.stage_id === 11)
-
-        if (deal) {
-          const { data } = await this.updateDeal(deal.id, { stage_id: 12 })
-          console.log('Deal updated', data)
-        }
+        const opts = pipedrive.AddDealParticipantRequest.constructFromObject({ person_id: person.id })
+        await dealsApi.addDealParticipant(drealDealId, opts)
+      // End Handle dreal
       } else {
-        const { data } = await this.addDeal({
-          title: `${userData.departement.code_departement} ${userData.departement.nom_departement}`,
-          orgId: organization.id,
-          stageId: 12
-        })
+        // eslint-disable-next-line prefer-const
+        let { organization, deals: organizationDeals } = await this.findOrganization(userData.departement.code_departement)
+        if (!organization) { organization = await this.addOrganization(userData.departement.code_departement) }
 
-        console.log('Deal Created', data)
+        this.updatePerson(person.id, { orgId: organization.id })
+
+        // Add new user 'Elaboration PAC' pipeline
+        const deal = {
+          title: `${userData.departement.code_departement} ${userData.departement.nom_departement}`,
+          personId: person.id
+        }
+        // Élaboration PAC - 55
+        if (userData.other_poste.includes('redacteur')) {
+          const { data } = await this.addDeal({ ...deal, stageId: 55 })
+          console.log('Deal New Redacteur Created', data)
+        }
+        // Suivi des procédures (DDT) - 61
+        if (userData.other_poste.includes('suivi_procedures') || userData.other_poste.includes('referent_sudocuh')) {
+          const { data } = await this.addDeal({ ...deal, stageId: 61 })
+          console.log('Deal New Suivi de procedure Created', data)
+        }
+
+        // embarquement département et régions - ?
+        if (userData.other_poste.includes('chef_unite')) {
+          const { data } = await this.addDeal({ ...deal, stageId: self.STATE_DEAL.EMBARQUEMENT.A_TRAITE })
+          console.log('Deal New chef d\'unité Created', data)
+        }
+
+        // Deal in prospect or Contacted goes to Inscrits
+        if (organizationDeals && organizationDeals.length) {
+          const deal = organizationDeals.find(d => d.stage_id === 10 || d.stage_id === 11)
+
+          if (deal) {
+            const { data } = await this.updateDeal(deal.id, { stage_id: 12 })
+            console.log('Deal updated', data)
+          }
+        } else {
+          const { data } = await this.addDeal({
+            title: `${userData.departement.code_departement} ${userData.departement.nom_departement}`,
+            orgId: organization.id,
+            stageId: 12
+          })
+
+          console.log('Deal Created', data)
+        }
       }
     } catch (err) {
       console.log(err)
