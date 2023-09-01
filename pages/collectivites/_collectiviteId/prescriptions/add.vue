@@ -363,7 +363,7 @@ export default {
     async submitPrescription () {
       try {
         await this.$user.isReady
-
+        console.log('submitPrescription')
         this.loadingSave = true
 
         // TODO: Add column verified or accepted sur les prescription with fill automatically if the user posting is a verified connected one.
@@ -391,23 +391,29 @@ export default {
         } else if (this.docType === 'attachments') {
           prescription.attachments = await this.uploadFiles()
         }
-        await this.$supabase.from('prescriptions').insert([prescription])
+        // await this.$supabase.from('prescriptions').insert([prescription])
         this.loadingSave = false
 
+        const userData = {
+          email: this.$user?.email || this.$route.query.email,
+          region: this.collectivite.region.name,
+          collectivite: this.collectivite,
+          isEpci: this.isEpci,
+          attachements: prescription.attachments || [{ name: 'lien', url: prescription.link_url }]
+        }
         await axios({
           url: '/api/slack/notify/admin/acte',
           method: 'post',
-          data: {
-            userData: {
-              email: this.$route.query.email,
-              region: this.collectivite.region.name,
-              collectivite: this.collectivite,
-              isEpci: this.isEpci,
-              attachements: prescription.attachments || [{ name: 'lien', url: prescription.link_url }]
-            }
-          }
+          data: { userData }
         })
-        this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
+
+        await axios({
+          url: '/api/pipedrive/depot_acte',
+          method: 'post',
+          data: { userData }
+        })
+
+        // this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
       } catch (error) {
         this.error = error
         this.$vuetify.goTo(0)

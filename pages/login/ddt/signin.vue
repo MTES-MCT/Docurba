@@ -141,17 +141,6 @@ export default {
           password: this.password
         })
         if (error) { throw error }
-
-        // TODO: REdirect
-        // console.log('SUER: ', this.$user.isReady)
-        // this.$user.isReady.then((result) => {
-        //   console.log('TESSTT: ', this.$user.profile.poste)
-        //   if (this.$user.profile.poste === 'dreal') {
-        //     this.$router.push({ name: 'trames-githubRef', params: { githubRef: this.trameRef } })
-        //   } else {
-        //     this.$router.push({ name: 'ddt-departement-collectivites', params: { departement: this.$user.profile.departement } })
-        //   }
-        // })
       } catch (error) {
         console.log('error: ', error)
         this.error = 'Email ou mot de passe incorrecte.'

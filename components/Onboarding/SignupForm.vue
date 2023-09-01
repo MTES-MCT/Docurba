@@ -33,6 +33,7 @@
       <validation-provider v-slot="{ errors }" name="Poste" rules="required">
         <v-select
           v-model="userData.other_poste"
+          multiple
           :error-messages="errors"
           :items="postes"
           filled
@@ -72,9 +73,11 @@ export default {
         { text: 'DREAL', value: 'dreal' }
       ],
       postes: [
-        { text: 'Rédacteur de PAC', value: 'redacteur' },
-        { text: 'Suivi des procédures', value: 'suivi_procedures' },
-        { text: 'Référent sudocuh (au sein des DDT)', value: 'referent_sudocuh' }
+        { text: 'Chef d\'unité/de bureau/de service et adjoint', value: 'chef_unite' },
+        { text: 'Rédacteur(ice) de PAC ', value: 'redacteur_pac' },
+        { text: 'Chargé(e) de l\'accompagnement des collectivités', value: 'suivi_procedures' },
+        { text: 'Référent(e) Sudocuh', value: 'referent_sudocuh' }
+
       ],
       icons: {
         mdiEye,

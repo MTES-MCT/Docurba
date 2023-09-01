@@ -93,6 +93,7 @@ app.post('/signupCollectivite', async (req, res) => {
   try {
     const user = await magicLinkSignIn({ email: req.body.userData.email, redirectBasePath: req.body.redirectTo })
 
+    await pipedrive.signupCollectivite({ ...req.body.userData, detailsCollectivite: req.body.detailsCollectivite })
     // SI pas de recovery_sent_at et pas de email_confirmed_at -> first co
     if (!user.email_confirmed_at && !user.recovery_sent_at) {
       const { data: insertedProfile, error: errorInsertProfile } = await supabase.from('profiles').insert({ ...req.body.userData, side: 'collectivite', user_id: user.id }).select()
@@ -113,7 +114,8 @@ app.post('/hooksSignupStateAgent', async (req, res) => {
   // Push in the good pipedrive
   // TODO: Attention au changement de nom dept / departement dans Signin() (pipedrive.js) & dans la fonction updateUserRole() (admin.js)
   // Verifier le validation Slack par la suite
-  await pipedrive.signup(req.body)
+  console.log('hooksSignupStateAgent: ', req.body)
+  await pipedrive.signupStateAgent(req.body)
 
   res.status(200).send('OK')
 })

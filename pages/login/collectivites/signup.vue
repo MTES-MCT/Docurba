@@ -143,7 +143,6 @@ export default {
         poste: 'elu',
         other_poste: 'test',
         tel: '0669487499',
-        departement: '47',
         collectivite_id: '45678'
       },
       snackbar: {
@@ -166,7 +165,8 @@ export default {
           method: 'post',
           url: '/api/auth/signupCollectivite',
           data: {
-            userData: { ...this.userData, collectivite_id: this.selectedCollectiviteId },
+            userData: { ...this.userData, collectivite_id: this.selectedCollectiviteId, departement: this.selectedCollectivite.departement },
+            detailsCollectivite: this.selectedCollectivite,
             redirectTo: window.location.origin
           }
         })
