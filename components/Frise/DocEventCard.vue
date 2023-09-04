@@ -49,12 +49,13 @@
     <v-card-title>
       {{ event.type }}
     </v-card-title>
-    <v-card-text v-if="event.description">
-      {{ event.description }}
+    <div />
+    <v-card-text v-if="event.commentaire">
+      {{ event.commentaire }}
     </v-card-text>
     <v-card-actions>
       <v-chip
-        v-for="attachement in event.attachements"
+        v-for="attachement in attachements"
         :key="attachement.id"
         outlined
         color="primary"
@@ -70,7 +71,7 @@
         </v-icon>
       </v-chip>
       <a
-        v-for="attachement in event.attachements"
+        v-for="attachement in attachements"
         :key="`file-link-${attachement.id}`"
         :ref="`file-${attachement.id}`"
         class="d-none"
@@ -89,11 +90,28 @@ export default {
     event: {
       type: Object,
       required: true
+    },
+    censored: {
+      type: Boolean,
+      default: () => true
     }
   },
   data () {
     return {
       icons: { mdiDotsHorizontal, mdiPencil, mdiFile, mdiDownload }
+    }
+  },
+  computed: {
+    attachements () {
+      if (this.event.from_sudocuh) {
+        if (!this.censored || this.event.type === 'Prescription' || this.event.type === "Délibération d'approbation") {
+          return this.event.attachements
+        } else {
+          return []
+        }
+      } else {
+        return this.event.attachements
+      }
     }
   },
   methods: {
@@ -103,8 +121,11 @@ export default {
       })
     },
     async downloadFile (attachement) {
-      const { data } = await this.$supabase.storage.from('doc-events-attachements')
-        .download(`${this.event.project_id}/${this.event.id}/${attachement.id}`)
+      // TODO: Handle link type
+      console.log('this.event.from_sudocuh: ', this.event.from_sudocuh)
+      const path = this.event.from_sudocuh ? attachement.id : `${this.event.project_id}/${this.event.id}/${attachement.id}`
+      console.log('CHOSEN: ', path)
+      const { data } = await this.$supabase.storage.from('doc-events-attachements').download(path)
 
       const link = this.$refs[`file-${attachement.id}`][0]
       link.href = URL.createObjectURL(data)

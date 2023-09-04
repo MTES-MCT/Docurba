@@ -1,23 +1,25 @@
 <template>
   <v-row justify="end">
-    <v-col cols="12">
-      <v-timeline v-if="!noProject" align-top class="doc-timeline pt-0 mt-6">
-        <v-timeline-item color="#E3E3FD" small>
-          <v-btn nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}}">
-            Ajouter un événement
-          </v-btn>
-        </v-timeline-item>
-        <v-timeline-item right hide-dot>
-          <span class="black--text"><b>Évènements suggérés par Docurba :</b></span>
-        </v-timeline-item>
-        <v-timeline-item v-for="event in recommendedEvents" :key="`recommended-${event.order}`" hide-dot right>
-          <FriseRecommendedEventCard :event-type="event" />
-        </v-timeline-item>
-      </v-timeline>
-    </v-col>
-    <v-col v-if="!noProject" offset="3" cols="9" class="pl-0">
-      <v-divider />
-    </v-col>
+    <template v-if="!noProject && !censored">
+      <v-col cols="12">
+        <v-timeline align-top class="doc-timeline pt-0 mt-6">
+          <v-timeline-item color="#E3E3FD" small>
+            <v-btn nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}}">
+              Ajouter un événement
+            </v-btn>
+          </v-timeline-item>
+          <v-timeline-item right hide-dot>
+            <span class="black--text"><b>Évènements suggérés par Docurba :</b></span>
+          </v-timeline-item>
+          <v-timeline-item v-for="event in recommendedEvents" :key="`recommended-${event.order}`" hide-dot right>
+            <FriseRecommendedEventCard :event-type="event" />
+          </v-timeline-item>
+        </v-timeline>
+      </v-col>
+      <v-col offset="3" cols="9" class="pl-0">
+        <v-divider />
+      </v-col>
+    </template>
     <v-col cols="12">
       <v-timeline align-top class="doc-timeline">
         <v-timeline-item
@@ -31,7 +33,7 @@
           <template #opposite>
             <v-chip>{{ formatDate(event.date_iso) }}</v-chip>
           </template>
-          <FriseDocEventCard :event="event" />
+          <FriseDocEventCard :event="event" :censored="censored" />
         </v-timeline-item>
       </v-timeline>
     </v-col>
@@ -44,6 +46,10 @@ import documentEvents from '@/assets/data/DU_events.json'
 
 export default {
   props: {
+    censored: {
+      type: Boolean,
+      default: () => true
+    },
     noProject: {
       type: Boolean,
       default: () => false
@@ -66,7 +72,8 @@ export default {
   },
   computed: {
     orderedEvents () {
-      return sortBy(this.events, (event) => {
+      const eventsDisplayed = this.events.filter(e => !this.censored || e.visibility === 'public' || !e.visibility)
+      return sortBy(eventsDisplayed, (event) => {
         return -this.$dayjs(event.date_iso).valueOf()
       })
     },

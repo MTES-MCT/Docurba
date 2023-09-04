@@ -129,12 +129,12 @@ module.exports = {
       }
 
       // Signup as DDT
-      if (userData.dept && userData.dept.code_departement) {
+      if (userData.departement && userData.departement.code_departement) {
       // eslint-disable-next-line prefer-const
-        let { organization, deals: organizationDeals } = await this.findOrganization(userData.dept.code_departement)
+        let { organization, deals: organizationDeals } = await this.findOrganization(userData.departement.code_departement)
 
         if (!organization) {
-          organization = await this.addOrganzation(userData.dept.code_departement)
+          organization = await this.addOrganzation(userData.departement.code_departement)
         }
 
         this.updatePerson(person.id, {
@@ -156,7 +156,7 @@ module.exports = {
           }
         } else {
           const { data } = await this.addDeal({
-            title: `${userData.dept.code_departement} ${userData.dept.nom_departement}`,
+            title: `${userData.departement.code_departement} ${userData.departement.nom_departement}`,
             orgId: organization.id,
             stageId: 12
           })

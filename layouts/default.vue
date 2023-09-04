@@ -1,10 +1,43 @@
 <template>
   <v-app>
     <LayoutsAppBar />
-    <v-main>
+    <v-main :class="$route.name.startsWith('login') ? 'beige' : ''">
       <nuxt />
     </v-main>
     <LayoutsFooter />
+    <v-snackbar
+      v-model="snackbar.val"
+      multi-line
+      vertical
+      color="error"
+      :timeout="10000"
+    >
+      <div>
+        {{ snackbar.text }}
+      </div>
+
+      <template #action="{ attrs }">
+        <v-btn
+          color="white"
+          outlined
+          class="mr-4"
+          tile
+          v-bind="attrs"
+          :to="{name: 'login-collectivites-signin'}"
+        >
+          Aller à la page de connexion
+        </v-btn>
+        <v-btn
+          color="white"
+          outlined
+          tile
+          v-bind="attrs"
+          @click="snackbar.val = false"
+        >
+          Fermer
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -14,10 +47,29 @@ import '@gouvfr/dsfr/dist/css/footer.css'
 import '@gouvfr/dsfr/dist/css/logo.css'
 
 import axios from 'axios'
+import qs from 'qs'
 
 export default {
   name: 'DefaultLayout',
+  data () {
+    return {
+      snackbar: { text: '', val: false }
+    }
+  },
   mounted () {
+    if (process.browser) {
+      const parsed = qs.parse(this.$route.hash.slice(1))
+      if (parsed.error) {
+        let errorMessage = ''
+        if (parsed.error === 'unauthorized_client') {
+          errorMessage = 'Le lien de connexion utilisé est expiré. Ce dernier à soit été déjà utilisé, soit est vieux de plus de 1h. Veuillez demander un nouvel envoi de email de  connexion depuis la page de connexion. '
+        }
+        this.snackbar = {
+          val: true,
+          text: errorMessage
+        }
+      }
+    }
     // console.log(this.$route.query)
     if (this.$route.query.contact) {
       axios({

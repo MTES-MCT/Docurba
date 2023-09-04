@@ -15,7 +15,7 @@
       <v-col cols="8">
         <v-card outlined>
           <v-card-text>
-            <FriseDocTimeline :events="events" />
+            <FriseDocTimeline :events="events" :censored="!isVerified" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -39,7 +39,8 @@ import _ from 'lodash'
 export default {
   name: 'ProcedureTimelineEvents',
   layout ({ $user }) {
-    if ($user?.id && $user?.scope && $user?.scope.dept) {
+    console.log('$user?.profile: ', $user?.profile)
+    if ($user?.profile?.side === 'etat' && $user?.profile?.verified) {
       return 'ddt'
     } else {
       return 'default'
@@ -60,17 +61,19 @@ export default {
       // } else {
       //   return { name: 'ddt-departement-collectivites-collectiviteId', params: { departement: $route.params.departement, collectiviteId: $route.params.collectiviteId } }
       // }
+    },
+    isVerified () {
+      return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     }
   },
   async mounted () {
     if (this.$user && this.$user.isReady) {
       this.$user.isReady.then(() => {
-        if (this.$user.id && this.$user.scope && this.$user.scope.dept) {
+        if (this.isVerified) {
           this.$nuxt.setLayout('ddt')
         }
       })
     }
-
     // this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.procedureId)
 
     // const { data: eventsDocruba, error: errorDocurba } = await this.$supabase.from('doc_frise_events').select('*').eq('project_id', this.projectId)
@@ -97,23 +100,21 @@ export default {
         type: e.libtypeevenement, // + ' - ',  + e.libstatutevenement,
         description: '', // e.commentaire + ' - Document sur le reseau: ' + e.nomdocument,
         actors: [],
-        attachements: [],
+        attachements: e.attachements,
         docType: e.codetypedocument,
         idProcedure: e.noserieprocedure,
         typeProcedure: e.libtypeprocedure,
         idProcedurePrincipal: e.noserieprocedureratt,
         commentaireDgd: e.commentairedgd,
         commentaireProcedure: e.commentaireproc,
+        commentaire: e.commentaire,
         dateLancement: e.datelancement,
         dateApprobation: e.dateapprobation,
         dateAbandon: e.dateabandon,
         dateExecutoire: e.dateexecutoire
       }
     }).concat(eventsDocurba), 'date_iso', 'desc')
-    // this.events = events
-
     this.loaded = true
-    console.log('EVENTS: ', this.events)
   }
 }
 </script>

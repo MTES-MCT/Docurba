@@ -10,25 +10,75 @@ module.exports = {
       }
     })
   },
-  requestDepartementAccess (userData) {
+  requestCollectiviteAccess (userData) {
     return axios({
       url: process.env.SLACK_WEBHOOK,
       method: 'post',
       data: {
-        text: `Demande d'accès DDT de ${userData.firstname} ${userData.lastname}`,
+        text: `Demande d'accès Collectivité de ${userData.firstname} ${userData.lastname} ayant pour poste ${userData.poste}`,
         blocks: [
           {
             type: 'header',
             text: {
               type: 'plain_text',
-              text: `Demande d'accès DDT de ${userData.firstname} ${userData.lastname}`
+              text: `Demande d'accès Collectivité de ${userData.firstname} ${userData.lastname} ayant pour poste ${userData.poste}`
             }
           },
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `- departement: ${userData.dept.nom_departement} - ${userData.dept.code_departement} \n - email: ${userData.email}`
+              text: `- collectivité code INSEE: ${userData.collectivite_id} (departement: ${userData.departement}) \n - email: ${userData.email}`
+            }
+          },
+          {
+            type: 'actions',
+            block_id: 'actions1',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: `Valider ${userData.email}`
+                },
+                value: JSON.stringify(userData),
+                action_id: 'collectivite_validation'
+              }
+            ]
+          },
+          {
+            type: 'divider'
+          }
+        ]
+      }
+    })
+  },
+  requestStateAgentAccess (userData) {
+    console.log('requestStateAgentAccess userData: ', userData)
+    let textContent = ''
+    if (userData.poste === 'ddt') {
+      textContent = `- departement: ${userData.departement.nom_departement} - ${userData.departement.code_departement} \n - email: ${userData.email}`
+    } else if (userData.poste === 'dreal') {
+      textContent = `- region: ${userData.region.name} - ${userData.region.code} \n - email: ${userData.email}`
+    }
+    return axios({
+      url: process.env.SLACK_WEBHOOK,
+      method: 'post',
+      data: {
+        text: `Demande d'accès ${userData.poste === 'dreal' ? 'DREAL' : 'DDT'} de ${userData.firstname} ${userData.lastname}`,
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: `Demande d'accès ${userData.poste === 'dreal' ? 'DREAL' : 'DDT'} de ${userData.firstname} ${userData.lastname}`
+            }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: textContent
             }
           },
           {

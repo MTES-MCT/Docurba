@@ -70,6 +70,15 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
         console.log('Error getCurrentCollectivite: ', error)
       }
     },
+    // async getProcedure(procedureId){
+    //   //si c'est une procedure Sudocu
+    //   if(){
+    //     const eventsSudocu = await this.$sudocu.getProcedureEvents(this.$route.params.procedureId)
+    //   } else{
+
+    //   }
+
+    // },
     async getProjectsProcedures (collectiviteId) {
       // Fetching user procedure for now. Should also fetch public projects at some point.
       // Or more simply fetch based on collectivite column but need to make a script to update projects.
@@ -84,6 +93,7 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
       })
       ret.projects = projects ?? []
       console.log('projects: ', projects)
+      // TODO: Should be a join, no need to double select
       if (projects) {
         const projectsIds = projects.map(p => p.id)
         const { data: procedures } = await $supabase.from('procedures').select('*').in('project_id', projectsIds)

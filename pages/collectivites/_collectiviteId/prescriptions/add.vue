@@ -340,15 +340,20 @@ export default {
           const idFile = uuidv4()
           const path = `${this.isEpci ? 'epci' : 'commune'}/${this.$route.params.collectiviteId}/${uploadTimestamp}/${idFile}`
           console.log('path: ', path)
-          const { error } = await this.$supabase.storage
+          const { data: dataUpload, error } = await this.$supabase.storage
             .from('prescriptions')
             .upload(path, file)
           if (error) {
             console.log('error on upload: ', error)
             throw new Error('Erreur d\'upload')
           }
-          filesData.push({ path, name: file.name, id: uuidv4() })
+
+          const { data: dataUrl, error: errorUrl } = this.$supabase.storage.from('prescriptions').getPublicUrl(dataUpload.path)
+          if (errorUrl) { throw new Error('Erreur de récuparation de l\'url') }
+          filesData.push({ path, name: file.name, id: uuidv4(), url: dataUrl.publicUrl })
+          console.log('TEST DATA: ', filesData)
         }
+
         return filesData
       } else {
         throw new Error('Pas de fichier à téléverser')
@@ -357,7 +362,11 @@ export default {
 
     async submitPrescription () {
       try {
+        await this.$user.isReady
+
         this.loadingSave = true
+
+        // TODO: Add column verified or accepted sur les prescription with fill automatically if the user posting is a verified connected one.
         const prescription = {
           epci: this.isEpci ? this.collectivite : null,
           towns: this.isEpci ? this.collectivite.towns.map(e => e.code_commune_INSEE) : [this.collectivite.id],
@@ -374,8 +383,8 @@ export default {
           is_scot: this.isSCoT,
           procedure_type: this.typeProcedure,
           ms_scope: this.MSScope,
-          procedure_number: this.numberProcedure
-
+          procedure_number: this.numberProcedure,
+          profile_id: this.$user?.profile?.id || this.$route.query.user_id
         }
         if (this.docType === 'link') {
           prescription.link_url = this.link
@@ -393,7 +402,8 @@ export default {
               email: this.$route.query.email,
               region: this.collectivite.region.name,
               collectivite: this.collectivite,
-              isEpci: this.isEpci
+              isEpci: this.isEpci,
+              attachements: prescription.attachments || [{ name: 'lien', url: prescription.link_url }]
             }
           }
         })

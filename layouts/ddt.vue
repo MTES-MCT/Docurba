@@ -2,7 +2,28 @@
   <v-app>
     <LayoutsAppBarDdt />
     <v-main class="beige">
-      <nuxt />
+      <v-container v-if="isLoading" class="fill-height">
+        <v-row justify="center" align="center">
+          <v-col cols="12">
+            <VGlobalLoader />
+          </v-col>
+        </v-row>
+      </v-container>
+      <template v-else>
+        <nuxt v-if="isAllowed" />
+        <v-container v-else class="fill-height">
+          <v-row justify="center" align="center">
+            <v-col cols="12" class="mb-4">
+              <div class="text-center text-h2">
+                En attente de validation
+              </div>
+            </v-col>
+            <v-col cols="12">
+              <v-img height="200" contain src="/images/errors/maintenance.svg" />
+            </v-col>
+          </v-row>
+        </v-container>
+      </template>
     </v-main>
     <LayoutsFooter />
   </v-app>
@@ -17,7 +38,19 @@ import axios from 'axios'
 
 export default {
   name: 'DdtLayout',
-  mounted () {
+  computed: {
+    isLoading () {
+      return !this.$user.profile
+    },
+    isAllowed () {
+      console.log('this.$user?.profile: ', this.$user.profile)
+      return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
+    }
+  },
+  async mounted () {
+    await this.$user.isReady
+    if (this.$user.profile.side !== 'etat') { this.$router.push('/') }
+
     if (this.$route.query.contact) {
       axios({
         url: '/api/pipedrive/contacted',
