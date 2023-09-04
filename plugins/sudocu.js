@@ -4,6 +4,21 @@ import _ from 'lodash'
 // console.log('args: ', args)
 // if (rawEventsError) { throw rawEventsError }
 
+function parseAttachment (path) {
+  if (path) {
+    const attachment = { id: '', name: '', type: 'file' }
+    let temp = ''
+    const semiSplit = path.split(':')
+    if (semiSplit[0] === 'link') { attachment.type = 'link' }
+    semiSplit.length > 1 ? temp = semiSplit[1] : temp = semiSplit[0]
+    attachment.name = temp
+    attachment.id = 'sudocu/' + temp.split('_').slice(1).join('/')
+    return [attachment]
+  } else {
+    return []
+  }
+}
+
 function formatSudocuProcedure (rawProcedures) {
   return rawProcedures.map((e) => {
     return {
@@ -62,26 +77,57 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         if (errPlanEvents) { throw new Error(errPlanEvents) }
         if (errSchemaEvents) { throw new Error(errSchemaEvents) }
 
-        function parseAttachment (path) {
-          if (path) {
-            const attachment = { id: '', name: '', type: 'file' }
-            let temp = ''
-            const semiSplit = path.split(':')
-            if (semiSplit[0] === 'link') { attachment.type = 'link' }
-            semiSplit.length > 1 ? temp = semiSplit[1] : temp = semiSplit[0]
-            attachment.name = temp
-            attachment.id = 'sudocu/' + temp.split('_').slice(1).join('/')
-            return [attachment]
-          } else {
-            return []
-          }
-        }
         const formattedEvs = planEvents.map(e => ({ ...e, attachements: parseAttachment(e.nomdocument) }))
 
         return formattedEvs.concat(schemaEvents)
       } catch (error) {
         console.log('ERROR getProcedureEvents:', error)
       }
+    },
+    async getProceduresEvents (arrProceduresId) {
+      try {
+        // TODO: Re rajouter les SCOT proprement
+        const rawPlanEvents = await $supabase.from('sudocu_procedure_events').select('*').in('noserieprocedure', arrProceduresId)
+        const rawSchemaEvents = await $supabase.from('sudocu_schemas_events').select('*').in('noserieprocedure', arrProceduresId)
+        const [{ data: planEvents, error: errPlanEvents }, { data: schemaEvents, error: errSchemaEvents }] = await Promise.all([rawPlanEvents, rawSchemaEvents])
+        if (errPlanEvents) { throw new Error(errPlanEvents) }
+        if (errSchemaEvents) { throw new Error(errSchemaEvents) }
+
+        const formattedEvs = planEvents.map(e => ({ ...e, attachements: parseAttachment(e.nomdocument) }))
+        const allEvts = formattedEvs.concat(schemaEvents)
+        return _.groupBy(allEvts, e => e.noserieprocedure)
+      } catch (error) {
+        console.log('ERROR getProcedureEvents:', error)
+      }
+    },
+    async getProceduresCollectivite (collectiviteId) {
+      // TODO: Ne gere que le PLAN pour le moment, il faut ajouter le SCOT
+      // On recupère les périmètres des procédures de la commune. Si c'est une EPCI on filtre sur la collectivite porteuse
+      const proceduresCollecQuery = $supabase.from('sudocu_procedures_perimetres').select('*')
+      collectiviteId = collectiviteId.toString().padStart(5, '0')
+
+      let proceduresCollec = null
+      if (collectiviteId > 5) {
+        proceduresCollec = await proceduresCollecQuery.eq('code_collectivite_porteuse', collectiviteId)
+      } else {
+        proceduresCollec = await proceduresCollecQuery.contains('communes_insee', [collectiviteId])
+      }
+      console.log('TEST proceduresCollec: ', proceduresCollec)
+      // On fetch les procédures faisant parti du périmètre de la commune
+      const proceduresCollecIds = proceduresCollec.data.map(e => e.procedure_id)
+      const rawPlanProcedures = await $supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds)
+
+      const planProcedures = rawPlanProcedures.data.map((rawPlanProcedure) => {
+        const collectivitePorteuse = proceduresCollec.data.find(e => e.procedure_id === rawPlanProcedure.noserieprocedure)
+        return { ...rawPlanProcedure, nbCommunesPerimetre: collectivitePorteuse.nb_communes, collectivitePorteuse: _.pick(collectivitePorteuse, ['code_collectivite_porteuse', 'type_collectivite_porteuse']) }
+      })
+      console.log('TEST planProcedures: ', planProcedures)
+      // TODO: On fetch tous les events liées aux procédures
+      const allProceduresEvents = await this.getProceduresEvents(proceduresCollecIds)
+      console.log('EVENTS OF EACH PROCEDURES: ', allProceduresEvents)
+      const planProceduresEvents = planProcedures.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
+      console.log('TEST planProceduresEvents: ', planProceduresEvents)
+      return planProceduresEvents
     },
     async getProcedures (communeId) {
       try {
