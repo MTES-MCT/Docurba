@@ -64,7 +64,7 @@ export default ({ $supabase, $user }, inject) => {
         return { user, profile }
       } catch (error) {
         if (error.message === 'User already registered') {
-          throw new Error('Cet e-mail est déjà enregistré. Vous pouvez réinitialiser votre mot de passe si vous l\'avez oublié.')
+          throw new Error('Cet email est déjà enregistré. Cliquez plutôt sur “J’ai déjà un compte” ou réinitialisez votre mot de passe si vous l’avez oublié.')
         } else {
           throw error
         }

@@ -72,7 +72,7 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item link @click="goToAdmin">
+            <v-list-item v-if="$user.profile.side === 'etat'" link @click="goToAdmin">
               <v-list-item-title>Accès DDT/DEAL</v-list-item-title>
             </v-list-item>
             <v-list-item link @click="signOut">

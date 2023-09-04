@@ -100,7 +100,7 @@ app.post('/signupCollectivite', async (req, res) => {
       if (errorInsertProfile) { throw errorInsertProfile }
       slack.requestCollectiviteAccess(insertedProfile[0])
     } else {
-      throw new Error('Vous avez déjà enregistrer un compte, nous vous avons renvoyé un email de connexion.')
+      throw new Error('Vous avez déjà un compte associé à cette adresse email. Nous vous avons renvoyé un email de connexion.')
     }
     res.status(200).send(user)
   } catch (error) {

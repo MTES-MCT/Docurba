@@ -231,7 +231,7 @@ module.exports = {
           personId: person.id
         }
         // Élaboration PAC - 55
-        if (userData.other_poste.includes('redacteur')) {
+        if (userData.other_poste.includes('redacteur_pac')) {
           const { data } = await this.addDeal({ ...deal, stageId: 55 })
           console.log('Deal New Redacteur Created', data)
         }

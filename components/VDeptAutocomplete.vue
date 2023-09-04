@@ -3,8 +3,8 @@
     v-model="selectedDepartement"
     :items="departements"
     label="Departement"
-    hide-details
     filled
+    :error-messages="errorMessages"
     return-object
   />
 </template>
@@ -17,6 +17,10 @@ export default {
     value: {
       type: Object,
       default () { return {} }
+    },
+    errorMessages: {
+      type: Array,
+      default: () => []
     }
   },
   data () {

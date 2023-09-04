@@ -84,7 +84,7 @@ export default {
         })
         this.snackbar = {
           val: true,
-          text: `Un email de connexion à été envoyé à ${this.email}. Cliquez sur le lien dans le mail pour être connecté automatiquement.`
+          text: `Un email de connexion à été envoyé à ${this.email}. Cliquez sur le lien dans l'email pour être connecté automatiquement.`
         }
         // this.$router.push({ name: 'login-collectivites-explain' })
       } catch (error) {

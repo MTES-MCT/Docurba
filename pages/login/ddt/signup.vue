@@ -34,7 +34,8 @@
                   <v-btn class="no-text-transform" outlined tile color="primary" :to="{name: 'login-ddt-signin'}">
                     J'ai déjà un compte
                   </v-btn>
-                  <v-btn depressed tile color="primary" :loading="loading" @click="signUp()">
+                  <!-- @click="signUp()" -->
+                  <v-btn depressed tile color="primary" :loading="loading" type="submit">
                     Créer mon compte
                   </v-btn>
                 </v-card-actions>

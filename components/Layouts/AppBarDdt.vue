@@ -91,7 +91,7 @@
       </div>
     </client-only>
     <template #extension>
-      <v-tabs align-with-title class="double-border">
+      <v-tabs v-if="$user.profile.verified" align-with-title class="double-border">
         <v-tab
           v-if="$user.profile.poste === 'ddt'"
           :to="{

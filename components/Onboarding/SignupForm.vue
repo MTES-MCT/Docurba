@@ -19,33 +19,37 @@
       </validation-provider>
     </v-col>
     <v-col cols="6">
-      <validation-provider v-slot="{ errors }" name="Rôle" rules="required">
+      <validation-provider v-slot="{ errors }" name="Administration" rules="required">
         <v-select
           v-model="userData.poste"
           :error-messages="errors"
           :items="roles"
           filled
-          label="Rôle"
+          label="Administration"
         />
       </validation-provider>
     </v-col>
     <v-col v-if="userData.poste === 'ddt'" cols="6">
-      <validation-provider v-slot="{ errors }" name="Poste" rules="required">
+      <validation-provider v-slot="{ errors }" name="Rôle(s)" rules="required">
         <v-select
           v-model="userData.other_poste"
           multiple
           :error-messages="errors"
           :items="postes"
           filled
-          label="Poste"
+          label="Rôle(s)"
         />
       </validation-provider>
     </v-col>
     <v-col v-if="userData.poste === 'ddt'" cols="12">
-      <VDeptAutocomplete v-model="userData.departement" />
+      <validation-provider v-slot="{ errors }" name="Département" rules="required">
+        <VDeptAutocomplete v-model="userData.departement" :error-messages="errors" />
+      </validation-provider>
     </v-col>
     <v-col v-if="userData.poste === 'dreal'" cols="12">
-      <VRegionAutocomplete v-model="userData.region" label="Votre region" />
+      <validation-provider v-slot="{ errors }" name="Région" rules="required">
+        <VRegionAutocomplete v-model="userData.region" label="Votre region" :error-messages="errors" />
+      </validation-provider>
     </v-col>
   </v-row>
 </template>
