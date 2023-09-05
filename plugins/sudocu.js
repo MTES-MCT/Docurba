@@ -188,6 +188,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
 
         const [{ data: rawPlanProcedures, error: rawProceduresError }, { data: rawSchemaProcedures, error: rawSchemaProceduresError }] = await Promise.all([promPlanProcedures, promSchemaProcedures])
         if (rawProceduresError) { throw rawProceduresError }
+
         if (rawSchemaProceduresError) { throw rawSchemaProceduresError }
         const rawProcedures = rawPlanProcedures.concat(rawSchemaProcedures)
 

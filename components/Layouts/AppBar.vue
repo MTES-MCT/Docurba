@@ -171,9 +171,13 @@ export default {
         this.openDocs = true
       }
     },
-    signOut () {
-      this.$supabase.auth.signOut()
+    async signOut () {
+      console.log('signout')
+
+      const { error } = await this.$supabase.auth.signOut({ scope: 'global' })
       this.$router.push('/')
+
+      console.log(error)
     }
   }
 }
