@@ -38,8 +38,12 @@ async function handleRedirect ($supabase, event, user, router) {
 export default ({ $supabase, app }, inject) => {
   const user = Vue.observable(Object.assign({}, defaultUser))
 
-  async function updateUser () {
-    const { data: { session } } = await $supabase.auth.getSession()
+  async function updateUser (session) {
+    if (!session) {
+      const { data } = await $supabase.auth.getSession()
+      session = data.session
+    }
+
     if (session) {
       Object.assign(user, session.user)
 
@@ -66,7 +70,7 @@ export default ({ $supabase, app }, inject) => {
 
     $supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
-        const user = await updateUser()
+        const user = await updateUser(session)
         handleRedirect($supabase, event, user, app.router)
       } else {
         Object.assign(user, defaultUser)
