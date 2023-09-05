@@ -87,8 +87,8 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
     async getProceduresEvents (arrProceduresId) {
       try {
         // TODO: Re rajouter les SCOT proprement
-        const rawPlanEvents = await $supabase.from('sudocu_procedure_events').select('*').in('noserieprocedure', arrProceduresId)
-        const rawSchemaEvents = await $supabase.from('sudocu_schemas_events').select('*').in('noserieprocedure', arrProceduresId)
+        const rawPlanEvents = await $supabase.from('sudocu_procedure_events').select('*').in('noserieprocedure', arrProceduresId).order('dateevenement', { ascending: true })
+        const rawSchemaEvents = await $supabase.from('sudocu_schemas_events').select('*').in('noserieprocedure', arrProceduresId).order('dateevenement', { ascending: true })
         const [{ data: planEvents, error: errPlanEvents }, { data: schemaEvents, error: errSchemaEvents }] = await Promise.all([rawPlanEvents, rawSchemaEvents])
         if (errPlanEvents) { throw new Error(errPlanEvents) }
         if (errSchemaEvents) { throw new Error(errSchemaEvents) }
@@ -112,21 +112,33 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       } else {
         proceduresCollec = await proceduresCollecQuery.contains('communes_insee', [collectiviteId])
       }
+      const proceduresCollecIds = proceduresCollec.data.map(e => e.procedure_id)
       console.log('TEST proceduresCollec: ', proceduresCollec)
       // On fetch les procédures faisant parti du périmètre de la commune
-      const proceduresCollecIds = proceduresCollec.data.map(e => e.procedure_id)
       const rawPlanProcedures = await $supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds)
+      console.log('TEST rawPlanProcedures: ', rawPlanProcedures)
 
       const planProcedures = rawPlanProcedures.data.map((rawPlanProcedure) => {
+        // Raccordements des périmètres aux procédures
+        const collecPerim = proceduresCollec.data.find(i => i.procedure_id === rawPlanProcedure.noserieprocedure)
+        rawPlanProcedure.perimetre = collecPerim.communes_insee.reduce((acc, curr, idx) => {
+          acc.push({ inseeCode: collecPerim.communes_insee[idx], name: collecPerim.name_communes[idx] })
+          return acc
+        }, [])
+        // Enrichissement des collectivités porteuses de chaque procédures
         const collectivitePorteuse = proceduresCollec.data.find(e => e.procedure_id === rawPlanProcedure.noserieprocedure)
         return { ...rawPlanProcedure, nbCommunesPerimetre: collectivitePorteuse.nb_communes, collectivitePorteuse: _.pick(collectivitePorteuse, ['code_collectivite_porteuse', 'type_collectivite_porteuse']) }
       })
       console.log('TEST planProcedures: ', planProcedures)
-      // TODO: On fetch tous les events liées aux procédures
+      // On fetch tous les events liées aux procédures
       const allProceduresEvents = await this.getProceduresEvents(proceduresCollecIds)
       console.log('EVENTS OF EACH PROCEDURES: ', allProceduresEvents)
+      // Raccordement des events à leur procédure
       const planProceduresEvents = planProcedures.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
       console.log('TEST planProceduresEvents: ', planProceduresEvents)
+      // TODO: Vérification de la sectorialité - si le périmètre de la procédure est plus petit que la collectivité porteuse
+      // TODO: Définition des status
+      // TODO: Définition des procédures secondaires
       return planProceduresEvents
     },
     async getProcedures (communeId) {
