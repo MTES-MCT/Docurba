@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import axios from 'axios'
 // import epcisList from ('./Data/EPCI.json')
 // const { data: rawEvents, error: rawEventsError, ...args } = await this.$supabase.from('sudocu_procedure_events').select('*', { count: 'exact' }).eq('codecollectivite', codecollectivite)
 // console.log('args: ', args)
@@ -107,9 +108,11 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       collectiviteId = collectiviteId.toString().padStart(5, '0')
 
       let proceduresCollec = null
-      if (collectiviteId > 5) {
+      if (collectiviteId.length > 5) {
+        console.log('SEARCHING FOR EPCI: ', collectiviteId)
         proceduresCollec = await proceduresCollecQuery.eq('code_collectivite_porteuse', collectiviteId)
       } else {
+        console.log('SEARCHING FOR COMMUNE: ', [collectiviteId])
         proceduresCollec = await proceduresCollecQuery.contains('communes_insee', [collectiviteId])
       }
       const proceduresCollecIds = proceduresCollec.data.map(e => e.procedure_id)
@@ -122,6 +125,16 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       const allProceduresEvents = await this.getProceduresEvents(proceduresCollecIds)
       console.log('EVENTS OF EACH PROCEDURES: ', allProceduresEvents)
 
+      // Fetch des EPCIs porteuses des différentes procédures
+      // /api/geo/intercommunalites?codes[]=200000172&codes[]=200000438
+      const collecPorteusesIds = [...new Set(proceduresCollec.data.filter(e => e.type_collectivite_porteuse !== 'COM').map(e => e.code_collectivite_porteuse))]
+      console.log('LIST IDS EPCI PORTEUSES: ', collecPorteusesIds)
+      const epcisPorteuses = await axios({
+        url: '/api/geo/intercommunalites',
+        method: 'get',
+        params: { codes: collecPorteusesIds }
+      }).data
+      console.log('EPCI PORTEUSES: ', epcisPorteuses)
       // Raccordement des events à leur procédure
       const planProceduresEvents = rawPlanProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
       console.log('TEST planProceduresEvents: ', planProceduresEvents)
@@ -140,25 +153,19 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         // const isSectoriel = false
         let statusProcedure = 'inconnu'
         let statusInfos = {}
-        // Si c'est un EPCI on verifie
-        if (collectivitePorteuse.nb_communes > 1) {
-          statusProcedure = 'todo'
-        } else {
-          // Si c'est une commune
-          // TODO: CHECK LE VALID des events
-          statusInfos = {
-            // isSectoriel:
-            hasDelibApprob: rawPlanProcedure.events.some(e => e.libtypeevenement === "Délibération d'approbation" && e.codestatutevenement === 'V'),
-            hasAbandon: rawPlanProcedure.events.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
-            hasAnnulation: rawPlanProcedure.events.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement))
-          }
-          if (statusInfos.hasAbandon) {
-            statusProcedure = 'abandon'
-          } else if (statusInfos.hasAnnulation) {
-            statusProcedure = 'annule'
-          } else if (rawPlanProcedure.datelancement) {
-            statusProcedure = 'en cours'
-          }
+
+        statusInfos = {
+          // isSectoriel:
+          hasDelibApprob: rawPlanProcedure.events.some(e => e.libtypeevenement === "Délibération d'approbation" && e.codestatutevenement === 'V'),
+          hasAbandon: rawPlanProcedure.events.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
+          hasAnnulation: rawPlanProcedure.events.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement))
+        }
+        if (statusInfos.hasAbandon) {
+          statusProcedure = 'abandon'
+        } else if (statusInfos.hasAnnulation) {
+          statusProcedure = 'annule'
+        } else if (rawPlanProcedure.datelancement) {
+          statusProcedure = 'en cours'
         }
 
         return { ...rawPlanProcedure, status: statusProcedure, statusInfos, nbCommunesPerimetre: collectivitePorteuse.nb_communes, collectivitePorteuse: _.pick(collectivitePorteuse, ['code_collectivite_porteuse', 'type_collectivite_porteuse']) }
