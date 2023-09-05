@@ -35,40 +35,43 @@ async function handleRedirect ($supabase, event, user, router) {
   }
 }
 
-export default ({ $supabase, app }, inject) => {
+export default async ({ $supabase, app }, inject) => {
   const user = Vue.observable(Object.assign({}, defaultUser))
 
   async function updateUser (session) {
+    console.log('updateUser', session)
+
     if (!session) {
+      console.log('get session')
       const { data } = await $supabase.auth.getSession()
       session = data.session
+
+      console.log('session result', session)
     }
 
     if (session) {
       Object.assign(user, session.user)
 
       user.isReady = new Promise((resolve, reject) => {
-        Promise.all([
-          $supabase.from('profiles').select().eq('user_id', session.user.id),
-          $supabase.from('admin_users_dept').select('role, dept').match({
-            user_id: session.user.id,
-            user_email: session.user.email
-          })
-        ]).then(([userProfile, userAdminRefs]) => {
-          if (userProfile?.data?.[0]) { user.profile = userProfile.data[0] }
-          if (userAdminRefs?.data?.[0]) { user.scope = userAdminRefs.data[0] }
+        $supabase.from('profiles').select().eq('user_id', session.user.id).then(({ data }) => {
+          console.log('profiles', data)
+          user.profile = data[0]
           resolve(true)
         })
       })
     }
+
     await user.isReady
+
     return user
   }
 
   if (process.client) {
-    updateUser()
+    await updateUser()
 
     $supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('onAuthStateChange', event, session)
+
       if (session) {
         const user = await updateUser(session)
         handleRedirect($supabase, event, user, app.router)
