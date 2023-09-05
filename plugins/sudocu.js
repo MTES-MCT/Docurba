@@ -1,5 +1,5 @@
 import _ from 'lodash'
-
+// import epcisList from ('./Data/EPCI.json')
 // const { data: rawEvents, error: rawEventsError, ...args } = await this.$supabase.from('sudocu_procedure_events').select('*', { count: 'exact' }).eq('codecollectivite', codecollectivite)
 // console.log('args: ', args)
 // if (rawEventsError) { throw rawEventsError }
@@ -115,10 +115,18 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       const proceduresCollecIds = proceduresCollec.data.map(e => e.procedure_id)
       console.log('TEST proceduresCollec: ', proceduresCollec)
       // On fetch les procédures faisant parti du périmètre de la commune
-      const rawPlanProcedures = await $supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds)
+      const rawPlanProcedures = await $supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: true })
       console.log('TEST rawPlanProcedures: ', rawPlanProcedures)
 
-      const planProcedures = rawPlanProcedures.data.map((rawPlanProcedure) => {
+      // On fetch tous les events liées aux procédures
+      const allProceduresEvents = await this.getProceduresEvents(proceduresCollecIds)
+      console.log('EVENTS OF EACH PROCEDURES: ', allProceduresEvents)
+
+      // Raccordement des events à leur procédure
+      const planProceduresEvents = rawPlanProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
+      console.log('TEST planProceduresEvents: ', planProceduresEvents)
+
+      const planProcedures = planProceduresEvents.map((rawPlanProcedure, idx) => {
         // Raccordements des périmètres aux procédures
         const collecPerim = proceduresCollec.data.find(i => i.procedure_id === rawPlanProcedure.noserieprocedure)
         rawPlanProcedure.perimetre = collecPerim.communes_insee.reduce((acc, curr, idx) => {
@@ -127,19 +135,44 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         }, [])
         // Enrichissement des collectivités porteuses de chaque procédures
         const collectivitePorteuse = proceduresCollec.data.find(e => e.procedure_id === rawPlanProcedure.noserieprocedure)
-        return { ...rawPlanProcedure, nbCommunesPerimetre: collectivitePorteuse.nb_communes, collectivitePorteuse: _.pick(collectivitePorteuse, ['code_collectivite_porteuse', 'type_collectivite_porteuse']) }
+        // TODO: Vérification de la sectorialité - si le périmètre de la procédure est plus petit que la collectivité porteuse
+
+        // const isSectoriel = false
+        let statusProcedure = 'inconnu'
+        let statusInfos = {}
+        // Si c'est un EPCI on verifie
+        if (collectivitePorteuse.nb_communes > 1) {
+          statusProcedure = 'todo'
+        } else {
+          // Si c'est une commune
+          // TODO: CHECK LE VALID des events
+          statusInfos = {
+            // isSectoriel:
+            hasDelibApprob: rawPlanProcedure.events.some(e => e.libtypeevenement === "Délibération d'approbation" && e.codestatutevenement === 'V'),
+            hasAbandon: rawPlanProcedure.events.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
+            hasAnnulation: rawPlanProcedure.events.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement))
+          }
+          if (statusInfos.hasAbandon) {
+            statusProcedure = 'abandon'
+          } else if (statusInfos.hasAnnulation) {
+            statusProcedure = 'annule'
+          } else if (rawPlanProcedure.datelancement) {
+            statusProcedure = 'en cours'
+          }
+        }
+
+        return { ...rawPlanProcedure, status: statusProcedure, statusInfos, nbCommunesPerimetre: collectivitePorteuse.nb_communes, collectivitePorteuse: _.pick(collectivitePorteuse, ['code_collectivite_porteuse', 'type_collectivite_porteuse']) }
       })
+
+      // Gestion des rollback du a une annuldation de la délibération (le DU précédent en date devient opposable) et précédent
+      // La dernière procédure ayant une délibération est l'opposable
+      const opposableProc = planProcedures.findLast(e => e.statusInfos.hasDelibApprob && !e.statusInfos.hasAbandon && !e.statusInfos.hasAnnulation)
+      opposableProc.status = 'opposable'
+      planProcedures.filter(e => e.statusInfos.hasDelibApprob && opposableProc.noserieprocedure !== e.noserieprocedure).forEach((e) => { e.status = 'precedent' })
+
       console.log('TEST planProcedures: ', planProcedures)
-      // On fetch tous les events liées aux procédures
-      const allProceduresEvents = await this.getProceduresEvents(proceduresCollecIds)
-      console.log('EVENTS OF EACH PROCEDURES: ', allProceduresEvents)
-      // Raccordement des events à leur procédure
-      const planProceduresEvents = planProcedures.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
-      console.log('TEST planProceduresEvents: ', planProceduresEvents)
-      // TODO: Vérification de la sectorialité - si le périmètre de la procédure est plus petit que la collectivité porteuse
-      // TODO: Définition des status
       // TODO: Définition des procédures secondaires
-      return planProceduresEvents
+      return planProcedures
     },
     async getProcedures (communeId) {
       try {
