@@ -12,7 +12,7 @@ const defaultUser = {
 }
 
 async function handleRedirect ($supabase, event, user, router) {
-  console.log('handleRedirect: ', event, user)
+  // console.log('handleRedirect: ', event, user)
   if (event === 'SIGNED_IN') {
     if (user.profile.poste === 'dreal') {
       function trameRef (user) {
@@ -39,14 +39,14 @@ export default async ({ $supabase, app }, inject) => {
   const user = Vue.observable(Object.assign({}, defaultUser))
 
   async function updateUser (session) {
-    console.log('updateUser', session)
+    // console.log('updateUser', session)
 
     if (!session) {
-      console.log('get session')
+      // console.log('get session')
       const { data } = await $supabase.auth.getSession()
       session = data.session
 
-      console.log('session result', session)
+      // console.log('session result', session)
     }
 
     if (session) {
@@ -54,7 +54,7 @@ export default async ({ $supabase, app }, inject) => {
 
       user.isReady = new Promise((resolve, reject) => {
         $supabase.from('profiles').select().eq('user_id', session.user.id).then(({ data }) => {
-          console.log('profiles', data)
+          // console.log('profiles', data)
           user.profile = data[0]
           resolve(true)
         })
@@ -70,7 +70,7 @@ export default async ({ $supabase, app }, inject) => {
     await updateUser()
 
     $supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('onAuthStateChange', event, session)
+      // console.log('onAuthStateChange', event, session)
 
       if (session) {
         const user = await updateUser(session)
