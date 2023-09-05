@@ -33,6 +33,16 @@ app.get('/communes/:code', (req, res) => {
 app.get('/intercommunalites', (req, res) => {
   const queryKeys = Object.keys(req.query)
 
+  if (req.query.codes) {
+    const intercommunalitesCodes = req.query.codes
+
+    const filterredIntercomunalites = intercommunalites.filter((intercommunalite) => {
+      return intercommunalitesCodes.includes(intercommunalite.code)
+    })
+
+    res.status(200).send(filterredIntercomunalites)
+  }
+
   if (queryKeys.length) {
     const filterredIntercomunalites = _.filter(intercommunalites, req.query)
     res.status(200).send(filterredIntercomunalites)
