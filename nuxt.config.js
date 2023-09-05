@@ -109,7 +109,10 @@ export default {
     { path: '/api/projects', handler: '~/server-middleware/projects.js' },
     { path: '/api/slack', handler: '~/server-middleware/slack.js' },
     { path: '/api/stats', handler: '~/server-middleware/stats.js' },
-    { path: '/api/trames', handler: '~/server-middleware/trames.js' }
+    { path: '/api/trames', handler: '~/server-middleware/trames.js' },
+    // Public documented APIs
+    { path: '/api/geo', handler: '~/server-middleware/geo.js' },
+    { path: '/api/urba', handler: '~/server-middleware/urba.js' }
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
