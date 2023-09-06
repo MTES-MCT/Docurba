@@ -413,7 +413,7 @@ export default {
           data: { userData }
         })
 
-        // this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
+        this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
       } catch (error) {
         this.error = error
         this.$vuetify.goTo(0)
