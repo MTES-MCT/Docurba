@@ -59,12 +59,12 @@ export default {
     }
   },
   async mounted () {
-    // TODO: TEST GETTING BY PERIMETER
-    // 200040111
-    const test = await this.$sudocu.getProceduresCollectivite('73001')
-    // const test = await this.$supabase.from('sudocu_procedures_perimetres').select('*').contains('communes_insee', ['73246'])
-    console.log('testtesttesttest: ', test)
-    // EDN TEST
+    // // TODO: TEST GETTING BY PERIMETER
+    // // 200040111
+    // const test = await this.$sudocu.getProceduresCollectivite('73001')
+    // // const test = await this.$supabase.from('sudocu_procedures_perimetres').select('*').contains('communes_insee', ['73246'])
+    // console.log('testtesttesttest: ', test)
+    // // EDN TEST
 
     this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId)
     this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
