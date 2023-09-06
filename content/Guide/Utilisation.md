@@ -3,8 +3,9 @@
 
 *Docurba, outil pour faciliter l’élaboration et le suivi des documents d’urbanisme.*
  
-💡>>**Sessions de prise en main de l'outil d'élaboration des PAC, en visioconférence.** [inscriptions via ce lien](https://tally.so/r/w54l6Z).<<
-_Prochaines dates : 3 août et 5 septembre._
+💡**Nous organisons des sessions de prise en main de l'outil d'élaboration des PAC, en visioconférence.** [inscriptions via ce lien](https://app.livestorm.co/mte/docurba-session-de-prise-en-main-de-loutil-delaboration-des-pac?type=detailed).
+
+
 
 
 <div class="my-8 background--text text--lighten-2 font-weight-bold rounded g300 rounded-lg pa-4">
