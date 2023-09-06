@@ -1,6 +1,11 @@
 <template>
-  <v-row v-if="procedures.length > 0 || emptyProjects.length > 0">
-    <v-col>
+  <v-row>
+    <DashboardDUInsertDialog
+      v-model="insertDialog"
+      :collectivite="collectivite"
+      @insert="fetchProjects"
+    />
+    <v-col v-if="procedures.length > 0 || emptyProjects.length > 0">
       <v-tabs
         v-model="tab"
         background-color="primary"
@@ -16,11 +21,9 @@
           SCoT
         </v-tab>
         <v-spacer />
-        <DashboardDUInsertDialog
-          v-if="!isPublic"
-          :collectivite="collectivite"
-          @insert="fetchProjects"
-        />
+        <v-btn text class="align-self-center" @click="insertDialog = true">
+          Ajouter un DU
+        </v-btn>
       </v-tabs>
 
       <v-tabs-items v-model="tab" :class="{beige: !isPublic}">
@@ -68,27 +71,16 @@
         </v-tab-item>
       </v-tabs-items>
     </v-col>
-  </v-row>
-  <v-row v-else-if="!loadingProcedures && procedures.length === 0 && emptyProjects.length === 0">
-    <v-col cols="12">
+    <v-col v-else-if="!loadingProcedures && procedures.length === 0 && emptyProjects.length === 0" cols="12">
       <div class="text--secondary beige pa-6 mb-12 rounded">
         Cette collectivité n'a pas de documents d'urbanisme sous sa compétence.
       </div>
+
+      <v-btn v-if="!isPublic" tile color="primary" @click="insertDialog = true">
+        Ajouter un document d'urbanisme
+      </v-btn>
     </v-col>
-    <v-col v-if="!isPublic" cols="auto">
-      <DashboardDUInsertDialog
-        v-model="insertDialog"
-        :collectivite="collectivite"
-        @insert="fetchProjects"
-      >
-        <v-btn tile color="primary" @click="insertDialog = true">
-          Ajouter un document d'urbanisme
-        </v-btn>
-      </DashboardDUInsertDialog>
-    </v-col>
-  </v-row>
-  <v-row v-else>
-    <v-col cols="12">
+    <v-col v-else cols="12">
       <VGlobalLoader />
     </v-col>
   </v-row>
