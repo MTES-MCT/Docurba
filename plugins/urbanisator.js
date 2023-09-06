@@ -53,6 +53,10 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
     // },
     async getCurrentCollectivite (collectiviteId) {
       try {
+        // const { data: collectivite } = await axios({
+        //   url: `/api/geo/${this.isEpci(collectiviteId) ? 'intercommunalites' : 'communes'}/${collectiviteId}`,
+        //   method: 'get'
+        // })
         const { data: collectivite } = await axios({
           url: `/api/${this.isEpci(collectiviteId) ? 'epci' : 'communes'}/${collectiviteId}`,
           method: 'get'
@@ -64,6 +68,7 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
         collectivite.type = isEpci ? 'epci' : 'commune'
         const regionCode = isEpci ? collectivite.towns[0].code_region : collectivite.code_region
         collectivite.region = this.getRegionDetails(regionCode)
+        console.log('ENRICHED FETCH COLLEC:', collectivite)
         return collectivite
       } catch (error) {
         // eslint-disable-next-line no-console

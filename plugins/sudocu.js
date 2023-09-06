@@ -103,20 +103,23 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
     },
     async getProceduresCollectivite (collectiviteId) {
       // TODO: Ne gere que le PLAN pour le moment, il faut ajouter le SCOT
+      // TODO: Refaire un export avec le name_collectivite_porteuse (erreur ici on a le type de la collec a la place)
+      // TODO: Refaire l'import des events avec le code event plutot que uniquement le label
+
       // On recupère les périmètres des procédures de la commune. Si c'est une EPCI on filtre sur la collectivite porteuse
       const proceduresCollecQuery = $supabase.from('sudocu_procedures_perimetres').select('*')
       collectiviteId = collectiviteId.toString().padStart(5, '0')
 
       let proceduresCollec = null
       if (collectiviteId.length > 5) {
-        console.log('SEARCHING FOR EPCI: ', collectiviteId)
+        console.log('Searching procédures for epci: ', collectiviteId)
         proceduresCollec = await proceduresCollecQuery.eq('code_collectivite_porteuse', collectiviteId)
       } else {
-        console.log('SEARCHING FOR COMMUNE: ', [collectiviteId])
+        console.log('Searching procédures for commune: ', [collectiviteId])
         proceduresCollec = await proceduresCollecQuery.contains('communes_insee', [collectiviteId])
       }
       const proceduresCollecIds = proceduresCollec.data.map(e => e.procedure_id)
-      console.log('TEST proceduresCollec: ', proceduresCollec)
+
       // On fetch les procédures faisant parti du périmètre de la commune
       const rawPlanProcedures = await $supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: true })
       console.log('TEST rawPlanProcedures: ', rawPlanProcedures)
@@ -126,15 +129,29 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       console.log('EVENTS OF EACH PROCEDURES: ', allProceduresEvents)
 
       // Fetch des EPCIs porteuses des différentes procédures
-      // /api/geo/intercommunalites?codes[]=200000172&codes[]=200000438
+      let epcisPorteuses = []
       const collecPorteusesIds = [...new Set(proceduresCollec.data.filter(e => e.type_collectivite_porteuse !== 'COM').map(e => e.code_collectivite_porteuse))]
-      console.log('LIST IDS EPCI PORTEUSES: ', collecPorteusesIds)
-      const epcisPorteuses = await axios({
-        url: '/api/geo/intercommunalites',
-        method: 'get',
-        params: { codes: collecPorteusesIds }
-      }).data
-      console.log('EPCI PORTEUSES: ', epcisPorteuses)
+      if (collecPorteusesIds.length > 0) {
+        console.log('LIST IDS EPCI PORTEUSES: ', collecPorteusesIds)
+        epcisPorteuses = (await axios({ url: '/api/geo/intercommunalites', method: 'get', params: { codes: collecPorteusesIds } })).data
+
+        console.log('EPCI PORTEUSES: ', epcisPorteuses)
+      }
+      let communesPorteuses = []
+      const communesPorteusesIds = [...new Set(proceduresCollec.data.filter(e => e.type_collectivite_porteuse === 'COM').map(e => e.code_collectivite_porteuse))]
+      if (communesPorteusesIds.length > 0) {
+        console.log('LIST IDS COMMUNES PORTEUSES: ', communesPorteusesIds)
+        communesPorteuses = (await axios({
+          url: '/api/geo/communes',
+          method: 'get',
+          params: { codes: communesPorteusesIds }
+        })).data
+
+        console.log('COMMUNES PORTEUSES: ', communesPorteuses)
+      }
+      // TODO utiliser ca
+      const collectivitesPorteuses = epcisPorteuses.concat(communesPorteuses)
+      console.log('collectivitesPorteuses: ', collectivitesPorteuses)
       // Raccordement des events à leur procédure
       const planProceduresEvents = rawPlanProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
       console.log('TEST planProceduresEvents: ', planProceduresEvents)
@@ -148,14 +165,15 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         }, [])
         // Enrichissement des collectivités porteuses de chaque procédures
         const collectivitePorteuse = proceduresCollec.data.find(e => e.procedure_id === rawPlanProcedure.noserieprocedure)
-        // TODO: Vérification de la sectorialité - si le périmètre de la procédure est plus petit que la collectivité porteuse
 
-        // const isSectoriel = false
         let statusProcedure = 'inconnu'
         let statusInfos = {}
 
+        // Vérification de la sectorialité - si le périmètre de la procédure est plus petit que la collectivité porteuse
+        const fullDetailsCollecPorteuse = collectivitesPorteuses.find(e => e.code === collectivitePorteuse.code_collectivite_porteuse)
+        console.log('FULL DETAILS COLLEC PORTEUSE: ', fullDetailsCollecPorteuse, ' FOR: ', collectivitePorteuse.code_collectivite_porteuse)
         statusInfos = {
-          // isSectoriel:
+          isSectoriel: collectivitePorteuse.nb_communes > 1 ? collectivitePorteuse.nb_communes < fullDetailsCollecPorteuse.nbCommunes : false,
           hasDelibApprob: rawPlanProcedure.events.some(e => e.libtypeevenement === "Délibération d'approbation" && e.codestatutevenement === 'V'),
           hasAbandon: rawPlanProcedure.events.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
           hasAnnulation: rawPlanProcedure.events.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement))
@@ -170,16 +188,35 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
 
         return { ...rawPlanProcedure, status: statusProcedure, statusInfos, nbCommunesPerimetre: collectivitePorteuse.nb_communes, collectivitePorteuse: _.pick(collectivitePorteuse, ['code_collectivite_porteuse', 'type_collectivite_porteuse']) }
       })
-
       // Gestion des rollback du a une annuldation de la délibération (le DU précédent en date devient opposable) et précédent
       // La dernière procédure ayant une délibération est l'opposable
-      const opposableProc = planProcedures.findLast(e => e.statusInfos.hasDelibApprob && !e.statusInfos.hasAbandon && !e.statusInfos.hasAnnulation)
-      opposableProc.status = 'opposable'
-      planProcedures.filter(e => e.statusInfos.hasDelibApprob && opposableProc.noserieprocedure !== e.noserieprocedure).forEach((e) => { e.status = 'precedent' })
+      function setSpecificsStatus (arrProcedures) {
+        const opposableProc = arrProcedures.findLast(e => e.statusInfos.hasDelibApprob && !e.statusInfos.hasAbandon && !e.statusInfos.hasAnnulation)
+        if (opposableProc) { opposableProc.status = 'opposable' }
+        arrProcedures.filter(e => e.statusInfos.hasDelibApprob && opposableProc.noserieprocedure !== e.noserieprocedure).forEach((e) => { e.status = 'precedent' })
+      }
+
+      // Définition des procédures secondaires
+      const typePrincipalProcedures = ['Elaboration', 'Révision', 'Abrogation', 'Engagement', 'Réengagement']
+      const [procsPrincipales, procsSecondaires] = _.partition(planProcedures, procedure => typePrincipalProcedures.includes(procedure.libtypeprocedure))
+      let groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.noserieprocedureratt?.toString())
+
+      // Define specific status for principales / secondaires
+      console.log('procsPrincipales ?? : ', procsPrincipales)
+      setSpecificsStatus(procsPrincipales)
+      console.log('groupedProcsSecondaires ?? : ', groupedProcsSecondaires)
+      _.each(groupedProcsSecondaires, e => setSpecificsStatus(e))
+      groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.noserieprocedureratt?.toString())
 
       console.log('TEST planProcedures: ', planProcedures)
-      // TODO: Définition des procédures secondaires
-      return planProcedures
+
+      // Assign procedures secondaire to principales
+      const fullProcs = _.map(procsPrincipales, (procedurePrincipale) => {
+        procedurePrincipale.procSecs = groupedProcsSecondaires[procedurePrincipale.noserieprocedure]
+        return procedurePrincipale
+      })
+
+      return fullProcs
     },
     async getProcedures (communeId) {
       try {

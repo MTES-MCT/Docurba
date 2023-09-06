@@ -10,6 +10,16 @@ const intercommunalites = require('./Data/EnrichedIntercommunalites.json')
 app.get('/communes', (req, res) => {
   const queryKeys = Object.keys(req.query)
 
+  if (req.query.codes) {
+    const communesCodes = req.query.codes
+
+    const filterredCommunes = communes.filter((commune) => {
+      return communesCodes.includes(commune.code)
+    })
+
+    res.status(200).send(filterredCommunes)
+  }
+
   if (queryKeys.length) {
     const filterredCommunes = _.filter(communes, req.query)
     res.status(200).send(filterredCommunes)
