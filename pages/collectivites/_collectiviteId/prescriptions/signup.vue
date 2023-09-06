@@ -111,15 +111,27 @@ export default {
     }
   },
   methods: {
-    async  nextPage () {
+    nextPage () {
       try {
-        const { data: profile, error: errorProfile } = this.$supabase.from('profiles').select().eq('email', this.email)
-        if (errorProfile) { throw errorProfile }
-        if (profile.length > 0) { throw new Error('Cet e-mail à déjà un compte rattaché, merci de vous connecter.') }
-        const { data: newProfile, error: errorNewProfile } = await this.$supabase.from('profiles').insert({ email: this.email, side: 'collectivite', no_signup: true }).select
-        if (errorNewProfile) { throw errorNewProfile }
+        // const { data: profile, error: errorProfile } = await this.$supabase.from('profiles').select().eq('email', this.email)
+
+        // if (errorProfile) { throw errorProfile }
+        // if (profile && profile.length > 0) { throw new Error('Cet e-mail à déjà un compte rattaché, merci de vous connecter.') }
+
+        // const { data: newProfile, error: errorNewProfile } = await this.$supabase.from('profiles').insert({
+        //   email: this.email,
+        //   side: 'collectivite',
+        //   no_signup: true
+        // }).select
+
+        // if (errorNewProfile) { throw errorNewProfile }
+
         this.$emit('snackMessage', 'Vous pouvez dès a présent soumettre votre acte. Nous vous préviendrons par email quand ce dernier sera avalisée.')
-        this.$router.push({ name: 'collectivites-collectiviteId-prescriptions-add', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { email: this.email, user_id: newProfile.id, ...this.$route.query } })
+        this.$router.push({
+          name: 'collectivites-collectiviteId-prescriptions-add',
+          params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE },
+          query: { email: this.email, ...this.$route.query }
+        })
       } catch (error) {
         this.error = error.message
       }
