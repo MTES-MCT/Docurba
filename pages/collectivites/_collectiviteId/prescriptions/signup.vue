@@ -133,6 +133,7 @@ export default {
           query: { email: this.email, ...this.$route.query }
         })
       } catch (error) {
+        console.log(error)
         this.error = error.message
       }
     }
