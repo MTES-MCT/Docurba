@@ -305,9 +305,15 @@ export default {
   computed: {
     choiceDone () {
       return (this.docType === 'attachments' && this.files && this.files.length > 0) || (this.docType === 'link' && this.link && this.$refs?.urlTextfield?.valid)
+    },
+    validationErrors () {
+      return this.$refs?.observerActePrescription?.errors
     }
   },
   watch: {
+    validationErrors (newVal) {
+      console.log('TRIGGER')
+    },
     DUType (newVal) {
       if (newVal === 'PLUi') {
         this.selectAllPerimetre()
@@ -317,6 +323,16 @@ export default {
     }
   },
   mounted () {
+    this.$watch(() => this.$refs.observerActePrescription.flags.failed, (val) => {
+      if (val) {
+        this.$nextTick(() => {
+          const el = this.$el.querySelector('.error--text:first-of-type')
+          this.$vuetify.goTo(el)
+        })
+      }
+    })
+
+    console.log('this.$refs: ', this.$refs)
     this.selectAllPerimetre()
   },
   methods: {
@@ -416,7 +432,7 @@ export default {
         // this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
       } catch (error) {
         this.error = error
-        this.$vuetify.goTo(0)
+        this.$vuetify.goTo('error--text:first-of-type')
         this.loadingSave = false
         console.log(error)
       }

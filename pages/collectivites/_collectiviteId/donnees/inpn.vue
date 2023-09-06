@@ -138,9 +138,9 @@ export default {
     } else {
       communesData = [this.collectivite]
     }
-
+    console.log('COMMUNE ID: ', communesData)
     communesData = communesData.map((e) => {
-      const urlInpn = `https://inpn.mnhn.fr/collTerr/commune/${e.id}`
+      const urlInpn = `https://inpn.mnhn.fr/collTerr/commune/${e.id || e.code_commune_INSEE}`
       const enriched = {
         ...e,
         urlEspaces: `${urlInpn}/tab/espaces`,
