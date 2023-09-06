@@ -40,7 +40,7 @@
       </v-col>
       <v-col cols="12">
         <p>
-          Veuillez noter qu'une étape de validation manuelle de notre part est nécessaire, afin de nous assurer que vous êtes bien en droit d’agir en tant que collectivité/bureaux d’études/agence d’urbanisme.
+          Veuillez noter qu'une étape de validation manuelle de notre part est nécessaire, afin de nous assurer que vous avez bien la qualité pour agir.
           Vous recevrez un email pour vous informer de votre validation de compte dès que notre équipe aura procédé à la vérification.
         </p>
         <v-alert type="info">
