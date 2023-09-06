@@ -55,6 +55,10 @@
         >
           Tableau de bord
         </v-btn>
+
+        <v-btn v-if="$user.profile.side === 'collectivite'" :to="`/collectivites/${$user.profile.collectivite_id}/?isEpci=${$user.profile.collectivite_id.length > 5}`" depressed tile text>
+          Ma collectivité
+        </v-btn>
         <v-menu v-if="$user.id" offset-y>
           <template #activator="{ on }">
             <v-btn
