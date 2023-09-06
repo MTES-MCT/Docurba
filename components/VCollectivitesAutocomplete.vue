@@ -20,6 +20,7 @@
         <v-autocomplete
           v-model="selectedCollectivite"
           v-bind="inputProps"
+          hide-details
           :no-data-text="loading ? 'Chargement ...' : 'Selectionnez un département'"
           :items="collectivites"
           item-text="name"

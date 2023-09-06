@@ -1,12 +1,5 @@
 <template>
   <v-dialog v-model="isOpen" max-width="800px">
-    <template #activator="{on}">
-      <slot>
-        <v-btn text class="align-self-center" v-on="on">
-          Ajouter un DU
-        </v-btn>
-      </slot>
-    </template>
     <v-card>
       <v-card-title>Création d'un nouveau documents d'urbanisme</v-card-title>
       <v-card-text>
@@ -34,7 +27,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="primary" outlined tile @click="isOpen = false">
+        <v-btn color="primary" outlined tile @click="close">
           Annuler
         </v-btn>
         <v-btn color="primary" :loading="saving" tile depressed @click="insertProject">
@@ -80,7 +73,6 @@ export default {
     const towns = isEpci ? this.collectivite.towns : [this.collectivite]
 
     return {
-      isOpen: this.value,
       saving: false,
       snackbar: false,
       isEpci,
@@ -108,11 +100,14 @@ export default {
         : [
             'CC', 'PLU'
           ]
-    }
-  },
-  watch: {
-    isOpen () {
-      this.$emit('input', this.isOpen)
+    },
+    isOpen: {
+      set (val) {
+        this.$emit('input', val)
+      },
+      get () {
+        return this.value
+      }
     }
   },
   methods: {
@@ -141,6 +136,9 @@ export default {
       }
 
       this.saving = false
+    },
+    close () {
+      this.$emit('input', false)
     }
   }
 }

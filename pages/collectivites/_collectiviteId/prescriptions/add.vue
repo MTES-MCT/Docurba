@@ -400,14 +400,14 @@ export default {
           procedure_type: this.typeProcedure,
           ms_scope: this.MSScope,
           procedure_number: this.numberProcedure,
-          profile_id: this.$user?.profile?.id || this.$route.query.user_id
+          profile_id: this.$user.id || null
         }
         if (this.docType === 'link') {
           prescription.link_url = this.link
         } else if (this.docType === 'attachments') {
           prescription.attachments = await this.uploadFiles()
         }
-        // await this.$supabase.from('prescriptions').insert([prescription])
+        await this.$supabase.from('prescriptions').insert([prescription])
         this.loadingSave = false
 
         const userData = {
@@ -429,7 +429,11 @@ export default {
           data: { userData }
         })
 
-        // this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
+        this.$router.push({
+          name: 'collectivites-collectiviteId-prescriptions',
+          params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE },
+          query: { ...this.$route.query, success: true }
+        })
       } catch (error) {
         this.error = error
         this.$vuetify.goTo('error--text:first-of-type')
