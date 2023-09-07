@@ -38,7 +38,7 @@ async function handleRedirect ($supabase, event, user, router) {
 export default async ({ $supabase, app }, inject) => {
   const user = Vue.observable(Object.assign({}, defaultUser))
 
-  async function updateUser (session) {
+  async function updateUser (session, retry = true) {
     // console.log('updateUser', session)
 
     if (!session) {
@@ -55,8 +55,16 @@ export default async ({ $supabase, app }, inject) => {
       user.isReady = new Promise((resolve, reject) => {
         $supabase.from('profiles').select().eq('user_id', session.user.id).then(({ data }) => {
           // console.log('profiles', data)
-          user.profile = data[0]
-          resolve(true)
+          if (data[0]) {
+            user.profile = data[0]
+            resolve(true)
+          } else if (retry) {
+            setTimeout(() => {
+              updateUser(session, false)
+            }, 200)
+
+            resolve(false)
+          }
         })
       })
     }
@@ -67,7 +75,7 @@ export default async ({ $supabase, app }, inject) => {
   }
 
   if (process.client) {
-    await updateUser()
+    await updateUser(null, false)
 
     $supabase.auth.onAuthStateChange(async (event, session) => {
       // console.log('onAuthStateChange', event, session)
