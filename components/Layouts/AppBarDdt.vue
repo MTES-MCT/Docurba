@@ -54,7 +54,7 @@
             }
           }"
         >
-          Tableau de bord
+          {{ $user.profile.poste === 'ddt' ? 'Tableau de bord' : 'Trame regionale' }}
         </v-btn>
         <v-menu v-if="$user.id" offset-y>
           <template #activator="{ on }">

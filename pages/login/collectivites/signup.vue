@@ -136,9 +136,9 @@ export default {
       selectedCollectivite: {},
       loading: false,
       userData: {
-        firstname: '', // 'jul',
-        lastname: '', // 'ler',
-        email: '', // 'testjulien1@yopmail.com',
+        email: this.$isDev ? `test_${this.$dayjs().format('DD-MM-YY+hhmm')}@docurba.beta.gouv.fr` : '',
+        firstname: this.$isDev ? 'Test' : '',
+        lastname: this.$isDev ? 'Test' : '',
         poste: '', // 'elu',
         other_poste: '', // 'test',
         tel: '', // '0669487499',

@@ -53,7 +53,7 @@
             }
           }"
         >
-          Tableau de bord
+          {{ $user.profile.poste === 'ddt' ? 'Tableau de bord' : 'Trame regionale' }}
         </v-btn>
 
         <v-btn v-if="$user.profile.side === 'collectivite'" :to="`/collectivites/${$user.profile.collectivite_id}/?isEpci=${$user.profile.collectivite_id.length > 5}`" depressed tile text>
