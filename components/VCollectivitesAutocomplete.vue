@@ -104,8 +104,13 @@ export default {
       this.$emit('input', this.selectedCollectivite)
     }
   },
-  mounted () {
-    this.fetchCollectivites()
+  async mounted () {
+    await this.fetchCollectivites()
+    if (this.value) {
+      this.selectedCollectivite = this.collectivites.find((e) => {
+        return e?.EPCI?.toString() === this.value.collectivite_id || e?.code_commune_INSEE?.toString() === this.value.collectivite_id
+      })
+    }
   },
   methods: {
     async fetchCollectivites () {

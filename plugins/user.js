@@ -52,16 +52,13 @@ export default async ({ $supabase, app }, inject) => {
     if (session) {
       Object.assign(user, session.user)
 
-      user.isReady = new Promise((resolve, reject) => {
-        $supabase.from('profiles').select().eq('user_id', session.user.id).then(({ data }) => {
-          // console.log('profiles', data)
-          user.profile = data[0]
-          resolve(true)
-        })
-      })
+      const { data, error } = await $supabase.from('profiles').select().eq('user_id', session.user.id)
+      console.log('profiles', data, ' err: ', error)
+      console.log('error: ', error)
+      user.profile = data[0]
     }
 
-    await user.isReady
+    // await user.isReady
 
     return user
   }
@@ -70,7 +67,7 @@ export default async ({ $supabase, app }, inject) => {
     await updateUser()
 
     $supabase.auth.onAuthStateChange(async (event, session) => {
-      // console.log('onAuthStateChange', event, session)
+      console.log('onAuthStateChange', event, session)
 
       if (session) {
         const user = await updateUser(session)
