@@ -26,6 +26,7 @@ async function handleRedirect ($supabase, event, user, router) {
     } else if (user.profile.poste === 'ddt') {
       router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
     }
+
     if (user.profile.side === 'collectivite') {
       if (!user.profile.successfully_logged_once) {
         axios({ url: '/api/pipedrive/collectivite_inscrite', method: 'post', data: { userData: { email: user.email } } })
@@ -38,7 +39,7 @@ async function handleRedirect ($supabase, event, user, router) {
 export default async ({ $supabase, app }, inject) => {
   const user = Vue.observable(Object.assign({}, defaultUser))
 
-  async function updateUser (session) {
+  async function updateUser (session, retry = true) {
     // console.log('updateUser', session)
 
     if (!session) {
@@ -50,29 +51,53 @@ export default async ({ $supabase, app }, inject) => {
     }
 
     if (session) {
+      // console.log('using session')
       Object.assign(user, session.user)
 
-      const { data, error } = await $supabase.from('profiles').select().eq('user_id', session.user.id)
-      console.log('profiles', data, ' err: ', error)
-      console.log('error: ', error)
-      user.profile = data[0]
+      user.isReady = new Promise((resolve, reject) => {
+        // console.log('session.user.id', session.user.id)
+
+        $supabase.from('profiles').select().eq('user_id', session.user.id).then(({ data, error }) => {
+          // console.log('profiles', data)
+          if (data[0]) {
+            user.profile = data[0]
+            resolve(true)
+          } else if (retry) {
+            setTimeout(async () => {
+              await updateUser(session, false)
+            }, 200)
+
+            resolve(false)
+          }
+        })
+      })
     }
 
-    // await user.isReady
+    await user.isReady
+    // console.log('user ready')
 
     return user
   }
 
   if (process.client) {
-    await updateUser()
+    await updateUser(null, false)
+
+    let currentSession = null
 
     $supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('onAuthStateChange', event, session)
 
       if (session) {
-        const user = await updateUser(session)
-        handleRedirect($supabase, event, user, app.router)
+        // console.log('update user with session')
+        if (event === 'INITIAL_SESSION ' || !currentSession) {
+          const user = await updateUser(session)
+          // console.log('user updated')
+          handleRedirect($supabase, event, user, app.router)
+        }
+
+        currentSession = session
       } else {
+        currentSession = null
         Object.assign(user, defaultUser)
       }
     })
