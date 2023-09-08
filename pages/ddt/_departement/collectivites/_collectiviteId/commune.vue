@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="collectivite">
+  <v-container v-if="collectivite && procedures">
     <v-row>
       <v-col cols="12">
         <h1 class="text-h1">
@@ -33,16 +33,17 @@
         </p>
       </v-col>
     </v-row>
+    <!-- collectivite-type="commune" -->
     <DashboardDUItemsList
       :collectivite="collectivite"
-      collectivite-type="commune"
+      :procedures="procedures"
     />
   </v-container>
 </template>
 <script>
 
 import { mdiArrowLeft } from '@mdi/js'
-import axios from 'axios'
+// import axios from 'axios'
 
 export default {
   name: 'Collectivite',
@@ -63,25 +64,32 @@ export default {
     // 200040111
     // 1001
     // 81178
-    console.log('this.$route.params.communeId: ', this.$route.params.collectiviteId)
-    const test = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
+
+    // TODO: Passage sur le référentiel BANATIC - enrichissement region code
+    // TODO: Small fix sur API geo, renvoyer rien quand liste de communes / interco vide
+
+    // console.log('this.$route.params.communeId: ', this.$route.params.collectiviteId)
+    const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
+    console.log('testtesttesttest: ', collectiviteProcedures)
+    // this.collectivite = {} // collectiviteProcedures.collectivite
+    this.procedures = collectiviteProcedures.procedures
     // const test = await this.$supabase.from('sudocu_procedures_perimetres').select('*').contains('communes_insee', ['73246'])
-    console.log('testtesttesttest: ', test)
+
     // EDN TEST
 
     this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId)
     // this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
-    await this.getLinkedEpci(this.$route.params.collectiviteId)
-  },
-  methods: {
-    async getLinkedEpci (communeId) {
-      const { data: epci } = await axios({
-        url: `/api/epci?communeId=${communeId}`,
-        method: 'get'
-      })
-      this.linkedEpci = epci[0]
-    }
+    // await this.getLinkedEpci(this.$route.params.collectiviteId)
   }
+  // methods: {
+  //   async getLinkedEpci (communeId) {
+  //     const { data: epci } = await axios({
+  //       url: `/api/epci?communeId=${communeId}`,
+  //       method: 'get'
+  //     })
+  //     this.linkedEpci = epci[0]
+  //   }
+  // }
 }
 </script>
 

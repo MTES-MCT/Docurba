@@ -49,10 +49,16 @@ export default ({ $supabase, $user }, inject) => {
         })
 
         if (signupError) { throw signupError }
+
         const sanitizedUserData = omit(userData, ['password'])
-        const { data: profile, error: errorInsertProfile } = await $supabase.from('profiles').insert({ ...sanitizedUserData, side: 'etat', user_id: user.id }).select()
+        const { data: profile, error: errorInsertProfile } = await $supabase.from('profiles').insert({
+          ...sanitizedUserData, side: 'etat', user_id: user.id
+        }).select()
+
         if (errorInsertProfile) { throw errorInsertProfile }
+
         const newProfile = profile[0]
+
         if (newProfile.poste === 'ddt') {
           await $supabase.from('github_ref_roles').insert([{
             role: 'user',
@@ -61,7 +67,7 @@ export default ({ $supabase, $user }, inject) => {
           }])
         }
 
-        return { user, profile }
+        return { user, profile: newProfile }
       } catch (error) {
         if (error.message === 'User already registered') {
           throw new Error('Cet email est déjà enregistré. Cliquez plutôt sur “J’ai déjà un compte” ou réinitialisez votre mot de passe si vous l’avez oublié.')

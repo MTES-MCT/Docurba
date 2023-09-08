@@ -147,11 +147,9 @@ export default {
         const { data, err } = await this.$supabase.from('projects').insert([savedProject]).select()
         const projectId = data[0].id
 
-        const dept = +savedProject.trame
-
         await axios({
           method: 'post',
-          url: `/api/trames/projects/dept-${dept}`,
+          url: `/api/trames/projects/dept-${this.$options.filters.deptToRef(savedProject.trame)}`,
           data: {
             userId: this.$user.id,
             projectId
@@ -189,7 +187,7 @@ export default {
 
         const { data: sections } = await axios({
           method: 'get',
-          url: `/api/trames/tree/dept-${+savedProject.trame}`
+          url: `/api/trames/tree/dept-${this.$options.filters.deptToRef(savedProject.trame)}`
         })
 
         function addPath (section) {

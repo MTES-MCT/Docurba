@@ -191,32 +191,58 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       // Gestion des rollback du a une annuldation de la délibération (le DU précédent en date devient opposable) et précédent
       // La dernière procédure ayant une délibération est l'opposable
       function setSpecificsStatus (arrProcedures) {
-        const opposableProc = arrProcedures.findLast(e => e.statusInfos.hasDelibApprob && !e.statusInfos.hasAbandon && !e.statusInfos.hasAnnulation)
+        const opposableProc = arrProcedures.findLast(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation)
         if (opposableProc) { opposableProc.status = 'opposable' }
-        arrProcedures.filter(e => e.statusInfos.hasDelibApprob && opposableProc.noserieprocedure !== e.noserieprocedure).forEach((e) => { e.status = 'precedent' })
+        arrProcedures.filter(e => e.status_infos.hasDelibApprob && opposableProc.id !== e.id).forEach((e) => { e.status = 'precedent' })
       }
+
+      // Formattage des procédures
+      const formattedProcedures = planProcedures.map((e) => {
+        return {
+          actors: [],
+          attachements: [],
+          id: e.noserieprocedure,
+          type: e.libtypeprocedure,
+          description: e.commentaire,
+          procedure_id: e.noserieprocedureratt,
+          launch_date: e.datelancement,
+          approval_date: e.dateapprobation,
+          abort_date: e.dateabandon,
+          enforceable_date: e.dateexecutoire,
+          created_at: e.datelancement,
+          last_updated_at: e.last_event_date,
+          collectivite_porteuse: e.collectivitePorteuse,
+          events: e.events,
+          perimetre: e.perimetre,
+          procSecs: e.procSecs,
+          status: e.status,
+          status_infos: e.statusInfos
+        }
+      })
+
+      console.log('formattedProcedures: ', formattedProcedures)
 
       // Définition des procédures secondaires
       const typePrincipalProcedures = ['Elaboration', 'Révision', 'Abrogation', 'Engagement', 'Réengagement']
-      const [procsPrincipales, procsSecondaires] = _.partition(planProcedures, procedure => typePrincipalProcedures.includes(procedure.libtypeprocedure))
-      let groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.noserieprocedureratt?.toString())
+      const [procsPrincipales, procsSecondaires] = _.partition(formattedProcedures, procedure => typePrincipalProcedures.includes(procedure.type))
+      let groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.procedure_id?.toString())
 
       // Define specific status for principales / secondaires
       console.log('procsPrincipales ?? : ', procsPrincipales)
       setSpecificsStatus(procsPrincipales)
       console.log('groupedProcsSecondaires ?? : ', groupedProcsSecondaires)
       _.each(groupedProcsSecondaires, e => setSpecificsStatus(e))
-      groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.noserieprocedureratt?.toString())
+      groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.procedure_id?.toString())
 
-      console.log('TEST planProcedures: ', planProcedures)
+      console.log('TEST formattedProcedures: ', formattedProcedures)
 
       // Assign procedures secondaire to principales
       const fullProcs = _.map(procsPrincipales, (procedurePrincipale) => {
-        procedurePrincipale.procSecs = groupedProcsSecondaires[procedurePrincipale.noserieprocedure]
+        procedurePrincipale.procSecs = groupedProcsSecondaires[procedurePrincipale.id]
         return procedurePrincipale
       })
 
-      return fullProcs
+      return { collectivite: {}, procedures: fullProcs }
     },
     async getProcedures (communeId) {
       try {

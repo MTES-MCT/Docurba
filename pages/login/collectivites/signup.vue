@@ -56,9 +56,8 @@
                       </validation-provider>
                     </v-col>
                     <v-col>
-                      <validation-provider v-slot="{ errors }" name="Intitulé" rules="required">
+                      <validation-provider v-if="userData.poste === 'autre'" v-slot="{ errors }" name="Intitulé" rules="required">
                         <v-text-field
-                          v-show="userData.poste === 'autre'"
                           v-model="userData.other_poste"
                           cols="6"
                           :error-messages="errors"
@@ -137,13 +136,13 @@ export default {
       selectedCollectivite: {},
       loading: false,
       userData: {
-        firstname: 'jul',
-        lastname: 'ler',
-        email: 'testjulien1@yopmail.com',
-        poste: 'elu',
-        other_poste: 'test',
-        tel: '0669487499',
-        collectivite_id: '45678'
+        email: this.$isDev ? `test_${this.$dayjs().format('DD-MM-YY+hhmm')}@docurba.beta.gouv.fr` : '',
+        firstname: this.$isDev ? 'Test' : '',
+        lastname: this.$isDev ? 'Test' : '',
+        poste: '', // 'elu',
+        other_poste: '', // 'test',
+        tel: '', // '0669487499',
+        collectivite_id: '' // '45678'
       },
       snackbar: {
         text: '',
@@ -159,6 +158,8 @@ export default {
   },
   methods: {
     async signUp () {
+      console.log('signup')
+
       try {
         this.loading = true
         this.userData.other_poste = this.userData.other_poste ? [this.userData.other_poste] : null

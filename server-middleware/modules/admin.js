@@ -7,7 +7,7 @@ const sendgrid = require('./sendgrid.js')
 module.exports = {
   async updateUserRole (userData, role) {
     const { data, error } = await supabase.from('github_ref_roles').update({ role }).match({
-      user_id: userData.id,
+      user_id: userData.user_id,
       ref: `dept-${userData.departement}`
     }).select()
 

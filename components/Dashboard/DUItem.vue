@@ -31,6 +31,7 @@
 </template>
 <script>
 export default {
+  name: 'DUItem',
   props: {
     procedure: {
       type: Object,
@@ -41,23 +42,7 @@ export default {
       default: () => false
     }
   },
-  data () {
-    return {
-
-    }
-  },
   computed: {
-    status () {
-      if (this.procedure.enforceable_date && !this.procedure.procedure_id) {
-        return 'opposable'
-      } else if (this.procedure.enforceable_date && this.procedure.procedure_id) {
-        return 'précédent'
-      } else if (this.procedure.launch_date || this.procedure.approval_date) {
-        return 'en cours'
-      } else {
-        return 'abandonné'
-      }
-    },
     step () {
       if (this.procedure.abort_date) {
         return `Abandon (${this.procedure.abort_date})`

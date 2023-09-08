@@ -40,7 +40,6 @@
         <v-btn v-if="!$user.id" depressed tile text :to="{name: 'login'}">
           Connexion
         </v-btn>
-        <!-- <AuthLoginDialog v-model="openLogin" /> -->
         <v-btn
           v-if="$user.profile.side === 'etat'"
           depressed
@@ -54,10 +53,11 @@
             }
           }"
         >
-          Tableau de bord
+          {{ $user.profile.poste === 'ddt' ? 'Tableau de bord' : 'Trame regionale' }}
         </v-btn>
-        <v-btn v-if="$user.profile.side === 'etat'" depressed tile text @click="clickMyDocs">
-          Mes documents
+
+        <v-btn v-if="$user.profile.side === 'collectivite'" :to="`/collectivites/${$user.profile.collectivite_id}/?isEpci=${$user.profile.collectivite_id.length > 5}`" depressed tile text>
+          Ma collectivité
         </v-btn>
         <v-menu v-if="$user.id" offset-y>
           <template #activator="{ on }">
@@ -72,9 +72,6 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item v-if="$user.profile.side === 'etat'" link @click="goToAdmin">
-              <v-list-item-title>Accès DDT/DEAL</v-list-item-title>
-            </v-list-item>
             <v-list-item link @click="signOut">
               <v-list-item-title>
                 Déconnexion
@@ -82,11 +79,6 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <!-- <v-btn depressed tile v-if="$user.id" text @click="$supabase.auth.signOut()">
-        Déconnexion
-      </v-btn> -->
-        <DocumentsDialog v-if="$user.id" v-model="openDocs" />
-        <AdminDdtRequestDialog v-model="openDDT" />
         <AuthResetPasswordDialog />
       </div>
     </client-only>
@@ -117,11 +109,7 @@ export default {
         mdiDotsVertical
       },
       helpDialog: false,
-      helpSnackbar: false,
-      openLogin: false,
-      openDocs: false,
-      openDDT: false,
-      adminAccess: null
+      helpSnackbar: false
     }
   },
   computed: {
@@ -134,50 +122,9 @@ export default {
     }
   },
   methods: {
-    // There is a lot of dupliaceted code here.
-    // This component should be using the auth.js plugin to get admin access.
-    async getAdminAccess () {
-      if (!this.adminAccess) {
-        const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('role').match({
-          user_id: this.$user.id,
-          user_email: this.$user.email,
-          role: 'ddt'
-        })
-
-        this.adminAccess = adminAccess
-      }
-
-      return this.adminAccess
-    },
-    async goToAdmin () {
-      const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('role').match({
-        user_id: this.$user.id,
-        user_email: this.$user.email,
-        role: 'ddt'
-      })
-
-      if (adminAccess && adminAccess.length) {
-        this.$router.push('/projets')
-      } else {
-        this.openDDT = true
-      }
-    },
-    async clickMyDocs () {
-      await this.getAdminAccess()
-
-      if (this.adminAccess) {
-        this.$router.push('/projets')
-      } else {
-        this.openDocs = true
-      }
-    },
     async signOut () {
-      console.log('signout')
-
-      const { error } = await this.$supabase.auth.signOut({ scope: 'global' })
+      await this.$supabase.auth.signOut({ scope: 'global' })
       this.$router.push('/')
-
-      console.log(error)
     }
   }
 }

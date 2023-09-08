@@ -44,10 +44,22 @@
               Vous êtes agent de l'Etat et voulez paramétrer votre trame de PAC et suivre les procédures de votre département ?
             </p>
             <div>
-              <v-btn depressed color="primary" class="mr-6" @click="openSignupSiginDialog('inscription')">
+              <v-btn
+                depressed
+                color="primary"
+                class="mr-6"
+                to="/login/ddt/signup"
+                nuxt
+              >
                 S'inscrire
               </v-btn>
-              <v-btn class="custom-transform-class text-none" outlined color="primary" @click="openSignupSiginDialog('connexion')">
+              <v-btn
+                class="custom-transform-class text-none"
+                outlined
+                color="primary"
+                to="/login/ddt/signin"
+                nuxt
+              >
                 Se connecter
               </v-btn>
             </div>
@@ -67,7 +79,6 @@
         <LandingNewsLetterForm />
       </v-row>
     </v-container>
-    <AuthLoginDialog v-model="loginDialogState.open" :signup-mode="loginDialogState.signupMode" />
   </div>
 </template>
 
@@ -81,17 +92,6 @@ export default {
         signupMode: false
       }
 
-    }
-  },
-  methods: {
-    openSignupSiginDialog (source) {
-      console.log('source: ', source)
-      if (source === 'connexion') {
-        this.loginDialogState.signupMode = false
-      } else {
-        this.loginDialogState.signupMode = true
-      }
-      this.loginDialogState.open = !this.loginDialogState.open
     }
   }
 }

@@ -1,45 +1,24 @@
 <template>
-  <LayoutsCustomApp>
-    <template v-if="!loading" #headerPageTitle>
-      - {{ (project && project.id ? project.name : $route.params.githubRef) | githubRef }}
-    </template>
-    <!-- <PACEditingTrame
-      v-if="!loading"
-      :project="project"
-      :git-ref="$route.params.githubRef"
-    /> -->
-    <v-container v-if="!loading">
-      <v-row>
-        <v-col cols="12">
-          <PACEditingAdvicesCard :avoided-tags="(project && project.id) ? [] : ['projet']" />
-        </v-col>
-      </v-row>
-      <!-- <v-row>
-        <v-spacer />
-        <v-col cols="auto">
-          <v-switch
-            hide-details
-            label="Afficher les sections présentes dans la trame parente"
-            @change="toggleParentSectionsDisplay"
-          />
-        </v-col>
-      </v-row> -->
-      <v-row>
-        <v-col v-for="section in sections" :key="section.url" cols="12">
-          <PACSectionCard
-            :section="section"
-            :git-ref="gitRef"
-            :project="project"
-            editable
-            @edited="toggleEdit"
-            @selectionChange="saveSelection"
-            @changeOrder="saveOrder"
-            @changeTree="updateTreeData"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-    <VGlobalLoader v-else />
+  <v-container v-if="!loading">
+    <v-row>
+      <v-col cols="12">
+        <PACEditingAdvicesCard :avoided-tags="(project && project.id) ? [] : ['projet']" />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col v-for="section in sections" :key="section.url" cols="12">
+        <PACSectionCard
+          :section="section"
+          :git-ref="gitRef"
+          :project="project"
+          editable
+          @edited="toggleEdit"
+          @selectionChange="saveSelection"
+          @changeOrder="saveOrder"
+          @changeTree="updateTreeData"
+        />
+      </v-col>
+    </v-row>
     <v-dialog v-model="beforeLeaveDialog.visible" width="500">
       <v-card>
         <v-card-title>
@@ -59,7 +38,14 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </LayoutsCustomApp>
+  </v-container>
+  <v-container v-else class="fill-height">
+    <v-row justify="center" align="center">
+      <v-col cols="12">
+        <VGlobalLoader />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -76,7 +62,7 @@ export default {
       this.beforeLeaveDialog.visible = true
     } else { next() }
   },
-  layout: 'app',
+  layout: 'ddt',
   data () {
     return {
       project: {},

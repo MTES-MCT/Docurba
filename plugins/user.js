@@ -1,5 +1,5 @@
 import Vue from 'vue'
-// import axios from 'axios'
+import axios from 'axios'
 
 const defaultUser = {
   id: null,
@@ -11,72 +11,93 @@ const defaultUser = {
   user_metadata: {}
 }
 
-// async
-function handleRedirect ($supabase, event, user, router) {
-  return true
+async function handleRedirect ($supabase, event, user, router) {
   // console.log('handleRedirect: ', event, user)
-  // if (event === 'SIGNED_IN') {
-  //   if (user.profile.poste === 'dreal') {
-  //     function trameRef (user) {
-  //       const scopes = { ddt: 'dept', dreal: 'region' }
-  //       const poste = user.profile.poste
-  //       const code = poste === 'ddt' ? user.profile.departement : user.profile.region
+  if (event === 'SIGNED_IN') {
+    if (user.profile.poste === 'dreal') {
+      function trameRef (user) {
+        const scopes = { ddt: 'dept', dreal: 'region' }
+        const poste = user.profile.poste
+        const code = poste === 'ddt' ? user.profile.departement : user.profile.region
 
-  //       return `${scopes[poste]}-${code}`
-  //     }
-  //     router.push({ name: 'trames-githubRef', params: { githubRef: trameRef(user) } })
-  //   } else if (user.profile.poste === 'ddt') {
-  //     router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
-  //   }
-  //   if (user.profile.side === 'collectivite') {
-  //     if (!user.profile.successfully_logged_once) {
-  //       axios({ url: '/api/pipedrive/collectivite_inscrite', method: 'post', data: { userData: { email: user.email } } })
-  //       await $supabase.from('profiles').update({ successfully_logged_once: true }).eq('user_id', user.id)
-  //     }
-  //   }
-  // }
+        return `${scopes[poste]}-${code}`
+      }
+      router.push({ name: 'trames-githubRef', params: { githubRef: trameRef(user) } })
+    } else if (user.profile.poste === 'ddt') {
+      router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
+    }
+
+    if (user.profile.side === 'collectivite') {
+      if (!user.profile.successfully_logged_once) {
+        axios({ url: '/api/pipedrive/collectivite_inscrite', method: 'post', data: { userData: { email: user.email } } })
+        await $supabase.from('profiles').update({ successfully_logged_once: true }).eq('user_id', user.id)
+      }
+    }
+  }
 }
 
 export default async ({ $supabase, app }, inject) => {
   const user = Vue.observable(Object.assign({}, defaultUser))
 
-  async function updateUser (session) {
-    console.log('updateUser', session)
+  async function updateUser (session, retry = true) {
+    // console.log('updateUser', session)
 
     if (!session) {
-      console.log('get session')
+      // console.log('get session')
       const { data } = await $supabase.auth.getSession()
       session = data.session
 
-      console.log('session result', session)
+      // console.log('session result', session)
     }
 
     if (session) {
+      // console.log('using session')
       Object.assign(user, session.user)
 
       user.isReady = new Promise((resolve, reject) => {
-        $supabase.from('profiles').select().eq('user_id', session.user.id).then(({ data }) => {
-          console.log('profiles', data)
-          user.profile = data[0]
-          resolve(true)
+        // console.log('session.user.id', session.user.id)
+
+        $supabase.from('profiles').select().eq('user_id', session.user.id).then(({ data, error }) => {
+          // console.log('profiles', data)
+          if (data[0]) {
+            user.profile = data[0]
+            resolve(true)
+          } else if (retry) {
+            setTimeout(async () => {
+              await updateUser(session, false)
+            }, 200)
+
+            resolve(false)
+          }
         })
       })
     }
 
     await user.isReady
+    // console.log('user ready')
+
     return user
   }
 
   if (process.client) {
-    await updateUser()
+    await updateUser(null, false)
+
+    let currentSession = null
 
     $supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('onAuthStateChange', event, session)
 
       if (session) {
-        const user = await updateUser(session)
-        handleRedirect($supabase, event, user, app.router)
+        // console.log('update user with session')
+        if (event === 'INITIAL_SESSION ' || !currentSession) {
+          const user = await updateUser(session)
+          // console.log('user updated')
+          handleRedirect($supabase, event, user, app.router)
+        }
+
+        currentSession = session
       } else {
+        currentSession = null
         Object.assign(user, defaultUser)
       }
     })
