@@ -52,7 +52,7 @@
 import { mdiEye, mdiEyeOff, mdiArrowLeft } from '@mdi/js'
 import { ValidationObserver } from 'vee-validate'
 import axios from 'axios'
-import { omit } from 'lodash'
+// import { omit } from 'lodash'
 
 export default {
   name: 'SignupStateAgent',
@@ -84,17 +84,19 @@ export default {
     async signUp () {
       try {
         this.loading = true
-        await this.$auth.signUpStateAgent({
+        const { profile } = await this.$auth.signUpStateAgent({
           ...this.userData,
           departement: this.userData.departement?.code_departement.toString().padStart(2, '0'),
           region: this.userData.region?.code.padStart(2, '0')
         })
 
-        const sanitizedUserData = omit(this.userData, ['password'])
+        // console.log('SINGUP profile: ', profile)
+
+        // const sanitizedUserData = omit(this.userData, ['password'])
         axios({
           method: 'post',
           url: '/api/auth/hooksSignupStateAgent',
-          data: sanitizedUserData
+          data: { ...profile, departement: this.userData.departement }
         })
         this.$router.push({ name: 'login-ddt-explain' })
       } catch (error) {

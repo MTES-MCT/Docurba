@@ -85,7 +85,7 @@ export default async ({ $supabase, app }, inject) => {
     let currentSession = null
 
     $supabase.auth.onAuthStateChange(async (event, session) => {
-      // console.log('onAuthStateChange', event, session)
+      console.log('onAuthStateChange', event, session)
 
       if (session) {
         // console.log('update user with session')

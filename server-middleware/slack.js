@@ -67,7 +67,7 @@ app.post('/notify/admin', (req, res) => {
 async function collectiviteValidation (data, responseUrl) {
   try {
     console.log('collectiviteValidation data: ', data)
-    const { error: errorUpdateProfile } = await supabase.from('profiles').update({ verified: true }).eq('id', data.id)
+    const { error: errorUpdateProfile } = await supabase.from('profiles').update({ verified: true }).eq('user_id', data.user_id)
     if (errorUpdateProfile) { throw errorUpdateProfile }
     axios({
       url: responseUrl,
@@ -103,7 +103,7 @@ app.post('/webhook/interactivity', async (req, res) => {
       console.log('userData:', userData)
 
       const { data, error } = await admin.updateUserRole(userData, 'admin')
-      const { error: errorUpdateProfile } = await supabase.from('profiles').update({ verified: true }).eq('id', userData.id)
+      const { error: errorUpdateProfile } = await supabase.from('profiles').update({ verified: true }).eq('user_id', userData.user_id)
       if (errorUpdateProfile) { throw errorUpdateProfile }
       if (data && !error) {
         res.status(200).send('OK')
