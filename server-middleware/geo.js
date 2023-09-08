@@ -78,7 +78,14 @@ app.get('/intercommunalites/:code', (req, res) => {
   })
 
   if (intercommunalite) {
-    res.status(200).send(intercommunalite)
+    const departement = Object.assign({}, departements.find(d => d.code === intercommunalite.departementCode))
+    delete departement.communes
+    delete departement.region
+
+    res.status(200).send(Object.assign({
+      region: regions.find(r => r.code === intercommunalite.regionCode),
+      departement
+    }, intercommunalite))
   } else {
     res.status(404).send(null)
   }
