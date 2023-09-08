@@ -1,7 +1,6 @@
 [
   {
     "code": "01",
-    "uri": "http://id.insee.fr/geo/region/598b3ed6-a7ea-44f8-a130-7a42e3630a8a",
     "type": "Region",
     "dateCreation": "2007-07-15",
     "intituleSansArticle": "Guadeloupe",
@@ -11,7 +10,6 @@
   },
   {
     "code": "02",
-    "uri": "http://id.insee.fr/geo/region/d2727c95-277b-4345-af7d-9bc1b9a83cfc",
     "type": "Region",
     "dateCreation": "1982-03-02",
     "intituleSansArticle": "Martinique",
@@ -21,7 +19,6 @@
   },
   {
     "code": "03",
-    "uri": "http://id.insee.fr/geo/region/465f8cf0-4b80-49b3-ba79-2ab47f4895e9",
     "type": "Region",
     "dateCreation": "1982-03-02",
     "intituleSansArticle": "Guyane",
@@ -31,7 +28,6 @@
   },
   {
     "code": "04",
-    "uri": "http://id.insee.fr/geo/region/5bc4db56-216e-41be-90a1-6b84c0607184",
     "type": "Region",
     "dateCreation": "1982-03-02",
     "intituleSansArticle": "La Réunion",
@@ -41,7 +37,6 @@
   },
   {
     "code": "06",
-    "uri": "http://id.insee.fr/geo/region/0e9f9adc-742d-4ab7-90bd-30e5aaf7b2ab",
     "type": "Region",
     "dateCreation": "2011-03-31",
     "intituleSansArticle": "Mayotte",
@@ -51,7 +46,6 @@
   },
   {
     "code": "11",
-    "uri": "http://id.insee.fr/geo/region/cf113ac9-0c4f-4db1-9be3-e99e4a336385",
     "type": "Region",
     "dateCreation": "1982-03-02",
     "intituleSansArticle": "Île-de-France",
@@ -61,7 +55,6 @@
   },
   {
     "code": "24",
-    "uri": "http://id.insee.fr/geo/region/29f4d870-b70d-4df4-8e70-0313d051c338",
     "type": "Region",
     "dateCreation": "2015-01-17",
     "intituleSansArticle": "Centre-Val de Loire",
@@ -71,7 +64,6 @@
   },
   {
     "code": "27",
-    "uri": "http://id.insee.fr/geo/region/c1c47bc9-6676-41e7-bdef-7136469f95f4",
     "type": "Region",
     "dateCreation": "2016-01-01",
     "intituleSansArticle": "Bourgogne-Franche-Comté",
@@ -81,7 +73,6 @@
   },
   {
     "code": "28",
-    "uri": "http://id.insee.fr/geo/region/a7ac0f8e-d4d4-4ff2-9135-f0e0b6371aed",
     "type": "Region",
     "dateCreation": "2016-01-01",
     "intituleSansArticle": "Normandie",
@@ -91,7 +82,6 @@
   },
   {
     "code": "32",
-    "uri": "http://id.insee.fr/geo/region/9c60accf-61a2-4f61-9546-875924d210ec",
     "type": "Region",
     "dateCreation": "2016-12-31",
     "intituleSansArticle": "Hauts-de-France",
@@ -101,7 +91,6 @@
   },
   {
     "code": "44",
-    "uri": "http://id.insee.fr/geo/region/8957f2ad-765c-4083-87f9-8d34fb702cf5",
     "type": "Region",
     "dateCreation": "2016-12-31",
     "intituleSansArticle": "Grand Est",
@@ -111,7 +100,6 @@
   },
   {
     "code": "52",
-    "uri": "http://id.insee.fr/geo/region/87777ef5-309b-47f5-9dc6-98893ff79698",
     "type": "Region",
     "dateCreation": "2019-01-01",
     "intituleSansArticle": "Pays de la Loire",
@@ -121,7 +109,6 @@
   },
   {
     "code": "53",
-    "uri": "http://id.insee.fr/geo/region/6c83500c-454c-4d69-aec5-b988fb6f6f1c",
     "type": "Region",
     "dateCreation": "2019-01-01",
     "intituleSansArticle": "Bretagne",
@@ -131,7 +118,6 @@
   },
   {
     "code": "75",
-    "uri": "http://id.insee.fr/geo/region/8f758225-b0a6-4c83-a748-d8951cffebf6",
     "type": "Region",
     "dateCreation": "2016-09-29",
     "intituleSansArticle": "Nouvelle-Aquitaine",
@@ -141,7 +127,6 @@
   },
   {
     "code": "76",
-    "uri": "http://id.insee.fr/geo/region/862793ee-891d-4831-b9c9-a94cfe2e6f7b",
     "type": "Region",
     "dateCreation": "2016-09-29",
     "intituleSansArticle": "Occitanie",
@@ -151,7 +136,6 @@
   },
   {
     "code": "84",
-    "uri": "http://id.insee.fr/geo/region/c12b23e7-d2e7-4443-ac4b-de8de5ce22f2",
     "type": "Region",
     "dateCreation": "2016-01-01",
     "intituleSansArticle": "Auvergne-Rhône-Alpes",
@@ -161,7 +145,6 @@
   },
   {
     "code": "93",
-    "uri": "http://id.insee.fr/geo/region/0c5aa4f7-6d45-48a1-95d8-8ee7c33fdf88",
     "type": "Region",
     "dateCreation": "1982-03-02",
     "intituleSansArticle": "Provence-Alpes-Côte d'Azur",
@@ -171,7 +154,6 @@
   },
   {
     "code": "94",
-    "uri": "http://id.insee.fr/geo/region/5697b378-8f6b-4c33-91fc-896d6eea08dd",
     "type": "Region",
     "dateCreation": "1982-03-02",
     "intituleSansArticle": "Corse",

@@ -7,6 +7,9 @@ const _ = require('lodash')
 const communes = require('./Data/EnrichedCommunes.json')
 const intercommunalites = require('./Data/EnrichedIntercommunalites.json')
 
+const departements = require('./Data/INSEE/departements.json')
+const regions = require('./Data/INSEE/regions.json')
+
 app.get('/communes', (req, res) => {
   const queryKeys = Object.keys(req.query)
 
@@ -34,7 +37,15 @@ app.get('/communes/:code', (req, res) => {
   })
 
   if (commune) {
-    res.status(200).send(commune)
+    const departement = Object.assign({}, departements.find(d => d.code === commune.departementCode))
+    delete departement.communes
+    delete departement.region
+
+    res.status(200).send(Object.assign({
+      intercommunalite: intercommunalites.find(i => i.code === commune.intercommunaliteCode),
+      region: regions.find(r => r.code === commune.regionCode),
+      departement
+    }, commune))
   } else {
     res.status(404).send(null)
   }
