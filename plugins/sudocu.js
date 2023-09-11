@@ -121,7 +121,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       const proceduresCollecIds = proceduresCollec.data.map(e => e.procedure_id)
 
       // On fetch les procédures faisant parti du périmètre de la commune
-      const rawPlanProcedures = await $supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: true })
+      const rawPlanProcedures = await $supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
       console.log('TEST rawPlanProcedures: ', rawPlanProcedures)
 
       // On fetch tous les events liées aux procédures
@@ -171,12 +171,11 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
 
         // Vérification de la sectorialité - si le périmètre de la procédure est plus petit que la collectivité porteuse
         const fullDetailsCollecPorteuse = collectivitesPorteuses.find(e => e.code === collectivitePorteuse.code_collectivite_porteuse)
-        console.log('FULL DETAILS COLLEC PORTEUSE: ', fullDetailsCollecPorteuse, ' FOR: ', collectivitePorteuse.code_collectivite_porteuse)
         statusInfos = {
           isSectoriel: collectivitePorteuse.nb_communes > 1 ? collectivitePorteuse.nb_communes < fullDetailsCollecPorteuse.nbCommunes : false,
-          hasDelibApprob: rawPlanProcedure.events.some(e => e.libtypeevenement === "Délibération d'approbation" && e.codestatutevenement === 'V'),
-          hasAbandon: rawPlanProcedure.events.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
-          hasAnnulation: rawPlanProcedure.events.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement))
+          hasDelibApprob: rawPlanProcedure.events?.some(e => e.libtypeevenement === "Délibération d'approbation" && e.codestatutevenement === 'V'),
+          hasAbandon: rawPlanProcedure.events?.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
+          hasAnnulation: rawPlanProcedure.events?.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement))
         }
         if (statusInfos.hasAbandon) {
           statusProcedure = 'abandon'
@@ -186,12 +185,13 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
           statusProcedure = 'en cours'
         }
 
-        return { ...rawPlanProcedure, status: statusProcedure, statusInfos, nbCommunesPerimetre: collectivitePorteuse.nb_communes, collectivitePorteuse: _.pick(collectivitePorteuse, ['code_collectivite_porteuse', 'type_collectivite_porteuse']) }
+        const nameDocType = rawPlanProcedure.perimetre > 1 ? rawPlanProcedure.codetypedocument + 'i' : rawPlanProcedure.codetypedocument
+        return { ...rawPlanProcedure, doc_type: nameDocType, status: statusProcedure, statusInfos, nbCommunesPerimetre: collectivitePorteuse.nb_communes, collectivitePorteuse: _.pick(collectivitePorteuse, ['code_collectivite_porteuse', 'type_collectivite_porteuse']) }
       })
       // Gestion des rollback du a une annuldation de la délibération (le DU précédent en date devient opposable) et précédent
       // La dernière procédure ayant une délibération est l'opposable
       function setSpecificsStatus (arrProcedures) {
-        const opposableProc = arrProcedures.findLast(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation)
+        const opposableProc = arrProcedures.find(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation)
         if (opposableProc) { opposableProc.status = 'opposable' }
         arrProcedures.filter(e => e.status_infos.hasDelibApprob && opposableProc.id !== e.id).forEach((e) => { e.status = 'precedent' })
       }
@@ -202,8 +202,9 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
           actors: [],
           attachements: [],
           id: e.noserieprocedure,
-          type: e.libtypeprocedure,
+          doc_type: e.codetypedocument,
           description: e.commentaire,
+          type: e.libtypeprocedure,
           procedure_id: e.noserieprocedureratt,
           launch_date: e.datelancement,
           approval_date: e.dateapprobation,
@@ -228,8 +229,9 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       let groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.procedure_id?.toString())
 
       // Define specific status for principales / secondaires
-      console.log('procsPrincipales ?? : ', procsPrincipales)
+
       setSpecificsStatus(procsPrincipales)
+      console.log('AFTER SET procsPrincipales ?? : ', procsPrincipales)
       console.log('groupedProcsSecondaires ?? : ', groupedProcsSecondaires)
       _.each(groupedProcsSecondaires, e => setSpecificsStatus(e))
       groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.procedure_id?.toString())
@@ -242,7 +244,12 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         return procedurePrincipale
       })
 
-      return { collectivite: {}, procedures: fullProcs }
+      const collectivite = (await axios({
+        url: `/api/geo/${collectiviteId.length > 5 ? 'intercommunalites' : 'communes'}/${collectiviteId}`,
+        method: 'get'
+      })).data
+
+      return { collectivite, procedures: fullProcs }
     },
     async getProcedures (communeId) {
       try {

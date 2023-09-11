@@ -32,7 +32,7 @@
         <v-tabs-items v-model="scope">
           <v-tab-item>
             <v-data-table
-              :headers="headers"
+              :headers="headersEpci"
               :items="collectivites"
               class="elevation-1"
               :search="search"
@@ -40,15 +40,19 @@
               loading-text="Chargement des collectivités..."
             >
               <template #top />
+
               <!-- eslint-disable-next-line -->
-            <template #item.name="{ item }">
-                <div class="d-flex">
-                  <div class="competence-tag mr-2" :style="{visibility: item.hasCompetence ? 'visible' : 'hidden'}">
-                    C
+            <template #item.competence="{ item }">
+                <div v-if="item.competenceSudocu || item.competenceBanatic" class="d-flex">
+                  <div class="competence-tag-sudocu mr-2" :style="{visibility: item.competenceSudocu ? 'visible' : 'hidden'}">
+                    C <span class="caption text-lowercase">Sudocu</span>
                   </div>
-                  <div class="">
-                    {{ item.name }}
+                  <div class="competence-tag-banatic mr-2" :style="{visibility: item.competenceBanatic ? 'visible' : 'hidden'}">
+                    C <span class="caption text-lowercase">BANATIC</span>
                   </div>
+                </div>
+                <div v-else>
+                  -
                 </div>
               </template>
               <!-- eslint-disable-next-line -->
@@ -72,16 +76,27 @@
               :search="search"
             >
               <!-- eslint-disable-next-line -->
-            <template #item.name="{ item }">
-                <div class="d-flex">
-                  <div class="competence-tag mr-2" :style="{visibility: item.hasCompetence ? 'visible' : 'hidden'}">
-                    C
+            <template #item.intercommunalite="{ item }">
+                <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.intercommunalite}/epci`">
+                  {{ item.intercommunalite }}
+                </nuxt-link>
+              </template>
+
+              <!-- eslint-disable-next-line -->
+            <template #item.competence="{ item }">
+                <div v-if="item.competenceSudocu || item.competenceBanatic" class="d-flex">
+                  <div class="competence-tag-sudocu mr-2" :style="{visibility: item.competenceSudocu ? 'visible' : 'hidden'}">
+                    C <span class="caption text-lowercase">Sudocu</span>
                   </div>
-                  <div class="">
-                    {{ item.name }}
+                  <div class="competence-tag-banatic mr-2" :style="{visibility: item.competenceBanatic ? 'visible' : 'hidden'}">
+                    C <span class="caption text-lowercase">BANATIC</span>
                   </div>
                 </div>
+                <div v-else>
+                  -
+                </div>
               </template>
+
               <!-- eslint-disable-next-line -->
             <template #item.actions="{ item }">
                 <div>
@@ -117,9 +132,18 @@ export default {
     headers () {
       return [
         { text: 'Nom', align: 'start', value: 'name' },
+        { text: 'Compétence', value: 'competence' },
+        { text: 'Intercommunalité', value: 'intercommunalite' },
+        { text: 'Date de création', value: 'dateCreation' },
+        { text: 'Actions', value: 'actions' }
+      ]
+    },
+    headersEpci () {
+      return [
+        { text: 'Nom', align: 'start', value: 'name' },
         { text: 'Type', value: 'type' },
-        { text: 'Dernière proc.', value: 'lastProc' },
-        { text: 'Status', value: 'status' },
+        { text: 'Compétence', value: 'competence' },
+        { text: 'Date de création', value: 'dateCreation' },
         { text: 'Actions', value: 'actions' }
       ]
     },
@@ -127,12 +151,14 @@ export default {
       if (!this.epci) { return [] }
       return this.epci.map((e) => {
         return {
-          name: e.label,
-          hasCompetence: e.hasCompetence,
-          type: `EPCI (${e.towns.length})`,
+          name: e.intitule,
+          competenceSudocu: e.hasCompetence,
+          competenceBanatic: e.competences.plu,
+          dateCreation: e.dateCreation,
+          type: `${e.labelJuridique} (${e.nbCommunes})`,
           lastProc: '',
           status: '',
-          detailsPath: { name: 'ddt-departement-collectivites-collectiviteId-epci', params: { departement: this.$route.params.departement, collectiviteId: e.EPCI } },
+          detailsPath: { name: 'ddt-departement-collectivites-collectiviteId-epci', params: { departement: this.$route.params.departement, collectiviteId: e.code } },
           frpProcPrincipalPath: { name: 'foo' }
         }
       })
@@ -140,29 +166,28 @@ export default {
   },
   async mounted () {
     const { data: epcis } = await axios({
-      url: '/api/epci',
+      url: '/api/geo/intercommunalites',
       method: 'get',
       params: {
-        departement: this.$route.params.departement
+        departementCode: this.$route.params.departement
       }
     })
 
     const { data: communes } = await axios({
-      url: '/api/communes',
+      url: '/api/geo/communes',
       method: 'get',
       params: {
-        departements: this.$route.params.departement
+        departementCode: this.$route.params.departement
       }
     })
 
-    const collecsInsee = communes.map(e => e.code_commune_INSEE.toString().padStart(5, '0')).concat(epcis.map(e => e.EPCI.toString()))
+    const collecsInsee = communes.map(e => e.code.padStart(5, '0')).concat(epcis.map(e => e.code))
     const { data: sudocuCollectivites, error: errorSudocuCollectivites } = await this.$supabase.from('sudocu_collectivites').select().in('codecollectivite', collecsInsee)
-    if (errorSudocuCollectivites) {
-      console.log('errorSudocuCollectivites: ', errorSudocuCollectivites)
-    }
+    if (errorSudocuCollectivites) { console.log('errorSudocuCollectivites: ', errorSudocuCollectivites) }
+
     this.epci = epcis.map((e) => {
       const sudoEpci = sudocuCollectivites.find((i) => {
-        return i.codecollectivite === e.EPCI.toString()
+        return i.codecollectivite === e.code
       })
       if (!sudoEpci) {
         console.log('not found sudoEpci: ', e)
@@ -173,19 +198,24 @@ export default {
       }
     })
 
-    const communesUniq = [...new Map(communes.map(item => [item.code_commune_INSEE, item])).values()]
+    const communesUniq = [...new Map(communes.map(item => [item.code, item])).values()]
     this.communes = communesUniq.map((e) => {
-      const sudoCom = sudocuCollectivites.find(i => i.codecollectivite === e.code_commune_INSEE.toString().padStart(5, '0'))
+      const sudoCom = sudocuCollectivites.find(i => i.codecollectivite === e.code.padStart(5, '0'))
       if (!sudoCom) {
         console.log('not found: ', e)
       }
       return {
-        name: e.nom_commune_complet,
-        hasCompetence: sudoCom?.sicompetenceplan ?? false,
+        name: e.intitule,
+        competenceSudocu: e.sudoCom?.sicompetenceplan ?? false,
+        // competenceBanatic: e.competences.plu,
         type: 'Commune',
         lastProc: '',
         status: '',
-        detailsPath: { name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: this.$route.params.departement, collectiviteId: e.code_commune_INSEE } },
+        competenceBanatic: null, // e.competences.plu,
+        departementCode: e.departementCode,
+        dateCreation: e.dateCreation,
+        intercommunalite: e.intercommunaliteCode,
+        detailsPath: { name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: this.$route.params.departement, collectiviteId: e.code } },
         frpProcPrincipalPath: { name: 'foo' }
       }
     })
@@ -199,11 +229,24 @@ export default {
 }
 </script>
 <style lang="scss">
-.competence-tag{
+.competence-tag-sudocu{
   background: #FEECC2;
   border-radius: 4px;
   text-transform: uppercase;
   color: #716043;
+  font-family: 'Marianne';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 24px;
+  padding: 0px 8px;
+}
+
+.competence-tag-banatic{
+  background: var(--v-primary-base);
+  border-radius: 4px;
+  text-transform: uppercase;
+  color: var(--v-primary-lighten1);
   font-family: 'Marianne';
   font-style: normal;
   font-weight: 700;

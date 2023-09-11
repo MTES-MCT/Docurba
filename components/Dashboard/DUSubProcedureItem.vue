@@ -2,24 +2,14 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        <v-chip :color="status.color" label class="text-uppercase mr-2">
-          {{ status.text }}
+        <v-chip :color="statusColors[procedure.status]" label class="text-uppercase mr-2">
+          {{ procedure.status }}
         </v-chip>
         {{ procedure.type }}
         - {{ procedure.id }} - parent: {{ procedure.procedure_id }}
       </v-col>
     </v-row>
     <v-row class="mt-0">
-      <!-- <v-col>
-        <div class="text-caption g600--text">
-          Statut
-        </div>
-        <div>
-          <v-chip :color="status.color">
-            {{ status.text }}
-          </v-chip>
-        </div>
-      </v-col> -->
       <v-col>
         <div class="text-caption g600--text">
           Type de procédure
@@ -45,9 +35,8 @@
         <p class="font-weight-bold">
           Commentaire / Note
         </p>
-        <div v-if="procedure.commentaireProcedure || procedure.commentaireDgd">
-          <p>{{ procedure.commentaireProcedure }} </p>
-          <p>{{ procedure.commentaireDgd }} </p>
+        <div v-if="procedure.description">
+          <p>{{ procedure.description }} </p>
         </div>
         <div v-else class="text--disabled">
           Pas de commentaire

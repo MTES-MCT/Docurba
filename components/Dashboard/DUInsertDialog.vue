@@ -66,11 +66,11 @@ export default {
     }
   },
   data () {
-    // console.log('DUInsertDialog collectivite', this.collectivite)
+    console.log('DUInsertDialog collectivite', this.collectivite)
 
-    const collectiviteId = this.collectivite.id ? this.collectivite.id.toString() : this.collectivite.code_commune_INSEE.tostring()
+    const collectiviteId = this.collectivite.code
     const isEpci = collectiviteId.length === 9
-    const towns = isEpci ? this.collectivite.towns : [this.collectivite]
+    const towns = isEpci ? this.collectivite.communes : [this.collectivite]
 
     return {
       saving: false,
@@ -84,9 +84,9 @@ export default {
         owner: this.$user.id,
         towns, // idealy this is done automatically by the DB
         epci: isEpci ? this.collectivite : null, // Same here, this should be made by the DB
-        region: towns[0].code_region, // I think this collumn could be removed.
+        region: this.collectivite.regionCode, // I think this collumn could be removed.
         PAC: [], // this should be removede when collumn is moved to a PAC table,
-        trame: towns[0].code_departement // This should go in the PAC table as well
+        trame: this.collectivite.departementCode // This should go in the PAC table as well
         // towns_insee: null // No other values in DB for now ?
       }
     }

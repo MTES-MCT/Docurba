@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12">
         <h1 class="text-h1">
-          {{ collectivite.name }}
+          {{ collectivite.intitule }}
         </h1>
       </v-col>
       <v-col cols="12">
@@ -23,19 +23,19 @@
         <v-expansion-panels flat>
           <v-expansion-panel class="border-light">
             <v-expansion-panel-header>
-              <h3>{{ collectivite.towns?.length }} communes dans votre EPCI</h3>
+              <h3>{{ collectivite.communes?.length }} communes dans votre EPCI</h3>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-container>
                 <v-row>
                   <v-col
-                    v-for="town in collectivite.towns"
-                    :key="town.code_commune_INSEE"
+                    v-for="town in collectivite.communes"
+                    :key="town.code"
                     cols="4"
                     class="pt-0 pl-0"
                   >
-                    <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: $route.params.departement, collectiviteId: town.code_commune_INSEE }}">
-                      {{ town.nom_commune }} ({{ town.code_commune_INSEE }})
+                    <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: $route.params.departement, collectiviteId: town.code }}">
+                      {{ town.intitule }} ({{ town.code }})
                     </nuxt-link>
                     <v-divider class="mt-3" />
                   </v-col>
@@ -59,7 +59,17 @@
     <DashboardDUItemsList
       collectivite-type="epci"
       :collectivite="collectivite"
+      :procedures="procedures"
+      :projects="projects"
+      @inserted="fetchProjects"
     />
+  </v-container>
+  <v-container v-else>
+    <v-row>
+      <v-col cols="12">
+        <VGlobalLoader />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 <script>
@@ -72,23 +82,29 @@ export default {
   data () {
     return {
       linkedEpci: null,
-      // tab: null,
       collectivite: null,
+      projects: null,
+      sudocuProcedures: null,
+      procedures: null,
       icons: {
         mdiArrowLeft
       }
     }
   },
   async mounted () {
-    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId)
-
-    // const [sudocuProcedures, { procedures, projects }] = await Promise.all([
-    //   this.$sudocu.getProcedures(this.$route.params.collectiviteId),
-    //   this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
-    // ])
-
-    // this.procedures = [...sudocuProcedures, ...procedures]
-    // this.emptyProjects = projects.filter(project => !project.procedures.length)
+    const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
+    this.sudocuProcedures = collectiviteProcedures.procedures
+    this.collectivite = collectiviteProcedures.collectivite
+    const { procedures, projects } = await this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }
+    this.procedures = [...collectiviteProcedures.procedures, ...procedures]
+    this.projects = projects
+  },
+  methods: {
+    async fetchProjects () {
+      const { procedures, projects } = await this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }
+      this.procedures = [...this.sudocuProcedures, ...procedures]
+      this.projects = projects
+    }
   }
 }
 </script>

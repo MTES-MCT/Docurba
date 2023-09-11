@@ -1,12 +1,13 @@
 <template>
   <v-row>
-    <!-- TODO: Remttre la modal -->
-    <!-- <DashboardDUInsertDialog
+    <!-- TODO: Remettre la modal -->
+    <!-- @insert="fetchProjects" -->
+    <DashboardDUInsertDialog
       v-model="insertDialog"
       :collectivite="collectivite"
-      @insert="fetchProjects"
-    /> -->
-    <v-col v-if="procedures.length > 0 || emptyProjects.length > 0">
+      @insert="$emit('inserted')"
+    />
+    <v-col v-if=" procedures?.length > 0 || emptyProjects?.length > 0">
       <v-tabs
         v-model="tab"
         background-color="primary"
@@ -72,7 +73,7 @@
         </v-tab-item>
       </v-tabs-items>
     </v-col>
-    <v-col v-else-if="!loadingProcedures && procedures.length === 0 && emptyProjects.length === 0" cols="12">
+    <v-col v-else-if="isLoaded && procedures.length === 0 && emptyProjects.length === 0" cols="12">
       <div class="text--secondary beige pa-6 mb-12 rounded">
         Cette collectivité n'a pas de documents d'urbanisme sous sa compétence.
       </div>
@@ -99,10 +100,10 @@ export default {
       type: Array,
       required: true
     },
-    // collectiviteType: {
-    //   type: String,
-    //   default: () => null
-    // },
+    projects: {
+      type: Array,
+      default: () => null
+    },
     isPublic: {
       type: Boolean,
       default: () => false
@@ -112,16 +113,15 @@ export default {
     return {
       loadingProcedures: true,
       tab: null,
-      insertDialog: false,
-      // sudocuProcedures: [],
-      // procedures: [],
-      projects: []
+      insertDialog: false
     }
   },
   computed: {
+    isLoaded () {
+      return !!this.procedures && !!this.projects && !!this.collectivite
+    },
     isEpci () {
-      // TODO: Determiner si c'est un EPCI ou pas avec la nouvelle data collectivite
-      return this.collectiviteType === 'epci'
+      return this.collectivite.type !== 'Commune'
     },
     DUCommunaux () {
       if (this.isEpci) {
@@ -135,38 +135,15 @@ export default {
       return this.procedures?.filter(e => e.docType === 'SCOT')
     },
     emptyProjects () {
-      return this.projects.filter(project => !project.procedures.length)
+      if (!this.projects) { return null }
+
+      return this.projects.filter(project => !project.procedures.length) ?? []
     },
     emptyProjectsInter () {
-      return this.emptyProjects.filter(project => project.collectivite_id.length === 9)
+      return this.emptyProjects?.filter(project => project.collectivite_id.length === 9)
     },
     emptyProjectsCommunaux () {
-      return this.emptyProjects.filter(project => project.collectivite_id.length !== 9)
-    }
-  },
-  async mounted () {
-    // TODO: Remettre les procedures Docurba
-
-    // const [sudocuProcedures, { procedures, projects }] = await Promise.all([
-    //   this.$sudocu.getProcedures(this.collectivite.id),
-    //   !this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }
-    // ])
-
-    // this.sudocuProcedures = sudocuProcedures
-    // this.procedures = [...sudocuProcedures, ...procedures]
-
-    const { projects } = await this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }
-    this.projects = projects
-    console.log('HERE projects: ', this.projects)
-    this.loadingProcedures = false
-  },
-  methods: {
-    async fetchProjects () {
-      const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.collectivite.id)
-      // TODO: remettre les procedures Docurba
-      console.log(procedures)
-      // this.procedures = [...this.sudocuProcedures, ...procedures]
-      this.projects = projects
+      return this.emptyProjects?.filter(project => project.collectivite_id.length !== 9)
     }
   }
 }
