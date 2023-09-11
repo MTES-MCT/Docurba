@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1>{{ isEpci ? collectivite.label : collectivite.name }} </h1>
+          <h1>{{ collectivite.intituleComplet }} </h1>
         </v-col>
       </v-row>
     </v-container>
@@ -11,7 +11,7 @@
       :is-epci="isEpci"
       :collectivite="collectivite"
       :procedures="procedures"
-      :communes="isEpci ? collectivite.towns : [collectivite]"
+      :communes="isEpci ? collectivite.communes : [collectivite]"
       @snackMessage="Object.assign(snackbar, {visible: true, message: arguments[0]})"
     />
     <v-snackbar v-model="snackbar.visible" top right color="success">
@@ -39,8 +39,10 @@ export default {
     }
   },
   async mounted () {
-    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId)
-    this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
+    const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
+    this.collectivite = collectiviteProcedures.collectivite
+    const { procedures } = await this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }
+    this.procedures = [...collectiviteProcedures.procedures, ...procedures]
   }
 }
 </script>

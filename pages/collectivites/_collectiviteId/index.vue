@@ -72,7 +72,8 @@
     </v-row>
     <DashboardDUItemsList
       :collectivite="collectivite"
-      :collectivite-type="isEpci ? 'epci' : 'commune'"
+      :procedures="procedures"
+      :projects="[]"
       is-public
     />
   </v-container>
@@ -97,33 +98,31 @@ export default {
     }
   },
   data () {
-    const collectiviteId = this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE
-
     return {
       actionsCards: [
         {
           title: 'Déposer un acte',
           text: 'Déposez une délibération de prescription ou un arrêté.',
-          to: { name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId }, query: this.$route.query }
+          to: { name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.collectivite.code }, query: this.$route.query }
         },
         {
           title: 'Socle de Porter à connaissance',
           text: 'Consultez ou modifiez votre socle de Porter à Connaissance.',
           to: {
             name: 'collectivites-collectiviteId-pac',
-            params: { collectiviteId },
+            params: { collectiviteId: this.collectivite.code },
             query: Object.assign({ document: this.isEpci ? 'PLUi' : 'PLU' }, this.$route.query)
           }
         },
         {
           title: 'Ressources',
           text: 'Consultez des ressources autour de vos documents d’urbanisme.',
-          to: { name: 'collectivites-collectiviteId-ressources', params: { collectiviteId }, query: this.$route.query }
+          to: { name: 'collectivites-collectiviteId-ressources', params: { collectiviteId: this.collectivite.code }, query: this.$route.query }
         },
         {
           title: 'Données',
           text: 'Consultez les données de votre territoire.',
-          to: { name: 'collectivites-collectiviteId-donnees-georisques', params: { collectiviteId }, query: this.$route.query }
+          to: { name: 'collectivites-collectiviteId-donnees-georisques', params: { collectiviteId: this.collectivite.code }, query: this.$route.query }
         }
       ]
     }

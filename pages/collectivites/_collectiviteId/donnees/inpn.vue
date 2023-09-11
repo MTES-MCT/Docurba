@@ -108,7 +108,7 @@ export default {
       headers: [
         {
           text: 'Commune',
-          value: 'nom_commune'
+          value: 'intitule'
         },
         { text: 'Liens', value: 'actions', sortable: false, align: 'center' }
       ],
@@ -134,13 +134,13 @@ export default {
 
     let communesData
     if (this.isEpci) {
-      communesData = this.collectivite.towns
+      communesData = this.collectivite.communes
     } else {
       communesData = [this.collectivite]
     }
     console.log('COMMUNE ID: ', communesData)
     communesData = communesData.map((e) => {
-      const urlInpn = `https://inpn.mnhn.fr/collTerr/commune/${e.id || e.code_commune_INSEE}`
+      const urlInpn = `https://inpn.mnhn.fr/collTerr/commune/${e.code}`
       const enriched = {
         ...e,
         urlEspaces: `${urlInpn}/tab/espaces`,

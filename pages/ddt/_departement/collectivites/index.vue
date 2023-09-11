@@ -77,9 +77,15 @@
             >
               <!-- eslint-disable-next-line -->
             <template #item.intercommunalite="{ item }">
-                <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.intercommunalite}/epci`">
-                  {{ item.intercommunalite }}
-                </nuxt-link>
+
+                <div v-if="item.intercommunaliteCode">
+                  <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.intercommunaliteCode}/epci`">
+                    {{ item.intercommunaliteName }}
+                  </nuxt-link>
+                </div>
+                <div v-else>
+                  -
+                </div>
               </template>
 
               <!-- eslint-disable-next-line -->
@@ -149,6 +155,7 @@ export default {
     },
     collectivites () {
       if (!this.epci) { return [] }
+
       return this.epci.map((e) => {
         return {
           name: e.intitule,
@@ -199,22 +206,24 @@ export default {
     })
 
     const communesUniq = [...new Map(communes.map(item => [item.code, item])).values()]
+    console.log('this.epci ici: ', communesUniq, ' sudocuCollectivites: ', sudocuCollectivites)
     this.communes = communesUniq.map((e) => {
-      const sudoCom = sudocuCollectivites.find(i => i.codecollectivite === e.code.padStart(5, '0'))
+      const sudoCom = sudocuCollectivites.find(i => i.codecollectivite === e.code)
       if (!sudoCom) {
         console.log('not found: ', e)
       }
+      console.log('sudoCom: ', sudoCom)
       return {
         name: e.intitule,
-        competenceSudocu: e.sudoCom?.sicompetenceplan ?? false,
-        // competenceBanatic: e.competences.plu,
+        competenceSudocu: sudoCom.sicompetenceplan,
+        competenceBanatic: e.competencePLU,
         type: 'Commune',
         lastProc: '',
         status: '',
-        competenceBanatic: null, // e.competences.plu,
+        intercommunaliteName: e.intercommunaliteName,
         departementCode: e.departementCode,
         dateCreation: e.dateCreation,
-        intercommunalite: e.intercommunaliteCode,
+        intercommunaliteCode: e.intercommunaliteCode,
         detailsPath: { name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: this.$route.params.departement, collectiviteId: e.code } },
         frpProcPrincipalPath: { name: 'foo' }
       }

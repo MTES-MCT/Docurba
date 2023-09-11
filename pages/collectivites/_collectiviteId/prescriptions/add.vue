@@ -385,7 +385,7 @@ export default {
         // TODO: Add column verified or accepted sur les prescription with fill automatically if the user posting is a verified connected one.
         const prescription = {
           epci: this.isEpci ? this.collectivite : null,
-          towns: this.isEpci ? this.collectivite.towns.map(e => e.code_commune_INSEE) : [this.collectivite.id],
+          towns: this.isEpci ? this.collectivite.communes.map(e => e.code) : [this.collectivite.code],
           attachments: null,
           type: this.docType,
           acte_type: this.acteType,
@@ -431,7 +431,7 @@ export default {
 
         this.$router.push({
           name: 'collectivites-collectiviteId-prescriptions',
-          params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE },
+          params: { collectiviteId: this.collectivite.code },
           query: { ...this.$route.query, success: true }
         })
       } catch (error) {

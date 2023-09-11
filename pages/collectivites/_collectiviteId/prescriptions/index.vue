@@ -164,9 +164,9 @@ export default {
     this.loading = true
     let prescriptions = null
     if (this.isEpci) {
-      prescriptions = (await this.$supabase.from('prescriptions').select('*').eq('epci->EPCI', this.collectivite.EPCI).order('created_at', { ascending: false })).data
+      prescriptions = (await this.$supabase.from('prescriptions').select('*').eq('epci->EPCI', this.collectivite.code).order('created_at', { ascending: false })).data
     } else {
-      const inseeSearch = [this.collectivite.code_commune_INSEE.toString().padStart(5, '0')]
+      const inseeSearch = [this.collectivite.code]
       prescriptions = (await this.$supabase.from('prescriptions').select('*').contains('towns', inseeSearch).order('created_at', { ascending: false })).data
     }
     const [current, ...history] = prescriptions
@@ -176,10 +176,10 @@ export default {
   },
   methods: {
     async nextStep () {
-      let path = { name: 'collectivites-collectiviteId-prescriptions-signup', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: this.$route.query }
+      let path = { name: 'collectivites-collectiviteId-prescriptions-signup', params: { collectiviteId: this.collectivite.code }, query: this.$route.query }
       await this.$user.isReady
       if (this.$user?.profile?.email) {
-        path = { name: 'collectivites-collectiviteId-prescriptions-add', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: this.$route.query }
+        path = { name: 'collectivites-collectiviteId-prescriptions-add', params: { collectiviteId: this.collectivite.code }, query: this.$route.query }
       }
       return this.$router.push(path)
     }
