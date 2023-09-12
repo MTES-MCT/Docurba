@@ -139,7 +139,7 @@ export default {
       const poste = this.$user.profile.poste
       const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
 
-      return `${scopes[poste]}-${code}`
+      return `${scopes[poste]}-${this.$options.filters.deptToRef(code)}`
     }
   },
   async mounted () {
