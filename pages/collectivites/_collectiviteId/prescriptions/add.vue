@@ -20,7 +20,7 @@
           <v-col cols="12" class="mb-6">
             <validation-provider v-slot="{ errors }" name="Vérification" rules="required|needToBeOui">
               <VBigRadio v-model="confirmCollectivite" :error-messages="errors" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
-                Est-ce que l’acte en question concerne bien  <b>{{ collectivite.name }} ({{ collectivite.region.name }})</b> ?
+                Est-ce que l’acte en question concerne bien  <b>{{ collectivite.intitule }} ({{ collectivite.region.intitule }})</b> ?
               </VBigRadio>
             </validation-provider>
           </v-col>
@@ -78,8 +78,8 @@
                   v-model="perimetre"
                   hide-details
                   class="mt-0"
-                  :label="`${commune.nom_commune} (${commune.code_commune_INSEE})`"
-                  :value="commune.code_commune_INSEE"
+                  :label="`${commune.intitule} (${commune.code})`"
+                  :value="commune.code"
                 />
               </v-col>
               <v-col cols="12" class="my-2">
@@ -337,7 +337,7 @@ export default {
   },
   methods: {
     selectAllPerimetre () {
-      this.perimetre = this.communes.map(e => e.code_commune_INSEE)
+      this.perimetre = this.communes.map(c => c.code)
     },
     removeFile (file) {
       this.files = [...this.files].filter(e => e !== file)
