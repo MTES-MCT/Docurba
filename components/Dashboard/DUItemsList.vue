@@ -23,7 +23,7 @@
           SCoT
         </v-tab>
         <v-spacer />
-        <v-btn text class="align-self-center" @click="insertDialog = true">
+        <v-btn v-if="!isPublic" text class="align-self-center" @click="insertDialog = true">
           Ajouter un DU
         </v-btn>
       </v-tabs>
