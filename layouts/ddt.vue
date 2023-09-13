@@ -38,10 +38,10 @@ import axios from 'axios'
 
 export default {
   name: 'DdtLayout',
+  data () {
+    return { isLoading: true }
+  },
   computed: {
-    isLoading () {
-      return !this.$user.profile.email
-    },
     isAllowed () {
       // console.log('this.$user?.profile: ', this.$user.profile)
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
@@ -49,6 +49,8 @@ export default {
   },
   async mounted () {
     await this.$user.isReady
+    this.isLoading = false
+
     if (this.$user.profile.side !== 'etat') { this.$router.push('/') }
 
     if (this.$route.query.contact) {
