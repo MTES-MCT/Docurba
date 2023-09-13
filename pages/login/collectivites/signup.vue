@@ -136,12 +136,12 @@ export default {
       selectedCollectivite: {},
       loading: false,
       userData: {
-        email: this.$isDev ? `test_${this.$dayjs().format('DD-MM-YY+hhmm')}@docurba.beta.gouv.fr` : '',
+        email: this.$isDev ? `fabien+${this.$dayjs().format('DDMMYYhhmm')}@quantedsquare.com` : '',
         firstname: this.$isDev ? 'Test' : '',
         lastname: this.$isDev ? 'Test' : '',
         poste: '', // 'elu',
         other_poste: '', // 'test',
-        tel: '', // '0669487499',
+        tel: this.$isDev ? '0669487499' : '', // '0669487499',
         collectivite_id: '' // '45678'
       },
       snackbar: {
@@ -158,12 +158,12 @@ export default {
   },
   methods: {
     async signUp () {
-      console.log('signup')
+      // console.log('signup')
 
       try {
         this.loading = true
         this.userData.other_poste = this.userData.other_poste ? [this.userData.other_poste] : null
-        const ret = await axios({
+        await axios({
           method: 'post',
           url: '/api/auth/signupCollectivite',
           data: {
@@ -172,9 +172,13 @@ export default {
             redirectTo: window.location.origin
           }
         })
-        console.log('ret: ', ret)
-        this.$router.push({ name: 'login-collectivites-explain', query: { collectivite_id: this.selectedCollectiviteId } })
+        // console.log('ret: ', ret)
+        this.$router.push({
+          name: 'login-collectivites-explain',
+          query: { collectivite_id: this.selectedCollectiviteId }
+        })
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error)
         this.error = error.response.data.message
         this.$vuetify.goTo(0)

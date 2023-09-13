@@ -43,7 +43,7 @@ export default {
       return !this.$user.profile.email
     },
     isAllowed () {
-      console.log('this.$user?.profile: ', this.$user.profile)
+      // console.log('this.$user?.profile: ', this.$user.profile)
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     }
   },

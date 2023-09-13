@@ -206,13 +206,13 @@ export default {
     })
 
     const communesUniq = [...new Map(communes.map(item => [item.code, item])).values()]
-    console.log('this.epci ici: ', communesUniq, ' sudocuCollectivites: ', sudocuCollectivites)
+    // console.log('this.epci ici: ', communesUniq, ' sudocuCollectivites: ', sudocuCollectivites)
     this.communes = communesUniq.map((e) => {
       const sudoCom = sudocuCollectivites.find(i => i.codecollectivite === e.code)
-      if (!sudoCom) {
-        console.log('not found: ', e)
-      }
-      console.log('sudoCom: ', sudoCom)
+      // if (!sudoCom) {
+      //   console.log('not found: ', e)
+      // }
+      // console.log('sudoCom: ', sudoCom)
       return {
         name: e.intitule,
         competenceSudocu: sudoCom.sicompetenceplan,
