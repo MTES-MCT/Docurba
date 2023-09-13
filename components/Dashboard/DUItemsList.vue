@@ -7,7 +7,7 @@
       :collectivite="collectivite"
       @insert="$emit('inserted')"
     />
-    <v-col v-if=" procedures?.length > 0 || emptyProjects?.length > 0">
+    <v-col v-if="procedures.length > 0 || emptyProjects.length > 0">
       <v-tabs
         v-model="tab"
         background-color="primary"
@@ -98,15 +98,15 @@ export default {
     },
     procedures: {
       type: Array,
-      required: true
+      default () { return [] }
     },
     projects: {
       type: Array,
-      default: () => null
+      default () { return [] }
     },
     isPublic: {
       type: Boolean,
-      default: () => false
+      default: false
     }
   },
   data () {
@@ -135,9 +135,9 @@ export default {
       return this.procedures?.filter(e => e.docType === 'SCOT')
     },
     emptyProjects () {
-      if (!this.projects) { return null }
+      if (!this.projects) { return [] }
 
-      return this.projects.filter(project => !project.procedures.length) ?? []
+      return this.projects.filter(project => !project.procedures.length)
     },
     emptyProjectsInter () {
       return this.emptyProjects?.filter(project => project.collectivite_id.length === 9)

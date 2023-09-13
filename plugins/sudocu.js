@@ -65,6 +65,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         if (rawDetailsProcedureError) { throw rawDetailsProcedureError }
         return rawDetailsProcedure
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('ERROR getProcedureInfosDgd: ', error)
       }
     },
@@ -82,6 +83,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
 
         return formattedEvs.concat(schemaEvents)
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('ERROR getProcedureEvents:', error)
       }
     },
@@ -98,6 +100,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         const allEvts = formattedEvs.concat(schemaEvents)
         return _.groupBy(allEvts, e => e.noserieprocedure)
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('ERROR getProcedureEvents:', error)
       }
     },
@@ -112,49 +115,49 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
 
       let proceduresCollec = null
       if (collectiviteId.length > 5) {
-        console.log('Searching procédures for epci: ', collectiviteId)
+        // console.log('Searching procédures for epci: ', collectiviteId)
         proceduresCollec = await proceduresCollecQuery.eq('code_collectivite_porteuse', collectiviteId)
       } else {
-        console.log('Searching procédures for commune: ', [collectiviteId])
+        // console.log('Searching procédures for commune: ', [collectiviteId])
         proceduresCollec = await proceduresCollecQuery.contains('communes_insee', [collectiviteId])
       }
       const proceduresCollecIds = proceduresCollec.data.map(e => e.procedure_id)
 
       // On fetch les procédures faisant parti du périmètre de la commune
       const rawPlanProcedures = await $supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
-      console.log('TEST rawPlanProcedures: ', rawPlanProcedures)
+      // console.log('TEST rawPlanProcedures: ', rawPlanProcedures)
 
       // On fetch tous les events liées aux procédures
       const allProceduresEvents = await this.getProceduresEvents(proceduresCollecIds)
-      console.log('EVENTS OF EACH PROCEDURES: ', allProceduresEvents)
+      // console.log('EVENTS OF EACH PROCEDURES: ', allProceduresEvents)
 
       // Fetch des EPCIs porteuses des différentes procédures
       let epcisPorteuses = []
       const collecPorteusesIds = [...new Set(proceduresCollec.data.filter(e => e.type_collectivite_porteuse !== 'COM').map(e => e.code_collectivite_porteuse))]
       if (collecPorteusesIds.length > 0) {
-        console.log('LIST IDS EPCI PORTEUSES: ', collecPorteusesIds)
+        // console.log('LIST IDS EPCI PORTEUSES: ', collecPorteusesIds)
         epcisPorteuses = (await axios({ url: '/api/geo/intercommunalites', method: 'get', params: { codes: collecPorteusesIds } })).data
 
-        console.log('EPCI PORTEUSES: ', epcisPorteuses)
+        // console.log('EPCI PORTEUSES: ', epcisPorteuses)
       }
       let communesPorteuses = []
       const communesPorteusesIds = [...new Set(proceduresCollec.data.filter(e => e.type_collectivite_porteuse === 'COM').map(e => e.code_collectivite_porteuse))]
       if (communesPorteusesIds.length > 0) {
-        console.log('LIST IDS COMMUNES PORTEUSES: ', communesPorteusesIds)
+        // console.log('LIST IDS COMMUNES PORTEUSES: ', communesPorteusesIds)
         communesPorteuses = (await axios({
           url: '/api/geo/communes',
           method: 'get',
           params: { codes: communesPorteusesIds }
         })).data
 
-        console.log('COMMUNES PORTEUSES: ', communesPorteuses)
+        // console.log('COMMUNES PORTEUSES: ', communesPorteuses)
       }
       // TODO utiliser ca
       const collectivitesPorteuses = epcisPorteuses.concat(communesPorteuses)
-      console.log('collectivitesPorteuses: ', collectivitesPorteuses)
+      // console.log('collectivitesPorteuses: ', collectivitesPorteuses)
       // Raccordement des events à leur procédure
       const planProceduresEvents = rawPlanProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
-      console.log('TEST planProceduresEvents: ', planProceduresEvents)
+      // console.log('TEST planProceduresEvents: ', planProceduresEvents)
 
       const planProcedures = planProceduresEvents.map((rawPlanProcedure, idx) => {
         // Raccordements des périmètres aux procédures
@@ -221,7 +224,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         }
       })
 
-      console.log('formattedProcedures: ', formattedProcedures)
+      // console.log('formattedProcedures: ', formattedProcedures)
 
       // Définition des procédures secondaires
       const typePrincipalProcedures = ['Elaboration', 'Révision', 'Abrogation', 'Engagement', 'Réengagement']
@@ -231,12 +234,12 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       // Define specific status for principales / secondaires
 
       setSpecificsStatus(procsPrincipales)
-      console.log('AFTER SET procsPrincipales ?? : ', procsPrincipales)
-      console.log('groupedProcsSecondaires ?? : ', groupedProcsSecondaires)
+      // console.log('AFTER SET procsPrincipales ?? : ', procsPrincipales)
+      // console.log('groupedProcsSecondaires ?? : ', groupedProcsSecondaires)
       _.each(groupedProcsSecondaires, e => setSpecificsStatus(e))
       groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.procedure_id?.toString())
 
-      console.log('TEST formattedProcedures: ', formattedProcedures)
+      // console.log('TEST formattedProcedures: ', formattedProcedures)
 
       // Assign procedures secondaire to principales
       const fullProcs = _.map(procsPrincipales, (procedurePrincipale) => {
@@ -282,6 +285,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         })
         return fullProcs
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('Error: ', error)
       }
     },
@@ -338,6 +342,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         })
         return proceduresEnrich
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('ERROR - [loadPerimetre]: ', error)
       }
     }

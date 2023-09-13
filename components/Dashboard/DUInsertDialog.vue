@@ -66,7 +66,7 @@ export default {
     }
   },
   data () {
-    console.log('DUInsertDialog collectivite', this.collectivite)
+    // console.log('DUInsertDialog collectivite', this.collectivite)
 
     const collectiviteId = this.collectivite.code
     const isEpci = collectiviteId.length === 9

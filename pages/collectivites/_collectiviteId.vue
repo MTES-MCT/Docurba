@@ -30,7 +30,7 @@ export default {
         message: ''
       },
       collectivite: null,
-      procedures: null
+      procedures: []
     }
   },
   computed: {
