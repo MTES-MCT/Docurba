@@ -33,6 +33,7 @@
     <DashboardDUItemsList
       :collectivite="collectivite"
       :procedures="procedures"
+      :schemas="schemas"
     />
   </v-container>
 </template>
@@ -59,10 +60,19 @@ export default {
     // 200040111
     // 1001
     // 81178
-    const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
 
+    // TODO: Handle New DU (comme EPCI)
+
+    // TEST
+    // const test = await this.$sudocu.getSchemaCollectivite(this.$route.params.collectiviteId)
+    // console.log('TESTING: ', test)
+    // END
+
+    const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
+    console.log('TESTING: ', collectiviteProcedures)
     this.collectivite = collectiviteProcedures.collectivite
     this.procedures = collectiviteProcedures.procedures
+    this.schemas = collectiviteProcedures.schemas
   }
 }
 </script>

@@ -65,7 +65,7 @@
             class="mb-4"
           />
           <DashboardDUItem
-            v-for="(procedure,i) in DUSchemas"
+            v-for="(procedure,i) in schemas"
             :key="'du_' + i"
             :procedure="procedure"
             :censored="isPublic"
@@ -104,6 +104,10 @@ export default {
       type: Array,
       default: () => null
     },
+    schemas: {
+      type: Array,
+      default: () => null
+    },
     isPublic: {
       type: Boolean,
       default: () => false
@@ -131,9 +135,9 @@ export default {
     DUInter () {
       return this.procedures?.filter(e => e.perimetre.length > 1)
     },
-    DUSchemas () {
-      return this.procedures?.filter(e => e.docType === 'SCOT')
-    },
+    // DUSchemas () {
+    //   return this.procedures?.filter(e => e.docType === 'SCOT')
+    // },
     emptyProjects () {
       if (!this.projects) { return null }
 

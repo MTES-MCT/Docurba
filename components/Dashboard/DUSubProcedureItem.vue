@@ -2,9 +2,9 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        <v-chip :color="statusColors[procedure.status]" label class="text-uppercase mr-2">
+        <!-- <v-chip :color="statusColors[procedure.status]" label class="text-uppercase mr-2">
           {{ procedure.status }}
-        </v-chip>
+        </v-chip> -->
         {{ procedure.type }}
         - {{ procedure.id }} - parent: {{ procedure.procedure_id }}
       </v-col>
