@@ -83,9 +83,9 @@ export default {
     return {
       linkedEpci: null,
       collectivite: null,
-      projects: null,
+      projects: [],
       sudocuProcedures: null,
-      procedures: null,
+      procedures: [],
       icons: {
         mdiArrowLeft
       }

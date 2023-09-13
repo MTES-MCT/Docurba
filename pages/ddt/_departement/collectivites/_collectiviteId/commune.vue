@@ -49,7 +49,7 @@ export default {
       linkedEpci: null,
       tab: null,
       collectivite: null,
-      procedures: null,
+      procedures: [],
       icons: {
         mdiArrowLeft
       }
