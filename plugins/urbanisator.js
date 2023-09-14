@@ -89,6 +89,14 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
 
     //   return [...sudocuProcedures, ...procedures]
     // },
+
+    async getCollectivite (code) {
+      if (code.length > 5) {
+        return (await axios({ url: `/api/geo/intercommunalites/${code}`, method: 'get' })).data
+      } else {
+        return (await axios({ url: `/api/geo/communes/${code}`, method: 'get' })).data
+      }
+    },
     async getProjectsProcedures (collectiviteId) {
       // Fetching user procedure for now. Should also fetch public projects at some point.
       // Or more simply fetch based on collectivite column but need to make a script to update projects.

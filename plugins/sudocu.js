@@ -1,9 +1,5 @@
 import _ from 'lodash'
 import axios from 'axios'
-// import epcisList from ('./Data/EPCI.json')
-// const { data: rawEvents, error: rawEventsError, ...args } = await this.$supabase.from('sudocu_procedure_events').select('*', { count: 'exact' }).eq('codecollectivite', codecollectivite)
-// console.log('args: ', args)
-// if (rawEventsError) { throw rawEventsError }
 
 function parseAttachment (path) {
   if (path) {
@@ -20,50 +16,18 @@ function parseAttachment (path) {
   }
 }
 
-function formatSudocuProcedure (rawProcedures) {
-  return rawProcedures.map((e) => {
-    return {
-      // This keys are only for backward comatibility but should not be used.
-      // Use new keys below that match procedure table in bdd.
-      date_iso: e.last_event_date,
-      // type: e.libtypeevenement + ' - ' + e.last_event_statut, // Maybe we dont need this.
-      // description: e.commentaire + ' - Document sur le reseau: ' + e.nomdocument,
-      actors: [],
-      attachements: [],
-      docType: e.codetypedocument,
-      idProcedure: e.noserieprocedure || e.id_procedure,
-      name: e.nomschema,
-      typeProcedure: e.libtypeprocedure,
-      idProcedurePrincipal: e.noserieprocedureratt,
-      commentaireDgd: e.commentairedgd, // This should be kep always for historic data
-      commentaireProcedure: e.commentaireproc, // This should be kep always for historic data
-      dateLancement: e.datelancement,
-      dateApprobation: e.dateapprobation,
-      dateAbandon: e.dateabandon,
-      dateExecutoire: e.dateexecutoire,
-      // new keys from procedure table on supabase
-      id: e.noserieprocedure || e.id_procedure,
-      type: e.libtypeprocedure,
-      description: e.commentaire + ' - Document sur le reseau: ' + e.nomdocument,
-      procedure_id: e.noserieprocedureratt,
-      launch_date: e.datelancement,
-      approval_date: e.dateapprobation, // Probably need to parse date to correct format.
-      abort_date: e.dateabandon, // Probably need to parse date to correct format.
-      enforceable_date: e.dateexecutoire, // Probably need to parse date to correct format.
-      created_at: e.datelancement, // Probably need to parse date to correct format.
-      last_updated_at: e.last_event_date // Probably need to parse date to correct format.
-    }
-  })
-}
-
 export default ({ route, store, $supabase, $urbanisator }, inject) => {
   inject('sudocu', {
     async getProcedureInfosDgd (procedureId) {
       try {
         if (typeof procedureId === 'string') { procedureId = parseInt(procedureId) }
-        const { data: rawDetailsProcedure, error: rawDetailsProcedureError } = await $supabase.from('sudocu_procedures_infosdgd').select('*').eq('procedure_id', procedureId)
-        if (rawDetailsProcedureError) { throw rawDetailsProcedureError }
-        return rawDetailsProcedure
+        const { data: dgdItems, error: infosDgdError } = await $supabase.from('sudocu_procedures_infosdgd').select('*').eq('procedure_id', procedureId)
+        const { data: procedure, error: procedureError } = await $supabase.from('distinct_procedures_events').select('*').eq('noserieprocedure', procedureId)
+        if (infosDgdError) { throw infosDgdError }
+        if (procedureError) { throw procedureError }
+        // console.log('DGD proced:', procedure)
+        const collectivite = await $urbanisator.getCollectivite(procedure[0].codecollectivite)
+        return { procedureId, commentaire: procedure[0].commentairedgd, dgdItems, collectivite }
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log('ERROR getProcedureInfosDgd: ', error)
@@ -149,16 +113,13 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
 
         // console.log('COMMUNES PORTEUSES: ', communesPorteuses)
       }
-      // TODO utiliser ca
+
       const collectivitesPorteuses = epcisPorteuses.concat(communesPorteuses)
       // console.log('collectivitesPorteuses: ', collectivitesPorteuses)
       // Raccordement des events à leur procédure
       const planProceduresEvents = rawPlanProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
       const schemaProceduresEvents = rawSchemaProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
-      // console.log('TEST planProceduresEvents: ', planProceduresEvents)
-      // console.log('TEST schemaProceduresEvents: ', schemaProceduresEvents)
 
-      // TODO: faire une fonction de la boucle
       function enrich (procedures, proceduresPerimetres, collectivitesPorteuses) {
         return procedures.map((procedure, idx) => {
         // Raccordements des périmètres aux procédures
@@ -169,13 +130,11 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
           }, [])
           // Enrichissement des collectivités porteuses de chaque procédures
           const collectivitePorteuse = proceduresPerimetres.data.find(e => e.procedure_id === procedure.noserieprocedure)
-          console.log('collectivitePorteuse: ', collectivitePorteuse, ' procedure.noserieprocedure: ', procedure.noserieprocedure)
           let statusProcedure = 'inconnu'
           let statusInfos = {}
 
           // Vérification de la sectorialité - si le périmètre de la procédure est plus petit que la collectivité porteuse
           const fullDetailsCollecPorteuse = collectivitesPorteuses.find(e => e.code === collectivitePorteuse.code_collectivite_porteuse)
-          console.log('fullDetailsCollecPorteuse: ', fullDetailsCollecPorteuse, ' procedure.noserieprocedure: ', procedure.noserieprocedure)
 
           let isSectoriel = null
           if (fullDetailsCollecPorteuse?.nbCommunes) {
@@ -206,7 +165,6 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       // Gestion des rollback du a une annuldation de la délibération (le DU précédent en date devient opposable) et précédent
       // La dernière procédure ayant une délibération est l'opposable
       function setSpecificsStatus (arrProcedures) {
-        console.log('setSpecificsStatus: ', arrProcedures)
         const opposableProc = arrProcedures.find(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation)
         if (opposableProc) { opposableProc.status = 'opposable' }
         arrProcedures.filter(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation && opposableProc.id !== e.id).forEach((e) => { e.status = 'precedent' })
@@ -225,7 +183,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
           status_infos: e.statusInfos
         }
       })
-      console.log('formattedSchemaProcedures SCHEMA: ', formattedSchemaProcedures)
+      // console.log('formattedSchemaProcedures SCHEMA: ', formattedSchemaProcedures)
 
       const formattedProcedures = planProcedures.map((e) => {
         return {
@@ -261,12 +219,9 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         // Define specific status for principales / secondaires
 
         setSpecificsStatus(procsPrincipales)
-        // console.log('AFTER SET procsPrincipales ?? : ', procsPrincipales)
-        // console.log('groupedProcsSecondaires ?? : ', groupedProcsSecondaires)
+
         _.each(groupedProcsSecondaires, e => setSpecificsStatus(e))
         groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.procedure_id?.toString())
-
-        // console.log('TEST procedures: ', procedures)
 
         // Assign procedures secondaire to principales
         return _.map(procsPrincipales, (procedurePrincipale) => {
@@ -283,97 +238,6 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       })).data
 
       return { collectivite, procedures: fullProcs, schemas: fullSchemas }
-    },
-    async getProcedures (communeId) {
-      try {
-        let codecollectivite
-        if ($urbanisator.isEpci(communeId)) {
-          codecollectivite = communeId
-        } else {
-          codecollectivite = communeId.toString().padStart(5, '0')
-        }
-
-        const promPlanProcedures = await $supabase.from('distinct_procedures_events').select('*').eq('codecollectivite', codecollectivite)
-        const promSchemaProcedures = await $supabase.from('distinct_procedures_schema_events').select('*').eq('codecollectivite', codecollectivite).order('last_event_date', { ascending: true })
-
-        const [{ data: rawPlanProcedures, error: rawProceduresError }, { data: rawSchemaProcedures, error: rawSchemaProceduresError }] = await Promise.all([promPlanProcedures, promSchemaProcedures])
-        if (rawProceduresError) { throw rawProceduresError }
-
-        if (rawSchemaProceduresError) { throw rawSchemaProceduresError }
-        const rawProcedures = rawPlanProcedures.concat(rawSchemaProcedures)
-
-        const formattedProcedures = formatSudocuProcedure(rawProcedures)
-        const allProceduresEnriched = await this.loadPerimetre(formattedProcedures)
-
-        const typePrincipalProcedures = ['Elaboration', 'Révision', 'Abrogation', 'Engagement', 'Réengagement']
-        const [procsPrincipales, procsSecondaires] = _.partition(allProceduresEnriched, procedure => typePrincipalProcedures.includes(procedure.typeProcedure))
-
-        const groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.idProcedurePrincipal?.toString())
-        const fullProcs = _.map(procsPrincipales, (procedurePrincipale) => {
-          procedurePrincipale.procSecs = groupedProcsSecondaires[procedurePrincipale.idProcedure]
-          return procedurePrincipale
-        })
-        return fullProcs
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('Error: ', error)
-      }
     }
-    // async loadPerimetre (procedures) {
-    //   try {
-    //     const proceduresIds = procedures.map(procedure => procedure.idProcedure)
-    //     const {
-    //       data: allPerim,
-    //       error: allPerimError
-    //     } = await $supabase.from('sudocu_procedures_perimetres').select().in('procedure_id', proceduresIds)
-    //     if (allPerimError) { throw allPerimError }
-
-    //     const {
-    //       data: ongoingProceduresStates,
-    //       error: ongoingProceduresStatesError
-    //     } = await $supabase.from('sudocu_procedures_etats').select().in('id_procedure_ongoing', proceduresIds)
-    //     if (ongoingProceduresStatesError) { throw ongoingProceduresStatesError }
-
-    //     const {
-    //       data: approvedProceduresStates,
-    //       error: approvedProceduresStatesError
-    //     } = await $supabase.from('sudocu_procedures_etats').select().in('id_procedure_approved', proceduresIds)
-    //     if (approvedProceduresStatesError) { throw approvedProceduresStatesError }
-
-    //     const proceduresEnrich = procedures.map((procedure) => {
-    //       procedure.approvedInTowns = []
-    //       procedure.ongoingInTowns = []
-
-    //       const approvedInTowns = approvedProceduresStates.filter(i => i.id_procedure_approved === procedure.idProcedure)
-    //       if (approvedInTowns.length > 0) {
-    //         procedure.approvedInTowns = approvedInTowns.map(i => i.insee_code)
-    //       }
-
-    //       const ongoingInTowns = ongoingProceduresStates.filter(i => i.id_procedure_ongoing === procedure.idProcedure)
-    //       if (ongoingInTowns.length > 0) {
-    //         procedure.ongoingInTowns = ongoingInTowns.map(i => i.insee_code)
-    //       }
-
-    //       const collecPerim = allPerim.find(i => i.procedure_id === procedure.idProcedure)
-    //       procedure.perimetre = collecPerim.communes_insee.reduce((acc, curr, idx) => {
-    //         acc.push({ inseeCode: collecPerim.communes_insee[idx], name: collecPerim.name_communes[idx] })
-    //         return acc
-    //       }, [])
-
-    //       // This is to simulate a join on project_id in procedure table
-    //       const isEpci = procedure.perimetre.length > 1
-
-    //       procedure.project = {
-    //         towns: procedure.perimetre,
-    //         doc_type: (procedure.docType === 'PLU' && isEpci) ? 'PLUi' : procedure.docType
-    //       }
-
-    //       return procedure
-    //     })
-    //     return proceduresEnrich
-    //   } catch (error) {
-    //     console.log('ERROR - [loadPerimetre]: ', error)
-    //   }
-    // }
   })
 }
