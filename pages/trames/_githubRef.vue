@@ -108,8 +108,8 @@ export default {
 
     let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,
-        `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`,
-        `region-${this.project.towns ? this.project.towns[0].code_region : ''}`,
+        `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.towns[0].departementCode) : ''}`,
+        `region-${this.project.towns ? this.project.towns[0].regionCode : ''}`,
         this.gitRef,
         'main'
     ])
@@ -178,7 +178,7 @@ export default {
       let headRef = 'main'
 
       if (this.project && this.project.id) {
-        headRef = `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`
+        headRef = `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.towns[0].departementCode) : ''}`
       }
 
       if (this.gitRef.includes('dept-')) {

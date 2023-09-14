@@ -25,7 +25,7 @@ export default {
     this.project = projects ? projects[0] : null
 
     if (this.project) {
-      const { dataset, themes } = await this.$daturba.getData(this.currentRegion, this.project.towns.map(t => t.code_commune_INSEE))
+      const { dataset, themes } = await this.$daturba.getData(this.currentRegion, this.project.towns.map(t => t.code))
 
       this.dataset = dataset
       this.themes = themes
@@ -33,7 +33,7 @@ export default {
       // Start Analytics
       this.$matomo([
         'trackEvent', 'Projet PAC', 'Data',
-          `${this.project.doc_type} - ${this.project.epci ? this.project.epci.label : this.project.towns[0].nom_commune}`
+          `${this.project.doc_type} - ${this.project.epci ? this.project.epci.intitule : this.project.towns[0].intitule}`
       ])
       // End Analytics
     }

@@ -223,13 +223,14 @@ export default {
     },
     getRegion (isEpci) {
       if (isEpci) {
-        const regionCode = this.projectForm.epci.towns[0].code_region
+        const regionCode = this.projectForm.epci.towns[0].regionCode
         console.log(this.projectForm.epci.towns)
 
         // eslint-disable-next-line eqeqeq
         return regions.find(r => r.code == +regionCode).iso
       } else {
-        return regions.find(r => r.name === this.projectForm.town.nom_region).iso
+        // eslint-disable-next-line eqeqeq
+        return regions.find(r => r.code == this.projectForm.town.regionCode).iso
       }
     }
   }

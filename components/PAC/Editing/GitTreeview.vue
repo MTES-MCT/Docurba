@@ -184,7 +184,7 @@ export default {
 
       const { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,
-        `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`,
+        `dept-${this.project.towns ? this.project.towns[0].departementCode : ''}`,
         this.gitRef
       ])
 

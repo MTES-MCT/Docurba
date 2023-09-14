@@ -28,7 +28,7 @@
       <v-spacer />
       <div class="ddt-text text-right">
         Direction départementale des territoires <br>
-        {{ project.towns[0].nom_departement }}
+        {{ project.towns[0].departementCode }}
       </div>
     </v-app-bar>
     <PACPDFPagesCounters :pac-data="project.PAC" content-id="pac-content-pdf" />
@@ -99,8 +99,8 @@ export default {
 
         const { data: supSections } = await $supAdmin.from('pac_sections').select('*').in('ref', [
           `projet-${project.id}`,
-          `dept-${project.towns ? project.towns[0].code_departement : ''}`,
-          `region-${project.towns ? project.towns[0].code_region : ''}`,
+          `dept-${project.towns ? this.$options.filters.deptToRef(this.project.towns[0].departementCode) : ''}`,
+          `region-${project.towns ? project.towns[0].regionCode : ''}`,
           'main'
         ])
 
