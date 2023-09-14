@@ -228,12 +228,6 @@ export default {
         frpProcPrincipalPath: { name: 'foo' }
       }
     })
-  },
-  methods: {
-    async getProcedures () {
-      this.procedures = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
-      return null
-    }
   }
 }
 </script>

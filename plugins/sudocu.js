@@ -105,8 +105,6 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       }
     },
     async getProceduresCollectivite (collectiviteId) {
-      // TODO: Ne gere que le PLAN pour le moment, il faut ajouter le SCOT
-      // TODO: Refaire un export avec le name_collectivite_porteuse (erreur ici on a le type de la collec a la place)
       // TODO: Refaire l'import des events avec le code event plutot que uniquement le label
 
       // On recupère les périmètres des procédures de la commune. Si c'est une EPCI on filtre sur la collectivite porteuse
@@ -121,10 +119,13 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         // console.log('Searching procédures for commune: ', [collectiviteId])
         proceduresCollec = await proceduresCollecQuery.contains('communes_insee', [collectiviteId])
       }
+      console.log('proceduresCollec.data: ', proceduresCollec.data)
       const proceduresCollecIds = proceduresCollec.data.map(e => e.procedure_id)
 
       // On fetch les procédures faisant parti du périmètre de la commune
       const rawPlanProcedures = await $supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
+
+      const rawSchemaProcedures = await $supabase.from('distinct_procedures_schema_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
       // console.log('TEST rawPlanProcedures: ', rawPlanProcedures)
 
       // On fetch tous les events liées aux procédures
@@ -144,11 +145,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       const communesPorteusesIds = [...new Set(proceduresCollec.data.filter(e => e.type_collectivite_porteuse === 'COM').map(e => e.code_collectivite_porteuse))]
       if (communesPorteusesIds.length > 0) {
         // console.log('LIST IDS COMMUNES PORTEUSES: ', communesPorteusesIds)
-        communesPorteuses = (await axios({
-          url: '/api/geo/communes',
-          method: 'get',
-          params: { codes: communesPorteusesIds }
-        })).data
+        communesPorteuses = (await axios({ url: '/api/geo/communes', method: 'get', params: { codes: communesPorteusesIds } })).data
 
         // console.log('COMMUNES PORTEUSES: ', communesPorteuses)
       }
@@ -157,55 +154,85 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       // console.log('collectivitesPorteuses: ', collectivitesPorteuses)
       // Raccordement des events à leur procédure
       const planProceduresEvents = rawPlanProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
+      const schemaProceduresEvents = rawSchemaProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
       // console.log('TEST planProceduresEvents: ', planProceduresEvents)
+      // console.log('TEST schemaProceduresEvents: ', schemaProceduresEvents)
 
-      const planProcedures = planProceduresEvents.map((rawPlanProcedure, idx) => {
+      // TODO: faire une fonction de la boucle
+      function enrich (procedures, proceduresPerimetres, collectivitesPorteuses) {
+        return procedures.map((procedure, idx) => {
         // Raccordements des périmètres aux procédures
-        const collecPerim = proceduresCollec.data.find(i => i.procedure_id === rawPlanProcedure.noserieprocedure)
-        rawPlanProcedure.perimetre = collecPerim.communes_insee.reduce((acc, curr, idx) => {
-          acc.push({ inseeCode: collecPerim.communes_insee[idx], name: collecPerim.name_communes[idx] })
-          return acc
-        }, [])
-        // Enrichissement des collectivités porteuses de chaque procédures
-        const collectivitePorteuse = proceduresCollec.data.find(e => e.procedure_id === rawPlanProcedure.noserieprocedure)
+          const collecPerim = proceduresPerimetres.data.find(i => i.procedure_id === procedure.noserieprocedure)
+          procedure.perimetre = collecPerim.communes_insee.reduce((acc, curr, idx) => {
+            acc.push({ inseeCode: collecPerim.communes_insee[idx], name: collecPerim.name_communes[idx] })
+            return acc
+          }, [])
+          // Enrichissement des collectivités porteuses de chaque procédures
+          const collectivitePorteuse = proceduresPerimetres.data.find(e => e.procedure_id === procedure.noserieprocedure)
+          console.log('collectivitePorteuse: ', collectivitePorteuse, ' procedure.noserieprocedure: ', procedure.noserieprocedure)
+          let statusProcedure = 'inconnu'
+          let statusInfos = {}
 
-        let statusProcedure = 'inconnu'
-        let statusInfos = {}
+          // Vérification de la sectorialité - si le périmètre de la procédure est plus petit que la collectivité porteuse
+          const fullDetailsCollecPorteuse = collectivitesPorteuses.find(e => e.code === collectivitePorteuse.code_collectivite_porteuse)
+          console.log('fullDetailsCollecPorteuse: ', fullDetailsCollecPorteuse, ' procedure.noserieprocedure: ', procedure.noserieprocedure)
 
-        // Vérification de la sectorialité - si le périmètre de la procédure est plus petit que la collectivité porteuse
-        const fullDetailsCollecPorteuse = collectivitesPorteuses.find(e => e.code === collectivitePorteuse.code_collectivite_porteuse)
-        statusInfos = {
-          isSectoriel: collectivitePorteuse.nb_communes > 1 ? collectivitePorteuse.nb_communes < fullDetailsCollecPorteuse.nbCommunes : false,
-          hasDelibApprob: rawPlanProcedure.events?.some(e => e.libtypeevenement === "Délibération d'approbation" && e.codestatutevenement === 'V'),
-          hasAbandon: rawPlanProcedure.events?.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
-          hasAnnulation: rawPlanProcedure.events?.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement))
-        }
-        if (statusInfos.hasAbandon) {
-          statusProcedure = 'abandon'
-        } else if (statusInfos.hasAnnulation) {
-          statusProcedure = 'annule'
-        } else if (rawPlanProcedure.datelancement) {
-          statusProcedure = 'en cours'
-        }
+          let isSectoriel = null
+          if (fullDetailsCollecPorteuse?.nbCommunes) {
+            isSectoriel = collectivitePorteuse.nb_communes > 1 ? collectivitePorteuse.nb_communes < fullDetailsCollecPorteuse.nbCommunes : false
+          }
+          statusInfos = {
+            isSectoriel, // collectivitePorteuse.nb_communes > 1 ? collectivitePorteuse.nb_communes < fullDetailsCollecPorteuse.nbCommunes : false,
+            hasDelibApprob: procedure.events?.some(e => e.libtypeevenement === "Délibération d'approbation" && e.codestatutevenement === 'V'),
+            hasAbandon: procedure.events?.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
+            hasAnnulation: procedure.events?.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement))
+          }
+          if (statusInfos.hasAbandon) {
+            statusProcedure = 'abandon'
+          } else if (statusInfos.hasAnnulation) {
+            statusProcedure = 'annule'
+          } else if (procedure.datelancement) {
+            statusProcedure = 'en cours'
+          }
 
-        const nameDocType = rawPlanProcedure.perimetre > 1 ? rawPlanProcedure.codetypedocument + 'i' : rawPlanProcedure.codetypedocument
-        return { ...rawPlanProcedure, doc_type: nameDocType, status: statusProcedure, statusInfos, nbCommunesPerimetre: collectivitePorteuse.nb_communes, collectivitePorteuse: _.pick(collectivitePorteuse, ['code_collectivite_porteuse', 'type_collectivite_porteuse']) }
-      })
+          const nameDocType = procedure.perimetre > 1 && procedure.codetypedocument === 'PLU' ? procedure.codetypedocument + 'i' : procedure.codetypedocument
+          return { ...procedure, doc_type: nameDocType, status: statusProcedure, statusInfos, nbCommunesPerimetre: collectivitePorteuse.nb_communes, collectivitePorteuse: _.pick(collectivitePorteuse, ['code_collectivite_porteuse', 'type_collectivite_porteuse']) }
+        })
+      }
+
+      const planProcedures = enrich(planProceduresEvents, proceduresCollec, collectivitesPorteuses)
+      const schemaProcedures = enrich(schemaProceduresEvents, proceduresCollec, collectivitesPorteuses)
+
       // Gestion des rollback du a une annuldation de la délibération (le DU précédent en date devient opposable) et précédent
       // La dernière procédure ayant une délibération est l'opposable
       function setSpecificsStatus (arrProcedures) {
+        console.log('setSpecificsStatus: ', arrProcedures)
         const opposableProc = arrProcedures.find(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation)
         if (opposableProc) { opposableProc.status = 'opposable' }
-        arrProcedures.filter(e => e.status_infos.hasDelibApprob && opposableProc.id !== e.id).forEach((e) => { e.status = 'precedent' })
+        arrProcedures.filter(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation && opposableProc.id !== e.id).forEach((e) => { e.status = 'precedent' })
       }
 
       // Formattage des procédures
+
+      // TODO: Faire un formatage special Schema
+      const formattedSchemaProcedures = schemaProcedures.map((e) => {
+        return {
+          ...e,
+          id: e.noserieprocedure,
+          name: e.nomschema,
+          type: e.libtypeprocedure,
+          procedure_id: e.noserieprocedureratt,
+          status_infos: e.statusInfos
+        }
+      })
+      console.log('formattedSchemaProcedures SCHEMA: ', formattedSchemaProcedures)
+
       const formattedProcedures = planProcedures.map((e) => {
         return {
           actors: [],
           attachements: [],
           id: e.noserieprocedure,
-          doc_type: e.codetypedocument,
+          doc_type: e.doc_type,
           description: e.commentaire,
           type: e.libtypeprocedure,
           procedure_id: e.noserieprocedureratt,
@@ -223,36 +250,39 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
           status_infos: e.statusInfos
         }
       })
-
       // console.log('formattedProcedures: ', formattedProcedures)
 
-      // Définition des procédures secondaires
-      const typePrincipalProcedures = ['Elaboration', 'Révision', 'Abrogation', 'Engagement', 'Réengagement']
-      const [procsPrincipales, procsSecondaires] = _.partition(formattedProcedures, procedure => typePrincipalProcedures.includes(procedure.type))
-      let groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.procedure_id?.toString())
+      function partitionProceduresPrincipSecs (procedures) {
+        // Définition des procédures secondaires
+        const typePrincipalProcedures = ['Elaboration', 'Révision', 'Abrogation', 'Engagement', 'Réengagement']
+        const [procsPrincipales, procsSecondaires] = _.partition(procedures, procedure => typePrincipalProcedures.includes(procedure.type))
+        let groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.procedure_id?.toString())
 
-      // Define specific status for principales / secondaires
+        // Define specific status for principales / secondaires
 
-      setSpecificsStatus(procsPrincipales)
-      // console.log('AFTER SET procsPrincipales ?? : ', procsPrincipales)
-      // console.log('groupedProcsSecondaires ?? : ', groupedProcsSecondaires)
-      _.each(groupedProcsSecondaires, e => setSpecificsStatus(e))
-      groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.procedure_id?.toString())
+        setSpecificsStatus(procsPrincipales)
+        // console.log('AFTER SET procsPrincipales ?? : ', procsPrincipales)
+        // console.log('groupedProcsSecondaires ?? : ', groupedProcsSecondaires)
+        _.each(groupedProcsSecondaires, e => setSpecificsStatus(e))
+        groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.procedure_id?.toString())
 
-      // console.log('TEST formattedProcedures: ', formattedProcedures)
+        // console.log('TEST procedures: ', procedures)
 
-      // Assign procedures secondaire to principales
-      const fullProcs = _.map(procsPrincipales, (procedurePrincipale) => {
-        procedurePrincipale.procSecs = groupedProcsSecondaires[procedurePrincipale.id]
-        return procedurePrincipale
-      })
+        // Assign procedures secondaire to principales
+        return _.map(procsPrincipales, (procedurePrincipale) => {
+          procedurePrincipale.procSecs = groupedProcsSecondaires[procedurePrincipale.id]
+          return procedurePrincipale
+        })
+      }
+      const fullProcs = partitionProceduresPrincipSecs(formattedProcedures)
+      const fullSchemas = partitionProceduresPrincipSecs(formattedSchemaProcedures)
 
       const collectivite = (await axios({
         url: `/api/geo/${collectiviteId.length > 5 ? 'intercommunalites' : 'communes'}/${collectiviteId}`,
         method: 'get'
       })).data
 
-      return { collectivite, procedures: fullProcs }
+      return { collectivite, procedures: fullProcs, schemas: fullSchemas }
     },
     async getProcedures (communeId) {
       try {
@@ -288,63 +318,62 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         // eslint-disable-next-line no-console
         console.log('Error: ', error)
       }
-    },
-    async loadPerimetre (procedures) {
-      try {
-        const proceduresIds = procedures.map(procedure => procedure.idProcedure)
-        const {
-          data: allPerim,
-          error: allPerimError
-        } = await $supabase.from('sudocu_procedures_perimetres').select().in('procedure_id', proceduresIds)
-        if (allPerimError) { throw allPerimError }
-
-        const {
-          data: ongoingProceduresStates,
-          error: ongoingProceduresStatesError
-        } = await $supabase.from('sudocu_procedures_etats').select().in('id_procedure_ongoing', proceduresIds)
-        if (ongoingProceduresStatesError) { throw ongoingProceduresStatesError }
-
-        const {
-          data: approvedProceduresStates,
-          error: approvedProceduresStatesError
-        } = await $supabase.from('sudocu_procedures_etats').select().in('id_procedure_approved', proceduresIds)
-        if (approvedProceduresStatesError) { throw approvedProceduresStatesError }
-
-        const proceduresEnrich = procedures.map((procedure) => {
-          procedure.approvedInTowns = []
-          procedure.ongoingInTowns = []
-
-          const approvedInTowns = approvedProceduresStates.filter(i => i.id_procedure_approved === procedure.idProcedure)
-          if (approvedInTowns.length > 0) {
-            procedure.approvedInTowns = approvedInTowns.map(i => i.insee_code)
-          }
-
-          const ongoingInTowns = ongoingProceduresStates.filter(i => i.id_procedure_ongoing === procedure.idProcedure)
-          if (ongoingInTowns.length > 0) {
-            procedure.ongoingInTowns = ongoingInTowns.map(i => i.insee_code)
-          }
-
-          const collecPerim = allPerim.find(i => i.procedure_id === procedure.idProcedure)
-          procedure.perimetre = collecPerim.communes_insee.reduce((acc, curr, idx) => {
-            acc.push({ inseeCode: collecPerim.communes_insee[idx], name: collecPerim.name_communes[idx] })
-            return acc
-          }, [])
-
-          // This is to simulate a join on project_id in procedure table
-          const isEpci = procedure.perimetre.length > 1
-
-          procedure.project = {
-            towns: procedure.perimetre,
-            doc_type: (procedure.docType === 'PLU' && isEpci) ? 'PLUi' : procedure.docType
-          }
-
-          return procedure
-        })
-        return proceduresEnrich
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('ERROR - [loadPerimetre]: ', error)
-      }
     }
+    // async loadPerimetre (procedures) {
+    //   try {
+    //     const proceduresIds = procedures.map(procedure => procedure.idProcedure)
+    //     const {
+    //       data: allPerim,
+    //       error: allPerimError
+    //     } = await $supabase.from('sudocu_procedures_perimetres').select().in('procedure_id', proceduresIds)
+    //     if (allPerimError) { throw allPerimError }
+
+    //     const {
+    //       data: ongoingProceduresStates,
+    //       error: ongoingProceduresStatesError
+    //     } = await $supabase.from('sudocu_procedures_etats').select().in('id_procedure_ongoing', proceduresIds)
+    //     if (ongoingProceduresStatesError) { throw ongoingProceduresStatesError }
+
+    //     const {
+    //       data: approvedProceduresStates,
+    //       error: approvedProceduresStatesError
+    //     } = await $supabase.from('sudocu_procedures_etats').select().in('id_procedure_approved', proceduresIds)
+    //     if (approvedProceduresStatesError) { throw approvedProceduresStatesError }
+
+    //     const proceduresEnrich = procedures.map((procedure) => {
+    //       procedure.approvedInTowns = []
+    //       procedure.ongoingInTowns = []
+
+    //       const approvedInTowns = approvedProceduresStates.filter(i => i.id_procedure_approved === procedure.idProcedure)
+    //       if (approvedInTowns.length > 0) {
+    //         procedure.approvedInTowns = approvedInTowns.map(i => i.insee_code)
+    //       }
+
+    //       const ongoingInTowns = ongoingProceduresStates.filter(i => i.id_procedure_ongoing === procedure.idProcedure)
+    //       if (ongoingInTowns.length > 0) {
+    //         procedure.ongoingInTowns = ongoingInTowns.map(i => i.insee_code)
+    //       }
+
+    //       const collecPerim = allPerim.find(i => i.procedure_id === procedure.idProcedure)
+    //       procedure.perimetre = collecPerim.communes_insee.reduce((acc, curr, idx) => {
+    //         acc.push({ inseeCode: collecPerim.communes_insee[idx], name: collecPerim.name_communes[idx] })
+    //         return acc
+    //       }, [])
+
+    //       // This is to simulate a join on project_id in procedure table
+    //       const isEpci = procedure.perimetre.length > 1
+
+    //       procedure.project = {
+    //         towns: procedure.perimetre,
+    //         doc_type: (procedure.docType === 'PLU' && isEpci) ? 'PLUi' : procedure.docType
+    //       }
+
+    //       return procedure
+    //     })
+    //     return proceduresEnrich
+    //   } catch (error) {
+    //     console.log('ERROR - [loadPerimetre]: ', error)
+    //   }
+    // }
   })
 }

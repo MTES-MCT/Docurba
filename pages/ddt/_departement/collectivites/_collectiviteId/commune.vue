@@ -34,6 +34,7 @@
       :collectivite="collectivite"
       :procedures="procedures"
       :projects="projects"
+      :schemas="schemas"
       @inserted="fetchProjects"
     />
   </v-container>
@@ -54,6 +55,7 @@ export default {
       procedures: [],
       sudocuProcedures: [],
       projects: [],
+      schemas: [],
       icons: {
         mdiArrowLeft
       }
@@ -64,11 +66,13 @@ export default {
     // 1001
     // 81178
     const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
+    console.log('TESTING: ', collectiviteProcedures)
     this.collectivite = collectiviteProcedures.collectivite
     this.sudocuProcedures = collectiviteProcedures.procedures
+    this.schemas = collectiviteProcedures.schemas
 
     const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
-    this.procedures = [...collectiviteProcedures.procedures, ...procedures]
+    this.procedures = [...this.sudocuProcedures, ...procedures]
     this.projects = projects
   },
   methods: {
@@ -77,6 +81,13 @@ export default {
       this.procedures = [...this.sudocuProcedures, ...procedures]
       this.projects = projects
     }
+
+    // TODO: Handle New DU (comme EPCI)
+
+    // TEST
+    // const test = await this.$sudocu.getSchemaCollectivite(this.$route.params.collectiviteId)
+    // console.log('TESTING: ', test)
+    // END
   }
 }
 </script>
