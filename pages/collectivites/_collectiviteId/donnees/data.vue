@@ -39,9 +39,9 @@ export default {
 
     const collectiviteId = this.isEpci
       ? this.communes.map((c) => {
-        return c.code_commune_INSEE
+        return c.code
       })
-      : this.collectivite.id
+      : this.collectivite.code
 
     const { dataset, themes } = await this.$daturba.getData(this.collectivite.region.iso, collectiviteId)
 

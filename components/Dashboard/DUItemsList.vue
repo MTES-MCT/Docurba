@@ -7,7 +7,7 @@
       :collectivite="collectivite"
       @insert="$emit('inserted')"
     />
-    <v-col v-if="procedures.length > 0 || emptyProjects.length > 0">
+    <v-col v-if="procedures.length > 0 || emptyProjects.length > 0 || schemas.length > 0">
       <v-tabs
         v-model="tab"
         background-color="primary"

@@ -66,7 +66,7 @@ export default {
     // 1001
     // 81178
     const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
-    console.log('TESTING: ', collectiviteProcedures)
+    // console.log('TESTING: ', collectiviteProcedures)
     this.collectivite = collectiviteProcedures.collectivite
     this.sudocuProcedures = collectiviteProcedures.procedures
     this.schemas = collectiviteProcedures.schemas

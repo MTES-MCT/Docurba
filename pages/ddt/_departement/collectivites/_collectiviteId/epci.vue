@@ -61,6 +61,7 @@
       :collectivite="collectivite"
       :procedures="procedures"
       :projects="projects"
+      :schemas="schemas"
       @inserted="fetchProjects"
     />
   </v-container>
@@ -86,6 +87,7 @@ export default {
       projects: [],
       sudocuProcedures: null,
       procedures: [],
+      schemas: [],
       icons: {
         mdiArrowLeft
       }
@@ -95,6 +97,7 @@ export default {
     const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
     this.sudocuProcedures = collectiviteProcedures.procedures
     this.collectivite = collectiviteProcedures.collectivite
+    this.schemas = collectiviteProcedures.schemas
 
     const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.collectivite.code)
     this.procedures = [...collectiviteProcedures.procedures, ...procedures]

@@ -73,7 +73,7 @@
     <DashboardDUItemsList
       :collectivite="collectivite"
       :procedures="procedures"
-      :projects="[]"
+      :schemas="schemas"
       is-public
     />
   </v-container>
@@ -94,7 +94,11 @@ export default {
     },
     procedures: {
       type: Array,
-      default: () => null
+      default () { return [] }
+    },
+    schemas: {
+      type: Array,
+      default () { return [] }
     }
   },
   data () {

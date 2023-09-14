@@ -12,6 +12,7 @@
       :collectivite="collectivite"
       :procedures="procedures"
       :communes="isEpci ? collectivite.communes : [collectivite]"
+      :schemas="schemas"
       @snackMessage="Object.assign(snackbar, {visible: true, message: arguments[0]})"
     />
     <v-snackbar v-model="snackbar.visible" top right color="success">
@@ -30,7 +31,8 @@ export default {
         message: ''
       },
       collectivite: null,
-      procedures: []
+      procedures: [],
+      schemas: []
     }
   },
   computed: {
@@ -41,8 +43,8 @@ export default {
   async mounted () {
     const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
     this.collectivite = collectiviteProcedures.collectivite
-    const { procedures } = await this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }
-    this.procedures = [...collectiviteProcedures.procedures, ...procedures]
+    this.schemas = collectiviteProcedures.schemas
+    this.procedures = collectiviteProcedures.procedures
   }
 }
 </script>
