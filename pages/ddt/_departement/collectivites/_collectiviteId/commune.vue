@@ -70,16 +70,12 @@ export default {
     const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
     this.procedures = [...collectiviteProcedures.procedures, ...procedures]
     this.projects = projects
-
-    console.log('projects', projects)
   },
   methods: {
     async fetchProjects () {
       const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
       this.procedures = [...this.sudocuProcedures, ...procedures]
       this.projects = projects
-
-      console.log('projects', projects)
     }
   }
 }

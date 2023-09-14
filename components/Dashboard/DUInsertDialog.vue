@@ -122,7 +122,7 @@ export default {
 
         await axios({
           method: 'post',
-          url: `/api/trames/projects/dept-${project.towns[0].code_departement}`,
+          url: `/api/trames/projects/dept-${this.$options.filters.deptToRef(this.collectivite.departementCode)}`,
           data: {
             userId: this.$user.id,
             projectId: project.id
