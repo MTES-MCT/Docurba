@@ -95,13 +95,14 @@ export default {
     const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
     this.sudocuProcedures = collectiviteProcedures.procedures
     this.collectivite = collectiviteProcedures.collectivite
-    const { procedures, projects } = await this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }
+
+    const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.collectivite.code)
     this.procedures = [...collectiviteProcedures.procedures, ...procedures]
     this.projects = projects
   },
   methods: {
     async fetchProjects () {
-      const { procedures, projects } = await this.isPublic ? this.$urbanisator.getProjectsProcedures(this.collectivite.id) : { projects: [], procedures: [] }
+      const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.collectivite.code)
       this.procedures = [...this.sudocuProcedures, ...procedures]
       this.projects = projects
     }

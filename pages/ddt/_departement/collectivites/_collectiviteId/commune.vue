@@ -33,6 +33,8 @@
     <DashboardDUItemsList
       :collectivite="collectivite"
       :procedures="procedures"
+      :projects="projects"
+      @inserted="fetchProjects"
     />
   </v-container>
 </template>
@@ -50,6 +52,8 @@ export default {
       tab: null,
       collectivite: null,
       procedures: [],
+      sudocuProcedures: [],
+      projects: [],
       icons: {
         mdiArrowLeft
       }
@@ -60,9 +64,23 @@ export default {
     // 1001
     // 81178
     const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
-
     this.collectivite = collectiviteProcedures.collectivite
-    this.procedures = collectiviteProcedures.procedures
+    this.sudocuProcedures = collectiviteProcedures.procedures
+
+    const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
+    this.procedures = [...collectiviteProcedures.procedures, ...procedures]
+    this.projects = projects
+
+    console.log('projects', projects)
+  },
+  methods: {
+    async fetchProjects () {
+      const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
+      this.procedures = [...this.sudocuProcedures, ...procedures]
+      this.projects = projects
+
+      console.log('projects', projects)
+    }
   }
 }
 </script>
