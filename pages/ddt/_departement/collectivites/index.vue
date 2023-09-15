@@ -27,6 +27,7 @@
         <v-tabs v-model="scope">
           <v-tab>EPCI</v-tab>
           <v-tab>Communes</v-tab>
+          <v-tab>SCOTs</v-tab>
         </v-tabs>
 
         <v-tabs-items v-model="scope">
@@ -112,6 +113,9 @@
                 </div>
               </template>
             </v-data-table>
+          </v-tab-item>
+          <v-tab-item>
+            <DashboardSCOTsDepList />
           </v-tab-item>
         </v-tabs-items>
       </v-col>

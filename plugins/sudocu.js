@@ -1,3 +1,4 @@
+/* eslint-disable */
 import _ from 'lodash'
 import axios from 'axios'
 
@@ -78,6 +79,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       let proceduresCollec = null
       if (collectiviteId.length > 5) {
         // console.log('Searching procédures for epci: ', collectiviteId)
+        // TODO TEST C'est parceque on liste uniquement les Procedures ou l'EPCI est porteur
         proceduresCollec = await proceduresCollecQuery.eq('code_collectivite_porteuse', collectiviteId)
       } else {
         // console.log('Searching procédures for commune: ', [collectiviteId])
@@ -162,12 +164,55 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       const planProcedures = enrich(planProceduresEvents, proceduresCollec, collectivitesPorteuses)
       const schemaProcedures = enrich(schemaProceduresEvents, proceduresCollec, collectivitesPorteuses)
 
-      // Gestion des rollback du a une annuldation de la délibération (le DU précédent en date devient opposable) et précédent
-      // La dernière procédure ayant une délibération est l'opposable
-      function setSpecificsStatus (arrProcedures) {
+      function setCommunalsProceduresStatus (arrProcedures) {
         const opposableProc = arrProcedures.find(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation)
         if (opposableProc) { opposableProc.status = 'opposable' }
         arrProcedures.filter(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation && opposableProc.id !== e.id).forEach((e) => { e.status = 'precedent' })
+      }
+
+      // Gestion des rollback du a une annuldation de la délibération (le DU précédent en date devient opposable) et précédent
+      // La dernière procédure ayant une délibération est l'opposable
+      function setSpecificsStatus (arrProcedures) {
+        if (collectiviteId.length > 5) {
+          const opposableProc = arrProcedures.find(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation && e.perimetre.length > 1)
+          if (opposableProc) { opposableProc.status = 'opposable' }
+
+          // Vérification des status des PLUi sectoriels opposable ou precedent
+          if (opposableProc && opposableProc.status_infos.isSectoriel) {
+            let globalPerimOpp = [arrProcedures[0].perimetre.map(e => e.inseeCode)]
+            arrProcedures.forEach((procedure, i) => {
+              // On cherche si le perimetre de la procédure PLUi suivante a des commune en commun
+              if (i > 0 && procedure.status_infos.isSectoriel && procedure.status_infos.hasDelibApprob && !procedure.status_infos.hasAbandon && !procedure.status_infos.hasAnnulation && procedure.perimetre.length > 1) {
+                console.log('procedure.perimetre.map(e => e.inseeCode): ', procedure.perimetre.map(e => e.inseeCode))
+
+                const procPerimetreCodes = procedure.perimetre.map(e => e.inseeCode)
+                const intersec = procPerimetreCodes.filter(code => globalPerimOpp.includes(code))
+                console.log('intersec: ', intersec)
+                if (intersec.length > 0) {
+                  procedure.status = 'precedent'
+                } else {
+                  procedure.status = 'opposable'
+                  globalPerimOpp = [...globalPerimOpp, ...procPerimetreCodes]
+                }
+              }
+            })
+          } else {
+            arrProcedures.filter(e => e.perimetre.length > 1 && e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation && opposableProc.id !== e.id).forEach((e) => { e.status = 'precedent' })
+          }
+          //Dans le cas d'un EPCI sans PLUi opposable, on recupere toutes les procédure avec perimetre = 1 (DU Communaux), on les groupe par code INSEE (toutes les procedures pour chaque commune)
+          // On applique pour chaque indépendament le test d'opposabilité, puis on reconcatene tout
+          const noPluiOpp = !arrProcedures.map(e => e.status).includes('opposable')
+          if (noPluiOpp) {
+            const proceduresCommunales = arrProcedures.filter(e => e.perimetre.length === 1)
+            const groupedProceduresCommunals = _.groupBy(proceduresCommunales, e => e.perimetre[0].inseeCode)
+
+            _.map(groupedProceduresCommunals, (proceduresCommune) => {
+              setCommunalsProceduresStatus(proceduresCommune)
+            })
+          }
+        } else {
+          setCommunalsProceduresStatus(arrProcedures)
+        }
       }
 
       // Formattage des procédures
@@ -208,7 +253,8 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
           status_infos: e.statusInfos
         }
       })
-      // console.log('formattedProcedures: ', formattedProcedures)
+      console.log('formattedProcedures: ', formattedProcedures)
+      console.log('LUL: ', formattedProcedures.filter(e => e.id === 17880))
 
       function partitionProceduresPrincipSecs (procedures) {
         // Définition des procédures secondaires
@@ -217,7 +263,6 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         let groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.procedure_id?.toString())
 
         // Define specific status for principales / secondaires
-
         setSpecificsStatus(procsPrincipales)
 
         _.each(groupedProcsSecondaires, e => setSpecificsStatus(e))
@@ -237,6 +282,8 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         method: 'get'
       })).data
 
+      console.log('ICI: ', { collectivite, procedures: fullProcs, schemas: fullSchemas })
+      console.log('LA: ', fullProcs.filter(e => e.id === 135543 || e.id === 137441 || e.id === 139675 || e.id === 97333))
       return { collectivite, procedures: fullProcs, schemas: fullSchemas }
     }
   })
