@@ -1,14 +1,13 @@
 ---
 question: "Quel lien avec Sudocuh ?"
 visible: true
-scope: ['ddt']
-order: 3
+scope: ['ddt','dreal']
+order: 1
 ---
 
-*Travail en cours*
 
-Nous collaborons avec Sudocuh pour permettre le renseignement d'actes sur Docurba. 
-Aujourd'hui sur Docurba, vous pouvez consulter les évènements relatifs aux procédures de votre département, le dernier extract des données Sudocuh sur Docurba datant de mi-juillet.
+Nous avons collaboré étroitement avec Sudocuh pour permettre le renseignement d'actes sur Docurba : nous expliquons ce transfert de l'outil Sudocuh vers Docurba lors de notre webinaire du 28 septembre. [Inscriptions via ce lien](https://app.livestorm.co/mte/docurba-presentation-generale-et-demonstration-des-fonctionnalites?s=c94908b9-d3ca-43c1-980f-5a6586108337) _(un replay sera envoyé automatiquement **à toute personne inscrite**)_
+
 
 **Point d'attention : ne faites pas de saisies en doublon des actes des procédures ;** 
 Si vous souhaitez renseigner des évènements sur Docurba comme vous avez l'habitude de le faire sur Sudocuh, faites-le une seule fois. C'est-à-dire : soit vous ajoutez un évènement dans Sudocuh, soit vous l'ajoutez sur Docurba. 
