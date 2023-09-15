@@ -1,10 +1,10 @@
 ---
 question: "Qui est rempli la Feuille de Route Partagée ?"
-visible: false
+visible: true
 scope: ['ddt','be','collectivite']
 order: 2
 ---
 
-*Fonctionnalité bientôt disponible*
+*Fonctionnalité disponible et qui laisse place à amélioration*
 
-Attendre lien FRP avec dépot de nouvelle prescription. 
+Le Feuille de Route peut-être remplie par l'agent de DDT et le bureaux d'études qui accompagnent la procédure ainsi que part la collectivité elle-même.
