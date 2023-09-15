@@ -15,7 +15,6 @@
 </div>
 
 
-[➕ Comment créer son compte en tant que DDT/DEAL](#headCreateAccount)
 
 [⚙️ Comment configurer sa trame de PAC](#headConfigPAC)
 
@@ -37,57 +36,27 @@
 
 <!-- ---
 
-**Consultez aussi:** 
 
-[En savoir plus sur Docurba.](https://docurba.notion.site/En-savoir-plus-sur-Docurba-9fca7ad625ac44879413865733f9fe2f)
-
-[Kit de communication: parler de Docurba autour de vous.](https://docurba.notion.site/Kit-de-communication-parler-de-Docurba-autour-de-vous-a41e68d87c034728ba2d6ca3aca52890)
 
 --- -->
 
-<a class="anchor" name="headCreateAccount"></a>
-# ➕ Créer son compte sur Docurba en tant que DDT/DEAL
-
-<div class="d-flex align-center">
-  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/17.png">
-  <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
-  Une fois sur la page <a href="https://docurba.beta.gouv.fr/](https://docurba.incubateur.net/" target="_blank">https://docurba.beta.gouv.fr/</a>, cliquez sur le bouton <code>connexion</code> en haut à droite.
-  </div>
-</div>
-
-Une fenêtre s’ouvre et il faudra renseigner vos informations:
-
-<div class="d-flex align-center">
-  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/02.png">
-  <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
-Pour profiter pleinement de Docurba en tant qu’agent de DDT/DEAL, vous devez:
-
- `sélectionner votre département` et `cocher la case “agent de DDT/DEAL”` puis cliquer sur  `inscription`. 
-  </div>
-</div>
-
-
-
-Cela ouvrira vos droits d'accès à l'outil d’édition des PAC de Docurba. **Cette partie n’est pas accessible aux collectivités.** Notez que vous pouvez créer autant de comptes DDT/DEAL que nécessaires par DDT. 
-
-*Vous recevrez un courriel de confirmation lorsque votre accès sera validé par l’équipe (cela prend en général quelques minutes).*
 
 <a class="anchor" name="headConfigPAC"></a>
-# ⚙️ Configurer sa trame de PAC
+# ⚙️ Configurer sa trame de PAC départementale
 
 <div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
 💡 La trame de PAC est la <b>base commune pour vos futurs PAC au sein de votre département</b>. Une fois votre trame personnalisée au niveau de votre département, vous pourrez vous en servir pour élaborer de nouveaux PAC. (Voir la partie "Créer son projet de PAC" de ce guide)
 </div>
 
-Vous pouvez **compléter la trame initiale en cliquant sur `le nom de votre département - ici : "Ardennes"`**. 
-<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/18.png">
+Vous pouvez **compléter la trame initiale en cliquant sur l'onglet "Trame de PAC départementale"** - accessible dès que votre compte sera validé par l'équipe (pour cela il est nécessaire de créer votre compte en cliquant sur le bouton "connexion" en haut à droite du site).
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/33.png">
 
 Lors de votre première connexion, vous verrez que votre trame comporte déjà des éléments rédigés : ils correspondent aux éléments harmonisés à l'échelle : 
 - nationale, avec le "Cadre Juridique et les grands principes de la planification", co-rédigé avec le National (QV4),
 - régionale, avec les "Documents supra-territoriaux et doctrines", éléments proposés par la DREAL et dans un travail commun avec les DDT de chaque région,
 - locale, avec les "Politiques publiques s'applicant sur votre territoire" regroupées en 12 fiches thématiques où une introduction et un sommaire ont été proposés pour chacune des fiches. 
 
-<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/22.png">
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/34.png">
   
 
 ⚠️ **Le cadre juridique proposé n'est pas modifiable car il est validé et mis à jour régulièrement par le National (QV4).** 
@@ -145,23 +114,13 @@ Cliquez sur 💾 pour chaque section éditée afin de sauvegarder vos changement
 # 🧑🏻‍💻 Créer un nouveau projet de PAC
 
 <div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
-☝ *Notez que les modifications apportées au niveau projet de PAC sont prioritaires sur votre trame de PAC. C'est-à-dire que **les modifications ne seront pas appliquées à votre trame départementale lorsque vous éditez un PAC pour une collectivité**.*
+☝ *Notez que les modifications apportées au niveau du PAC communal/intercommunal sont prioritaires sur votre trame de PAC. C'est-à-dire que **les modifications ne seront pas appliquées à votre trame départementale lorsque vous éditez un PAC pour une collectivité**.*
 </div>
 
 
-**Revenez sur la page d’accueil** en cliquant sur `Mes documents`
+**Pour créez un nouveau PAC, recherchez la collectivité concernée par ce nouveau PAC depuis l'onglet _"Mes collectivités"_ - visible lorsque vous êtes connecté à votre espace DDT(M)/DEAL.**
 
-<div class="d-flex align-center">
-  <img class="elevation-3  my-8" style="max-width:70%" src="/images/guide/26.png">
-  <div class=" background--text text--lighten-2  ml-8 rounded g300 rounded-lg pa-4">
-  
-  **Créez votre projet de PAC** en cliquant sur le `➕` en bas à droite de l’écran.  
-
-  Cette fenêtre s’ouvre. Vous pouvez alors choisir d’utiliser votre trame départementale et donc élaborer le PAC à partir de celle-ci. (Recommandé)
-
-  **Si vous décochez cette option, vous pourrez charger le PDF d'un PAC existant. (Utile en cas de procédure en cours).**
-  </div>
-</div>
+Cliquez sur le bouton "consulter" en face de la collectivité concernée puis sur "ajouter une DU". FONCTIONNALITÉ EN COURS D'AMÉLIORATION, MERCI DE VOTRE COMPRÉHENSION.  
 
 <div class="d-flex align-center">
   <div class=" background--text text--lighten-2  mr-8 rounded g300 rounded-lg pa-4">
@@ -199,7 +158,7 @@ Votre trame peut également être modifiée au niveau régional (par la DREAL pa
 
 
 <a class="anchor" name="headSharing"></a>
-# 📤 Le partage du PAC
+# 📤 Le partage du PAC - FONCTIONNALITÉ BIENTÔT DE RETOUR
 
 
 
@@ -242,7 +201,7 @@ Vous pouvez `partager votre PAC` et choisir qui pourra **collaborer et éditer l
 </div>
 
 <a class="anchor" name="headPrint"></a>
-# 🖨 Imprimer  **le PAC**
+# 🖨 Imprimer  **le PAC** - FONCTIONNALITÉ BIENTÔT DE RETOUR
 
 Vous pouvez **exporter votre PAC en format PDF** depuis le `mode consultation` de votre PAC à l’aide de l’`icône de téléchargement` en bas à droite.
 Le document PDF sera automatiquement téléchargé sur votre ordinateur, cela peut prendre quelques minutes suivant la taille du document, merci de votre patience. (Ce temps de téléchargement est en cours d'amélioration)
@@ -255,33 +214,12 @@ Aujourd'hui l'outil ne permet pas l'édition de la page de garde du pdf du PAC, 
 
 </div>
 
-<a class="anchor" name="headArchive"></a>
-# 🗃️ Archiver ses projets
 
+# Onglet "Mes collectivités" et la Feuille de route partagée entre services de l'État et collectivités : 
 
-<div class="d-flex align-center">
-  <div class=" background--text text--lighten-2  mr-8 rounded g300 rounded-lg pa-4">
+Faites le suivi des procédures depuis l'onglet "mes collectivités" : il liste l'ensemble des collectivités du département et indique les informations relatives aux différentes procédures passées et en cours. 
+C'est un travail en collaboration avec Sudocuh, le GPU et encadré par la DGALN en vu du transfert de l'outil Sudocuh vers Docurba. 
 
-  Vous pouvez également **archiver vos projets de PAC** (utile pour faire disparaitre les essais de PAC que vous ferez éventuellement lors de la prise en main de l'outil. Depuis les paramètres principaux de votre projet de PAC, cliquez sur l’icône du crayon pour faire apparaitre la fenêtre suivante et cliquez sur *`archiver`.* 
-
-  </div>
-  <img class="elevation-3  my-8" style="max-width:50%" src="/images/guide/16.png">
-
-</div>
-
-<a class="anchor" name="headFRP"></a>
-# Feuille de route partagée entre services de l'État et collectivités
-
-Nous travaillons avec un groupe de DDT à la construction de cette nouvelle fonctionnalité qui a la volonté de **servir de guide pour la collectivité** dans sa procédure d'élaboration de DU. Via les évènements proposés dans l'outil, les collectivités auront notamment à disposition des informations sur les étapes de la procédure, les articles du code de l'urbanisme (s'il y a lieu), les échéances à respecter, etc. 
-
-Cette feuille de route est partagée entre les services de l'État, la collectivité et son bureau d'études, dans l'optique de **fluidifier les échanges et vous permettre d'avoir plus de visibilité sur le calendrier des collectivités que vous accompagnez.** Nous collaborons également avec le GPU et Sudocuh pour veiller à la cohérence des différents outils.
-
-Aujourd'hui, une collectivité peut *`déposer sa délibération de prescription`* sur Docurba, et consulter son socle de PAC et des données territorialisées. 
-Prochainement, la collectivité et son bureau d'études pourront accéder à l'**outil dynamique de la Feuille de Route Partagée**.
-
-_Extrait du formulaire de dépôt d'acte de Docurba :_
-
-<img class="elevation-3  my-8" style="max-width:50%" src="/images/guide/31.png">
 
 
 <div class="text-center my-16">
