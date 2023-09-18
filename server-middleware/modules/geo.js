@@ -1,13 +1,21 @@
 
 const _ = require('lodash')
 
-const communes = require('./Data/EnrichedCommunes.json')
-const intercommunalites = require('./Data/EnrichedIntercommunalites.json')
+const communes = require('../Data/EnrichedCommunes.json')
+const intercommunalites = require('../Data/EnrichedIntercommunalites.json')
 
-const departements = require('./Data/INSEE/departements.json')
-const regions = require('./Data/INSEE/regions.json')
+const departements = require('../Data/INSEE/departements.json')
+const regions = require('../Data/INSEE/regions.json')
 
 module.exports = {
+  getCollectivite (code) {
+    return code.length > 5 ? this.getIntercommunalite(code) : this.getCommune(code)
+  },
+  getCollectivites (codes) {
+    const communes = this.getCommunes({ codes })
+    const intercommunalites = this.getIntercommunalites({ codes })
+    return [...communes, ...intercommunalites]
+  },
   getCommunes (query) {
     const queryKeys = Object.keys(query)
 

@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'Collectivite',
   data () {
@@ -41,10 +43,11 @@ export default {
     }
   },
   async mounted () {
-    const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
-    this.collectivite = collectiviteProcedures.collectivite
-    this.schemas = collectiviteProcedures.schemas
-    this.procedures = collectiviteProcedures.procedures
+    const { collectivite, schemas, procedures } = (await axios({ url: `/api/urba/collectivites/${this.$route.params.collectiviteId}`, method: 'get' })).data
+
+    this.collectivite = collectivite
+    this.schemas = schemas
+    this.procedures = procedures
   }
 }
 </script>

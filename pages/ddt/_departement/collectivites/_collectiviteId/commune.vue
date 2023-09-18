@@ -42,7 +42,7 @@
 <script>
 
 import { mdiArrowLeft } from '@mdi/js'
-// import axios from 'axios'
+import axios from 'axios'
 
 export default {
   name: 'Collectivite',
@@ -65,11 +65,11 @@ export default {
     // 200040111
     // 1001
     // 81178
-    const collectiviteProcedures = await this.$sudocu.getProceduresCollectivite(this.$route.params.collectiviteId)
-    // console.log('TESTING: ', collectiviteProcedures)
-    this.collectivite = collectiviteProcedures.collectivite
-    this.sudocuProcedures = collectiviteProcedures.procedures
-    this.schemas = collectiviteProcedures.schemas
+    const { collectivite, schemas, procedures: sudocuProcedures } = (await axios({ url: `/api/urba/collectivites/${this.$route.params.collectiviteId}`, method: 'get' })).data
+
+    this.collectivite = collectivite
+    this.schemas = schemas
+    this.sudocuProcedures = sudocuProcedures
 
     const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
     this.procedures = [...this.sudocuProcedures, ...procedures]
