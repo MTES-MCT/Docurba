@@ -69,6 +69,8 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         console.log('ERROR getProcedureEvents:', error)
       }
     },
+
+
     async getProceduresCollectivite (collectiviteId) {
       // TODO: Refaire l'import des events avec le code event plutot que uniquement le label
 
@@ -78,46 +80,32 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
 
       let proceduresCollec = null
       if (collectiviteId.length > 5) {
-        // console.log('Searching procédures for epci: ', collectiviteId)
-        // TODO TEST C'est parceque on liste uniquement les Procedures ou l'EPCI est porteur
         proceduresCollec = await proceduresCollecQuery.eq('code_collectivite_porteuse', collectiviteId)
       } else {
-        // console.log('Searching procédures for commune: ', [collectiviteId])
         proceduresCollec = await proceduresCollecQuery.contains('communes_insee', [collectiviteId])
       }
-      console.log('proceduresCollec.data: ', proceduresCollec.data)
       const proceduresCollecIds = proceduresCollec.data.map(e => e.procedure_id)
 
       // On fetch les procédures faisant parti du périmètre de la commune
       const rawPlanProcedures = await $supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
-
       const rawSchemaProcedures = await $supabase.from('distinct_procedures_schema_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
-      // console.log('TEST rawPlanProcedures: ', rawPlanProcedures)
 
       // On fetch tous les events liées aux procédures
       const allProceduresEvents = await this.getProceduresEvents(proceduresCollecIds)
-      // console.log('EVENTS OF EACH PROCEDURES: ', allProceduresEvents)
 
       // Fetch des EPCIs porteuses des différentes procédures
       let epcisPorteuses = []
       const collecPorteusesIds = [...new Set(proceduresCollec.data.filter(e => e.type_collectivite_porteuse !== 'COM').map(e => e.code_collectivite_porteuse))]
       if (collecPorteusesIds.length > 0) {
-        // console.log('LIST IDS EPCI PORTEUSES: ', collecPorteusesIds)
         epcisPorteuses = (await axios({ url: '/api/geo/intercommunalites', method: 'get', params: { codes: collecPorteusesIds } })).data
-
-        // console.log('EPCI PORTEUSES: ', epcisPorteuses)
       }
       let communesPorteuses = []
       const communesPorteusesIds = [...new Set(proceduresCollec.data.filter(e => e.type_collectivite_porteuse === 'COM').map(e => e.code_collectivite_porteuse))]
       if (communesPorteusesIds.length > 0) {
-        // console.log('LIST IDS COMMUNES PORTEUSES: ', communesPorteusesIds)
         communesPorteuses = (await axios({ url: '/api/geo/communes', method: 'get', params: { codes: communesPorteusesIds } })).data
-
-        // console.log('COMMUNES PORTEUSES: ', communesPorteuses)
       }
 
       const collectivitesPorteuses = epcisPorteuses.concat(communesPorteuses)
-      // console.log('collectivitesPorteuses: ', collectivitesPorteuses)
       // Raccordement des events à leur procédure
       const planProceduresEvents = rawPlanProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
       const schemaProceduresEvents = rawSchemaProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
@@ -143,7 +131,7 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
             isSectoriel = collectivitePorteuse.nb_communes > 1 ? collectivitePorteuse.nb_communes < fullDetailsCollecPorteuse.nbCommunes : false
           }
           statusInfos = {
-            isSectoriel, // collectivitePorteuse.nb_communes > 1 ? collectivitePorteuse.nb_communes < fullDetailsCollecPorteuse.nbCommunes : false,
+            isSectoriel,
             hasDelibApprob: procedure.events?.some(e => e.libtypeevenement === "Délibération d'approbation" && e.codestatutevenement === 'V'),
             hasAbandon: procedure.events?.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
             hasAnnulation: procedure.events?.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement))
@@ -183,11 +171,8 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
             arrProcedures.forEach((procedure, i) => {
               // On cherche si le perimetre de la procédure PLUi suivante a des commune en commun
               if (i > 0 && procedure.status_infos.isSectoriel && procedure.status_infos.hasDelibApprob && !procedure.status_infos.hasAbandon && !procedure.status_infos.hasAnnulation && procedure.perimetre.length > 1) {
-                console.log('procedure.perimetre.map(e => e.inseeCode): ', procedure.perimetre.map(e => e.inseeCode))
-
                 const procPerimetreCodes = procedure.perimetre.map(e => e.inseeCode)
                 const intersec = procPerimetreCodes.filter(code => globalPerimOpp.includes(code))
-                console.log('intersec: ', intersec)
                 if (intersec.length > 0) {
                   procedure.status = 'precedent'
                 } else {
@@ -216,8 +201,6 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
       }
 
       // Formattage des procédures
-
-      // TODO: Faire un formatage special Schema
       const formattedSchemaProcedures = schemaProcedures.map((e) => {
         return {
           ...e,
@@ -228,8 +211,6 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
           status_infos: e.statusInfos
         }
       })
-      // console.log('formattedSchemaProcedures SCHEMA: ', formattedSchemaProcedures)
-
       const formattedProcedures = planProcedures.map((e) => {
         return {
           actors: [],
@@ -253,8 +234,6 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
           status_infos: e.statusInfos
         }
       })
-      console.log('formattedProcedures: ', formattedProcedures)
-      console.log('LUL: ', formattedProcedures.filter(e => e.id === 17880))
 
       function partitionProceduresPrincipSecs (procedures) {
         // Définition des procédures secondaires
@@ -282,8 +261,6 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
         method: 'get'
       })).data
 
-      console.log('ICI: ', { collectivite, procedures: fullProcs, schemas: fullSchemas })
-      console.log('LA: ', fullProcs.filter(e => e.id === 135543 || e.id === 137441 || e.id === 139675 || e.id === 97333))
       return { collectivite, procedures: fullProcs, schemas: fullSchemas }
     }
   })
