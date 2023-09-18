@@ -109,13 +109,31 @@ module.exports = {
       }
       // Dans le cas d'un EPCI sans PLUi opposable, on recupere toutes les procédure avec perimetre = 1 (DU Communaux), on les groupe par code INSEE (toutes les procedures pour chaque commune)
       // On applique pour chaque indépendament le test d'opposabilité, puis on reconcatene tout
+      const PluisOpp = arrProcedures.filter(e => e.status === 'opposable')
       const noPluiOpp = !arrProcedures.map(e => e.status).includes('opposable')
-      if (noPluiOpp) {
-        const proceduresCommunales = arrProcedures.filter(e => e.perimetre.length === 1)
-        const groupedProceduresCommunals = _.groupBy(proceduresCommunales, e => e.perimetre[0].inseeCode)
+      const proceduresCommunales = arrProcedures.filter(e => e.perimetre.length === 1)
+      // console.log('Cambligneul - Procedure 31870', arrProcedures.find(e => e.id === 31870))
 
+      if (noPluiOpp) {
+        const groupedProceduresCommunals = _.groupBy(proceduresCommunales, e => e.perimetre[0].inseeCode)
+        // console.log('groupedProceduresCommunals: ', groupedProceduresCommunals['62198'])
         _.map(groupedProceduresCommunals, (proceduresCommune) => {
           this.setCommunalsProceduresStatus(proceduresCommune)
+        })
+      } else {
+        // Si il y a un ou des PLUi opposable, on considère tous les DU des communes qui sont sous le perimètre de ce / ces PLUi(s) comme précédent
+        const PluisOppCodePerimetre = PluisOpp.reduce((acc, curr) => [...acc, ...curr.perimetre.map(e => e.inseeCode)], [])
+        console.log('PluisOppCodePerimetre: ', PluisOppCodePerimetre)
+        proceduresCommunales.forEach((procedureCommunale) => {
+          // Si la procédure de la commune est dans le pérmietre des PLUi
+          const isSousPlui = PluisOppCodePerimetre.includes(procedureCommunale.perimetre[0].inseeCode)
+          if (isSousPlui) {
+            procedureCommunale.status = 'precedent'
+          } else {
+            // OU si les perimetres des PLUi opposables ne couvre pas la commune, on recupère les procédures de la commune et on applique le setStatus
+            const proceduresHorsPerimetre = arrProcedures.filter(e => e.perimetre[0].inseeCode === procedureCommunale.perimetre[0].inseeCode && e.perimetre.length === 1)
+            this.setCommunalsProceduresStatus(proceduresHorsPerimetre)
+          }
         })
       }
     } else {
@@ -155,7 +173,7 @@ module.exports = {
     const proceduresCollecIds = proceduresCollec.data.map(e => e.procedure_id)
 
     // On fetch les procédures faisant parti du périmètre de la commune
-    const rawPlanProcedures = await supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
+    const rawPlanProcedures = await supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false }).order('dateapprobation', { ascending: false }) // .order([{ column: 'last_event_date', order: 'desc' }, { column: 'dateapprobation', order: 'desc' }])
     const rawSchemaProcedures = await supabase.from('distinct_procedures_schema_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
 
     // On fetch tous les events liées aux procédures
