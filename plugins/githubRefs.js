@@ -34,4 +34,11 @@ export default () => {
       return +deptCode
     }
   })
+
+  Vue.filter('deptNumberToString', function (deptCode) {
+    if (deptCode) {
+      const codeString = deptCode.toString()
+      return (codeString.length < 2 ? '0' : '') + codeString
+    } else { return deptCode }
+  })
 }

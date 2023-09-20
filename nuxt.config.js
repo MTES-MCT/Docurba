@@ -36,7 +36,7 @@ export default {
     { src: '~/plugins/print.js', mode: 'client' },
     { src: '~/plugins/rules.js' },
     { src: '~/plugins/notifications.js', mode: 'client' },
-    { src: '~/plugins/githubRefs.js', mode: 'client' },
+    { src: '~/plugins/githubRefs.js' },
     { src: '~/plugins/urbanisator.js' },
     { src: '~/plugins/sudocu.js', mode: 'client' }
   ],
