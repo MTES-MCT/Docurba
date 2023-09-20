@@ -6,6 +6,7 @@
     filled
     :error-messages="errorMessages"
     return-object
+    :clearable="clearable"
   />
 </template>
 
@@ -21,6 +22,10 @@ export default {
     errorMessages: {
       type: Array,
       default: () => []
+    },
+    clearable: {
+      type: Boolean,
+      default: false
     }
   },
   data () {

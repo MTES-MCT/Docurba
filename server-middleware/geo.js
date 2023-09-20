@@ -1,8 +1,11 @@
+/* eslint-disable no-console */
 const express = require('express')
 const app = express()
 app.use(express.json())
 
 const geo = require('./modules/geo.js')
+
+const topojson = require('./Data/a-com2022-topo.json')
 
 app.get('/communes', (req, res) => {
   const communes = geo.getCommunes(req.query)
@@ -30,6 +33,10 @@ app.get('/intercommunalites/:code', (req, res) => {
   } else {
     res.status(404).send(null)
   }
+})
+
+app.get('/topojson/communes', (req, res) => {
+  res.status(200).send(topojson)
 })
 
 module.exports = app

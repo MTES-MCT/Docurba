@@ -1,0 +1,1820 @@
+[
+  {
+    "code": "01",
+    "type": "Departement",
+    "dateCreation": "1967-12-31",
+    "intituleSansArticle": "Ain",
+    "typeArticle": "5",
+    "chefLieu": "01053",
+    "intitule": "Ain",
+    "region": {
+      "code": "84",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Auvergne-Rhône-Alpes",
+      "typeArticle": "1",
+      "chefLieu": "69123",
+      "intitule": "Auvergne-Rhône-Alpes"
+    }
+  },
+  {
+    "code": "02",
+    "type": "Departement",
+    "dateCreation": "2016-12-31",
+    "intituleSansArticle": "Aisne",
+    "typeArticle": "5",
+    "chefLieu": "02408",
+    "intitule": "Aisne",
+    "region": {
+      "code": "32",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Hauts-de-France",
+      "typeArticle": "4",
+      "chefLieu": "59350",
+      "intitule": "Hauts-de-France"
+    }
+  },
+  {
+    "code": "03",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Allier",
+    "typeArticle": "5",
+    "chefLieu": "03190",
+    "intitule": "Allier",
+    "region": {
+      "code": "84",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Auvergne-Rhône-Alpes",
+      "typeArticle": "1",
+      "chefLieu": "69123",
+      "intitule": "Auvergne-Rhône-Alpes"
+    }
+  },
+  {
+    "code": "04",
+    "type": "Departement",
+    "dateCreation": "1970-04-13",
+    "intituleSansArticle": "Alpes-de-Haute-Provence",
+    "typeArticle": "4",
+    "chefLieu": "04070",
+    "intitule": "Alpes-de-Haute-Provence",
+    "region": {
+      "code": "93",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Provence-Alpes-Côte d'Azur",
+      "typeArticle": "0",
+      "chefLieu": "13055",
+      "intitule": "Provence-Alpes-Côte d'Azur"
+    }
+  },
+  {
+    "code": "05",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Hautes-Alpes",
+    "typeArticle": "4",
+    "chefLieu": "05061",
+    "intitule": "Hautes-Alpes",
+    "region": {
+      "code": "93",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Provence-Alpes-Côte d'Azur",
+      "typeArticle": "0",
+      "chefLieu": "13055",
+      "intitule": "Provence-Alpes-Côte d'Azur"
+    }
+  },
+  {
+    "code": "06",
+    "type": "Departement",
+    "dateCreation": "1947-09-17",
+    "intituleSansArticle": "Alpes-Maritimes",
+    "typeArticle": "4",
+    "chefLieu": "06088",
+    "intitule": "Alpes-Maritimes",
+    "region": {
+      "code": "93",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Provence-Alpes-Côte d'Azur",
+      "typeArticle": "0",
+      "chefLieu": "13055",
+      "intitule": "Provence-Alpes-Côte d'Azur"
+    }
+  },
+  {
+    "code": "07",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Ardèche",
+    "typeArticle": "5",
+    "chefLieu": "07186",
+    "intitule": "Ardèche",
+    "region": {
+      "code": "84",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Auvergne-Rhône-Alpes",
+      "typeArticle": "1",
+      "chefLieu": "69123",
+      "intitule": "Auvergne-Rhône-Alpes"
+    }
+  },
+  {
+    "code": "08",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Ardennes",
+    "typeArticle": "4",
+    "chefLieu": "08105",
+    "intitule": "Ardennes",
+    "region": {
+      "code": "44",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Grand Est",
+      "typeArticle": "2",
+      "chefLieu": "67482",
+      "intitule": "Grand Est"
+    }
+  },
+  {
+    "code": "09",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Ariège",
+    "typeArticle": "5",
+    "chefLieu": "09122",
+    "intitule": "Ariège",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "10",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Aube",
+    "typeArticle": "5",
+    "chefLieu": "10387",
+    "intitule": "Aube",
+    "region": {
+      "code": "44",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Grand Est",
+      "typeArticle": "2",
+      "chefLieu": "67482",
+      "intitule": "Grand Est"
+    }
+  },
+  {
+    "code": "11",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Aude",
+    "typeArticle": "5",
+    "chefLieu": "11069",
+    "intitule": "Aude",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "12",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Aveyron",
+    "typeArticle": "5",
+    "chefLieu": "12202",
+    "intitule": "Aveyron",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "13",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Bouches-du-Rhône",
+    "typeArticle": "4",
+    "chefLieu": "13055",
+    "intitule": "Bouches-du-Rhône",
+    "region": {
+      "code": "93",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Provence-Alpes-Côte d'Azur",
+      "typeArticle": "0",
+      "chefLieu": "13055",
+      "intitule": "Provence-Alpes-Côte d'Azur"
+    }
+  },
+  {
+    "code": "14",
+    "type": "Departement",
+    "dateCreation": "2018-01-01",
+    "intituleSansArticle": "Calvados",
+    "typeArticle": "2",
+    "chefLieu": "14118",
+    "intitule": "Calvados",
+    "region": {
+      "code": "28",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Normandie",
+      "typeArticle": "0",
+      "chefLieu": "76540",
+      "intitule": "Normandie"
+    }
+  },
+  {
+    "code": "15",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Cantal",
+    "typeArticle": "2",
+    "chefLieu": "15014",
+    "intitule": "Cantal",
+    "region": {
+      "code": "84",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Auvergne-Rhône-Alpes",
+      "typeArticle": "1",
+      "chefLieu": "69123",
+      "intitule": "Auvergne-Rhône-Alpes"
+    }
+  },
+  {
+    "code": "16",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Charente",
+    "typeArticle": "3",
+    "chefLieu": "16015",
+    "intitule": "Charente",
+    "region": {
+      "code": "75",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Nouvelle-Aquitaine",
+      "typeArticle": "3",
+      "chefLieu": "33063",
+      "intitule": "Nouvelle-Aquitaine"
+    }
+  },
+  {
+    "code": "17",
+    "type": "Departement",
+    "dateCreation": "1941-09-04",
+    "intituleSansArticle": "Charente-Maritime",
+    "typeArticle": "3",
+    "chefLieu": "17300",
+    "intitule": "Charente-Maritime",
+    "region": {
+      "code": "75",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Nouvelle-Aquitaine",
+      "typeArticle": "3",
+      "chefLieu": "33063",
+      "intitule": "Nouvelle-Aquitaine"
+    }
+  },
+  {
+    "code": "18",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Cher",
+    "typeArticle": "2",
+    "chefLieu": "18033",
+    "intitule": "Cher",
+    "region": {
+      "code": "24",
+      "type": "Region",
+      "dateCreation": "2015-01-17",
+      "intituleSansArticle": "Centre-Val de Loire",
+      "typeArticle": "2",
+      "chefLieu": "45234",
+      "intitule": "Centre-Val de Loire"
+    }
+  },
+  {
+    "code": "19",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Corrèze",
+    "typeArticle": "3",
+    "chefLieu": "19272",
+    "intitule": "Corrèze",
+    "region": {
+      "code": "75",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Nouvelle-Aquitaine",
+      "typeArticle": "3",
+      "chefLieu": "33063",
+      "intitule": "Nouvelle-Aquitaine"
+    }
+  },
+  {
+    "code": "21",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Côte-d'Or",
+    "typeArticle": "3",
+    "chefLieu": "21231",
+    "intitule": "Côte-d'Or",
+    "region": {
+      "code": "27",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Bourgogne-Franche-Comté",
+      "typeArticle": "0",
+      "chefLieu": "21231",
+      "intitule": "Bourgogne-Franche-Comté"
+    }
+  },
+  {
+    "code": "22",
+    "type": "Departement",
+    "dateCreation": "1990-03-08",
+    "intituleSansArticle": "Côtes-d'Armor",
+    "typeArticle": "4",
+    "chefLieu": "22278",
+    "intitule": "Côtes-d'Armor",
+    "region": {
+      "code": "53",
+      "type": "Region",
+      "dateCreation": "2019-01-01",
+      "intituleSansArticle": "Bretagne",
+      "typeArticle": "0",
+      "chefLieu": "35238",
+      "intitule": "Bretagne"
+    }
+  },
+  {
+    "code": "23",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Creuse",
+    "typeArticle": "3",
+    "chefLieu": "23096",
+    "intitule": "Creuse",
+    "region": {
+      "code": "75",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Nouvelle-Aquitaine",
+      "typeArticle": "3",
+      "chefLieu": "33063",
+      "intitule": "Nouvelle-Aquitaine"
+    }
+  },
+  {
+    "code": "24",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Dordogne",
+    "typeArticle": "3",
+    "chefLieu": "24322",
+    "intitule": "Dordogne",
+    "region": {
+      "code": "75",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Nouvelle-Aquitaine",
+      "typeArticle": "3",
+      "chefLieu": "33063",
+      "intitule": "Nouvelle-Aquitaine"
+    }
+  },
+  {
+    "code": "25",
+    "type": "Departement",
+    "dateCreation": "1974-06-01",
+    "intituleSansArticle": "Doubs",
+    "typeArticle": "2",
+    "chefLieu": "25056",
+    "intitule": "Doubs",
+    "region": {
+      "code": "27",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Bourgogne-Franche-Comté",
+      "typeArticle": "0",
+      "chefLieu": "21231",
+      "intitule": "Bourgogne-Franche-Comté"
+    }
+  },
+  {
+    "code": "26",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Drôme",
+    "typeArticle": "3",
+    "chefLieu": "26362",
+    "intitule": "Drôme",
+    "region": {
+      "code": "84",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Auvergne-Rhône-Alpes",
+      "typeArticle": "1",
+      "chefLieu": "69123",
+      "intitule": "Auvergne-Rhône-Alpes"
+    }
+  },
+  {
+    "code": "27",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Eure",
+    "typeArticle": "5",
+    "chefLieu": "27229",
+    "intitule": "Eure",
+    "region": {
+      "code": "28",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Normandie",
+      "typeArticle": "0",
+      "chefLieu": "76540",
+      "intitule": "Normandie"
+    }
+  },
+  {
+    "code": "28",
+    "type": "Departement",
+    "dateCreation": "1974-11-01",
+    "intituleSansArticle": "Eure-et-Loir",
+    "typeArticle": "1",
+    "chefLieu": "28085",
+    "intitule": "Eure-et-Loir",
+    "region": {
+      "code": "24",
+      "type": "Region",
+      "dateCreation": "2015-01-17",
+      "intituleSansArticle": "Centre-Val de Loire",
+      "typeArticle": "2",
+      "chefLieu": "45234",
+      "intitule": "Centre-Val de Loire"
+    }
+  },
+  {
+    "code": "29",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Finistère",
+    "typeArticle": "2",
+    "chefLieu": "29232",
+    "intitule": "Finistère",
+    "region": {
+      "code": "53",
+      "type": "Region",
+      "dateCreation": "2019-01-01",
+      "intituleSansArticle": "Bretagne",
+      "typeArticle": "0",
+      "chefLieu": "35238",
+      "intitule": "Bretagne"
+    }
+  },
+  {
+    "code": "2A",
+    "type": "Departement",
+    "dateCreation": "1976-01-01",
+    "intituleSansArticle": "Corse-du-Sud",
+    "typeArticle": "3",
+    "chefLieu": "2A004",
+    "intitule": "Corse-du-Sud",
+    "region": {
+      "code": "94",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Corse",
+      "typeArticle": "0",
+      "chefLieu": "2A004",
+      "intitule": "Corse"
+    }
+  },
+  {
+    "code": "2B",
+    "type": "Departement",
+    "dateCreation": "1976-01-01",
+    "intituleSansArticle": "Haute-Corse",
+    "typeArticle": "3",
+    "chefLieu": "2B033",
+    "intitule": "Haute-Corse",
+    "region": {
+      "code": "94",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Corse",
+      "typeArticle": "0",
+      "chefLieu": "2A004",
+      "intitule": "Corse"
+    }
+  },
+  {
+    "code": "30",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Gard",
+    "typeArticle": "2",
+    "chefLieu": "30189",
+    "intitule": "Gard",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "31",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Haute-Garonne",
+    "typeArticle": "3",
+    "chefLieu": "31555",
+    "intitule": "Haute-Garonne",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "32",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Gers",
+    "typeArticle": "2",
+    "chefLieu": "32013",
+    "intitule": "Gers",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "33",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Gironde",
+    "typeArticle": "3",
+    "chefLieu": "33063",
+    "intitule": "Gironde",
+    "region": {
+      "code": "75",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Nouvelle-Aquitaine",
+      "typeArticle": "3",
+      "chefLieu": "33063",
+      "intitule": "Nouvelle-Aquitaine"
+    }
+  },
+  {
+    "code": "34",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Hérault",
+    "typeArticle": "5",
+    "chefLieu": "34172",
+    "intitule": "Hérault",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "35",
+    "type": "Departement",
+    "dateCreation": "2019-01-01",
+    "intituleSansArticle": "Ille-et-Vilaine",
+    "typeArticle": "1",
+    "chefLieu": "35238",
+    "intitule": "Ille-et-Vilaine",
+    "region": {
+      "code": "53",
+      "type": "Region",
+      "dateCreation": "2019-01-01",
+      "intituleSansArticle": "Bretagne",
+      "typeArticle": "0",
+      "chefLieu": "35238",
+      "intitule": "Bretagne"
+    }
+  },
+  {
+    "code": "36",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Indre",
+    "typeArticle": "5",
+    "chefLieu": "36044",
+    "intitule": "Indre",
+    "region": {
+      "code": "24",
+      "type": "Region",
+      "dateCreation": "2015-01-17",
+      "intituleSansArticle": "Centre-Val de Loire",
+      "typeArticle": "2",
+      "chefLieu": "45234",
+      "intitule": "Centre-Val de Loire"
+    }
+  },
+  {
+    "code": "37",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Indre-et-Loire",
+    "typeArticle": "1",
+    "chefLieu": "37261",
+    "intitule": "Indre-et-Loire",
+    "region": {
+      "code": "24",
+      "type": "Region",
+      "dateCreation": "2015-01-17",
+      "intituleSansArticle": "Centre-Val de Loire",
+      "typeArticle": "2",
+      "chefLieu": "45234",
+      "intitule": "Centre-Val de Loire"
+    }
+  },
+  {
+    "code": "38",
+    "type": "Departement",
+    "dateCreation": "1971-04-01",
+    "intituleSansArticle": "Isère",
+    "typeArticle": "5",
+    "chefLieu": "38185",
+    "intitule": "Isère",
+    "region": {
+      "code": "84",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Auvergne-Rhône-Alpes",
+      "typeArticle": "1",
+      "chefLieu": "69123",
+      "intitule": "Auvergne-Rhône-Alpes"
+    }
+  },
+  {
+    "code": "39",
+    "type": "Departement",
+    "dateCreation": "1974-06-01",
+    "intituleSansArticle": "Jura",
+    "typeArticle": "2",
+    "chefLieu": "39300",
+    "intitule": "Jura",
+    "region": {
+      "code": "27",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Bourgogne-Franche-Comté",
+      "typeArticle": "0",
+      "chefLieu": "21231",
+      "intitule": "Bourgogne-Franche-Comté"
+    }
+  },
+  {
+    "code": "40",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Landes",
+    "typeArticle": "4",
+    "chefLieu": "40192",
+    "intitule": "Landes",
+    "region": {
+      "code": "75",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Nouvelle-Aquitaine",
+      "typeArticle": "3",
+      "chefLieu": "33063",
+      "intitule": "Nouvelle-Aquitaine"
+    }
+  },
+  {
+    "code": "41",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Loir-et-Cher",
+    "typeArticle": "2",
+    "chefLieu": "41018",
+    "intitule": "Loir-et-Cher",
+    "region": {
+      "code": "24",
+      "type": "Region",
+      "dateCreation": "2015-01-17",
+      "intituleSansArticle": "Centre-Val de Loire",
+      "typeArticle": "2",
+      "chefLieu": "45234",
+      "intitule": "Centre-Val de Loire"
+    }
+  },
+  {
+    "code": "42",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Loire",
+    "typeArticle": "3",
+    "chefLieu": "42218",
+    "intitule": "Loire",
+    "region": {
+      "code": "84",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Auvergne-Rhône-Alpes",
+      "typeArticle": "1",
+      "chefLieu": "69123",
+      "intitule": "Auvergne-Rhône-Alpes"
+    }
+  },
+  {
+    "code": "43",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Haute-Loire",
+    "typeArticle": "3",
+    "chefLieu": "43157",
+    "intitule": "Haute-Loire",
+    "region": {
+      "code": "84",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Auvergne-Rhône-Alpes",
+      "typeArticle": "1",
+      "chefLieu": "69123",
+      "intitule": "Auvergne-Rhône-Alpes"
+    }
+  },
+  {
+    "code": "44",
+    "type": "Departement",
+    "dateCreation": "2019-01-01",
+    "intituleSansArticle": "Loire-Atlantique",
+    "typeArticle": "3",
+    "chefLieu": "44109",
+    "intitule": "Loire-Atlantique",
+    "region": {
+      "code": "52",
+      "type": "Region",
+      "dateCreation": "2019-01-01",
+      "intituleSansArticle": "Pays de la Loire",
+      "typeArticle": "4",
+      "chefLieu": "44109",
+      "intitule": "Pays de la Loire"
+    }
+  },
+  {
+    "code": "45",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Loiret",
+    "typeArticle": "2",
+    "chefLieu": "45234",
+    "intitule": "Loiret",
+    "region": {
+      "code": "24",
+      "type": "Region",
+      "dateCreation": "2015-01-17",
+      "intituleSansArticle": "Centre-Val de Loire",
+      "typeArticle": "2",
+      "chefLieu": "45234",
+      "intitule": "Centre-Val de Loire"
+    }
+  },
+  {
+    "code": "46",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Lot",
+    "typeArticle": "2",
+    "chefLieu": "46042",
+    "intitule": "Lot",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "47",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Lot-et-Garonne",
+    "typeArticle": "2",
+    "chefLieu": "47001",
+    "intitule": "Lot-et-Garonne",
+    "region": {
+      "code": "75",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Nouvelle-Aquitaine",
+      "typeArticle": "3",
+      "chefLieu": "33063",
+      "intitule": "Nouvelle-Aquitaine"
+    }
+  },
+  {
+    "code": "48",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Lozère",
+    "typeArticle": "3",
+    "chefLieu": "48095",
+    "intitule": "Lozère",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "49",
+    "type": "Departement",
+    "dateCreation": "2018-01-01",
+    "intituleSansArticle": "Maine-et-Loire",
+    "typeArticle": "0",
+    "chefLieu": "49007",
+    "intitule": "Maine-et-Loire",
+    "region": {
+      "code": "52",
+      "type": "Region",
+      "dateCreation": "2019-01-01",
+      "intituleSansArticle": "Pays de la Loire",
+      "typeArticle": "4",
+      "chefLieu": "44109",
+      "intitule": "Pays de la Loire"
+    }
+  },
+  {
+    "code": "50",
+    "type": "Departement",
+    "dateCreation": "2018-01-01",
+    "intituleSansArticle": "Manche",
+    "typeArticle": "3",
+    "chefLieu": "50502",
+    "intitule": "Manche",
+    "region": {
+      "code": "28",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Normandie",
+      "typeArticle": "0",
+      "chefLieu": "76540",
+      "intitule": "Normandie"
+    }
+  },
+  {
+    "code": "51",
+    "type": "Departement",
+    "dateCreation": "2016-12-31",
+    "intituleSansArticle": "Marne",
+    "typeArticle": "3",
+    "chefLieu": "51108",
+    "intitule": "Marne",
+    "region": {
+      "code": "44",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Grand Est",
+      "typeArticle": "2",
+      "chefLieu": "67482",
+      "intitule": "Grand Est"
+    }
+  },
+  {
+    "code": "52",
+    "type": "Departement",
+    "dateCreation": "1975-01-01",
+    "intituleSansArticle": "Haute-Marne",
+    "typeArticle": "3",
+    "chefLieu": "52121",
+    "intitule": "Haute-Marne",
+    "region": {
+      "code": "44",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Grand Est",
+      "typeArticle": "2",
+      "chefLieu": "67482",
+      "intitule": "Grand Est"
+    }
+  },
+  {
+    "code": "53",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Mayenne",
+    "typeArticle": "3",
+    "chefLieu": "53130",
+    "intitule": "Mayenne",
+    "region": {
+      "code": "52",
+      "type": "Region",
+      "dateCreation": "2019-01-01",
+      "intituleSansArticle": "Pays de la Loire",
+      "typeArticle": "4",
+      "chefLieu": "44109",
+      "intitule": "Pays de la Loire"
+    }
+  },
+  {
+    "code": "54",
+    "type": "Departement",
+    "dateCreation": "1997-01-01",
+    "intituleSansArticle": "Meurthe-et-Moselle",
+    "typeArticle": "0",
+    "chefLieu": "54395",
+    "intitule": "Meurthe-et-Moselle",
+    "region": {
+      "code": "44",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Grand Est",
+      "typeArticle": "2",
+      "chefLieu": "67482",
+      "intitule": "Grand Est"
+    }
+  },
+  {
+    "code": "55",
+    "type": "Departement",
+    "dateCreation": "1997-01-01",
+    "intituleSansArticle": "Meuse",
+    "typeArticle": "3",
+    "chefLieu": "55029",
+    "intitule": "Meuse",
+    "region": {
+      "code": "44",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Grand Est",
+      "typeArticle": "2",
+      "chefLieu": "67482",
+      "intitule": "Grand Est"
+    }
+  },
+  {
+    "code": "56",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Morbihan",
+    "typeArticle": "2",
+    "chefLieu": "56260",
+    "intitule": "Morbihan",
+    "region": {
+      "code": "53",
+      "type": "Region",
+      "dateCreation": "2019-01-01",
+      "intituleSansArticle": "Bretagne",
+      "typeArticle": "0",
+      "chefLieu": "35238",
+      "intitule": "Bretagne"
+    }
+  },
+  {
+    "code": "57",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Moselle",
+    "typeArticle": "3",
+    "chefLieu": "57463",
+    "intitule": "Moselle",
+    "region": {
+      "code": "44",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Grand Est",
+      "typeArticle": "2",
+      "chefLieu": "67482",
+      "intitule": "Grand Est"
+    }
+  },
+  {
+    "code": "58",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Nièvre",
+    "typeArticle": "3",
+    "chefLieu": "58194",
+    "intitule": "Nièvre",
+    "region": {
+      "code": "27",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Bourgogne-Franche-Comté",
+      "typeArticle": "0",
+      "chefLieu": "21231",
+      "intitule": "Bourgogne-Franche-Comté"
+    }
+  },
+  {
+    "code": "59",
+    "type": "Departement",
+    "dateCreation": "1973-09-01",
+    "intituleSansArticle": "Nord",
+    "typeArticle": "2",
+    "chefLieu": "59350",
+    "intitule": "Nord",
+    "region": {
+      "code": "32",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Hauts-de-France",
+      "typeArticle": "4",
+      "chefLieu": "59350",
+      "intitule": "Hauts-de-France"
+    }
+  },
+  {
+    "code": "60",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Oise",
+    "typeArticle": "5",
+    "chefLieu": "60057",
+    "intitule": "Oise",
+    "region": {
+      "code": "32",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Hauts-de-France",
+      "typeArticle": "4",
+      "chefLieu": "59350",
+      "intitule": "Hauts-de-France"
+    }
+  },
+  {
+    "code": "61",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Orne",
+    "typeArticle": "5",
+    "chefLieu": "61001",
+    "intitule": "Orne",
+    "region": {
+      "code": "28",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Normandie",
+      "typeArticle": "0",
+      "chefLieu": "76540",
+      "intitule": "Normandie"
+    }
+  },
+  {
+    "code": "62",
+    "type": "Departement",
+    "dateCreation": "1974-01-01",
+    "intituleSansArticle": "Pas-de-Calais",
+    "typeArticle": "2",
+    "chefLieu": "62041",
+    "intitule": "Pas-de-Calais",
+    "region": {
+      "code": "32",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Hauts-de-France",
+      "typeArticle": "4",
+      "chefLieu": "59350",
+      "intitule": "Hauts-de-France"
+    }
+  },
+  {
+    "code": "63",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Puy-de-Dôme",
+    "typeArticle": "2",
+    "chefLieu": "63113",
+    "intitule": "Puy-de-Dôme",
+    "region": {
+      "code": "84",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Auvergne-Rhône-Alpes",
+      "typeArticle": "1",
+      "chefLieu": "69123",
+      "intitule": "Auvergne-Rhône-Alpes"
+    }
+  },
+  {
+    "code": "64",
+    "type": "Departement",
+    "dateCreation": "1969-10-10",
+    "intituleSansArticle": "Pyrénées-Atlantiques",
+    "typeArticle": "4",
+    "chefLieu": "64445",
+    "intitule": "Pyrénées-Atlantiques",
+    "region": {
+      "code": "75",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Nouvelle-Aquitaine",
+      "typeArticle": "3",
+      "chefLieu": "33063",
+      "intitule": "Nouvelle-Aquitaine"
+    }
+  },
+  {
+    "code": "65",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Hautes-Pyrénées",
+    "typeArticle": "4",
+    "chefLieu": "65440",
+    "intitule": "Hautes-Pyrénées",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "66",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Pyrénées-Orientales",
+    "typeArticle": "4",
+    "chefLieu": "66136",
+    "intitule": "Pyrénées-Orientales",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "67",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Bas-Rhin",
+    "typeArticle": "2",
+    "chefLieu": "67482",
+    "intitule": "Bas-Rhin",
+    "region": {
+      "code": "44",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Grand Est",
+      "typeArticle": "2",
+      "chefLieu": "67482",
+      "intitule": "Grand Est"
+    }
+  },
+  {
+    "code": "68",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Haut-Rhin",
+    "typeArticle": "2",
+    "chefLieu": "68066",
+    "intitule": "Haut-Rhin",
+    "region": {
+      "code": "44",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Grand Est",
+      "typeArticle": "2",
+      "chefLieu": "67482",
+      "intitule": "Grand Est"
+    }
+  },
+  {
+    "code": "69",
+    "type": "Departement",
+    "dateCreation": "1971-04-01",
+    "intituleSansArticle": "Rhône",
+    "typeArticle": "2",
+    "chefLieu": "69123",
+    "intitule": "Rhône",
+    "region": {
+      "code": "84",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Auvergne-Rhône-Alpes",
+      "typeArticle": "1",
+      "chefLieu": "69123",
+      "intitule": "Auvergne-Rhône-Alpes"
+    }
+  },
+  {
+    "code": "70",
+    "type": "Departement",
+    "dateCreation": "1974-07-01",
+    "intituleSansArticle": "Haute-Saône",
+    "typeArticle": "3",
+    "chefLieu": "70550",
+    "intitule": "Haute-Saône",
+    "region": {
+      "code": "27",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Bourgogne-Franche-Comté",
+      "typeArticle": "0",
+      "chefLieu": "21231",
+      "intitule": "Bourgogne-Franche-Comté"
+    }
+  },
+  {
+    "code": "71",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Saône-et-Loire",
+    "typeArticle": "0",
+    "chefLieu": "71270",
+    "intitule": "Saône-et-Loire",
+    "region": {
+      "code": "27",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Bourgogne-Franche-Comté",
+      "typeArticle": "0",
+      "chefLieu": "21231",
+      "intitule": "Bourgogne-Franche-Comté"
+    }
+  },
+  {
+    "code": "72",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Sarthe",
+    "typeArticle": "3",
+    "chefLieu": "72181",
+    "intitule": "Sarthe",
+    "region": {
+      "code": "52",
+      "type": "Region",
+      "dateCreation": "2019-01-01",
+      "intituleSansArticle": "Pays de la Loire",
+      "typeArticle": "4",
+      "chefLieu": "44109",
+      "intitule": "Pays de la Loire"
+    }
+  },
+  {
+    "code": "73",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Savoie",
+    "typeArticle": "3",
+    "chefLieu": "73065",
+    "intitule": "Savoie",
+    "region": {
+      "code": "84",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Auvergne-Rhône-Alpes",
+      "typeArticle": "1",
+      "chefLieu": "69123",
+      "intitule": "Auvergne-Rhône-Alpes"
+    }
+  },
+  {
+    "code": "74",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Haute-Savoie",
+    "typeArticle": "3",
+    "chefLieu": "74010",
+    "intitule": "Haute-Savoie",
+    "region": {
+      "code": "84",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Auvergne-Rhône-Alpes",
+      "typeArticle": "1",
+      "chefLieu": "69123",
+      "intitule": "Auvergne-Rhône-Alpes"
+    }
+  },
+  {
+    "code": "75",
+    "type": "Departement",
+    "dateCreation": "1968-01-01",
+    "intituleSansArticle": "Paris",
+    "typeArticle": "0",
+    "chefLieu": "75056",
+    "intitule": "Paris",
+    "region": {
+      "code": "11",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Île-de-France",
+      "typeArticle": "1",
+      "chefLieu": "75056",
+      "intitule": "Île-de-France"
+    }
+  },
+  {
+    "code": "76",
+    "type": "Departement",
+    "dateCreation": "1955-01-18",
+    "intituleSansArticle": "Seine-Maritime",
+    "typeArticle": "3",
+    "chefLieu": "76540",
+    "intitule": "Seine-Maritime",
+    "region": {
+      "code": "28",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Normandie",
+      "typeArticle": "0",
+      "chefLieu": "76540",
+      "intitule": "Normandie"
+    }
+  },
+  {
+    "code": "77",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Seine-et-Marne",
+    "typeArticle": "0",
+    "chefLieu": "77288",
+    "intitule": "Seine-et-Marne",
+    "region": {
+      "code": "11",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Île-de-France",
+      "typeArticle": "1",
+      "chefLieu": "75056",
+      "intitule": "Île-de-France"
+    }
+  },
+  {
+    "code": "78",
+    "type": "Departement",
+    "dateCreation": "1969-11-29",
+    "intituleSansArticle": "Yvelines",
+    "typeArticle": "4",
+    "chefLieu": "78646",
+    "intitule": "Yvelines",
+    "region": {
+      "code": "11",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Île-de-France",
+      "typeArticle": "1",
+      "chefLieu": "75056",
+      "intitule": "Île-de-France"
+    }
+  },
+  {
+    "code": "79",
+    "type": "Departement",
+    "dateCreation": "1973-08-03",
+    "intituleSansArticle": "Deux-Sèvres",
+    "typeArticle": "4",
+    "chefLieu": "79191",
+    "intitule": "Deux-Sèvres",
+    "region": {
+      "code": "75",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Nouvelle-Aquitaine",
+      "typeArticle": "3",
+      "chefLieu": "33063",
+      "intitule": "Nouvelle-Aquitaine"
+    }
+  },
+  {
+    "code": "80",
+    "type": "Departement",
+    "dateCreation": "1974-01-01",
+    "intituleSansArticle": "Somme",
+    "typeArticle": "3",
+    "chefLieu": "80021",
+    "intitule": "Somme",
+    "region": {
+      "code": "32",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Hauts-de-France",
+      "typeArticle": "4",
+      "chefLieu": "59350",
+      "intitule": "Hauts-de-France"
+    }
+  },
+  {
+    "code": "81",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Tarn",
+    "typeArticle": "2",
+    "chefLieu": "81004",
+    "intitule": "Tarn",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "82",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Tarn-et-Garonne",
+    "typeArticle": "2",
+    "chefLieu": "82121",
+    "intitule": "Tarn-et-Garonne",
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  },
+  {
+    "code": "83",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Var",
+    "typeArticle": "2",
+    "chefLieu": "83137",
+    "intitule": "Var",
+    "region": {
+      "code": "93",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Provence-Alpes-Côte d'Azur",
+      "typeArticle": "0",
+      "chefLieu": "13055",
+      "intitule": "Provence-Alpes-Côte d'Azur"
+    }
+  },
+  {
+    "code": "84",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Vaucluse",
+    "typeArticle": "2",
+    "chefLieu": "84007",
+    "intitule": "Vaucluse",
+    "region": {
+      "code": "93",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Provence-Alpes-Côte d'Azur",
+      "typeArticle": "0",
+      "chefLieu": "13055",
+      "intitule": "Provence-Alpes-Côte d'Azur"
+    }
+  },
+  {
+    "code": "85",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Vendée",
+    "typeArticle": "3",
+    "chefLieu": "85191",
+    "intitule": "Vendée",
+    "region": {
+      "code": "52",
+      "type": "Region",
+      "dateCreation": "2019-01-01",
+      "intituleSansArticle": "Pays de la Loire",
+      "typeArticle": "4",
+      "chefLieu": "44109",
+      "intitule": "Pays de la Loire"
+    }
+  },
+  {
+    "code": "86",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Vienne",
+    "typeArticle": "3",
+    "chefLieu": "86194",
+    "intitule": "Vienne",
+    "region": {
+      "code": "75",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Nouvelle-Aquitaine",
+      "typeArticle": "3",
+      "chefLieu": "33063",
+      "intitule": "Nouvelle-Aquitaine"
+    }
+  },
+  {
+    "code": "87",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Haute-Vienne",
+    "typeArticle": "3",
+    "chefLieu": "87085",
+    "intitule": "Haute-Vienne",
+    "region": {
+      "code": "75",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Nouvelle-Aquitaine",
+      "typeArticle": "3",
+      "chefLieu": "33063",
+      "intitule": "Nouvelle-Aquitaine"
+    }
+  },
+  {
+    "code": "88",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Vosges",
+    "typeArticle": "4",
+    "chefLieu": "88160",
+    "intitule": "Vosges",
+    "region": {
+      "code": "44",
+      "type": "Region",
+      "dateCreation": "2016-12-31",
+      "intituleSansArticle": "Grand Est",
+      "typeArticle": "2",
+      "chefLieu": "67482",
+      "intitule": "Grand Est"
+    }
+  },
+  {
+    "code": "89",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Yonne",
+    "typeArticle": "5",
+    "chefLieu": "89024",
+    "intitule": "Yonne",
+    "region": {
+      "code": "27",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Bourgogne-Franche-Comté",
+      "typeArticle": "0",
+      "chefLieu": "21231",
+      "intitule": "Bourgogne-Franche-Comté"
+    }
+  },
+  {
+    "code": "90",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Territoire de Belfort",
+    "typeArticle": "2",
+    "chefLieu": "90010",
+    "intitule": "Territoire de Belfort",
+    "region": {
+      "code": "27",
+      "type": "Region",
+      "dateCreation": "2016-01-01",
+      "intituleSansArticle": "Bourgogne-Franche-Comté",
+      "typeArticle": "0",
+      "chefLieu": "21231",
+      "intitule": "Bourgogne-Franche-Comté"
+    }
+  },
+  {
+    "code": "91",
+    "type": "Departement",
+    "dateCreation": "1974-11-01",
+    "intituleSansArticle": "Essonne",
+    "typeArticle": "5",
+    "chefLieu": "91228",
+    "intitule": "Essonne",
+    "region": {
+      "code": "11",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Île-de-France",
+      "typeArticle": "1",
+      "chefLieu": "75056",
+      "intitule": "Île-de-France"
+    }
+  },
+  {
+    "code": "92",
+    "type": "Departement",
+    "dateCreation": "1968-01-01",
+    "intituleSansArticle": "Hauts-de-Seine",
+    "typeArticle": "4",
+    "chefLieu": "92050",
+    "intitule": "Hauts-de-Seine",
+    "region": {
+      "code": "11",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Île-de-France",
+      "typeArticle": "1",
+      "chefLieu": "75056",
+      "intitule": "Île-de-France"
+    }
+  },
+  {
+    "code": "93",
+    "type": "Departement",
+    "dateCreation": "1968-01-01",
+    "intituleSansArticle": "Seine-Saint-Denis",
+    "typeArticle": "3",
+    "chefLieu": "93008",
+    "intitule": "Seine-Saint-Denis",
+    "region": {
+      "code": "11",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Île-de-France",
+      "typeArticle": "1",
+      "chefLieu": "75056",
+      "intitule": "Île-de-France"
+    }
+  },
+  {
+    "code": "94",
+    "type": "Departement",
+    "dateCreation": "1968-01-01",
+    "intituleSansArticle": "Val-de-Marne",
+    "typeArticle": "2",
+    "chefLieu": "94028",
+    "intitule": "Val-de-Marne",
+    "region": {
+      "code": "11",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Île-de-France",
+      "typeArticle": "1",
+      "chefLieu": "75056",
+      "intitule": "Île-de-France"
+    }
+  },
+  {
+    "code": "95",
+    "type": "Departement",
+    "dateCreation": "1968-01-01",
+    "intituleSansArticle": "Val-d'Oise",
+    "typeArticle": "2",
+    "chefLieu": "95500",
+    "intitule": "Val-d'Oise",
+    "region": {
+      "code": "11",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Île-de-France",
+      "typeArticle": "1",
+      "chefLieu": "75056",
+      "intitule": "Île-de-France"
+    }
+  },
+  {
+    "code": "971",
+    "type": "Departement",
+    "dateCreation": "2007-07-15",
+    "intituleSansArticle": "Guadeloupe",
+    "typeArticle": "3",
+    "chefLieu": "97105",
+    "intitule": "Guadeloupe",
+    "region": {
+      "code": "01",
+      "type": "Region",
+      "dateCreation": "2007-07-15",
+      "intituleSansArticle": "Guadeloupe",
+      "typeArticle": "3",
+      "chefLieu": "97105",
+      "intitule": "Guadeloupe"
+    }
+  },
+  {
+    "code": "972",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Martinique",
+    "typeArticle": "3",
+    "chefLieu": "97209",
+    "intitule": "Martinique",
+    "region": {
+      "code": "02",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Martinique",
+      "typeArticle": "3",
+      "chefLieu": "97209",
+      "intitule": "Martinique"
+    }
+  },
+  {
+    "code": "973",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Guyane",
+    "typeArticle": "3",
+    "chefLieu": "97302",
+    "intitule": "Guyane",
+    "region": {
+      "code": "03",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Guyane",
+      "typeArticle": "3",
+      "chefLieu": "97302",
+      "intitule": "Guyane"
+    }
+  },
+  {
+    "code": "974",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "La Réunion",
+    "typeArticle": "0",
+    "chefLieu": "97411",
+    "intitule": "La Réunion",
+    "region": {
+      "code": "04",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "La Réunion",
+      "typeArticle": "0",
+      "chefLieu": "97411",
+      "intitule": "La Réunion"
+    }
+  },
+  {
+    "code": "976",
+    "type": "Departement",
+    "dateCreation": "2011-03-31",
+    "intituleSansArticle": "Mayotte",
+    "typeArticle": "0",
+    "chefLieu": "97608",
+    "intitule": "Mayotte",
+    "region": {
+      "code": "06",
+      "type": "Region",
+      "dateCreation": "2011-03-31",
+      "intituleSansArticle": "Mayotte",
+      "typeArticle": "0",
+      "chefLieu": "97608",
+      "intitule": "Mayotte"
+    }
+  }
+]

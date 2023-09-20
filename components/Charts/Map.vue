@@ -1,6 +1,6 @@
 <template>
   <g>
-    <path v-for="(feature, i) in features" :key="i" :d="geoDrawer(feature)" :style="pathStyle(feature)" :fill="feature.properties.fill" />
+    <path v-for="(feature, i) in features" :key="i" :d="geoDrawer(feature)" :style="pathStyle(feature)" :fill="feature.properties.fill || 'none'" />
     <slot v-bind="{geoProjection}" />
   </g>
 </template>
@@ -34,6 +34,9 @@ export default {
     const geoDrawer = geoPath()
 
     if (!this.$parent.geoProjection) {
+      if (this.topology.transform) {
+        geoProjection.scale(this.topology.transform.scale)
+      }
       geoProjection.fitSize([this.getWidth(), this.getHeight()], this.getFeatures())
     }
 
@@ -71,13 +74,14 @@ export default {
   },
   methods: {
     getFeatures () {
+      // console.log(topojson.feature(this.topology, this.featuresKey))
       return topojson.feature(this.topology, this.featuresKey)
     },
     pathStyle (feature) {
       return {
         stroke: this.color,
         fill: feature.properties ? feature.properties.fill : '',
-        'stroke-width': '1px'
+        'stroke-width': '0.5px'
       }
     }
   }
