@@ -3,6 +3,7 @@
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
         <span v-if=" procedure.doc_type === 'SCOT'">
+          <!-- (porté par {{}}) -->
           {{ procedure.name }}
         </span>
         <div v-else>
