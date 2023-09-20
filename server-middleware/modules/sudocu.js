@@ -174,9 +174,9 @@ module.exports = {
       const proceduresCollecIds = proceduresCollec.data.map(e => e.procedure_id)
 
       // On fetch les procédures faisant parti du périmètre de la commune
-      // const rawPlanProcedures = await supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false }).order('dateapprobation', { ascending: false }) // .order([{ column: 'last_event_date', order: 'desc' }, { column: 'dateapprobation', order: 'desc' }])
+      const rawPlanProcedures = await supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false }).order('dateapprobation', { ascending: false }) // .order([{ column: 'last_event_date', order: 'desc' }, { column: 'dateapprobation', order: 'desc' }])
       const rawSchemaProcedures = await supabase.from('distinct_procedures_schema_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
-      // if (rawPlanProcedures.error) { throw rawPlanProcedures }
+      if (rawPlanProcedures.error) { throw rawPlanProcedures }
       if (rawSchemaProcedures.error) { throw rawSchemaProcedures }
       // On fetch tous les events liées aux procédures
       const allProceduresEvents = await this.getProceduresEvents(proceduresCollecIds)
@@ -186,10 +186,10 @@ module.exports = {
       const collectivitesPorteuses = geo.getCollectivites(collecsPorteusesIds)
 
       // Raccordement des events à leur procédure
-      // const planProceduresEvents = rawPlanProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
+      const planProceduresEvents = rawPlanProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
       const schemaProceduresEvents = rawSchemaProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
 
-      // const planProcedures = this.enrich(planProceduresEvents, proceduresCollec, collectivitesPorteuses)
+      const planProcedures = this.enrich(planProceduresEvents, proceduresCollec, collectivitesPorteuses)
       const schemaProcedures = this.enrich(schemaProceduresEvents, proceduresCollec, collectivitesPorteuses)
 
       // Formattage des procédures
@@ -216,36 +216,36 @@ module.exports = {
           status: e.status
         }
       })
-      // const formattedProcedures = planProcedures.map((e) => {
-      //   return {
-      //     actors: [],
-      //     attachements: [],
-      //     id: e.noserieprocedure,
-      //     doc_type: e.doc_type,
-      //     description: e.commentaire,
-      //     type: e.libtypeprocedure,
-      //     procedure_id: e.noserieprocedureratt,
-      //     launch_date: e.datelancement,
-      //     approval_date: e.dateapprobation,
-      //     abort_date: e.dateabandon,
-      //     enforceable_date: e.dateexecutoire,
-      //     created_at: e.datelancement,
-      //     last_updated_at: e.last_event_date,
-      //     collectivite_porteuse: e.collectivitePorteuse,
-      //     events: e.events,
-      //     perimetre: e.perimetre,
-      //     procSecs: e.procSecs,
-      //     status: e.status,
-      //     status_infos: e.statusInfos
-      //   }
-      // })
+      const formattedProcedures = planProcedures.map((e) => {
+        return {
+          actors: [],
+          attachements: [],
+          id: e.noserieprocedure,
+          doc_type: e.doc_type,
+          description: e.commentaire,
+          type: e.libtypeprocedure,
+          procedure_id: e.noserieprocedureratt,
+          launch_date: e.datelancement,
+          approval_date: e.dateapprobation,
+          abort_date: e.dateabandon,
+          enforceable_date: e.dateexecutoire,
+          created_at: e.datelancement,
+          last_updated_at: e.last_event_date,
+          collectivite_porteuse: e.collectivitePorteuse,
+          events: e.events,
+          perimetre: e.perimetre,
+          procSecs: e.procSecs,
+          status: e.status,
+          status_infos: e.statusInfos
+        }
+      })
 
-      // const fullProcs = this.partitionProceduresPrincipSecs(collectiviteId, formattedProcedures)
+      const fullProcs = this.partitionProceduresPrincipSecs(collectiviteId, formattedProcedures)
       const fullSchemas = this.partitionProceduresPrincipSecs(collectiviteId, formattedSchemaProcedures)
 
       const collectivite = geo.getCollectivite(collectiviteId)
       // procedures: fullProcs
-      return { collectivite, schemas: fullSchemas }
+      return { collectivite, procedures: fullProcs, schemas: fullSchemas }
     } catch (error) {
       console.log(JSON.stringify(error))
     }

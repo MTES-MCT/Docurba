@@ -70,7 +70,7 @@ export default {
     this.collectivite = collectivite
     this.schemas = schemas
     this.sudocuProcedures = sudocuProcedures
-
+    console.log('this.sudocuProcedures: ', this.sudocuProcedures)
     const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
     this.procedures = [...this.sudocuProcedures, ...procedures]
     this.projects = projects
@@ -81,13 +81,6 @@ export default {
       this.procedures = [...this.sudocuProcedures, ...procedures]
       this.projects = projects
     }
-
-    // TODO: Handle New DU (comme EPCI)
-
-    // TEST
-    // const test = await this.$sudocu.getSchemaCollectivite(this.$route.params.collectiviteId)
-    // console.log('TESTING: ', test)
-    // END
   }
 }
 </script>

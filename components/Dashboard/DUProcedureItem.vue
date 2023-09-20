@@ -7,7 +7,7 @@
           {{ procedure.name }}
         </span>
         <div v-else>
-          <span>{{ procedure.doc_type }}</span>
+          <span>{{ procedure.doc_type }}</span><span v-if="procedure.perimetre.length > 1">-i<span v-if="procedure.status_infos.isSectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')">S</span></span>
           <span> {{ procedure.perimetre.length === 1 ? procedure.perimetre[0].name + ' (' + procedure.perimetre[0].inseeCode + ')' : '' }}</span>
         </div>
 
