@@ -47,7 +47,7 @@
       </v-chip>
     </v-card-subtitle>
     <v-card-title>
-      {{ event.type }}
+      {{ event.type }} - {{ event.status }}
     </v-card-title>
     <div />
     <v-card-text v-if="event.commentaire">

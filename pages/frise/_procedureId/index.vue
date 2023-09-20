@@ -98,6 +98,7 @@ export default {
         from_sudocuh: true,
         date_iso: e.dateevenement,
         type: e.libtypeevenement, // + ' - ',  + e.libstatutevenement,
+        status: e.libstatutevenement,
         description: '', // e.commentaire + ' - Document sur le reseau: ' + e.nomdocument,
         actors: [],
         attachements: e.attachements,

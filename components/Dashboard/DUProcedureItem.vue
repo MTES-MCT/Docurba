@@ -139,9 +139,6 @@ export default {
         mdiArrowRight
       }
     }
-  },
-  mounted () {
-    console.log('INSIDE DU PROCEDURE ITEM: ', this.procedure)
   }
 }
 </script>
