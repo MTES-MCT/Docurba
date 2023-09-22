@@ -1,7 +1,7 @@
 <a class="anchor" name="headTop"></a>
-# Guide d’utilisation.
+# Guide : comment élaborer des PAC sur Docurba.
 
-*Docurba, outil pour faciliter l’élaboration et le suivi des documents d’urbanisme.*
+*Docurba vise à faciliter l’élaboration et le suivi des documents d’urbanisme.*
  
 💡**Nous organisons des sessions de prise en main de l'outil d'élaboration des PAC, en visioconférence.** [inscriptions via ce lien](https://app.livestorm.co/mte/docurba-session-de-prise-en-main-de-loutil-delaboration-des-pac?type=detailed).
 
@@ -14,7 +14,7 @@
  Vous trouverez dans ce guide:
 </div>
 
-
+[Se connecter/s'inscrire](#headConnection)
 
 [⚙️ Comment configurer sa trame de PAC](#headConfigPAC)
 
@@ -40,21 +40,46 @@
 
 --- -->
 
+<a class="anchor" name="headConnection"></a>
+# Se connecter/s'inscrire 
+
+<div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
+
+
+
+<div class="d-flex align-center">
+  <div class=" background--text text--lighten-2  mr-8 rounded g300 rounded-lg pa-4">
+
+  La première étape est d'**ouvrir votre espace spécial agent de l'état**, ce qui vous donnera accès à certaines fonctionnalités que vous ne pouvez pas consulter sans vous être créé un compte au préalable, comme c'est le cas pour l'outil d'élaboration des PAC. Depuis le bouton `connexion`, renseignez vos informations et laissez-vous guider par les indications.
+  </div>
+  <img class="elevation-3  my-8" style="max-width:50%" src="/images/guide/40.png">
+
+</div>
+
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/41.png">
+
+_Bon à savoir : 
+* votre demande d'accès est acceptée et validée manuellement en quelques minutes par notre équipe,
+* une fois votre accès validé, pensez à recharger la page et cliquer sur `Tableau de bord` ; vous êtes connecté._
+
+Vous accédez alors à votre `Tableau de bord`d'agent de l'État : 
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/42.png">
+Cet espace vous permet de faire le suivi des procédures de votre département, pour en savoir plsu et consulter le guide d'utilisation, cliquer sur ce lien. (Bientôt disponible)
 
 <a class="anchor" name="headConfigPAC"></a>
 # ⚙️ Configurer sa trame de PAC départementale
-
 <div class="my-8 background--text text--lighten-2 font-italic  rounded g300 rounded-lg pa-4">
-💡 La trame de PAC est la <b>base commune pour vos futurs PAC au sein de votre département</b>. Une fois votre trame personnalisée au niveau de votre département, vous pourrez vous en servir pour élaborer de nouveaux PAC. (Voir la partie "Créer son projet de PAC" de ce guide)
+
+Rendez-vous sur l'onglet `Trame de PAC départementale`: 
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/43.png">
+
+💡 La trame de PAC est la <b>base commune pour vos futurs PAC au sein de votre département</b>. Une fois votre trame personnalisée au niveau de votre département, vous pourrez vous en servir pour élaborer de nouveaux PAC et ainsi gagner du temps avec des éléments du PAC déjà rédigés par vos soins. (Voir la partie "Créer son projet de PAC" de ce guide)
 </div>
 
-Vous pouvez **compléter la trame initiale en cliquant sur l'onglet "Trame de PAC départementale"** - accessible dès que votre compte sera validé par l'équipe (pour cela il est nécessaire de créer votre compte en cliquant sur le bouton "connexion" en haut à droite du site).
-<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/33.png">
-
-Lors de votre première connexion, vous verrez que votre trame comporte déjà des éléments rédigés : ils correspondent aux éléments harmonisés à l'échelle : 
-- nationale, avec le "Cadre Juridique et les grands principes de la planification", co-rédigé avec le National (QV4),
-- régionale, avec les "Documents supra-territoriaux et doctrines", éléments proposés par la DREAL et dans un travail commun avec les DDT de chaque région,
-- locale, avec les "Politiques publiques s'applicant sur votre territoire" regroupées en 12 fiches thématiques où une introduction et un sommaire ont été proposés pour chacune des fiches. 
+**Lors de votre première connexion, vous verrez que votre trame comporte déjà des éléments rédigés : ils correspondent aux éléments harmonisés aux différentes échelles :**
+- échelle nationale, avec le "Cadre Juridique et les grands principes de la planification", co-rédigé et mis à jour mensuellement avec le National (DHUP/QV4),
+- échelle régionale, avec les "Documents supra-territoriaux et doctrines", éléments proposés par la DREAL et dans un travail commun avec les DDT de chaque région,
+- échelle locale, avec les "Politiques publiques s'applicant sur votre territoire" regroupées en 12 fiches thématiques, où une introduction et un sommaire ont été proposés pour chacune de ces fiches. 
 
 <img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/34.png">
   
@@ -118,16 +143,34 @@ Cliquez sur 💾 pour chaque section éditée afin de sauvegarder vos changement
 </div>
 
 
-**Pour créez un nouveau PAC, recherchez la collectivité concernée par ce nouveau PAC depuis l'onglet _"Mes collectivités"_ - visible lorsque vous êtes connecté à votre espace DDT(M)/DEAL.**
+**Pour créez un nouveau PAC, recherchez la collectivité concernée par ce nouveau PAC depuis l'onglet _`Mes collectivités`_**
 
-Cliquez sur le bouton "consulter" en face de la collectivité concernée puis sur "ajouter une DU". FONCTIONNALITÉ EN COURS D'AMÉLIORATION, MERCI DE VOTRE COMPRÉHENSION.  
+Cliquez sur `consulter` en face de la collectivité pour laquelle vous voulez créer le PAC. 
+
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/44.png">
+
+Puis cliquez sur `ajouter un DU`:  
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/45.png">
 
 <div class="d-flex align-center">
   <div class=" background--text text--lighten-2  mr-8 rounded g300 rounded-lg pa-4">
 
-  **Une fois le projet de PAC créé pour une certaine collectivité**, et si vous avez choisi d'utiliser votre trame départementale, vous pourrez élaborer le PAC en décochant les sections et sous-sections qui ne concernent pas la commune.
+Choississez le nom du PAC et le type de document concerné dans le menu déroulant, puis cliquez sur `ajouter`.
+  </div>
+  <img class="elevation-3  my-8" style="max-width:50%" src="/images/guide/46.png">
 
-  *Exemple*: Au préalable dans cette trame, le choix a été fait de lister les différents SCoT du département sous la section "SCoT". Maintenant au niveau projet, il est possible de décocher les différents SCoT qui ne concernent pas la collectivité pour laquelle est élaboré de PAC.
+</div>
+
+Le PAC créé apparaît donc sur la page de la collectivité initiallement sélectionnée, vous pouvez cliquez sur `modifier le PAC`. 
+À ce stade, sachez que le PAC n'est pas partagé à la collectivité, vous pouvez faire toutes les modifications nécessaires et revenir sur le moficiation du PAC le nombre de fois nécessaires.
+<img class="elevation-3  my-8" style="max-width:100%" src="/images/guide/47.png">
+
+
+
+<div class="d-flex align-center">
+  <div class=" background--text text--lighten-2  mr-8 rounded g300 rounded-lg pa-4">
+
+  **Comment tirer profit de votre trame de PAC départementale**: Au préalable dans cette trame de PAC, le choix a été fait de lister les différents SCoT du département sous la section "SCoT". Maintenant au moment de modifier le PAC de la collectivité, il est possible de décocher les différents SCoT qui ne concernent pas la collectivité pour laquelle est élaboré de PAC.
   </div>
   <img class="elevation-3  my-8" style="max-width:50%" src="/images/guide/27.png">
 
