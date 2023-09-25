@@ -28,8 +28,8 @@ module.exports = {
 
     // Define specific status for principales / secondaires
     this.setSpecificsStatus(collectiviteId, procsPrincipales)
-
-    _.each(groupedProcsSecondaires, procedureSecondaire => this.setSpecificsStatus(collectiviteId, procedureSecondaire))
+    // TODO: L'etat des procédure secondaires ne ce defini pas pareil que les principales
+    // _.each(groupedProcsSecondaires, procedureSecondaire => this.setSpecificsStatus(collectiviteId, procedureSecondaire))
     groupedProcsSecondaires = _.groupBy(procsSecondaires, e => e.procedure_id?.toString())
 
     // Assign procedures secondaire to principales
@@ -58,6 +58,7 @@ module.exports = {
       if (fullDetailsCollecPorteuse?.nbCommunes) {
         isSectoriel = collectivitePorteuse.nb_communes > 1 ? collectivitePorteuse.nb_communes < fullDetailsCollecPorteuse.nbCommunes : false
       }
+      // TODO: Ajouter Délibération d'approbation du prefet a ajouter
       statusInfos = {
         isSectoriel,
         hasDelibApprob: procedure.events?.some(e => e.libtypeevenement === "Délibération d'approbation" && e.codestatutevenement === 'V'),
@@ -78,8 +79,11 @@ module.exports = {
   },
   setCommunalsProceduresStatus (arrProcedures) {
     const opposableProc = arrProcedures.find(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation)
-    if (opposableProc) { opposableProc.status = 'opposable' }
-    arrProcedures.filter(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation && opposableProc.id !== e.id).forEach((e) => { e.status = 'precedent' })
+    if (opposableProc) {
+      opposableProc.status = 'opposable'
+      arrProcedures.filter(e => (e.status_infos.hasDelibApprob || opposableProc.perimetre.length === 1) && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation && opposableProc.id !== e.id).forEach((e) => { e.status = 'precedent' })
+    }
+    // console.log('opposableProc:', opposableProc)
   },
   // Gestion des rollback du a une annuldation de la délibération (le DU précédent en date devient opposable) et précédent
   // La dernière procédure ayant une délibération est l'opposable
@@ -112,11 +116,9 @@ module.exports = {
       const PluisOpp = arrProcedures.filter(e => e.status === 'opposable')
       const noPluiOpp = !arrProcedures.map(e => e.status).includes('opposable')
       const proceduresCommunales = arrProcedures.filter(e => e.perimetre.length === 1)
-      // console.log('Cambligneul - Procedure 31870', arrProcedures.find(e => e.id === 31870))
 
       if (noPluiOpp) {
         const groupedProceduresCommunals = _.groupBy(proceduresCommunales, e => e.perimetre[0].inseeCode)
-        // console.log('groupedProceduresCommunals: ', groupedProceduresCommunals['62198'])
         _.map(groupedProceduresCommunals, (proceduresCommune) => {
           this.setCommunalsProceduresStatus(proceduresCommune)
         })
@@ -141,7 +143,6 @@ module.exports = {
   },
   async  getProceduresEvents (arrProceduresId) {
     try {
-      // TODO: Re rajouter les SCOT proprement
       const rawPlanEvents = await supabase.from('sudocu_procedure_events').select('*').in('noserieprocedure', arrProceduresId).order('dateevenement', { ascending: true })
       const rawSchemaEvents = await supabase.from('sudocu_schemas_events').select('*').in('noserieprocedure', arrProceduresId).order('dateevenement', { ascending: true })
       const [{ data: planEvents, error: errPlanEvents }, { data: schemaEvents, error: errSchemaEvents }] = await Promise.all([rawPlanEvents, rawSchemaEvents])
@@ -179,6 +180,7 @@ module.exports = {
       if (rawPlanProcedures.error) { throw rawPlanProcedures }
       if (rawSchemaProcedures.error) { throw rawSchemaProcedures }
       // On fetch tous les events liées aux procédures
+
       const allProceduresEvents = await this.getProceduresEvents(proceduresCollecIds)
 
       // Fetch des collectivités porteuses des différentes procédures
@@ -245,9 +247,11 @@ module.exports = {
 
       const collectivite = geo.getCollectivite(collectiviteId)
       // procedures: fullProcs
+      // console.log('collectivite: ', collectivite, ' : ', fullProcs)
+      console.log('collectivite: ', collectivite)
       return { collectivite, procedures: fullProcs, schemas: fullSchemas }
     } catch (error) {
-      console.log(JSON.stringify(error))
+      console.log('ERROR: ', error)
     }
   }
 }

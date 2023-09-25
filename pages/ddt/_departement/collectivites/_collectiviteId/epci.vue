@@ -52,7 +52,7 @@
           Documents d'urbanisme
         </p>
         <p class="text-h6">
-          Documents d’urbanisme disponibles pour la commune recherchée :
+          Documents d’urbanisme sous la compétence de l'EPCI recherchée:
         </p>
       </v-col>
     </v-row>

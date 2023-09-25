@@ -44,7 +44,7 @@
           v-if="$user.profile.side === 'etat'"
           depressed
           tile
-          text
+          color="primary"
           :to="{
             name: $user.profile.poste === 'ddt' ? 'ddt-departement-collectivites' : 'trames-githubRef',
             params: {

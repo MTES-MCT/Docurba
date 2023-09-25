@@ -56,7 +56,14 @@ export default {
       snackbar: { text: '', val: false }
     }
   },
-  mounted () {
+  async mounted () {
+    await this.$user.isReady.then((resolve, reject) => {
+      console.log('MOUNTED IS READY', this.$user.profile)
+      if (this.$user.profile.poste === 'ddt') {
+        this.$router.push(`ddt/${this.$user.profile.departement}/collectivites`)
+      }
+    })
+
     if (process.browser) {
       const parsed = qs.parse(this.$route.hash.slice(1))
       if (parsed.error) {

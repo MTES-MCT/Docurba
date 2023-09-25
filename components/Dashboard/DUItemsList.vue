@@ -20,7 +20,7 @@
           DU communaux
         </v-tab>
         <v-tab>
-          SCoT
+          SCoTs
         </v-tab>
         <v-spacer />
         <v-btn v-if="!isPublic" text class="align-self-center" @click="insertDialog = true">
@@ -30,18 +30,23 @@
 
       <v-tabs-items v-model="tab" :class="{beige: !isPublic}">
         <v-tab-item v-if="isEpci">
-          <DashboardEmptyProjectCard
-            v-for="emptyProject in emptyProjectsInter"
-            :key="emptyProject.id"
-            :project="emptyProject"
-            class="mb-4"
-          />
-          <DashboardDUItem
-            v-for="(procedure,i) in DUInter"
-            :key="'du_' + i"
-            :procedure="procedure"
-            :censored="isPublic"
-          />
+          <template v-if="emptyProjectsInter.length > 0 || DUInter.length > 0">
+            <DashboardEmptyProjectCard
+              v-for="emptyProject in emptyProjectsInter"
+              :key="emptyProject.id"
+              :project="emptyProject"
+              class="mb-4"
+            />
+            <DashboardDUItem
+              v-for="(procedure,i) in DUInter"
+              :key="'du_' + i"
+              :procedure="procedure"
+              :censored="isPublic"
+            />
+          </template>
+          <div v-else class="d-flex align-center justify-center pa-8 text--disabled">
+            Pas de documents
+          </div>
         </v-tab-item>
         <v-tab-item>
           <DashboardEmptyProjectCard
@@ -135,9 +140,6 @@ export default {
     DUInter () {
       return this.procedures?.filter(e => e.perimetre.length > 1)
     },
-    // DUSchemas () {
-    //   return this.procedures?.filter(e => e.docType === 'SCOT')
-    // },
     emptyProjects () {
       if (!this.projects) { return [] }
 
