@@ -2,7 +2,9 @@
 const express = require('express')
 const app = express()
 app.use(express.json())
+const { createClient } = require('@supabase/supabase-js')
 
+const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 const sudocu = require('./modules/sudocu.js')
 const sido = require('./modules/sido.js')
 
@@ -28,6 +30,20 @@ app.get('/collectivites/:code', async (req, res) => {
   } catch (error) {
     console.log(error)
     res.status(404).send(error)
+  }
+})
+
+app.get('/sido_csv', async (req, res) => {
+  const sidoQuery = supabase.from('sido').select('*')
+  if (req.query.communes) {
+    const { data } = await sidoQuery.eq('collectivite_type', 'Commune').csv()
+    res.send(data)
+  } else if (req.query.epcis) {
+    const { data } = await sidoQuery.neq('collectivite_type', 'Commune').csv()
+    res.send(data)
+  } else {
+    const { data } = await sidoQuery.csv()
+    res.send(data)
   }
 })
 

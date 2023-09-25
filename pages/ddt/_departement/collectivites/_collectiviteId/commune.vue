@@ -62,9 +62,6 @@ export default {
     }
   },
   async mounted () {
-    // 200040111
-    // 1001
-    // 81178
     const { collectivite, schemas, procedures: sudocuProcedures } = (await axios({ url: `/api/urba/collectivites/${this.$route.params.collectiviteId}`, method: 'get' })).data
 
     this.collectivite = collectivite
