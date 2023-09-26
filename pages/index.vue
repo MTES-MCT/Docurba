@@ -1,18 +1,10 @@
 <template>
   <div>
-    <!-- START HERO v2 -->
-    <!-- <v-container fluid>
-      <v-row justify="center" align="center" class="primary">
-        <v-col cols="auto">
-          <a class="white--text" href="https://app.livestorm.co/dinum-12/flash-info-docurba-les-nouveautes-de-loutil?type=detailed" target="_blank"><b>Flash Info de Docurba : jeudi 9 février 2023 à 14h. Cliquez ici pour s’inscrire à la visioconférence !</b></a>
-        </v-col>
-      </v-row>
-    </v-container> -->
-    <v-container fluid class="pa-8">
-      <v-row class="beige rounded-lg py-16 position-relative">
-        <VFloatingShape src="/images/landing/ellipse_half_blue_right.svg" :size="60" :right="15" :bottom="15" />
-        <VFloatingShape src="/images/landing/circle_red.svg" :size="54" :left="200" :bottom="-27" />
-        <v-col>
+    <v-container>
+      <v-row class="beige rounded-lg py-md-16 position-relative mt-md-4">
+        <VFloatingShape class=" d-none d-md-flex" src="/images/landing/ellipse_half_blue_right.svg" :size="60" :right="15" :bottom="15" />
+        <VFloatingShape class=" d-none d-md-flex" src="/images/landing/circle_red.svg" :size="54" :left="200" :bottom="-27" />
+        <v-col cols="12">
           <v-container>
             <v-row>
               <v-col cols="12" class="position-relative">
@@ -32,7 +24,9 @@
               </v-col>
             </v-row>
           </v-container>
-          <LandingUserStory style="position:absolute;bottom:-28%;left:0" />
+          <client-only>
+            <LandingUserStory :id="!$vuetify.breakpoint.mobile ? 'container-user-stories' : ''" />
+          </client-only>
         </v-col>
       </v-row>
     </v-container>
@@ -44,22 +38,10 @@
               Vous êtes agent de l'Etat et voulez paramétrer votre trame de PAC et suivre les procédures de votre département ?
             </p>
             <div>
-              <v-btn
-                depressed
-                color="primary"
-                class="mr-6"
-                to="/login/ddt/signup"
-                nuxt
-              >
+              <v-btn depressed color="primary" class="mr-6" to="/login/ddt/signup" nuxt>
                 S'inscrire
               </v-btn>
-              <v-btn
-                class="custom-transform-class text-none"
-                outlined
-                color="primary"
-                to="/login/ddt/signin"
-                nuxt
-              >
+              <v-btn class="custom-transform-class text-none" outlined color="primary" to="/login/ddt/signin" nuxt>
                 Se connecter
               </v-btn>
             </div>
@@ -69,10 +51,6 @@
       <LandingDemarche class="mb-12" />
       <LandingKeyFeatures class="mt-12" />
     </v-container>
-    <!-- <v-container>
-      <LandingRegionsCard class="mt-12" />
-    </v-container> -->
-    <!-- <LandingCtaByNeed /> -->
     <LandingCitations />
     <v-container fluid>
       <v-row class="bf100-g750 mt-16 py-8">
@@ -104,5 +82,11 @@ export default {
 
 .rm-divider {
   border-width: 0 5px 0 0 !important;
+}
+
+#container-user-stories{
+  position:absolute;
+  bottom:-28%;
+  left:0
 }
 </style>

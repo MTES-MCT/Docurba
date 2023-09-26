@@ -57,12 +57,14 @@ export default {
     }
   },
   async mounted () {
-    await this.$user.isReady.then((resolve, reject) => {
-      console.log('MOUNTED IS READY', this.$user.profile)
-      if (this.$user.profile.poste === 'ddt') {
-        this.$router.push(`ddt/${this.$user.profile.departement}/collectivites`)
-      }
-    })
+    // TODO: Is not a function  .isReady at init
+    if (typeof this.$user.isReady === 'function') {
+      await this.$user.isReady.then((resolve, reject) => {
+        if (this.$route.path === '/' && this.$user.profile.poste === 'ddt') {
+          this.$router.push(`ddt/${this.$user.profile.departement}/collectivites`)
+        }
+      })
+    }
 
     if (process.browser) {
       const parsed = qs.parse(this.$route.hash.slice(1))

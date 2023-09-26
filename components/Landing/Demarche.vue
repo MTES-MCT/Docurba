@@ -1,11 +1,11 @@
 <template>
   <v-row>
     <v-col cols="12">
-      <h1 class="text-h1 text-no-wrap">
+      <h1 class="text-h1 ">
         Docurba vous aide dans vos démarches
       </h1>
     </v-col>
-    <v-col cols="8">
+    <v-col cols="12" md="8">
       <p>
         Docurba, la plateforme mise en place par les services de l’Etat pour les collectivités et leurs bureaux d’étude afin de faciliter l'élaboration des documents d'urbanisme et la prise en compte des informations et enjeux environnementaux
       </p>
@@ -41,7 +41,7 @@
         </li>
       </ul>
     </v-col>
-    <v-col cols="4">
+    <v-col cols="12" md="4">
       <LandingWhatPAC />
     </v-col>
   </v-row>

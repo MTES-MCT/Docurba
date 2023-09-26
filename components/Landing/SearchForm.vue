@@ -1,7 +1,7 @@
 <template>
   <v-form ref="form" v-model="valid">
     <v-row justify="center" align="center">
-      <v-col>
+      <v-col cols="12" md="10">
         <VCollectivitesAutocomplete
           v-model="selectedCollectivite"
           :cols-dep="4"
@@ -11,7 +11,7 @@
           }"
         />
       </v-col>
-      <v-col cols="auto">
+      <v-col cols="auto" md="2">
         <v-btn
           depressed
           color="primary"

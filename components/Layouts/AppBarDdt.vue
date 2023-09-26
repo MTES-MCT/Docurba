@@ -69,6 +69,11 @@
             </v-btn>
           </template>
           <v-list>
+            <v-list-item link to="/guide">
+              <v-list-item-title>
+                Guide
+              </v-list-item-title>
+            </v-list-item>
             <v-list-item link @click="signOut">
               <v-list-item-title>
                 Déconnexion

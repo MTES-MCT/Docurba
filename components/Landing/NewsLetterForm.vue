@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center" align="center">
-      <v-col cols="5">
+      <v-col cols="12" md="5">
         <h3 class="text-h5">
           <b>Abonnez-vous à notre lettre d’information</b>
         </h3>
@@ -9,7 +9,7 @@
           Suivez l’avancée de nos travaux au fur et à mesure.Rythme d’environ une par mois.
         </p>
       </v-col>
-      <v-col cols="6" offset="1">
+      <v-col cols="12" md="6" md-offset="1">
         <v-row no-gutters>
           <v-col cols="">
             <v-text-field

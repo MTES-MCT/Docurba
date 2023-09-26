@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col v-show="!hideDept" cols="12" :sm="colsDep">
+    <v-col v-show="!hideDept" cols="12" :md="colsDep">
       <v-autocomplete
         v-model="selectedDepartement"
         v-bind="inputProps"
@@ -15,7 +15,7 @@
         @change="fetchCollectivites"
       />
     </v-col>
-    <v-col cols="12" :sm="colsTown">
+    <v-col cols="12" :md="colsTown">
       <validation-provider v-slot="{ errors }" name="Collectivité" rules="requiredCollectivite">
         <v-autocomplete
           v-model="selectedCollectivite"

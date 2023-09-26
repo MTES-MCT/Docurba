@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="2" class="position-relative">
+    <v-col cols="2" class="position-relative d-none d-md-flex">
       <!-- DECORAtION GOES HERE -->
       <VFloatingShape src="/images/landing/ellipse_half_blue_left.svg" :size="60" :left="15" :top="-45" />
 
@@ -13,14 +13,14 @@
       <VFloatingShape src="/images/landing/undraw_completed_tasks.svg" :size="100" :left="50" :bottom="230" />
       <VFloatingShape src="/images/landing/line_left_2.svg" :width="280" :height="200" :right="-10" :bottom="100" />
     </v-col>
-    <v-col cols="8">
+    <v-col cols="12" md="8">
       <v-row>
         <v-col v-for="(feature, i) in keyFeatures" :key="i" cols="12" class="mb-6">
           <LandingKeyFeatureCard v-bind="feature" />
         </v-col>
       </v-row>
     </v-col>
-    <v-col cols="2" class="position-relative">
+    <v-col cols="2" class="position-relative d-none d-md-flex">
       <!-- DECORATION GOES HERE -->
       <VFloatingShape src="/images/landing/line_right_1.svg" :width="140" :height="150" :left="-20" :top="50" />
       <VFloatingShape src="/images/landing/undraw_completed_tasks.svg" :size="100" :left="50" :top="200" />
