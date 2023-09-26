@@ -52,7 +52,7 @@
           Documents d'urbanisme
         </p>
         <p class="text-h6">
-          Documents d’urbanisme sous la compétence de l'EPCI recherchée:
+          Documents d’urbanisme sous la compétence de {{ collectivite.intitule }} :
         </p>
       </v-col>
     </v-row>

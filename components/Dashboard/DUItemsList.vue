@@ -44,23 +44,40 @@
               :censored="isPublic"
             />
           </template>
-          <div v-else class="d-flex align-center justify-center pa-8 text--disabled">
-            Pas de documents
+          <div v-else class="d-flex align-center justify-center pa-8 text--disabled flex-column g200  rounded">
+            <p class="text-h1 mb-7">
+              :'(
+            </p>
+            <p class="font-weight-bold">
+              Pas de documents d'urbanisme Intercommunaux
+            </p>
+            <span class="font-italic">Astuce: Si vous ne voyez pas le document d'urbanisme recherché, vérifiez sur la commune ou l'EPCI qui à la compétence.</span>
           </div>
         </v-tab-item>
         <v-tab-item>
-          <DashboardEmptyProjectCard
-            v-for="emptyProject in emptyProjectsCommunaux"
-            :key="emptyProject.id"
-            :project="emptyProject"
-            class="mb-4"
-          />
-          <DashboardDUItem
-            v-for="(procedure,i) in DUCommunaux"
-            :key="'du_' + i"
-            :procedure="procedure"
-            :censored="isPublic"
-          />
+          <template v-if="emptyProjectsInter.length > 0 || DUInter.length > 0">
+            <DashboardEmptyProjectCard
+              v-for="emptyProject in emptyProjectsCommunaux"
+              :key="emptyProject.id"
+              :project="emptyProject"
+              class="mb-4"
+            />
+            <DashboardDUItem
+              v-for="(procedure,i) in DUCommunaux"
+              :key="'du_' + i"
+              :procedure="procedure"
+              :censored="isPublic"
+            />
+          </template>
+          <div v-else class="d-flex align-center justify-center pa-8 text--disabled flex-column g200  rounded">
+            <p class="text-h1 mb-7">
+              :'(
+            </p>
+            <p class="font-weight-bold">
+              Pas de documents en compétence communal
+            </p>
+            <span class="font-italic">Astuce: Si vous ne voyez pas le document d'urbanisme recherché, vérifiez sur la commune ou l'EPCI qui à la compétence.</span>
+          </div>
         </v-tab-item>
         <v-tab-item>
           <DashboardEmptyProjectCard
