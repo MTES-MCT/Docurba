@@ -2,7 +2,7 @@
   <v-form
     ref="form"
     v-model="valid"
-    lazy-validation
+
     @submit.prevent="nextPage"
   >
     <v-container id="prescription" class="mb-16">
@@ -129,7 +129,7 @@ export default {
         this.$emit('snackMessage', 'Vous pouvez dès a présent soumettre votre acte. Nous vous préviendrons par email quand ce dernier sera avalisée.')
         this.$router.push({
           name: 'collectivites-collectiviteId-prescriptions-add',
-          params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE },
+          params: { collectiviteId: this.collectivite.code },
           query: { email: this.email, ...this.$route.query }
         })
       } catch (error) {
