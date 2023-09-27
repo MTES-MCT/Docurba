@@ -6,7 +6,7 @@ module.exports = {
       url: process.env.SLACK_WEBHOOK,
       method: 'post',
       data: {
-        text: `Vérification de l'email ${userData.email} pour le depot d'acte de ${userData.isEpci ? 'l\'EPCI' : 'la commune'}:  ${userData.collectivite.name} (${userData.region.name})`
+        text: `Vérification de l'email ${userData.email} pour le depot d'acte de ${userData.isEpci ? 'l\'EPCI' : 'la commune'}:  ${userData.collectivite.intitule} (${userData.collectivite.region.intitule})`
       }
     })
   },

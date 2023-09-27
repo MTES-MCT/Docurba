@@ -32,6 +32,7 @@ app.post('/depot_acte', async (req, res) => {
     const dealIdToUpdate = personDeals.filter(e => e.stage_id === pipedrive.COLLECTIVITE_DEAL.INSCRIT)[0]?.id
     const { data } = await pipedrive.updateDeal(dealIdToUpdate, { stage_id: pipedrive.COLLECTIVITE_DEAL.DEPOT_ACTE })
   }
+  res.send({ success: true })
 })
 
 app.post('/contacted', async (req, res) => {

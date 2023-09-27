@@ -400,7 +400,7 @@ export default {
           procedure_type: this.typeProcedure,
           ms_scope: this.MSScope,
           procedure_number: this.numberProcedure,
-          profile_id: this.$user.id || null
+          user_id: this.$user.id || null
         }
         if (this.docType === 'link') {
           prescription.link_url = this.link
@@ -412,7 +412,7 @@ export default {
 
         const userData = {
           email: this.$user?.email || this.$route.query.email,
-          region: this.collectivite.region.name,
+          // region: this.collectivite.region.name,
           collectivite: this.collectivite,
           isEpci: this.isEpci,
           attachements: prescription.attachments || [{ name: 'lien', url: prescription.link_url }]
@@ -423,12 +423,12 @@ export default {
           data: { userData }
         })
 
-        await axios({
+        axios({
           url: '/api/pipedrive/depot_acte',
           method: 'post',
           data: { userData }
         })
-
+        console.log('REDIRECT')
         this.$router.push({
           name: 'collectivites-collectiviteId-prescriptions',
           params: { collectiviteId: this.collectivite.code },
