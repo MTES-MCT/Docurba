@@ -161,6 +161,10 @@ module.exports = {
 
     const rawRecords = await this.getAllRecords(cswUrl,
       and(
+        or(
+          propertyEquals('Type', 'dataset'),
+          propertyEquals('Type', 'series')
+        ),
         propertyEquals('Subject', category),
         contours.length === 1
           ? intersects(polygon(contours[0]))
@@ -178,6 +182,7 @@ module.exports = {
 
   async getCategories (codeInsee, isEpci) {
     const { region } = isEpci ? getIntercommunalite(codeInsee) : getCommune(codeInsee)
+
     const categoriesUrl = REGIONS_URLS[region.iso].categories
 
     const { data } = await axios.get(categoriesUrl)
