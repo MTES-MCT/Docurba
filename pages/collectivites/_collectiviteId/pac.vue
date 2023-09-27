@@ -46,18 +46,11 @@ export default {
     return {
       project: {},
       sections: [],
-      gitRef: `region-${this.collectivite.region.code}`,
+      gitRef: `region-${this.$options.filters.deptToRef(this.collectivite.region.code)}`,
       loading: true
     }
   },
   async mounted () {
-    if (this.gitRef.includes('projet-')) {
-      const projectId = this.gitRef.replace('projet-', '')
-
-      const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-      this.project = projects ? projects[0] : {}
-    }
-
     const { data: sections } = await axios({
       method: 'get',
       url: `/api/trames/tree/${this.gitRef}`
