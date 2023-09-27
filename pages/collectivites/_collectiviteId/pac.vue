@@ -46,53 +46,27 @@ export default {
     return {
       project: {},
       sections: [],
-      gitRef: `region-${this.collectivite.region.code}`,
+      gitRef: `region-${this.$options.filters.deptToRef(this.collectivite.region.code)}`,
       loading: true
     }
   },
   async mounted () {
-    if (this.gitRef.includes('projet-')) {
-      const projectId = this.gitRef.replace('projet-', '')
-
-      const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-      this.project = projects ? projects[0] : {}
-    }
-
     const { data: sections } = await axios({
       method: 'get',
       url: `/api/trames/tree/${this.gitRef}`
     })
 
     const { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
-        `projet-${this.project.id}`,
-        `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.towns[0].departementCode) : ''}`,
-        `region-${this.project.towns ? this.project.towns[0].regionCode : ''}`,
-        'main',
-        this.gitRef
+      this.gitRef,
+      'main'
     ])
 
     this.orderSections(sections, supSections)
-
-    if (this.project && this.project.id) {
-      this.sections = this.filterSectionsForProject(sections)
-    } else {
-      this.sections = this.filterPublicsections(sections)
-    }
+    this.sections = this.filterPublicsections(sections)
 
     this.loading = false
   },
   methods: {
-    filterSectionsForProject (sections) {
-      const paths = this.project.PAC
-
-      const filteredSections = sections.filter(section => paths.includes(section.path))
-
-      return filteredSections.map((section) => {
-        return Object.assign({}, section, {
-          children: section.children ? this.filterSectionsForProject(section.children) : []
-        })
-      })
-    },
     filterPublicsections (sections) {
       const docType = this.$route.query.document || 'CC'
 
