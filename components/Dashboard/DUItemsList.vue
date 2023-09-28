@@ -55,7 +55,7 @@
           </div>
         </v-tab-item>
         <v-tab-item>
-          <template v-if="emptyProjectsInter.length > 0 || DUInter.length > 0">
+          <template v-if="emptyProjectsCommunaux.length > 0 || DUCommunaux.length > 0">
             <DashboardEmptyProjectCard
               v-for="emptyProject in emptyProjectsCommunaux"
               :key="emptyProject.id"
