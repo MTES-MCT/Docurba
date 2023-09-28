@@ -86,29 +86,11 @@ export default {
       url: `/api/trames/tree/${this.gitRef}`
     })
 
-    // const cadreJuridique = sections.find(s => s.path.includes('Cadre-juridique-et-grands'))
-
-    // const juridiquePaths = [cadreJuridique.path]
-
-    // function addToJuridique (s) {
-    //   juridiquePaths.push(s.path)
-
-    //   if (s.children) {
-    //     s.children.forEach((c) => {
-    //       addToJuridique(c)
-    //     })
-    //   }
-    // }
-
-    // cadreJuridique.children.forEach((c) => {
-    //   addToJuridique(c)
-    // })
-
-    // console.log(JSON.stringify(juridiquePaths, null, 2))
+    console.log('trame project', this.project, this.project.towns[0])
 
     let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,
-        `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.towns[0].departementCode) : ''}`,
+        `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.trame) : ''}`,
         `region-${this.project.towns ? this.project.towns[0].regionCode : ''}`,
         this.gitRef,
         'main'
@@ -124,15 +106,9 @@ export default {
           groupedSupSections[path].find(s => s.ref.includes('main'))
     })
 
-    // console.log(supSections.find(s => s.path.includes('Les risques')))
-
-    // console.log(supSections.filter(s => s.ref.includes('projet')))
-
     this.orderSections(sections, supSections)
 
     function parseSection (section, supSections) {
-      // console.log(section, section.ref)
-
       if (section.children) {
         section.children = section.children.map(section => parseSection(section, supSections))
       } else { section.children = [] }
@@ -178,7 +154,7 @@ export default {
       let headRef = 'main'
 
       if (this.project && this.project.id) {
-        headRef = `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.towns[0].departementCode) : ''}`
+        headRef = `dept-${this.$options.filters.deptToRef(this.project.trame)}`
       }
 
       if (this.gitRef.includes('dept-')) {
