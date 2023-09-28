@@ -59,7 +59,7 @@ export default {
     // Start Analytics
     this.$matomo([
       'trackEvent', 'Projet PAC', 'Content',
-          `${this.project.doc_type} - ${this.project.epci ? this.project.epci.label : this.project.towns[0].nom_commune}`
+          `${this.project.doc_type} - ${this.project.epci ? this.project.epci.intitule : this.project.towns[0].intitule}`
     ])
     // End Analytics
 

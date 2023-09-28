@@ -53,6 +53,10 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
     // },
     async getCurrentCollectivite (collectiviteId) {
       try {
+        // const { data: collectivite } = await axios({
+        //   url: `/api/geo/${this.isEpci(collectiviteId) ? 'intercommunalites' : 'communes'}/${collectiviteId}`,
+        //   method: 'get'
+        // })
         const { data: collectivite } = await axios({
           url: `/api/${this.isEpci(collectiviteId) ? 'epci' : 'communes'}/${collectiviteId}`,
           method: 'get'
@@ -64,10 +68,33 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
         collectivite.type = isEpci ? 'epci' : 'commune'
         const regionCode = isEpci ? collectivite.towns[0].code_region : collectivite.code_region
         collectivite.region = this.getRegionDetails(regionCode)
+        console.log('ENRICHED FETCH COLLEC:', collectivite)
         return collectivite
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log('Error getCurrentCollectivite: ', error)
+      }
+    },
+    // async getCollectiviteProcedure (collectiviteId) {
+    //   // si c'est une procedure Sudocu
+    //   // if(){
+    //   //   const eventsSudocu = await this.$sudocu.getProcedureEvents(this.$route.params.procedureId)
+    //   // } else{
+
+    //   // }
+    //   const [sudocuProcedures, { procedures }] = await Promise.all([
+    //     $sudocu.getProcedures(this.collectivite.id),
+    //     this.getProjectsProcedures(collectiviteId)
+    //   ])
+
+    //   return [...sudocuProcedures, ...procedures]
+    // },
+
+    async getCollectivite (code) {
+      if (code.length > 5) {
+        return (await axios({ url: `/api/geo/intercommunalites/${code}`, method: 'get' })).data
+      } else {
+        return (await axios({ url: `/api/geo/communes/${code}`, method: 'get' })).data
       }
     },
     async getProjectsProcedures (collectiviteId) {
@@ -80,10 +107,12 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
 
       const { data: projects } = await $supabase.from('projects').select('id, name, doc_type, towns, collectivite_id').match({
         owner: $user.id, // TODO: fetch shared projects.
-        collectivite_id: collectiviteId
+        collectivite_id: collectiviteId,
+        archived: false
       })
       ret.projects = projects ?? []
-      console.log('projects: ', projects)
+      // console.log('projects: ', projects)
+      // TODO: Should be a join, no need to double select
       if (projects) {
         const projectsIds = projects.map(p => p.id)
         const { data: procedures } = await $supabase.from('procedures').select('*').in('project_id', projectsIds)

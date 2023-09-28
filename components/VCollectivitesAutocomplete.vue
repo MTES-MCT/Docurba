@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col v-show="!hideDept" cols="12" :sm="colsDep">
+    <v-col v-show="!hideDept" cols="12" :md="colsDep">
       <v-autocomplete
         v-model="selectedDepartement"
         v-bind="inputProps"
@@ -8,41 +8,53 @@
         placeholder="Departement"
         hide-details
         filled
+        autocomplete="off"
         return-object
-        dense
+        :dense="!large"
+        @blur="$emit('blur')"
         @change="fetchCollectivites"
       />
     </v-col>
-    <v-col cols="12" :sm="colsTown">
-      <v-autocomplete
-        :value="selectedCollectivite"
-        v-bind="inputProps"
-        :no-data-text="loading ? 'Chargement ...' : 'Selectionnez un département'"
-        :items="collectivites"
-        item-text="name"
-        return-object
-        hide-details
-        filled
-        placeholder="Commune ou EPCI"
-        :loading="loading"
-        dense
-        @change="$emit('input', arguments[0])"
-      />
+    <v-col cols="12" :md="colsTown">
+      <validation-provider v-slot="{ errors }" name="Collectivité" rules="requiredCollectivite">
+        <v-autocomplete
+          v-model="selectedCollectivite"
+          v-bind="inputProps"
+          hide-details
+          :no-data-text="loading ? 'Chargement ...' : 'Selectionnez un département'"
+          :items="collectivites"
+          item-text="name"
+          autocomplete="off"
+          :error-messages="errors"
+          return-object
+          filled
+          placeholder="Commune ou EPCI"
+          :loading="loading"
+          :dense="!large"
+        />
+      </validation-provider>
     </v-col>
   </v-row>
 </template>
 
 <script>
 import axios from 'axios'
+import { ValidationProvider } from 'vee-validate'
 import departements from '@/assets/data/departements-france.json'
 
 export default {
+  name: 'VCollectiviteAutocomplete',
+  components: {
+    ValidationProvider
+  },
   props: {
+    large: {
+      type: Boolean,
+      default: false
+    },
     value: {
       type: Object,
-      default () {
-        return {}
-      }
+      default: () => null
     },
     inputProps: {
       type: Object,
@@ -74,7 +86,7 @@ export default {
 
     if (this.defaultDepartementCode) {
       defaultDepartement = enrichedDepartements.find((d) => {
-        // eslint-disable-next-line eqeqeq
+        // eslint-disable-next-line
         return d.code_departement == this.defaultDepartementCode
       })
     }
@@ -87,13 +99,21 @@ export default {
       loading: false
     }
   },
-  mounted () {
-    this.fetchCollectivites()
+  watch: {
+    selectedCollectivite () {
+      this.$emit('input', this.selectedCollectivite)
+    }
+  },
+  async mounted () {
+    await this.fetchCollectivites()
+    if (this.value) {
+      this.selectedCollectivite = this.collectivites.find((e) => {
+        return e?.EPCI?.toString() === this.value.collectivite_id || e?.code_commune_INSEE?.toString() === this.value.collectivite_id
+      })
+    }
   },
   methods: {
     async fetchCollectivites () {
-      console.log(this.selectedDepartement, this.selectedDepartement.code_departement)
-
       if (this.selectedDepartement) {
         this.loading = true
         let towns = (await axios({

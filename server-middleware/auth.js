@@ -41,39 +41,81 @@ app.post('/password', async (req, res) => {
   }
 })
 
-app.post('/signup', async (req, res) => {
-  // No email verifycation at the moment
-  // Need to test the type of link generated -> https://supabase.com/docs/reference/javascript/auth-api-generatelink
-  // const { data: user, error } = await supabase.auth.api.generateLink(
-  //   'email_change_current',
-  //   req.body.email,
-  //   {
-  //     redirectTo: req.body.redirectTo
-  //   }
-  // )
-
-  // // console.log('auth signup', user, error)
-
-  // if (!error && user && user.action_link) {
-  //   sendgrid.sendEmail({
-  //     to: req.body.email,
-  //     template_id: 'd-766d017b51124a108cabc985d0dbf451',
-  //     dynamic_template_data: {
-  //       redirectURL: user.action_link
-  //     }
-  //   })
-  // } else {
-  //   // eslint-disable-next-line no-console
-  //   console.log('error sending verifycation email', error, user)
-  // }
-
-  const { userData } = req.body
-
-  if (userData.isDDT) {
-    await slack.requestDepartementAccess(userData)
+async function magicLinkSignIn ({ email, shouldExist, redirectBasePath }) {
+  const { data: { user, properties }, error } = await supabase.auth.admin.generateLink(
+    {
+      type: 'magiclink',
+      email,
+      options: {
+        redirectTo: redirectBasePath
+      }
+    }
+  )
+  if (error) {
+    console.log('ERROR magicLinkSignIn: ', error)
+    throw error
   }
+  if (shouldExist && !user.email_confirmed_at) {
+    throw new Error('Vous devez créer un compte avant de pouvoir vous connecter.')
+  }
+  if (properties && properties.action_link) {
+    sendgrid.sendEmail({
+      to: email,
+      template_id: 'd-766d017b51124a108cabc985d0dbf451',
+      dynamic_template_data: {
+        redirectURL: properties.action_link
+      }
+    })
+  }
+  return user
+}
 
-  await pipedrive.signup(userData)
+async function getRedirectPath (emailProfile) {
+  const { data: rawProfile, error: errorProfile } = await supabase.from('profiles').select().eq('email', emailProfile)
+  if (errorProfile) { throw errorProfile }
+  if (rawProfile.length < 1) { throw new Error("Nous n'avons pas trouvé d'utilisateur enregistrer avec cet adresse email. Veuillez créer un compte.") }
+  const profile = rawProfile[0]
+  return `/collectivites/${profile.collectivite_id}?isEpci=${profile.collectivite_id.length > 5}`
+}
+
+app.post('/signinCollectivite', async (req, res) => {
+  try {
+    const path = await getRedirectPath(req.body.email)
+    const user = await magicLinkSignIn({ email: req.body.email, shouldExist: true, redirectBasePath: req.body.redirectTo + path })
+    res.status(200).send(user)
+  } catch (error) {
+    console.log('ERROR /auth/signinCollectivite : ', error.message)
+    res.status(500).send({ message: error.message })
+  }
+})
+
+app.post('/signupCollectivite', async (req, res) => {
+  try {
+    const user = await magicLinkSignIn({ email: req.body.userData.email, redirectBasePath: req.body.redirectTo })
+
+    await pipedrive.signupCollectivite({ ...req.body.userData, detailsCollectivite: req.body.detailsCollectivite })
+    // SI pas de recovery_sent_at et pas de email_confirmed_at -> first co
+    if (!user.email_confirmed_at && !user.recovery_sent_at) {
+      const { data: insertedProfile, error: errorInsertProfile } = await supabase.from('profiles').insert({ ...req.body.userData, side: 'collectivite', user_id: user.id }).select()
+      if (errorInsertProfile) { throw errorInsertProfile }
+      slack.requestCollectiviteAccess(insertedProfile[0])
+    } else {
+      throw new Error('Vous avez déjà un compte associé à cette adresse email. Nous vous avons renvoyé un email de connexion.')
+    }
+    res.status(200).send(user)
+  } catch (error) {
+    console.log('ERROR /auth/signupCollectivite : ', error.message)
+    res.status(500).send({ message: error.message })
+  }
+})
+
+app.post('/hooksSignupStateAgent', async (req, res) => {
+  await slack.requestStateAgentAccess(req.body)
+  // Push in the good pipedrive
+  // TODO: Attention au changement de nom dept / departement dans Signin() (pipedrive.js) & dans la fonction updateUserRole() (admin.js)
+  // Verifier le validation Slack par la suite
+  console.log('hooksSignupStateAgent: ', req.body)
+  await pipedrive.signupStateAgent(req.body)
 
   res.status(200).send('OK')
 })

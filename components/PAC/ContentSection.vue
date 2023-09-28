@@ -12,7 +12,7 @@
               v-if="projectId && project"
               :section="section"
               :attachement-folders="[
-                project.towns[0].code_departement,
+                project.towns[0].departementCode,
                 projectId
               ]"
             />

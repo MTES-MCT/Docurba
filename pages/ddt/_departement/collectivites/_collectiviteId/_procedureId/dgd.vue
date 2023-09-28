@@ -1,9 +1,9 @@
 <template>
-  <v-container v-if="collectivite && procedure">
+  <v-container v-if="collectivite">
     <v-row>
       <v-col cols="12">
         <h1 class="text-h1">
-          {{ collectivite.name }} <span v-if="collectivite.code_commune_INSEE">({{ collectivite.code_commune_INSEE }})</span>
+          {{ collectivite.intitule }} ({{ collectivite.code }})
         </h1>
       </v-col>
       <v-col cols="12">
@@ -28,7 +28,7 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <div v-for="(dgdItem) in rawDetails" :key="'dgd_' + dgdItem.dgd_noseriedgd" class="d-flex  border-light rounded mb-4 pa-4 white-bg">
+        <div v-for="(dgdItem) in dgdItems" :key="'dgd_' + dgdItem.dgd_noseriedgd" class="d-flex  border-light rounded mb-4 pa-4 white-bg">
           <div class="mr-8">
             <div class="text-caption g600--text">
               Année
@@ -68,8 +68,8 @@
           <p class="font-weight-black">
             Commentaire / Note
           </p>
-          <p v-if="procedure.commentaireDgd">
-            {{ procedure.commentaireDgd }}
+          <p v-if="commentaire">
+            {{ commentaire }}
           </p>
           <p v-else class="text--secondary font-italic">
             Pas de commentaire
@@ -90,6 +90,8 @@ export default {
     return {
       procedure: null,
       collectivite: null,
+      commentaire: null,
+      dgdItems: null,
       icons: {
         mdiArrowLeft
       },
@@ -97,10 +99,11 @@ export default {
     }
   },
   async mounted () {
-    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
-    this.rawDetails = (await this.$sudocu.getProcedureInfosDgd(this.$route.params.procedureId)).sort((a, b) => b.dgd_anneedgd - a.dgd_anneedgd)
-    this.procedure = await this.$sudocu.getProcedures(this.$route.params.collectiviteId)
-    console.log('details: ', this.rawDetails)
+    const { commentaire, dgdItems, collectivite } = (await this.$sudocu.getProcedureInfosDgd(this.$route.params.procedureId))
+    console.log('DGD: ', commentaire, dgdItems, collectivite)
+    this.commentaire = commentaire
+    this.collectivite = collectivite
+    this.dgdItems = dgdItems.sort((a, b) => b.dgd_anneedgd - a.dgd_anneedgd)
   }
 }
 </script>

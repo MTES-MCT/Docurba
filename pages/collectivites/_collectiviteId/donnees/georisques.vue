@@ -84,15 +84,15 @@ export default {
       headers: [
         {
           text: 'Commune',
-          value: 'nom_commune'
+          value: 'intitule'
         },
-        {
-          text: 'Code Postal',
-          value: 'code_postal'
-        },
+        // {
+        //   text: 'Code Postal',
+        //   value: 'code_postal'
+        // },
         {
           text: 'Code INSEE',
-          value: 'code_commune_INSEE'
+          value: 'code'
         },
         { text: 'Actions', value: 'actions', sortable: false, align: 'center' }
       ],
@@ -128,15 +128,17 @@ export default {
 
     let communesData
     if (this.isEpci) {
-      communesData = this.collectivite.towns
+      communesData = this.collectivite.communes
     } else {
       communesData = [this.collectivite]
     }
+    console.log('communesData: ', communesData)
     communesData = communesData.map((e) => {
       const enriched = {
         ...e,
         loading: false,
-        urlGeoRisque: `https://www.georisques.gouv.fr/mes-risques/connaitre-les-risques-pres-de-chez-moi/rapport2?form-commune=true&codeInsee=${e.code_commune_INSEE}&city=${e.nom_commune}&typeForm=commune&postCode=${e.code_postal}`
+        // &typeForm=commune&postCode=${e.code_postal}
+        urlGeoRisque: `https://www.georisques.gouv.fr/mes-risques/connaitre-les-risques-pres-de-chez-moi/rapport2?form-commune=true&codeInsee=${e.code}&city=${e.intitule}`
       }
       return enriched
     })

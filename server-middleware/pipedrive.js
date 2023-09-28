@@ -8,6 +8,33 @@ const { createClient } = require('@supabase/supabase-js')
 const pipedrive = require('./modules/pipedrive.js')
 const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
+app.post('/collectivite_inscrite', async (req, res) => {
+  console.log('-- COLLECTIVITE INSCRITE PIPEDRIVE --')
+  const userData = req.body.userData
+  await pipedrive.movePersonDealTo(userData.email, pipedrive.COLLECTIVITE_DEAL.TRY_INSCRIPTION, pipedrive.COLLECTIVITE_DEAL.INSCRIT)
+  res.status(200).send('OK')
+})
+
+app.post('/depot_acte', async (req, res) => {
+  console.log('-- DEPOT D\'ACTE COLLECTIVITE PIPEDRIVE --')
+
+  const userData = req.body.userData
+
+  const { person } = await pipedrive.findPerson(userData.email)
+
+  if (!person) {
+    const deal = {
+      title: `Nouvel utilisateur inconnu: ${userData.email} - ${userData.collectivite.label} (${userData.collectivite.region.iso})`
+    }
+    const { data } = await pipedrive.addDeal({ ...deal, stageId: pipedrive.COLLECTIVITE_DEAL.DEPOT_ACTE })
+  } else {
+    const personDeals = await pipedrive.getPersonDeals(person.id)
+    const dealIdToUpdate = personDeals.filter(e => e.stage_id === pipedrive.COLLECTIVITE_DEAL.INSCRIT)[0]?.id
+    const { data } = await pipedrive.updateDeal(dealIdToUpdate, { stage_id: pipedrive.COLLECTIVITE_DEAL.DEPOT_ACTE })
+  }
+  res.send({ success: true })
+})
+
 app.post('/contacted', async (req, res) => {
   const email = req.body.email
   const isGouv = email.indexOf('gouv.fr') > email.indexOf('@')

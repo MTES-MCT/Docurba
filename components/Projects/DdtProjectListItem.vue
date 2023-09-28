@@ -103,7 +103,7 @@ export default {
   },
   computed: {
     placeName () {
-      return this.project.epci ? this.project.epci.label : this.project.towns[0].nom_commune
+      return this.project.epci ? this.project.epci.intitule : this.project.towns[0].intitule
     }
   }
 }

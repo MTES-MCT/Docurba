@@ -7,8 +7,8 @@ const sendgrid = require('./sendgrid.js')
 module.exports = {
   async updateUserRole (userData, role) {
     const { data, error } = await supabase.from('github_ref_roles').update({ role }).match({
-      user_id: userData.id,
-      ref: `dept-${userData.dept.code_departement}`
+      user_id: userData.user_id,
+      ref: `dept-${userData.departement}`
     }).select()
 
     // eslint-disable-next-line no-console
@@ -24,12 +24,12 @@ module.exports = {
         template_id: 'd-06e865fdc30d42a398fdc6bc532deb82',
         dynamic_template_data: {
           firstname: userData.firstname || '',
-          dept: userData.dept.code_departement
+          dept: userData.departement
         }
       })
 
       // Update deal status in Pipedrive.
-      const { deals } = pipedrive.findOrganization(userData.dept.code_departement)
+      const { deals } = pipedrive.findOrganization(userData.departement)
 
       if (deals && deals.length) {
         const deal = deals.find((d) => {

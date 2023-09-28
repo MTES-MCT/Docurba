@@ -36,7 +36,7 @@ export default {
     { src: '~/plugins/print.js', mode: 'client' },
     { src: '~/plugins/rules.js' },
     { src: '~/plugins/notifications.js', mode: 'client' },
-    { src: '~/plugins/githubRefs.js', mode: 'client' },
+    { src: '~/plugins/githubRefs.js' },
     { src: '~/plugins/urbanisator.js' },
     { src: '~/plugins/sudocu.js', mode: 'client' }
   ],
@@ -60,27 +60,27 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     // https://go.nuxtjs.dev/content
-    '@nuxt/content',
-    '@nuxtjs/sentry'
+    '@nuxt/content'
+    // '@nuxtjs/sentry'
   ],
-  sentry: {
-    dsn: 'https://f6730834cb3a4f14988bdf86b2e0b8bd@o4505403744649216.ingest.sentry.io/4505403746877440',
-    tracing: {
-      tracesSampleRate: 1.0
-    },
-    clientIntegrations: {
-      CaptureConsole: {},
-      Replay: {}
-    },
-    clientConfig: {
-      // This sets the sample rate to be 10%. You may want this to be 100% while
-      // in development and sample at a lower rate in production
-      replaysSessionSampleRate: 0.1,
-      // If the entire session is not sampled, use the below sample rate to sample
-      // sessions when an error occurs.
-      replaysOnErrorSampleRate: 1.0
-    }
-  },
+  // sentry: {
+  //   dsn: 'https://f6730834cb3a4f14988bdf86b2e0b8bd@o4505403744649216.ingest.sentry.io/4505403746877440',
+  //   tracing: {
+  //     tracesSampleRate: 1.0
+  //   },
+  //   clientIntegrations: {
+  //     CaptureConsole: {},
+  //     Replay: {}
+  //   },
+  //   clientConfig: {
+  //     // This sets the sample rate to be 10%. You may want this to be 100% while
+  //     // in development and sample at a lower rate in production
+  //     replaysSessionSampleRate: 0.1,
+  //     // If the entire session is not sampled, use the below sample rate to sample
+  //     // sessions when an error occurs.
+  //     replaysOnErrorSampleRate: 1.0
+  //   }
+  // },
   render: {
     csp: {
       // hashAlgorithm: 'sha256',
@@ -109,7 +109,10 @@ export default {
     { path: '/api/projects', handler: '~/server-middleware/projects.js' },
     { path: '/api/slack', handler: '~/server-middleware/slack.js' },
     { path: '/api/stats', handler: '~/server-middleware/stats.js' },
-    { path: '/api/trames', handler: '~/server-middleware/trames.js' }
+    { path: '/api/trames', handler: '~/server-middleware/trames.js' },
+    // Public documented APIs
+    { path: '/api/geo', handler: '~/server-middleware/geo.js' },
+    { path: '/api/urba', handler: '~/server-middleware/urba.js' }
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios

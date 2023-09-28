@@ -100,7 +100,7 @@ export default {
 
     // if working on a project you need to fetch files from dept and project.
     if (this.section.project_id) {
-      attachementFolders.push(this.section.project_id, this.project.towns[0].code_departement)
+      attachementFolders.push(this.section.project_id, this.project.towns[0].departementCode)
     } else {
       attachementFolders.push(this.section.dept)
     }

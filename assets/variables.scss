@@ -164,6 +164,9 @@
   }
   .no-text-transform {
   text-transform: none !important;
+    .v-btn__content{
+      text-transform: none !important;
+    }
 }
   .pointer {
     cursor: pointer;

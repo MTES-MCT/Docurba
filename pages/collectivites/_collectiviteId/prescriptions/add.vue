@@ -20,7 +20,7 @@
           <v-col cols="12" class="mb-6">
             <validation-provider v-slot="{ errors }" name="Vérification" rules="required|needToBeOui">
               <VBigRadio v-model="confirmCollectivite" :error-messages="errors" :items="[{label: 'Oui', value:'oui'}, {label: 'Non', value:'non'}]">
-                Est-ce que l’acte en question concerne bien  <b>{{ collectivite.name }} ({{ collectivite.region.name }})</b> ?
+                Est-ce que l’acte en question concerne bien  <b>{{ collectivite.intitule }} ({{ collectivite.region.intitule }})</b> ?
               </VBigRadio>
             </validation-provider>
           </v-col>
@@ -78,8 +78,8 @@
                   v-model="perimetre"
                   hide-details
                   class="mt-0"
-                  :label="`${commune.nom_commune} (${commune.code_commune_INSEE})`"
-                  :value="commune.code_commune_INSEE"
+                  :label="`${commune.intitule} (${commune.code})`"
+                  :value="commune.code"
                 />
               </v-col>
               <v-col cols="12" class="my-2">
@@ -305,9 +305,15 @@ export default {
   computed: {
     choiceDone () {
       return (this.docType === 'attachments' && this.files && this.files.length > 0) || (this.docType === 'link' && this.link && this.$refs?.urlTextfield?.valid)
+    },
+    validationErrors () {
+      return this.$refs?.observerActePrescription?.errors
     }
   },
   watch: {
+    validationErrors (newVal) {
+      console.log('TRIGGER')
+    },
     DUType (newVal) {
       if (newVal === 'PLUi') {
         this.selectAllPerimetre()
@@ -317,11 +323,21 @@ export default {
     }
   },
   mounted () {
+    this.$watch(() => this.$refs.observerActePrescription.flags.failed, (val) => {
+      if (val) {
+        this.$nextTick(() => {
+          const el = this.$el.querySelector('.error--text:first-of-type')
+          this.$vuetify.goTo(el)
+        })
+      }
+    })
+
+    console.log('this.$refs: ', this.$refs)
     this.selectAllPerimetre()
   },
   methods: {
     selectAllPerimetre () {
-      this.perimetre = this.communes.map(e => e.code_commune_INSEE)
+      this.perimetre = this.communes.map(c => c.code)
     },
     removeFile (file) {
       this.files = [...this.files].filter(e => e !== file)
@@ -340,15 +356,20 @@ export default {
           const idFile = uuidv4()
           const path = `${this.isEpci ? 'epci' : 'commune'}/${this.$route.params.collectiviteId}/${uploadTimestamp}/${idFile}`
           console.log('path: ', path)
-          const { error } = await this.$supabase.storage
+          const { data: dataUpload, error } = await this.$supabase.storage
             .from('prescriptions')
             .upload(path, file)
           if (error) {
             console.log('error on upload: ', error)
             throw new Error('Erreur d\'upload')
           }
-          filesData.push({ path, name: file.name, id: uuidv4() })
+
+          const { data: dataUrl, error: errorUrl } = this.$supabase.storage.from('prescriptions').getPublicUrl(dataUpload.path)
+          if (errorUrl) { throw new Error('Erreur de récuparation de l\'url') }
+          filesData.push({ path, name: file.name, id: uuidv4(), url: dataUrl.publicUrl })
+          console.log('TEST DATA: ', filesData)
         }
+
         return filesData
       } else {
         throw new Error('Pas de fichier à téléverser')
@@ -357,10 +378,14 @@ export default {
 
     async submitPrescription () {
       try {
+        await this.$user.isReady
+        console.log('submitPrescription')
         this.loadingSave = true
+
+        // TODO: Add column verified or accepted sur les prescription with fill automatically if the user posting is a verified connected one.
         const prescription = {
           epci: this.isEpci ? this.collectivite : null,
-          towns: this.isEpci ? this.collectivite.towns.map(e => e.code_commune_INSEE) : [this.collectivite.id],
+          towns: this.isEpci ? this.collectivite.communes.map(e => e.code) : [this.collectivite.code],
           attachments: null,
           type: this.docType,
           acte_type: this.acteType,
@@ -374,8 +399,8 @@ export default {
           is_scot: this.isSCoT,
           procedure_type: this.typeProcedure,
           ms_scope: this.MSScope,
-          procedure_number: this.numberProcedure
-
+          procedure_number: this.numberProcedure,
+          user_id: this.$user.id || null
         }
         if (this.docType === 'link') {
           prescription.link_url = this.link
@@ -385,22 +410,33 @@ export default {
         await this.$supabase.from('prescriptions').insert([prescription])
         this.loadingSave = false
 
+        const userData = {
+          email: this.$user?.email || this.$route.query.email,
+          // region: this.collectivite.region.name,
+          collectivite: this.collectivite,
+          isEpci: this.isEpci,
+          attachements: prescription.attachments || [{ name: 'lien', url: prescription.link_url }]
+        }
         await axios({
           url: '/api/slack/notify/admin/acte',
           method: 'post',
-          data: {
-            userData: {
-              email: this.$route.query.email,
-              region: this.collectivite.region.name,
-              collectivite: this.collectivite,
-              isEpci: this.isEpci
-            }
-          }
+          data: { userData }
         })
-        this.$router.push({ name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.isEpci ? this.collectivite.EPCI : this.collectivite.code_commune_INSEE }, query: { ...this.$route.query, success: true } })
+
+        axios({
+          url: '/api/pipedrive/depot_acte',
+          method: 'post',
+          data: { userData }
+        })
+        console.log('REDIRECT')
+        this.$router.push({
+          name: 'collectivites-collectiviteId-prescriptions',
+          params: { collectiviteId: this.collectivite.code },
+          query: { ...this.$route.query, success: true }
+        })
       } catch (error) {
         this.error = error
-        this.$vuetify.goTo(0)
+        this.$vuetify.goTo('error--text:first-of-type')
         this.loadingSave = false
         console.log(error)
       }

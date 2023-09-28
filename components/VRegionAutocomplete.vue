@@ -3,8 +3,8 @@
     :items="regions"
     item-text="name"
     return-object
-    hide-details
     filled
+    :error-messages="errorMessages"
     placeholder="Territoire"
     :label="label"
     @change="input"
@@ -26,6 +26,10 @@ export default {
     returnIso: {
       type: Boolean,
       default: false
+    },
+    errorMessages: {
+      type: Array,
+      default: () => []
     }
   },
   data () {

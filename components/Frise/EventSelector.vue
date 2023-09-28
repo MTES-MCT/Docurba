@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col :cols="isOther ? 4 : 12">
-      <v-select v-model="selectedEvent" :items="eventsNames" hide-details filled label="Type" />
+      <v-autocomplete v-model="selectedEvent" :items="eventsNames" hide-details filled label="Type" />
     </v-col>
     <v-col v-show="isOther">
       <v-text-field v-model="customEvent" hide-details filled />
@@ -27,7 +27,7 @@ export default {
       return event.name === this.eventType
     })
 
-    const names = documentEvents.map(event => event.name).sort()
+    const names = documentEvents.map(event => event.name).sort((a, b) => a.order - b.order)
     names.push('Autre')
 
     return {

@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12">
         <h1 class="text-h1">
-          {{ collectivite.name }}
+          {{ collectivite.intitule }}
         </h1>
       </v-col>
       <v-col cols="12">
@@ -23,19 +23,19 @@
         <v-expansion-panels flat>
           <v-expansion-panel class="border-light">
             <v-expansion-panel-header>
-              <h3>{{ collectivite.towns?.length }} communes dans votre EPCI</h3>
+              <h3>{{ collectivite.communes?.length }} communes dans votre EPCI</h3>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-container>
                 <v-row>
                   <v-col
-                    v-for="town in collectivite.towns"
-                    :key="town.code_commune_INSEE"
+                    v-for="town in collectivite.communes"
+                    :key="town.code"
                     cols="4"
                     class="pt-0 pl-0"
                   >
-                    <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: $route.params.departement, collectiviteId: town.code_commune_INSEE }}">
-                      {{ town.nom_commune }} ({{ town.code_commune_INSEE }})
+                    <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: $route.params.departement, collectiviteId: town.code }}">
+                      {{ town.intitule }} ({{ town.code }})
                     </nuxt-link>
                     <v-divider class="mt-3" />
                   </v-col>
@@ -52,19 +52,31 @@
           Documents d'urbanisme
         </p>
         <p class="text-h6">
-          Documents d’urbanisme disponibles pour la commune recherchée :
+          Documents d’urbanisme sous la compétence de {{ collectivite.intitule }} :
         </p>
       </v-col>
     </v-row>
     <DashboardDUItemsList
       collectivite-type="epci"
       :collectivite="collectivite"
+      :procedures="procedures"
+      :projects="projects"
+      :schemas="schemas"
+      @inserted="fetchProjects"
     />
+  </v-container>
+  <v-container v-else>
+    <v-row>
+      <v-col cols="12">
+        <VGlobalLoader />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 <script>
 
 import { mdiArrowLeft } from '@mdi/js'
+import axios from 'axios'
 
 export default {
   name: 'Collectivite',
@@ -72,23 +84,33 @@ export default {
   data () {
     return {
       linkedEpci: null,
-      // tab: null,
       collectivite: null,
+      projects: [],
+      sudocuProcedures: null,
+      procedures: [],
+      schemas: [],
       icons: {
         mdiArrowLeft
       }
     }
   },
   async mounted () {
-    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId)
+    const { collectivite, schemas, procedures: sudocuProcedures } = (await axios({ url: `/api/urba/collectivites/${this.$route.params.collectiviteId}`, method: 'get' })).data
 
-    // const [sudocuProcedures, { procedures, projects }] = await Promise.all([
-    //   this.$sudocu.getProcedures(this.$route.params.collectiviteId),
-    //   this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
-    // ])
+    this.collectivite = collectivite
+    this.schemas = schemas
+    this.sudocuProcedures = sudocuProcedures
 
-    // this.procedures = [...sudocuProcedures, ...procedures]
-    // this.emptyProjects = projects.filter(project => !project.procedures.length)
+    const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.collectivite.code)
+    this.procedures = [...sudocuProcedures, ...procedures]
+    this.projects = projects
+  },
+  methods: {
+    async fetchProjects () {
+      const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.collectivite.code)
+      this.procedures = [...this.sudocuProcedures, ...procedures]
+      this.projects = projects
+    }
   }
 }
 </script>

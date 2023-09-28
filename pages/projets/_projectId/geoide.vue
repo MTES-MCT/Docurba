@@ -29,7 +29,7 @@ export default {
     // Start Analytics
     this.$matomo([
       'trackEvent', 'Projet PAC', 'GeoIde',
-          `${this.project.doc_type} - ${this.project.epci ? this.project.epci.label : this.project.towns[0].nom_commune}`
+          `${this.project.doc_type} - ${this.project.epci ? this.project.epci.intitule : this.project.towns[0].intitule}`
     ])
     // End Analytics
 
@@ -44,7 +44,7 @@ export default {
   methods: {
     async fetchDatasets () {
       this.loading = true
-      const codes = this.project.towns.map(t => t.code_commune_INSEE)
+      const codes = this.project.towns.map(t => t.code)
 
       const parsedInseeCode = codes.map((code) => {
         return `commune/${code.toString().length < 5 ? '0' + code : code}`

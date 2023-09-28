@@ -2,8 +2,15 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        <span>{{ procedure.project.doc_type }}</span>
-        <span> {{ procedure.perimetre.length === 1 ? procedure.perimetre[0].name + ' (' + procedure.perimetre[0].inseeCode + ')' : '' }}</span>
+        <span v-if=" procedure.doc_type === 'SCOT'">
+          <!-- (porté par {{}}) -->
+          {{ procedure.name }}
+        </span>
+        <div v-else>
+          <span>{{ procedure.doc_type }}</span><span v-if="procedure.perimetre.length > 1">-i<span v-if="procedure.status_infos.isSectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')">S</span></span>
+          <span> {{ procedure.perimetre.length === 1 ? procedure.perimetre[0].name + ' (' + procedure.perimetre[0].inseeCode + ')' : '' }}</span>
+        </div>
+
         <br>
         id - {{ procedure.id }} - parent: {{ procedure.procedure_id }}
       </v-col>
@@ -14,8 +21,8 @@
           Statut
         </div>
         <div>
-          <v-chip :color="status.color" small label class="text-uppercase mr-2">
-            {{ status.text }}
+          <v-chip :color="statusColors[procedure.status]" small label class="text-uppercase mr-2">
+            {{ procedure.status }}
           </v-chip>
         </div>
       </v-col>
@@ -44,18 +51,15 @@
         <p class="font-weight-bold">
           Commentaire / Note
         </p>
-        <p v-if="procedure.commentaireProcedure">
-          {{ procedure.commentaireProcedure }}
-        </p>
-        <p v-if="procedure.commentaireDgd">
-          {{ procedure.commentaireDgd }}
+        <p v-if="procedure.description">
+          {{ procedure.description }}
         </p>
       </v-col>
       <v-col cols="12" class="pb-0">
         <v-divider />
       </v-col>
       <v-col cols="12" class="pb-0">
-        <DashboardDUModalPerimetre v-if="procedure.project.towns" :towns="procedure.project.towns" />
+        <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
         <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <span class="primary--text text-decoration-underline mr-4">
             Feuille de route partagée
@@ -102,7 +106,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="d-flex align-center justify-end pb-0">
-        <DashboardDUModalPerimetre v-if="procedure.project.towns" :towns="procedure.project.towns" />
+        <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
         <v-spacer />
         <v-btn text color="primary" :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <v-icon small color="primary" class="mr-2">
@@ -134,36 +138,6 @@ export default {
     return {
       icons: {
         mdiArrowRight
-      }
-    }
-  },
-  computed: {
-    isPlui () {
-      return this.procedure.project.towns.length > 1
-    },
-    status () {
-      if (this.procedure.abort_date) {
-        return { text: 'abandonné', color: 'error' }
-      }
-      // si ce n'est pas un PLU
-      if (!this.isPlui) {
-        // TODO: managed approved in towns for docurba model ?
-        if (this.procedure.approvedInTowns.includes(this.procedure.perimetre[0].inseeCode)) {
-          return { text: 'opposable', color: 'success lighten-2' }
-        } else if (this.procedure.ongoingInTowns.includes(this.procedure.perimetre[0].inseeCode)) {
-          return { text: 'en cours', color: '' }
-        } else {
-          return { text: 'précédent', color: '' }
-        }
-      } else {
-        // Si on est dans un cas de PLUi
-        if ((this.procedure.enforceable_date || this.procedure.approval_date) && this.procedure.procedure_id) {
-          return { text: 'opposable', color: 'success lighten-2' }
-        } else if (this.procedure.enforceable_date && !this.procedure.procedure_id) {
-          return { text: 'précédent', color: '' }
-        }
-        // implicite si date de lancement
-        return { text: 'en cours', color: '' }
       }
     }
   }

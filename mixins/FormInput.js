@@ -17,7 +17,7 @@ extend('email', {
 
 extend('min', {
   ...min,
-  message: '{_field_} may be greater than {length} characters'
+  message: '{_field_} doit contenir au moins {length} caractères.'
 })
 
 extend('needToBeOui', {
@@ -26,6 +26,13 @@ extend('needToBeOui', {
     return value === 'oui'
   },
   message: 'Vous n\'êtes pas sur la bonne collectivité.'
+})
+
+extend('requiredCollectivite', {
+  validate (value) {
+    return (value.EPCI || value.code_commune_INSEE)
+  },
+  message: 'Vous devez choisir une collectivité'
 })
 
 extend('password', {

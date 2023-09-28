@@ -32,7 +32,7 @@
           Si vous disposez d'un acte, vous pouvez le déposer ici.
         </p>
 
-        <v-btn outlined color="primary" :to="{ name: 'collectivites-collectiviteId-prescriptions-signup', params: { collectiviteId: isEpci ? collectivite.EPCI : collectivite.code_commune_INSEE }, query: $route.query }">
+        <v-btn outlined color="primary" @click="nextStep">
           Déposer
         </v-btn>
       </v-col>
@@ -164,15 +164,26 @@ export default {
     this.loading = true
     let prescriptions = null
     if (this.isEpci) {
-      prescriptions = (await this.$supabase.from('prescriptions').select('*').eq('epci->EPCI', this.collectivite.EPCI).order('created_at', { ascending: false })).data
+      prescriptions = (await this.$supabase.from('prescriptions').select('*').eq('epci->>code', this.collectivite.code).order('created_at', { ascending: false })).data
+      console.log('prescriptions::: ', prescriptions, ' this.collectivite.code: ', this.collectivite.code)
     } else {
-      const inseeSearch = [this.collectivite.code_commune_INSEE.toString().padStart(5, '0')]
+      const inseeSearch = [this.collectivite.code]
       prescriptions = (await this.$supabase.from('prescriptions').select('*').contains('towns', inseeSearch).order('created_at', { ascending: false })).data
     }
     const [current, ...history] = prescriptions
     this.prescription = current
     this.history = history
     this.loading = false
+  },
+  methods: {
+    async nextStep () {
+      let path = { name: 'collectivites-collectiviteId-prescriptions-signup', params: { collectiviteId: this.collectivite.code }, query: this.$route.query }
+      await this.$user.isReady
+      if (this.$user?.profile?.email) {
+        path = { name: 'collectivites-collectiviteId-prescriptions-add', params: { collectiviteId: this.collectivite.code }, query: this.$route.query }
+      }
+      return this.$router.push(path)
+    }
   }
 }
 

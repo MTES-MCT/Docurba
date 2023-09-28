@@ -1,12 +1,5 @@
 <template>
   <v-dialog v-model="isOpen" max-width="800px">
-    <template #activator="{on}">
-      <slot>
-        <v-btn text class="align-self-center" v-on="on">
-          Ajouter un DU
-        </v-btn>
-      </slot>
-    </template>
     <v-card>
       <v-card-title>Création d'un nouveau documents d'urbanisme</v-card-title>
       <v-card-text>
@@ -34,7 +27,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn color="primary" outlined tile @click="isOpen = false">
+        <v-btn color="primary" outlined tile @click="close">
           Annuler
         </v-btn>
         <v-btn color="primary" :loading="saving" tile depressed @click="insertProject">
@@ -75,12 +68,11 @@ export default {
   data () {
     // console.log('DUInsertDialog collectivite', this.collectivite)
 
-    const collectiviteId = this.collectivite.id ? this.collectivite.id.toString() : this.collectivite.code_commune_INSEE.tostring()
+    const collectiviteId = this.collectivite.code
     const isEpci = collectiviteId.length === 9
-    const towns = isEpci ? this.collectivite.towns : [this.collectivite]
+    const towns = isEpci ? this.collectivite.communes : [this.collectivite]
 
     return {
-      isOpen: this.value,
       saving: false,
       snackbar: false,
       isEpci,
@@ -92,9 +84,9 @@ export default {
         owner: this.$user.id,
         towns, // idealy this is done automatically by the DB
         epci: isEpci ? this.collectivite : null, // Same here, this should be made by the DB
-        region: towns[0].code_region, // I think this collumn could be removed.
+        region: this.collectivite.regionCode, // I think this collumn could be removed.
         PAC: [], // this should be removede when collumn is moved to a PAC table,
-        trame: towns[0].code_departement // This should go in the PAC table as well
+        trame: this.collectivite.departementCode // This should go in the PAC table as well
         // towns_insee: null // No other values in DB for now ?
       }
     }
@@ -108,11 +100,14 @@ export default {
         : [
             'CC', 'PLU'
           ]
-    }
-  },
-  watch: {
-    isOpen () {
-      this.$emit('input', this.isOpen)
+    },
+    isOpen: {
+      set (val) {
+        this.$emit('input', val)
+      },
+      get () {
+        return this.value
+      }
     }
   },
   methods: {
@@ -127,7 +122,7 @@ export default {
 
         await axios({
           method: 'post',
-          url: `/api/trames/projects/dept-${project.towns[0].code_departement}`,
+          url: `/api/trames/projects/dept-${this.$options.filters.deptToRef(this.collectivite.departementCode)}`,
           data: {
             userId: this.$user.id,
             projectId: project.id
@@ -141,6 +136,9 @@ export default {
       }
 
       this.saving = false
+    },
+    close () {
+      this.$emit('input', false)
     }
   }
 }

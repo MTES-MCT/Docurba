@@ -1,45 +1,24 @@
 <template>
-  <LayoutsCustomApp>
-    <template v-if="!loading" #headerPageTitle>
-      - {{ (project && project.id ? project.name : $route.params.githubRef) | githubRef }}
-    </template>
-    <!-- <PACEditingTrame
-      v-if="!loading"
-      :project="project"
-      :git-ref="$route.params.githubRef"
-    /> -->
-    <v-container v-if="!loading">
-      <v-row>
-        <v-col cols="12">
-          <PACEditingAdvicesCard :avoided-tags="(project && project.id) ? [] : ['projet']" />
-        </v-col>
-      </v-row>
-      <!-- <v-row>
-        <v-spacer />
-        <v-col cols="auto">
-          <v-switch
-            hide-details
-            label="Afficher les sections présentes dans la trame parente"
-            @change="toggleParentSectionsDisplay"
-          />
-        </v-col>
-      </v-row> -->
-      <v-row>
-        <v-col v-for="section in sections" :key="section.url" cols="12">
-          <PACSectionCard
-            :section="section"
-            :git-ref="gitRef"
-            :project="project"
-            editable
-            @edited="toggleEdit"
-            @selectionChange="saveSelection"
-            @changeOrder="saveOrder"
-            @changeTree="updateTreeData"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-    <VGlobalLoader v-else />
+  <v-container v-if="!loading">
+    <v-row>
+      <v-col cols="12">
+        <PACEditingAdvicesCard :avoided-tags="(project && project.id) ? [] : ['projet']" />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col v-for="section in sections" :key="section.url" cols="12">
+        <PACSectionCard
+          :section="section"
+          :git-ref="gitRef"
+          :project="project"
+          editable
+          @edited="toggleEdit"
+          @selectionChange="saveSelection"
+          @changeOrder="saveOrder"
+          @changeTree="updateTreeData"
+        />
+      </v-col>
+    </v-row>
     <v-dialog v-model="beforeLeaveDialog.visible" width="500">
       <v-card>
         <v-card-title>
@@ -59,7 +38,14 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </LayoutsCustomApp>
+  </v-container>
+  <v-container v-else class="fill-height">
+    <v-row justify="center" align="center">
+      <v-col cols="12">
+        <VGlobalLoader />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -76,7 +62,7 @@ export default {
       this.beforeLeaveDialog.visible = true
     } else { next() }
   },
-  layout: 'app',
+  layout: 'ddt',
   data () {
     return {
       project: {},
@@ -100,30 +86,12 @@ export default {
       url: `/api/trames/tree/${this.gitRef}`
     })
 
-    // const cadreJuridique = sections.find(s => s.path.includes('Cadre-juridique-et-grands'))
-
-    // const juridiquePaths = [cadreJuridique.path]
-
-    // function addToJuridique (s) {
-    //   juridiquePaths.push(s.path)
-
-    //   if (s.children) {
-    //     s.children.forEach((c) => {
-    //       addToJuridique(c)
-    //     })
-    //   }
-    // }
-
-    // cadreJuridique.children.forEach((c) => {
-    //   addToJuridique(c)
-    // })
-
-    // console.log(JSON.stringify(juridiquePaths, null, 2))
+    console.log('trame project', this.project, this.project.towns[0])
 
     let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,
-        `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`,
-        `region-${this.project.towns ? this.project.towns[0].code_region : ''}`,
+        `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.trame) : ''}`,
+        `region-${this.project.towns ? this.project.towns[0].regionCode : ''}`,
         this.gitRef,
         'main'
     ])
@@ -138,15 +106,9 @@ export default {
           groupedSupSections[path].find(s => s.ref.includes('main'))
     })
 
-    // console.log(supSections.find(s => s.path.includes('Les risques')))
-
-    // console.log(supSections.filter(s => s.ref.includes('projet')))
-
     this.orderSections(sections, supSections)
 
     function parseSection (section, supSections) {
-      // console.log(section, section.ref)
-
       if (section.children) {
         section.children = section.children.map(section => parseSection(section, supSections))
       } else { section.children = [] }
@@ -192,7 +154,7 @@ export default {
       let headRef = 'main'
 
       if (this.project && this.project.id) {
-        headRef = `dept-${this.project.towns ? this.project.towns[0].code_departement : ''}`
+        headRef = `dept-${this.$options.filters.deptToRef(this.project.trame)}`
       }
 
       if (this.gitRef.includes('dept-')) {

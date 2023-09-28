@@ -33,19 +33,31 @@
     <v-spacer />
     <!-- This client only could be removed with proper user management server side -->
     <client-only>
-      <div class="align-self-center">
+      <div v-if="!$vuetify.breakpoint.mobile" class="align-self-center">
         <v-btn depressed tile text :to="{name: 'faq'}">
           Besoin d'aide ?
         </v-btn>
-        <v-btn v-if="!$user.id" depressed tile text @click="openLogin = true">
+        <v-btn v-if="!$user.id" depressed tile text :to="{name: 'login'}">
           Connexion
         </v-btn>
-        <AuthLoginDialog v-model="openLogin" />
-        <v-btn v-if="$user.id && $user.scope && $user.scope.dept" depressed tile text :to="{name: 'ddt-departement-collectivites', params: {departement: $user.scope.dept}}">
-          Tableau de bord
+        <v-btn
+          v-if="$user.profile.side === 'etat'"
+          depressed
+          tile
+          color="primary"
+          :to="{
+            name: $user.profile.poste === 'ddt' ? 'ddt-departement-collectivites' : 'trames-githubRef',
+            params: {
+              departement: $user.profile.departement,
+              githubRef: trameRef
+            }
+          }"
+        >
+          {{ $user.profile.poste === 'ddt' ? 'Tableau de bord' : 'Trame regionale' }}
         </v-btn>
-        <v-btn v-if="$user.id" depressed tile text @click="clickMyDocs">
-          Mes documents
+
+        <v-btn v-if="$user.profile.side === 'collectivite'" :to="`/collectivites/${$user.profile.collectivite_id}/?isEpci=${$user.profile.collectivite_id.length > 5}`" depressed tile text>
+          Ma collectivité
         </v-btn>
         <v-menu v-if="$user.id" offset-y>
           <template #activator="{ on }">
@@ -60,9 +72,6 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item link @click="goToAdmin">
-              <v-list-item-title>Accès DDT/DEAL</v-list-item-title>
-            </v-list-item>
             <v-list-item link @click="signOut">
               <v-list-item-title>
                 Déconnexion
@@ -70,12 +79,6 @@
             </v-list-item>
           </v-list>
         </v-menu>
-        <!-- <v-btn depressed tile v-if="$user.id" text @click="$supabase.auth.signOut()">
-        Déconnexion
-      </v-btn> -->
-        <DocumentsDialog v-if="$user.id" v-model="openDocs" />
-        <AdminDdtRequestDialog v-model="openDDT" />
-        <AuthResetPasswordDialog />
       </div>
     </client-only>
     <template v-if="extended" #extension>
@@ -105,53 +108,21 @@ export default {
         mdiDotsVertical
       },
       helpDialog: false,
-      helpSnackbar: false,
-      openLogin: false,
-      openDocs: false,
-      openDDT: false,
-      adminAccess: null
+      helpSnackbar: false
+    }
+  },
+  computed: {
+    trameRef () {
+      const scopes = { ddt: 'dept', dreal: 'region' }
+      const poste = this.$user.profile.poste
+      const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
+
+      return `${scopes[poste]}-${code}`
     }
   },
   methods: {
-    // There is a lot of dupliaceted code here.
-    // This component should be using the auth.js plugin to get admin access.
-    async getAdminAccess () {
-      if (!this.adminAccess) {
-        const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('role').match({
-          user_id: this.$user.id,
-          user_email: this.$user.email,
-          role: 'ddt'
-        })
-
-        this.adminAccess = adminAccess
-      }
-
-      return this.adminAccess
-    },
-    async goToAdmin () {
-      const { data: adminAccess } = await this.$supabase.from('admin_users_dept').select('role').match({
-        user_id: this.$user.id,
-        user_email: this.$user.email,
-        role: 'ddt'
-      })
-
-      if (adminAccess && adminAccess.length) {
-        this.$router.push('/projets')
-      } else {
-        this.openDDT = true
-      }
-    },
-    async clickMyDocs () {
-      await this.getAdminAccess()
-
-      if (this.adminAccess) {
-        this.$router.push('/projets')
-      } else {
-        this.openDocs = true
-      }
-    },
-    signOut () {
-      this.$supabase.auth.signOut()
+    async signOut () {
+      await this.$supabase.auth.signOut({ scope: 'global' })
       this.$router.push('/')
     }
   }
