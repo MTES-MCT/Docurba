@@ -5,7 +5,9 @@ scope: ['ddt']
 order: 8
 ---
 
-**Partage en ligne :**
+_FONCTIONNALITÉ BIENTÔT DE RETOUR_
+
+(**Partage en ligne :**
 1. Depuis “mes documents” et retrouvez le PAC que vous souhaitez partager à la collectivité,
 2. Cliquez sur “partager”, renseignez l’adresse email de la collectivité et confirmez. (Le partage en mode lecture est configuré par défaut),
 3. Vous pouvez à tout moment supprimer le partage en cliquant sur la croix en face de l'email renseigné précédemment. 
@@ -19,4 +21,4 @@ Voir [comment imprimer les PAC](https://docurba.beta.gouv.fr/faq?scope=0&recherc
 
 
 Note : téléchargez le PDF du PAC depuis le mode consultation du PAC, en cliquant sur la flèche de téléchargement en bas à droite. 
-Voir aussi [comment partager le PAC section par section](https://docurba.beta.gouv.fr/faq?scope=0&recherche=par%20section).
+Voir aussi [comment partager le PAC section par section](https://docurba.beta.gouv.fr/faq?scope=0&recherche=par%20section).)
