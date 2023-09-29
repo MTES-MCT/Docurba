@@ -98,6 +98,7 @@ export default {
       }
     })
     this.categories = data
+    this.selectedCategory = data[0]
   }
 }
 </script>
