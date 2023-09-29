@@ -81,7 +81,9 @@ module.exports = {
     const opposableProc = arrProcedures.find(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation)
     if (opposableProc) {
       opposableProc.status = 'opposable'
-      arrProcedures.filter(e => (e.status_infos.hasDelibApprob || opposableProc.perimetre.length === 1) && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation && opposableProc.id !== e.id).forEach((e) => { e.status = 'precedent' })
+      // TODO: ca fait un bug sur Montgaillard
+      // || opposableProc.perimetre.length === 1
+      arrProcedures.filter(e => (e.status_infos.hasDelibApprob) && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation && opposableProc.id !== e.id).forEach((e) => { e.status = 'precedent' })
     }
     // console.log('opposableProc:', opposableProc)
   },
