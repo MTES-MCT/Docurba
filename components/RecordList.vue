@@ -78,8 +78,6 @@ export default {
           cancelToken: this.cancelTokenSource.token
         })
 
-        console.log(data)
-
         this.cancelTokenSource = null
         this.records = data
         this.loading = false
