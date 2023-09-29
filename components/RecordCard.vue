@@ -22,7 +22,7 @@
           <v-icon>
             {{ icons.mdiDownload }}
           </v-icon>
-          {{ dl.description ?? 'Télécharger' }}
+          {{ (dl.description || dl.name) ?? 'Télécharger' }}
         </v-btn>
         <v-btn
           depressed
@@ -58,7 +58,7 @@ export default {
   },
   computed: {
     downloadLinks () {
-      return this.record.links.filter(link => link.protocol.startsWith('WWW:DOWNLOAD'))
+      return this.record.links.filter(link => link.protocol?.startsWith('WWW:DOWNLOAD'))
     }
   }
 }
