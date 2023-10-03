@@ -86,8 +86,6 @@ export default {
       url: `/api/trames/tree/${this.gitRef}`
     })
 
-    console.log('trame project', this.project, this.project.towns[0])
-
     let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,
         `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.trame) : ''}`,
