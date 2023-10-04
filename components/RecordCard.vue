@@ -10,6 +10,21 @@
     <v-card-actions>
       <div class="record-card-actions">
         <v-btn
+          v-for="wmsLink in wmsLinks"
+          :key="wmsLink.url"
+          class="download-button"
+          text
+          tile
+          block
+          color="primary"
+          @click="openMap(wmsLink)"
+        >
+          <v-icon>
+            {{ icons.mdiMap }}
+          </v-icon>
+          {{ wmsLink.description ?? 'Voir la carte' }}
+        </v-btn>
+        <v-btn
           v-for="dl in downloadLinks"
           :key="dl.url"
           class="download-button"
@@ -40,7 +55,7 @@
 </template>
 
 <script>
-import { mdiDownload } from '@mdi/js'
+import { mdiMap, mdiDownload } from '@mdi/js'
 
 export default {
   props: {
@@ -52,13 +67,46 @@ export default {
   data () {
     return {
       icons: {
+        mdiMap,
         mdiDownload
       }
     }
   },
   computed: {
+    wmsLinks () {
+      return this.record.links.filter(link => link.protocol === 'OGC:WMS')
+    },
     downloadLinks () {
       return this.record.links.filter(link => link.protocol?.startsWith('WWW:DOWNLOAD'))
+    }
+  },
+  methods: {
+    openMap (wmsLink) {
+      const form = document.createElement('form')
+      form.action = 'https://geobretagne.fr/mapfishapp/'
+      form.method = 'POST'
+      form.target = '_blank'
+      document.body.append(form)
+
+      const input = document.createElement('input')
+      input.name = 'data'
+      input.value = JSON.stringify(
+        {
+          services: [],
+          layers: [
+            {
+              layername: wmsLink.name,
+              metadataURL: this.record.url,
+              owstype: 'WMS',
+              owsurl: wmsLink.url
+            }
+          ]
+        }
+      )
+
+      form.append(input)
+      form.submit()
+      form.remove()
     }
   }
 }
