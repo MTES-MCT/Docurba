@@ -4,11 +4,11 @@
 *Docurba, outil pour faciliter l’élaboration et le suivi des documents d’urbanisme.*
  
 **📆 Nous organisons des sessions de prise en main de l'outil (tableau de bord et outil de suivi des procédures):**
-- à destination des collectivités territoriales et des bureaux d'étude : [inscriptions via ce lien](https://app.livestorm.co/mte/comment-et-pourquoi-utiliser-loutil-docurba-pour-mes-procedures-de-documents-durbanisme?type=detailed)  
+- à destination des collectivités territoriales et des bureaux d'études : [inscriptions via ce lien](https://app.livestorm.co/mte/comment-et-pourquoi-utiliser-loutil-docurba-pour-mes-procedures-de-documents-durbanisme?type=detailed)  
 - à destination des services de l'état : [inscriptions via ce lien](https://app.livestorm.co/mte/docurba-et-suivi-des-procedures-de-du-session-de-prise-en-main-du-tableau-de-bord-et-de-la-feuille-de-route-partagee?type=detailed) 
 
  
- 📖 Bienvenue dans le tutoriel d’utilisation du tableau de bord et de l'outil de suivi de procédures de [Docurba](https://docurba.beta.gouv.fr/) **à destination des collectivités territoriales, de leur bureau d'étude, ainsi que des agents de DDT(M)/DEAL**.  
+ 📖 Bienvenue dans le tutoriel d’utilisation du tableau de bord et de l'outil de suivi de procédures de [Docurba](https://docurba.beta.gouv.fr/) **à destination des collectivités territoriales, de leur bureau d'études, ainsi que des agents de DDT(M)/DEAL**.  
  
  Vous trouverez dans ce guide :
 
@@ -24,9 +24,9 @@
 
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[🔹 Vous êtes une DDT/DEAL](#headDDTDEAL)
   
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[🔹 Vous êtes une collectivité territoriale ou un bureau d'étude](#headCTBE)
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[🔹 Vous êtes une collectivité territoriale ou un bureau d'études](#headCTBE)
   
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[🔹 Vous êtes une DDT/DEAL, une collectivité territoriale ou un bureau d'étude](#headCTDDT)
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[🔹 Vous êtes une DDT/DEAL, une collectivité territoriale ou un bureau d'études](#headCTDDT)
 
 
 [📋 Feuille de Route Partagée](#headFRP)
@@ -122,7 +122,7 @@ Pour cela, nous intégrons **les bases de données de sites de référence** te
 Que vous soyez une DDT/DEAL ou une collectivité territoriale/bureau d’étude, vous accédez depuis votre tableau de bord aux documents d’urbanisme disponibles (et aux procédures associées) pour une commune concernée.
 
 **Rappels** :
-- **pour une collectivité territoriale/bureau d’étude** : vous accédez aux « Documents d’urbanisme » directement depuis votre tableau de bord
+- **pour une collectivité territoriale/bureau d’études** : vous accédez aux « Documents d’urbanisme » directement depuis votre tableau de bord
 - **pour une DDT/DEAL** : vous accédez aux « Documents d’urbanisme » après avoir sélectionné la collectivité/EPCI concerné.e depuis la liste indiquée sur votre tableau de bord.
 
 Ainsi, vous accédez à la page suivante :
@@ -165,7 +165,7 @@ La Feuille de Route Partagée est l’outil interne que vous allez utiliser dans
 Dans tous les cas, vous ne pourrez effectuer aucune modification.```**
 
 2. **Rappels**
-- **si vous êtes une collectivité territoriale/un bureau d’étude** : vous accédez aux « Documents d’urbanisme » directement depuis votre tableau de bord. *Vous pouvez alors accéder à la Feuille de Route Partagée depuis la procédure de document d'urbanisme concernée (en bas à droite)*.
+- **si vous êtes une collectivité territoriale/un bureau d’études** : vous accédez aux « Documents d’urbanisme » directement depuis votre tableau de bord. *Vous pouvez alors accéder à la Feuille de Route Partagée depuis la procédure de document d'urbanisme concernée (en bas à droite)*.
 - **pour une DDT/DEAL** : vous accédez aux « Documents d’urbanisme » après avoir sélectionné la collectivité/EPCI concerné.e depuis la liste indiquée sur votre tableau de bord. *Vous pouvez alors accéder à la Feuille de Route Partagée depuis la procédure de document d'urbanisme concernée (en bas à droite)*.
 
 
