@@ -26,11 +26,12 @@
         tile
         depressed
         :href="`/api/pdf/${project.id}`"
+        download
         @click="downloadPdf"
       >
         PDF
       </v-btn> -->
-      <!-- <v-btn
+      <v-btn
         color="primary"
         tile
         depressed
@@ -40,7 +41,7 @@
       >
         PDF
       </v-btn>
-      <a ref="pdfLink" :href="pdfUrl" :download="project.name">TEST</a> -->
+      <a ref="pdfLink" class="d-none" :href="pdfUrl" :download="project.name" />
     </v-card-actions>
   </v-card>
 </template>
@@ -71,10 +72,11 @@ export default {
         })
 
         const blob = new Blob([data], { type: 'application/pdf' })
+        console.log(data, blob)
         this.pdfUrl = URL.createObjectURL(blob)
       }
 
-      // console.log(this.$refs.pdfLink.click)
+      console.log('this.$refs.pdfLink.click')
 
       this.$refs.pdfLink.click()
     }

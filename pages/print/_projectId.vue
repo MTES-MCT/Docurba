@@ -97,9 +97,17 @@ export default {
           url: `${baseUrl}/api/trames/tree/projet-${projectId}?content=all`
         })
 
+        function deptToRef (deptCode) {
+          if (deptCode.includes('A') || deptCode.includes('B')) {
+            return deptCode
+          } else {
+            return +deptCode
+          }
+        }
+
         const { data: supSections } = await $supAdmin.from('pac_sections').select('*').in('ref', [
           `projet-${project.id}`,
-          `dept-${project.towns ? this.$options.filters.deptToRef(this.project.towns[0].departementCode) : ''}`,
+          `dept-${project.towns ? deptToRef(project.towns[0].departementCode) : ''}`,
           `region-${project.towns ? project.towns[0].regionCode : ''}`,
           'main'
         ])
