@@ -105,6 +105,8 @@ export default {
 
         section.content = sectionContent
         section.body = this.$md.compile(section.content)
+
+        console.log(section)
       }
     })
   },

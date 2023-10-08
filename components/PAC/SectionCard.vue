@@ -205,7 +205,6 @@
 </template>
 
 <script>
-
 import axios from 'axios'
 import {
   mdiPlus, mdiPencil, mdiContentSave,
@@ -302,8 +301,34 @@ export default {
       return this.isOpen ? 'primary lighten-4' : 'white'
     },
     sectionContent () {
+      const body = this.$md.compile(this.sectionMarkdown)
+
+      const pdfContent = {
+        content: []
+      }
+
+      function addChildToContent (child) {
+        if (child.type === 'element' || child.type === 'root') {
+          return {
+            text: child.children.map(c => addChildToContent(c)),
+            style: child.tag
+          }
+        } else {
+          return {
+            text: child.value,
+            style: child.tag
+          }
+        }
+      }
+
+      body.children.forEach((child) => {
+        pdfContent.content.push(addChildToContent(child))
+      })
+
+      this.$pdf(pdfContent)
+
       return {
-        body: this.$md.compile(this.sectionMarkdown)
+        body
       }
     },
     isEditable () {
