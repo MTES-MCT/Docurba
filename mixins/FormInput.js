@@ -69,6 +69,7 @@ extend('expirationDateCreditCard', {
   },
   message: 'Please fill as much as you can'
 })
+
 // @vue/component
 export default {
   components: {

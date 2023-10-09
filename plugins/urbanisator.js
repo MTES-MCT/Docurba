@@ -110,6 +110,7 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
         collectivite_id: collectiviteId,
         archived: false
       })
+
       ret.projects = projects ?? []
       // console.log('projects: ', projects)
       // TODO: Should be a join, no need to double select

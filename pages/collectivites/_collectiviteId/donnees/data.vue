@@ -1,5 +1,7 @@
 <template>
-  <DataSourcesList v-if="!loading && communes" :region="collectivite.region.iso" :data-sources="dataset" :themes="themes" />
+  <!-- TODO Pour l'instant, un composant spécifique à GeoBretagne -->
+  <RecordList v-if="collectivite.region.iso === 'FR-BRE'" :collectivite-code="collectivite.code" :is-epci="isEpci" />
+  <DataSourcesList v-else-if="!loading && communes" :region="collectivite.region.iso" :data-sources="dataset" :themes="themes" />
   <VGlobalLoader v-else />
 </template>
 
@@ -43,10 +45,11 @@ export default {
       })
       : this.collectivite.code
 
-    const { dataset, themes } = await this.$daturba.getData(this.collectivite.region.iso, collectiviteId)
-
-    this.dataset = dataset
-    this.themes = themes
+    if (this.collectivite.region.iso !== 'FR-BRE') {
+      const { dataset, themes } = await this.$daturba.getData(this.collectivite.region.iso, collectiviteId)
+      this.dataset = dataset
+      this.themes = themes
+    }
 
     this.loading = false
   }
