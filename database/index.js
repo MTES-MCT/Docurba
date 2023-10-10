@@ -58,16 +58,21 @@
   async function importToDocurba (config) {
     try {
       console.log(`Start importing to Docurba from table dump: ${OUTPUTDIR}`)
+      // TODO: Maybe delete the existing table in Docurba first ?
+      const client = new Client(config)
+      await client.connect()
+      await client.query(`
+      DROP materialized view IF EXISTS distinct_procedures_events;
+      DROP materialized view IF EXISTS distinct_procedures_schema_events;
+      `)
+
       for (const tableName of TABLES_TO_EXPORT) {
         console.log(tableName)
-        await execute(`PGPASSWORD="${config.password}" pg_restore -h ${config.host} -p ${config.port} -d ${config.database} -U ${config.user} -t ${tableName} -Fc ${OUTPUTDIR}/${tableName}`)
+        await execute(`PGPASSWORD="${config.password}" pg_restore --clean -h ${config.host} -p ${config.port} -d ${config.database} -U ${config.user} -t ${tableName} -Fc ${OUTPUTDIR}/${tableName}`)
         console.log(`${tableName} imported.`)
       }
 
-      // FINIR DE REFRESH LES MATERIALIZED VIEW
       console.log('Creating MV...')
-      const client = new Client(config)
-      await client.connect()
 
       const mv1Sql = fs.readFileSync('./database/sql/D1-MVPlanProcedures.sql').toString().replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ')
       const mv2Sql = fs.readFileSync('./database/sql/D2-MVSchemaProcedures.sql').toString().replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ')
@@ -89,9 +94,8 @@
   }
 
   // await loadDump(PG_TEST_CONFIG)
-  // await createDocurbaTables(PG_TEST_CONFIG)
+  await createSudocuProcessedTables(PG_DEV_CONFIG)
   // await exportProcessedSudocu(PG_TEST_CONFIG)
-  // TODO: TEST SUR UNE BASE TARGET NEUTRE ?
-  // await importToDocurba(PG_TEST_CONFIG)
-  console.log('PG_TEST_CONFIG: ', PG_TEST_CONFIG)
+  // await importToDocurba(PG_DEV_CONFIG)
+  // console.log('PG_TEST_CONFIG: ', PG_TEST_CONFIG)
 })()

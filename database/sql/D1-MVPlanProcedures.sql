@@ -1,4 +1,4 @@
-DROP materialized view distinct_procedures_events;
+DROP materialized view IF EXISTS distinct_procedures_events;
 create materialized view distinct_procedures_events as
     select noserieprocedure,
     MAX(dateevenement) as last_event_date,

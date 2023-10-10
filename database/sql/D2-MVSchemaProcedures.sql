@@ -1,4 +1,4 @@
-DROP materialized view distinct_procedures_schema_events;
+DROP materialized view IF EXISTS distinct_procedures_schema_events;
 create materialized view distinct_procedures_schema_events as
 select *
 from(
@@ -23,9 +23,7 @@ from(
     MAX(nomschema) as nomschema,
     MAX(datefinecheance) as datefinecheance,
     MAX(coutschemaht) as coutschemaht,
-    MAX(coutschemattc) as coutschemattc,
-    bool_or(is_ongoing) as is_ongoing,
-    bool_or(is_approved) as is_approved
+    MAX(coutschemattc) as coutschemattc
 
     from sudocu_schemas_events spe
     GROUP BY spe.noserieprocedure
