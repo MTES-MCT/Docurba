@@ -1,4 +1,4 @@
 ---
-title: "DDT SAT CC PLU"
-sourceNational: /ressources/doc_20210200_ddt_sat_cc_plu.odt
+title: "Exemple de cahier des charges pour recuter un BE à adapter"
+sourceNational: /ressources/Exemple_de_cahier_de_charge_pour_recrutement_BE_a_adapter.odt
 ---
