@@ -21,16 +21,6 @@
       <v-btn color="primary" tile depressed nuxt :to="`/trames/projet-${project.id}`">
         Modifier le PAC
       </v-btn>
-      <!-- <v-btn
-        color="primary"
-        tile
-        depressed
-        :href="`/api/pdf/${project.id}`"
-        download
-        @click="downloadPdf"
-      >
-        PDF
-      </v-btn> -->
       <v-btn
         color="primary"
         tile
@@ -41,12 +31,10 @@
       >
         PDF
       </v-btn>
-      <a ref="pdfLink" class="d-none" :href="pdfUrl" :download="project.name" />
     </v-card-actions>
   </v-card>
 </template>
 <script>
-import axios from 'axios'
 
 export default {
   props: {
@@ -64,21 +52,8 @@ export default {
   methods: {
     async downloadPdf () {
       this.loadingPdf = true
-
-      if (!this.pdfUrl) {
-        const { data } = await axios({
-          method: 'get',
-          url: `/api/pdf/${this.project.id}`
-        })
-
-        const blob = new Blob([data], { type: 'application/pdf' })
-        console.log(data, blob)
-        this.pdfUrl = URL.createObjectURL(blob)
-      }
-
-      console.log('this.$refs.pdfLink.click')
-
-      this.$refs.pdfLink.click()
+      await this.$pdf.pdfFromRef(`projet-${this.project.id}`, this.project)
+      this.loadingPdf = false
     }
   }
 }

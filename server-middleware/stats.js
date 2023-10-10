@@ -46,7 +46,7 @@ app.get('/projects', async (req, res) => {
   projects = projects.filter(p => p.towns && p.towns.length && p.towns[0])
   projects = projects.filter(p => !docurbaTeamIds.includes(p.owner))
 
-  const projectsByDept = _.groupBy(projects, p => +p.towns[0].code_departement)
+  const projectsByDept = _.groupBy(projects, p => +p.towns[0].departementCode)
   const projectsByMonth = _.groupBy(projects, p => dayjs(p.created_at).format('MM/YY'))
 
   _.forEach(projectsByDept, (projects, dept) => { projectsByDept[dept] = projects.length })
