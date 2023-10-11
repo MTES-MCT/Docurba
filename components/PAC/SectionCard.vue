@@ -51,7 +51,7 @@
                         </v-chip>
                       </template>
                     </PACEditingParentDiffDialog>
-                    <v-badge v-if="section.diffCount" color="primary" class="ml-2" inline :content="section.diffCount" />
+                    <v-badge v-if="section.diffCount && isEditable" color="primary" class="ml-2" inline :content="section.diffCount" />
                     <v-tooltip v-if="section.isDuplicated" top max-width="300px">
                       <template #activator="{on}">
                         <v-chip

@@ -211,8 +211,6 @@ export default {
       const level = diffRef.includes('dept-') ? 'départemental' : 'régional'
 
       if (diffFile) {
-        console.log('diff found', section, diffFile)
-
         section.diff = {
           path: diffFile.filename,
           ref: diffRef,
