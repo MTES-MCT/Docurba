@@ -86,6 +86,8 @@ export default {
       url: `/api/trames/tree/${this.gitRef}`
     })
 
+    console.log(sections)
+
     let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,
         `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.trame) : ''}`,
@@ -107,6 +109,19 @@ export default {
     this.orderSections(sections, supSections)
 
     function parseSection (section, supSections) {
+      const groupedChildren = groupBy(section.children, c => c.name)
+      const groupedKeys = Object.keys(groupedChildren)
+
+      groupedKeys.forEach((key) => {
+        const group = groupedChildren[key]
+
+        if (group.length > 1) {
+          group.forEach((section) => {
+            section.isDuplicated = true
+          })
+        }
+      })
+
       if (section.children) {
         section.children = section.children.map(section => parseSection(section, supSections))
       } else { section.children = [] }
@@ -190,12 +205,14 @@ export default {
       const sectionPath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
 
       const diffFile = diffFiles.find((file) => {
-        return file.filename === sectionPath
+        return file.filename === sectionPath && file.status === 'modified'
       })
 
       const level = diffRef.includes('dept-') ? 'départemental' : 'régional'
 
       if (diffFile) {
+        console.log('diff found', section, diffFile)
+
         section.diff = {
           path: diffFile.filename,
           ref: diffRef,

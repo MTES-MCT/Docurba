@@ -52,6 +52,20 @@
                       </template>
                     </PACEditingParentDiffDialog>
                     <v-badge v-if="section.diffCount" color="primary" class="ml-2" inline :content="section.diffCount" />
+                    <v-tooltip v-if="section.isDuplicated" top max-width="300px">
+                      <template #activator="{on}">
+                        <v-chip
+                          label
+                          color="bf200"
+                          text-color="primary lighten-2"
+                          class="ml-2"
+                          v-on="on"
+                        >
+                          Doublon
+                        </v-chip>
+                      </template>
+                      Cette section est en double. N'hésitez pas à corriger le doublon en supprimant une des deux sections pour éviter des confusion ou des perte de données.
+                    </v-tooltip>
                   </h2>
                 </v-col>
                 <v-col v-if="(isOpen || hover) && editable" cols="auto">
@@ -434,6 +448,9 @@ export default {
       }
     },
     sectionRemoved (section) {
+      const duplicated = this.section.children.find(c => c.name === section.name)
+      if (duplicated) { duplicated.isDuplicated = false }
+
       // eslint-disable-next-line vue/no-mutating-props
       this.section.children = this.section.children.filter((c) => {
         return c.path !== section.path
@@ -459,8 +476,6 @@ export default {
             ref: this.headRef
           }
         })
-
-        console.log('diffSectionContent', diffSectionContent)
 
         this.diff.body = this.$md.compile(diffSectionContent.replace(/---([\s\S]*)---/, ''))
       } catch (err) {

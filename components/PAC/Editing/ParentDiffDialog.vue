@@ -66,9 +66,9 @@ export default {
         parent_sha: this.section.diff.sha,
         path: this.section.path,
         ref: this.gitRef
-      }).then(() => {
+      }).then((res) => {
         this.saved = true
-      })
+      })// .catch(err => console.log('err saving', err))
 
       this.open = false
     }
