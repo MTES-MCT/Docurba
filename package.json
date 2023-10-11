@@ -11,10 +11,12 @@
     "cleanSM": "node scripts/cleanSM.js",
     "sido": "node scripts/sidoData.js",
     "generate": "nuxt generate",
+    "migrate": "node database/index.js",
     "lint:js": "eslint --ext \".js,.vue\" --ignore-path .gitignore .",
     "lint": "npm run lint:js"
   },
   "dependencies": {
+    "@getvim/execute": "^1.0.0",
     "@gouvfr/dsfr": "^1.1.0",
     "@mdi/js": "^6.1.95",
     "@nuxt/content": "^1.14.0",
@@ -34,6 +36,7 @@
     "d3": "^7.1.1",
     "d3-geo": "^3.0.1",
     "dayjs": "^1.10.7",
+    "dotenv": "^16.3.1",
     "express": "^4.17.1",
     "fast-xml-parser": "^4.2.7",
     "js-base64": "^3.7.5",
@@ -41,6 +44,7 @@
     "nuxt": "^2.16",
     "octokit": "^2.0.11",
     "pdfmake": "^0.2.7",
+    "pg": "^8.11.3",
     "pipedrive": "^16.1.0",
     "postcss": "^8.4.21",
     "qs": "^6.11.2",
