@@ -101,7 +101,7 @@
             params: {githubRef: trameRef}
           }"
         >
-          Trame de PAC {{ trameRef.includes('region') ? 'regionale' : 'départementale' }}
+          Trame de PAC {{ trameRef.includes('region') ? 'régionale' : 'départementale' }}
         </v-tab>
         <v-tab
           :to="{
