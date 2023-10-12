@@ -261,7 +261,7 @@ export default {
     let headRef = 'main'
 
     if (this.project && this.project.id) {
-      headRef = `dept-${this.project.towns ? this.project.towns[0].departementCode : ''}`
+      headRef = `dept-${this.project.trame}`
     }
 
     if (this.gitRef.includes('dept-')) {

@@ -290,8 +290,6 @@ export default ({ $md, $isDev, $supabase }, inject) => {
 
       // console.log(JSON.stringify(pdfContent.content, null, 2))
 
-      console.log(elements, pdfContent)
-
       await this.pdfFromContent(pdfContent)
     }
   }
