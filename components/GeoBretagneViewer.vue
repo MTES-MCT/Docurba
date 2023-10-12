@@ -1,6 +1,6 @@
 <template>
   <div>
-    <iframe v-if="iframeSrc" :src="iframeSrc" />
+    <iframe v-if="iframeSrc" :src="iframeSrc" title="GeoBretagneViewer" />
   </div>
 </template>
 

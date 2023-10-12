@@ -18,7 +18,7 @@ pdfMake.fonts = {
 }
 
 export default ({ $md, $isDev, $supabase }, inject) => {
-  const baseUrl = $isDev ? 'http://localhost:3000' : 'https://docurba.beta.gouv.fr'
+  const baseUrl = $isDev ? 'http://localhost:3000' : location.origin
 
   pdfMake.fonts = {
     Marianne: {
