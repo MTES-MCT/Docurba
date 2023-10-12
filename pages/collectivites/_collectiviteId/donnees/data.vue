@@ -1,6 +1,6 @@
 <template>
   <!-- TODO Pour l'instant, un composant spécifique à GeoBretagne -->
-  <RecordList v-if="collectivite.region.iso === 'FR-BRE'" :collectivite-code="collectivite.code" :is-epci="isEpci" />
+  <GeoBretagneViewer v-if="collectivite.region.iso === 'FR-BRE'" :collectivite-code="collectivite.code" :is-epci="isEpci" class="mt-4" />
   <DataSourcesList v-else-if="!loading && communes" :region="collectivite.region.iso" :data-sources="dataset" :themes="themes" />
   <VGlobalLoader v-else />
 </template>
