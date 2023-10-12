@@ -2,6 +2,7 @@ import axios from 'axios'
 import pdfMake from 'pdfmake/build/pdfmake'
 // import pdfFonts from 'pdfmake/build/vfs_fonts'
 import orderSections from '@/mixins/orderSections.js'
+import departements from '@/assets/data/INSEE/departements_small.json'
 
 // pdfMake.vfs = pdfFonts.pdfMake.vfs
 
@@ -76,7 +77,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
       })
 
       function deptToRef (deptCode) {
-        if (deptCode.includes('A') || deptCode.includes('B')) {
+        if (deptCode?.includes('A') || deptCode?.includes('B')) {
           return deptCode
         } else {
           return +deptCode
@@ -85,7 +86,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
 
       const { data: supSections } = await $supabase.from('pac_sections').select('*').in('ref', [
         githubRef,
-        `dept-${project?.towns ? deptToRef(project.towns[0].departementCode) : ''}`,
+        `dept-${deptToRef(project?.trame)}`,
         `region-${project?.towns ? project.towns[0].regionCode : ''}`,
         'main'
       ])
@@ -110,6 +111,8 @@ export default ({ $md, $isDev, $supabase }, inject) => {
     async pdfFromRef (githubRef, project) {
       const roots = await this.fetchGithubRef(githubRef, project)
 
+      const dept = departements.find(d => d.code === project.trame)
+
       const pdfContent = {
         content: [
           {
@@ -119,7 +122,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
               image: 'logo'
             }, {
               width: '*',
-              text: `Direction départementale \n des territoires du ${project.towns[0].departementCode}`,
+              text: `Direction départementale des territoires \n ${dept.intitule}`,
               style: 'ddt'
             }]
           },
@@ -187,6 +190,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
               style: element.tag,
               tocItem: isToc ? element.tocId : false,
               tocMargin: element.tocMargin,
+              tocStyle: 'a',
               headlineLevel,
               margin: [0, 10, 0, 0]
             })

@@ -105,7 +105,7 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
         procedures: []
       }
 
-      const { data: projects } = await $supabase.from('projects').select('id, name, doc_type, towns, collectivite_id, PAC').match({
+      const { data: projects } = await $supabase.from('projects').select('id, name, doc_type, towns, collectivite_id, PAC, trame, region').match({
         owner: $user.id, // TODO: fetch shared projects.
         collectivite_id: collectiviteId,
         archived: false

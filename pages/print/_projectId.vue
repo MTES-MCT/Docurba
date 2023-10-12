@@ -28,7 +28,7 @@
       <v-spacer />
       <div class="ddt-text text-right">
         Direction départementale des territoires <br>
-        {{ project.towns[0].departementCode }}
+        {{ project.trame }}
       </div>
     </v-app-bar>
     <PACPDFPagesCounters :pac-data="project.PAC" content-id="pac-content-pdf" />
