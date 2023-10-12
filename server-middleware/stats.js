@@ -48,10 +48,10 @@ app.get('/projects', async (req, res) => {
   //   console.log(p.name, p.trame, p.towns[0])
   // })
 
-  projects = projects.filter(p => p.towns && p.towns.length && p.towns[0] && p.towns[0].departementCode)
+  projects = projects.filter(p => p.towns && p.towns.length && p.towns[0] && p.trame)
   projects = projects.filter(p => !docurbaTeamIds.includes(p.owner))
 
-  const projectsByDept = _.groupBy(projects, p => p.towns[0].departementCode)
+  const projectsByDept = _.groupBy(projects, p => p.trame)
   const projectsByMonth = _.groupBy(projects, p => dayjs(p.created_at).format('MM/YY'))
 
   _.forEach(projectsByDept, (projects, dept) => { projectsByDept[dept] = projects.length })

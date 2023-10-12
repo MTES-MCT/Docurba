@@ -66,6 +66,8 @@ export default {
         method: 'get'
       })
 
+      // console.log(data)
+
       // console.log('Projects Data', data)
 
       // const ARA = departements.filter((dept) => {
