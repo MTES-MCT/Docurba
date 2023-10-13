@@ -36,6 +36,8 @@ async function getFiles (path, ref, fetchContent = false) {
     path
   })
 
+  // console.log('getFiles', path)
+
   try {
     await Promise.all(repo.map(async (file) => {
       file.name = file.name.replace('.md', '')

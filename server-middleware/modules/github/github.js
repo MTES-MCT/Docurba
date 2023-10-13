@@ -36,7 +36,7 @@ module.exports = async function (path, options = {}) {
       repo: 'France-PAC'
     }, options))
 
-    // console.log('github res --> ', res)
+    // console.log('github res --> ')
 
     if (path.includes('GET') && !path.includes('/compare/')) {
       supabase.from('github_cache').upsert([{
