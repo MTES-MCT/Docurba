@@ -339,6 +339,24 @@ export default {
   watch: {
     editEnabled () {
       this.$emit('edited', this.section.path, this.editEnabled)
+    },
+    isOpen () {
+      if (this.isOpen) {
+        this.$analytics({
+          category: 'pac',
+          name: 'open section',
+          value: this.section.name,
+          data: this.section
+        })
+      }
+    },
+    isSelected () {
+      this.$analytics({
+        category: 'pac',
+        name: `${this.isSelected ? 'select' : 'unselect'} section`,
+        value: this.section.name,
+        data: this.section
+      })
     }
   },
   mounted () {
@@ -433,6 +451,12 @@ export default {
         this.errorSaving = true
       }
 
+      this.$analytics({
+        category: 'pac',
+        name: 'update section',
+        value: this.section.name
+      })
+
       this.saving = false
     },
     sectionAdded (newSection) {
@@ -446,6 +470,13 @@ export default {
         // eslint-disable-next-line vue/no-mutating-props
         this.section.path = this.section.path.replace('.md', '')
       }
+
+      this.$analytics({
+        category: 'pac',
+        name: 'add section',
+        value: newSection.name,
+        data: newSection
+      })
     },
     sectionRemoved (section) {
       const duplicated = this.section.children.find(c => c.name === section.name)
