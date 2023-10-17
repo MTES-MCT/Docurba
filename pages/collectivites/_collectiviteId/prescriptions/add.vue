@@ -133,8 +133,8 @@
               />
             </validation-provider>
           </v-col>
-          <v-col v-if="typeProcedure === 'MS - Modification simplifiée'" cols="12" class="pt-0 pb-2">
-            <v-select v-model="MSScope" filled multiple label="Cette modification simplifiée concerne" :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']" />
+          <v-col cols="12" class="pt-0 pb-2">
+            <v-select v-model="MSScope" filled multiple label="Cette procédure concerne" :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']" />
           </v-col>
           <v-col cols="12" class="pt-0 pb-2 d-flex align-start">
             <v-text-field v-model="numberProcedure" style="max-width:25%;" filled placeholder="Ex. 4" label="Numéro de procédure" />

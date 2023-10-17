@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="isOpen" max-width="800px">
     <v-card>
-      <v-card-title>Création d'un nouveau documents d'urbanisme</v-card-title>
+      <v-card-title>Création d'un nouveau document d'urbanisme</v-card-title>
       <v-card-text>
         <v-form>
           <v-row>

@@ -5,7 +5,7 @@
   const fs = require('fs')
   const { Client } = require('pg')
   const { execute } = require('@getvim/execute')
-  const { PG_TEST_CONFIG, PG_DEV_CONFIG } = require('./pg_secret_config.json')
+  const { PG_TEST_CONFIG, PG_DEV_CONFIG, PG_PROD_CONFIG } = require('./pg_secret_config.json')
 
   const SQLS = [
     '1-EventsDetails.sql',
@@ -61,10 +61,10 @@
       // TODO: Maybe delete the existing table in Docurba first ?
       const client = new Client(config)
       await client.connect()
-      await client.query(`
-      DROP materialized view IF EXISTS distinct_procedures_events;
-      DROP materialized view IF EXISTS distinct_procedures_schema_events;
-      `)
+      // await client.query(`
+      // DROP materialized view IF EXISTS distinct_procedures_events;
+      // DROP materialized view IF EXISTS distinct_procedures_schema_events;
+      // `)
 
       for (const tableName of TABLES_TO_EXPORT) {
         console.log(tableName)
@@ -94,8 +94,8 @@
   }
 
   // await loadDump(PG_TEST_CONFIG)
-  await createSudocuProcessedTables(PG_DEV_CONFIG)
+  // await createSudocuProcessedTables(PG_DEV_CONFIG)
   // await exportProcessedSudocu(PG_TEST_CONFIG)
-  // await importToDocurba(PG_DEV_CONFIG)
+  await importToDocurba(PG_PROD_CONFIG)
   // console.log('PG_TEST_CONFIG: ', PG_TEST_CONFIG)
 })()
