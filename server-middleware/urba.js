@@ -34,6 +34,7 @@ app.get('/collectivites/:code', async (req, res) => {
 })
 
 app.get('/sido_csv', async (req, res) => {
+  console.log('OKOKOK')
   const sidoQuery = supabase.from('sido').select('*')
   if (req.query.communes) {
     const { data } = await sidoQuery.eq('collectivite_type', 'Commune').csv()
