@@ -64,7 +64,7 @@
                           Doublon
                         </v-chip>
                       </template>
-                      Cette section est en double. N'hésitez pas à corriger le doublon en supprimant une des deux sections pour éviter des confusion ou des perte de données.
+                      Cette section est en double. N'hésitez pas à corriger le doublon en supprimant une des deux sections pour éviter des confusions ou des pertes de données. Notre conseil : conserver la section qui comporte des éléments pré-rédigés.
                     </v-tooltip>
                   </h2>
                 </v-col>
@@ -183,6 +183,7 @@
         :parent="section"
         :git-ref="gitRef"
         @added="sectionAdded"
+        @introCreated="updateSectionType"
       >
         <template #activator="{on}">
           <v-row align="center" class="my-3 pointer" v-on="on">
@@ -418,13 +419,13 @@ export default {
         const nameIndex = filePath.lastIndexOf(this.section.name)
         filePath = `${filePath.substring(0, nameIndex)}${this.sectionName}${this.section.type === 'file' ? '.md' : ''}`
 
-        await this.updateName() // This should emit a 'changeTree' event that shoud update section.path in props.
+        await this.updateName()
       }
 
       try {
         // console.log('is path updated ?', filePath)
 
-        await axios({
+        const { data: { data: { content: savedFile } } } = await axios({
           method: 'post',
           url: `/api/trames/${this.gitRef}`,
           data: {
@@ -436,6 +437,14 @@ export default {
             }
           }
         })
+
+        if (this.section.type === 'dir') {
+          // eslint-disable-next-line vue/no-mutating-props
+          this.section.introSha = savedFile.sha
+        } else {
+          // eslint-disable-next-line vue/no-mutating-props
+          this.section.sha = savedFile.sha
+        }
 
         if (this.project && this.project.id) {
           this.$notifications.notifyUpdate(this.project.id)
@@ -459,17 +468,21 @@ export default {
 
       this.saving = false
     },
-    sectionAdded (newSection) {
-      // This could probably go into parent with an event. But it's not a big issue to have it here.
-      // A Section card could also use a computed based on children length to determine if it's a dir or a file and adapt its path accordingly.
-      // eslint-disable-next-line vue/no-mutating-props
-      this.section.children.push(newSection)
+    updateSectionType (introFile) {
       if (this.section.type === 'file') {
         // eslint-disable-next-line vue/no-mutating-props
         this.section.type = 'dir'
         // eslint-disable-next-line vue/no-mutating-props
         this.section.path = this.section.path.replace('.md', '')
+        // eslint-disable-next-line vue/no-mutating-props
+        this.section.introSha = introFile.sha
       }
+    },
+    sectionAdded (newSection) {
+      // This could probably go into parent with an event. But it's not a big issue to have it here.
+      // A Section card could also use a computed based on children length to determine if it's a dir or a file and adapt its path accordingly.
+      // eslint-disable-next-line vue/no-mutating-props
+      this.section.children.push(newSection)
 
       this.$analytics({
         category: 'pac',
