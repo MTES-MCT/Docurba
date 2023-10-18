@@ -161,9 +161,10 @@ export default {
       // console.log(file)
       file.name = file.name.replace('.md', '')
       file.children = []
+      file.parent = this.parent
 
       this.dialog = false
-      this.$emit('added', file, this.parent)
+      this.$emit('added', file)
       this.loading = false
     }
   }

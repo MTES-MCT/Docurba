@@ -71,7 +71,7 @@
                 <v-col v-if="(isOpen || hover) && editable" cols="auto">
                   <v-tooltip bottom>
                     <template #activator="{on}">
-                      <v-btn icon small v-on="on" @click.stop="$emit('changeOrder', section.path, -1)">
+                      <v-btn icon small v-on="on" @click.stop="$emit('changeOrder', section, -1)">
                         <v-icon>{{ icons.mdiArrowUp }}</v-icon>
                       </v-btn>
                     </template>
@@ -79,7 +79,7 @@
                   </v-tooltip>
                   <v-tooltip bottom>
                     <template #activator="{on}">
-                      <v-btn icon small v-on="on" @click.stop="$emit('changeOrder', section.path, 1)">
+                      <v-btn icon small v-on="on" @click.stop="$emit('changeOrder', section, 1)">
                         <v-icon>{{ icons.mdiArrowDown }}</v-icon>
                       </v-btn>
                     </template>

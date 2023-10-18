@@ -106,7 +106,7 @@ export default {
 
     this.orderSections(sections, supSections)
 
-    function parseSection (section, supSections) {
+    function parseSection (section, supSections, parent) {
       const groupedChildren = groupBy(section.children, c => c.name)
       const groupedKeys = Object.keys(groupedChildren)
 
@@ -121,7 +121,7 @@ export default {
       })
 
       if (section.children) {
-        section.children = section.children.map(section => parseSection(section, supSections))
+        section.children = section.children.map(s => parseSection(s, supSections, section))
       } else { section.children = [] }
 
       const supSection = supSections.find((supSection) => {
@@ -131,6 +131,7 @@ export default {
       return Object.assign({
         diff: null,
         diffCount: 0,
+        parent,
         parentSha: supSection ? supSection.parent_sha : ''
       }, section)
     }
@@ -238,31 +239,10 @@ export default {
         PAC: this.project.PAC
       }).eq('id', this.project.id)
     },
-    findParent (section, path) {
-      const child = section.children.find(s => s.path === path)
-
-      if (child) {
-        return section
-      } else {
-        return section.children.find((s) => {
-          return this.findParent(s, path)
-        })
-      }
-    },
-    async saveOrder (sectionPath, orderChange) {
-      let parent = this.sections.find(s => s.path === sectionPath)
-      let changedSections = null
-
-      if (!parent) {
-        this.sections.find((section) => {
-          parent = this.findParent(section, sectionPath)
-          return parent
-        })
-
-        changedSections = parent.children
-      } else {
-        changedSections = this.sections
-      }
+    async saveOrder (section, orderChange) {
+      const sectionPath = section.path
+      const parent = section.parent
+      const changedSections = parent ? parent.children : this.sections
 
       const changedSectionIndex = changedSections.findIndex(s => s.path === sectionPath)
       const newIndex = changedSectionIndex + orderChange
