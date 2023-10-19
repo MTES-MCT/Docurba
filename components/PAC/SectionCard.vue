@@ -548,3 +548,9 @@ export default {
   font-size: 20px;
 }
 </style>
+
+<style>
+.pac-section-content img {
+  max-width: 100%;
+}
+</style>
