@@ -69,7 +69,7 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item link to="/guide">
+            <v-list-item link href="https://pad.incubateur.net/s/zG4jtJNL9" target="_blank">
               <v-list-item-title>
                 Guide
               </v-list-item-title>
