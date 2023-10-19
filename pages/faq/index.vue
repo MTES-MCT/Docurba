@@ -104,7 +104,6 @@
 
         <v-tabs-items v-model="tab" class="mt-3">
           <v-tab-item
-
             v-for="item in items"
             :key="item.tab"
           >
@@ -163,7 +162,6 @@ export default {
           disabled: true,
           href: ''
         }],
-
       items: [
         { tab: 'Je suis une DDT', content: 'Tab 1 Content' },
         { tab: 'Je suis une collectivité', content: 'Tab 2 Content' },
@@ -189,9 +187,15 @@ export default {
           active: false
         },
         {
-          title: 'Première connexion',
+          title: 'Données et Socle de PAC',
           img: '/images/faq/leaf.png',
           folder: '/FAQ/Données et Socle de PAC',
+          active: false
+        },
+        {
+          title: 'Première connexion',
+          img: '/images/faq/leaf.png',
+          folder: '/FAQ/Première connexion',
           active: false
         },
         {
@@ -217,10 +221,12 @@ export default {
     categorizedQuestions () {
       // 0 -> DDT, 1 -> Collectivites, 2 -> BE
       const mapping = { ddt: 0, collectivite: 1, be: 2, dreal: 3 }
+
       let cats = [[], [], [], []]
       const topicFAQ = this.FAQ.filter((e) => {
         return e.dir === this.activeCard.folder
       })
+
       topicFAQ.forEach((question) => {
         question.scope?.forEach((scp) => {
           cats[mapping[scp]].push(question)
