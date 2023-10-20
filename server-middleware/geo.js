@@ -5,7 +5,7 @@ app.use(express.json())
 
 const geo = require('./modules/geo.js')
 
-const topojson = require('./Data/a-com2022-topo.json')
+const fullTopojson = require('./Data/a-com2022-topo.json')
 
 app.get('/communes', (req, res) => {
   const communes = geo.getCommunes(req.query)
@@ -35,8 +35,30 @@ app.get('/intercommunalites/:code', (req, res) => {
   }
 })
 
+app.get('/geojson/communes', (req, res) => {
+  try {
+    if (!req.query.codes) {
+      throw new Error('"codes" parameter is mandatory')
+    }
+    const geojson = geo.getCommunesGeoJSON(req.query.codes)
+    res.status(200).send(geojson)
+  } catch (error) {
+    res.status(400).send({ message: error.message })
+  }
+})
+
 app.get('/topojson/communes', (req, res) => {
-  res.status(200).send(topojson)
+  try {
+    if (!req.query.codes) {
+      res.status(200).send(fullTopojson)
+      return
+    }
+
+    const topojson = geo.getCommunesTopoJSON(req.query.codes)
+    res.status(200).send(topojson)
+  } catch (error) {
+    res.status(400).send({ message: error.message })
+  }
 })
 
 module.exports = app

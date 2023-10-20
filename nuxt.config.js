@@ -21,7 +21,6 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-
     { src: '~/plugins/dayjs.js' },
     { src: '~/plugins/isDev.js' },
     { src: '~/plugins/composition.js' },
@@ -38,7 +37,9 @@ export default {
     { src: '~/plugins/notifications.js', mode: 'client' },
     { src: '~/plugins/githubRefs.js' },
     { src: '~/plugins/urbanisator.js' },
-    { src: '~/plugins/sudocu.js', mode: 'client' }
+    { src: '~/plugins/sudocu.js', mode: 'client' },
+    { src: '~/plugins/pdfMake.js', mode: 'client' },
+    { src: '~/plugins/analytics.js' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -131,7 +132,7 @@ export default {
 
   // Vue router
   router: {
-    middleware: ['matomo']
+    middleware: ['analytics', 'matomo']
   },
 
   // Content module configuration: https://go.nuxtjs.dev/config-content

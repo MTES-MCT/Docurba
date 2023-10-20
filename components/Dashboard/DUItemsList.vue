@@ -17,7 +17,8 @@
           DU intercommunaux
         </v-tab>
         <v-tab>
-          DU communaux
+          <span v-if="isEpci">DU communaux</span>
+          <span v-else>PLU/PLUi</span>
         </v-tab>
         <v-tab>
           SCoTs

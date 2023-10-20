@@ -200,9 +200,10 @@ export default {
       const sudoEpci = sudocuCollectivites.find((i) => {
         return i.codecollectivite === e.code
       })
-      if (!sudoEpci) {
-        console.log('not found sudoEpci: ', e)
-      }
+      // if (!sudoEpci) {
+      //   // console.log('not found sudoEpci: ', e)
+      // }
+      // // console.log('sudoEpci: ', sudoEpci)
       return {
         ...e,
         hasCompetence: sudoEpci?.sicompetenceplan ?? false
@@ -219,7 +220,7 @@ export default {
       // console.log('sudoCom: ', sudoCom)
       return {
         name: e.intitule,
-        competenceSudocu: sudoCom.sicompetenceplan,
+        competenceSudocu: sudoCom?.sicompetenceplan,
         competenceBanatic: e.competencePLU,
         type: 'Commune',
         lastProc: '',

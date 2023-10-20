@@ -120,7 +120,7 @@ export default {
           }
         })
 
-        await axios({
+        const { data: { data: { content: parentIntro } } } = await axios({
           method: 'post',
           url: `/api/trames/${this.gitRef}`,
           data: {
@@ -131,6 +131,10 @@ export default {
             }
           }
         })
+
+        this.$emit('introCreated', parentIntro)
+
+        // console.log('parentIntro', parentIntro)
       }
 
       const newSectionPath = `${dir}/${this.sectionName}`
@@ -157,9 +161,10 @@ export default {
       // console.log(file)
       file.name = file.name.replace('.md', '')
       file.children = []
+      file.parent = this.parent
 
       this.dialog = false
-      this.$emit('added', file, this.parent)
+      this.$emit('added', file)
       this.loading = false
     }
   }

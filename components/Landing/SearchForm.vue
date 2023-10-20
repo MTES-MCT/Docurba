@@ -49,6 +49,15 @@ export default {
       } else {
         const collectiviteId = this.selectedCollectivite.type === 'epci' ? this.selectedCollectivite.EPCI : this.selectedCollectivite.code_commune_INSEE
 
+        this.$analytics({
+          category: 'public',
+          name: 'search',
+          value: collectiviteId,
+          data: {
+            collectivite: this.selectedCollectivite
+          }
+        })
+
         this.$matomo([
           'trackEvent', 'Socle de PAC', 'Recherche',
           `${this.selectedCollectivite.departement} - ${this.selectedCollectivite.name}`

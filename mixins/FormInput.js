@@ -30,7 +30,7 @@ extend('needToBeOui', {
 
 extend('requiredCollectivite', {
   validate (value) {
-    return (value.EPCI || value.code_commune_INSEE)
+    return !!(value.EPCI || value.code_commune_INSEE)
   },
   message: 'Vous devez choisir une collectivité'
 })
@@ -69,6 +69,7 @@ extend('expirationDateCreditCard', {
   },
   message: 'Please fill as much as you can'
 })
+
 // @vue/component
 export default {
   components: {

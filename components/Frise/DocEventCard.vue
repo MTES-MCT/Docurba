@@ -50,8 +50,8 @@
       {{ event.type }} - {{ event.status }}
     </v-card-title>
     <div />
-    <v-card-text v-if="event.commentaire">
-      {{ event.commentaire }}
+    <v-card-text v-if="event.commentaire || event.description">
+      {{ event.commentaire || event.description }}
     </v-card-text>
     <v-card-actions>
       <v-chip

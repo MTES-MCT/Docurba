@@ -1,6 +1,6 @@
 ---
 question: "Partage du PAC par sections : utilité des cases à cocher dans les PAC communaux/intercommaunaux."
-visible: true
+visible: false
 scope: ['ddt']
 order: 9
 ---

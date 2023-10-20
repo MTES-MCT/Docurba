@@ -46,7 +46,7 @@ module.exports = async function (path, options = {}) {
         data: res
       }]).then((data) => {
         // console.log('cache saved', data)
-      })
+      }).catch(err => console.log('supabase err', err))
     }
 
     return res
@@ -55,7 +55,7 @@ module.exports = async function (path, options = {}) {
       // console.log('Cache Working')
       return cachedRes.data
     } else {
-      console.log('error in github', err)
+      console.log('error in github', path, err)
     }
   }
 }

@@ -59,7 +59,7 @@ export default {
       if (geometry.properties && geometry.properties.adm1_code) {
         newGeometry.properties = Object.assign({}, geometry.properties)
 
-        const dept = newGeometry.properties.iso_3166_2.replace('FR-0', '').replace('FR-', '')
+        const dept = newGeometry.properties.iso_3166_2.replace('FR-', '')
         newGeometry.properties.fill = colorScale(this.points[dept] || 0)
       }
 

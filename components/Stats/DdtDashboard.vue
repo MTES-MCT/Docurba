@@ -11,7 +11,7 @@
     <v-col cols="12" md="4">
       <v-row>
         <v-col cols="12">
-          <StatsBignumberCard title="nb d’agents de DDT/DEAL inscrits sur Docurba" :number="stats.nbAdmins" />
+          <StatsBignumberCard title="Nombre d’agents de DDT/DEAL inscrits sur Docurba" :number="stats.nbAdmins" />
         </v-col>
         <v-col cols="12">
           <StatsTextCard
@@ -72,11 +72,13 @@ export default {
         val = 1
       }
 
-      if (this.diffs[code] && this.diffs[code] > 25) {
+      const diff = this.diffs[code] || this.diffs[`0${code}`]
+
+      if (diff && diff > 25) {
         val = 2
       }
 
-      if (projectsByDept[code]) {
+      if (projectsByDept[code] || projectsByDept[`0${code}`]) {
         if (val === 2) {
           val = 3
         } // else { val = 2 }

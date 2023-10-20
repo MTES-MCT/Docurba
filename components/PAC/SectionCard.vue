@@ -51,13 +51,27 @@
                         </v-chip>
                       </template>
                     </PACEditingParentDiffDialog>
-                    <v-badge v-if="section.diffCount" color="primary" class="ml-2" inline :content="section.diffCount" />
+                    <v-badge v-if="section.diffCount && isEditable" color="primary" class="ml-2" inline :content="section.diffCount" />
+                    <v-tooltip v-if="section.isDuplicated" top max-width="300px">
+                      <template #activator="{on}">
+                        <v-chip
+                          label
+                          color="bf200"
+                          text-color="primary lighten-2"
+                          class="ml-2"
+                          v-on="on"
+                        >
+                          Doublon
+                        </v-chip>
+                      </template>
+                      Cette section est en double. N'hésitez pas à corriger le doublon en supprimant une des deux sections pour éviter des confusions ou des pertes de données. Notre conseil : conserver la section qui comporte des éléments pré-rédigés.
+                    </v-tooltip>
                   </h2>
                 </v-col>
                 <v-col v-if="(isOpen || hover) && editable" cols="auto">
                   <v-tooltip bottom>
                     <template #activator="{on}">
-                      <v-btn icon small v-on="on" @click.stop="$emit('changeOrder', section.path, -1)">
+                      <v-btn icon small v-on="on" @click.stop="$emit('changeOrder', section, -1)">
                         <v-icon>{{ icons.mdiArrowUp }}</v-icon>
                       </v-btn>
                     </template>
@@ -65,7 +79,7 @@
                   </v-tooltip>
                   <v-tooltip bottom>
                     <template #activator="{on}">
-                      <v-btn icon small v-on="on" @click.stop="$emit('changeOrder', section.path, 1)">
+                      <v-btn icon small v-on="on" @click.stop="$emit('changeOrder', section, 1)">
                         <v-icon>{{ icons.mdiArrowDown }}</v-icon>
                       </v-btn>
                     </template>
@@ -169,6 +183,7 @@
         :parent="section"
         :git-ref="gitRef"
         @added="sectionAdded"
+        @introCreated="updateSectionType"
       >
         <template #activator="{on}">
           <v-row align="center" class="my-3 pointer" v-on="on">
@@ -205,7 +220,6 @@
 </template>
 
 <script>
-
 import axios from 'axios'
 import {
   mdiPlus, mdiPencil, mdiContentSave,
@@ -248,7 +262,7 @@ export default {
     let headRef = 'main'
 
     if (this.project && this.project.id) {
-      headRef = `dept-${this.project.towns ? this.project.towns[0].departementCode : ''}`
+      headRef = `dept-${this.project.trame}`
     }
 
     if (this.gitRef.includes('dept-')) {
@@ -302,8 +316,10 @@ export default {
       return this.isOpen ? 'primary lighten-4' : 'white'
     },
     sectionContent () {
+      const body = this.$md.compile(this.sectionMarkdown)
+
       return {
-        body: this.$md.compile(this.sectionMarkdown)
+        body
       }
     },
     isEditable () {
@@ -324,6 +340,24 @@ export default {
   watch: {
     editEnabled () {
       this.$emit('edited', this.section.path, this.editEnabled)
+    },
+    isOpen () {
+      if (this.isOpen) {
+        this.$analytics({
+          category: 'pac',
+          name: 'open section',
+          value: this.section.name,
+          data: this.section
+        })
+      }
+    },
+    isSelected () {
+      this.$analytics({
+        category: 'pac',
+        name: `${this.isSelected ? 'select' : 'unselect'} section`,
+        value: this.section.name,
+        data: this.section
+      })
     }
   },
   mounted () {
@@ -385,13 +419,13 @@ export default {
         const nameIndex = filePath.lastIndexOf(this.section.name)
         filePath = `${filePath.substring(0, nameIndex)}${this.sectionName}${this.section.type === 'file' ? '.md' : ''}`
 
-        await this.updateName() // This should emit a 'changeTree' event that shoud update section.path in props.
+        await this.updateName()
       }
 
       try {
         // console.log('is path updated ?', filePath)
 
-        await axios({
+        const { data: { data: { content: savedFile } } } = await axios({
           method: 'post',
           url: `/api/trames/${this.gitRef}`,
           data: {
@@ -403,6 +437,14 @@ export default {
             }
           }
         })
+
+        if (this.section.type === 'dir') {
+          // eslint-disable-next-line vue/no-mutating-props
+          this.section.introSha = savedFile.sha
+        } else {
+          // eslint-disable-next-line vue/no-mutating-props
+          this.section.sha = savedFile.sha
+        }
 
         if (this.project && this.project.id) {
           this.$notifications.notifyUpdate(this.project.id)
@@ -418,21 +460,41 @@ export default {
         this.errorSaving = true
       }
 
+      this.$analytics({
+        category: 'pac',
+        name: 'update section',
+        value: this.section.name
+      })
+
       this.saving = false
+    },
+    updateSectionType (introFile) {
+      if (this.section.type === 'file') {
+        // eslint-disable-next-line vue/no-mutating-props
+        this.section.type = 'dir'
+        // eslint-disable-next-line vue/no-mutating-props
+        this.section.path = this.section.path.replace('.md', '')
+        // eslint-disable-next-line vue/no-mutating-props
+        this.section.introSha = introFile.sha
+      }
     },
     sectionAdded (newSection) {
       // This could probably go into parent with an event. But it's not a big issue to have it here.
       // A Section card could also use a computed based on children length to determine if it's a dir or a file and adapt its path accordingly.
       // eslint-disable-next-line vue/no-mutating-props
       this.section.children.push(newSection)
-      if (this.section.type === 'file') {
-        // eslint-disable-next-line vue/no-mutating-props
-        this.section.type = 'dir'
-        // eslint-disable-next-line vue/no-mutating-props
-        this.section.path = this.section.path.replace('.md', '')
-      }
+
+      this.$analytics({
+        category: 'pac',
+        name: 'add section',
+        value: newSection.name,
+        data: newSection
+      })
     },
     sectionRemoved (section) {
+      const duplicated = this.section.children.find(c => c.name === section.name)
+      if (duplicated) { duplicated.isDuplicated = false }
+
       // eslint-disable-next-line vue/no-mutating-props
       this.section.children = this.section.children.filter((c) => {
         return c.path !== section.path
@@ -459,8 +521,6 @@ export default {
           }
         })
 
-        console.log('diffSectionContent', diffSectionContent)
-
         this.diff.body = this.$md.compile(diffSectionContent.replace(/---([\s\S]*)---/, ''))
       } catch (err) {
         this.diff.body = null
@@ -486,5 +546,11 @@ export default {
 
 .section-title {
   font-size: 20px;
+}
+</style>
+
+<style>
+.pac-section-content img {
+  max-width: 100%;
 }
 </style>

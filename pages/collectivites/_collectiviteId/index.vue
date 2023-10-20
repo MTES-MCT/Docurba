@@ -42,6 +42,7 @@
             color="white"
             class="py-2 fill-height"
             :to="actionsCard.disabled ? null: actionsCard.to"
+            nuxt
           >
             <v-card-title class="text-body-1 font-weight-bold break-word d-flex align-end justify-space-between" style="line-height:24px">
               <div>
@@ -138,7 +139,7 @@ export default {
 <style scoped>
 .divider-vertical {
   width: 4px;
-height: 100%;
+  height: 100%;
   background: #6A6AF4;
 }
 </style>

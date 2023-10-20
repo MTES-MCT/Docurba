@@ -53,7 +53,8 @@ export default {
         { text: 'Base territoriale', path: `/collectivites/${this.$route.params.collectiviteId}/donnees/data` },
         { text: 'Géo-IDE', path: `/collectivites/${this.$route.params.collectiviteId}/donnees/geoide` },
         { text: 'Géorisques', path: `/collectivites/${this.$route.params.collectiviteId}/donnees/georisques` },
-        { text: 'INPN', path: `/collectivites/${this.$route.params.collectiviteId}/donnees/inpn` }
+        { text: 'INPN', path: `/collectivites/${this.$route.params.collectiviteId}/donnees/inpn` },
+        { text: 'GPU', path: `/collectivites/${this.$route.params.collectiviteId}/donnees/gpu` }
       ]
     }
   }

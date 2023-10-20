@@ -86,8 +86,6 @@ export default {
       url: `/api/trames/tree/${this.gitRef}`
     })
 
-    console.log('trame project', this.project, this.project.towns[0])
-
     let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,
         `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.trame) : ''}`,
@@ -108,9 +106,22 @@ export default {
 
     this.orderSections(sections, supSections)
 
-    function parseSection (section, supSections) {
+    function parseSection (section, supSections, parent) {
+      const groupedChildren = groupBy(section.children, c => c.name)
+      const groupedKeys = Object.keys(groupedChildren)
+
+      groupedKeys.forEach((key) => {
+        const group = groupedChildren[key]
+
+        if (group.length > 1) {
+          group.forEach((section) => {
+            section.isDuplicated = true
+          })
+        }
+      })
+
       if (section.children) {
-        section.children = section.children.map(section => parseSection(section, supSections))
+        section.children = section.children.map(s => parseSection(s, supSections, section))
       } else { section.children = [] }
 
       const supSection = supSections.find((supSection) => {
@@ -120,6 +131,7 @@ export default {
       return Object.assign({
         diff: null,
         diffCount: 0,
+        parent,
         parentSha: supSection ? supSection.parent_sha : ''
       }, section)
     }
@@ -192,7 +204,7 @@ export default {
       const sectionPath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
 
       const diffFile = diffFiles.find((file) => {
-        return file.filename === sectionPath
+        return file.filename === sectionPath && file.status === 'modified'
       })
 
       const level = diffRef.includes('dept-') ? 'départemental' : 'régional'
@@ -227,31 +239,10 @@ export default {
         PAC: this.project.PAC
       }).eq('id', this.project.id)
     },
-    findParent (section, path) {
-      const child = section.children.find(s => s.path === path)
-
-      if (child) {
-        return section
-      } else {
-        return section.children.find((s) => {
-          return this.findParent(s, path)
-        })
-      }
-    },
-    async saveOrder (sectionPath, orderChange) {
-      let parent = this.sections.find(s => s.path === sectionPath)
-      let changedSections = null
-
-      if (!parent) {
-        this.sections.find((section) => {
-          parent = this.findParent(section, sectionPath)
-          return parent
-        })
-
-        changedSections = parent.children
-      } else {
-        changedSections = this.sections
-      }
+    async saveOrder (section, orderChange) {
+      const sectionPath = section.path
+      const parent = section.parent
+      const changedSections = parent ? parent.children : this.sections
 
       const changedSectionIndex = changedSections.findIndex(s => s.path === sectionPath)
       const newIndex = changedSectionIndex + orderChange
