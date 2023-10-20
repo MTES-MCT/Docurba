@@ -273,7 +273,7 @@ export default {
 </script>
 
 <style lang="scss">
-  .faq .nuxt-content-container img {
+  .faq .nuxt-content-container img, .faq .nuxt-content img {
     max-width: 100%;
   }
 </style>
