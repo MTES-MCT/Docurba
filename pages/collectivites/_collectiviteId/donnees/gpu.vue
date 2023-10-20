@@ -1,15 +1,15 @@
 <template>
-  <div class="py-4">
-    <v-container v-if="loading">
-      <v-row>
-        <v-col v-for="i in 3" :key="i">
-          <v-skeleton-loader type="image" />
-        </v-col>
-      </v-row>
-    </v-container>
+  <v-container v-if="loading">
+    <v-row>
+      <v-col v-for="i in 3" :key="i">
+        <v-skeleton-loader type="image" />
+      </v-col>
+    </v-row>
+  </v-container>
 
-    <template v-else>
-      <v-container>
+  <v-container v-else>
+    <v-row>
+      <v-col cols="12">
         <v-chip-group
           v-model="selectedArea"
           column
@@ -25,16 +25,14 @@
             {{ area.intitule }}
           </v-chip>
         </v-chip-group>
-      </v-container>
-      <v-container class="mt-2">
-        <v-row>
-          <v-col v-for="doc in filteredDocuments" :key="doc.id" :cols="4">
-            <DataGpuDocumentCard :document="doc" />
-          </v-col>
-        </v-row>
-      </v-container>
-    </template>
-  </div>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col v-for="doc in filteredDocuments" :key="doc.id" :cols="4">
+        <DataGpuDocumentCard :document="doc" />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>

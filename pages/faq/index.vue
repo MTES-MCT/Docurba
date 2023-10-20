@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="faq">
     <v-row>
       <v-col cols="12">
         <v-breadcrumbs class="pb-0 pl-0" :items="breadItems" />
@@ -273,5 +273,7 @@ export default {
 </script>
 
 <style lang="scss">
-
+  .faq .nuxt-content-container img {
+    max-width: 100%;
+  }
 </style>

@@ -26,11 +26,11 @@ En quelques clics, l'acte est ensuite **publié** sur le Géoportail de l'urbani
 
 ### 2. **Recherchez la collectivité** concernée via la barre de recherche
 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/barre01.png)
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/barre01.png)
   
 ### 3. Cliquez sur « **Déposer un acte** » et laisser vous guider par l'outil
 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/faqdepotacte02ter.png)
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/faqdepotacte02ter.png)
 
 <a class="anchor" name="headdepot"></a>
 ## 🔹 Déposer un acte
@@ -42,13 +42,13 @@ Vous allez voir ci-dessous comment **déposer** vos actes.
 
 - Cliquez sur « **Déposer** » :
 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/faqdepotacte02bis.png)
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/faqdepotacte02bis.png)
 
 - Puis renseignez votre **email** :
 
   ⚠️ Choisissez bien une adresse que vous consultez **_régulièrement_**
 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/faqdepotacte03.png)
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/faqdepotacte03.png)
 
 *Après avoir validé, vous pourrez alors continuer à renseigner le formulaire de dépôt d’acte.
 Pendant ce temps, nous procéderons à la vérification de votre identité et vous recevrez un email vous confirmant que votre compte est bien validé le cas échéant.*
@@ -61,26 +61,26 @@ Une fois connecté, vous pourrez directement déposer votre acte sans passer par
 
 - Répondez aux différentes questions, tel qu'indiqué ci-dessous :
 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/faqformulaire01.png)
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/faqformulaire01.png)
 
   ❌ Vous devez renseigner la **date de l'acte** et non la date du dépôt de cet acte.
 
 - Affinez le périmètre **géographique** de l'acte :
 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/faqformulaire02.png)
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/faqformulaire02.png)
 
 - ainsi que son périmètre **d'application** :
 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/faqformulaire03.png)
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/faqformulaire03.png)
 
 - enfin, **finalisez** le dépôt et **confirmez** :
 
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/faqformulaire04.png)
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/faqformulaire04.png)
 
 ### Et voilà, votre acte est déposé !  
 ### Il est désormais **hébergé** sur Docurba ce qui va vous faciliter la publication sur le GPU 🥳 !
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/faqformulaire05.png)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/faqformulaire05.png)
 
 ```
 📌 Vous receverez alors l'email confirmant le dépôt d'acte.
@@ -103,19 +103,19 @@ Suite au dépôt d'acte, vous avez reçu instantanément **le lien URL** de votr
 Exemple avec la commune de SAUCATS.  
 **Cliquez** sur la commune concernée 👇🏻  
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/faqgpu01.png) 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/faqgpu01.png) 
 
 ### 3. Affichez la page Territoire  
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/faqgpu02.png)   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/faqgpu02.png)   
 
 ### 4. Ajoutez des « documents complémentaires »  
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/faqgpu03.png)   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/faqgpu03.png)   
 
 ### 5. Remplissez le formulaire et validez !  
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](https://github.com/MTES-MCT/Docurba/blob/dev/static/images/guide/faqgpu04.png) 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![alt text](/images/guide/faqgpu04.png) 
 
 ### Et voilà ! Votre acte est désormais hébergé sur Docurba et publié 👏🏻.
 
