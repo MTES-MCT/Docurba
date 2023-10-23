@@ -71,6 +71,10 @@ export default ({ $md, $isDev, $supabase }, inject) => {
     },
     // fetchGithubRef could go into its own plugin/mixin.
     async fetchGithubRef (githubRef, project) {
+      const { data: [{ PAC: selectedSections }] } = await $supabase.from('projects').select('PAC').eq('id', project.id)
+
+      // console.log('selectedSections', selectedSections)
+
       const { data: sections } = await axios({
         method: 'get',
         url: `${baseUrl}/api/trames/tree/${githubRef}?content=all`
@@ -102,9 +106,8 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         }
       }
 
-      const sectionsPaths = project.PAC.map(p => p)
-      const parsedSections = sections.filter(s => sectionsPaths.includes(s.path))
-      parsedSections.forEach(s => parseSection(s, sectionsPaths))
+      const parsedSections = sections.filter(s => selectedSections.includes(s.path))
+      parsedSections.forEach(s => parseSection(s, selectedSections))
 
       return parsedSections
     },

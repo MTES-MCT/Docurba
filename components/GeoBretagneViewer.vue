@@ -41,6 +41,12 @@ export default {
 
     const xss = '%3Cscript%3EsetTimeout%28%28%29%3D%3E%7B%24%28%27%23help%27%29.hide%28%29%3B%24%28%27.modal-backdrop%27%29.hide%28%29%3B%24%28%27%23legend%27%29.removeClass%28%27active%27%29%3B%7D%2C2000%29%3C%2Fscript%3E'
     this.iframeSrc = `https://geobretagne.fr/mviewer/?x=${x}&y=${y}&z=13&config=/apps/viz/config.xml&title=${xss}`
+
+    this.$analytics({
+      category: 'public',
+      name: 'afficher carte',
+      value: this.collectiviteCode
+    })
   }
 }
 </script>

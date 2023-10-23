@@ -312,7 +312,7 @@ export default {
   },
   watch: {
     validationErrors (newVal) {
-      console.log('TRIGGER')
+      // console.log('TRIGGER')
     },
     DUType (newVal) {
       if (newVal === 'PLUi') {
@@ -332,7 +332,7 @@ export default {
       }
     })
 
-    console.log('this.$refs: ', this.$refs)
+    // console.log('this.$refs: ', this.$refs)
     this.selectAllPerimetre()
   },
   methods: {
@@ -355,11 +355,12 @@ export default {
           // <type_epci_commune>/<insee_or_code>/<date>/files
           const idFile = uuidv4()
           const path = `${this.isEpci ? 'epci' : 'commune'}/${this.$route.params.collectiviteId}/${uploadTimestamp}/${idFile}`
-          console.log('path: ', path)
+          // console.log('path: ', path)
           const { data: dataUpload, error } = await this.$supabase.storage
             .from('prescriptions')
             .upload(path, file)
           if (error) {
+            // eslint-disable-next-line no-console
             console.log('error on upload: ', error)
             throw new Error('Erreur d\'upload')
           }
@@ -367,7 +368,7 @@ export default {
           const { data: dataUrl, error: errorUrl } = this.$supabase.storage.from('prescriptions').getPublicUrl(dataUpload.path)
           if (errorUrl) { throw new Error('Erreur de récuparation de l\'url') }
           filesData.push({ path, name: file.name, id: uuidv4(), url: dataUrl.publicUrl })
-          console.log('TEST DATA: ', filesData)
+          // console.log('TEST DATA: ', filesData)
         }
 
         return filesData
@@ -379,7 +380,7 @@ export default {
     async submitPrescription () {
       try {
         await this.$user.isReady
-        console.log('submitPrescription')
+        // console.log('submitPrescription')
         this.loadingSave = true
 
         // TODO: Add column verified or accepted sur les prescription with fill automatically if the user posting is a verified connected one.
@@ -428,7 +429,17 @@ export default {
           method: 'post',
           data: { userData }
         })
-        console.log('REDIRECT')
+        // console.log('REDIRECT')
+
+        this.$analytics({
+          category: 'prescriptions',
+          name: 'ajout',
+          value: this.collectivite.code,
+          data: {
+            collectivite: this.collectivite
+          }
+        })
+
         this.$router.push({
           name: 'collectivites-collectiviteId-prescriptions',
           params: { collectiviteId: this.collectivite.code },
@@ -438,6 +449,7 @@ export default {
         this.error = error
         this.$vuetify.goTo('error--text:first-of-type')
         this.loadingSave = false
+        // eslint-disable-next-line no-console
         console.log(error)
       }
     }

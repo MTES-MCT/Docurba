@@ -173,9 +173,16 @@ export default {
   methods: {
     showMap () {
       // Start Analytics
+      this.$analytics({
+        category: 'public',
+        name: 'afficher carte',
+        value: this.source.title,
+        data: this.source
+      })
+
       this.$matomo([
         'trackEvent', 'Data Source', 'Carte',
-        this.source.nom
+        this.source.title
       ])
       // End Analytics
     }
