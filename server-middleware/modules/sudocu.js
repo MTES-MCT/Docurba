@@ -61,9 +61,11 @@ module.exports = {
       // TODO: Ajouter Délibération d'approbation du prefet a ajouter
       statusInfos = {
         isSectoriel,
-        hasDelibApprob: procedure.events?.some(e => e.libtypeevenement === "Délibération d'approbation" && e.codestatutevenement === 'V'),
+        // ou Arrêté d'abrogation OU Arrêté du Maire ou du Préfet ou de l'EPCI OU Approbation du préfet
+        //
+        hasDelibApprob: procedure.events?.some(e => ["Délibération d'approbation", "Arrêté d'abrogation", "Arrêté du Maire ou du Préfet ou de l'EPCI", 'Approbation du préfet'].includes(e.libtypeevenement) && e.codestatutevenement === 'V'),
         hasAbandon: procedure.events?.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
-        hasAnnulation: procedure.events?.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement))
+        hasAnnulation: procedure.events?.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement) && e.codestatutevenement === 'V')
       }
       if (statusInfos.hasAbandon) {
         statusProcedure = 'abandon'
@@ -79,6 +81,7 @@ module.exports = {
   },
   setCommunalsProceduresStatus (arrProcedures) {
     const opposableProc = arrProcedures.find(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation)
+    console.log('arrProcedures: ', arrProcedures)
     if (opposableProc) {
       opposableProc.status = 'opposable'
       // TODO: ca fait un bug sur Montgaillard

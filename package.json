@@ -12,6 +12,7 @@
     "sido": "node scripts/sidoData.js",
     "generate": "nuxt generate",
     "migrate": "node database/index.js",
+    "sudocu2docurba": "node database/sudocu2docurba.js",
     "lint:js": "eslint --ext \".js,.vue\" --ignore-path .gitignore .",
     "lint": "npm run lint:js"
   },
