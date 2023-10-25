@@ -10,6 +10,11 @@
   <v-container v-else>
     <v-row>
       <v-col cols="12">
+        <v-alert type="info">
+          Ceci est une première version de la mise à disposition des données proposées par le GPU, n'hésitez pas à nous faire des retours pour l'améliorer : <a href="mailto:equipe@docurba.beta.gouv.fr">equipe@docurba.beta.gouv.fr</a>
+        </v-alert>
+      </v-col>
+      <v-col cols="12">
         <v-chip-group
           v-model="selectedArea"
           column
