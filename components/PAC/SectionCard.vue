@@ -126,9 +126,14 @@
               <v-row v-if="editEnabled">
                 <v-col :cols="(diff.visible && diff.body) ? 6 : 12">
                   <VTiptap v-if="editEnabled" v-model="sectionMarkdown" class="mt-6">
-                    <PACSectionsAttachementsDialog
+                    <PACSectionsFileAttachmentsDialog
                       :section="section"
                       :git-ref="gitRef"
+                    />
+                    <PACSectionsDataAttachmentsDialog
+                      v-if="project"
+                      :section="section"
+                      :project="project"
                     />
                     <v-tooltip bottom>
                       <template #activator="{on}">
@@ -150,12 +155,17 @@
                   <nuxt-content class="pac-section-content mt-4" :document="sectionContent" />
                 </v-col>
               </v-row>
-              <PACSectionsAttachementsChips
-                :section="section"
-                :git-ref="gitRef"
-                :project="project"
-                :editable="editable"
-              />
+              <v-row>
+                <v-col class="d-flex flex-column" :style="{ gap: '0.5rem' }">
+                  <PACSectionsFileAttachmentsChips
+                    :section="section"
+                    :git-ref="gitRef"
+                    :project="project"
+                    :editable="editable"
+                  />
+                  <PACSectionsDataAttachmentsCards :section="section" />
+                </v-col>
+              </v-row>
               <v-row v-if="section.children && section.children.length">
                 <v-col
                   v-for="child in section.children"

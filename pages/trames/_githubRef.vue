@@ -129,6 +129,7 @@ export default {
       })
 
       return Object.assign({
+        id: supSection?.id,
         diff: null,
         diffCount: 0,
         parent,

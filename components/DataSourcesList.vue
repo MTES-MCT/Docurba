@@ -1,5 +1,6 @@
 <template>
-  <v-container v-if="dataSources.length">
+  <VGlobalLoader v-if="loading" />
+  <v-container v-else-if="dataSources.length">
     <v-row>
       <v-col cols="12">
         <v-chip-group
@@ -64,13 +65,9 @@ import { groupBy } from 'lodash'
 
 export default {
   props: {
-    dataSources: {
+    collectivitesCodes: {
       type: Array,
-      default () { return [] }
-    },
-    themes: {
-      type: Array,
-      default () { return [] }
+      required: true
     },
     region: {
       type: String,
@@ -88,7 +85,10 @@ export default {
   },
   data () {
     return {
-      selectedTheme: ''
+      dataSources: [],
+      themes: [],
+      selectedTheme: '',
+      loading: true
     }
   },
   computed: {
@@ -117,17 +117,37 @@ export default {
       // End Analytics
     }
   },
+  async created () {
+    const { dataset, themes } = await this.$daturba.getData(this.region, this.collectivitesCodes)
+    this.dataSources = dataset
+    this.themes = themes
+    this.loading = false
+  },
   methods: {
     changeSelection (sourceObj, selected) {
       if (selected) {
-        this.$emit('add', sourceObj)
+        this.$emit('add', {
+          title: sourceObj.nom,
+          category: sourceObj.nom_couche,
+          source: 'BASE_TERRITORIALE',
+          url: sourceObj.carto_url,
+          links: sourceObj.ressources.map((r) => {
+            return {
+              label: r.alias ?? r[0].alias,
+              url: r.valeur ?? r[0].valeur
+            }
+          }),
+          extra: {
+            id: sourceObj.id,
+            table: sourceObj.nom_table
+          }
+        })
       } else {
-        this.$emit('remove', sourceObj)
+        this.$emit('remove', sourceObj.carto_url)
       }
     },
     isSelected (sourceObj) {
-      const sourceUrl = this.$daturba.getCardDataUrl(this.region, sourceObj)
-      return !!this.selection.find(s => s.url === sourceUrl)
+      return !!this.selection.find(s => s.url === sourceObj.carto_url)
     }
   }
 }
