@@ -91,6 +91,10 @@ export default {
       type: Object,
       required: true
     },
+    procedureId: {
+      type: String,
+      required: true
+    },
     censored: {
       type: Boolean,
       default: () => true
@@ -122,9 +126,7 @@ export default {
     },
     async downloadFile (attachement) {
       // TODO: Handle link type
-      console.log('this.event.from_sudocuh: ', this.event.from_sudocuh)
-      const path = this.event.from_sudocuh ? attachement.id : `${this.event.project_id}/${this.event.id}/${attachement.id}`
-      console.log('CHOSEN: ', path)
+      const path = this.event.from_sudocuh ? attachement.id : `${this.procedureId}/${this.event.id}/${attachement.id}`
       const { data } = await this.$supabase.storage.from('doc-events-attachements').download(path)
 
       const link = this.$refs[`file-${attachement.id}`][0]

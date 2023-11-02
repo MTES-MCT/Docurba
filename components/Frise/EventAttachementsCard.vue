@@ -30,7 +30,7 @@
                   <v-list-item-action class="mr-2">
                     <v-btn
                       color="primary"
-                      :lodaing="dowloading.includes(file.id)"
+                      :loading="dowloading.includes(file.id)"
                       outlined
                       @click="downloadFile(file)"
                     >
@@ -89,10 +89,10 @@ export default {
       type: Array,
       required: true
     },
-    projectId: {
+    procedureId: {
       type: String,
       default () {
-        return this.$route.params.projectId
+        return this.$route.params.procedureId
       }
     },
     eventId: {
@@ -146,10 +146,17 @@ export default {
       file.state = 'removed'
     },
     async downloadFile (file) {
+      if (file.state === 'new') {
+        const link = this.$refs[`file-${file.id}`][0]
+        link.href = URL.createObjectURL(file.file)
+        link.click()
+        return
+      }
+
       this.dowloading.push(file.id)
 
       const { data } = await this.$supabase.storage.from('doc-events-attachements')
-        .download(`${this.projectId}/${this.eventId}/${file.id}`)
+        .download(`${this.procedureId}/${this.eventId}/${file.id}`)
 
       const link = this.$refs[`file-${file.id}`][0]
       link.href = URL.createObjectURL(data)

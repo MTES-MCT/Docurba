@@ -33,7 +33,7 @@
           <template #opposite>
             <v-chip>{{ formatDate(event.date_iso) }}</v-chip>
           </template>
-          <FriseDocEventCard :event="event" :censored="censored" />
+          <FriseDocEventCard :event="event" :procedure-id="procedureId" :censored="censored" />
         </v-timeline-item>
       </v-timeline>
     </v-col>
@@ -54,10 +54,10 @@ export default {
       type: Boolean,
       default: () => false
     },
-    projectId: {
+    procedureId: {
       type: String,
       default () {
-        return this.$route.params.projectId
+        return this.$route.params.procedureId
       }
     },
     events: {
