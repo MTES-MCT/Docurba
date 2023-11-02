@@ -34,6 +34,10 @@ export default {
     ressources: {
       type: Array,
       required: true
+    },
+    regionIso: {
+      type: String,
+      default: () => this.$route.query.region || this.$route.query.r
     }
   },
   computed: {
@@ -42,15 +46,12 @@ export default {
       return this.ressources.filter((r) => {
         return this.getSource(r)
       })
-    },
-    selectedRegion () {
-      return this.$route.query.region || this.$route.query.r
     }
   },
   methods: {
     getSource (ressource) {
       if (ressource.regions) {
-        const region = ressource.regions.find(s => (s ? s.iso : '') === this.selectedRegion)
+        const region = ressource.regions.find(s => (s ? s.iso : '') === this.regionIso)
 
         return region ? region.source : ressource.sourceNational
       } else { return ressource.sourceNational }
