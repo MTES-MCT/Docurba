@@ -132,8 +132,10 @@
                     />
                     <PACSectionsDataAttachmentsDialog
                       v-if="project"
+                      v-model="dataAttachments"
                       :section="section"
                       :project="project"
+                      :git-ref="gitRef"
                     />
                     <v-tooltip bottom>
                       <template #activator="{on}">
@@ -163,7 +165,11 @@
                     :project="project"
                     :editable="editable"
                   />
-                  <PACSectionsDataAttachmentsCards :section="section" />
+                  <PACSectionsDataAttachmentsCards
+                    v-model="dataAttachments"
+                    :section="section"
+                    :git-ref="gitRef"
+                  />
                 </v-col>
               </v-row>
               <v-row v-if="section.children && section.children.length">
@@ -308,7 +314,8 @@ export default {
       errorSaving: false,
       errorDiff: false,
       headRef,
-      diff: { body: null, visible: false, label: `Trame ${headRef.includes('dept-') ? 'départementale' : 'régionale'}` }
+      diff: { body: null, visible: false, label: `Trame ${headRef.includes('dept-') ? 'départementale' : 'régionale'}` },
+      dataAttachments: []
     }
   },
   computed: {
@@ -372,6 +379,7 @@ export default {
   },
   mounted () {
     this.fetchSectionContent()
+    this.fetchDataAttachments()
   },
   methods: {
     async fetchSectionContent () {
@@ -408,6 +416,13 @@ export default {
 
         this.sectionHistory = sectionHistory
       }
+    },
+    async fetchDataAttachments () {
+      const { data } = await this.$supabase.from('pac_sections_data').select('*').match({
+        path: this.section.path,
+        ref: this.gitRef
+      })
+      this.dataAttachments = data
     },
     async updateName () {
       await axios({

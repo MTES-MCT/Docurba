@@ -60,6 +60,10 @@
 import { mdiPlus, mdiPaperclip, mdiClose } from '@mdi/js'
 
 export default {
+  model: {
+    prop: 'attachments',
+    event: 'input'
+  },
   props: {
     project: {
       type: Object,
@@ -68,6 +72,14 @@ export default {
     },
     section: {
       type: Object,
+      required: true
+    },
+    gitRef: {
+      type: String,
+      required: true
+    },
+    attachments: {
+      type: Array,
       required: true
     }
   },
@@ -79,7 +91,6 @@ export default {
         mdiClose
       },
       dialog: false,
-      selectedAttachments: [],
       currentTab: null
     }
   },
@@ -91,40 +102,35 @@ export default {
       return this.project.towns[0].region.iso
     },
     baseTerritorialeSelection () {
-      return this.selectedAttachments.filter(a => a.source === 'BASE_TERRITORIALE')
+      return this.attachments.filter(a => a.source === 'BASE_TERRITORIALE')
     },
     geoRisquesSelection () {
-      return this.selectedAttachments.filter(a => a.source === 'GEORISQUES')
+      return this.attachments.filter(a => a.source === 'GEORISQUES')
     },
     inpnSelection () {
-      return this.selectedAttachments.filter(a => a.source === 'INPN')
+      return this.attachments.filter(a => a.source === 'INPN')
     }
-  },
-  async created () {
-    const { data } = await this.$supabase.from('pac_sections_data').select('*').match({
-      section_id: this.section.id
-    })
-
-    this.selectedAttachments = data
   },
   methods: {
     async add (attachment) {
       const { data } = await this.$supabase.from('pac_sections_data').insert([{
         ...attachment,
-        section_id: this.section.id
+        path: this.section.path,
+        ref: this.gitRef
       }]).select()
 
-      this.selectedAttachments = this.selectedAttachments.concat(data)
+      this.$emit('input', this.attachments.concat(data))
     },
     async remove (attachmentUrl) {
-      this.selectedAttachments = this.selectedAttachments.filter((s) => {
-        return s.url !== attachmentUrl
-      })
-
       await this.$supabase.from('pac_sections_data').delete().match({
         url: attachmentUrl,
-        section_id: this.section.id
+        path: this.section.path,
+        ref: this.gitRef
       })
+
+      this.$emit('input', this.attachments.filter((s) => {
+        return s.url !== attachmentUrl
+      }))
     }
   }
 }

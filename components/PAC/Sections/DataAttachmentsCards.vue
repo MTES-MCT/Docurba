@@ -60,15 +60,26 @@
 import { mdiClose } from '@mdi/js'
 
 export default {
+  model: {
+    prop: 'attachments',
+    event: 'input'
+  },
   props: {
     section: {
       type: Object,
+      required: true
+    },
+    gitRef: {
+      type: String,
+      required: true
+    },
+    attachments: {
+      type: Array,
       required: true
     }
   },
   data () {
     return {
-      attachments: [],
       dialog: false,
       selectedAttachment: null,
       subscription: null,
@@ -82,35 +93,14 @@ export default {
       }
     }
   },
-  mounted () {
-    this.fetchAttachments()
-
-    this.subscription = this.$supabase
-      .channel(`public:pac_sections_data:section_id=eq.${this.section.id}`)
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'pac_sections_data',
-        filter: `section_id=eq.${this.section.id}`
-      }, () => {
-        this.fetchAttachments()
-      }).subscribe()
-  },
-  beforeDestroy () {
-    this.$supabase.removeChannel(this.subscription)
-  },
   methods: {
     openDialog (attachment) {
       this.selectedAttachment = attachment
       this.dialog = true
     },
-    async fetchAttachments () {
-      const { data } = await this.$supabase.from('pac_sections_data').select('*').match({ section_id: this.section.id })
-      this.attachments = data
-    },
     async removeAttachment (attachment) {
       await this.$supabase.from('pac_sections_data').delete().eq('id', attachment.id)
-      this.attachments = this.attachments.filter(a => a.id !== attachment.id)
+      this.$emit('input', this.attachments.filter(a => a.id !== attachment.id))
       this.dialog = false
     }
   }
