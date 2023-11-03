@@ -1,3 +1,5 @@
+import fr from 'vuetify/lib/locale/fr'
+
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -145,7 +147,10 @@ export default {
     icons: {
       iconfont: 'mdiSvg',
       chevronRight: 'mdiChevronRight'
-
+    },
+    lang: {
+      locales: { fr },
+      current: 'fr'
     },
     theme: {
       options: { customProperties: true },
