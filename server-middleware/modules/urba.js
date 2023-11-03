@@ -261,12 +261,12 @@ module.exports = {
         pc_date_arret_projet: currentArretEvent?.date_iso || '', //
         pc_date_pac: currentPAC?.date_iso || '', //
         pc_date_pac_comp: currentPACcomp?.date_iso || '', //
-        pc_plui_valant_scot: lastPrescriptionEvent?.is_scot || '', //
-        pc_pluih: lastPrescriptionEvent?.is_pluih || false, //
+        pc_plui_valant_scot: lastCurrentProcedure?.is_scot || '', //
+        pc_pluih: lastCurrentProcedure?.is_pluih || false, //
         pc_pluih_num_procedure: '', // Pas de ref dans Docurba
-        pc_sectoriel: lastPrescriptionEvent?.is_sectoriel || false, //
-        pc_pdu_tient_lieu: lastPrescriptionEvent?.is_pdu || false, //
-        pc_pdu_obligatoire: lastPrescriptionEvent?.mandatory_pdu || false, //
+        pc_sectoriel: lastCurrentProcedure?.is_sectoriel || false, //
+        pc_pdu_tient_lieu: lastCurrentProcedure?.is_pdu || false, //
+        pc_pdu_obligatoire: lastCurrentProcedure?.mandatory_pdu || false, //
         pc_psmv: '', //  A priori on l'a
         pc_type_moe: '', // A priori on l'a
         pc_nom_sst: '', // A priori on l'a
