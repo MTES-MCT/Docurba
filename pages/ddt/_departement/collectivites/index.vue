@@ -165,7 +165,7 @@ export default {
           name: e.intitule,
           competenceSudocu: e.hasCompetence,
           competenceBanatic: e.competences.plu,
-          dateCreation: e.dateCreation,
+          // dateCreation: e.dateCreation,
           type: `${e.labelJuridique} (${e.nbCommunes})`,
           lastProc: '',
           status: '',
@@ -227,7 +227,7 @@ export default {
         status: '',
         intercommunaliteName: e.intercommunaliteName,
         departementCode: e.departementCode,
-        dateCreation: e.dateCreation,
+        // dateCreation: e.dateCreation,
         intercommunaliteCode: e.intercommunaliteCode,
         detailsPath: { name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: this.$route.params.departement, collectiviteId: e.code } },
         frpProcPrincipalPath: { name: 'foo' }
