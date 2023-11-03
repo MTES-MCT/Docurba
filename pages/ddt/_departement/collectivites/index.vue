@@ -142,6 +142,7 @@ export default {
     headers () {
       return [
         { text: 'Nom', align: 'start', value: 'name' },
+        { text: 'Code INSEE', align: 'start', value: 'code' },
         { text: 'Compétence', value: 'competence' },
         { text: 'Intercommunalité', value: 'intercommunalite' },
         // { text: 'Date de création', value: 'dateCreation' },
@@ -151,6 +152,7 @@ export default {
     headersEpci () {
       return [
         { text: 'Nom', align: 'start', value: 'name' },
+        { text: 'SIREN', align: 'start', value: 'code' },
         { text: 'Type', value: 'type' },
         { text: 'Compétence', value: 'competence' },
         // { text: 'Date de création', value: 'dateCreation' },
@@ -160,16 +162,23 @@ export default {
     collectivites () {
       if (!this.epci) { return [] }
 
-      return this.epci.map((e) => {
+      return this.epci.map((collectivite) => {
         return {
-          name: e.intitule,
-          competenceSudocu: e.hasCompetence,
-          competenceBanatic: e.competences.plu,
-          // dateCreation: e.dateCreation,
-          type: `${e.labelJuridique} (${e.nbCommunes})`,
+          name: collectivite.intitule,
+          code: collectivite.code,
+          competenceSudocu: collectivite.hasCompetence,
+          competenceBanatic: collectivite.competences.plu,
+          // dateCreation: collectivite.dateCreation,
+          type: `${collectivite.labelJuridique} (${collectivite.nbCommunes})`,
           lastProc: '',
           status: '',
-          detailsPath: { name: 'ddt-departement-collectivites-collectiviteId-epci', params: { departement: this.$route.params.departement, collectiviteId: e.code } },
+          detailsPath: {
+            name: 'ddt-departement-collectivites-collectiviteId-epci',
+            params: {
+              departement: this.$route.params.departement,
+              collectiviteId: collectivite.code
+            }
+          },
           frpProcPrincipalPath: { name: 'foo' }
         }
       })
@@ -194,6 +203,8 @@ export default {
 
     const collecsInsee = communes.map(e => e.code.padStart(5, '0')).concat(epcis.map(e => e.code))
     const { data: sudocuCollectivites, error: errorSudocuCollectivites } = await this.$supabase.from('sudocu_collectivites').select().in('codecollectivite', collecsInsee)
+
+    // eslint-disable-next-line no-console
     if (errorSudocuCollectivites) { console.log('errorSudocuCollectivites: ', errorSudocuCollectivites) }
 
     this.epci = epcis.map((e) => {
@@ -212,24 +223,31 @@ export default {
 
     const communesUniq = [...new Map(communes.map(item => [item.code, item])).values()]
     // console.log('this.epci ici: ', communesUniq, ' sudocuCollectivites: ', sudocuCollectivites)
-    this.communes = communesUniq.map((e) => {
-      const sudoCom = sudocuCollectivites.find(i => i.codecollectivite === e.code)
+    this.communes = communesUniq.map((commune) => {
+      const sudoCom = sudocuCollectivites.find(i => i.codecollectivite === commune.code)
       // if (!sudoCom) {
-      //   console.log('not found: ', e)
+      //   consolcommune.log('not found: ', e)
       // }
-      // console.log('sudoCom: ', sudoCom)
+      // consolcommune.log('sudoCom: ', sudoCom)
       return {
-        name: e.intitule,
+        name: commune.intitule,
+        code: commune.code,
         competenceSudocu: sudoCom?.sicompetenceplan,
-        competenceBanatic: e.competencePLU,
+        competenceBanatic: commune.competencePLU,
         type: 'Commune',
         lastProc: '',
         status: '',
-        intercommunaliteName: e.intercommunaliteName,
-        departementCode: e.departementCode,
-        // dateCreation: e.dateCreation,
-        intercommunaliteCode: e.intercommunaliteCode,
-        detailsPath: { name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: this.$route.params.departement, collectiviteId: e.code } },
+        intercommunaliteName: commune.intercommunaliteName,
+        departementCode: commune.departementCode,
+        // dateCreation: commune.dateCreation,
+        intercommunaliteCode: commune.intercommunaliteCode,
+        detailsPath: {
+          name: 'ddt-departement-collectivites-collectiviteId-commune',
+          params: {
+            departement: this.$route.params.departement,
+            collectiviteId: commune.code
+          }
+        },
         frpProcPrincipalPath: { name: 'foo' }
       }
     })
