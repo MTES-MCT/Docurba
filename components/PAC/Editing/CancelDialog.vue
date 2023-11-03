@@ -8,7 +8,7 @@
     <v-card>
       <v-card-title>Annuler ?</v-card-title>
       <v-card-text>
-        Vos changement sur "{{ section.name }}"" seront perdu.
+        Vos changements sur "{{ section.name }}" seront perdus.
       </v-card-text>
       <v-card-actions>
         <v-spacer />
