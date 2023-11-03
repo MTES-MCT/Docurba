@@ -8,7 +8,7 @@
         <DashboardCollectivitesInnerNav :is-epci="isEpci" :collectivite="collectivite" :communes="communes" />
       </v-col>
     </v-row>
-    <RessourcesList :ressources="ressources" />
+    <RessourcesList :ressources="ressources" :region-iso="collectivite.region.iso" />
   </v-container>
 </template>
 

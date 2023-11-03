@@ -1,8 +1,13 @@
 // TODO: Import supabase
 import _ from 'lodash'
+import { PG_DEV_CONFIG, PG_PROD_CONFIG } from '../../database/pg_secret_config.json'
 import geo from './geo.js'
 const { createClient } = require('@supabase/supabase-js')
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+const DB_CONFIG = PG_DEV_CONFIG
+console.log('TEST: ', DB_CONFIG.url, DB_CONFIG.admin_key)
+const supabase = createClient(DB_CONFIG.url, DB_CONFIG.admin_key)
+
+// const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 module.exports = {
   parseAttachment (path) {
@@ -81,7 +86,7 @@ module.exports = {
   },
   setCommunalsProceduresStatus (arrProcedures) {
     const opposableProc = arrProcedures.find(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation)
-    console.log('arrProcedures: ', arrProcedures)
+    // console.log('arrProcedures: ', arrProcedures)
     if (opposableProc) {
       opposableProc.status = 'opposable'
       // TODO: ca fait un bug sur Montgaillard
@@ -181,6 +186,7 @@ module.exports = {
 
       // On fetch les procédures faisant parti du périmètre de la commune
       const rawPlanProcedures = await supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false }).order('dateapprobation', { ascending: false }) // .order([{ column: 'last_event_date', order: 'desc' }, { column: 'dateapprobation', order: 'desc' }])
+      console.log('rawPlanProcedures: ', rawPlanProcedures.data[0])
       const rawSchemaProcedures = await supabase.from('distinct_procedures_schema_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
       if (rawPlanProcedures.error) { throw rawPlanProcedures }
       if (rawSchemaProcedures.error) { throw rawSchemaProcedures }
@@ -243,7 +249,12 @@ module.exports = {
           perimetre: e.perimetre,
           procSecs: e.procSecs,
           status: e.status,
-          status_infos: e.statusInfos
+          status_infos: e.statusInfos,
+          volet_qualitatif: e.volet_qualitatif[0],
+          is_scot: e.is_scot,
+          is_pluih: e.is_pluih,
+          is_pdu: e.is_pdu,
+          mandatory_pdu: e.mandatory_pdu
         }
       })
 
@@ -253,7 +264,7 @@ module.exports = {
       const collectivite = geo.getCollectivite(collectiviteId)
       // procedures: fullProcs
       // console.log('collectivite: ', collectivite, ' : ', fullProcs)
-      console.log('collectivite: ', collectivite)
+      // console.log('collectivite: ', collectivite)
       return { collectivite, procedures: fullProcs, schemas: fullSchemas }
     } catch (error) {
       console.log('ERROR: ', error)
