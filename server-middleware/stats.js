@@ -36,7 +36,7 @@ const departements = require('./Data/departements-france.json')
 
 app.get('/projects', async (req, res) => {
   // eslint-disable-next-line prefer-const
-  let { data: projects } = await supabase.from('projects').select('id, name, created_at, owner, towns, trame')
+  let { data: projects } = await supabase.neq('owner', null).select('id, name, created_at, owner, towns, trame')
 
   projects = projects.filter((p) => {
     const name = p.name ? p.name.toLowerCase() : ''

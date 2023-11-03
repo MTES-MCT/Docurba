@@ -72,16 +72,22 @@
         console.log(`${tableName} imported.`)
       }
 
-      console.log('Creating MV...')
-
-      const mv1Sql = fs.readFileSync('./database/sql/D1-MVPlanProcedures.sql').toString().replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ')
-      const mv2Sql = fs.readFileSync('./database/sql/D2-MVSchemaProcedures.sql').toString().replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ')
-      await client.query(mv1Sql)
-      await client.query(mv2Sql)
-      console.log('Materialized View Done.')
+      await createMaterializedViewProcedures(config)
     } catch (error) {
       console.error(error)
     }
+  }
+
+  async function createMaterializedViewProcedures (config) {
+    const client = new Client(config)
+    await client.connect()
+    console.log('Creating MV...')
+
+    const mv1Sql = fs.readFileSync('./database/sql/D1-MVPlanProcedures.sql').toString().replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ')
+    const mv2Sql = fs.readFileSync('./database/sql/D2-MVSchemaProcedures.sql').toString().replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ')
+    await client.query(mv1Sql)
+    await client.query(mv2Sql)
+    console.log('Materialized View Done.')
   }
 
   async function loadDump (config) {
@@ -94,8 +100,9 @@
   }
 
   // await loadDump(PG_TEST_CONFIG)
-  // await createSudocuProcessedTables(PG_DEV_CONFIG)
+  await createSudocuProcessedTables(PG_DEV_CONFIG)
+  await createMaterializedViewProcedures(PG_DEV_CONFIG)
   // await exportProcessedSudocu(PG_TEST_CONFIG)
-  await importToDocurba(PG_PROD_CONFIG)
+  // await importToDocurba(PG_PROD_CONFIG)
   // console.log('PG_TEST_CONFIG: ', PG_TEST_CONFIG)
 })()

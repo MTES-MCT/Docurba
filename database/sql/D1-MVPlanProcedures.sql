@@ -1,6 +1,6 @@
 DROP materialized view IF EXISTS distinct_procedures_events;
 create materialized view distinct_procedures_events as
-    select noserieprocedure,
+    select sudocu_procedure_events.noserieprocedure,
     MAX(dateevenement) as last_event_date,
     MAX(noserieevenement) as last_event_id,
     MAX(noserieprocedureratt) as noserieprocedureratt,
@@ -16,8 +16,14 @@ create materialized view distinct_procedures_events as
     MAX(dateexecutoire) as dateexecutoire,
     MAX(commentaire) as commentaire,
     MAX(nomdocument) as nomdocument,
+    jsonb_agg(volet_qualitatif) as volet_qualitatif,
+    bool_and(sipsmv) as is_scot,
+    bool_and(sipsmv) as is_pluih,
+    bool_and(sipsmv) as is_pdu,
+    bool_and(sipsmv) as mandatory_pdu,
     MAX(libstatutevenement) as last_event_statut,
-    MAX(codecollectivite) as codecollectivite
+    MAX(sudocu_procedure_events.codecollectivite) as codecollectivite
     from sudocu_procedure_events
-    GROUP BY noserieprocedure
+    LEFT JOIN procedureplandetails pp ON pp.noserieprocedure = sudocu_procedure_events.noserieprocedure
+    GROUP BY sudocu_procedure_events.noserieprocedure
     ORDER BY MAX(dateevenement) DESC;

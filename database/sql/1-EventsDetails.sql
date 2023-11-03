@@ -1,3 +1,10 @@
+DROP materialized view IF EXISTS distinct_procedures_events;
+DROP materialized view IF EXISTS distinct_procedures_schema_events;
+DROP view IF EXISTS eventsdetails;
+DROP view IF EXISTS procedureplandetails;
+DROP view IF EXISTS procedureschemadetails;
+DROP view IF EXISTS collectivitesdetails;
+
 CREATE OR REPLACE VIEW eventsDetails AS
   SELECT procedure_typed.noserieevenement, procedure_typed.noserieprocedureratt,procedure_typed.codetypedocument,procedure_typed.libtypedocument, procedure_typed.libtypeevenement, procedure_typed.dateevenement, procedure_typed.codetypeevenement, procedure_typed.commentaire, procedure_typed.nomdocument, procedure_typed.libstatutevenement, procedure_typed.codestatutevenement, procedure_typed.noserieprocedure, procedure_typed.libtypeprocedure, procedure_typed.commentairedgd, procedure_typed.commentaireproc, procedure_typed.datelancement, procedure_typed.dateapprobation, procedure_typed.dateabandon, procedure_typed.dateexecutoire, procedure_typed.siprocedureprincipale
   FROM(

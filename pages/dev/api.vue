@@ -16,10 +16,19 @@
         </v-expansion-panels>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-btn @click="test">
+          TEST
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   async asyncData ({ $content }) {
     const endpoints = (await $content('Dev/API', {
@@ -29,6 +38,12 @@ export default {
 
     return {
       endpoints
+    }
+  },
+  methods: {
+    async test () {
+      const data = await axios('/api/urba/state/01001')
+      console.log(data)
     }
   }
 }

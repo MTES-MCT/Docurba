@@ -1,12 +1,13 @@
 /* eslint-disable no-console */
-const express = require('express')
+import express from 'express'
+import { createClient } from '@supabase/supabase-js'
+import urba from './modules/urba.js'
+import sudocu from './modules/sudocu.js'
+import sido from './modules/sido.js'
 const app = express()
 app.use(express.json())
-const { createClient } = require('@supabase/supabase-js')
 
 const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
-const sudocu = require('./modules/sudocu.js')
-const sido = require('./modules/sido.js')
 
 // app.get('/communes', (req, res) => {
 
@@ -62,6 +63,18 @@ app.get('/documents/count', async (req, res) => {
     res.status(200).send({ count })
   } catch (err) {
     console.log('Error counting sido table', err)
+    res.status(400).send(err)
+  }
+})
+
+app.get('/state/:collectiviteCode', async (req, res) => {
+  // console.log('/state/:collectiviteCode')
+
+  try {
+    const collectiviteState = await urba.getCollectiviteState(req.params.collectiviteCode)
+    res.status(200).send(collectiviteState)
+  } catch (err) {
+    console.log('error', err)
     res.status(400).send(err)
   }
 })

@@ -145,6 +145,11 @@
     color: var(--v-g800) !important
   }
 
+  .border-grey{
+    border: solid 1px var(--v-grey-base) !important;
+    background: white !important;
+  }
+
   .v-application .v-card.v-sheet--outlined {
     border: 1px solid #DDDDDD !important;
     border-color: #DDDDDD !important;

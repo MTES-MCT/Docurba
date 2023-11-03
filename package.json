@@ -12,12 +12,14 @@
     "sido": "node scripts/sidoData.js",
     "generate": "nuxt generate",
     "migrate": "node database/index.js",
+    "sudocu2docurba": "node database/sudocu2docurba.js",
     "lint:js": "eslint --ext \".js,.vue\" --ignore-path .gitignore .",
     "lint": "npm run lint:js"
   },
   "dependencies": {
     "@getvim/execute": "^1.0.0",
     "@gouvfr/dsfr": "^1.1.0",
+    "@json2csv/node": "^7.0.3",
     "@mdi/js": "^6.1.95",
     "@nuxt/content": "^1.14.0",
     "@nuxt/postcss8": "^1.1.3",

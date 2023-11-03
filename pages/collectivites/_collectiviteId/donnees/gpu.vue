@@ -10,12 +10,17 @@
   <v-container v-else>
     <v-row>
       <v-col cols="12">
+        <v-alert type="info">
+          Ceci est une première version de la mise à disposition des données proposées par le GPU, n'hésitez pas à nous faire des retours pour l'améliorer : <a href="mailto:equipe@docurba.beta.gouv.fr">equipe@docurba.beta.gouv.fr</a>
+        </v-alert>
+      </v-col>
+      <v-col cols="12">
         <v-chip-group
           v-model="selectedArea"
           column
         >
           <v-chip
-            v-for="area in areas"
+            v-for="area in availableAreas"
             :key="area.code"
             :value="area.code"
             filter
@@ -40,6 +45,10 @@ import axios from 'axios'
 
 export default {
   props: {
+    isEpci: {
+      type: Boolean,
+      required: true
+    },
     collectivite: {
       type: Object,
       required: true
@@ -48,6 +57,7 @@ export default {
   data () {
     return {
       loading: true,
+      areas: [],
       selectedArea: null,
       documents: []
     }
@@ -58,14 +68,17 @@ export default {
         return this.documents
       }
       return this.documents.filter(doc => doc.grid.name === this.selectedArea)
+    },
+    availableAreas () {
+      return this.areas.filter(a => !!this.documents.find(doc => doc.grid.name === a.code))
     }
   },
   async created () {
     this.areas = [
       { code: this.collectivite.code, intitule: this.collectivite.intitule },
-      // ...(this.collectivite.communes
-      //   ?.filter(commune => commune.type === 'Commune')
-      //   .map(({ code, intitule }) => { return { code, intitule } }) ?? []),
+      ...(this.collectivite.communes
+        ?.filter(commune => commune.type === 'Commune')
+        .map(({ code, intitule }) => { return { code, intitule } }) ?? []),
       { code: this.collectivite.departement.code, intitule: this.collectivite.departement.intitule },
       { code: 'R' + this.collectivite.region.code, intitule: this.collectivite.region.intitule },
       { code: 'FR', intitule: 'France' }
@@ -88,12 +101,21 @@ export default {
       })
     )
 
+    const centerRes = await axios.get(`https://geo.api.gouv.fr/${this.isEpci ? 'epcis' : 'communes'}/${this.collectivite.code}?fields=centre`)
+
+    const [x, y] = centerRes.data.centre.coordinates
+
     this.documents = responses.flat().map((doc) => {
       if (doc.type === 'SUP') {
         const categoryCode = doc.name.split('_').at(-1)
         doc.supCategory = supCategories.find(
           cat => cat.name === categoryCode
         )
+      }
+
+      doc.center = {
+        lat: y,
+        lon: x
       }
 
       return doc

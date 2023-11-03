@@ -44,14 +44,14 @@ export default {
   computed: {
     isAllowed () {
       // console.log('this.$user?.profile: ', this.$user.profile)
-      return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
+      return (this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified) || this.$isDev
     }
   },
   async mounted () {
     await this.$user.isReady
     this.isLoading = false
 
-    if (this.$user.profile.side !== 'etat') { this.$router.push('/') }
+    if (this.$user.profile.side !== 'etat' && !this.$isDev) { this.$router.push('/') }
 
     if (this.$route.query.contact) {
       axios({

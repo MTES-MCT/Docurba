@@ -8,7 +8,7 @@
         <h1 class="text-h1">
           Feuille de route partagée
         </h1>
-        {{ collectivite }}
+        <!-- {{ collectivite }} -->
       </v-col>
     </v-row>
     <v-row v-if="loaded">
@@ -39,7 +39,7 @@ import _ from 'lodash'
 export default {
   name: 'ProcedureTimelineEvents',
   layout ({ $user }) {
-    console.log('$user?.profile: ', $user?.profile)
+    // console.log('$user?.profile: ', $user?.profile)
     if ($user?.profile?.side === 'etat' && $user?.profile?.verified) {
       return 'ddt'
     } else {
@@ -47,7 +47,6 @@ export default {
     }
   },
   data () {
-    console.log('DATa')
     return {
       loaded: false,
       collectivite: null,
@@ -68,7 +67,6 @@ export default {
     }
   },
   async mounted () {
-    console.log('MOUNTED')
     try {
       if (this.$user && this.$user.isReady) {
         this.$user.isReady.then(() => {
@@ -81,11 +79,9 @@ export default {
       await this.getEvents()
       this.loaded = true
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log('ERROR MOUNTED: ', error)
     }
-  },
-  update () {
-    console.log('UPDATED')
   },
   methods: {
     async getEvents () {

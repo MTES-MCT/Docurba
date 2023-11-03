@@ -32,7 +32,7 @@
     <v-spacer />
     <v-card-actions>
       <v-btn
-        :href="'https://www.geoportail-urbanisme.gouv.fr/map/?document=' + document.id"
+        :href="mapUrl"
         target="_blank"
         tile
         depressed
@@ -42,7 +42,7 @@
         Voir la carte
       </v-btn>
       <v-btn
-        :href="'https://www.geoportail-urbanisme.gouv.fr/document/by-id/' + document.id + '?tab=2'"
+        :href="filesUrl"
         target="_blank"
         tile
         text
@@ -85,6 +85,12 @@ export default {
       }
 
       return this.document.type
+    },
+    mapUrl () {
+      return `https://www.geoportail-urbanisme.gouv.fr/map/?document=${this.document.id}#tile=1&lat=${this.document.center.lat}&lon=${this.document.center.lon}&zoom=13`
+    },
+    filesUrl () {
+      return `https://www.geoportail-urbanisme.gouv.fr/document/by-id/${this.document.id}?tab=2`
     }
   }
 }
