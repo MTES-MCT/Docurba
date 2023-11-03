@@ -258,13 +258,24 @@ export default {
       this.$router.replace({ path: '/faq', query: { ...this.$route.query, recherche: this.search } })
     }
   },
+  mounted () {
+    if (this.$route.query.action) {
+      this.selectTopic({ title: this.$route.query.action })
+    }
+  },
   methods: {
     selectTopic (item) {
-      this.faqCards = this.faqCards.map((e) => {
-        if (item.title === e.title) {
-          return { ...e, active: true }
+      this.$router.push({
+        query: Object.assign({}, this.$route.query, {
+          action: item.title
+        })
+      })
+
+      this.faqCards = this.faqCards.map((faqCard) => {
+        if (item.title === faqCard.title) {
+          return { ...faqCard, active: true }
         }
-        return { ...e, active: false }
+        return { ...faqCard, active: false }
       })
       item.active = true
     }
