@@ -68,7 +68,7 @@ app.get('/documents/count', async (req, res) => {
 })
 
 app.get('/state/:collectiviteCode', async (req, res) => {
-  console.log('/state/:collectiviteCode')
+  // console.log('/state/:collectiviteCode')
 
   try {
     const collectiviteState = await urba.getCollectiviteState(req.params.collectiviteCode)

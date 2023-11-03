@@ -8,6 +8,8 @@ import intercommunalites from '../Data/EnrichedIntercommunalites.json'
 // import regions from '../Data/INSEE/regions.json'
 import departements from '../Data/INSEE/departements.json'
 
+// import enqueteData from '../../static/json/communes.json'
+
 const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 const codeEtaMap = {
@@ -18,7 +20,7 @@ const codeEtaMap = {
 }
 
 function getColectiviteCode (procedure) {
-  if (!procedure.current_perimetre || !procedure.current_perimetre.length) {
+  if (!procedure || !procedure.current_perimetre || !procedure.current_perimetre.length) {
     // Pas de communes
     return '9'
   } else if (procedure.current_perimetre.length > 1) {
@@ -162,6 +164,13 @@ module.exports = {
     }
   },
   async getCollectiviteState (collectiviteCode) {
+    // const calculatedData = enqueteData.find(c => c.code_insee === collectiviteCode)
+
+    // if (calculatedData) {
+    //   console.log('alreadyCalculated', collectiviteCode)
+    //   return calculatedData
+    // }
+
     console.log('getCollectiviteState', collectiviteCode)
 
     function findEventByType (events, type, procedure_id) {
@@ -178,6 +187,7 @@ module.exports = {
     try {
       const { data: procedures, error } = await supabase.from('procedures').select('*')
         .contains('current_perimetre', `[{ "inseeCode": "${collectiviteCode}" }]`)
+        .neq('doc_type', 'SCOT')
 
       const principalsProcedures = procedures.filter(p => p.is_principale)
 
@@ -189,7 +199,7 @@ module.exports = {
 
       events.sort((a, b) => {
         const dateA = +dayjs(a.date_iso)
-        const dateB = +dayjs(b.dat)
+        const dateB = +dayjs(b.date_iso)
 
         return dateA - dateB
       })
@@ -199,7 +209,8 @@ module.exports = {
         return procedure && e.type === 'Prescription'
       })[0]
 
-      console.log('lastPrescriptionEvent', lastPrescriptionEvent)
+      // console.log('lastPrescriptionEvent', lastPrescriptionEvent)
+      // console.log('opposableProcedure', opposableProcedure)
 
       const lastCurrentProcedure = lastPrescriptionEvent ? currentProcedures.find(p => p.id === lastPrescriptionEvent.procedure_id) : undefined
 
@@ -211,6 +222,8 @@ module.exports = {
       const codeEtat2 = `${codeEtaMap[opposableDocType]}${getColectiviteCode(opposableProcedure)}${codeEtaMap[currentDocType]}${getColectiviteCode(currentProcedures)}`
 
       const currentArretEvent = lastCurrentProcedure ? findEventByType(events, 'Arrêt de projet', lastCurrentProcedure.id) : {}
+      const currentPAC = lastCurrentProcedure ? findEventByType(events, 'Porter à connaissance', lastCurrentProcedure.id) : {}
+      const currentPACcomp = lastCurrentProcedure ? findEventByType(events, 'Porter à connaissance complémentaire', lastCurrentProcedure.id) : {}
 
       const opposableEvents = opposableProcedure ? events.filter(e => e.procedure_id === opposableProcedure.id) : []
       const opposablePrescriptionEvent = opposableProcedure ? findEventByType(opposableEvents, 'Prescription', opposableProcedure.id) : {}
@@ -220,6 +233,8 @@ module.exports = {
       const opposablePAC = opposableProcedure ? findEventByType(opposableEvents, 'Porter à connaissance', opposableProcedure.id) : {}
       const opposablePACcomp = opposableProcedure ? findEventByType(opposableEvents, 'Porter à connaissance complémentaire', opposableProcedure.id) : {}
 
+      // console.log(opposableExecutoireEvent)
+
       // const opposableRevisions = opposableEvents.filter(e => e.type.includes())
       const opposableSecondaryProcedures = opposableProcedure ? procedures.filter(p => p.secondary_procedure_of === opposableProcedure.id) : []
 
@@ -227,59 +242,63 @@ module.exports = {
 
       const typesCurrentProc = uniq(currentProcedures.map(p => `${p.doc_type}${(p.doc_type === 'PLU' && p.current_perimetre.length > 1) ? 'i' : ''}`))
 
+      const revisions = currentProcedures.filter(p => ['Révision', 'Révision allégée (ou RMS)', 'Révision simplifiée'].includes(p.type))
+      const modifications = currentProcedures.filter(p => ['Modification', 'Modification simplifiée'].includes(p.type))
+
       return {
+        code_insee: collectiviteCode,
         plan_etat_code1: codeEtat, //
         plan_libelle_etat_code1: codeEtatsLabels[codeEtat], //
-        plan_code_etat_bcsi: codeEtat2, //
-        plan_libelle_code_etat_bcsi: '', //
+        plan_code_etat_bcsi: codeEtat2, // Avoir le nouveau mode de calcul
+        plan_libelle_code_etat_bcsi: '', // Avoir le nouveau mode de calcul
         types_pc: typesCurrentProc.join(' '),
         type_pc_color: getStateColor(typesCurrentProc),
-        pc_num_procedure: lastCurrentProcedure?.from_sudocuh, //
-        pc_nb_communes: lastCurrentProcedure?.current_perimetre.length, //
-        pc_type_document: lastCurrentProcedure?.doc_type, //
-        pc_type_procedure: lastCurrentProcedure?.type, //
-        pc_date_prescription: lastPrescriptionEvent?.date_iso, //
-        pc_date_arret_projet: currentArretEvent?.date_iso, //
-        pc_date_pac: opposablePAC.date_iso || '', //
-        pc_date_pac_comp: opposablePACcomp.date_iso || '', //
-        pc_plui_valant_scot: lastPrescriptionEvent?.is_scot, //
-        pc_pluih: lastPrescriptionEvent?.is_pluih, //
-        pc_pluih_num_procedure: '', //
-        pc_sectoriel: lastPrescriptionEvent?.is_sectoriel, //
-        pc_pdu_tient_lieu: lastPrescriptionEvent?.is_pdu, //
-        pc_pdu_obligatoire: lastPrescriptionEvent?.mandatory_pdu, //
-        pc_psmv: '', //
-        pc_type_moe: '', //
-        pc_nom_sst: '', //
-        pc_cout_sst_ht: '', //
-        pc_cout_sst_ttc: '', //
-        pa_num_procedure: opposableProcedure?.from_sudocuh, //
-        pa_nb_communes: opposableProcedure?.current_perimetre.length, //
-        pa_type_document: opposableProcedure?.doc_type, //
-        pa_type_procedure: opposableProcedure?.type, //
-        pa_sectoriel: opposableProcedure?.is_sectoriel, //
-        pa_date_prescription: opposablePrescriptionEvent?.date_iso, //
-        pa_date_arret_projet: opposableArretEvent.date_iso, //
-        pa_date_pac: '', //
-        pa_date_pac_comp: '', //
-        pa_date_approbation: opposabelAprobationEvent?.date_iso, //
-        pa_annee_prescription: dayjs(opposablePrescriptionEvent?.date_iso).format('YYYY'), //
-        pa_annee_approbation: dayjs(opposableExecutoireEvent?.date_iso).format('YYYY'), //
-        pa_date_executoire: opposableExecutoireEvent?.date_iso, //
+        pc_num_procedure: lastCurrentProcedure?.from_sudocuh || '', //
+        pc_nb_communes: lastCurrentProcedure?.current_perimetre.length || '', //
+        pc_type_document: lastCurrentProcedure?.doc_type || '', //
+        pc_type_procedure: lastCurrentProcedure?.type || '', //
+        pc_date_prescription: lastPrescriptionEvent?.date_iso || '', //
+        pc_date_arret_projet: currentArretEvent?.date_iso || '', //
+        pc_date_pac: currentPAC?.date_iso || '', //
+        pc_date_pac_comp: currentPACcomp?.date_iso || '', //
+        pc_plui_valant_scot: lastPrescriptionEvent?.is_scot || '', //
+        pc_pluih: lastPrescriptionEvent?.is_pluih || false, //
+        pc_pluih_num_procedure: '', // Pas de ref dans Docurba
+        pc_sectoriel: lastPrescriptionEvent?.is_sectoriel || false, //
+        pc_pdu_tient_lieu: lastPrescriptionEvent?.is_pdu || false, //
+        pc_pdu_obligatoire: lastPrescriptionEvent?.mandatory_pdu || false, //
+        pc_psmv: '', //  A priori on l'a
+        pc_type_moe: '', // A priori on l'a
+        pc_nom_sst: '', // A priori on l'a
+        pc_cout_sst_ht: '', // A priori on l'a
+        pc_cout_sst_ttc: '', // A priori on l'a
+        pa_num_procedure: opposableProcedure?.from_sudocuh || '', //
+        pa_nb_communes: opposableProcedure?.current_perimetre.length || '', //
+        pa_type_document: opposableProcedure?.doc_type || '', //
+        pa_type_procedure: opposableProcedure?.type || '', //
+        pa_sectoriel: opposableProcedure?.is_sectoriel || false, //
+        pa_date_prescription: opposablePrescriptionEvent?.date_iso || '', //
+        pa_date_arret_projet: opposableArretEvent?.date_iso || '', //
+        pa_date_pac: opposablePAC?.date_iso, //
+        pa_date_pac_comp: opposablePACcomp?.date_iso, //
+        pa_date_approbation: opposabelAprobationEvent?.date_iso || '', //
+        pa_annee_prescription: opposablePrescriptionEvent?.date_iso ? dayjs(opposablePrescriptionEvent?.date_iso).format('YYYY') : '', //
+        pa_annee_approbation: opposableExecutoireEvent?.date_iso ? dayjs(opposableExecutoireEvent?.date_iso).format('YYYY') : '', //
+        pa_date_executoire: opposableExecutoireEvent?.date_iso || '', //
         pa_delai_approbation: dayjs(opposableExecutoireEvent?.date_iso).diff(opposablePrescriptionEvent?.date_iso, 'day'), //
-        pa_plui_valant_scot: opposableProcedure?.is_scot, //
-        pa_pluih: opposableProcedure?.is_pluih, //
-        pa_pluih_num_procedure: '', //
-        pa_pdu_tient_lieu: opposableProcedure?.is_pdu, //
-        pa_pdu_obligatoire: opposableProcedure?.mandatory_pdu, //
-        pa_psmv: '', //
-        pa_type_moe: '', //
-        pa_nom_sst: '', //
-        pa_cout_sst_ht: '', //
-        pa_cout_sst_ttc: '', //
-        proc_nb_revisions: '', //
-        proc_nb_modifications: '', //
-        proc_nb_proc_secondaires: opposableSecondaryProcedures.length, //
+        pa_plui_valant_scot: opposableProcedure?.is_scot || false, //
+        pa_pluih: opposableProcedure?.is_pluih || false, //
+        pa_pluih_num_procedure: '', // // Pas de ref dans Docurba
+        pa_pdu_tient_lieu: opposableProcedure?.is_pdu || false, //
+        pa_pdu_obligatoire: opposableProcedure?.mandatory_pdu || false, //
+        pa_psmv: '', //  A priori on l'a
+        pa_type_moe: '', // A priori on l'a
+        pa_nom_sst: '', // A priori on l'a
+        pa_cout_sst_ht: '', // A priori on l'a
+        pa_cout_sst_ttc: '', // A priori on l'a
+        proc_nb_revisions: revisions.length || '', //
+        proc_nb_modifications: modifications.length || '', //
+        proc_nb_proc_secondaires: opposableSecondaryProcedures.length || '', //
 
         /*
         Volet Qualitatif
@@ -306,27 +325,27 @@ module.exports = {
         }
         */
 
-        q_eval_environmnt: voletQualitatif.eval_environmental, //
-        q_integ_loi_ene: voletQualitatif.is_integ_loi_ene, //
-        q_environnement: voletQualitatif.is_environnement, //
-        q_paysage: voletQualitatif.is_paysage, //
-        q_entree_ville: voletQualitatif.is_entree_ville, //
-        q_patrimoine: voletQualitatif.is_patrimoine, //
-        q_lutte_insalubrite: voletQualitatif.is_lutte_insalubrite, //
-        q_renouvel_urbain: voletQualitatif.is_renouvel_urbain, //
-        q_developpement: voletQualitatif.is_developpement, //
-        q_mixite_fonctionnelle: '', //
-        q_ouverture_urbain: '', //
-        q_peri_plafond_statmnt: voletQualitatif.is_peri_plafond_statmnt, //
-        q_schema_amenagement: voletQualitatif.is_schema_amenagement, //
-        q_schema_amenagement_ss_reg: voletQualitatif.is_schema_amenagement_ss_reg, //
-        q_stecal: voletQualitatif.is_stecal, //
-        q_nb_stecal: voletQualitatif.nb_stecal, //
-        q_densite_mini: voletQualitatif.is_densite_mini, //
-        q_aire_stationment_max: voletQualitatif.is_aire_stationment_max, //
-        q_comm_electronique: voletQualitatif.is_comm_electronique, //
-        q_renvoi_rnu: voletQualitatif.is_renvoi_rnu, //
-        q_obligation_aire_statmnt: voletQualitatif.is_obligation_aire_statmnt //
+        q_eval_environmnt: voletQualitatif?.eval_environmental || '', //
+        q_integ_loi_ene: voletQualitatif?.is_integ_loi_ene || '', //
+        q_environnement: voletQualitatif?.is_environnement || '', //
+        q_paysage: voletQualitatif?.is_paysage || '', //
+        q_entree_ville: voletQualitatif?.is_entree_ville || '', //
+        q_patrimoine: voletQualitatif?.is_patrimoine || '', //
+        q_lutte_insalubrite: voletQualitatif?.is_lutte_insalubrite || '', //
+        q_renouvel_urbain: voletQualitatif?.is_renouvel_urbain || '', //
+        q_developpement: voletQualitatif?.is_developpement || '', //
+        q_mixite_fonctionnelle: '', // Ne pas prendre en compte
+        q_ouverture_urbain: '', // A priori on l'a
+        q_peri_plafond_statmnt: voletQualitatif?.is_peri_plafond_statmnt || '', //
+        q_schema_amenagement: voletQualitatif?.is_schema_amenagement || '', //
+        q_schema_amenagement_ss_reg: voletQualitatif?.is_schema_amenagement_ss_reg || '', //
+        q_stecal: voletQualitatif?.is_stecal || '', //
+        q_nb_stecal: voletQualitatif?.nb_stecal || '', //
+        q_densite_mini: voletQualitatif?.is_densite_mini || '', //
+        q_aire_stationment_max: voletQualitatif?.is_aire_stationment_max || '', //
+        q_comm_electronique: voletQualitatif?.is_comm_electronique || '', //
+        q_renvoi_rnu: voletQualitatif?.is_renvoi_rnu || '', //
+        q_obligation_aire_statmnt: voletQualitatif?.is_obligation_aire_statmnt || '' //
       }
     } catch (err) {
       console.log('error', err)
