@@ -1,5 +1,5 @@
 ---
-name: sharingPAC_v1
+name: sharingPAC_v1.1
 tag: projet
 ---
 

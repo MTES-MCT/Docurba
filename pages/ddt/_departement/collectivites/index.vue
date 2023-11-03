@@ -144,7 +144,7 @@ export default {
         { text: 'Nom', align: 'start', value: 'name' },
         { text: 'Compétence', value: 'competence' },
         { text: 'Intercommunalité', value: 'intercommunalite' },
-        { text: 'Date de création', value: 'dateCreation' },
+        // { text: 'Date de création', value: 'dateCreation' },
         { text: 'Actions', value: 'actions' }
       ]
     },
@@ -153,7 +153,7 @@ export default {
         { text: 'Nom', align: 'start', value: 'name' },
         { text: 'Type', value: 'type' },
         { text: 'Compétence', value: 'competence' },
-        { text: 'Date de création', value: 'dateCreation' },
+        // { text: 'Date de création', value: 'dateCreation' },
         { text: 'Actions', value: 'actions' }
       ]
     },
