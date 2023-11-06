@@ -43,7 +43,7 @@ module.exports = {
       return procedurePrincipale
     })
   },
-  enrich (procedures, proceduresPerimetres, collectivitesPorteuses) {
+  enrich (procedures, proceduresPerimetres, collectivitesPorteuses, { siSchema = false } = {}) {
     return procedures.map((procedure, idx) => {
     // Raccordements des périmètres aux procédures
       const collecPerim = proceduresPerimetres.data.find(i => i.procedure_id === procedure.noserieprocedure)
@@ -63,12 +63,13 @@ module.exports = {
       if (fullDetailsCollecPorteuse?.nbCommunes) {
         isSectoriel = collectivitePorteuse.nb_communes > 1 ? collectivitePorteuse.nb_communes < fullDetailsCollecPorteuse.nbCommunes : false
       }
-      // TODO: Ajouter Délibération d'approbation du prefet a ajouter
+
+      // siSchema -> partiellement ok
+      const isValid = (e, isSchema) => isSchema ? e.codestatutevenement === 'V' : (e.codestatutevenement === 'V' || e.codestatutevenement === 'AT')
       statusInfos = {
         isSectoriel,
         // ou Arrêté d'abrogation OU Arrêté du Maire ou du Préfet ou de l'EPCI OU Approbation du préfet
-        //
-        hasDelibApprob: procedure.events?.some(e => ["Délibération d'approbation", "Arrêté d'abrogation", "Arrêté du Maire ou du Préfet ou de l'EPCI", 'Approbation du préfet'].includes(e.libtypeevenement) && e.codestatutevenement === 'V'),
+        hasDelibApprob: procedure.events?.some(e => ["Délibération d'approbation", "Arrêté d'abrogation", "Arrêté du Maire ou du Préfet ou de l'EPCI", 'Approbation du préfet'].includes(e.libtypeevenement) && isValid(e, siSchema)),
         hasAbandon: procedure.events?.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
         hasAnnulation: procedure.events?.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement) && e.codestatutevenement === 'V')
       }
@@ -203,7 +204,7 @@ module.exports = {
       const schemaProceduresEvents = rawSchemaProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
 
       const planProcedures = this.enrich(planProceduresEvents, proceduresCollec, collectivitesPorteuses)
-      const schemaProcedures = this.enrich(schemaProceduresEvents, proceduresCollec, collectivitesPorteuses)
+      const schemaProcedures = this.enrich(schemaProceduresEvents, proceduresCollec, collectivitesPorteuses, { isSchema: true })
 
       // Formattage des procédures
       const formattedSchemaProcedures = schemaProcedures.map((e) => {
@@ -250,11 +251,12 @@ module.exports = {
           procSecs: e.procSecs,
           status: e.status,
           status_infos: e.statusInfos,
-          volet_qualitatif: e.volet_qualitatif[0],
+          volet_qualitatif: e.volet_qualitatif,
           is_scot: e.is_scot,
           is_pluih: e.is_pluih,
           is_pdu: e.is_pdu,
-          mandatory_pdu: e.mandatory_pdu
+          mandatory_pdu: e.mandatory_pdu,
+          moe: e.moe
         }
       })
 
