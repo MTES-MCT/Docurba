@@ -130,7 +130,7 @@ export default {
       description: '',
       actors: [],
       attachements: [],
-      visibility: 'public'
+      visibility: 'private'
     }
 
     return {
