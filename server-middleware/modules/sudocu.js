@@ -1,13 +1,8 @@
 // TODO: Import supabase
 import _ from 'lodash'
-import { PG_DEV_CONFIG, PG_PROD_CONFIG } from '../../database/pg_secret_config.json'
 import geo from './geo.js'
 const { createClient } = require('@supabase/supabase-js')
-const DB_CONFIG = PG_DEV_CONFIG
-console.log('TEST: ', DB_CONFIG.url, DB_CONFIG.admin_key)
-const supabase = createClient(DB_CONFIG.url, DB_CONFIG.admin_key)
-
-// const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 module.exports = {
   parseAttachment (path) {

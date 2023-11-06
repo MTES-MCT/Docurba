@@ -126,8 +126,15 @@
               <v-row v-if="editEnabled">
                 <v-col :cols="(diff.visible && diff.body) ? 6 : 12">
                   <VTiptap v-if="editEnabled" v-model="sectionMarkdown" class="mt-6">
-                    <PACSectionsAttachementsDialog
+                    <PACSectionsFileAttachmentsDialog
                       :section="section"
+                      :git-ref="gitRef"
+                    />
+                    <PACSectionsDataAttachmentsDialog
+                      v-if="project"
+                      v-model="dataAttachments"
+                      :section="section"
+                      :project="project"
                       :git-ref="gitRef"
                     />
                     <v-tooltip bottom>
@@ -150,12 +157,21 @@
                   <nuxt-content class="pac-section-content mt-4" :document="sectionContent" />
                 </v-col>
               </v-row>
-              <PACSectionsAttachementsChips
-                :section="section"
-                :git-ref="gitRef"
-                :project="project"
-                :editable="editable"
-              />
+              <v-row>
+                <v-col class="d-flex flex-column" :style="{ gap: '0.5rem' }">
+                  <PACSectionsFileAttachmentsChips
+                    :section="section"
+                    :git-ref="gitRef"
+                    :project="project"
+                    :editable="editable"
+                  />
+                  <PACSectionsDataAttachmentsCards
+                    v-model="dataAttachments"
+                    :section="section"
+                    :git-ref="gitRef"
+                  />
+                </v-col>
+              </v-row>
               <v-row v-if="section.children && section.children.length">
                 <v-col
                   v-for="child in section.children"
@@ -298,7 +314,8 @@ export default {
       errorSaving: false,
       errorDiff: false,
       headRef,
-      diff: { body: null, visible: false, label: `Trame ${headRef.includes('dept-') ? 'départementale' : 'régionale'}` }
+      diff: { body: null, visible: false, label: `Trame ${headRef.includes('dept-') ? 'départementale' : 'régionale'}` },
+      dataAttachments: []
     }
   },
   computed: {
@@ -362,6 +379,7 @@ export default {
   },
   mounted () {
     this.fetchSectionContent()
+    this.fetchDataAttachments()
   },
   methods: {
     async fetchSectionContent () {
@@ -398,6 +416,13 @@ export default {
 
         this.sectionHistory = sectionHistory
       }
+    },
+    async fetchDataAttachments () {
+      const { data } = await this.$supabase.from('pac_sections_data').select('*').match({
+        path: this.section.path,
+        ref: this.gitRef
+      })
+      this.dataAttachments = data
     },
     async updateName () {
       await axios({

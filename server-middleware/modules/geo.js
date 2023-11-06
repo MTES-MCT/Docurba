@@ -123,6 +123,7 @@ module.exports = {
     const codes = Array.isArray(codesInsee) ? codesInsee : [codesInsee]
 
     const communes = codes.map(code => this.getCommuneGeoJSON(code))
-    return topology(convertArrayToObject(communes, 'id'))
+    // return topology(convertArrayToObject(communes, 'id'))
+    return topology(communes)
   }
 }

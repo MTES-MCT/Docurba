@@ -1,8 +1,7 @@
 <template>
   <!-- TODO Pour l'instant, un composant spécifique à GeoBretagne -->
   <GeoBretagneViewer v-if="collectivite.region.iso === 'FR-BRE'" :collectivite-code="collectivite.code" :is-epci="isEpci" class="mt-4" />
-  <DataSourcesList v-else-if="!loading && communes" :region="collectivite.region.iso" :data-sources="dataset" :themes="themes" />
-  <VGlobalLoader v-else />
+  <DataSourcesList v-else-if="communes" :region="collectivite.region.iso" :collectivites-codes="collectivitesCodes" />
 </template>
 
 <script>
@@ -24,12 +23,10 @@ export default {
   },
   data () {
     return {
-      dataset: [],
-      themes: [],
-      loading: true
+      collectivitesCodes: []
     }
   },
-  async mounted () {
+  created () {
     // Start Analytics
     this.communes.forEach((commune) => {
       this.$matomo([
@@ -39,19 +36,11 @@ export default {
     })
     // End Analytics
 
-    const collectiviteId = this.isEpci
+    this.collectivitesCodes = this.isEpci
       ? this.communes.map((c) => {
         return c.code
       })
-      : this.collectivite.code
-
-    if (this.collectivite.region.iso !== 'FR-BRE') {
-      const { dataset, themes } = await this.$daturba.getData(this.collectivite.region.iso, collectiviteId)
-      this.dataset = dataset
-      this.themes = themes
-    }
-
-    this.loading = false
+      : [this.collectivite.code]
   }
 }
 </script>

@@ -50,14 +50,12 @@ export default {
       default: true
     }
   },
-  data () {
-    const max = this.scale.domain()[1]
-    const quarter = max / 4
+  computed: {
+    ticks () {
+      const max = this.scale.domain ? this.scale.domain()[1] : this.scalePoints.length
+      const quarter = max / 4
 
-    // console.log('scales', this.scale.domain(), this.scale.range())
-
-    return {
-      ticks: this.scalePoints.length
+      return this.scalePoints.length
         ? this.scalePoints
         : [
             { value: quarter, label: `${Math.round(quarter)}` },
