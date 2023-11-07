@@ -35,8 +35,9 @@ const departements = require('./Data/departements-france.json')
 // const cache = {}
 
 app.get('/projects', async (req, res) => {
-  // eslint-disable-next-line prefer-const
-  let { data: projects } = await supabase.neq('owner', null).select('id, name, created_at, owner, towns, trame')
+  let { data: projects } = await supabase.from('projects')
+    .select('id, name, created_at, owner, towns, trame')
+    .not('owner', 'is', null)
 
   projects = projects.filter((p) => {
     const name = p.name ? p.name.toLowerCase() : ''
@@ -65,19 +66,13 @@ app.get('/projects', async (req, res) => {
 })
 
 app.get('/fdr', async (req, res) => {
-  let { data: events } = await supabase.from('doc_frise_events').select('project: project_id (id, owner)')
-
-  events = events.filter(e => !docurbaTeamIds.includes(e.project.owner))
-
-  const groupedEvents = _.groupBy(events, e => e.project.id)
-
-  const nbProjects = _.reduce(groupedEvents, (total, projectEvents) => {
-    return total + (projectEvents.length >= 3 ? 1 : 0)
-  }, 0)
+  const { count } = await supabase.from('doc_frise_events')
+    .select('id, projects!inner(owner)', { count: 'exact', head: true })
+    .filter('projects.owner', 'not.in', '(' + docurbaTeamIds.map(id => `"${id}"`).join(',') + ')')
+    .is('from_sudocuh', null)
 
   res.status(200).send({
-    nbEvents: events.length,
-    nbProjects
+    nbEvents: count
   })
 })
 
