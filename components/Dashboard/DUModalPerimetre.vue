@@ -22,7 +22,7 @@
         <v-container class="py-8">
           <v-row>
             <v-col
-              v-for="town in towns"
+              v-for="town in sortedTowns"
               :key="town.inseeCode"
               cols="4"
               class="pl-0"
@@ -62,6 +62,11 @@ export default {
   data () {
     return {
       dialog: false
+    }
+  },
+  computed: {
+    sortedTowns () {
+      return [...this.towns].sort((a, b) => a.name.localeCompare(b.name))
     }
   }
 }
