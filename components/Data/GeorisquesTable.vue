@@ -31,15 +31,21 @@
           </v-icon>
           Télécharger les données PPR
         </v-btn>
-        <v-btn
-          v-if="selectable"
-          color="primary"
-          fab
-          x-small
-          @click="select(item)"
-        >
-          <v-icon>{{ isSelected(item) ? icons.mdiCheck : icons.mdiPlus }}</v-icon>
-        </v-btn>
+        <v-tooltip top>
+          <template #activator="{ on }">
+            <v-btn
+              v-if="selectable"
+              color="primary"
+              fab
+              x-small
+              v-on="on"
+              @click="select(item)"
+            >
+              <v-icon>{{ isSelected(item) ? icons.mdiCheck : icons.mdiPlus }}</v-icon>
+            </v-btn>
+          </template>
+          Ajouter la donnée à la section de PAC
+        </v-tooltip>
       </div>
     </template>
   </v-data-table>
