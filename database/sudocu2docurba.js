@@ -1,3 +1,4 @@
+
 (async () => {
   const { PG_TEST_CONFIG, PG_DEV_CONFIG, PG_PROD_CONFIG } = require('./pg_secret_config.json')
   const { createClient } = require('@supabase/supabase-js')
@@ -60,7 +61,7 @@
       test: true
     }
     // console.log('formattedProcedure: ', formattedProcedure)
-    console.log('procedure?.moe: ', procedure?.moe)
+    // console.log('procedure?.moe: ', procedure?.moe)
     const { data: insertedProcedure, error: errorInsertedProcedure } = await supabase.from('procedures').upsert(formattedProcedure, { onConflict: 'from_sudocuh', ignoreDuplicates: false }).select()
     if (errorInsertedProcedure) { throw errorInsertedProcedure }
     // console.log('insertedProcedure: ', insertedProcedure)
@@ -78,6 +79,7 @@
       for (const procedure of procedures) {
         // console.log('procedure: ', procedure)
         const { docurbaProcedureId: docurbaProcedurePrincipaleId, docurbaProjectId: docurbaProjectPrincipaleId } = await createFullProcedure(procedure, { isPrincipale: true, collectivite })
+        // console.log('procedure: ', procedure.id, ' ', procedure.doc_type, '  ', procedure.status)
         // console.log(' docurbaProcedureId, docurbaProjectId : ', docurbaProcedurePrincipaleId, docurbaProjectPrincipaleId)
         if (procedure.procSecs && procedure.procSecs.length > 0) {
           for (const procedureSecondaire of procedure.procSecs) {
@@ -129,30 +131,36 @@
     // const collectivites = epcis
     const len = collectivites.length
     // 1221 stopped schema
-    const startAt = 31801
-    const BATCH_SIZE = 50
-    const RATE = 200
+    const startAt = 2866
+    const BATCH_SIZE = 15
+    const RATE = 50
 
-    const tempProms = []
+    let tempProms = []
 
-    const testOne = collectivites.find(e => e.code === '200070233')
-    console.log('HERE TESt: ', testOne)
-    await processProcedures(testOne.code, { schemaOnly: false })
+    // COmmiune / Procedure qui ne doivent pas etre a en cours
+    // 01303 / 61137
+    // 56054 / 60401
+    // 83004 / 1831
+    // 83044 / 14904
 
-    // for (const [i, collec] of collectivites.entries()) {
-    //   if (i >= startAt) {
-    //     console.log('Processing ', i, ' of ', len, ' - code: ', collec.code)
+    // const testOne = collectivites.find(e => e.code === '83044')
+    // console.log('HERE TESt: ', testOne)
+    // await processProcedures(testOne.code, { schemaOnly: false })
 
-    //     const prom = processProcedures(collec.code, { schemaOnly: false })
-    //     await new Promise((resolve, reject) => setTimeout(resolve, RATE))
-    //     tempProms.push(prom)
-    //     if (i % BATCH_SIZE === 0 || len - i < BATCH_SIZE) {
-    //       const batch = await Promise.all(tempProms)
-    //       console.log('Insert ', batch.length, ' in Supabase')
-    //       tempProms = []
-    //     }
-    //   }
-    // }
+    for (const [i, collec] of collectivites.entries()) {
+      if (i >= startAt) {
+        console.log('Processing ', i, ' of ', len, ' - code: ', collec.code)
+
+        const prom = processProcedures(collec.code, { schemaOnly: true })
+        await new Promise((resolve, reject) => setTimeout(resolve, RATE))
+        tempProms.push(prom)
+        if (i % BATCH_SIZE === 0 || len - i < BATCH_SIZE) {
+          const batch = await Promise.all(tempProms)
+          console.log('Insert ', batch.length, ' in Supabase')
+          tempProms = []
+        }
+      }
+    }
   } catch (error) {
     console.log('error: ', error)
   }

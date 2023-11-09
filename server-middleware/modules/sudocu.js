@@ -60,7 +60,8 @@ module.exports = {
       }
 
       // siSchema -> partiellement ok
-      const isValid = (e, isSchema) => isSchema ? e.codestatutevenement === 'V' : (e.codestatutevenement === 'V' || e.codestatutevenement === 'AT')
+      const isValid = (e, isSchema) => isSchema ? e.codestatutevenement === 'V' : (e.codestatutevenement === 'V' || e.codestatutevenement === 'AP')
+      console.log('isSchema: ', siSchema)
       statusInfos = {
         isSectoriel,
         // ou Arrêté d'abrogation OU Arrêté du Maire ou du Préfet ou de l'EPCI OU Approbation du préfet
@@ -182,7 +183,7 @@ module.exports = {
 
       // On fetch les procédures faisant parti du périmètre de la commune
       const rawPlanProcedures = await supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false }).order('dateapprobation', { ascending: false }) // .order([{ column: 'last_event_date', order: 'desc' }, { column: 'dateapprobation', order: 'desc' }])
-      console.log('rawPlanProcedures: ', rawPlanProcedures.data[0])
+      // console.log('rawPlanProcedures: ', rawPlanProcedures.data[0])
       const rawSchemaProcedures = await supabase.from('distinct_procedures_schema_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
       if (rawPlanProcedures.error) { throw rawPlanProcedures }
       if (rawSchemaProcedures.error) { throw rawSchemaProcedures }
@@ -262,7 +263,11 @@ module.exports = {
       // procedures: fullProcs
       // console.log('collectivite: ', collectivite, ' : ', fullProcs)
       // console.log('collectivite: ', collectivite)
-      return { collectivite, procedures: fullProcs, schemas: fullSchemas }
+      return {
+        collectivite,
+        procedures: fullProcs,
+        schemas: fullSchemas
+      }
     } catch (error) {
       console.log('ERROR: ', error)
     }

@@ -42,8 +42,16 @@
                   filled
                   placeholder="Selectionner une option"
                   label="Procédure parente"
-                  :items="typesDu"
-                />
+                  item-value="id"
+                  :items="proceduresParents"
+                >
+                  <template #selection="{item}">
+                    {{ item.type }} du {{ item.doc_type }} {{ item.status }} (collec. porteuse {{ item.collectivite_porteuse_id }})
+                  </template>
+                  <template #item="{item}">
+                    {{ item.type }} du {{ item.doc_type }} {{ item.status }} (collec. porteuse {{ item.collectivite_porteuse_id }})
+                  </template>
+                </v-select>
               </validation-provider>
             </v-col>
             <v-col cols="12" class="d-flex align-start">
@@ -122,8 +130,7 @@ export default {
   async mounted () {
     try {
       if (this.procedureCategory === 'secondaire') {
-        await this.getProcedures()
-        this.proceduresParents = null
+        this.proceduresParents = await this.getProcedures()
       }
     } catch (error) {
       console.log()
@@ -131,9 +138,10 @@ export default {
   },
   methods: {
     async getProcedures () {
+      console.log('this.$route.collectiviteId: ', this.$route.params.collectiviteId)
       const { data: procedures, error } = await this.$supabase.from('procedures').select('*')
         .eq('is_principale', true)
-        .contains('current_perimetre', { inseeCode: this.$route.collectiviteId })
+        .contains('current_perimetre', '[{ "inseeCode": "73001" }]')
       console.log('procedures: ', procedures)
       if (error) { throw error }
       return procedures

@@ -80,33 +80,29 @@ export default {
       this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.log('ERROR MOUNTED: ', error)
+      console.log('ERROR: ', error)
     }
   },
   methods: {
     async getEvents () {
-      // this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.procedureId)
-      // const { data: eventsDocruba, error: errorDocurba } = await this.$supabase.from('doc_frise_events').select('*').eq('project_id', this.projectId)
-
       const eventsSudocu = await this.$sudocu.getProcedureEvents(this.$route.params.procedureId)
 
       const { data: procedureDocurba, error: errorProcedureDocurba } = await this.$supabase.from('projects').select('*, doc_frise_events(*)').eq('sudocuh_procedure_id', this.$route.params.procedureId)
+
+      // const { data: procedures, error } = await this.$supabase.from('procedures').select('*')
+      //   .eq('is_principale', true)
+      //   .contains('current_perimetre', '[{ "inseeCode": "73001" }]')
+
       if (errorProcedureDocurba) { throw errorProcedureDocurba }
       const eventsDocurba = procedureDocurba?.[0]?.doc_frise_events ?? []
-      // const { data: procedureDocurba, error: errorProcedureDocurba } = await this.$supabase.from('projects').select('*').eq('sudocuh_procedure_id', this.$route.params.procedureId)
-      // if (errorProcedureDocurba) {
-      //   console.log('errorProcedureDocurba: ', errorProcedureDocurba)
-      // }
-      // console.log('procedureDocurba: ', procedureDocurba)
-      // const { data, error } = await this.$supabase.from('projects').insert([newProject]).select()
 
       this.events = _.orderBy(eventsSudocu.map((e) => {
         return {
           from_sudocuh: true,
           date_iso: e.dateevenement,
-          type: e.libtypeevenement, // + ' - ',  + e.libstatutevenement,
+          type: e.libtypeevenement,
           status: e.libstatutevenement,
-          description: '', // e.commentaire + ' - Document sur le reseau: ' + e.nomdocument,
+          description: '',
           actors: [],
           attachements: e.attachements,
           docType: e.codetypedocument,
