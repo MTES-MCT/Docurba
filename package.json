@@ -32,7 +32,7 @@
     "@tiptap/extension-link": "^2.0.0-beta.36",
     "@tiptap/extension-underline": "^2.0.0-beta.22",
     "@tiptap/starter-kit": "^2.0.0-beta.163",
-    "@tiptap/vue-2": "^2.0.0-beta.72",
+    "@tiptap/vue-2": "^2.1.12",
     "@vue/composition-api": "^1.4.0-beta.0",
     "core-js": "^3.9.1",
     "d3": "^7.1.1",
