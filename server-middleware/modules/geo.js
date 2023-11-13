@@ -8,17 +8,11 @@ const intercommunalites = require('../Data/EnrichedIntercommunalites.json')
 const departements = require('../Data/INSEE/departements.json')
 const regions = require('../Data/INSEE/regions.json')
 
-const geojsonCommunes = require('../Data/communes-france-geo.json')
-
-const convertArrayToObject = (array, key) => {
-  const initialValue = {}
-  return array.reduce((obj, item) => {
-    return {
-      ...obj,
-      [item[key]]: item
-    }
-  }, initialValue)
-}
+// const geojsonCommunes = require('../Data/communes-france-geo.json')
+const geojsonCommunes = require('../Data/geojson/communes-geo.json')
+const geojsonDepartements = require('../Data/geojson/departements-geo.json')
+const geojsonRegions = require('../Data/geojson/regions-geo.json')
+const topojsonFrance = require('../Data/geojson/france-topo.json')
 
 module.exports = {
   getCollectivite (code) {
@@ -106,24 +100,80 @@ module.exports = {
       return null
     }
   },
-  getCommuneGeoJSON (codeInsee) {
-    const commune = geojsonCommunes.features.find(feat => feat.id === codeInsee)
-    if (!commune) { throw new Error(`Code INSEE ${codeInsee} invalide`) }
-    return commune
-  },
-  getCommunesGeoJSON (codesInsee) {
-    const codes = Array.isArray(codesInsee) ? codesInsee : [codesInsee]
+  getGeometries (communeCodes = [], departementCodes = [], regionCodes = [], addDepReg = true, format = 'geojson') {
+    const comFeatures = []
+    const depFeatures = []
+    const regFeatures = []
 
-    return {
-      type: 'FeatureCollection',
-      features: codes.map(code => this.getCommuneGeoJSON(code))
+    for (const com of communeCodes) {
+      const feature = geojsonCommunes.features.find(feat => feat.properties.com === com)
+      comFeatures.push(feature)
+
+      if (addDepReg && !departementCodes.includes(feature.properties.dep)) {
+        departementCodes.push(feature.properties.dep)
+      }
     }
-  },
-  getCommunesTopoJSON (codesInsee) {
-    const codes = Array.isArray(codesInsee) ? codesInsee : [codesInsee]
 
-    const communes = codes.map(code => this.getCommuneGeoJSON(code))
-    // return topology(convertArrayToObject(communes, 'id'))
-    return topology(communes)
+    for (const dep of departementCodes) {
+      const feature = geojsonDepartements.features.find(feat => feat.properties.dep === dep)
+      depFeatures.push(feature)
+
+      if (addDepReg && !regionCodes.includes(feature.properties.reg)) {
+        regionCodes.push(feature.properties.reg)
+      }
+    }
+
+    for (const reg of regionCodes) {
+      const feature = geojsonRegions.features.find(feat => feat.properties.reg === reg)
+      regFeatures.push(feature)
+    }
+
+    if (format === 'geojson') {
+      return {
+        type: 'FeatureCollection',
+        features: [
+          ...comFeatures,
+          ...depFeatures,
+          ...regFeatures
+        ]
+      }
+    }
+
+    if (format === 'topojson') {
+      return topology({
+        communes: { type: 'FeatureCollection', features: comFeatures },
+        departements: { type: 'FeatureCollection', features: depFeatures },
+        regions: { type: 'FeatureCollection', features: regFeatures }
+      })
+    }
+
+    throw new Error('Format inconnu')
+  },
+  getCommunesGeoJson (codes = [], addDepReg = true) {
+    if (!codes?.length) {
+      return topojsonFrance
+    }
+    const communeCodes = Array.isArray(codes) ? codes : [codes]
+    return this.getGeometries(communeCodes, [], [], addDepReg, 'geojson')
+  },
+  getCommunesTopoJson (codes = [], addDepReg = true) {
+    const communeCodes = Array.isArray(codes) ? codes : [codes]
+    return this.getGeometries(communeCodes, [], [], addDepReg, 'topojson')
+  },
+  getDepartementsGeoJson (codes = [], addReg = true) {
+    const departementCodes = Array.isArray(codes) ? codes : [codes]
+    return this.getGeometries([], departementCodes, [], addReg, 'geojson')
+  },
+  getDepartementsTopoJson (codes = [], addReg = true) {
+    const departementCodes = Array.isArray(codes) ? codes : [codes]
+    return this.getGeometries([], departementCodes, [], addReg, 'topojson')
+  },
+  getRegionsGeoJson (codes = []) {
+    const regionCodes = Array.isArray(codes) ? codes : [codes]
+    return this.getGeometries([], [], regionCodes, false, 'geojson')
+  },
+  getRegionsTopoJson (codes = []) {
+    const regionsCodes = Array.isArray(codes) ? codes : [codes]
+    return this.getGeometries([], [], regionsCodes, false, 'topojson')
   }
 }

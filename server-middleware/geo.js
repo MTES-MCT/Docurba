@@ -5,8 +5,6 @@ app.use(express.json())
 
 const geo = require('./modules/geo.js')
 
-const fullTopojson = require('./Data/a-com2022-topo.json')
-
 app.get('/communes', (req, res) => {
   const communes = geo.getCommunes(req.query)
   res.status(200).send(communes)
@@ -35,26 +33,36 @@ app.get('/intercommunalites/:code', (req, res) => {
   }
 })
 
-app.get('/geojson/communes', (req, res) => {
+app.get('/geojson/:locality', (req, res) => {
   try {
-    if (!req.query.codes) {
-      throw new Error('"codes" parameter is mandatory')
+    let geojson
+    if (req.params.locality === 'communes') {
+      geojson = geo.getCommunesGeoJson(req.query.codes)
+    } else if (req.params.locality === 'departements') {
+      geojson = geo.getDepartementsGeoJson(req.query.codes)
+    } else if (req.params.locality === 'regions') {
+      geojson = geo.getRegionsGeoJson(req.query.codes)
+    } else {
+      throw new Error('Type de localité invalide')
     }
-    const geojson = geo.getCommunesGeoJSON(req.query.codes)
     res.status(200).send(geojson)
   } catch (error) {
     res.status(400).send({ message: error.message })
   }
 })
 
-app.get('/topojson/communes', (req, res) => {
+app.get('/topojson/:locality', (req, res) => {
   try {
-    if (!req.query.codes) {
-      res.status(200).send(fullTopojson)
-      return
+    let topojson
+    if (req.params.locality === 'communes') {
+      topojson = geo.getCommunesTopoJson(req.query.codes)
+    } else if (req.params.locality === 'departements') {
+      topojson = geo.getDepartementsTopoJson(req.query.codes)
+    } else if (req.params.locality === 'regions') {
+      topojson = geo.getRegionsTopoJson(req.query.codes)
+    } else {
+      throw new Error('Type de localité invalide')
     }
-
-    const topojson = geo.getCommunesTopoJSON(req.query.codes)
     res.status(200).send(topojson)
   } catch (error) {
     res.status(400).send({ message: error.message })
