@@ -130,13 +130,13 @@
                       :section="section"
                       :git-ref="gitRef"
                     />
-                    <!-- <PACSectionsDataAttachmentsDialog
+                    <PACSectionsDataAttachmentsDialog
                       v-if="project.id"
                       v-model="dataAttachments"
                       :section="section"
                       :project="project"
                       :git-ref="gitRef"
-                    /> -->
+                    />
                     <v-tooltip bottom>
                       <template #activator="{on}">
                         <v-btn icon tile v-on="on" @click="toggleDiff">
