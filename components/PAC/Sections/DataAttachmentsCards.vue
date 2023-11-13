@@ -32,7 +32,7 @@
           :href="attachment.url"
           target="_blank"
         >
-          Voir la resource
+          Voir la ressource
         </v-btn>
       </v-card-actions>
     </v-card>

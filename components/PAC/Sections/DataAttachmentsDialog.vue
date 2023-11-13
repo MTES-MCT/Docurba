@@ -1,9 +1,14 @@
 <template>
   <v-dialog v-model="dialog">
-    <template #activator="{on}">
-      <v-btn depressed tile icon v-on="on">
-        <v-icon>{{ icons.mdiPaperclip }}</v-icon>
-      </v-btn>
+    <template #activator="{ on: toolbarOn }">
+      <v-tooltip bottom>
+        <template #activator="{ on: tootlipOn }">
+          <v-btn depressed tile icon v-on="{ ...toolbarOn, ...tootlipOn }">
+            <v-icon>{{ icons.mdiPaperclip }}</v-icon>
+          </v-btn>
+        </template>
+        Ajouter un jeu de donnée
+      </v-tooltip>
     </template>
 
     <v-card>
@@ -99,7 +104,8 @@ export default {
       return this.project.towns.map(t => t.code)
     },
     currentRegionIso () {
-      return this.project.towns[0].region.iso
+      const collectivite = this.project.epci ?? this.project.towns[0]
+      return collectivite.region.iso
     },
     baseTerritorialeSelection () {
       return this.attachments.filter(a => a.source === 'BASE_TERRITORIALE')
