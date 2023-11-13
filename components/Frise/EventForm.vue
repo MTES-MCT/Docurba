@@ -27,7 +27,7 @@
               </v-row>
             </v-col>
             <v-col cols="6">
-              <div>
+              <!-- <div>
                 <span class="label">Partie prenantes</span>
                 <v-checkbox
                   v-for="actor in actorsList"
@@ -37,8 +37,8 @@
                   :label="actor"
                   hide-details
                 />
-              </div>
-              <div class="mt-6">
+              </div> -->
+              <div>
                 <v-select
                   v-model="event.visibility"
                   persistent-hint
@@ -130,7 +130,7 @@ export default {
       description: '',
       actors: [],
       attachements: [],
-      visibility: 'public'
+      visibility: 'private'
     }
 
     return {

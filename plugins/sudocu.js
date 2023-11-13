@@ -231,7 +231,13 @@ export default ({ route, store, $supabase, $urbanisator }, inject) => {
           perimetre: e.perimetre,
           procSecs: e.procSecs,
           status: e.status,
-          status_infos: e.statusInfos
+          status_infos: e.statusInfos,
+          status_infos: e.statusInfos,
+          volet_qualitatif: e.volet_qualitatif[0],
+          is_scot: e.is_scot,
+          is_pluih: e.is_pluih,
+          is_pdu: e.is_pdu,
+          mandatory_pdu: e.mandatory_pdu
         }
       })
 

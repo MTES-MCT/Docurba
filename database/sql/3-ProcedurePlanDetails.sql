@@ -42,7 +42,11 @@ with
         'is_renvoi_rnu',
         vq.sirenvoirnu,
         'is_obligation_aire_statmnt',
-        vq.siobligationrealstationnement
+        vq.siobligationrealstationnement,
+        'is_pascotloiene',
+        vq.siintegrationdispoloiene,
+        'is_ouverture_urbain',
+        ene.siecheancierouvertureurba
       ) as volet_qualitatif
     from
       sudocu.loiene ene
@@ -56,17 +60,17 @@ select
   pp.siobligationpdu,
   pp.sipluiscot,
   pp.siplhpluih,
-  pp.coutplanttc,
-  pp.coutplanht,
-  pp.nomprestaexterne,
   c.nomcollectivite,
   c.codecollectivite,
   c.sicompetenceplan,
   c.noserietypecollectivite,
   c.libtypecollectivite,
   c.codetypecollectivite,
-  vq.volet_qualitatif
+  vq.volet_qualitatif,
+  jsonb_build_object('nomprestaexterne', pp.nomprestaexterne, 'coutplanht', pp.coutplanht,'coutplanttc', pp.coutplanttc) as moe
 from
   sudocu.procedureplan pp
   left join public.collectivitesdetails c on c.noseriecollectivite = pp.noseriecollectivite
   left join voletqualiene vq on vq.noserieprocedure = pp.noserieprocedure;
+
+
