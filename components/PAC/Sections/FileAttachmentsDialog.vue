@@ -1,10 +1,16 @@
 <template>
   <v-dialog v-model="dialog">
-    <template #activator="{on}">
-      <v-btn depressed tile icon v-on="on">
-        <v-icon>{{ icons.mdiNotePlusOutline }}</v-icon>
-      </v-btn>
+    <template #activator="{ on: toolbarOn }">
+      <v-tooltip bottom>
+        <template #activator="{ on: tootlipOn }">
+          <v-btn depressed tile icon v-on="{ ...toolbarOn, ...tootlipOn }">
+            <v-icon>{{ icons.mdiNotePlusOutline }}</v-icon>
+          </v-btn>
+        </template>
+        Ajouter un fichier
+      </v-tooltip>
     </template>
+
     <v-card>
       <v-card-title>
         Ajouter une annexe à la section : {{ section.name }}
