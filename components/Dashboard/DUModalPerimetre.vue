@@ -22,12 +22,12 @@
         <v-container class="py-8">
           <v-row>
             <v-col
-              v-for="town in towns"
+              v-for="town in sortedTowns"
               :key="town.inseeCode"
               cols="4"
               class="pl-0"
             >
-              <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId', params: { departement: $route.params.departement, collectiviteId: town.inseeCode }, query: { isEpci: false } }">
+              <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: $route.params.departement, collectiviteId: town.inseeCode }, query: { isEpci: false } }">
                 {{ town.name }} ({{ town.inseeCode }})
               </nuxt-link>
             </v-col>
@@ -62,6 +62,11 @@ export default {
   data () {
     return {
       dialog: false
+    }
+  },
+  computed: {
+    sortedTowns () {
+      return [...this.towns].sort((a, b) => a.name.localeCompare(b.name))
     }
   }
 }
