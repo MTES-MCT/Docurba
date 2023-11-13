@@ -130,13 +130,13 @@
                       :section="section"
                       :git-ref="gitRef"
                     />
-                    <PACSectionsDataAttachmentsDialog
-                      v-if="project"
+                    <!-- <PACSectionsDataAttachmentsDialog
+                      v-if="project.id"
                       v-model="dataAttachments"
                       :section="section"
                       :project="project"
                       :git-ref="gitRef"
-                    />
+                    /> -->
                     <v-tooltip bottom>
                       <template #activator="{on}">
                         <v-btn icon tile v-on="on" @click="toggleDiff">
@@ -425,11 +425,13 @@ export default {
       this.dataAttachments = data
     },
     async updateName () {
+      const { path, type, name } = this.section
+
       await axios({
         method: 'post',
         url: `/api/trames/tree/${this.gitRef}`,
         data: {
-          section: this.section,
+          section: { path, type, name },
           newName: this.sectionName
         }
       })

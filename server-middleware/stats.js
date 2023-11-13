@@ -38,6 +38,7 @@ app.get('/projects', async (req, res) => {
   let { data: projects } = await supabase.from('projects')
     .select('id, name, created_at, owner, towns, trame')
     .not('owner', 'is', null)
+    .is('from_sudocuh', null)
 
   projects = projects.filter((p) => {
     const name = p.name ? p.name.toLowerCase() : ''

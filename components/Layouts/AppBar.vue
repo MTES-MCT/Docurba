@@ -34,7 +34,7 @@
     <!-- This client only could be removed with proper user management server side -->
     <client-only>
       <div class="align-self-center">
-        <v-btn depressed tile text :to="{name: 'faq'}">
+        <v-btn class="hidden-xs-only" depressed tile text :to="{name: 'faq'}">
           Besoin d'aide ?
         </v-btn>
         <v-btn v-if="!$user.id" depressed tile text :to="{name: 'login'}">
