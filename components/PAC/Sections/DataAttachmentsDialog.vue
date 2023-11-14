@@ -30,7 +30,7 @@
           <v-tab-item>
             <DataSourcesList
               :collectivites-codes="collectivitesCodes"
-              :region="currentRegionIso"
+              :region="project.region"
               selectable
               :selection="baseTerritorialeSelection"
               @add="add"
@@ -102,10 +102,6 @@ export default {
   computed: {
     collectivitesCodes () {
       return this.project.towns.map(t => t.code)
-    },
-    currentRegionIso () {
-      const collectivite = this.project.epci ?? this.project.towns[0]
-      return collectivite.region.iso
     },
     baseTerritorialeSelection () {
       return this.attachments.filter(a => a.source === 'BASE_TERRITORIALE')
