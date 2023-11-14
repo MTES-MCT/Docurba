@@ -18,6 +18,12 @@ pdfMake.fonts = {
   }
 }
 
+const SOURCE_LABEL = {
+  BASE_TERRITORIALE: 'Base territoriale',
+  GEORISQUES: 'GéoRisques',
+  INPN: 'INPN'
+}
+
 export default ({ $md, $isDev, $supabase }, inject) => {
   const baseUrl = $isDev ? 'http://localhost:3000' : location.origin
 
@@ -31,27 +37,27 @@ export default ({ $md, $isDev, $supabase }, inject) => {
   }
 
   const pdfMaker = {
-    pdfFromContent (pdfData) {
+    pdfFromContent (pdfData, filename = 'PAC') {
       Object.assign(pdfData, {
         pageSize: 'A4',
         pageMargins: 65,
         styles: {
           title: { fontSize: 40, alignment: 'center' },
           tocTitle: { fontSize: 18 },
-          h1: { fontSize: 40, alignment: 'left' },
-          h2: { fontSize: 32, alignment: 'left' },
-          h3: { fontSize: 28, alignment: 'left' },
-          h4: { fontSize: 24, alignment: 'left' },
-          h5: { fontSize: 22, alignment: 'left' },
-          h6: { fontSize: 20, alignment: 'left' },
+          h1: { fontSize: 30, alignment: 'left' },
+          h2: { fontSize: 24, alignment: 'left' },
+          h3: { fontSize: 20, alignment: 'left' },
+          h4: { fontSize: 18, alignment: 'left' },
+          h5: { fontSize: 16, alignment: 'left' },
+          h6: { fontSize: 14, alignment: 'left' },
           a: { decoration: 'underline', color: '#000091' },
-          p: { fontSize: 14, alignment: 'justify' },
+          p: { fontSize: 12, alignment: 'justify' },
           footer: { fontSize: 12, alignment: 'right' },
-          ddt: { fontSize: 14, alignment: 'right' }
+          ddt: { fontSize: 12, alignment: 'right' }
         },
         defaultStyle: {
           font: 'Marianne',
-          fontSize: 14,
+          fontSize: 12,
           alignment: 'justify'
         },
         footer (currentPage, pageCount) {
@@ -67,13 +73,11 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         }
       })
 
-      pdfMake.createPdf(pdfData).download('file.pdf')
+      pdfMake.createPdf(pdfData).download(`${filename}.pdf`)
     },
     // fetchGithubRef could go into its own plugin/mixin.
     async fetchGithubRef (githubRef, project) {
       const { data: [{ PAC: selectedSections }] } = await $supabase.from('projects').select('PAC').eq('id', project.id)
-
-      // console.log('selectedSections', selectedSections)
 
       const { data: sections } = await axios({
         method: 'get',
@@ -97,8 +101,62 @@ export default ({ $md, $isDev, $supabase }, inject) => {
 
       orderSections.methods.orderSections(sections, supSections)
 
+      const { data: attachments } = await $supabase.from('pac_sections_data').select('*').eq('ref', githubRef)
+
+      function pushAttachments (section) {
+        const sectionAttachments = attachments.filter(a => a.path === section.path)
+        if (sectionAttachments.length) {
+          const attachmentElements = []
+
+          for (const attachment of sectionAttachments) {
+            attachmentElements.push(
+              {
+                type: 'text',
+                value: '\n'
+              },
+              {
+                type: 'element',
+                tag: 'li',
+                children: [
+                  {
+                    type: 'element',
+                    tag: 'a',
+                    props: {
+                      href: attachment.url
+                    },
+                    children: [
+                      {
+                        type: 'text',
+                        value: `${SOURCE_LABEL[attachment.source]} - ${attachment.category ? (attachment.category + ' - ') : ''}${attachment.title}`
+                      }
+                    ]
+                  }
+                ]
+              }
+            )
+          }
+
+          section.body.children.push({
+            type: 'text',
+            value: '\n'
+          }, {
+            type: 'element',
+            tag: 'ul',
+            props: {},
+            children: attachmentElements
+          }, {
+            type: 'text',
+            value: '\n'
+          })
+        }
+      }
+
       function parseSection (section, paths) {
-        if (section.content) { section.body = $md.compile(section.content) }
+        if (section.content) {
+          section.body = $md.compile(section.content)
+        }
+
+        pushAttachments(section)
 
         if (section.children) {
           section.children = section.children.filter(c => paths.includes(c.path))
@@ -164,6 +222,14 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             }
           }
 
+          if (element.tag === 'strong' || element.bold) {
+            newParams.bold = true
+          }
+
+          if (element.tag === 'em' || element.italics) {
+            newParams.italics = true
+          }
+
           if (element.children && element.children.length) {
             content.text = extractText(element.children, Object.assign({}, params, newParams))
           } else if (!element.children) {
@@ -215,7 +281,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           }
         } else {
           pdfContent.content.push({
-            text: extractText(element.children),
+            stack: extractText(element.children),
             style: element.tag,
             headlineLevel
           })
@@ -295,9 +361,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         addElementToContent(element)
       })
 
-      // console.log(JSON.stringify(pdfContent.content, null, 2))
-
-      await this.pdfFromContent(pdfContent)
+      await this.pdfFromContent(pdfContent, `${project.doc_type} - ${project.name}`)
     }
   }
 
