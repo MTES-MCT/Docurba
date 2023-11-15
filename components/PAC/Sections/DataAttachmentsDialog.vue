@@ -7,7 +7,7 @@
             <v-icon>{{ icons.mdiPaperclip }}</v-icon>
           </v-btn>
         </template>
-        Ajouter un jeu de donnée
+        Ajouter un jeu de données
       </v-tooltip>
     </template>
 
