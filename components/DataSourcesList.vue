@@ -52,7 +52,7 @@
   <v-container v-else class="fill-height">
     <v-row class="fill-height" justify="center" align="center">
       <v-col cols="auto">
-        <h2 class="text-h2 text-center">
+        <h2 class="text-h5 text-center">
           Aucune donnée n'est disponible pour le moment.
         </h2>
       </v-col>
@@ -119,8 +119,8 @@ export default {
   },
   async created () {
     const { dataset, themes } = await this.$daturba.getData(this.region, this.collectivitesCodes)
-    this.dataSources = dataset
-    this.themes = themes
+    this.dataSources = dataset ?? []
+    this.themes = themes ?? []
     this.loading = false
   },
   methods: {
