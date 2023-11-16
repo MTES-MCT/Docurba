@@ -27,6 +27,10 @@ const SOURCE_LABEL = {
 export default ({ $md, $isDev, $supabase }, inject) => {
   const baseUrl = $isDev ? 'http://localhost:3000' : location.origin
 
+  // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
+  const IMAGE_SRC_TO_REPLACE = 'https://sante.gouv.fr/local/adapt-img/608/10x/IMG/jpg/Etat_de_sante_population.jpg?1680693100'
+  const IMAGE_SRC_REPLACEMENT = `${baseUrl}/images/pac/Etat_de_sante_population.jpg`
+
   pdfMake.fonts = {
     Marianne: {
       normal: `${baseUrl}/fonts/Marianne/fontes_desktop/Marianne-Regular.otf`,
@@ -271,6 +275,11 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           })
         } else if (element.tag === 'img') {
           if (element.props.src) {
+            if (element.props.src === IMAGE_SRC_TO_REPLACE) {
+              // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
+              element.props.src = IMAGE_SRC_REPLACEMENT
+            }
+
             pdfContent.content.push({
               image: `SRC:${element.props.src}`,
               width: 450,
