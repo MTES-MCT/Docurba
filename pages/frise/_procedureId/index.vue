@@ -35,17 +35,8 @@
 </template>
 
 <script>
-import _ from 'lodash'
 export default {
   name: 'ProcedureTimelineEvents',
-  layout ({ $user }) {
-    // console.log('$user?.profile: ', $user?.profile)
-    if ($user?.profile?.side === 'etat' && $user?.profile?.verified) {
-      return 'ddt'
-    } else {
-      return 'default'
-    }
-  },
   data () {
     return {
       loaded: false,
@@ -85,39 +76,9 @@ export default {
   },
   methods: {
     async getEvents () {
-      const eventsSudocu = await this.$sudocu.getProcedureEvents(this.$route.params.procedureId)
-
-      const { data: procedureDocurba, error: errorProcedureDocurba } = await this.$supabase.from('projects').select('*, doc_frise_events(*)').eq('sudocuh_procedure_id', this.$route.params.procedureId)
-
-      // const { data: procedures, error } = await this.$supabase.from('procedures').select('*')
-      //   .eq('is_principale', true)
-      //   .contains('current_perimetre', '[{ "inseeCode": "73001" }]')
-
-      if (errorProcedureDocurba) { throw errorProcedureDocurba }
-      const eventsDocurba = procedureDocurba?.[0]?.doc_frise_events ?? []
-
-      this.events = _.orderBy(eventsSudocu.map((e) => {
-        return {
-          from_sudocuh: true,
-          date_iso: e.dateevenement,
-          type: e.libtypeevenement,
-          status: e.libstatutevenement,
-          description: '',
-          actors: [],
-          attachements: e.attachements,
-          docType: e.codetypedocument,
-          idProcedure: e.noserieprocedure,
-          typeProcedure: e.libtypeprocedure,
-          idProcedurePrincipal: e.noserieprocedureratt,
-          commentaireDgd: e.commentairedgd,
-          commentaireProcedure: e.commentaireproc,
-          commentaire: e.commentaire,
-          dateLancement: e.datelancement,
-          dateApprobation: e.dateapprobation,
-          dateAbandon: e.dateabandon,
-          dateExecutoire: e.dateexecutoire
-        }
-      }).concat(eventsDocurba), 'date_iso', 'desc')
+      const { data: events, error: errorEvents } = await this.$supabase.from('doc_frise_events').select('*').eq('procedure_id', this.$route.params.procedureId)
+      if (errorEvents) { throw errorEvents }
+      this.events = events
     }
   }
 }

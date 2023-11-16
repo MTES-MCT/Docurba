@@ -1,5 +1,5 @@
 <template>
-  <validation-observer :ref="`observerAddProcedure-${procedureCategory}`" v-slot="{ handleSubmit, invalid }">
+  <validation-observer v-if="isLoaded && (procedureCategory === 'principale' || (procedureCategory === 'secondaire' && proceduresParents && proceduresParents.length > 0))" :ref="`observerAddProcedure-${procedureCategory}`" v-slot="{ handleSubmit, invalid }">
     <form @submit.prevent="handleSubmit(createProcedure)">
       <v-container class="pa-0">
         <v-row>
@@ -16,8 +16,8 @@
               />
             </validation-provider>
           </v-col>
-          <v-col cols="12">
-            <v-text-field v-model="description" filled placeholder="Description de l’objet de la procédure" label="Description de l’objet de la procédure" />
+          <v-col cols="12" class="pt-0 pb-2">
+            <v-select v-model="objetProcedure" filled multiple label="Objet de la procédure" :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']" />
           </v-col>
           <v-col v-if="procedureCategory === 'principale'" cols="12">
             <validation-provider v-slot="{ errors }" name="Type de document d'urbanisme" rules="required">
@@ -36,7 +36,7 @@
             <v-col cols="12">
               <validation-provider v-slot="{ errors }" name="Procédure parente" rules="required">
                 <v-select
-                  v-model="typeDu"
+                  v-model="procedureParent"
                   style="max-width:50%;"
                   :error-messages="errors"
                   filled
@@ -89,10 +89,22 @@
       </v-container>
     </form>
   </validation-observer>
+
+  <v-container v-else>
+    <v-row>
+      <v-col cols="12" class="py-12">
+        <p class="text-h6">
+          Pas de procédure principale
+        </p>
+        Aucune procédure principale n’a été trouvée pour la collectivité. Une procédure secondaire doit être attachée à une procédure principale.
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
 import { mdiInformationOutline } from '@mdi/js'
+import axios from 'axios'
 import FormInput from '@/mixins/FormInput.js'
 
 export default {
@@ -116,39 +128,91 @@ export default {
         principale: ['Élaboration', 'Révision'],
         secondaire: ['Révision à modalité simplifiée ou Révision allégée', 'Modification', 'Modification simplifiée', 'Mise en comptabilité', 'Mise à jour']
       },
-      proceduresParents: [],
+      procedureParent: null,
+      proceduresParents: null,
       numberProcedure: '',
-      description: '',
+      objetProcedure: null,
       typeDu: '',
       typesDu: ['Carte Communale', 'PLU', 'PLUi', 'PLUiH', 'PLUiM'],
-      perimetre: this.collectivite.type === 'Commune' ? [this.collectivite.code] : this.collectivite.intercommunalite.communes.map(e => e.code),
-      icons: {
-        mdiInformationOutline
-      }
+      perimetre: this.collectivite.type === 'Commune' ? [this.collectivite.code] : this.collectivite.communes.map(e => e.code),
+      icons: { mdiInformationOutline }
     }
   },
   async mounted () {
     try {
       if (this.procedureCategory === 'secondaire') {
-        this.proceduresParents = await this.getProcedures()
+        const proceduresParents = await this.getProcedures()
+        this.proceduresParents = proceduresParents
       }
     } catch (error) {
-      console.log()
+      console.log(error)
     }
   },
   methods: {
+    isLoaded () {
+      return this.procedureCategory === 'principale' || (this.procedureCategory === 'secondaire' && this.proceduresParents.length > 0)
+    },
     async getProcedures () {
-      console.log('this.$route.collectiviteId: ', this.$route.params.collectiviteId)
-      const { data: procedures, error } = await this.$supabase.from('procedures').select('*')
-        .eq('is_principale', true)
-        .contains('current_perimetre', '[{ "inseeCode": "73001" }]')
+      let query = this.$supabase.from('procedures').select('*').eq('is_principale', true)
+
+      if (this.collectivite.type !== 'Commune') {
+        query = query.eq('collectivite_porteuse_id', this.collectivite.code)
+      } else {
+        query = query.contains('current_perimetre', `[{ "inseeCode": "${this.collectivite.code}" }]`)
+      }
+      const { data: procedures, error } = await query
       console.log('procedures: ', procedures)
       if (error) { throw error }
       return procedures
+    },
+    async createProcedure () {
+      this.loadingSave = true
+      try {
+        const detailedPerimetre = (await axios({ url: `/api/geo/communes?codes=${this.perimetre}`, method: 'get' })).data
+        const fomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
+        // const regions = [...new Set(detailedPerimetre.map(e => e.regionCode))]
+        const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
+
+        const { data: insertedProject, error: errorInsertProject } = await this.$supabase.from('projects').insert({
+          name: `${this.typeProcedure} ${this.typeDu}`,
+          doc_type: this.typeDu,
+          region: this.collectivite.regionCode,
+          collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
+          current_perimetre: fomattedPerimetre,
+          initial_perimetre: fomattedPerimetre,
+          collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
+          test: true
+        }).select()
+        if (errorInsertProject) { throw errorInsertProject }
+
+        await this.$supabase.from('procedures').insert({
+          secondary_procedure_of: this.procedureParent,
+          type: this.typeProcedure,
+          commentaire: this.objetProcedure?.join(', '),
+          collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
+          is_principale: this.procedureCategory === 'principale',
+          status: 'en cours',
+          is_sectoriel: null,
+          is_scot: null,
+          is_pluih: this.typeDu === 'PLUiH',
+          is_pdu: null,
+          doc_type: this.typeDu,
+          departements,
+          numero: this.procedureCategory === 'principale' ? '1' : this.numberProcedure,
+          current_perimetre: fomattedPerimetre,
+          initial_perimetre: fomattedPerimetre,
+          project_id: insertedProject[0].id,
+          testing: true
+        })
+        this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`)
+      } catch (error) {
+        this.error = error
+        console.log(error)
+      } finally {
+        this.loadingSave = false
+      }
     }
-  },
-  createProcedure () {
-    console.log('Procedure created')
   }
+
 }
 </script>

@@ -138,22 +138,27 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
     async getProjects (collectiviteId, { plans = true, schemas = true, eventsDetails = false } = {}) {
       try {
         let query = $supabase.from('procedures')
-          .select('*, projects(*)') // + eventsDetails ? ', frise_doc_events(*)' : ''
-          .contains('current_perimetre', `[{ "inseeCode": "${route.params.collectiviteId}" }]`)
+          .select('*, projects(*)')
+
+        if (route.params.collectiviteId.length > 5) {
+          query = query.eq('collectivite_porteuse_id', route.params.collectiviteId)
+        } else {
+          query = query.contains('current_perimetre', `[{ "inseeCode": "${route.params.collectiviteId}" }]`)
+        }
 
         if (schemas && !plans) {
-          query = query.eq('doc_type', 'SCOT') // faire un OR is_plui_scot
+          query = query.eq('doc_type', 'SCOT')
         }
         if (plans && !schemas) {
           query = query.neq('doc_type', 'SCOT')
         }
-        const { data, error } = await query
+        const { data, error } = await query.order('created_at', { ascending: false })
         if (error) { throw error }
         const groupedSubProcedures = groupBy(data, 'secondary_procedure_of')
         const proceduresPrincipales = data.filter(e => e.is_principale)
           .map((e) => {
             const { projects, ...rest } = e
-            return { ...rest, project: projects, subProcs: groupedSubProcedures[e.id] }
+            return { ...rest, project: projects, procSecs: groupedSubProcedures[e.id] }
           })
 
         const ret = {}

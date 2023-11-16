@@ -38,7 +38,6 @@
     <DashboardDUItemsList
       :collectivite="collectivite"
       :procedures="procedures"
-      :projects="projects"
       :schemas="schemas"
       @inserted="fetchProjects"
     />
@@ -54,36 +53,24 @@ export default {
   layout: 'ddt',
   data () {
     return {
-      linkedEpci: null,
       tab: null,
       collectivite: null,
       procedures: [],
-      sudocuProcedures: [],
-      projects: [],
       schemas: [],
-      icons: {
-        mdiArrowLeft
-      }
+      icons: { mdiArrowLeft }
     }
   },
   async mounted () {
-    const { collectivite, schemas, procedures: sudocuProcedures } = (await axios({ url: `/api/urba/collectivites/${this.$route.params.collectiviteId}`, method: 'get' })).data
-    this.collectivite = collectivite
+    this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
+    const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
     this.schemas = schemas
-    this.sudocuProcedures = sudocuProcedures
-    console.log('this.sudocuProcedures: ', this.sudocuProcedures)
-    const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
-    this.procedures = [...this.sudocuProcedures, ...procedures]
-    this.projects = projects
-
-    const test = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
-    console.log('TESTING ', test)
+    this.procedures = plans
   },
   methods: {
     async fetchProjects () {
-      const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
-      this.procedures = [...this.sudocuProcedures, ...procedures]
-      this.projects = projects
+      // const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
+      // this.procedures = [...this.sudocuProcedures, ...procedures]
+      // this.projects = projects
     }
   }
 }

@@ -7,12 +7,13 @@
           {{ procedure.name }}
         </span>
         <div v-else>
-          <span>{{ procedure.doc_type }}</span><span v-if="procedure.perimetre.length > 1">-i<span v-if="procedure.status_infos.isSectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')">S</span></span>
-          <span> {{ procedure.perimetre.length === 1 ? procedure.perimetre[0].name + ' (' + procedure.perimetre[0].inseeCode + ')' : '' }}</span>
+          <span>{{ procedure.doc_type }}</span><span v-if="procedure.current_perimetre.length > 1">-i<span v-if="procedure.is_sectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')">S</span></span>
+          <span> {{ procedure.current_perimetre.length === 1 ? procedure.current_perimetre[0].name + ' (' + procedure.current_perimetre[0].inseeCode + ')' : '' }}</span>
+          numéro {{ procedure.numero }}
         </div>
 
         <br>
-        id - {{ procedure.id }} - parent: {{ procedure.procedure_id }}
+        <span class="text-caption">{{ procedure.id }} - parent: {{ procedure.procedure_id }}</span>
       </v-col>
     </v-row>
     <v-row class="mt-0">
@@ -51,43 +52,26 @@
         <p class="font-weight-bold">
           Commentaire / Note
         </p>
-        <p v-if="procedure.description">
-          {{ procedure.description }}
+        <p v-if="procedure.commentaire">
+          {{ procedure.commentaire }}
         </p>
       </v-col>
       <v-col cols="12" class="pb-0">
         <v-divider />
       </v-col>
       <v-col cols="12" class="pb-0">
-        <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
-        <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
+        <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
+        <nuxt-link :to="`/frise/${procedure.id}`">
           <span class="primary--text text-decoration-underline mr-4">
             Feuille de route partagée
           </span>
         </nuxt-link>
-        <nuxt-link
-          :to="{
-            name: 'ddt-departement-collectivites-collectiviteId-procedureId-dgd',
-            params: {
-              departement: $route.params.departement,
-              collectiviteId: $route.params.collectiviteId,
-              procedureId: procedure.id
-            }
-          }"
-        >
-          <span class="primary--text text-decoration-underline mr-4 ">
-            DGD
-          </span>
+        <nuxt-link :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}-dgd`">
+          <span class="primary--text text-decoration-underline mr-4 ">DGD</span>
         </nuxt-link>
         <nuxt-link
-          :to="{
-            name: 'ddt-departement-collectivites-collectiviteId-procedureId-infos',
-            params: {
-              departement: $route.params.departement,
-              collectiviteId: $route.params.collectiviteId,
-              procedureId: procedure.id
-            }
-          }"
+
+          :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}-infos`"
         >
           <span class="primary--text text-decoration-underline mr-4 ">
             Info. générales
@@ -106,7 +90,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="d-flex align-center justify-end pb-0">
-        <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
+        <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
         <v-spacer />
         <v-btn text color="primary" :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <v-icon small color="primary" class="mr-2">

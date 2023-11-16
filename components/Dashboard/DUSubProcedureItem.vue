@@ -1,12 +1,11 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        <!-- <v-chip :color="statusColors[procedure.status]" label class="text-uppercase mr-2">
-          {{ procedure.status }}
-        </v-chip> -->
-        {{ procedure.type }}
-        - {{ procedure.id }} - parent: {{ procedure.procedure_id }}
+      <v-col cols="12">
+        <div class="text-subtitle-1 font-weight-bold">
+          {{ procedure.type }} numéro {{ procedure.numero }}
+        </div>
+        <span class="text-caption">{{ procedure.id }} - parent: {{ procedure.procedure_id }}</span>
       </v-col>
     </v-row>
     <v-row class="mt-0">
@@ -35,8 +34,8 @@
         <p class="font-weight-bold">
           Commentaire / Note
         </p>
-        <div v-if="procedure.description">
-          <p>{{ procedure.description }} </p>
+        <div v-if="procedure.commentaire">
+          <p>{{ procedure.commentaire }} </p>
         </div>
         <div v-else class="text--disabled">
           Pas de commentaire
@@ -46,7 +45,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12">
-        <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
+        <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
         <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <span class="primary--text text-decoration-underline mr-4">
             Feuille de route partagée
@@ -75,7 +74,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="d-flex align-center justify-end ">
-        <DashboardDUModalPerimetre v-if="procedure.perimetre" :towns="procedure.perimetre" />
+        <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
         <v-spacer />
         <v-btn text color="primary" :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <v-icon small color="primary" class="mr-2">

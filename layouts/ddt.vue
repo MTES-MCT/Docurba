@@ -10,7 +10,7 @@
         </v-row>
       </v-container>
       <template v-else>
-        <nuxt v-if="isAllowed" keep-alive />
+        <nuxt v-if="isAllowed" />
         <v-container v-else class="fill-height">
           <v-row justify="center" align="center">
             <v-col cols="12" class="mb-4">
