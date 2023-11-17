@@ -19,6 +19,11 @@
           <v-col cols="12" class="pt-0 pb-2">
             <v-select v-model="objetProcedure" filled multiple label="Objet de la procédure" :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']" />
           </v-col>
+          <v-col v-if="objetProcedure.includes('Autre')" offset="1" cols="11" class="pt-0 pb-2">
+            <validation-provider v-slot="{ errors }" name="Details de la procédure" rules="required">
+              <v-text-field v-model="otherObjetProcedure" :error-messages="errors" filled label="Précisez" />
+            </validation-provider>
+          </v-col>
           <v-col v-if="procedureCategory === 'principale'" cols="12">
             <validation-provider v-slot="{ errors }" name="Type de document d'urbanisme" rules="required">
               <v-select
@@ -54,23 +59,23 @@
                 </v-select>
               </validation-provider>
             </v-col>
-            <v-col cols="12" class="d-flex align-start">
-              <v-text-field v-model="numberProcedure" style="max-width:50%;" filled placeholder="Ex. 4" label="Numéro de procédure" />
-              <v-tooltip right>
-                <template #activator="{ on, attrs }">
-                  <v-icon
-                    color="primary"
-                    class="ml-4"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    {{ icons.mdiInformationOutline }}
-                  </v-icon>
-                </template>
-                <div>Le numéro est dans l’acte (ex : modification simplifiée n°4)</div>
-              </v-tooltip>
-            </v-col>
           </template>
+          <v-col v-if="procedureCategory === 'secondaire' || typeProcedure === 'Révision'" cols="12" class="d-flex align-start">
+            <v-text-field v-model="numberProcedure" style="max-width:50%;" filled placeholder="Ex. 4" label="Numéro de procédure" />
+            <v-tooltip right>
+              <template #activator="{ on, attrs }">
+                <v-icon
+                  color="primary"
+                  class="ml-4"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  {{ icons.mdiInformationOutline }}
+                </v-icon>
+              </template>
+              <div>Le numéro est dans l’acte (ex : modification simplifiée n°4)</div>
+            </v-tooltip>
+          </v-col>
         </v-row>
         <DdtPerimeterCheckInput v-model="perimetre" :communes="collectivite.communes || collectivite.intercommunalite.communes" />
         <v-row>
@@ -131,9 +136,10 @@ export default {
       procedureParent: null,
       proceduresParents: null,
       numberProcedure: '',
-      objetProcedure: null,
+      objetProcedure: [],
+      otherObjetProcedure: '',
       typeDu: '',
-      typesDu: ['Carte Communale', 'PLU', 'PLUi', 'PLUiH', 'PLUiM'],
+      typesDu: ['Carte Communale', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM'],
       perimetre: this.collectivite.type === 'Commune' ? [this.collectivite.code] : this.collectivite.communes.map(e => e.code),
       icons: { mdiInformationOutline }
     }
@@ -188,7 +194,7 @@ export default {
         await this.$supabase.from('procedures').insert({
           secondary_procedure_of: this.procedureParent,
           type: this.typeProcedure,
-          commentaire: this.objetProcedure?.join(', '),
+          commentaire: this.objetProcedure && this.objetProcedure.includes('Autre') ? this.otherObjetProcedure : this.objetProcedure?.join(', '),
           collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
           is_principale: this.procedureCategory === 'principale',
           status: 'en cours',

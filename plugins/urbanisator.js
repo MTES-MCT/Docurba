@@ -137,13 +137,14 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
     },
     async getProjects (collectiviteId, { plans = true, schemas = true, eventsDetails = false } = {}) {
       try {
+        console.log('Fetch: ', collectiviteId)
         let query = $supabase.from('procedures')
           .select('*, projects(*)')
 
-        if (route.params.collectiviteId.length > 5) {
-          query = query.eq('collectivite_porteuse_id', route.params.collectiviteId)
+        if (collectiviteId.length > 5) {
+          query = query.eq('collectivite_porteuse_id', collectiviteId)
         } else {
-          query = query.contains('current_perimetre', `[{ "inseeCode": "${route.params.collectiviteId}" }]`)
+          query = query.contains('current_perimetre', `[{ "inseeCode": "${collectiviteId}" }]`)
         }
 
         if (schemas && !plans) {
@@ -164,6 +165,7 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
         const ret = {}
         if (schemas) { ret.schemas = proceduresPrincipales.filter(e => e.doc_type === 'SCOT') }
         if (plans) { ret.plans = proceduresPrincipales.filter(e => e.doc_type !== 'SCOT') }
+        console.log('ret: ', ret)
         return ret
       } catch (error) {
         console.log(error)
