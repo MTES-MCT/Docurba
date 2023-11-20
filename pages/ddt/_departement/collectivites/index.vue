@@ -36,6 +36,7 @@
               :headers="headersEpci"
               :items="collectivites"
               class="elevation-1"
+              :custom-filter="customFilter"
               :search="search"
               :loading="!epci"
               loading-text="Chargement des collectivités..."
@@ -74,6 +75,7 @@
               class="elevation-1"
               :loading="!communes"
               loading-text="Chargement des collectivités..."
+              :custom-filter="customFilter"
               :search="search"
             >
               <!-- eslint-disable-next-line -->
@@ -141,22 +143,22 @@ export default {
   computed: {
     headers () {
       return [
-        { text: 'Nom', align: 'start', value: 'name' },
-        { text: 'Code INSEE', align: 'start', value: 'code' },
-        { text: 'Compétence', value: 'competence' },
-        { text: 'Intercommunalité', value: 'intercommunalite' },
+        { text: 'Nom', align: 'start', value: 'name', filterable: true },
+        { text: 'Code INSEE', align: 'start', value: 'code', filterable: true },
+        { text: 'Compétence', value: 'competence', filterable: false },
+        { text: 'Intercommunalité', value: 'intercommunalite', filterable: false },
         // { text: 'Date de création', value: 'dateCreation' },
-        { text: 'Actions', value: 'actions' }
+        { text: 'Actions', value: 'actions', filterable: false }
       ]
     },
     headersEpci () {
       return [
-        { text: 'Nom', align: 'start', value: 'name' },
-        { text: 'SIREN', align: 'start', value: 'code' },
-        { text: 'Type', value: 'type' },
-        { text: 'Compétence', value: 'competence' },
+        { text: 'Nom', align: 'start', value: 'name', filterable: true },
+        { text: 'SIREN', align: 'start', value: 'code', filterable: true },
+        { text: 'Type', value: 'type', filterable: false },
+        { text: 'Compétence', value: 'competence', filterable: false },
         // { text: 'Date de création', value: 'dateCreation' },
-        { text: 'Actions', value: 'actions' }
+        { text: 'Actions', value: 'actions', filterable: false }
       ]
     },
     collectivites () {
@@ -200,6 +202,8 @@ export default {
         departementCode: this.$route.params.departement
       }
     })
+
+    console.log('nb communes : ', communes.length)
 
     const collecsInsee = communes.map(e => e.code.padStart(5, '0')).concat(epcis.map(e => e.code))
     const { data: sudocuCollectivites, error: errorSudocuCollectivites } = await this.$supabase.from('sudocu_collectivites').select().in('codecollectivite', collecsInsee)
@@ -251,6 +255,16 @@ export default {
         frpProcPrincipalPath: { name: 'foo' }
       }
     })
+  },
+  methods: {
+    customFilter (value, search, item) {
+      if (!search?.length || !value?.length) { return true }
+
+      const normalizedValue = value.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+      const normalizedSearch = search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+
+      return normalizedValue.includes(normalizedSearch)
+    }
   }
 }
 </script>
