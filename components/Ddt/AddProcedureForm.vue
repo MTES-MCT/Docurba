@@ -1,5 +1,6 @@
 <template>
-  <validation-observer v-if="isLoaded && (procedureCategory === 'principale' || (procedureCategory === 'secondaire' && proceduresParents && proceduresParents.length > 0))" :ref="`observerAddProcedure-${procedureCategory}`" v-slot="{ handleSubmit, invalid }">
+  <VGlobalLoader v-if="!isLoaded" />
+  <validation-observer v-else-if="(procedureCategory === 'principale' || (procedureCategory === 'secondaire' && proceduresParents && proceduresParents.length > 0))" :ref="`observerAddProcedure-${procedureCategory}`" v-slot="{ handleSubmit, invalid }">
     <form @submit.prevent="handleSubmit(createProcedure)">
       <v-container class="pa-0">
         <v-row>
@@ -77,9 +78,39 @@
             </v-tooltip>
           </v-col>
         </v-row>
-        <DdtPerimeterCheckInput v-model="perimetre" :communes="collectivite.communes || collectivite.intercommunalite.communes" />
+        <DdtPerimeterCheckInput v-model="perimetre" :communes="communes" />
         <v-row>
-          <v-col cols="12" class="d-flex">
+          <v-col cols="12" class="mt-4 ">
+            <div class="mb-2">
+              Nom de la procédure
+            </div>
+            <v-alert v-show="postfixSectoriel" outlined type="info">
+              Précisez le titre de votre document sectoriel afin de l’identifier plus facilement dans Docurba.
+            </v-alert>
+            <div class="d-flex">
+              <v-text-field
+                :value="baseName"
+                background-color="white"
+                outlined
+                class="rounded-r-0 "
+                hide-details
+                readonly
+              />
+              <v-text-field
+                hide-details
+                label="Complément (optionnel)"
+                class="rounded-l-0 smaller-input-slot"
+                placeholder="Précisez le titre de la procédure (optionnel)"
+                filled
+              />
+            </div>
+            <div class="caption mt-1">
+              Ce nom n’a pas de valeur légale et sera utilisé pour retrouver vos procédures dans Docurba.
+            </div>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" class="d-flex mt-8">
             <v-btn
               type="submit"
               color="primary"
@@ -110,6 +141,7 @@
 <script>
 import { mdiInformationOutline } from '@mdi/js'
 import axios from 'axios'
+import { uniqBy } from 'lodash'
 import FormInput from '@/mixins/FormInput.js'
 
 export default {
@@ -139,27 +171,43 @@ export default {
       objetProcedure: [],
       otherObjetProcedure: '',
       typeDu: '',
+      nameComplement: '',
       typesDu: ['Carte Communale', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM'],
-      perimetre: this.collectivite.type === 'Commune' ? [this.collectivite.code] : this.collectivite.communes.map(e => e.code),
+      perimetre: [],
       icons: { mdiInformationOutline }
+    }
+  },
+  computed: {
+    isLoaded () {
+      return this.procedureCategory === 'principale' || (this.procedureCategory === 'secondaire' && this.proceduresParents !== null)
+    },
+    postfixSectoriel () {
+      return this.perimetre.length < this.communes.length ? 'S' : ''
+    },
+    baseName () {
+      return `${this.typeProcedure} ${this.numberProcedure} de ${this.typeDu + this.postfixSectoriel} ${this.collectivite.intitule}`.replace(/\s+/g, ' ').trim()
+    },
+    communes () {
+      const coms = this.collectivite.communes || this.collectivite.intercommunalite.communes
+      return uniqBy(coms, 'code').filter(e => e.type === 'Commune')
     }
   },
   async mounted () {
     try {
+      console.log('collectivite: ', this.collectivite, ' len: ', this.collectivite.communes.length, ' test: ', this.collectivite.communes.map(e => e.code))
       if (this.procedureCategory === 'secondaire') {
         const proceduresParents = await this.getProcedures()
         this.proceduresParents = proceduresParents
       }
+      console.log('TEST: ', this.communes.map(e => e.code))
+      this.perimetre = this.collectivite.type === 'Commune' ? [this.collectivite.code] : this.communes.map(e => e.code)
     } catch (error) {
       console.log(error)
     }
   },
   methods: {
-    isLoaded () {
-      return this.procedureCategory === 'principale' || (this.procedureCategory === 'secondaire' && this.proceduresParents.length > 0)
-    },
     async getProcedures () {
-      let query = this.$supabase.from('procedures').select('*').eq('is_principale', true)
+      let query = this.$supabase.from('procedures').select('*').eq('is_principale', true).eq('status', 'opposable')
 
       if (this.collectivite.type !== 'Commune') {
         query = query.eq('collectivite_porteuse_id', this.collectivite.code)
@@ -174,8 +222,10 @@ export default {
     async createProcedure () {
       this.loadingSave = true
       try {
+        console.log('PERIM: ', this.perimetre)
         const detailedPerimetre = (await axios({ url: `/api/geo/communes?codes=${this.perimetre}`, method: 'get' })).data
         const fomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
+
         // const regions = [...new Set(detailedPerimetre.map(e => e.regionCode))]
         const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
 
@@ -191,6 +241,7 @@ export default {
         }).select()
         if (errorInsertProject) { throw errorInsertProject }
 
+        console.log('fomattedPerimetre: ', fomattedPerimetre, ' fomattedPerimetreL: ', fomattedPerimetre.length)
         await this.$supabase.from('procedures').insert({
           secondary_procedure_of: this.procedureParent,
           type: this.typeProcedure,
@@ -208,6 +259,7 @@ export default {
           current_perimetre: fomattedPerimetre,
           initial_perimetre: fomattedPerimetre,
           project_id: insertedProject[0].id,
+          name: this.baseName + this.nameComplement ? '' + this.nameComplement : '',
           testing: true
         })
         this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`)
@@ -222,3 +274,9 @@ export default {
 
 }
 </script>
+
+<style lang="scss">
+.smaller-input-slot .v-input__slot{
+  min-height: 55px !important;
+}
+</style>

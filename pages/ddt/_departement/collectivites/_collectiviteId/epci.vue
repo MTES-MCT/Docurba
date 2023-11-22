@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="loaded">
+  <v-container v-if="collectivite">
     <v-row>
       <v-col cols="12">
         <h1 class="text-h1">
@@ -46,28 +46,36 @@
         </v-expansion-panels>
       </v-col>
     </v-row>
-    <v-row>
+    <template v-if="loaded">
+      <v-row>
+        <v-col cols="12">
+          <v-alert type="info">
+            Date du dernier extract de données Sudocuh vers Docurba: <b>4 Octobre 2023</b>
+          </v-alert>
+        </v-col>
+        <v-col cols="12">
+          <p class="text-h2">
+            Documents d'urbanisme
+          </p>
+          <p class="text-h6">
+            Documents d’urbanisme sous la compétence de {{ collectivite.intitule }} :
+          </p>
+        </v-col>
+      </v-row>
+      <DashboardDUItemsList
+        collectivite-type="epci"
+        :collectivite="collectivite"
+        :procedures="plans"
+        :projects="projects"
+        :schemas="schemas"
+        @deleteProcedure="getProcedures"
+      />
+    </template>
+    <v-row v-else>
       <v-col cols="12">
-        <v-alert type="info">
-          Date du dernier extract de données Sudocuh vers Docurba: <b>4 Octobre 2023</b>
-        </v-alert>
-      </v-col>
-      <v-col cols="12">
-        <p class="text-h2">
-          Documents d'urbanisme
-        </p>
-        <p class="text-h6">
-          Documents d’urbanisme sous la compétence de {{ collectivite.intitule }} :
-        </p>
+        <VGlobalLoader />
       </v-col>
     </v-row>
-    <DashboardDUItemsList
-      collectivite-type="epci"
-      :collectivite="collectivite"
-      :procedures="plans"
-      :projects="projects"
-      :schemas="schemas"
-    />
   </v-container>
   <v-container v-else>
     <v-row>
@@ -98,12 +106,17 @@ export default {
     }
   },
   async mounted () {
-    this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
-    const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
-    this.schemas = schemas
-    this.plans = plans
-    console.log('schemas: ', schemas, ' plans: ', plans)
+    await this.getProcedures()
     this.loaded = true
+  },
+  methods: {
+    async getProcedures () {
+      this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
+      const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
+      this.schemas = schemas
+      this.plans = plans
+      console.log('schemas: ', schemas, ' plans: ', plans)
+    }
   }
 }
 </script>

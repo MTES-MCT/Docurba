@@ -39,7 +39,7 @@
     const formattedProcedure = {
       project_id: docurbaProjectId,
       type: procedure.type,
-      scot_name: procedure.name,
+      scot: procedure.name,
       commentaire: procedure.description,
       current_perimetre: procedure.perimetre,
       initial_perimetre: procedure.perimetre,
@@ -58,7 +58,7 @@
       moe: procedure?.moe,
       volet_qualitatif: procedure?.volet_qualitatif,
       is_sudocuh_scot: schemaOnly,
-      test: true
+      numero: procedure?.numero_procedure
     }
     // console.log('formattedProcedure: ', formattedProcedure)
     // console.log('procedure?.moe: ', procedure?.moe)
@@ -136,12 +136,6 @@
     const RATE = 50
 
     let tempProms = []
-
-    // COmmiune / Procedure qui ne doivent pas etre a en cours
-    // 01303 / 61137
-    // 56054 / 60401
-    // 83004 / 1831
-    // 83044 / 14904
 
     // const testOne = collectivites.find(e => e.code === '83044')
     // console.log('HERE TESt: ', testOne)

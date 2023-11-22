@@ -3,7 +3,10 @@
     <v-container class="px-0">
       <v-row align="end">
         <v-col cols="auto">
-          <nuxt-link :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${$route.params.collectiviteId.length > 5 ? 'epci' : 'commune'}`">
+          <nuxt-link class="text-decoration-none d-flex align-center" :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${$route.params.collectiviteId.length > 5 ? 'epci' : 'commune'}`">
+            <v-icon color="primary" small class="mr-2">
+              {{ icons.mdiChevronLeft }}
+            </v-icon>
             {{ collectivite.intitule }}
           </nuxt-link>
           <h1>Nouvelle procédure</h1>
@@ -32,14 +35,15 @@
 </template>
 <script>
 import axios from 'axios'
-
+import { mdiChevronLeft } from '@mdi/js'
 export default {
   name: 'ProcedureAdd',
   layout: 'ddt',
   data () {
     return {
       collectivite: null,
-      tab: null
+      tab: null,
+      icons: { mdiChevronLeft }
     }
   },
   async mounted () {

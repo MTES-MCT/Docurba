@@ -24,7 +24,8 @@ create materialized view distinct_procedures_events as
     bool_and(sipdu) as is_pdu,
     bool_and(siobligationpdu) as mandatory_pdu,
     MAX(libstatutevenement) as last_event_statut,
-    MAX(sudocu_procedure_events.codecollectivite) as codecollectivite
+    MAX(sudocu_procedure_events.codecollectivite) as codecollectivite,
+    MAX(noprocedure) as numero_procedure
     from sudocu_procedure_events
     LEFT JOIN procedureplandetails pp ON pp.noserieprocedure = sudocu_procedure_events.noserieprocedure
     GROUP BY sudocu_procedure_events.noserieprocedure

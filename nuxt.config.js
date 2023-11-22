@@ -171,6 +171,8 @@ export default {
             lighten4: '#F5F5FE'
           },
           grey: {
+            darken2: '#161616',
+            darken1: '#EEEEEE',
             base: '#DDDDDD'
           },
           secondary: '#e1000f',

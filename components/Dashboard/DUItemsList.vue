@@ -3,8 +3,7 @@
     <v-col v-if="procedures.length > 0 || schemas.length > 0">
       <v-tabs
         v-model="tab"
-        background-color="primary"
-        dark
+        color="primary"
       >
         <v-tab v-if="isEpci">
           DU intercommunaux
@@ -17,7 +16,7 @@
           SCoTs
         </v-tab>
         <v-spacer />
-        <v-btn v-if="!isPublic" text class="align-self-center" :to="`/ddt/${collectivite.departementCode}/collectivites/${collectivite.code}/procedure/add`">
+        <v-btn v-if="!isPublic" depressed color="primary" class="align-self-center" :to="`/ddt/${collectivite.departementCode}/collectivites/${collectivite.code}/procedure/add`">
           Ajouter une procédure
         </v-btn>
       </v-tabs>
@@ -30,6 +29,7 @@
               :key="'du_' + i"
               :procedure="procedure"
               :censored="isPublic"
+              @delete="$emit('deleteProcedure', arguments[0])"
             />
           </template>
           <div v-else class="d-flex align-center justify-center pa-8 text--disabled flex-column g200  rounded">
@@ -49,6 +49,7 @@
               :key="'du_' + i"
               :procedure="procedure"
               :censored="isPublic"
+              @delete="$emit('deleteProcedure', arguments[0])"
             />
           </template>
           <div v-else class="d-flex align-center justify-center pa-8 text--disabled flex-column g200  rounded">
@@ -67,6 +68,7 @@
             :key="'du_' + i"
             :procedure="procedure"
             :censored="isPublic"
+            @delete="$emit('deleteProcedure', arguments[0])"
           />
         </v-tab-item>
       </v-tabs-items>
