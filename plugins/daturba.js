@@ -4,9 +4,9 @@ import GEORISQUES_MAP from '@/assets/data/GeoRisquesMap.json'
 export default ({ route }, inject) => {
   // MAP permet d'afficher les onglet de source
   const sourceMap = {
-    'FR-ARA': {
-      url: 'https://bdterr.datara.gouv.fr/base_territoriale/results?_format=json',
-      themesUrl: 'https://bdterr.datara.gouv.fr/base_territoriale/themes',
+    // eslint-disable-next-line quote-props
+    '84': {
+      baseUrl: 'https://bdterr.datara.gouv.fr/base_territoriale',
       data: {
         limit: -1,
         list: false,
@@ -15,27 +15,14 @@ export default ({ route }, inject) => {
         type: 'pac'
       }
     },
-    'FR-PDL': {
-      url: 'https://catalogue.sigloire.fr/base_territoriale/results?_format=json',
-      themesUrl: 'https://catalogue.sigloire.fr/base_territoriale/themes',
+    // eslint-disable-next-line quote-props
+    '52': {
+      baseUrl: 'https://catalogue.sigloire.fr/base_territoriale',
       data: {
         limit: -1,
         list: false,
         offset: 0,
         'themes[]': ['5', '6', '7', '8', '60', '10', '11', '25', '24', '41', '42', '9', '12', '26', '61', '63', '47', '48', '49', '15', '16', '27', '17', '45', '31', '32', '33', '34', '35', '14', '23', '22', '28', '30', '46', '36', '37', '38', '39', '40']
-        // 'themes[]': ['6', '7', '60', '11', '25', '24', '42', '12', '26', '63', '48', '49', '16', '27', '17', '45', '32', '33', '34', '35', '30', '46', '23', '22', '37', '38', '39', '40']
-      }
-    },
-    'FR-OCC': {
-      url: 'https://catalogue.picto-occitanie.fr/base_territoriale/results',
-      themesUrl: 'https://catalogue.picto-occitanie.fr/base_territoriale/themes',
-      data: {
-        limit: -1,
-        list: false,
-        offset: 0,
-        'themes[]': ['42', '43', '44', '195', '170', '47', '40', '41', '228', '189', '196', '107', '108', '109', '117', '118', '119', '120', '121', '122', '124', '125', '128', '129', '130', '131', '132', '231', '247', '137', '138', '139', '140', '141', '142', '232', '144', '145', '240', '241', '147', '148', '175', '150', '151', '156', '157', '158', '159', '178', '161', '234', '252', '250', '207', '58', '48', '66', '79', '200', '201', '251', '39', '57', '183', '85', '86', '112', '68', '152', '153', '168', '229', '197', '235', '237', '238', '99', '102', '113', '114', '239', '116', '154', '155', '123', '211', '198', '202', '203', '236', '190', '191', '218', '222', '171', '199', '248', '209', '63', '71', '72', '73', '74', '204', '76', '78', '77', '180', '83', '84', '87', '88', '89', '213', '214', '163', '164', '165', '166', '184', '185', '186', '187', '210', '212', '90', '101', '91', '92', '94', '95', '96', '98', '111', '167', '103', '104', '105', '106']
-        // 'themes[]': ['5', '6', '7', '8', '60', '10', '11', '25', '24', '41', '42', '9', '12', '26', '61', '63', '47', '48', '49', '15', '16', '27', '17', '45', '31', '32', '33', '34', '35', '14', '23', '22', '28', '30', '46', '36', '37', '38', '39', '40']
-        // 'themes[]': ['6', '7', '60', '11', '25', '24', '42', '12', '26', '63', '48', '49', '16', '27', '17', '45', '32', '33', '34', '35', '30', '46', '23', '22', '37', '38', '39', '40']
       }
     }
   }
@@ -74,53 +61,17 @@ export default ({ route }, inject) => {
     })
   }
 
-  const parsers = {
-    'FR-ARA': prodigeParser,
-    'FR-PDL': prodigeParser
-  }
-
-  const cardSourceUrl = {
-    'FR-ARA' (cardData) {
-      return `https://bdterr.datara.gouv.fr/base_territoriale/fiche?_format=json&id=${cardData.id}&nom_table=${cardData.nom_table}`
-    },
-    'FR-PDL' (cardData) {
-      return `https://catalogue.sigloire.fr/base_territoriale/fiche?_format=json&id=${cardData.id}&nom_table=${cardData.nom_table}`
-    }
-  }
-
-  const cardSourceMap = {
-    async 'FR-ARA' (cardData) {
-      const { data } = await axios({
-        url: cardSourceUrl['FR-ARA'](cardData),
-        method: 'get'
-      })
-
-      return data
-    },
-    async 'FR-PDL' (cardData) {
-      const { data } = await axios({
-        url: cardSourceUrl['FR-PDL'](cardData),
-        method: 'get'
-      })
-
-      return data
-    }
-  }
-
   inject('daturba', {
     async getCommunesDetails (inseeArr) {
-      console.log('inseeArr: ', inseeArr)
       const { data } = await axios({
         url: '/api/communes',
         method: 'get',
         params: { communes: inseeArr }
       })
-      console.log('data: ', data)
       return data
     },
     async getGeorisques ({ dataset, insee }) {
       const EXISTING_DATASETS = GEORISQUES_MAP.map(e => e.endpoint)
-      console.log('EXISTING_DATASETS: ', EXISTING_DATASETS)
       if (!EXISTING_DATASETS.includes(dataset)) { throw new Error('Le dataset demandé est inconnu. Types disponibles:' + EXISTING_DATASETS.join(', ')) }
       // https://www.georisques.gouv.fr/api/v1/zonage_sismique?code_insee=74001&page=1&page_size=10&rayon=1000
       // TODO: ATTENTION, le max de join est de 10. Le faire autrement dans un cas de caumunauté de commune + grand
@@ -131,7 +82,6 @@ export default ({ route }, inject) => {
         method: 'get',
         params: { dataset, insee }
       })
-      console.log('data STUFF: ', data)
       return { dataset, data: data.data }
     },
     // search arg should be `commune/${codeInsee}` or `departement/${codeDepartement}` or `region/${codeRegion}`
@@ -189,11 +139,12 @@ export default ({ route }, inject) => {
 
       return { cards, themes: summary }
     },
-    getCardDataUrl (region = route.query.region, data) {
-      return cardSourceUrl[region](data)
+    getCardDataUrl (region = route.query.region, cardData) {
+      return `${sourceMap[region].baseUrl}/fiche?_format=json&id=${cardData.id}&nom_table=${cardData.nom_table}`
     },
-    getCardData (region = route.query.region, data) {
-      return cardSourceMap[region](data)
+    async getCardData (region = route.query.region, cardData) {
+      const { data } = await axios.get(this.getCardDataUrl(region, cardData))
+      return data
     },
     async getData (region = route.query.region, inseeCodes = route.query.insee) {
       if (!region || !inseeCodes || !inseeCodes.length) { return {} }
@@ -207,7 +158,7 @@ export default ({ route }, inject) => {
 
       if (source) {
         const { data: dataset } = await axios({
-          url: source.url,
+          url: source.baseUrl + '/results?_format=json',
           method: 'post',
           data: Object.assign({
             'insee[]': parsedInseeCode
@@ -215,14 +166,12 @@ export default ({ route }, inject) => {
         })
 
         const { data: themes } = await axios({
-          url: source.themesUrl,
+          url: source.baseUrl + '/themes',
           method: 'get'
         })
 
-        // console.log('getData', region, dataset, themes)
-
         dataset.forEach((data) => {
-          parsers[region](data, themes)
+          prodigeParser(data, themes)
         })
 
         return {

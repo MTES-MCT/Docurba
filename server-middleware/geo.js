@@ -33,6 +33,24 @@ app.get('/intercommunalites/:code', (req, res) => {
   }
 })
 
+app.get('/collectivites/:code', (req, res) => {
+  if (req.params.code.length > 5) {
+    const intercommunalite = geo.getIntercommunalite(req.params.code)
+    if (intercommunalite) {
+      res.status(200).send(intercommunalite)
+    } else {
+      res.status(404).send(null)
+    }
+  } else {
+    const commune = geo.getCommune(req.params.code)
+    if (commune) {
+      res.status(200).send(commune)
+    } else {
+      res.status(404).send(null)
+    }
+  }
+})
+
 app.get('/geojson/:locality', (req, res) => {
   try {
     let geojson

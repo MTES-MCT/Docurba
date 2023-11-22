@@ -1,7 +1,7 @@
 <template>
   <!-- TODO Pour l'instant, un composant spécifique à GeoBretagne -->
   <GeoBretagneViewer v-if="collectivite.region.iso === 'FR-BRE'" :collectivite-code="collectivite.code" :is-epci="isEpci" class="mt-4" />
-  <DataSourcesList v-else-if="communes" :region="collectivite.region.iso" :collectivites-codes="collectivitesCodes" />
+  <DataSourcesList v-else-if="communes" :region="collectivite.region.code" :collectivites-codes="collectivitesCodes" />
 </template>
 
 <script>
