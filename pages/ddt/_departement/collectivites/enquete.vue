@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row class="pt-4">
       <v-col cols="12">
         <h1 class="text-h1">
           Validation des procédures
@@ -68,9 +68,6 @@ export default {
     const departementCode = this.$route.params.departement
     const collectivities = (await axios(`/api/geo/communes?departementCode=${departementCode}`)).data
 
-    const { data: validations } = await this.$supabase.from('procedures_validations').select('*')
-    // TODO: Add a filter to get only last 12 months validations
-
     this.collectivities = collectivities.map((c) => {
       return Object.assign({
         validations: [],
@@ -78,6 +75,10 @@ export default {
         loaded: false
       }, c)
     })
+
+    const { data: validations } = await this.$supabase.from('procedures_validations').select('*')
+      .eq('departement', departementCode)
+    // TODO: Add a filter to get only last 12 months validations
 
     this.updateValidations(validations)
 
@@ -89,7 +90,10 @@ export default {
         const inseeCode = validation.insee_code
 
         const collectivity = this.collectivities.find(c => c.code === inseeCode)
-        collectivity.validations.push(validation)
+
+        if (collectivity) {
+          collectivity.validations.push(validation)
+        }
       })
 
       // this.collectivities.validated = this.collectivities.all.filter((c) => {
