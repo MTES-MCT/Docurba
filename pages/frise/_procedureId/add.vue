@@ -1,20 +1,21 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12">
-        <v-btn text exact-path color="primary" nuxt :to="{name: 'frise-procedureId', params: { procedureId: $route.params.procedureId}}">
-          <v-icon>{{ icons.mdiChevronLeft }}</v-icon> Revenir à la frise
-        </v-btn>
+      <v-col cols="12" class="mt-6">
+        <nuxt-link :to="`/frise/${$route.params.procedureId}`" class="text-decoration-none d-flex align-center">
+          <v-icon color="primary" small class="mr-2">
+            {{ icons.mdiChevronLeft }}
+          </v-icon>
+          Revenir à la feuille de route
+        </nuxt-link>
       </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12">
+      <v-col cols="12" class="pt-0">
         <h1 class="text-h1">
           Ajouter un événement
         </h1>
       </v-col>
-      <FriseEventForm />
     </v-row>
+    <FriseEventForm v-if="procedure" :procedure="procedure" :type-du="$route.query.typeDu" />
   </v-container>
 </template>
 
@@ -30,27 +31,23 @@ export default {
       return 'default'
     }
   },
-  props: {
-    projectId: {
-      type: String,
-      default () {
-        return this.$route.params.projectId
-      }
-    }
-  },
   data () {
     return {
       icons: {
         mdiChevronLeft
-      }
+      },
+      procedure: null
     }
   },
-  mounted () {
+  async mounted () {
     this.$user.isReady.then(() => {
       if (this.$user?.profile?.poste === 'ddt' || this.$user?.profile?.poste === 'dreal') {
         this.$nuxt.setLayout('ddt')
       }
     })
+    const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('project_id, id').eq('id', this.$route.params.procedureId)
+    if (errorProcedure) { throw errorProcedure }
+    this.procedure = procedure[0]
   }
 }
 </script>

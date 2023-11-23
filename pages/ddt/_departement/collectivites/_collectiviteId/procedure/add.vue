@@ -1,7 +1,7 @@
 <template>
   <div v-if="collectivite">
-    <v-container class="px-0">
-      <v-row align="end">
+    <v-container class="px-0 mt-8">
+      <v-row align="end" class="mb-1">
         <v-col cols="auto">
           <nuxt-link class="text-decoration-none d-flex align-center" :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${$route.params.collectiviteId.length > 5 ? 'epci' : 'commune'}`">
             <v-icon color="primary" small class="mr-2">
@@ -16,7 +16,7 @@
     <v-container class="border-grey pb-8 px-8 mb-16">
       <v-row>
         <v-col cols="12" class="pt-0 pb-8">
-          <v-tabs v-model="tab">
+          <v-tabs v-model="tab" class="py-4">
             <v-tab>Procédure principale</v-tab>
             <v-tab>Procédure secondaire</v-tab>
           </v-tabs>

@@ -16,30 +16,60 @@
           <h1 class="text-h1">
             {{ procedure.doc_type }} de {{ collectivite.intitule }}
           </h1>
-          <div class="ml-auto">
-            <v-btn color="primary" class="mr-2" outlined>
-              Ajouter une procédure secondaire
+        </div>
+      </v-col>
+      <v-col cols="12" class="mb-2">
+        <v-btn color="primary" class="mr-2" outlined>
+          Ajouter une procédure secondaire
+        </v-btn>
+        <v-btn depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+          Ajouter un événement
+        </v-btn>
+        <v-menu>
+          <template #activator="{ on, attrs }">
+            <v-btn icon color="primary" v-bind="attrs" v-on="on">
+              <v-icon> {{ icons.mdiDotsVertical }}</v-icon>
             </v-btn>
-            <v-btn depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}}">
-              Ajouter un événement
-            </v-btn>
-            <v-menu>
-              <template #activator="{ on, attrs }">
-                <v-btn icon color="primary" v-bind="attrs" v-on="on">
-                  <v-icon> {{ icons.mdiDotsVertical }}</v-icon>
-                </v-btn>
-              </template>
+          </template>
 
-              <v-list>
-                <v-list-item>
-                  <v-list-item-title @click="deleteProcedure">
+          <v-list>
+            <v-dialog v-model="dialog" width="500">
+              <template #activator="{ on, attrs }">
+                <!-- <span class="error--text text-decoration-underline ml-auto align-center" v-bind="attrs" v-on="on">
+              Supprimer
+            </span> -->
+
+                <v-list-item link v-bind="attrs" v-on="on">
+                  <v-list-item-title>
                     Supprimer
                   </v-list-item-title>
                 </v-list-item>
-              </v-list>
-            </v-menu>
-          </div>
-        </div>
+              </template>
+
+              <v-card>
+                <v-card-title class="text-h5 error white--text">
+                  Cette action est irréversible.
+                </v-card-title>
+
+                <v-card-text class="pt-4">
+                  Êtes-vous sur de vouloir supprimer cette procédure ? Il ne sera pas possible de revenir en arrière.
+                </v-card-text>
+
+                <v-divider />
+
+                <v-card-actions>
+                  <v-spacer />
+                  <v-btn color="primary" text @click="dialog = false">
+                    Annuler
+                  </v-btn>
+                  <v-btn color="error" depressed @click="archiveProcedure(procedure.id)">
+                    Supprimer
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-list>
+        </v-menu>
       </v-col>
     </v-row>
     <v-row v-if="loaded">
@@ -54,6 +84,7 @@
                   :id="`event-${event.id}`"
                   :key="event.id"
                   :event="event"
+                  :type-du="procedure.doc_type"
                 />
               </v-col>
               <v-col cols="3" class="my-6">
@@ -73,12 +104,24 @@
                   Ressources
                 </p>
                 <p>
-                  <v-chip label color="grey darken-1">
-                    <v-icon color="grey darken-2" class="mr-2">
-                      {{ icons.mdiPaperclip }}
-                    </v-icon>
-                    test
-                  </v-chip>
+                  <v-tooltip v-for="attachment in attachments" :key="attachment.id" bottom>
+                    <template #activator="{ on, attrs }">
+                      <v-chip
+                        label
+                        color="grey darken-1"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        <v-icon color="grey darken-2" class="mr-2">
+                          {{ icons.mdiPaperclip }}
+                        </v-icon>
+                        <span class="text-truncate">
+                          {{ attachment.name }}
+                        </span>
+                      </v-chip>
+                    </template>
+                    {{ attachment.name }}
+                  </v-tooltip>
                 </p>
               </v-col>
             </v-row>
@@ -103,6 +146,7 @@ export default
       collectivite: null,
       procedure: null,
       events: [],
+      dialog: false,
       documentEvents,
       icons: {
         mdiBookmark,
@@ -113,10 +157,13 @@ export default
     }
   },
   computed: {
+    attachments () {
+      return this.events.map(e => e.attachements).flat()
+    },
     backToCollectivite () {
       console.log(this.collectivite, ' this.$user: ', this.$user)
-      if (this.$user.id && this.$user.scope && this.$user.scope.dept) {
-        return `/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}`
+      if (this.$user.id && this.$user.profile && this.$user.profile.side === 'etat') {
+        return `/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`
       } else {
         return `/collectivites/${this.collectivite.code}`
       }
@@ -129,7 +176,6 @@ export default
         return [this.documentEvents[0]]
       }
       const lastEventType = this.documentEvents.find((event) => {
-        console.log('event: ', event, ' this.events: ', this.events)
         return this.events[0].type === event.name
       })
       const lastEventOrder = lastEventType ? lastEventType.order : -1
@@ -164,8 +210,20 @@ export default
     }
   },
   methods: {
-    deleteProcedure () {
-      console.log('Delete procedure')
+    async  archiveProcedure (idProcedure) {
+      try {
+        console.log('idProcedure to archive: ', idProcedure)
+        const { error } = await this.$supabase
+          .from('procedures')
+          .update({ archived: true })
+          .eq('id', idProcedure)
+
+        if (error) { throw error }
+        this.$emit('delete', idProcedure)
+        this.dialog = false
+      } catch (error) {
+        console.log(error)
+      }
     },
     findRecommendedEventType (order, priority) {
       return this.documentEvents.find((eventType) => {
@@ -173,7 +231,9 @@ export default
       })
     },
     async getEvents () {
-      const { data: events, error: errorEvents } = await this.$supabase.from('doc_frise_events').select('*').eq('procedure_id', this.$route.params.procedureId)
+      const { data: events, error: errorEvents } = await this.$supabase.from('doc_frise_events')
+        .select('*, profiles(*)')
+        .eq('procedure_id', this.$route.params.procedureId)
       if (errorEvents) { throw errorEvents }
       this.events = events
     }

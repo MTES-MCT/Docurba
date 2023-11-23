@@ -101,6 +101,23 @@
   }
 
   async function insertEvents (events, { docurbaProcedureId, docurbaProjectId, schemaOnly }) {
+    // attachements: this.parseAttachment(e.nomdocument)
+
+    function parseAttachment (path) {
+      if (path) {
+        const attachment = { id: '', name: '', type: 'file' }
+        let temp = ''
+        const semiSplit = path.split(':')
+        if (semiSplit[0] === 'link') { attachment.type = 'link' }
+        semiSplit.length > 1 ? temp = semiSplit[1] : temp = semiSplit[0]
+        attachment.name = temp
+        attachment.id = 'sudocu/' + temp.split('_').slice(1).join('/')
+        return [attachment]
+      } else {
+        return []
+      }
+    }
+
     const formattedEvents = events?.map((event) => {
       const formattedEvent = {
         project_id: docurbaProjectId,
@@ -110,7 +127,7 @@
         date_iso: event.dateevenement,
         description: '',
         actors: null, // TODO: Voir si on trouve les noms dans Sudocu
-        attachements: null, // TODO: Ajouter proprement le lien attachments
+        attachements: parseAttachment(event.nomdocument),
         visibility: 'private',
         from_sudocuh: event.noserieevenement,
         is_sudocuh_scot: schemaOnly
