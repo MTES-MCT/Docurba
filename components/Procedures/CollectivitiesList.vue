@@ -206,6 +206,14 @@ export default {
             departement: collectivity.departementCode
           })
         })
+
+        if (!collectivity.procedures.length) {
+          validations.push({
+            insee_code: inseeCode,
+            status: 'RNU',
+            departement: collectivity.departementCode
+          })
+        }
       })
 
       await this.$supabase.from('procedures_validations').insert(validations)
