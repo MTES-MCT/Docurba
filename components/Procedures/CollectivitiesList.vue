@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="12">
+    <v-col v-show="collectivities.length" cols="12">
       <v-row>
         <v-col cols="12">
           <v-list>
@@ -38,6 +38,15 @@
                 : ''
             }}
           </v-btn>
+        </v-col>
+      </v-row>
+    </v-col>
+    <v-col v-show="!collectivities.length" cols="12">
+      <v-row justify="center" class="my-5">
+        <v-col cols="auto">
+          <h4 class="text-h4">
+            Aucune communes {{ validated ? 'validées' : 'à valider' }}
+          </h4>
         </v-col>
       </v-row>
     </v-col>
