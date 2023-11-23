@@ -2,10 +2,16 @@
   <v-list-item :value="collectivity.code">
     <template #default="{active}">
       <v-list-item-content>
-        <v-list-item-title>{{ collectivity.intitule }} ({{ collectivity.code }})</v-list-item-title>
+        <v-list-item-title class="font-weight-bold">
+          {{ collectivity.intitule }} ({{ collectivity.code }})
+        </v-list-item-title>
       </v-list-item-content>
       <v-list-item-content v-if="collectivity.loaded">
-        <v-list-item-subtitle v-for="procedure in collectivity.procedures" :key="procedure.id">
+        <v-list-item-subtitle
+          v-for="procedure in collectivity.procedures"
+          :key="procedure.id"
+          class="py-2"
+        >
           <v-chip small label color="alt-beige" class="font-weight-bold">
             {{ procedure.doc_type }}
           </v-chip>
@@ -39,16 +45,18 @@
             tile
             depressed
             nuxt
+            small
+            class="font-weight-bold"
             :to="`/ddt/${collectivity.departementCode}/collectivites/${collectivity.code}/commune`"
           >
             <span class="primary--text">Corriger</span>
-            <v-icon color="primary">
+            <v-icon small color="primary" class="ml-1">
               {{ icons.mdiArrowRight }}
             </v-icon>
           </v-btn>
         </v-list-item-action>
         <v-list-item-action>
-          <v-checkbox :value="active">
+          <v-checkbox :value="active" class="d-flex align-center">
             <template #prepend>
               <span class="primary--text">Valider</span>
             </template>

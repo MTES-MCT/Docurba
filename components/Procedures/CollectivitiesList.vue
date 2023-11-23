@@ -6,8 +6,8 @@
           <v-list>
             <v-list-item-group v-model="selectedCollectivities" multiple>
               <template v-for="(collectivity, i) in filteredCollectivities">
-                <v-divider v-if="i > 0" :key="i" />
                 <ProceduresCollectivityListItem :key="collectivity.code" :collectivity="collectivity" :validated="validated" />
+                <v-divider :key="i" />
               </template>
             </v-list-item-group>
           </v-list>
@@ -15,11 +15,11 @@
       </v-row>
       <v-row align="center">
         <v-col cols="4">
-          <v-pagination v-model="page" :length="Math.ceil(collectivities.length/10)" />
+          <v-pagination v-model="page" :length="Math.ceil(collectivities.length/10)" class="pagination" />
         </v-col>
         <v-spacer />
-        <v-col v-if="!validated" cols="auto">
-          <v-checkbox v-model="selectAll" hide-details>
+        <v-col v-if="!validated" cols="auto" class="mr-2">
+          <v-checkbox v-model="selectAll" hide-details class="d-flex align-center mt-0">
             <template #prepend>
               <div class="text-no-wrap primary--text">
                 Tout valider
@@ -30,7 +30,7 @@
       </v-row>
       <v-row v-if="!validated">
         <v-spacer />
-        <v-col cols="auto">
+        <v-col cols="auto" class="mr-4">
           <v-btn color="primary" :loading="loadingValidation" :disabled="!loadingValidation && selectedCollectivities.length === 0" @click="validateSelection">
             Valider {{
               selectedCollectivities.length ?
@@ -152,3 +152,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.pagination .v-pagination__item, .pagination .v-pagination__navigation {
+  box-shadow:  0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12) !important
+}
+</style>

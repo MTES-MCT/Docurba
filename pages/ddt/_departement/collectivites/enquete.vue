@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row class="pt-4">
+    <v-row class="pt-6">
       <v-col cols="12">
         <h1 class="text-h1">
           Validation des procédures
@@ -15,7 +15,7 @@
     <v-row v-if="!loading">
       <v-col cols="12">
         <v-card flat tile outlined>
-          <v-card-text>
+          <v-card-text class="px-5">
             <v-tabs v-model="tab">
               <v-tab>Communes à valider</v-tab>
               <v-tab>Communes validées</v-tab>
