@@ -1,5 +1,23 @@
 <template>
   <v-row>
+    <v-col cols="12" class="pb-0">
+      <v-row class="mt-4">
+        <v-col cols="auto">
+          <v-text-field
+            v-model="search.text"
+            dense
+            outlined
+            hide-details
+            label="Recherche"
+            :append-icon="icons.mdiMagnify"
+          />
+        </v-col>
+        <v-spacer />
+        <v-col cols="auto" class="status-select">
+          <v-select v-model="search.status" solo :items="search.statusList" flat hide-details />
+        </v-col>
+      </v-row>
+    </v-col>
     <v-col v-show="collectivities.length" cols="12">
       <v-row>
         <v-col cols="12">
@@ -15,7 +33,7 @@
       </v-row>
       <v-row align="center">
         <v-col cols="4">
-          <v-pagination v-model="page" :length="Math.ceil(collectivities.length/10)" class="pagination" />
+          <v-pagination v-model="page" :length="Math.ceil(searchedCollectivities.length/10)" class="pagination" />
         </v-col>
         <v-spacer />
         <v-col v-if="!validated" cols="auto" class="mr-2">
@@ -54,6 +72,8 @@
 </template>
 
 <script>
+import { mdiMagnify } from '@mdi/js'
+
 export default {
   props: {
     collectivities: {
@@ -67,6 +87,21 @@ export default {
   },
   data () {
     return {
+      search: {
+        text: '',
+        status: 'all',
+        statusList: [{
+          text: 'Tous les status',
+          value: 'all'
+        }, {
+          text: 'Opposable',
+          value: 'opposable'
+        }, {
+          text: 'En cours',
+          value: 'en cours'
+        }]
+      },
+      icons: { mdiMagnify },
       collectivitiesList: this.collectivities.map(c => Object.assign({}, c)),
       selectedCollectivities: [],
       page: 1,
@@ -75,9 +110,27 @@ export default {
     }
   },
   computed: {
+    searchedCollectivities () {
+      const normalizedSearch = this.search.text.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+
+      return this.collectivities.filter((collectivity) => {
+        const normalizedValue = `${collectivity.intitule} ${collectivity.code}`.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+
+        if (normalizedSearch && !normalizedValue.includes(normalizedSearch)) {
+          return false
+        }
+
+        if (this.search.status !== 'all' && collectivity.loaded) {
+          const searchedProcedure = collectivity.procedures.find(p => p.status === this.search.status)
+          if (!searchedProcedure) { return false }
+        }
+
+        return true
+      })
+    },
     filteredCollectivities () {
       const pageIndex = (this.page - 1) * 10
-      return this.collectivitiesList.slice(pageIndex, pageIndex + 10)
+      return this.searchedCollectivities.slice(pageIndex, pageIndex + 10)
     }
   },
   watch: {
@@ -87,6 +140,9 @@ export default {
         return Object.assign({}, collectivity, listItem)
       })
 
+      this.fetchCollectivitiesProcedures()
+    },
+    filteredCollectivities () {
       this.fetchCollectivitiesProcedures()
     },
     selectAll () {
@@ -110,7 +166,7 @@ export default {
 
       this.filteredCollectivities.forEach(async (collectivite) => {
         // console.log(collectivite.procedures, !collectivite.procedures.length)
-        if (!collectivite.procedures.length) {
+        if (!collectivite.loaded && !collectivite.procedures.length) {
           const inseeCode = collectivite.code
 
           const { data: procedures } = await this.$supabase.from('procedures')
@@ -161,6 +217,12 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.status-select {
+  max-width: 200px;
+}
+</style>
 
 <style>
 .pagination .v-pagination__item, .pagination .v-pagination__navigation {

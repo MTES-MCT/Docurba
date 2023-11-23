@@ -19,8 +19,16 @@
             <v-tabs v-model="tab">
               <v-tab>Communes à valider</v-tab>
               <v-tab>Communes validées</v-tab>
+              <v-tab>SCOT à valider</v-tab>
+              <v-tab>SCOT validés</v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab">
+              <v-tab-item>
+                <ProceduresCollectivitiesList :collectivities="unvalidatedCollectivities" @validations="updateValidations" />
+              </v-tab-item>
+              <v-tab-item>
+                <ProceduresCollectivitiesList :collectivities="validatedCollectivities" validated @validations="updateValidations" />
+              </v-tab-item>
               <v-tab-item>
                 <ProceduresCollectivitiesList :collectivities="unvalidatedCollectivities" @validations="updateValidations" />
               </v-tab-item>
@@ -95,15 +103,14 @@ export default {
           collectivity.validations.push(validation)
         }
       })
-
-      // this.collectivities.validated = this.collectivities.all.filter((c) => {
-      //   return c.validations.length
-      // })
-
-      // this.collectivities.unvalidated = this.collectivities.all.filter((c) => {
-      //   return !c.validations.length
-      // })
     }
+    // fetchScots () {
+    //   const {data: scots} = await this.$supabase.from()
+    // }
   }
 }
 </script>
+
+<style scoped>
+
+</style>
