@@ -39,7 +39,7 @@
     const formattedProcedure = {
       project_id: docurbaProjectId,
       type: procedure.type,
-      scot: procedure.name,
+      name: procedure.name,
       commentaire: procedure.description,
       current_perimetre: procedure.perimetre,
       initial_perimetre: procedure.perimetre,
@@ -60,6 +60,7 @@
       is_sudocuh_scot: schemaOnly,
       numero: procedure?.numero_procedure
     }
+    console.log('formattedProcedure: ', formattedProcedure.numero)
     // console.log('formattedProcedure: ', formattedProcedure)
     // console.log('procedure?.moe: ', procedure?.moe)
     const { data: insertedProcedure, error: errorInsertedProcedure } = await supabase.from('procedures').upsert(formattedProcedure, { onConflict: 'from_sudocuh', ignoreDuplicates: false }).select()
@@ -132,6 +133,7 @@
         from_sudocuh: event.noserieevenement,
         is_sudocuh_scot: schemaOnly
       }
+      // console.log('attachements: ', formattedEvent.attachements)
       return formattedEvent
     })
     if (formattedEvents) {
@@ -148,7 +150,7 @@
     // const collectivites = epcis
     const len = collectivites.length
     // 1221 stopped schema
-    const startAt = 2866
+    const startAt = 27435
     const BATCH_SIZE = 15
     const RATE = 50
 
