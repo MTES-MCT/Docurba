@@ -50,7 +50,7 @@
       <v-row>
         <v-col cols="12">
           <v-alert type="info">
-            Date du dernier extract de données Sudocuh vers Docurba: <b>4 Octobre 2023</b>
+            Date du dernier extract de données Sudocuh vers Docurba: <b>19 Novembre 2023</b>
           </v-alert>
         </v-col>
         <v-col cols="12">
