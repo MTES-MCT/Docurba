@@ -1,3 +1,5 @@
+import fr from 'vuetify/lib/locale/fr'
+
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -21,7 +23,6 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-
     { src: '~/plugins/dayjs.js' },
     { src: '~/plugins/isDev.js' },
     { src: '~/plugins/composition.js' },
@@ -38,7 +39,9 @@ export default {
     { src: '~/plugins/notifications.js', mode: 'client' },
     { src: '~/plugins/githubRefs.js' },
     { src: '~/plugins/urbanisator.js' },
-    { src: '~/plugins/sudocu.js', mode: 'client' }
+    { src: '~/plugins/sudocu.js', mode: 'client' },
+    { src: '~/plugins/pdfMake.js', mode: 'client' },
+    { src: '~/plugins/analytics.js' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -101,6 +104,7 @@ export default {
     { path: '/api/admin', handler: '~/server-middleware/admin.js' },
     { path: '/api/auth', handler: '~/server-middleware/auth.js' },
     { path: '/api/communes', handler: '~/server-middleware/communes.js' },
+    { path: '/api/data', handler: '~/server-middleware/data.js' },
     { path: '/api/epci', handler: '~/server-middleware/EPCI.js' },
     { path: '/api/geoide', handler: '~/server-middleware/geoide.js' },
     { path: '/api/georisques', handler: '~/server-middleware/georisques.js' },
@@ -130,7 +134,7 @@ export default {
 
   // Vue router
   router: {
-    middleware: ['matomo']
+    middleware: ['analytics', 'matomo']
   },
 
   // Content module configuration: https://go.nuxtjs.dev/config-content
@@ -143,7 +147,10 @@ export default {
     icons: {
       iconfont: 'mdiSvg',
       chevronRight: 'mdiChevronRight'
-
+    },
+    lang: {
+      locales: { fr },
+      current: 'fr'
     },
     theme: {
       options: { customProperties: true },

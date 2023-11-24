@@ -66,6 +66,8 @@ export default {
         method: 'get'
       })
 
+      // console.log(data)
+
       // console.log('Projects Data', data)
 
       // const ARA = departements.filter((dept) => {
@@ -75,10 +77,12 @@ export default {
       // const ARAprojects = { total: 0 }
 
       // ARA.forEach((dept) => {
-      //   const nbProjects = data.byDept[dept.code_departement]
+      //   const nbProjects = data.byDept[dept.code_departement] || data.byDept['0' + dept.code_departement.toString()]
+
+      //   console.log(dept, nbProjects)
 
       //   ARAprojects[dept.nom_departement] = nbProjects
-      //   ARAprojects.total += nbProjects
+      //   ARAprojects.total += (nbProjects || 0)
       // })
 
       // console.log(JSON.stringify(ARAprojects, null, 2))

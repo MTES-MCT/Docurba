@@ -69,7 +69,7 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item link to="/guide">
+            <v-list-item link href="https://pad.incubateur.net/s/zG4jtJNL9" target="_blank">
               <v-list-item-title>
                 Guide
               </v-list-item-title>
@@ -101,7 +101,7 @@
             params: {githubRef: trameRef}
           }"
         >
-          Trame de PAC {{ trameRef.includes('region') ? 'regionale' : 'départementale' }}
+          Trame de PAC {{ trameRef.includes('region') ? 'régionale' : 'départementale' }}
         </v-tab>
         <v-tab
           :to="{

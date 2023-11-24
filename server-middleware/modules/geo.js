@@ -1,11 +1,24 @@
 
 const _ = require('lodash')
+const { topology } = require('topojson-server')
 
 const communes = require('../Data/EnrichedCommunes.json')
 const intercommunalites = require('../Data/EnrichedIntercommunalites.json')
 
 const departements = require('../Data/INSEE/departements.json')
 const regions = require('../Data/INSEE/regions.json')
+
+const geojsonCommunes = require('../Data/communes-france-geo.json')
+
+const convertArrayToObject = (array, key) => {
+  const initialValue = {}
+  return array.reduce((obj, item) => {
+    return {
+      ...obj,
+      [item[key]]: item
+    }
+  }, initialValue)
+}
 
 module.exports = {
   getCollectivite (code) {
@@ -92,5 +105,25 @@ module.exports = {
     } else {
       return null
     }
+  },
+  getCommuneGeoJSON (codeInsee) {
+    const commune = geojsonCommunes.features.find(feat => feat.id === codeInsee)
+    if (!commune) { throw new Error(`Code INSEE ${codeInsee} invalide`) }
+    return commune
+  },
+  getCommunesGeoJSON (codesInsee) {
+    const codes = Array.isArray(codesInsee) ? codesInsee : [codesInsee]
+
+    return {
+      type: 'FeatureCollection',
+      features: codes.map(code => this.getCommuneGeoJSON(code))
+    }
+  },
+  getCommunesTopoJSON (codesInsee) {
+    const codes = Array.isArray(codesInsee) ? codesInsee : [codesInsee]
+
+    const communes = codes.map(code => this.getCommuneGeoJSON(code))
+    // return topology(convertArrayToObject(communes, 'id'))
+    return topology(communes)
   }
 }

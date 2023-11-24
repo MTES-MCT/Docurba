@@ -7,7 +7,7 @@ order: 1
 
 *En cours d'amélioration*
 
-Aujourd'hui, la "Feuille de Route Publique" matérialise une procédure passée, les informations renseignées sur cette feuille de route sont publiques. Ces évènements sont issus de Sudocuh (outil État) et le dernier extract de données Sudocuh visible sur Docurba date de mi juillet 2023.
+Aujourd'hui, la "Feuille de Route Publique" matérialise chaque procédure passée ou en cours, les informations renseignées sur cette feuille de route sont publiques. Les évènements présents dans les Feuille de Route Publique sont des actes renseignés par la DDT(M)/DEAL dans l'outil appelé Sudocuh (outil État), la dernière bascule de ces données Sudocuh vers Docurba date du 4 octobre 2023. Nous travaillons à ce que ces bascules soient faites de manière hebdomadaire.
 
 Seule la DDT(M)/DEAL correspondante peut ajouter des évènements concernant l'état d'avancement de la procédure, et à l'avenir vous pourrez décider si rendre public ou non les évènements ajoutés. 
 

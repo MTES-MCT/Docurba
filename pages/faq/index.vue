@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="faq">
     <v-row>
       <v-col cols="12">
         <v-breadcrumbs class="pb-0 pl-0" :items="breadItems" />
@@ -104,7 +104,6 @@
 
         <v-tabs-items v-model="tab" class="mt-3">
           <v-tab-item
-
             v-for="item in items"
             :key="item.tab"
           >
@@ -163,7 +162,6 @@ export default {
           disabled: true,
           href: ''
         }],
-
       items: [
         { tab: 'Je suis une DDT', content: 'Tab 1 Content' },
         { tab: 'Je suis une collectivité', content: 'Tab 2 Content' },
@@ -189,9 +187,15 @@ export default {
           active: false
         },
         {
-          title: 'Première connexion',
+          title: 'Données et Socle de PAC',
           img: '/images/faq/leaf.png',
           folder: '/FAQ/Données et Socle de PAC',
+          active: false
+        },
+        {
+          title: 'Première connexion',
+          img: '/images/faq/leaf.png',
+          folder: '/FAQ/Première connexion',
           active: false
         },
         {
@@ -217,10 +221,12 @@ export default {
     categorizedQuestions () {
       // 0 -> DDT, 1 -> Collectivites, 2 -> BE
       const mapping = { ddt: 0, collectivite: 1, be: 2, dreal: 3 }
+
       let cats = [[], [], [], []]
       const topicFAQ = this.FAQ.filter((e) => {
         return e.dir === this.activeCard.folder
       })
+
       topicFAQ.forEach((question) => {
         question.scope?.forEach((scp) => {
           cats[mapping[scp]].push(question)
@@ -252,13 +258,24 @@ export default {
       this.$router.replace({ path: '/faq', query: { ...this.$route.query, recherche: this.search } })
     }
   },
+  mounted () {
+    if (this.$route.query.action) {
+      this.selectTopic({ title: this.$route.query.action })
+    }
+  },
   methods: {
     selectTopic (item) {
-      this.faqCards = this.faqCards.map((e) => {
-        if (item.title === e.title) {
-          return { ...e, active: true }
+      this.$router.push({
+        query: Object.assign({}, this.$route.query, {
+          action: item.title
+        })
+      })
+
+      this.faqCards = this.faqCards.map((faqCard) => {
+        if (item.title === faqCard.title) {
+          return { ...faqCard, active: true }
         }
-        return { ...e, active: false }
+        return { ...faqCard, active: false }
       })
       item.active = true
     }
@@ -267,5 +284,7 @@ export default {
 </script>
 
 <style lang="scss">
-
+  .faq .nuxt-content-container img, .faq .nuxt-content img {
+    max-width: 100%;
+  }
 </style>

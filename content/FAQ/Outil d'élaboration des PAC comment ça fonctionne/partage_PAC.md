@@ -1,6 +1,6 @@
 ---
 question: "Comment partager le PAC à la collectivité, à un agent en DDT ? "
-visible: true
+visible: false
 scope: ['ddt']
 order: 8
 ---

@@ -47,7 +47,7 @@ app.post('/:ref', async (req, res) => {
   if (commit.sha) {
     const currentFile = await getFileContent(commit.path, ref, 'object')
 
-    console.log('currentFile', commit.path)
+    // console.log('currentFile', commit.path)
     // console.log('currentFile', currentFile)
 
     commit.sha = currentFile.sha

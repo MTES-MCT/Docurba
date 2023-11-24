@@ -9,7 +9,7 @@ Cliquez en haut à droite de [notre site](https://docurba.beta.gouv.fr/), sur le
 
 Une fois sur votre espace DREAL, vous pourrez notamment ajouter des éléments d'échelle régionale utiles aux PAC de votre région depuis l'onglet "Trame de PAC régionale".
 Une fois ajoutés par vos soins, ces éléments seront visibles dans les socles de PAC des collectivités de votre région, et utilisables par les DDT(M) au moment de l'élaboration des PAC.
-**Consultez le guide spécial DREAL, [via ce lien](https://drive.google.com/file/d/1sFLVLtr6WfiGCa-KAaeDWRt9m4k0Yig7/view?usp=sharing).**
+**Consultez le guide spécial DREAL, [via ce lien](https://drive.google.com/file/d/1-d8l_KcHUHFKyvKke-kvtJck5LBoyIKz/view?usp=sharing).**
 
 
 Exemples d'éléments bienvenus de la part des DREAL : SRADDET, SDAGE et PGRI, etc. 

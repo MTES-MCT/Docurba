@@ -1,6 +1,6 @@
 ---
 question: "Existe-t-il un “mode brouillon” pour élaborer les PAC ? "
-visible: true
+visible: false
 scope: ['ddt']
 order: 4
 ---

@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     redirectUser () {
-      if (process.client && this.private && !this.$user.id) {
+      if (process.client && ((this.private && !this.$user.id) || !this.$isDev)) {
         this.$router.push('/')
       }
     }
