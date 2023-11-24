@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col cols="12" class="pb-0">
-      <v-row class="mt-4">
+      <v-row class="mt-6">
         <v-col cols="auto">
           <v-text-field
             v-model="search.text"
@@ -18,7 +18,7 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col v-show="collectivities.length" cols="12">
+    <v-col v-show="collectivities.length" cols="12" class="pt-0">
       <v-row>
         <v-col cols="12">
           <v-list>
@@ -161,8 +161,15 @@ export default {
     this.fetchCollectivitiesProcedures()
   },
   methods: {
-    fetchCollectivitiesProcedures () {
+    async fetchCollectivitiesProcedures () {
       // console.log('filteredCollectivities', this.filteredCollectivities)
+
+      const { data, error } = await this.$supabase
+        .rpc('procedures_by_insee_codes', {
+          codes: ['01001', '01002']
+        })
+
+      console.log(data, error)
 
       this.filteredCollectivities.forEach(async (collectivite) => {
         // console.log(collectivite.procedures, !collectivite.procedures.length)
