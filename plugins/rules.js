@@ -4,7 +4,9 @@ export default (_, inject) => {
       if (v && typeof (v) === 'object') {
         if (typeof (v.length) === 'number') {
           return v.length > 0
-        } else { return Object.keys(v).length > 0 }
+        } else {
+          return Object.keys(v).length > 0
+        }
       } else { return !!v }
     }
   })

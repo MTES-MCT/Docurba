@@ -105,11 +105,12 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
         procedures: []
       }
 
-      const { data: projects } = await $supabase.from('projects').select('id, name, doc_type, towns, collectivite_id').match({
+      const { data: projects } = await $supabase.from('projects').select('id, name, doc_type, towns, collectivite_id, PAC, trame, region').match({
         owner: $user.id, // TODO: fetch shared projects.
         collectivite_id: collectiviteId,
         archived: false
       })
+
       ret.projects = projects ?? []
       // console.log('projects: ', projects)
       // TODO: Should be a join, no need to double select

@@ -26,6 +26,14 @@ export default {
     featuresKey: {
       type: String,
       required: true
+    },
+    noStroke: {
+      type: Boolean,
+      default: false
+    },
+    strokeWidth: {
+      type: Number,
+      default: 0.5
     }
   },
   data () {
@@ -81,7 +89,7 @@ export default {
       return {
         stroke: this.color,
         fill: feature.properties ? feature.properties.fill : '',
-        'stroke-width': '0.5px'
+        'stroke-width': this.noStroke ? '0px' : `${this.strokeWidth}px`
       }
     }
   }

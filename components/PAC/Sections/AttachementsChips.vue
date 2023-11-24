@@ -104,7 +104,7 @@ export default {
         path: this.section.path
       }).in('ref', [
         `projet-${this.project.id}`,
-        `dept-${this.project.towns ? this.project.towns[0].departementCode : ''}`,
+        `dept-${this.$options.filters.deptToRef(this.project.trame)}`,
         this.gitRef
       ])
 

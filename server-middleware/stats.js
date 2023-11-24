@@ -36,17 +36,22 @@ const departements = require('./Data/departements-france.json')
 
 app.get('/projects', async (req, res) => {
   // eslint-disable-next-line prefer-const
-  let { data: projects } = await supabase.from('projects').select('id, name, created_at, owner, towns')
+  let { data: projects } = await supabase.neq('owner', null).select('id, name, created_at, owner, towns, trame')
 
   projects = projects.filter((p) => {
     const name = p.name ? p.name.toLowerCase() : ''
     return !name.includes('test') && !name.includes('essai')
   })
 
-  projects = projects.filter(p => p.towns && p.towns.length && p.towns[0])
+  // const test = projects.filter(p => p.towns && p.towns.length && p.towns[0] && !p.towns[0].departementCode)
+  // test.forEach((p) => {
+  //   console.log(p.name, p.trame, p.towns[0])
+  // })
+
+  projects = projects.filter(p => p.towns && p.towns.length && p.towns[0] && p.trame)
   projects = projects.filter(p => !docurbaTeamIds.includes(p.owner))
 
-  const projectsByDept = _.groupBy(projects, p => +p.towns[0].code_departement)
+  const projectsByDept = _.groupBy(projects, p => p.trame)
   const projectsByMonth = _.groupBy(projects, p => dayjs(p.created_at).format('MM/YY'))
 
   _.forEach(projectsByDept, (projects, dept) => { projectsByDept[dept] = projects.length })

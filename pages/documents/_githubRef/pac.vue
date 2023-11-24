@@ -66,8 +66,8 @@ export default {
 
     const { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,
-        `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.towns[0].departementCode) : ''}`,
-        `region-${this.project.towns ? this.project.towns[0].regionCode : ''}`,
+        `dept-${this.$options.filters.deptToRef(this.project.trame)}`,
+        `region-${this.project.region}`,
         'main',
         this.gitRef
     ])

@@ -22,6 +22,11 @@
     </v-row>
     <v-row>
       <v-col cols="12">
+        <v-alert type="info">
+          Date du dernier extract de données Sudocuh vers Docurba: <b>4 Octobre 2023</b>
+        </v-alert>
+      </v-col>
+      <v-col cols="12">
         <p class="text-h2">
           Documents d'urbanisme
         </p>
@@ -63,7 +68,6 @@ export default {
   },
   async mounted () {
     const { collectivite, schemas, procedures: sudocuProcedures } = (await axios({ url: `/api/urba/collectivites/${this.$route.params.collectiviteId}`, method: 'get' })).data
-
     this.collectivite = collectivite
     this.schemas = schemas
     this.sudocuProcedures = sudocuProcedures

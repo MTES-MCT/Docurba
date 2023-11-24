@@ -40,6 +40,7 @@
 <script>
 import axios from 'axios'
 import { ValidationProvider } from 'vee-validate'
+import FormInput from '@/mixins/FormInput.js'
 import departements from '@/assets/data/departements-france.json'
 
 export default {
@@ -47,6 +48,7 @@ export default {
   components: {
     ValidationProvider
   },
+  mixins: [FormInput],
   props: {
     large: {
       type: Boolean,

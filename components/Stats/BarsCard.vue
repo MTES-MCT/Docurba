@@ -3,8 +3,8 @@
     <v-card-title>
       {{ title }}
     </v-card-title>
-    <v-card-text v-if="Object.keys(points).length">
-      <ChartsLayout :height="300">
+    <v-card-text v-if="Object.keys(points).length" class="d-flex justify-center">
+      <ChartsLayout :height="300" class="bars-layout">
         <ChartsBars :points="points" :y-min="0" color="#9a9aff">
           <ChartsLabels axis="y" text="yLabel" />
           <!-- <ChartsAxis axis="y" /> -->
@@ -37,3 +37,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.bars-layout {
+  max-height: 300px;
+}
+</style>

@@ -28,7 +28,7 @@ export default () => {
   })
 
   Vue.filter('deptToRef', function (deptCode) {
-    if (deptCode.includes('A') || deptCode.includes('B')) {
+    if (deptCode?.includes('A') || deptCode?.includes('B')) {
       return deptCode
     } else {
       return +deptCode

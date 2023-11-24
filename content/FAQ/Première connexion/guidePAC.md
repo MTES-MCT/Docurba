@@ -5,4 +5,4 @@ scope: ['ddt']
 order: 2
 ---
 
-Consultez notre guide pour commencer à élaborer des PAC sur Docurba : [Guide d'utilisation](https://docurba.beta.gouv.fr/guide). 
+Consultez notre guide pour commencer à élaborer des PAC sur Docurba : [Guide d'utilisation](https://pad.incubateur.net/s/zG4jtJNL9). 

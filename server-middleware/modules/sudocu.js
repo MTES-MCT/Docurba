@@ -61,9 +61,11 @@ module.exports = {
       // TODO: Ajouter Délibération d'approbation du prefet a ajouter
       statusInfos = {
         isSectoriel,
-        hasDelibApprob: procedure.events?.some(e => e.libtypeevenement === "Délibération d'approbation" && e.codestatutevenement === 'V'),
+        // ou Arrêté d'abrogation OU Arrêté du Maire ou du Préfet ou de l'EPCI OU Approbation du préfet
+        //
+        hasDelibApprob: procedure.events?.some(e => ["Délibération d'approbation", "Arrêté d'abrogation", "Arrêté du Maire ou du Préfet ou de l'EPCI", 'Approbation du préfet'].includes(e.libtypeevenement) && e.codestatutevenement === 'V'),
         hasAbandon: procedure.events?.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
-        hasAnnulation: procedure.events?.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement))
+        hasAnnulation: procedure.events?.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement) && e.codestatutevenement === 'V')
       }
       if (statusInfos.hasAbandon) {
         statusProcedure = 'abandon'
@@ -79,6 +81,7 @@ module.exports = {
   },
   setCommunalsProceduresStatus (arrProcedures) {
     const opposableProc = arrProcedures.find(e => e.status_infos.hasDelibApprob && !e.status_infos.hasAbandon && !e.status_infos.hasAnnulation)
+    // console.log('arrProcedures: ', arrProcedures)
     if (opposableProc) {
       opposableProc.status = 'opposable'
       // TODO: ca fait un bug sur Montgaillard
@@ -178,6 +181,7 @@ module.exports = {
 
       // On fetch les procédures faisant parti du périmètre de la commune
       const rawPlanProcedures = await supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false }).order('dateapprobation', { ascending: false }) // .order([{ column: 'last_event_date', order: 'desc' }, { column: 'dateapprobation', order: 'desc' }])
+      console.log('rawPlanProcedures: ', rawPlanProcedures.data[0])
       const rawSchemaProcedures = await supabase.from('distinct_procedures_schema_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
       if (rawPlanProcedures.error) { throw rawPlanProcedures }
       if (rawSchemaProcedures.error) { throw rawSchemaProcedures }
@@ -240,7 +244,12 @@ module.exports = {
           perimetre: e.perimetre,
           procSecs: e.procSecs,
           status: e.status,
-          status_infos: e.statusInfos
+          status_infos: e.statusInfos,
+          volet_qualitatif: e.volet_qualitatif ? e.volet_qualitatif[0] : null,
+          is_scot: e.is_scot,
+          is_pluih: e.is_pluih,
+          is_pdu: e.is_pdu,
+          mandatory_pdu: e.mandatory_pdu
         }
       })
 
@@ -250,7 +259,7 @@ module.exports = {
       const collectivite = geo.getCollectivite(collectiviteId)
       // procedures: fullProcs
       // console.log('collectivite: ', collectivite, ' : ', fullProcs)
-      console.log('collectivite: ', collectivite)
+      // console.log('collectivite: ', collectivite)
       return { collectivite, procedures: fullProcs, schemas: fullSchemas }
     } catch (error) {
       console.log('ERROR: ', error)
