@@ -38,8 +38,8 @@ export default {
   data () {
     const documentsEvents = {
       PLU: PluEvents,
-      scot: ScotEvents,
-      cc: ccEvents
+      SCOT: ScotEvents,
+      CC: ccEvents
     }
     console.log('typeDu: ', this.typeDu)
     const documentEvents = documentsEvents[this.typeDu]

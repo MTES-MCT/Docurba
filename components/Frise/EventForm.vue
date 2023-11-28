@@ -38,7 +38,7 @@
             <v-row>
               <v-spacer />
               <v-col cols="auto">
-                <v-btn color="primary" outlined tile @click="$emit('cancel')">
+                <v-btn color="primary" outlined tile :to="`/frise/${procedure.id}`">
                   Annuler
                 </v-btn>
               </v-col>
@@ -95,6 +95,12 @@ export default {
       type: Object,
       required: true
     },
+    value: {
+      type: Object,
+      default () {
+        return {}
+      }
+    },
     eventId: {
       type: String,
       default () {
@@ -107,7 +113,6 @@ export default {
       type: this.$route.query.eventType || '',
       date_iso: this.$dayjs().format('YYYY-MM-DD'),
       description: '',
-      actors: [],
       attachements: [],
       visibility: 'private'
     }
@@ -116,10 +121,11 @@ export default {
       collectivite: null,
       defaultEvent,
       event: Object.assign({}, defaultEvent, {
-        description: this.$isDev ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' : '',
+        description: this.$isDev ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' : '',
         project_id: this.procedure.project_id,
-        procedure_id: this.procedure.id
-      }),
+        procedure_id: this.procedure.id,
+        test: !!this.$isDev
+      }, this.value),
       attachements: [],
       icons: { mdiTrashCan },
       loading: !!this.eventId,
