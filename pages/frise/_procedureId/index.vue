@@ -88,7 +88,7 @@
                 />
               </v-col>
               <v-col cols="3" class="my-6">
-                <p class="font-weight-bold">
+                <!-- <p class="font-weight-bold">
                   Événements clés
                 </p>
                 <p>
@@ -98,7 +98,7 @@
                     </v-icon>
                     test
                   </v-chip>
-                </p>
+                </p> -->
 
                 <p class="font-weight-bold">
                   Ressources
