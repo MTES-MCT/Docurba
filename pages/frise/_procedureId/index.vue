@@ -108,6 +108,7 @@
                     <template #activator="{ on, attrs }">
                       <v-chip
                         label
+                        class="mb-2"
                         color="grey darken-1"
                         v-bind="attrs"
                         v-on="on"
