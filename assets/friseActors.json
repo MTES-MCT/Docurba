@@ -1,16 +1,21 @@
 [
   {
-    "values": ["Collectivité"],
+    "values": ["collectivite"],
     "color": "#855D48",
     "background": "#FBF5F2"
   },
   {
-    "values": ["DDT"],
+    "values": ["etat"],
     "color": "#66673D",
     "background": "#FCEEAC"
   },
   {
-    "values": ["Bureau d’étude"],
+    "values": ["docurba"],
+    "color": "#447049",
+    "background": "#E6FEDA"
+  },
+  {
+    "values": ["sudocu"],
     "color": "#447049",
     "background": "#E6FEDA"
   }

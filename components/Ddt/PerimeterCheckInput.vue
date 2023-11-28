@@ -8,7 +8,7 @@
         outlined
         @click="selectAllPerimetre"
       >
-        Selectionner toutes
+        Sélectionner toutes
       </v-btn>
       <v-btn
         color="primary"
@@ -18,7 +18,7 @@
         Déselectionner toutes
       </v-btn>
     </v-col>
-    <v-col v-for="(commune, i) in communes" :key="i" cols="4">
+    <v-col v-for="(commune) in communes" :key="'commune_'+ commune.code" cols="4">
       <v-checkbox
         v-model="perimetre"
         hide-details
@@ -30,6 +30,7 @@
   </v-row>
 </template>
 <script>
+
 export default {
   props: {
     communes: {
@@ -43,7 +44,7 @@ export default {
   },
   data () {
     return {
-      perimetre: this.value
+      perimetre: this.communes.map(e => e.code)
     }
   },
   watch: {
@@ -51,6 +52,7 @@ export default {
       this.$emit('input', this.perimetre)
     }
   },
+
   methods: {
     selectAllPerimetre () {
       this.perimetre = this.communes.map(c => c.code)

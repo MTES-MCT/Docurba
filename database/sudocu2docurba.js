@@ -39,7 +39,7 @@
     const formattedProcedure = {
       project_id: docurbaProjectId,
       type: procedure.type,
-      scot_name: procedure.name,
+      name: procedure.name,
       commentaire: procedure.description,
       current_perimetre: procedure.perimetre,
       initial_perimetre: procedure.perimetre,
@@ -58,8 +58,9 @@
       moe: procedure?.moe,
       volet_qualitatif: procedure?.volet_qualitatif,
       is_sudocuh_scot: schemaOnly,
-      test: true
+      numero: procedure?.numero
     }
+    // console.log('ID procedure: ', procedure.id, 'formattedProcedure: ', procedure.numero)
     // console.log('formattedProcedure: ', formattedProcedure)
     // console.log('procedure?.moe: ', procedure?.moe)
     const { data: insertedProcedure, error: errorInsertedProcedure } = await supabase.from('procedures').upsert(formattedProcedure, { onConflict: 'from_sudocuh', ignoreDuplicates: false }).select()
@@ -75,6 +76,7 @@
 
   async function processProcedures (collectiviteCode, { schemaOnly }) {
     const { collectivite, procedures, schemas } = (await axios({ url: `http://localhost:3000/api/urba/collectivites/${collectiviteCode}`, method: 'get' })).data
+
     if (!schemaOnly) {
       for (const procedure of procedures) {
         // console.log('procedure: ', procedure)
@@ -101,6 +103,23 @@
   }
 
   async function insertEvents (events, { docurbaProcedureId, docurbaProjectId, schemaOnly }) {
+    // attachements: this.parseAttachment(e.nomdocument)
+
+    function parseAttachment (path) {
+      if (path) {
+        const attachment = { id: '', name: '', type: 'file' }
+        let temp = ''
+        const semiSplit = path.split(':')
+        if (semiSplit[0] === 'link') { attachment.type = 'link' }
+        semiSplit.length > 1 ? temp = semiSplit[1] : temp = semiSplit[0]
+        attachment.name = temp
+        attachment.id = 'sudocu/' + temp.split('_').slice(1).join('/')
+        return [attachment]
+      } else {
+        return []
+      }
+    }
+
     const formattedEvents = events?.map((event) => {
       const formattedEvent = {
         project_id: docurbaProjectId,
@@ -108,13 +127,14 @@
         type: event.libtypeevenement,
         is_valid: event.codestatutevenement === 'V',
         date_iso: event.dateevenement,
-        description: '',
+        description: event.commentaire,
         actors: null, // TODO: Voir si on trouve les noms dans Sudocu
-        attachements: null, // TODO: Ajouter proprement le lien attachments
+        attachements: parseAttachment(event.nomdocument),
         visibility: 'private',
         from_sudocuh: event.noserieevenement,
         is_sudocuh_scot: schemaOnly
       }
+      // console.log('attachements: ', formattedEvent.attachements)
       return formattedEvent
     })
     if (formattedEvents) {
@@ -131,19 +151,13 @@
     // const collectivites = epcis
     const len = collectivites.length
     // 1221 stopped schema
-    const startAt = 2866
-    const BATCH_SIZE = 15
+    const startAt = 26896
+    const BATCH_SIZE = 5
     const RATE = 50
 
     let tempProms = []
 
-    // COmmiune / Procedure qui ne doivent pas etre a en cours
-    // 01303 / 61137
-    // 56054 / 60401
-    // 83004 / 1831
-    // 83044 / 14904
-
-    // const testOne = collectivites.find(e => e.code === '83044')
+    // const testOne = collectivites.find(e => e.code === '37145')
     // console.log('HERE TESt: ', testOne)
     // await processProcedures(testOne.code, { schemaOnly: false })
 
@@ -151,7 +165,7 @@
       if (i >= startAt) {
         console.log('Processing ', i, ' of ', len, ' - code: ', collec.code)
 
-        const prom = processProcedures(collec.code, { schemaOnly: true })
+        const prom = processProcedures(collec.code, { schemaOnly: false })
         await new Promise((resolve, reject) => setTimeout(resolve, RATE))
         tempProms.push(prom)
         if (i % BATCH_SIZE === 0 || len - i < BATCH_SIZE) {
