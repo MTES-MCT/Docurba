@@ -105,6 +105,14 @@
         </v-tab>
         <v-tab
           :to="{
+            name: 'ddt-departement-pac',
+            params: {departement: $user.profile.departement}
+          }"
+        >
+          Mes PAC
+        </v-tab>
+        <v-tab
+          :to="{
             name:'ddt-departement-collectivites-enquete',
             params: {departement: $user.profile.departement}
           }"

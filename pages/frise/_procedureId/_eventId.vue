@@ -16,7 +16,8 @@
           Modification d'évènement
         </h1>
       </v-col>
-      <FriseEventForm v-if="procedure" :procedure="procedure" :type-du="$route.query.typeDu" />
+      <FriseEventForm v-if="!loading" v-model="event" :procedure="procedure" :type-du="$route.query.typeDu" />
+      <VGlobalLoader v-else />
     </v-row>
   </v-container>
 </template>
@@ -28,7 +29,9 @@ export default {
   data () {
     return {
       icons: { mdiChevronLeft },
-      procedure: null
+      procedure: null,
+      event: null,
+      loading: true
     }
   },
   async mounted () {
@@ -37,10 +40,16 @@ export default {
         this.$nuxt.setLayout('ddt')
       }
     })
+
     const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('project_id, id').eq('id', this.$route.params.procedureId)
     if (errorProcedure) { throw errorProcedure }
     this.procedure = procedure[0]
-    console.log('this.procedure: ', this.procedure)
+
+    const { data: event, error: errorEvent } = await this.$supabase.from('doc_frise_events').select('*').eq('id', this.$route.params.eventId)
+    if (errorEvent) { throw errorEvent }
+    this.event = event[0]
+    console.log('this.event: ', event)
+    this.loading = false
   }
 }
 </script>

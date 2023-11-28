@@ -7,27 +7,30 @@
     </v-col>
     <v-col cols="">
       <div v-if="suggestion" class="primary--text mb-1">
-        Evenement suggéré
+        Evénement suggéré
       </div>
       <v-card :outlined="!suggestion" flat :color="suggestion ? 'primary lighten-4': ''">
         <v-card-title class="font-weight-bold d-flex flex-nowrap">
-          <div class="break-word flex-grow-0 d-flex flex-wrap align-self-start">
-            {{ event.type || event.name }}
-            <!-- <v-icon color="grey darken-2">
-                  {{ icons.mdiBookmark }}
-                </v-icon> -->
+          <div class="break-word flex-grow-0 d-flex flex-wrap align-self-start mr-4">
+            <div>
+              {{ event.type || event.name }}
+              <v-icon v-if="event.structurant" color="grey darken-2">
+                {{ icons.mdiBookmark }}
+              </v-icon>
+            </div>
+
             <v-chip v-if="!suggestion && !event.is_valid" class="ml-2 font-weight-bold text-uppercase" color="error" label>
               invalide
             </v-chip>
           </div>
           <div v-if="!suggestion" class=" ml-auto flex-shrink-1 d-flex align-self-start">
             <v-chip class="mr-2 font-weight-bold text-uppercase" dark color="grey darken-2" label>
-              {{ event.visibility }}
+              {{ event.visibility === 'private' ? 'privé' : '' }}
             </v-chip>
             <v-chip class="text-uppercase" :color="creator.background" label>
               {{ event.profiles?.poste || event.profiles?.side || creator.values[0] }}
             </v-chip>
-            <v-btn class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
+            <v-btn v-if="creator.values[0] != 'sudocu'" class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
               <v-icon color="grey darken-2">
                 {{ icons.mdiPencil }}
               </v-icon>
@@ -38,7 +41,7 @@
             <v-btn outlined color="primary" depressed class="mx-2" @click="ignore = true">
               Ignorer
             </v-btn>
-            <v-btn color="primary" depressed>
+            <v-btn color="primary" depressed @click="$emit('addSuggestedEvent', event.name)">
               Ajouter
             </v-btn>
           </div>
