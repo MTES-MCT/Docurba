@@ -9,11 +9,11 @@
         <div v-else>
           <span>{{ procedure.doc_type }}</span><span v-if="procedure.current_perimetre.length > 1">-i<span v-if="procedure.is_sectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')">S</span></span>
           <span> {{ procedure.current_perimetre.length === 1 ? procedure.current_perimetre[0].name + ' (' + procedure.current_perimetre[0].inseeCode + ')' : '' }}</span>
-          numéro {{ procedure.numero }}
+          <span v-if="procedure.numero">numéro {{ procedure.numero }}</span>
         </div>
 
         <br>
-        <span class="text-caption">{{ procedure.id }} - parent: {{ procedure.procedure_id }}</span>
+        <span class="text-caption">{{ procedure.id }} - (sudocu: {{ procedure.from_sudocuh }}) parent: {{ procedure.procedure_id }}</span>
       </v-col>
     </v-row>
     <v-row class="mt-0">

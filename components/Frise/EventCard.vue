@@ -1,56 +1,52 @@
 <template>
-  <v-row v-show="!ignore" class=" align-center justify-center ma-6">
-    <v-col cols="2" class="px-0">
+  <v-row v-show="!ignore" class=" align-center justify-center ma-2">
+    <v-col cols="auto">
       <v-chip v-if="!suggestion" class="font-weight-bold" color="alt-beige" label>
         {{ formatDate }}
       </v-chip>
     </v-col>
-    <v-col cols="10" class="px-0">
+    <v-col cols="">
       <div v-if="suggestion" class="primary--text mb-1">
         Evenement suggéré
       </div>
       <v-card :outlined="!suggestion" flat :color="suggestion ? 'primary lighten-4': ''">
-        <v-card-title class="font-weight-bold">
-          <div class="d-flex break-word">
-            <div class="d-flex">
-              <div>
-                {{ event.type || event.name }}
-                <v-icon color="grey darken-2">
+        <v-card-title class="font-weight-bold d-flex flex-nowrap">
+          <div class="break-word flex-grow-0 d-flex flex-wrap align-self-start">
+            {{ event.type || event.name }}
+            <!-- <v-icon color="grey darken-2">
                   {{ icons.mdiBookmark }}
-                </v-icon>
-                <v-chip v-if="!suggestion && !event.is_valid" class="mr-2 font-weight-bold text-uppercase" color="error" label>
-                  invalide
-                </v-chip>
-              </div>
-              <div v-if="!suggestion" class="d-flex ml-4">
-                <v-chip class="mr-2 font-weight-bold text-uppercase" dark color="grey darken-2" label>
-                  {{ event.visibility }}
-                </v-chip>
-                <v-chip class="text-uppercase" :color="creator.background" label>
-                  {{ event.profiles.poste || event.profiles.side }}
-                </v-chip>
-                <v-btn class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
-                  <v-icon color="grey darken-2">
-                    {{ icons.mdiPencil }}
-                  </v-icon>
-                </v-btn>
-              </div>
-            </div>
+                </v-icon> -->
+            <v-chip v-if="!suggestion && !event.is_valid" class="mr-2 font-weight-bold text-uppercase" color="error" label>
+              invalide
+            </v-chip>
+          </div>
+          <div v-if="!suggestion" class=" ml-auto flex-shrink-1 d-flex align-self-start">
+            <v-chip class="mr-2 font-weight-bold text-uppercase" dark color="grey darken-2" label>
+              {{ event.visibility }}
+            </v-chip>
+            <v-chip class="text-uppercase" :color="creator.background" label>
+              {{ event.profiles?.poste || event.profiles?.side || creator.values[0] }}
+            </v-chip>
+            <v-btn class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
+              <v-icon color="grey darken-2">
+                {{ icons.mdiPencil }}
+              </v-icon>
+            </v-btn>
+          </div>
 
-            <div v-if="suggestion" class="d-flex ml-auto">
-              <v-btn outlined color="primary" depressed class="mx-2" @click="ignore = true">
-                Ignorer
-              </v-btn>
-              <v-btn color="primary" depressed>
-                Ajouter
-              </v-btn>
-            </div>
+          <div v-if="suggestion" class="d-flex ml-auto">
+            <v-btn outlined color="primary" depressed class="mx-2" @click="ignore = true">
+              Ignorer
+            </v-btn>
+            <v-btn color="primary" depressed>
+              Ajouter
+            </v-btn>
           </div>
         </v-card-title>
         <v-card-text v-if="event.commentaire || event.description">
           {{ event.commentaire || event.description }}
         </v-card-text>
-        <v-card-actions v-if="event.attachements">
+        <v-card-actions v-if="event.attachements?.length">
           <v-chip
             v-for="attachement in event.attachements"
             :key="attachement.id"
@@ -109,7 +105,7 @@ export default {
   computed: {
     creator () {
       console.log('event ttt: ', this.event, this.event.profiles)
-      let actor = this.event.profiles.side || 'docurba'
+      let actor = this.event.profiles?.side || 'docurba'
       if (this.event.from_sudocuh) { actor = 'sudocu' }
       console.log('actor: ', actor)
       return actors.find((e) => {

@@ -58,9 +58,9 @@
       moe: procedure?.moe,
       volet_qualitatif: procedure?.volet_qualitatif,
       is_sudocuh_scot: schemaOnly,
-      numero: procedure?.numero_procedure
+      numero: procedure?.numero
     }
-    console.log('formattedProcedure: ', formattedProcedure.numero)
+    // console.log('ID procedure: ', procedure.id, 'formattedProcedure: ', procedure.numero)
     // console.log('formattedProcedure: ', formattedProcedure)
     // console.log('procedure?.moe: ', procedure?.moe)
     const { data: insertedProcedure, error: errorInsertedProcedure } = await supabase.from('procedures').upsert(formattedProcedure, { onConflict: 'from_sudocuh', ignoreDuplicates: false }).select()
@@ -76,6 +76,7 @@
 
   async function processProcedures (collectiviteCode, { schemaOnly }) {
     const { collectivite, procedures, schemas } = (await axios({ url: `http://localhost:3000/api/urba/collectivites/${collectiviteCode}`, method: 'get' })).data
+
     if (!schemaOnly) {
       for (const procedure of procedures) {
         // console.log('procedure: ', procedure)
@@ -126,7 +127,7 @@
         type: event.libtypeevenement,
         is_valid: event.codestatutevenement === 'V',
         date_iso: event.dateevenement,
-        description: '',
+        description: event.commentaire,
         actors: null, // TODO: Voir si on trouve les noms dans Sudocu
         attachements: parseAttachment(event.nomdocument),
         visibility: 'private',
@@ -150,13 +151,13 @@
     // const collectivites = epcis
     const len = collectivites.length
     // 1221 stopped schema
-    const startAt = 27435
-    const BATCH_SIZE = 15
+    const startAt = 26896
+    const BATCH_SIZE = 5
     const RATE = 50
 
     let tempProms = []
 
-    // const testOne = collectivites.find(e => e.code === '83044')
+    // const testOne = collectivites.find(e => e.code === '37145')
     // console.log('HERE TESt: ', testOne)
     // await processProcedures(testOne.code, { schemaOnly: false })
 
@@ -164,7 +165,7 @@
       if (i >= startAt) {
         console.log('Processing ', i, ' of ', len, ' - code: ', collec.code)
 
-        const prom = processProcedures(collec.code, { schemaOnly: true })
+        const prom = processProcedures(collec.code, { schemaOnly: false })
         await new Promise((resolve, reject) => setTimeout(resolve, RATE))
         tempProms.push(prom)
         if (i % BATCH_SIZE === 0 || len - i < BATCH_SIZE) {
