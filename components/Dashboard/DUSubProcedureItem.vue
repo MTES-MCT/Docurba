@@ -51,7 +51,7 @@
             Feuille de route partagée
           </span>
         </nuxt-link>
-        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-procedureId-dgd', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
+        <!-- <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-procedureId-dgd', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
           <span class="primary--text text-decoration-underline mr-4 ">
             DGD
           </span>
@@ -60,10 +60,18 @@
           <span class="primary--text text-decoration-underline mr-4 ">
             Info. générales
           </span>
-        </nuxt-link>
+        </nuxt-link> -->
+
+        <span class="primary--text text-decoration-underline mr-4 text--disabled">
+          DGD
+        </span>
+        <span class="primary--text text-decoration-underline mr-4 text--disabled">
+          Info. générales
+        </span>
         <span class="primary--text text-decoration-underline mr-4 text--disabled">
           PAC
         </span>
+
         <!-- <span class="primary--text text-decoration-underline text--disabled">
           Note d'enjeux
         </span> -->
