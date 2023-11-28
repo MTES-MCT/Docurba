@@ -16,7 +16,7 @@
             <!-- <v-icon color="grey darken-2">
                   {{ icons.mdiBookmark }}
                 </v-icon> -->
-            <v-chip v-if="!suggestion && !event.is_valid" class="mr-2 font-weight-bold text-uppercase" color="error" label>
+            <v-chip v-if="!suggestion && !event.is_valid" class="ml-2 font-weight-bold text-uppercase" color="error" label>
               invalide
             </v-chip>
           </div>
