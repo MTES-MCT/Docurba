@@ -155,7 +155,9 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
         }
         const { data, error } = await query.order('created_at', { ascending: false })
         if (error) { throw error }
+
         const groupedSubProcedures = groupBy(data, 'secondary_procedure_of')
+
         const proceduresPrincipales = data.filter(e => e.is_principale)
           .map((e) => {
             const { projects, ...rest } = e
