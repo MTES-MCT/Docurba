@@ -18,11 +18,19 @@
             </validation-provider>
           </v-col>
           <v-col cols="12" class="pt-0 pb-2">
-            <v-select v-model="objetProcedure" filled multiple label="Objet de la procédure" :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']" />
+            <v-select
+              v-model="objetProcedure"
+              style="max-width:50%;"
+              :hide-details="objetProcedure.includes('Autre')"
+              filled
+              multiple
+              label="Objet de la procédure"
+              :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']"
+            />
           </v-col>
-          <v-col v-if="objetProcedure.includes('Autre')" offset="1" cols="11" class="pt-0 pb-2">
+          <v-col v-if="objetProcedure.includes('Autre')" cols="12" class="pt-0 pb-2">
             <validation-provider v-slot="{ errors }" name="Details de la procédure" rules="required">
-              <v-text-field v-model="otherObjetProcedure" :error-messages="errors" filled label="Précisez" />
+              <v-text-field v-model="otherObjetProcedure" style="max-width:50%;" :error-messages="errors" filled label="Description de l’objet de la procédure" />
             </validation-provider>
           </v-col>
           <v-col v-if="procedureCategory === 'principale'" cols="12">
@@ -194,12 +202,10 @@ export default {
   },
   async mounted () {
     try {
-      console.log('collectivite: ', this.collectivite, ' len: ', this.collectivite.communes.length, ' test: ', this.collectivite.communes.map(e => e.code))
       if (this.procedureCategory === 'secondaire') {
         const proceduresParents = await this.getProcedures()
         this.proceduresParents = proceduresParents
       }
-      console.log('TEST: ', this.communes.map(e => e.code))
       this.perimetre = this.collectivite.type === 'Commune' ? [this.collectivite.code] : this.communes.map(e => e.code)
     } catch (error) {
       console.log(error)
