@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        <span v-if=" procedure.doc_type === 'SCOT'">
+        <span v-if="procedure.name">
           <!-- (porté par {{}}) -->
           {{ procedure.name }}
         </span>
@@ -66,17 +66,20 @@
             Feuille de route partagée
           </span>
         </nuxt-link>
-        <nuxt-link :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}-dgd`">
+        <!-- <nuxt-link :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}-dgd`">
           <span class="primary--text text-decoration-underline mr-4 ">DGD</span>
         </nuxt-link>
-        <nuxt-link
-
-          :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}-infos`"
-        >
+        <nuxt-link :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}-infos`">
           <span class="primary--text text-decoration-underline mr-4 ">
             Info. générales
           </span>
-        </nuxt-link>
+        </nuxt-link> -->
+        <span class="primary--text text-decoration-underline mr-4 text--disabled">
+          DGD
+        </span>
+        <span class="primary--text text-decoration-underline mr-4 text--disabled">
+          Info. générales
+        </span>
         <span class="primary--text text-decoration-underline mr-4 text--disabled">
           PAC
         </span>

@@ -105,6 +105,7 @@
                 readonly
               />
               <v-text-field
+                v-model="nameComplement"
                 hide-details
                 label="Complément (optionnel)"
                 class="rounded-l-0 smaller-input-slot"
@@ -180,7 +181,7 @@ export default {
       otherObjetProcedure: '',
       typeDu: '',
       nameComplement: '',
-      typesDu: ['Carte Communale', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM'],
+      typesDu: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM'],
       perimetre: [],
       icons: { mdiInformationOutline }
     }
@@ -265,7 +266,8 @@ export default {
           current_perimetre: fomattedPerimetre,
           initial_perimetre: fomattedPerimetre,
           project_id: insertedProject[0].id,
-          name: this.baseName + this.nameComplement ? '' + this.nameComplement : '',
+          name: (this.baseName + ' ' + this.nameComplement).trim(),
+          owner_id: this.$user.id,
           testing: true
         })
         this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`)

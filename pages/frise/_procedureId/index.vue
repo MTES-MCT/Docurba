@@ -35,10 +35,6 @@
           <v-list>
             <v-dialog v-model="dialog" width="500">
               <template #activator="{ on, attrs }">
-                <!-- <span class="error--text text-decoration-underline ml-auto align-center" v-bind="attrs" v-on="on">
-              Supprimer
-            </span> -->
-
                 <v-list-item link v-bind="attrs" v-on="on">
                   <v-list-item-title>
                     Supprimer
@@ -78,9 +74,9 @@
           <v-container>
             <v-row>
               <v-col cols="9">
-                <FriseEventCard :event="recommendedEvents[0]" suggestion />
+                <FriseEventCard :event="recommendedEvents[0]" suggestion @addSuggestedEvent="addSuggestedEvent" />
                 <FriseEventCard
-                  v-for="event in events"
+                  v-for="event in enrichedEvents"
                   :id="`event-${event.id}`"
                   :key="event.id"
                   :event="event"
@@ -88,18 +84,32 @@
                 />
               </v-col>
               <v-col cols="3" class="my-6">
-                <!-- <p class="font-weight-bold">
+                <p class="font-weight-bold">
                   Événements clés
                 </p>
-                <p>
-                  <v-chip label color="grey darken-1">
-                    <v-icon color="grey darken-2" class="mr-2">
-                      {{ icons.mdiBookmark }}
-                    </v-icon>
-                    test
-                  </v-chip>
-                </p> -->
-
+                <div class="mb-4">
+                  <div v-for="(eventStructurant, i) in eventsStructurants" :key="i" class="mb-2">
+                    <v-tooltip bottom>
+                      <template #activator="{ on, attrs }">
+                        <v-chip
+                          label
+                          class="mb-2"
+                          color="grey darken-1"
+                          v-bind="attrs"
+                          v-on="on"
+                        >
+                          <v-icon color="grey darken-2" class="mr-2">
+                            {{ icons.mdiBookmark }}
+                          </v-icon>
+                          <span class="text-truncate">
+                            {{ eventStructurant.type }}
+                          </span>
+                        </v-chip>
+                      </template>
+                      {{ eventStructurant.type }}
+                    </v-tooltip>
+                  </div>
+                </div>
                 <p class="font-weight-bold">
                   Ressources
                 </p>
@@ -137,18 +147,21 @@
 <script>
 import axios from 'axios'
 import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical } from '@mdi/js'
-import documentEvents from '@/assets/data/DU_events.json'
+// import documentEvents from '@/assets/data/DU_events.json'
+
+import PluEvents from '@/assets/data/events/PLU_events.json'
+import ScotEvents from '@/assets/data/events/SCOT_events.json'
+import ccEvents from '@/assets/data/events/CC_events.json'
 export default
 {
   name: 'ProcedureTimelineEvents',
   data () {
     return {
-      loaded: false,
       collectivite: null,
       procedure: null,
       events: [],
       dialog: false,
-      documentEvents,
+      // documentEvents,
       icons: {
         mdiBookmark,
         mdiPaperclip,
@@ -158,6 +171,27 @@ export default
     }
   },
   computed: {
+    loaded () {
+      return this.procedure && this.collectivite && this.eventsStructurants && this.enrichedEvents
+    },
+    documentEvents () {
+      const documentsEvents = {
+        PLU: PluEvents,
+        SCOT: ScotEvents,
+        CC: ccEvents
+      }
+      console.log('typeDu: ', this.procedure.doc_type)
+      return documentsEvents[this.procedure.doc_type]
+    },
+    eventsStructurants () {
+      return this.enrichedEvents.filter(e => e.structurant)
+    },
+    enrichedEvents () {
+      return this.events.map((event) => {
+        const ev = this.documentEvents.find(x => x.name === event.type)
+        return { ...event, structurant: !!ev?.structurant }
+      })
+    },
     attachments () {
       return this.events.map(e => e.attachements).flat()
     },
@@ -173,6 +207,7 @@ export default
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     },
     recommendedEvents () {
+      console.log(' this.procedure.doc_type: ', this.procedure.doc_type)
       if (this.events && this.events.length < 1) {
         return [this.documentEvents[0]]
       }
@@ -185,7 +220,7 @@ export default
         this.findRecommendedEventType(lastEventOrder, 2),
         this.findRecommendedEventType(lastEventOrder, 1)
       ]
-
+      console.log('recommendedEvents: ', recommendedEvents)
       return recommendedEvents.filter(e => !!e)
     }
   },
@@ -204,13 +239,15 @@ export default
       this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}` })).data
       if (errorProcedure) { throw errorProcedure }
       await this.getEvents()
-      this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log('ERROR: ', error)
     }
   },
   methods: {
+    addSuggestedEvent (eventName) {
+      this.$router.push(`/frise/${this.procedure.id}/add?eventType=${eventName}&typeDu=${this.procedure.doc_type}`)
+    },
     async  archiveProcedure (idProcedure) {
       try {
         console.log('idProcedure to archive: ', idProcedure)
@@ -228,7 +265,7 @@ export default
     },
     findRecommendedEventType (order, priority) {
       return this.documentEvents.find((eventType) => {
-        return eventType.recommended === priority && eventType.order > order
+        return eventType.order > order
       })
     },
     async getEvents () {
