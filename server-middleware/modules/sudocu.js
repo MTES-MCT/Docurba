@@ -2,7 +2,10 @@
 import _ from 'lodash'
 import geo from './geo.js'
 const { createClient } = require('@supabase/supabase-js')
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+// const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+
+const { PG_DEV_CONFIG } = require('../../database/pg_secret_config.json')
+const supabase = createClient(PG_DEV_CONFIG.url, PG_DEV_CONFIG.admin_key)
 
 module.exports = {
   parseAttachment (path) {
@@ -212,7 +215,7 @@ module.exports = {
           procedure_id: e.noserieprocedureratt,
           status_infos: e.statusInfos,
           doc_type: e.doc_type,
-          description: e.commentaire,
+          description: e.commentaireproc,
           launch_date: e.datelancement,
           approval_date: e.dateapprobation,
           abort_date: e.dateabandon,
@@ -223,16 +226,18 @@ module.exports = {
           events: e.events,
           perimetre: e.perimetre,
           procSecs: e.procSecs,
-          status: e.status
+          status: e.status,
+          numero: e.numero_procedure
         }
       })
       const formattedProcedures = planProcedures.map((e) => {
+        // console.log('id: ', e.noserieprocedure, ' e.numero_procedure: ', e.numero_procedure)
         return {
           actors: [],
           attachements: [],
           id: e.noserieprocedure,
           doc_type: e.doc_type,
-          description: e.commentaire,
+          description: e.commentaireproc,
           type: e.libtypeprocedure,
           procedure_id: e.noserieprocedureratt,
           launch_date: e.datelancement,
@@ -252,7 +257,8 @@ module.exports = {
           is_pluih: e.is_pluih,
           is_pdu: e.is_pdu,
           mandatory_pdu: e.mandatory_pdu,
-          moe: e.moe
+          moe: e.moe,
+          numero: e.numero_procedure
         }
       })
 

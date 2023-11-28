@@ -24,7 +24,7 @@
       <v-row>
         <v-col cols="12">
           <v-alert type="info">
-            Date du dernier extract de données Sudocuh vers Docurba: <b>4 Octobre 2023</b>
+            Date du dernier extract de données Sudocuh vers Docurba: <b>19 Novembre 2023</b>
           </v-alert>
         </v-col>
         <v-col cols="12">
@@ -38,8 +38,9 @@
       </v-row>
       <DashboardDUItemsList
         :collectivite="collectivite"
-        :procedures="procedures"
+        :procedures="plans"
         :schemas="schemas"
+        @deleteProcedure="getProcedures"
       />
     </template>
 
@@ -63,21 +64,22 @@ export default {
       loaded: false,
       tab: null,
       collectivite: null,
-      procedures: [],
+      plans: [],
       schemas: [],
       icons: { mdiArrowLeft }
     }
   },
   async mounted () {
-    try {
+    await this.getProcedures()
+    this.loaded = true
+  },
+  methods: {
+    async getProcedures () {
       this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
       this.schemas = schemas
-      this.procedures = plans
-    } catch (error) {
-      console.log(error)
-    } finally {
-      this.loaded = true
+      this.plans = plans
+      console.log('schemas: ', schemas, ' plans: ', plans)
     }
   }
 }

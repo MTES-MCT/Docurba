@@ -139,7 +139,7 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
       try {
         console.log('Fetch: ', collectiviteId)
         let query = $supabase.from('procedures')
-          .select('*, projects(*)')
+          .select('*, projects(*)').eq('archived', false)
 
         if (collectiviteId.length > 5) {
           query = query.eq('collectivite_porteuse_id', collectiviteId)

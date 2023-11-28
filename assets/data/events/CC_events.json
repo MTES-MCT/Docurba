@@ -1,0 +1,727 @@
+[
+  {
+    "name": "Délibération de prescription du conseil municipal",
+    "order": 1,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Définition des modalités",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ms"
+    ],
+    "structurant": true
+  },
+  {
+    "name": "Délibération ou arrêté définissant les objectifs et modalités concertation",
+    "order": 2,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Définition des modalités",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "Recrutement d'un bureau d'études",
+    "order": 3,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Définition des modalités",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "Réunion des PPA",
+    "order": 4,
+    "required": false,
+    "chrnological": true,
+    "epci": false,
+    "law": "",
+    "phases": "Toutes phases",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Réunion de concertation grand public",
+    "order": 5,
+    "required": false,
+    "chrnological": true,
+    "epci": false,
+    "law": "",
+    "phases": "Toutes phases",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Phase de construction du diagnostic",
+    "order": 6,
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "",
+    "order": "",
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": true
+  },
+  {
+    "name": "Prise en compte du porter à connaissance dans le projet",
+    "order": 8,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Diagnostic",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "",
+    "order": "",
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": true
+  },
+  {
+    "name": "Prise en compte de la note d'enjeux",
+    "order": 9,
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Transmission du porter à connaissance complémentaire",
+    "order": 11,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Toutes phases",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Présentation du diagnostic aux PPA",
+    "order": 12,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Diagnostic",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": true
+  },
+  {
+    "name": "Lancement de l'évaluation environnementale du projet",
+    "order": 13,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "EE",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Phase de construction du rapport de présentation",
+    "order": 14,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Rapport de présentation",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "Phase de construction de(s) réglement(s) graphique(s)",
+    "order": 15,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Règlement",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "Consultation de l'autorité environnementale au cas par cas ad'hoc",
+    "order": 16,
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": true
+  },
+  {
+    "name": "Exemption d'évaluation environnementale",
+    "order": 17,
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": true
+  },
+  {
+    "name": "Soumission à évaluation environnementale",
+    "order": 18,
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": true
+  },
+  {
+    "name": "Délibération de bilan de la concertation",
+    "order": 19,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Concertation",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": "fasle"
+  },
+  {
+    "name": "Saisine de l'Autorité environnementale pour avis",
+    "order": 20,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Arrêt du projet",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Saisine de la CDNPS pour avis",
+    "order": 21,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Arrêt du projet",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Saisine de la CDPENAF pour avis",
+    "order": 22,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Arrêt du projet",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Réception de l'avis de l'autorité environnementale",
+    "order": 23,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Arrêt du projet",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": "fasle"
+  },
+  {
+    "name": "Réception de l'avis CDPENAF",
+    "order": 24,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "?",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Réception de l'avis de la CDNPS",
+    "order": 25,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "?",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Publicité sur mise à disposition du public",
+    "order": 26,
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "ms"
+    ],
+    "scope_sugg": [
+      "ms"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "Début de mise à disposition du public",
+    "order": 27,
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "ms"
+    ],
+    "scope_sugg": [
+      "ms"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "Fin de mise à disposition du public",
+    "order": 28,
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "ms"
+    ],
+    "scope_sugg": [
+      "ms"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "Arrêté d'enquête publique",
+    "order": 29,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Enquête publique",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "Début d'enquête publique",
+    "order": 30,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Enquête publique",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": true
+  },
+  {
+    "name": "Fin d'enquête publique",
+    "order": 31,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Enquête publique",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": true
+  },
+  {
+    "name": "Rapport du commissaire enquêteur",
+    "order": 32,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Enquête publique",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "Intégration des retours faits pendant l'enquête publique",
+    "order": 33,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Enquête publique",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "Abandon",
+    "order": 34,
+    "required": false,
+    "chrnological": true,
+    "epci": false,
+    "law": "",
+    "phases": "Avant l'approbation",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": true
+  },
+  {
+    "name": "Délibération d'approbation du conseil municipal",
+    "order": 35,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Approbation",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ms"
+    ],
+    "structurant": true
+  },
+  {
+    "name": "Transmission au préfet pour approbation",
+    "order": 36,
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "Approbation",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ms"
+    ],
+    "structurant": true
+  },
+  {
+    "name": "Refus d'approbation du préfet",
+    "order": 37,
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "Approbation",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": true
+  },
+  {
+    "name": "Approbation du préfet",
+    "order": 38,
+    "required": "",
+    "chrnological": "",
+    "epci": "",
+    "law": "",
+    "phases": "Approbation",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": true
+  },
+  {
+    "name": "Transmission au contrôle de légalité",
+    "order": 39,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Caractère exécutoire",
+    "scope_liste": [
+      "ms"
+    ],
+    "scope_sugg": [
+      "ms"
+    ],
+    "structurant": true
+  },
+  {
+    "name": "Publicité dans la presse",
+    "order": 40,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Caractère exécutoire",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ms"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "Affichage en commune",
+    "order": 41,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Caractère exécutoire",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ms"
+    ],
+    "structurant": false
+  },
+  {
+    "name": "Publication du PLU sur le GPU",
+    "order": 42,
+    "required": true,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "Caractère exécutoire",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ms"
+    ],
+    "structurant": true
+  },
+  {
+    "name": "Recours gracieux de l'État",
+    "order": 43,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "?",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Retrait de la délibération d'approbation",
+    "order": 44,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Désistement recours gracieux de l’État",
+    "order": 45,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false
+  },
+  {
+    "name": "Annulation TA partielle",
+    "order": 46,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": true
+  },
+  {
+    "name": "Annulation TA totale",
+    "order": 47,
+    "required": false,
+    "chrnological": false,
+    "epci": false,
+    "law": "",
+    "phases": "?",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": true
+  }
+]

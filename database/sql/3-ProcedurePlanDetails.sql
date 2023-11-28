@@ -67,10 +67,12 @@ select
   c.libtypecollectivite,
   c.codetypecollectivite,
   vq.volet_qualitatif,
-  jsonb_build_object('nomprestaexterne', pp.nomprestaexterne, 'coutplanht', pp.coutplanht,'coutplanttc', pp.coutplanttc) as moe
+  jsonb_build_object('nomprestaexterne', pp.nomprestaexterne, 'coutplanht', pp.coutplanht,'coutplanttc', pp.coutplanttc) as moe,
+  p.noprocedure
 from
   sudocu.procedureplan pp
   left join public.collectivitesdetails c on c.noseriecollectivite = pp.noseriecollectivite
+  left join sudocu.procedure p on p.noserieprocedure = pp.noserieprocedure
   left join voletqualiene vq on vq.noserieprocedure = pp.noserieprocedure;
 
 

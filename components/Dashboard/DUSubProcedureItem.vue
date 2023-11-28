@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12">
         <div class="text-subtitle-1 font-weight-bold">
-          {{ procedure.type }} numéro {{ procedure.numero }}
+          {{ procedure.type }} <span v-if="procedure.numero">numéro {{ procedure.numero }}</span>
         </div>
         <span class="text-caption">{{ procedure.id }} - parent: {{ procedure.procedure_id }}</span>
       </v-col>
@@ -44,7 +44,7 @@
       <v-col cols="12" class="pb-0">
         <v-divider />
       </v-col>
-      <v-col cols="12">
+      <v-col cols="12" class="d-flex">
         <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
         <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <span class="primary--text text-decoration-underline mr-4">
@@ -64,9 +64,38 @@
         <span class="primary--text text-decoration-underline mr-4 text--disabled">
           PAC
         </span>
-        <span class="primary--text text-decoration-underline text--disabled">
+        <!-- <span class="primary--text text-decoration-underline text--disabled">
           Note d'enjeux
-        </span>
+        </span> -->
+        <v-dialog v-model="dialog" width="500">
+          <template #activator="{ on, attrs }">
+            <span class="error--text text-decoration-underline ml-auto align-center" v-bind="attrs" v-on="on">
+              Supprimer
+            </span>
+          </template>
+
+          <v-card>
+            <v-card-title class="text-h5 error white--text">
+              Cette action est irréversible.
+            </v-card-title>
+
+            <v-card-text class="pt-4">
+              Êtes-vous sur de vouloir supprimer cette procédure ? Il ne sera pas possible de revenir en arrière.
+            </v-card-text>
+
+            <v-divider />
+
+            <v-card-actions>
+              <v-spacer />
+              <v-btn color="primary" text @click="dialog = false">
+                Annuler
+              </v-btn>
+              <v-btn v-if="!censored" color="error" depressed @click="archiveProcedure(procedure.id)">
+                Supprimer
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-col>
     </v-row>
     <v-row v-else>
@@ -104,8 +133,26 @@ export default {
   },
   data () {
     return {
+      dialog: false,
       icons: {
         mdiArrowRight
+      }
+    }
+  },
+  methods: {
+    async  archiveProcedure (idProcedure) {
+      try {
+        console.log('idProcedure to archive: ', idProcedure)
+        const { error } = await this.$supabase
+          .from('procedures')
+          .update({ archived: true })
+          .eq('id', idProcedure)
+
+        if (error) { throw error }
+        this.$emit('delete', idProcedure)
+        this.dialog = false
+      } catch (error) {
+        console.log(error)
       }
     }
   }
