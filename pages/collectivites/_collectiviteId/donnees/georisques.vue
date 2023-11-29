@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1>Risques Géographique pour {{ isEpci ? 'l\'Epci' : 'la commune' }} </h1>
+          <h1>Risques Géographiques pour {{ isEpci ? 'l\'Epci' : 'la commune' }} </h1>
         </v-col>
         <v-col cols="12">
           <p>
