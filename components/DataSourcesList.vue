@@ -81,13 +81,17 @@ export default {
       type: Array,
       // This should be an array of cardData url created using $daturba
       default () { return [] }
+    },
+    defaultSelectedTheme: {
+      type: Number,
+      default () { return null }
     }
   },
   data () {
     return {
       dataSources: [],
       themes: [],
-      selectedTheme: '',
+      selectedTheme: this.defaultSelectedTheme,
       loading: true
     }
   },
@@ -115,6 +119,7 @@ export default {
         this.$matomo(['trackEvent', 'Data Source', 'Theme', theme])
       }
       // End Analytics
+      this.$emit('select-theme', this.selectedTheme)
     }
   },
   async created () {
