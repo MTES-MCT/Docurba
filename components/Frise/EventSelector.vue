@@ -4,7 +4,7 @@
       <v-autocomplete
         v-model="selectedEvent"
         style="max-width:50%;"
-        :items="eventsNames"
+        :items="filteredEvents"
         hide-details
         filled
         label="Type"
@@ -26,8 +26,8 @@ export default {
     event: 'input'
   },
   props: {
-    typeDu: {
-      type: String,
+    procedure: {
+      type: Object,
       required: true
     },
     eventType: {
@@ -41,23 +41,36 @@ export default {
       SCOT: ScotEvents,
       CC: ccEvents
     }
-    console.log('typeDu: ', this.typeDu)
-    const documentEvents = documentsEvents[this.typeDu]
-    const selectedEvent = documentEvents.find((event) => {
-      return event.name === this.eventType
-    })
-
-    const names = documentEvents.map(event => event.name).sort((a, b) => a.order - b.order)
-    names.push('Autre')
+    const documentEvents = documentsEvents[this.procedure.doc_type]
+    const selectedEvent = documentEvents.find(event => event.name === this.eventType)
 
     return {
       documentEvents,
       customEvent: selectedEvent ? '' : this.eventType,
-      eventsNames: names,
       selectedEvent: selectedEvent ? selectedEvent.name : (this.eventType ? 'Autre' : '')
     }
   },
   computed: {
+    filteredEvents () {
+      let internalType = 'aucun'
+      const isIntercommunal = this.procedure.current_perimetre.length > 1
+
+      const secondairesTypes = {
+        'Révision à modalité simplifiée ou Révision allégée': 'rms',
+        Modification: 'm',
+        'Modification simplifiée': 'ms',
+        'Mise en comptabilité': 'mc',
+        'Mise à jour': 'mj'
+      }
+      if (secondairesTypes[this.procedure.type]) { internalType = secondairesTypes[this.procedure.type] }
+      if (['Elaboration', 'Modification'].includes(this.procedure.type)) {
+        if (isIntercommunal) { internalType = 'ppi' } else { internalType = 'pp' }
+      }
+
+      return this.documentEvents.filter(e => e.scope_liste.includes(internalType))
+        .map(event => event.name)
+        .sort((a, b) => a.order - b.order).concat(['Autre'])
+    },
     isOther () {
       return this.selectedEvent === 'Autre'
     }

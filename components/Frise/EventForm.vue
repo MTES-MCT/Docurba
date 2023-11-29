@@ -5,7 +5,7 @@
         <v-container>
           <v-row>
             <v-col cols="12">
-              <FriseEventSelector v-model="event.type" :type-du="$route.query.typeDu" />
+              <FriseEventSelector v-model="event.type" :procedure="procedure" />
             </v-col>
             <v-col cols="12">
               <VTextDatePicker v-model="event.date_iso" label="Date de l'évènement" />
