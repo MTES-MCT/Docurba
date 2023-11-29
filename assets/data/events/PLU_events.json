@@ -469,35 +469,6 @@
     "structurant__1": false
   },
   {
-    "name": "",
-    "order": "",
-    "required": "",
-    "chrnological": "",
-    "epci": "",
-    "law": "",
-    "phases": "",
-    "scope_liste": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg": "",
-    "structurant": true,
-    "name__1": "",
-    "order__1": "",
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": true
-  },
-  {
     "name": "Prise en compte du porter à connaissance dans le projet",
     "order": 15,
     "required": false,
@@ -562,33 +533,6 @@
       "ppi"
     ],
     "structurant__1": false
-  },
-  {
-    "name": "",
-    "order": "",
-    "required": "",
-    "chrnological": "",
-    "epci": "",
-    "law": "",
-    "phases": "",
-    "scope_liste": [
-      "ppi"
-    ],
-    "scope_sugg": "",
-    "structurant": true,
-    "name__1": "",
-    "order__1": "",
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "ppi"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": true
   },
   {
     "name": "Prise en compte de la note d'enjeux dans le projet",

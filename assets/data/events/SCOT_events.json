@@ -1082,18 +1082,6 @@
     "structurant": true
   },
   {
-    "name": "",
-    "order": "",
-    "required": "",
-    "chrnological": "",
-    "epci": "",
-    "law": "",
-    "phases": "",
-    "scope_liste": "",
-    "scope_sugg": "",
-    "structurant": true
-  },
-  {
     "name": "Recours gracieux de l'État",
     "order": 60,
     "required": false,

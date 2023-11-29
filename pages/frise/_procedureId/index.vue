@@ -203,12 +203,17 @@ export default
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     },
     recommendedEvents () {
+      const filteredDocumentEvents = this.documentEvents.filter((e) => {
+        return e.scope_sugg.includes(this.internalProcedureType)
+      })
+
       if (this.events && this.events.length < 1) {
-        return [this.documentEvents[0]]
+        return [filteredDocumentEvents[0]]
       }
-      const lastEventType = this.documentEvents.find((event) => {
+      const lastEventType = filteredDocumentEvents.find((event) => {
         return this.events[0].type === event.name
       })
+      console.log('lastEventType: ', lastEventType, ' this.events[0].type: ', this.events[0].type, ' test: ', filteredDocumentEvents)
       const lastEventOrder = lastEventType ? lastEventType.order : -1
 
       const recommendedEvents = [
@@ -283,6 +288,7 @@ export default
       const { data: events, error: errorEvents } = await this.$supabase.from('doc_frise_events')
         .select('*, profiles(*)')
         .eq('procedure_id', this.$route.params.procedureId)
+        .order('date_iso', { ascending: false })
       if (errorEvents) { throw errorEvents }
       this.events = events
     }
