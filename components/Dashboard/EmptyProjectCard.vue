@@ -17,6 +17,9 @@
       <v-btn color="primary" tile depressed nuxt :to="`/trames/projet-${project.id}`">
         Modifier le PAC
       </v-btn>
+      <v-btn color="primary" tile depressed nuxt :to="`/documents/projet-${project.id}/pac`">
+        Consulter le PAC
+      </v-btn>
       <v-btn
         color="primary"
         tile

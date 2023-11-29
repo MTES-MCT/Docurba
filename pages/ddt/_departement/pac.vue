@@ -62,8 +62,10 @@ export default {
     }
   },
   async mounted () {
-    const { data: communes } = await axios('/api/geo/communes?departementCode=01')
-    const { data: intercomunalites } = await axios('/api/geo/intercommunalites?departementCode=01')
+    const departement = this.$route.params.departement
+
+    const { data: communes } = await axios(`/api/geo/communes?departementCode=${departement}`)
+    const { data: intercomunalites } = await axios(`/api/geo/intercommunalites?departementCode=${departement}`)
 
     // console.log(communes, intercomunalites)
 
