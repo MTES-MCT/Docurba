@@ -13,20 +13,6 @@
           />
         </v-col>
       </v-row>
-      <client-only>
-        <v-btn
-          v-if="project && project.id"
-          depressed
-          fab
-          fixed
-          bottom
-          right
-          color="primary"
-          :href="`/api/pdf/${project.id}`"
-        >
-          <v-icon>{{ icons.mdiDownload }}</v-icon>
-        </v-btn>
-      </client-only>
     </v-container>
     <VGlobalLoader v-else />
   </LayoutsCustomApp>

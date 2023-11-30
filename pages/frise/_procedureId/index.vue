@@ -19,13 +19,13 @@
         </div>
       </v-col>
       <v-col cols="12" class="mb-2">
-        <v-btn color="primary" class="mr-2" outlined>
+        <v-btn v-if="$user?.profile?.side === 'etat'" color="primary" class="mr-2" outlined>
           Ajouter une procédure secondaire
         </v-btn>
         <v-btn depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
           Ajouter un événement
         </v-btn>
-        <v-menu>
+        <v-menu v-if="$user?.profile?.side === 'etat'">
           <template #activator="{ on, attrs }">
             <v-btn icon color="primary" v-bind="attrs" v-on="on">
               <v-icon> {{ icons.mdiDotsVertical }}</v-icon>
@@ -74,7 +74,7 @@
           <v-container>
             <v-row>
               <v-col cols="9">
-                <FriseEventCard :event="recommendedEvents[0]" suggestion @addSuggestedEvent="addSuggestedEvent" />
+                <FriseEventCard v-if="$user?.id" :event="recommendedEvents[0]" suggestion @addSuggestedEvent="addSuggestedEvent" />
                 <FriseEventCard
                   v-for="event in enrichedEvents"
                   :id="`event-${event.id}`"
@@ -147,7 +147,6 @@
 <script>
 import axios from 'axios'
 import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical } from '@mdi/js'
-// import documentEvents from '@/assets/data/DU_events.json'
 
 import PluEvents from '@/assets/data/events/PLU_events.json'
 import ScotEvents from '@/assets/data/events/SCOT_events.json'
@@ -161,7 +160,6 @@ export default
       procedure: null,
       events: [],
       dialog: false,
-      // documentEvents,
       icons: {
         mdiBookmark,
         mdiPaperclip,
@@ -180,7 +178,6 @@ export default
         SCOT: ScotEvents,
         CC: ccEvents
       }
-      console.log('typeDu: ', this.procedure.doc_type)
       return documentsEvents[this.procedure.doc_type]
     },
     eventsStructurants () {
@@ -196,7 +193,6 @@ export default
       return this.events.map(e => e.attachements).flat()
     },
     backToCollectivite () {
-      console.log(this.collectivite, ' this.$user: ', this.$user)
       if (this.$user.id && this.$user.profile && this.$user.profile.side === 'etat') {
         return `/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`
       } else {
@@ -207,13 +203,17 @@ export default
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     },
     recommendedEvents () {
-      console.log(' this.procedure.doc_type: ', this.procedure.doc_type)
+      const filteredDocumentEvents = this.documentEvents.filter((e) => {
+        return e.scope_sugg.includes(this.internalProcedureType)
+      })
+
       if (this.events && this.events.length < 1) {
-        return [this.documentEvents[0]]
+        return [filteredDocumentEvents[0]]
       }
-      const lastEventType = this.documentEvents.find((event) => {
+      const lastEventType = filteredDocumentEvents.find((event) => {
         return this.events[0].type === event.name
       })
+      console.log('lastEventType: ', lastEventType, ' this.events[0].type: ', this.events[0].type, ' test: ', filteredDocumentEvents)
       const lastEventOrder = lastEventType ? lastEventType.order : -1
 
       const recommendedEvents = [
@@ -222,6 +222,22 @@ export default
       ]
       console.log('recommendedEvents: ', recommendedEvents)
       return recommendedEvents.filter(e => !!e)
+    },
+    internalProcedureType () {
+      const isIntercommunal = this.procedure.current_perimetre.length > 1
+      const secondairesTypes = {
+        'Révision à modalité simplifiée ou Révision allégée': 'rms',
+        Modification: 'm',
+        'Modification simplifiée': 'ms',
+        'Mise en comptabilité': 'mc',
+        'Mise à jour': 'mj'
+      }
+
+      if (secondairesTypes[this.procedure.type]) { return secondairesTypes[this.procedure.type] }
+      if (['Elaboration', 'Modification'].includes(this.procedure.type)) {
+        if (isIntercommunal) { return 'ppi' } else { return 'pp' }
+      }
+      return 'aucun'
     }
   },
   async mounted () {
@@ -272,6 +288,7 @@ export default
       const { data: events, error: errorEvents } = await this.$supabase.from('doc_frise_events')
         .select('*, profiles(*)')
         .eq('procedure_id', this.$route.params.procedureId)
+        .order('date_iso', { ascending: false })
       if (errorEvents) { throw errorEvents }
       this.events = events
     }
