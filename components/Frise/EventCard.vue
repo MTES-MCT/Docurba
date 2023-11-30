@@ -107,7 +107,6 @@ export default {
   },
   computed: {
     creator () {
-      console.log('event ttt: ', this.event, this.event.profiles)
       let actor = this.event.profiles?.side || 'docurba'
       if (this.event.from_sudocuh) { actor = 'sudocu' }
       console.log('actor: ', actor)

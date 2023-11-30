@@ -97,20 +97,6 @@
     "structurant": false
   },
   {
-    "name": "",
-    "order": "",
-    "required": "",
-    "chrnological": "",
-    "epci": "",
-    "law": "",
-    "phases": "",
-    "scope_liste": [
-      "pp"
-    ],
-    "scope_sugg": "",
-    "structurant": true
-  },
-  {
     "name": "Prise en compte du porter à connaissance dans le projet",
     "order": 8,
     "required": false,
