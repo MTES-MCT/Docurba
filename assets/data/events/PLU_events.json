@@ -2,9 +2,6 @@
   {
     "name": "Délibération de prescription du conseil municipal ou communautaire",
     "order": 1,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "Elaboration : art. L. 153-11 du CU\nRevision : art. L. 153-32 du CU",
     "phases": "Définition des modalités",
     "scope_liste": [
@@ -22,36 +19,11 @@
       "ms"
     ],
     "structurant": true,
-    "name__1": "Délibération de prescription du conseil municipal ou communautaire",
-    "order__1": 1,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "Elaboration : art. L. 153-11 du CU\nRevision : art. L. 153-32 du CU",
-    "phases__1": "Définition des modalités",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "structurant__1": true
+    "impact": "en cours"
   },
   {
     "name": "Arrêté de lancement de la procédure",
     "order": 2,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "Définition des modalités",
     "scope_liste": [
@@ -63,30 +35,11 @@
       "ms"
     ],
     "structurant": true,
-    "name__1": "Arrêté de lancement de la procédure",
-    "order__1": 2,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "Définition des modalités",
-    "scope_liste__1": [
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "m",
-      "ms"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Notification du projet ou demande de DUP",
     "order": 3,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -96,28 +49,11 @@
       "mc"
     ],
     "structurant": true,
-    "name__1": "Notification du projet ou demande de DUP",
-    "order__1": 3,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "mc"
-    ],
-    "scope_sugg__1": [
-      "mc"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Délibération modalités de mise à disposition du public",
     "order": 4,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -127,28 +63,11 @@
       "ms"
     ],
     "structurant": false,
-    "name__1": "Délibération modalités de mise à disposition du public",
-    "order__1": 4,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "ms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Notification de la procédure aux PPA",
     "order": 5,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -160,30 +79,11 @@
       "ms"
     ],
     "structurant": true,
-    "name__1": "Notification de la procédure aux PPA",
-    "order__1": 5,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "m",
-      "ms"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Délibération qui justifie l'utilité de l'ouverture à l'urbanisation d'une zone",
     "order": 6,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -191,26 +91,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Délibération qui justifie l'utilité de l'ouverture à l'urbanisation d'une zone",
-    "order__1": 6,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "m"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Délibération ou arrêté définissant les objectifs et modalités concertation",
     "order": 7,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "Elaboration : art. L. 153-11 du CU\nRevision : art. L. 153-32 du CU\n\net dans les 2 cas : articles L. 103-2, L. 103-3 et L. 103-4 du code de l’urbanisme",
     "phases": "Définition des modalités",
     "scope_liste": [
@@ -226,34 +111,11 @@
       "rms"
     ],
     "structurant": false,
-    "name__1": "Délibération ou arrêté définissant les objectifs et modalités concertation",
-    "order__1": 7,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "Elaboration : art. L. 153-11 du CU\nRevision : art. L. 153-32 du CU\n\net dans les 2 cas : articles L. 103-2, L. 103-3 et L. 103-4 du code de l’urbanisme",
-    "phases__1": "Définition des modalités",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Délibération modalités de collaboration avec les communes",
     "order": 8,
-    "required": true,
-    "chrnological": false,
-    "epci": true,
     "law": "art. L. 153-8 (1°) du code de l'urbanisme",
     "phases": "Définition des modalités",
     "scope_liste": [
@@ -263,28 +125,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Délibération modalités de collaboration avec les communes",
-    "order__1": 8,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": true,
-    "law__1": "art. L. 153-8 (1°) du code de l'urbanisme",
-    "phases__1": "Définition des modalités",
-    "scope_liste__1": [
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Recrutement d'un bureau d'études",
     "order": 9,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Définition des modalités",
     "scope_liste": [
@@ -302,36 +147,11 @@
       "ms"
     ],
     "structurant": false,
-    "name__1": "Recrutement d'un bureau d'études",
-    "order__1": 9,
-    "recommended": 2,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Définition des modalités",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Recrutement d'un AMO",
     "order": 10,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -343,30 +163,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Recrutement d'un AMO",
-    "order__1": 10,
-    "recommended": 1,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Réunion des PPA",
     "order": 11,
-    "required": false,
-    "chrnological": true,
-    "epci": false,
     "law": "",
     "phases": "Toutes phases",
     "scope_liste": [
@@ -379,31 +180,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Réunion des PPA",
-    "order__1": 11,
-    "recommended": 2,
-    "required__1": false,
-    "chrnological__1": true,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Toutes phases",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mc"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Réunion de concertation grand public",
     "order": 12,
-    "required": false,
-    "chrnological": true,
-    "epci": false,
     "law": "",
     "phases": "Toutes phases",
     "scope_liste": [
@@ -415,30 +196,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Réunion de concertation grand public",
-    "order__1": 12,
-    "recommended": 2,
-    "required__1": false,
-    "chrnological__1": true,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Toutes phases",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Phase de construction du diagnostic",
     "order": 13,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -450,30 +212,24 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Phase de construction du diagnostic",
-    "order__1": 13,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
+    "impact": ""
+  },
+  {
+    "name": "Transmission du porter-à-connaissance",
+    "order": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": [
       "pp",
       "ppi"
     ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": ""
   },
   {
     "name": "Prise en compte du porter à connaissance dans le projet",
     "order": 15,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "L. 132-2 du CU",
     "phases": "Diagnostic",
     "scope_liste": [
@@ -485,30 +241,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Prise en compte du porter à connaissance dans le projet",
-    "order__1": 15,
-    "recommended": 2,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 132-2 du CU",
-    "phases__1": "Diagnostic",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Demande de la note d'enjeux",
     "order": 16,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "L. 132-4-1 du CU",
     "phases": "Diagnostic ou PADD",
     "scope_liste": [
@@ -518,28 +255,23 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Demande de la note d'enjeux",
-    "order__1": 16,
-    "recommended": "#N/A",
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 132-4-1 du CU",
-    "phases__1": "Diagnostic ou PADD",
-    "scope_liste__1": [
+    "impact": ""
+  },
+  {
+    "name": "Transmission de la note d'enjeux",
+    "order": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": [
       "ppi"
     ],
-    "scope_sugg__1": [
-      "ppi"
-    ],
-    "structurant__1": false
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": ""
   },
   {
     "name": "Prise en compte de la note d'enjeux dans le projet",
     "order": 9,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -553,32 +285,11 @@
       "rms"
     ],
     "structurant": false,
-    "name__1": "Prise en compte de la note d'enjeux dans le projet",
-    "order__1": 9,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Transmission du porter à connaissance complémentaire",
     "order": 19,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Toutes phases",
     "scope_liste": [
@@ -587,27 +298,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Transmission du porter à connaissance complémentaire",
-    "order__1": 19,
-    "recommended": 1,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Toutes phases",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Présentation du diagnostic aux PPA",
     "order": 20,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Diagnostic",
     "scope_liste": [
@@ -619,30 +314,11 @@
       "ppi"
     ],
     "structurant": true,
-    "name__1": "Présentation du diagnostic aux PPA",
-    "order__1": 20,
-    "recommended": 2,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Diagnostic",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Lancement de l'évaluation environnementale du projet",
     "order": 21,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "Elaboration : L. 104-1 (3°bis) et R. 104-11 (I-1°) du CU\nRévision : L. 104-1 (3°bis) et R. 104-11 (I-2°) du CU",
     "phases": "EE",
     "scope_liste": [
@@ -658,34 +334,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Lancement de l'évaluation environnementale du projet",
-    "order__1": 21,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "Elaboration : L. 104-1 (3°bis) et R. 104-11 (I-1°) du CU\nRévision : L. 104-1 (3°bis) et R. 104-11 (I-2°) du CU",
-    "phases__1": "EE",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mc"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Phase de construction du projet de territoire (PADD)",
     "order": 22,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "PADD",
     "scope_liste": [
@@ -697,30 +350,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Phase de construction du projet de territoire (PADD)",
-    "order__1": 22,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "PADD",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Présentation du PADD aux PPA",
     "order": 23,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "PADD",
     "scope_liste": [
@@ -732,30 +366,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Présentation du PADD aux PPA",
-    "order__1": 23,
-    "recommended": 1,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "PADD",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Intégration des retours sur le PADD",
     "order": 24,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "PADD",
     "scope_liste": [
@@ -767,30 +382,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Intégration des retours sur le PADD",
-    "order__1": 24,
-    "recommended": 1,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "PADD",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Débat sur le PADD en conseil municipal",
     "order": 25,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "L. 153-12 du CU",
     "phases": "PADD",
     "scope_liste": [
@@ -800,28 +396,11 @@
       "pp"
     ],
     "structurant": true,
-    "name__1": "Débat sur le PADD en conseil municipal",
-    "order__1": 25,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 153-12 du CU",
-    "phases__1": "PADD",
-    "scope_liste__1": [
-      "pp"
-    ],
-    "scope_sugg__1": [
-      "pp"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Débat sur le PADD en conseil communautaire et en conseils communaux",
     "order": 26,
-    "required": true,
-    "chrnological": false,
-    "epci": true,
     "law": "L. 153-12 du CU",
     "phases": "PADD",
     "scope_liste": [
@@ -831,28 +410,11 @@
       "ppi"
     ],
     "structurant": true,
-    "name__1": "Débat sur le PADD en conseil communautaire et en conseils communaux",
-    "order__1": 26,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": true,
-    "law__1": "L. 153-12 du CU",
-    "phases__1": "PADD",
-    "scope_liste__1": [
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "ppi"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Phase de construction du rapport de présentation",
     "order": 27,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Rapport de présentation",
     "scope_liste": [
@@ -864,30 +426,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Phase de construction du rapport de présentation",
-    "order__1": 27,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Rapport de présentation",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Phase de construction du règlement écrit et graphique",
     "order": 28,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Règlement",
     "scope_liste": [
@@ -899,30 +442,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Phase de construction du règlement écrit et graphique",
-    "order__1": 28,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Règlement",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Phase de construction des OAP",
     "order": 29,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "OAP",
     "scope_liste": [
@@ -934,30 +458,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Phase de construction des OAP",
-    "order__1": 29,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "OAP",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Phase de construction du POA",
     "order": 30,
-    "required": true,
-    "chrnological": false,
-    "epci": true,
     "law": "L. 151-45",
     "phases": "POA",
     "scope_liste": [
@@ -967,28 +472,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Phase de construction du POA",
-    "order__1": 30,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": true,
-    "law__1": "L. 151-45",
-    "phases__1": "POA",
-    "scope_liste__1": [
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Présentation du projet complet de PLU finalisé aux PPA avant l'arrêt",
     "order": 31,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Pré-arrêt",
     "scope_liste": [
@@ -1002,32 +490,11 @@
       "rms"
     ],
     "structurant": false,
-    "name__1": "Présentation du projet complet de PLU finalisé aux PPA avant l'arrêt",
-    "order__1": 31,
-    "recommended": 2,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Pré-arrêt",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Intégration des derniers retours sur le PLU",
     "order": 32,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -1041,32 +508,11 @@
       "rms"
     ],
     "structurant": false,
-    "name__1": "Intégration des derniers retours sur le PLU",
-    "order__1": 32,
-    "recommended": 2,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Dérogation au principe d'urbanisation limitée -> consultation CDPENAF\n(délai 3 mois) et saisine Préfet pour avis (4 mois)",
     "order": 33,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "L. 142-5 et R. 142-2 du CU (délai de 2 mois)",
     "phases": "Arrêt du projet",
     "scope_liste": [
@@ -1078,30 +524,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Dérogation au principe d'urbanisation limitée -> consultation CDPENAF\n(délai 3 mois) et saisine Préfet pour avis (4 mois)",
-    "order__1": 33,
-    "recommended": "#N/A",
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 142-5 et R. 142-2 du CU (délai de 2 mois)",
-    "phases__1": "Arrêt du projet",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Dérogation au principe d'urbanisation limitée -> avis du préfet",
     "order": 34,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -1113,30 +540,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Dérogation au principe d'urbanisation limitée -> avis du préfet",
-    "order__1": 34,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Consultation de l'autorité environnementale au cas par cas ad'hoc",
     "order": 35,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -1152,34 +560,11 @@
       "mc"
     ],
     "structurant": false,
-    "name__1": "Consultation de l'autorité environnementale au cas par cas ad'hoc",
-    "order__1": 35,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "rms",
-      "m",
-      "ms",
-      "mc"
-    ],
-    "scope_sugg__1": [
-      "rms",
-      "m",
-      "ms",
-      "mc"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Exemption d'évaluation environnementale",
     "order": 36,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -1190,29 +575,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Exemption d'évaluation environnementale",
-    "order__1": 36,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "rms",
-      "m",
-      "ms",
-      "mc"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Exemption d'évaluation environnementale -> délibération de décision",
     "order": 37,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -1223,29 +590,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Exemption d'évaluation environnementale -> délibération de décision",
-    "order__1": 37,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "rms",
-      "m",
-      "ms",
-      "mc"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Soumission à évaluation environnementale",
     "order": 38,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -1256,29 +605,11 @@
     ],
     "scope_sugg": "",
     "structurant": true,
-    "name__1": "Soumission à évaluation environnementale",
-    "order__1": 38,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "rms",
-      "m",
-      "ms",
-      "mc"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Délibération de bilan de la concertation",
     "order": 39,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "R. 153-3",
     "phases": "Concertation",
     "scope_liste": [
@@ -1294,34 +625,11 @@
       "rms"
     ],
     "structurant": false,
-    "name__1": "Délibération de bilan de la concertation",
-    "order__1": 39,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "R. 153-3",
-    "phases__1": "Concertation",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Notification du dossier aux PPA et communes concernées",
     "order": 40,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -1333,30 +641,11 @@
       "ms"
     ],
     "structurant": false,
-    "name__1": "Notification du dossier aux PPA et communes concernées",
-    "order__1": 40,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "m",
-      "ms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Arrêt de projet",
     "order": 41,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "L. 153-14",
     "phases": "Arrêt du projet",
     "scope_liste": [
@@ -1370,32 +659,11 @@
       "rms"
     ],
     "structurant": true,
-    "name__1": "Arrêt de projet",
-    "order__1": 41,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 153-14",
-    "phases__1": "Arrêt du projet",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Présentation des OAP et règlement aux communes du territoire",
     "order": 42,
-    "required": true,
-    "chrnological": false,
-    "epci": true,
     "law": "L.153-15",
     "phases": "Arrêt du projet",
     "scope_liste": [
@@ -1405,28 +673,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Présentation des OAP et règlement aux communes du territoire",
-    "order__1": 42,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": true,
-    "law__1": "L.153-15",
-    "phases__1": "Arrêt du projet",
-    "scope_liste__1": [
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Délibération du conseil communautaire qui arrête le projet de PLU",
     "order": "",
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -1436,28 +687,11 @@
       "ppi"
     ],
     "structurant": true,
-    "name__1": "Délibération du conseil communautaire qui arrête le projet de PLU",
-    "order__1": "",
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "ppi"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Saisine de l'Autorité environnementale pour avis",
     "order": 44,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "art. R. 104-23",
     "phases": "Arrêt du projet",
     "scope_liste": [
@@ -1472,33 +706,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Saisine de l'Autorité environnementale pour avis",
-    "order__1": 44,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "art. R. 104-23",
-    "phases__1": "Arrêt du projet",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Saisine de la CDNPS pour avis",
     "order": 45,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "L121-27 (loi littorale)\nL 122-7 et L.122-14 (loi montagne)\nL. 153-16",
     "phases": "Arrêt du projet",
     "scope_liste": [
@@ -1509,29 +721,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Saisine de la CDNPS pour avis",
-    "order__1": 45,
-    "recommended": "#N/A",
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L121-27 (loi littorale)\nL 122-7 et L.122-14 (loi montagne)\nL. 153-16",
-    "phases__1": "Arrêt du projet",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "mc"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Saisine de la CDPENAF pour avis",
     "order": 46,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "L. 153-16\nL151-11 à 13",
     "phases": "Arrêt du projet",
     "scope_liste": [
@@ -1546,33 +740,11 @@
       "rms"
     ],
     "structurant": false,
-    "name__1": "Saisine de la CDPENAF pour avis",
-    "order__1": 46,
-    "recommended": "#N/A",
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 153-16\nL151-11 à 13",
-    "phases__1": "Arrêt du projet",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "mc"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Consultation des PPA",
     "order": 47,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "L. 153-16\nL132-7",
     "phases": "Arrêt du projet",
     "scope_liste": [
@@ -1584,30 +756,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Consultation des PPA",
-    "order__1": 47,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 153-16\nL132-7",
-    "phases__1": "Arrêt du projet",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Consultation du comité régional de l'habitat et de l'hébergement",
     "order": 48,
-    "required": true,
-    "chrnological": false,
-    "epci": true,
     "law": "L. 153-16",
     "phases": "Arrêt du projet",
     "scope_liste": [
@@ -1617,28 +770,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Consultation du comité régional de l'habitat et de l'hébergement",
-    "order__1": 48,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": true,
-    "law__1": "L. 153-16",
-    "phases__1": "Arrêt du projet",
-    "scope_liste__1": [
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Consultation de l'Institut national de l'origine et de la qualité dans les zones d'appellation d'origine contrôlée et, le cas échéant, du Centre national de la propriété forestière",
     "order": 49,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "R153-6",
     "phases": "Arrêt du projet",
     "scope_liste": [
@@ -1647,27 +783,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Consultation de l'Institut national de l'origine et de la qualité dans les zones d'appellation d'origine contrôlée et, le cas échéant, du Centre national de la propriété forestière",
-    "order__1": 49,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "R153-6",
-    "phases__1": "Arrêt du projet",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Avis de la personne publique ou de l'EPCI en cas de modification d'une ZAC",
     "order": 50,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -1675,26 +795,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Avis de la personne publique ou de l'EPCI en cas de modification d'une ZAC",
-    "order__1": 50,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "m"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Réception de l'avis de l'autorité environnementale",
     "order": 51,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Arrêt du projet",
     "scope_liste": [
@@ -1709,33 +814,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Réception de l'avis de l'autorité environnementale",
-    "order__1": 51,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Arrêt du projet",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Réception de l'avis de la CDPENAF",
     "order": 52,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "?",
     "scope_liste": [
@@ -1750,33 +833,11 @@
       "rms"
     ],
     "structurant": false,
-    "name__1": "Réception de l'avis de la CDPENAF",
-    "order__1": 52,
-    "recommended": 0,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "?",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "mc"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Réception de l'avis de la CDNPS",
     "order": 53,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "?",
     "scope_liste": [
@@ -1791,33 +852,11 @@
       "rms"
     ],
     "structurant": false,
-    "name__1": "Réception de l'avis de la CDNPS",
-    "order__1": 53,
-    "recommended": 0,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "?",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "mc"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Réception de l'avis de l'État",
     "order": 54,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Arrêt du projet",
     "scope_liste": [
@@ -1829,30 +868,11 @@
       "ppi"
     ],
     "structurant": true,
-    "name__1": "Réception de l'avis de l'État",
-    "order__1": 54,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Arrêt du projet",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Avis de l'Etat sur l'analyse de la consomation d'ENAF et la modération de cette consommation",
     "order": 55,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -1860,26 +880,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Avis de l'Etat sur l'analyse de la consomation d'ENAF et la modération de cette consommation",
-    "order__1": 55,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "m"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Examen conjoint des PPA",
     "order": 56,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "L. 153-34 et R. 153-12",
     "phases": "",
     "scope_liste": [
@@ -1891,30 +896,11 @@
       "mc"
     ],
     "structurant": true,
-    "name__1": "Examen conjoint des PPA",
-    "order__1": 56,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "L. 153-34 et R. 153-12",
-    "phases__1": "",
-    "scope_liste__1": [
-      "rms",
-      "mc"
-    ],
-    "scope_sugg__1": [
-      "rms",
-      "mc"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Publicité sur mise à disposition du public",
     "order": 57,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -1924,28 +910,11 @@
       "ms"
     ],
     "structurant": false,
-    "name__1": "Publicité sur mise à disposition du public",
-    "order__1": 57,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "ms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Début de mise à disposition du public",
     "order": 58,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "L. 153-47 CU",
     "phases": "",
     "scope_liste": [
@@ -1955,28 +924,11 @@
       "ms"
     ],
     "structurant": false,
-    "name__1": "Début de mise à disposition du public",
-    "order__1": 58,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "L. 153-47 CU",
-    "phases__1": "",
-    "scope_liste__1": [
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "ms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Fin de mise à disposition du public",
     "order": 59,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "L. 153-47 CU",
     "phases": "",
     "scope_liste": [
@@ -1986,28 +938,11 @@
       "ms"
     ],
     "structurant": false,
-    "name__1": "Fin de mise à disposition du public",
-    "order__1": 59,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "L. 153-47 CU",
-    "phases__1": "",
-    "scope_liste__1": [
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "ms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Arrêté d'enquête publique",
     "order": 60,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "L. 153-19",
     "phases": "Enquête publique",
     "scope_liste": [
@@ -2025,36 +960,11 @@
       "mc"
     ],
     "structurant": false,
-    "name__1": "Arrêté d'enquête publique",
-    "order__1": 60,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 153-19",
-    "phases__1": "Enquête publique",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "mc"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "mc"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Début d'enquête publique",
     "order": 61,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Enquête publique",
     "scope_liste": [
@@ -2072,36 +982,11 @@
       "mc"
     ],
     "structurant": true,
-    "name__1": "Début d'enquête publique",
-    "order__1": 61,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Enquête publique",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "mc"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "mc"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Fin d'enquête publique",
     "order": 62,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Enquête publique",
     "scope_liste": [
@@ -2119,36 +1004,11 @@
       "mc"
     ],
     "structurant": true,
-    "name__1": "Fin d'enquête publique",
-    "order__1": 62,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Enquête publique",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "mc"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "mc"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Rapport du commissaire enquêteur",
     "order": 63,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Enquête publique",
     "scope_liste": [
@@ -2166,36 +1026,11 @@
       "mc"
     ],
     "structurant": false,
-    "name__1": "Rapport du commissaire enquêteur",
-    "order__1": 63,
-    "recommended": 2,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Enquête publique",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "mc"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "mc"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Intégration des retours faits pendant l'enquête publique",
     "order": 64,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Enquête publique",
     "scope_liste": [
@@ -2213,36 +1048,11 @@
       "mc"
     ],
     "structurant": false,
-    "name__1": "Intégration des retours faits pendant l'enquête publique",
-    "order__1": 64,
-    "recommended": 0,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Enquête publique",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "mc"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "mc"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Avis de la commune sur le dossier de MC",
     "order": 65,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -2250,26 +1060,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Avis de la commune sur le dossier de MC",
-    "order__1": 65,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "mc"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Conférence intercommunale",
     "order": 66,
-    "required": true,
-    "chrnological": false,
-    "epci": true,
     "law": "L 153-21 (1°)",
     "phases": "avant l'Approbation",
     "scope_liste": [
@@ -2279,28 +1074,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Conférence intercommunale",
-    "order__1": 66,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": true,
-    "law__1": "L 153-21 (1°)",
-    "phases__1": "avant l'Approbation",
-    "scope_liste__1": [
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Abandon",
     "order": 67,
-    "required": false,
-    "chrnological": true,
-    "epci": false,
     "law": "",
     "phases": "Avant l'approbation",
     "scope_liste": [
@@ -2314,32 +1092,11 @@
     ],
     "scope_sugg": "",
     "structurant": true,
-    "name__1": "Abandon",
-    "order__1": 67,
-    "recommended": 0,
-    "required__1": false,
-    "chrnological__1": true,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Avant l'approbation",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mc",
-      "mj"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": true
+    "impact": "abandon"
   },
   {
     "name": "Mise en demeure servitudes",
     "order": 68,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -2347,26 +1104,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Mise en demeure servitudes",
-    "order__1": 68,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "mj"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Délibération d'approbation du conseil municipal ou communautaire",
     "order": 69,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "L. 153-21 (2°)",
     "phases": "Approbation",
     "scope_liste": [
@@ -2384,36 +1126,11 @@
       "ms"
     ],
     "structurant": true,
-    "name__1": "Délibération d'approbation du conseil municipal ou communautaire",
-    "order__1": 69,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 153-21 (2°)",
-    "phases__1": "Approbation",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "structurant__1": true
+    "impact": "opposable"
   },
   {
     "name": "Arrêté du Maire ou du Préfet ou de l'EPCI",
     "order": 70,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "Approbation",
     "scope_liste": [
@@ -2421,26 +1138,11 @@
     ],
     "scope_sugg": "",
     "structurant": true,
-    "name__1": "Arrêté du Maire ou du Préfet ou de l'EPCI",
-    "order__1": 70,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "Approbation",
-    "scope_liste__1": [
-      "mj"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "DUP emportant mise en compatibilité",
     "order": 71,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "Approbation",
     "scope_liste": [
@@ -2448,26 +1150,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "DUP emportant mise en compatibilité",
-    "order__1": 71,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "Approbation",
-    "scope_liste__1": [
-      "mc"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Déclaration d'intérêt général",
     "order": 72,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "Approbation",
     "scope_liste": [
@@ -2475,26 +1162,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Déclaration d'intérêt général",
-    "order__1": 72,
-    "recommended": 0,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "Approbation",
-    "scope_liste__1": [
-      "mc"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Délibération décidant de la mise en compatibilité",
     "order": 73,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "Approbation",
     "scope_liste": [
@@ -2502,26 +1174,11 @@
     ],
     "scope_sugg": "",
     "structurant": true,
-    "name__1": "Délibération décidant de la mise en compatibilité",
-    "order__1": 73,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "Approbation",
-    "scope_liste__1": [
-      "mc"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Transmission au contrôle de légalité",
     "order": 74,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "L. 153-23",
     "phases": "Caractère exécutoire",
     "scope_liste": [
@@ -2541,38 +1198,11 @@
       "mj"
     ],
     "structurant": true,
-    "name__1": "Transmission au contrôle de légalité",
-    "order__1": 74,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 153-23",
-    "phases__1": "Caractère exécutoire",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mj"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mj"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Publicité dans la presse",
     "order": 75,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "R. 153-21",
     "phases": "Caractère exécutoire",
     "scope_liste": [
@@ -2590,36 +1220,11 @@
       "ms"
     ],
     "structurant": false,
-    "name__1": "Publicité dans la presse",
-    "order__1": 75,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "R. 153-21",
-    "phases__1": "Caractère exécutoire",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Affichage en commune",
     "order": 76,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "R. 153-21",
     "phases": "Caractère exécutoire",
     "scope_liste": [
@@ -2641,40 +1246,11 @@
       "mj"
     ],
     "structurant": false,
-    "name__1": "Affichage en commune",
-    "order__1": 76,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "R. 153-21",
-    "phases__1": "Caractère exécutoire",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mc",
-      "mj"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mc",
-      "mj"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Affichage au siège de l'EPCI et dans toutes les communes",
     "order": 77,
-    "required": true,
-    "chrnological": false,
-    "epci": true,
     "law": "R. 153-21",
     "phases": "Caractère exécutoire",
     "scope_liste": [
@@ -2690,34 +1266,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Affichage au siège de l'EPCI et dans toutes les communes",
-    "order__1": 77,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": true,
-    "law__1": "R. 153-21",
-    "phases__1": "Caractère exécutoire",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mc",
-      "mj"
-    ],
-    "scope_sugg__1": [
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Publication du PLU sur le GPU",
     "order": 78,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
     "law": "L. 153-23",
     "phases": "Caractère exécutoire",
     "scope_liste": [
@@ -2739,40 +1292,11 @@
       "mj"
     ],
     "structurant": false,
-    "name__1": "Publication du PLU sur le GPU",
-    "order__1": 78,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 153-23",
-    "phases__1": "Caractère exécutoire",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mc",
-      "mj"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mc",
-      "mj"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Caractère exécutoire",
     "order": 79,
-    "required": "",
-    "chrnological": "",
-    "epci": "",
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -2789,35 +1313,11 @@
       "ppi"
     ],
     "structurant": true,
-    "name__1": "Caractère exécutoire",
-    "order__1": 79,
-    "recommended": "",
-    "required__1": "",
-    "chrnological__1": "",
-    "epci__1": "",
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mc",
-      "mj"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": true
+    "impact": "opposable"
   },
   {
     "name": "Recours gracieux de l'État",
     "order": 80,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
     "law": "",
     "phases": "?",
     "scope_liste": [
@@ -2830,31 +1330,27 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Recours gracieux de l'État",
-    "order__1": 80,
-    "recommended": 0,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "?",
-    "scope_liste__1": [
+    "impact": ""
+  },
+  {
+    "name": "Retrait de la délibération de prescription",
+    "order": 81,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
       "pp",
       "ppi",
       "rms",
       "m",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
   },
   {
     "name": "Retrait de la délibération d'approbation",
-    "order": 81,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
+    "order": 82,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -2866,30 +1362,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Retrait de la délibération d'approbation",
-    "order__1": 81,
-    "recommended": 0,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Désistement recours gracieux de l’État",
-    "order": 82,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
+    "order": 83,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -2901,30 +1378,11 @@
     ],
     "scope_sugg": "",
     "structurant": false,
-    "name__1": "Désistement recours gracieux de l’État",
-    "order__1": 82,
-    "recommended": 0,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Annulation TA partielle",
-    "order": 83,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
+    "order": 84,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -2938,32 +1396,11 @@
     ],
     "scope_sugg": "",
     "structurant": true,
-    "name__1": "Annulation TA partielle",
-    "order__1": 83,
-    "recommended": 0,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mc",
-      "mj"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Annulation TA totale",
-    "order": 84,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
+    "order": 85,
     "law": "",
     "phases": "?",
     "scope_liste": [
@@ -2977,32 +1414,11 @@
     ],
     "scope_sugg": "",
     "structurant": true,
-    "name__1": "Annulation TA totale",
-    "order__1": 84,
-    "recommended": 0,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "?",
-    "scope_liste__1": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms",
-      "mc",
-      "mj"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": true
+    "impact": "annule"
   },
   {
     "name": "Bilan à 3 ans sur le volet habitat",
-    "order": 85,
-    "required": true,
-    "chrnological": false,
-    "epci": true,
+    "order": 86,
     "law": "L. 153-28 et L. 153-29",
     "phases": "Bilan/évaluation",
     "scope_liste": [
@@ -3012,28 +1428,11 @@
       "ppi"
     ],
     "structurant": false,
-    "name__1": "Bilan à 3 ans sur le volet habitat",
-    "order__1": 85,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": true,
-    "law__1": "L. 153-28 et L. 153-29",
-    "phases__1": "Bilan/évaluation",
-    "scope_liste__1": [
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "ppi"
-    ],
-    "structurant__1": false
+    "impact": ""
   },
   {
     "name": "Rapport d'artificialisation des sols",
-    "order": 86,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
+    "order": 87,
     "law": "L. 153-27 dernier alinéa du CU\n\n\nArticle L 22-31-1 (code général collectivités territoriales)",
     "phases": "Bilan/évaluation",
     "scope_liste": [
@@ -3042,27 +1441,11 @@
     ],
     "scope_sugg": "",
     "structurant": "",
-    "name__1": "Rapport d'artificialisation des sols",
-    "order__1": 86,
-    "recommended": 0,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 153-27 dernier alinéa du CU\n\n\nArticle L 22-31-1 (code général collectivités territoriales)",
-    "phases__1": "Bilan/évaluation",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": ""
+    "impact": ""
   },
   {
     "name": "Evaluation du PLU au bout de 6 ans ou révision substantielle si besoin",
-    "order": 87,
-    "required": true,
-    "chrnological": false,
-    "epci": false,
+    "order": 88,
     "law": "L. 153-27 du CU",
     "phases": "Bilan/évaluation",
     "scope_liste": [
@@ -3074,30 +1457,11 @@
       "ppi"
     ],
     "structurant": true,
-    "name__1": "Evaluation du PLU au bout de 6 ans ou révision substantielle si besoin",
-    "order__1": 87,
-    "recommended": 2,
-    "required__1": true,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "L. 153-27 du CU",
-    "phases__1": "Bilan/évaluation",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": [
-      "pp",
-      "ppi"
-    ],
-    "structurant__1": true
+    "impact": ""
   },
   {
     "name": "Caducité",
-    "order": 88,
-    "required": false,
-    "chrnological": false,
-    "epci": false,
+    "order": 89,
     "law": "",
     "phases": "?",
     "scope_liste": [
@@ -3106,19 +1470,6 @@
     ],
     "scope_sugg": "",
     "structurant": "",
-    "name__1": "Caducité",
-    "order__1": 88,
-    "recommended": 0,
-    "required__1": false,
-    "chrnological__1": false,
-    "epci__1": false,
-    "law__1": "",
-    "phases__1": "?",
-    "scope_liste__1": [
-      "pp",
-      "ppi"
-    ],
-    "scope_sugg__1": "",
-    "structurant__1": ""
+    "impact": ""
   }
 ]
