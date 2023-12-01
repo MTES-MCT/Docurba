@@ -5,9 +5,15 @@
         <h1>Mes porter à connaissance (PAC)</h1>
       </v-col>
       <v-col v-if="!loading" cols="12">
-        <v-row>
+        <v-row align="end">
           <v-col cols="4">
             <v-text-field v-model="search" outlined hide-details label="Recherche" :append-icon="icons.mdiMagnify" />
+          </v-col>
+          <v-spacer />
+          <v-col cols="auto">
+            <v-btn color="primary" depressed tile @click="creationDialog = true">
+              Céer un PAC
+            </v-btn>
           </v-col>
         </v-row>
         <v-row>
@@ -18,6 +24,7 @@
       </v-col>
       <VGlobalLoader v-else />
     </v-row>
+    <DashboardDUInsertDialog v-model="creationDialog" @insert="fetchProjects" />
   </v-container>
 </template>
 
@@ -34,6 +41,9 @@ export default {
       icons: {
         mdiMagnify
       },
+      intercomunalites: [],
+      communes: [],
+      creationDialog: false,
       loading: true
     }
   },
@@ -57,22 +67,29 @@ export default {
 
     // console.log(communes, intercomunalites)
 
-    const { data: projects } = await this.$supabase.from('projects').select('id, name, doc_type, towns, collectivite_id, PAC, trame, region').match({
-      owner: this.$user.id,
-      archived: false
-    })
+    this.communes = communes
+    this.intercomunalites = intercomunalites
 
-    function findCollectivity (code) {
-      return intercomunalites.find(i => i.code === code) || communes.find(c => c.code === code)
-    }
-
-    projects.forEach((project) => {
-      const collectivity = findCollectivity(project.collectivite_id)
-      project.collectivity = collectivity
-    })
-
-    this.projects = projects.filter(project => !!project.collectivity)
+    await this.fetchProjects()
     this.loading = false
+  },
+  methods: {
+    findCollectivity (code) {
+      return this.intercomunalites.find(i => i.code === code) || this.communes.find(c => c.code === code)
+    },
+    async fetchProjects () {
+      const { data: projects } = await this.$supabase.from('projects').select('id, name, doc_type, towns, collectivite_id, PAC, trame, region').match({
+        owner: this.$user.id,
+        archived: false
+      })
+
+      projects.forEach((project) => {
+        const collectivity = this.findCollectivity(project.collectivite_id)
+        project.collectivity = collectivity
+      })
+
+      this.projects = projects.filter(project => !!project.collectivity)
+    }
   }
 }
 </script>
