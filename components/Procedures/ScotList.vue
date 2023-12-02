@@ -20,7 +20,7 @@
     </v-col>
     <v-col v-show="collectivities.length" cols="12" class="pt-0">
       <v-row>
-        <v-col v-if="!showListLoader" cols="12">
+        <v-col v-if="fullyLoaded" cols="12">
           <v-list>
             <v-list-item-group v-model="selectedCollectivities" multiple>
               <template v-for="(collectivity, i) in filteredCollectivities">
@@ -109,6 +109,7 @@ export default {
       page: 1,
       selectAll: false,
       loadingValidation: false,
+      scots: [],
       fullyLoaded: false
     }
   },
@@ -134,26 +135,9 @@ export default {
     filteredCollectivities () {
       const pageIndex = (this.page - 1) * 10
       return this.searchedCollectivities.slice(pageIndex, pageIndex + 10)
-    },
-    showListLoader () {
-      return this.search.status !== 'all' ? !this.fullyLoaded : false
-    },
-    displayedCodes () {
-      return this.filteredCollectivities.filter(c => !c.loaded).map(c => c.code)
     }
   },
   watch: {
-    collectivities () {
-      this.fetchCollectivitiesProcedures(this.displayedCodes)
-    },
-    searchedCollectivities () {
-      if (this.page > (this.searchedCollectivities.length / 10)) {
-        this.page = Math.ceil(this.searchedCollectivities.length / 10)
-      }
-    },
-    filteredCollectivities () {
-      this.fetchCollectivitiesProcedures(this.displayedCodes)
-    },
     selectAll () {
       if (this.selectAll) {
         this.selectedCollectivities = this.filteredCollectivities.map(c => c.code)
@@ -162,14 +146,10 @@ export default {
       }
     },
     page () {
-      // this.fetchCollectivitiesProcedures(this.displayedCodes)
       this.selectAll = false
     }
   },
   async mounted () {
-    // First load the 10 first collectivities
-    this.fetchCollectivitiesProcedures(this.filteredCollectivities.filter(c => !c.loaded).map(c => c.code))
-    // Then load all for filters
     await this.fetchCollectivitiesProcedures(this.collectivities.filter(c => !c.loaded).map(c => c.code))
     this.fullyLoaded = true
   },
@@ -178,7 +158,7 @@ export default {
       // console.log('filteredCollectivities', this.filteredCollectivities)
 
       const { data: procedures } = await this.$supabase
-        .rpc('procedures_by_insee_codes', {
+        .rpc('scot_by_insee_codes', {
           codes
         })
 
