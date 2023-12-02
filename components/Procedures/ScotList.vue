@@ -18,25 +18,22 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col v-show="collectivities.length" cols="12" class="pt-0">
+    <v-col v-if="loaded" cols="12" class="pt-0">
       <v-row>
-        <v-col v-if="fullyLoaded" cols="12">
+        <v-col cols="12">
           <v-list>
-            <v-list-item-group v-model="selectedCollectivities" multiple>
-              <template v-for="(collectivity, i) in filteredCollectivities">
-                <ProceduresCollectivityListItem :key="collectivity.code" :collectivity="collectivity" :validated="validated" />
+            <v-list-item-group v-model="selectedScots" multiple>
+              <template v-for="(scot, i) in filteredScots">
+                <ProceduresScotListItem :key="scot.code" :scot="scot" :validated="validated" />
                 <v-divider :key="i" />
               </template>
             </v-list-item-group>
           </v-list>
         </v-col>
-        <v-col v-else>
-          <VGlobalLoader />
-        </v-col>
       </v-row>
-      <v-row align="center">
+      <v-row v-show="loaded && scots.length" align="center">
         <v-col cols="4">
-          <v-pagination v-model="page" :length="Math.ceil(searchedCollectivities.length/10)" class="pagination" />
+          <v-pagination v-model="page" :length="Math.ceil(searchedScots.length/10)" class="pagination" />
         </v-col>
         <v-spacer />
         <v-col v-if="!validated" cols="auto" class="mr-2">
@@ -52,17 +49,20 @@
       <v-row v-if="!validated">
         <v-spacer />
         <v-col cols="auto" class="mr-4">
-          <v-btn color="primary" :loading="loadingValidation" :disabled="!loadingValidation && selectedCollectivities.length === 0" @click="validateSelection">
+          <v-btn color="primary" :loading="loadingValidation" :disabled="!loadingValidation && selectedScots.length === 0" @click="validateSelection">
             Valider {{
-              selectedCollectivities.length ?
-                `${selectedCollectivities.length} commune${selectedCollectivities.length > 1 ? 's' : ''}`
+              selectedScots.length ?
+                `${selectedScots.length} commune${selectedScots.length > 1 ? 's' : ''}`
                 : ''
             }}
           </v-btn>
         </v-col>
       </v-row>
     </v-col>
-    <v-col v-show="!collectivities.length" cols="12">
+    <v-col v-else>
+      <VGlobalLoader />
+    </v-col>
+    <v-col v-show="loaded && !scots.length" cols="12">
       <v-row justify="center" class="my-5">
         <v-col cols="auto">
           <h4 class="text-h4">
@@ -79,11 +79,15 @@ import { mdiMagnify } from '@mdi/js'
 
 export default {
   props: {
-    collectivities: {
+    scots: {
       type: Array,
       required: true
     },
     validated: {
+      type: Boolean,
+      default: false
+    },
+    loaded: {
       type: Boolean,
       default: false
     }
@@ -105,103 +109,73 @@ export default {
         }]
       },
       icons: { mdiMagnify },
-      selectedCollectivities: [],
+      selectedScots: [],
       page: 1,
       selectAll: false,
-      loadingValidation: false,
-      scots: [],
-      fullyLoaded: false
+      loadingValidation: false
     }
   },
   computed: {
-    searchedCollectivities () {
+    searchedScots () {
       const normalizedSearch = this.search.text.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
 
-      return this.collectivities.filter((collectivity) => {
-        const normalizedValue = `${collectivity.intitule} ${collectivity.code}`.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
-
-        if (normalizedSearch && !normalizedValue.includes(normalizedSearch)) {
-          return false
+      return this.scots.filter((scot) => {
+        if (normalizedSearch) {
+          const normalizedValue = `${scot.intitule} ${scot.code}`.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+          if (!normalizedValue.includes(normalizedSearch)) { return false }
         }
 
-        if (this.search.status !== 'all' && collectivity.loaded) {
-          const searchedProcedure = collectivity.procedures.find(p => p.status === this.search.status)
+        if (this.search.status !== 'all') {
+          const searchedProcedure = scot.procedures.find(p => p.status === this.search.status)
           if (!searchedProcedure) { return false }
         }
 
         return true
       })
     },
-    filteredCollectivities () {
+    filteredScots () {
       const pageIndex = (this.page - 1) * 10
-      return this.searchedCollectivities.slice(pageIndex, pageIndex + 10)
+      return this.searchedScots.slice(pageIndex, pageIndex + 10)
     }
   },
   watch: {
+    searchedScots () {
+      if (this.page > (this.searchedScots.length / 10)) {
+        this.page = Math.ceil(this.searchedScots.length / 10)
+      }
+    },
     selectAll () {
       if (this.selectAll) {
-        this.selectedCollectivities = this.filteredCollectivities.map(c => c.code)
+        this.selectedScots = this.filteredScots.map(c => c.code)
       } else {
-        this.selectedCollectivities = []
+        this.selectedScots = []
       }
     },
     page () {
       this.selectAll = false
     }
   },
-  async mounted () {
-    await this.fetchCollectivitiesProcedures(this.collectivities.filter(c => !c.loaded).map(c => c.code))
-    this.fullyLoaded = true
-  },
   methods: {
-    async fetchCollectivitiesProcedures (codes) {
-      // console.log('filteredCollectivities', this.filteredCollectivities)
-
-      const { data: procedures } = await this.$supabase
-        .rpc('scot_by_insee_codes', {
-          codes
-        })
-
-      // console.log('procedures', codes.length, procedures)
-
-      this.collectivities.filter(c => codes.includes(c.code)).forEach((collectivite) => {
-        if (!collectivite.loaded) {
-          collectivite.procedures = procedures.filter((procedure) => {
-            return procedure.doc_type !== 'SCOT' && !!procedure.current_perimetre.find(c => c.inseeCode === collectivite.code)
-          })
-
-          collectivite.loaded = true
-        }
-      })
-    },
     async validateSelection () {
       this.loadingValidation = true
 
       const validations = []
 
-      this.selectedCollectivities.forEach((inseeCode) => {
-        const collectivity = this.filteredCollectivities.find(c => c.code === inseeCode)
+      this.selectedScots.forEach((collectivityCode) => {
+        const collectivity = this.filteredScots.find(c => c.code === collectivityCode)
 
         collectivity.procedures.forEach((procedure) => {
           validations.push({
-            insee_code: inseeCode,
+            collectivite_code: collectivityCode,
             procedure_id: procedure.id,
             status: procedure.status,
-            departement: collectivity.departementCode
+            departement: this.$user.profile.departement,
+            doc_type: 'SCOT'
           })
         })
-
-        if (!collectivity.procedures.length) {
-          validations.push({
-            insee_code: inseeCode,
-            status: 'RNU',
-            departement: collectivity.departementCode
-          })
-        }
       })
 
       await this.$supabase.from('procedures_validations').insert(validations)
-
       this.$emit('validations', validations)
 
       this.loadingValidation = false

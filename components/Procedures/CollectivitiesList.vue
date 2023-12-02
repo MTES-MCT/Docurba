@@ -204,18 +204,20 @@ export default {
 
         collectivity.procedures.forEach((procedure) => {
           validations.push({
-            insee_code: inseeCode,
+            collectivite_code: inseeCode,
             procedure_id: procedure.id,
             status: procedure.status,
-            departement: collectivity.departementCode
+            departement: collectivity.departementCode,
+            doc_type: procedure.doc_type
           })
         })
 
         if (!collectivity.procedures.length) {
           validations.push({
-            insee_code: inseeCode,
+            collectivite_code: inseeCode,
             status: 'RNU',
-            departement: collectivity.departementCode
+            departement: collectivity.departementCode,
+            doc_type: 'RNU'
           })
         }
       })

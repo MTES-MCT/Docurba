@@ -27,13 +27,13 @@
                 <ProceduresCollectivitiesList :collectivities="unvalidatedCollectivities" @validations="updateValidations" />
               </v-tab-item>
               <v-tab-item>
-                <ProceduresCollectivitiesList :collectivities="validatedCollectivities" validated @validations="updateValidations" />
+                <ProceduresCollectivitiesList :collectivities="validatedCollectivities" validated />
               </v-tab-item>
               <v-tab-item>
-                <ProceduresCollectivitiesList :collectivities="unvalidatedCollectivities" @validations="updateValidations" />
+                <ProceduresScotList :scots="unvalidatedScots" :loaded="scotsLoaded" @validations="updateScotsValidations" />
               </v-tab-item>
               <v-tab-item>
-                <ProceduresCollectivitiesList :collectivities="validatedCollectivities" validated @validations="updateValidations" />
+                <ProceduresScotList :scots="validatedScots" :loaded="scotsLoaded" validated />
               </v-tab-item>
             </v-tabs-items>
           </v-card-text>
@@ -46,6 +46,7 @@
 
 <script>
 import axios from 'axios'
+import { groupBy } from 'lodash'
 // import dayjs from 'dayjs'
 
 export default {
@@ -55,12 +56,13 @@ export default {
     return {
       tab: null,
       collectivities: [],
-      loading: true
+      scots: [],
+      loading: true,
+      scotsLoaded: false
     }
   },
   computed: {
     validatedCollectivities () {
-      console.log('update validated')
       return this.collectivities.filter((c) => {
         return c.validations.length
       })
@@ -69,6 +71,12 @@ export default {
       return this.collectivities.filter((c) => {
         return !c.validations.length
       })
+    },
+    unvalidatedScots () {
+      return this.scots.filter(s => !s.validations.length)
+    },
+    validatedScots () {
+      return this.scots.filter(s => s.validations.length)
     }
   },
   async mounted () {
@@ -84,18 +92,40 @@ export default {
       }, c)
     })
 
+    // TODO: Add a filter to get only last 12 months validations
     const { data: validations } = await this.$supabase.from('procedures_validations').select('*')
       .eq('departement', departementCode)
-    // TODO: Add a filter to get only last 12 months validations
 
-    this.updateValidations(validations)
+    this.fetchScots(validations.filter(v => v.doc_type === 'SCOT'))
+    this.updateValidations(validations.filter(v => v.doc_type !== 'SCOT'))
 
     this.loading = false
   },
   methods: {
+    async fetchScots (validations) {
+      // console.log('filteredScots', this.filteredScots)
+      const { data: procedures } = await this.$supabase
+        .rpc('scot_by_insee_codes', {
+          codes: this.collectivities.map(c => c.code)
+        })
+
+      const groupedProcedures = groupBy(procedures, p => p.collectivite_porteuse_id)
+      const collectivitiesCodes = Object.keys(groupedProcedures)
+
+      this.scots = collectivitiesCodes.map((collectiviteCode) => {
+        return {
+          intitule: groupedProcedures[collectiviteCode][0].name,
+          code: collectiviteCode,
+          procedures: groupedProcedures[collectiviteCode],
+          validations: validations.filter(v => v.collectivite_code === collectiviteCode)
+        }
+      })
+
+      this.scotsLoaded = true
+    },
     updateValidations (validations) {
       validations.forEach((validation) => {
-        const inseeCode = validation.insee_code
+        const inseeCode = validation.collectivite_code
 
         const collectivity = this.collectivities.find(c => c.code === inseeCode)
 
@@ -103,10 +133,13 @@ export default {
           collectivity.validations.push(validation)
         }
       })
+    },
+    updateScotsValidations (validations) {
+      validations.forEach((validation) => {
+        const scot = this.scots.find(s => s.code === validation.collectivite_code)
+        scot.validations.pussh(validation)
+      })
     }
-    // fetchScots () {
-    //   const {data: scots} = await this.$supabase.from()
-    // }
   }
 }
 </script>
