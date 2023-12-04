@@ -168,6 +168,7 @@ export default {
   },
   data () {
     return {
+      loaded: false,
       loadingSave: false,
       typeProcedure: '',
       typesProcedure: {
@@ -182,16 +183,16 @@ export default {
       typeDu: '',
       nameComplement: '',
       typesDu: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM'],
-      perimetre: [],
+      perimetre: null,
       icons: { mdiInformationOutline }
     }
   },
   computed: {
     isLoaded () {
-      return this.procedureCategory === 'principale' || (this.procedureCategory === 'secondaire' && this.proceduresParents !== null)
+      return this.loaded && (this.procedureCategory === 'principale' || (this.procedureCategory === 'secondaire' && this.proceduresParents !== null))
     },
     postfixSectoriel () {
-      return this.perimetre.length < this.communes.length ? 'S' : ''
+      return (this.collectivite.type === 'Commune' && this.perimetre.length > 1) || (this.collectivite.type !== 'Commune' && this.perimetre.length < this.communes.length) ? 'S' : ''
     },
     baseName () {
       return `${this.typeProcedure} ${this.numberProcedure} de ${this.typeDu + this.postfixSectoriel} ${this.collectivite.intitule}`.replace(/\s+/g, ' ').trim()
@@ -208,6 +209,7 @@ export default {
         this.proceduresParents = proceduresParents
       }
       this.perimetre = this.collectivite.type === 'Commune' ? [this.collectivite.code] : this.communes.map(e => e.code)
+      this.loaded = true
     } catch (error) {
       console.log(error)
     }

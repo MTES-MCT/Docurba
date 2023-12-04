@@ -13,7 +13,7 @@
           <span v-else>PLU/PLUi</span>
         </v-tab>
         <v-tab>
-          SCoTs
+          SCoT
         </v-tab>
         <v-spacer />
         <v-btn v-if="!isPublic" depressed color="primary" class="align-self-center" :to="`/ddt/${collectivite.departementCode}/collectivites/${collectivite.code}/procedure/add`">
