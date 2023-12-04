@@ -146,6 +146,8 @@ export default {
           }
         })
 
+        this.$router.push(`/trames/projet-${project.id}`)
+
         this.isOpen = false
         this.$emit('insert')
       } else {
@@ -158,8 +160,8 @@ export default {
       const departement = this.$user.profile.departement
 
       if (departement) {
-        const { data: communes } = await axios('/api/geo/communes?departementCode=01')
-        const { data: intercomunalites } = await axios('/api/geo/intercommunalites?departementCode=01')
+        const { data: communes } = await axios(`/api/geo/communes?departementCode=${departement}`)
+        const { data: intercomunalites } = await axios(`/api/geo/intercommunalites?departementCode=${departement}`)
 
         this.collectivites = [{ header: 'ECPI' }, ...intercomunalites, { divider: true }, { header: 'Communes' }, ...communes]
       }

@@ -1,6 +1,17 @@
 <template>
   <v-container>
     <v-row>
+      <v-col v-if="!clickedOnDocLink" cols="12">
+        <v-alert type="info">
+          Zoom sur les dernières améliorations des fonctionnalités de Docurba.
+          <a
+            class="white--text"
+            href="https://pad.incubateur.net/FUz6ITnHSC6wVv1rvIipyg?view"
+            target="_blank"
+            @click="showClose"
+          >Découvrez la documentation</a>
+        </v-alert>
+      </v-col>
       <v-col cols="12">
         <h1>Mes collectivités - {{ $route.params.departement }}</h1>
       </v-col>
@@ -128,6 +139,8 @@
 <script>
 import axios from 'axios'
 
+const docVersion = '1.0'
+
 export default {
   name: 'CollectiviteDU',
   layout: 'ddt',
@@ -137,7 +150,8 @@ export default {
       lastProcedures: null,
       epci: null,
       communes: null,
-      scope: 0
+      scope: 0,
+      clickedOnDocLink: true
     }
   },
   computed: {
@@ -187,6 +201,9 @@ export default {
     }
   },
   async mounted () {
+    console.log((localStorage.getItem('docVersion') === docVersion))
+    this.clickedOnDocLink = (localStorage.getItem('docVersion') === docVersion)
+
     const { data: epcis } = await axios({
       url: '/api/geo/intercommunalites',
       method: 'get',
@@ -202,8 +219,6 @@ export default {
         departementCode: this.$route.params.departement
       }
     })
-
-    console.log('nb communes : ', communes.length)
 
     const collecsInsee = communes.map(e => e.code.padStart(5, '0')).concat(epcis.map(e => e.code))
     const { data: sudocuCollectivites, error: errorSudocuCollectivites } = await this.$supabase.from('sudocu_collectivites').select().in('codecollectivite', collecsInsee)
@@ -264,6 +279,10 @@ export default {
       const normalizedSearch = search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
 
       return normalizedValue.includes(normalizedSearch)
+    },
+    showClose () {
+      this.clickedOnDocLink = true
+      localStorage.setItem('docVersion', docVersion)
     }
   }
 }
