@@ -74,7 +74,7 @@
           <v-container>
             <v-row>
               <v-col cols="9">
-                <FriseEventCard v-if="$user?.id && recommendedEvents[0]" :event="recommendedEvents[0]" suggestion @addSuggestedEvent="addSuggestedEvent" />
+                <FriseEventCard v-if="$user?.id && recommendedEvents && recommendedEvents[0]" :event="recommendedEvents[0]" suggestion @addSuggestedEvent="addSuggestedEvent" />
                 <FriseEventCard
                   v-for="event in enrichedEvents"
                   :id="`event-${event.id}`"
@@ -173,14 +173,15 @@ export default
   },
   computed: {
     loaded () {
-      return this.procedure && this.collectivite && this.eventsStructurants && this.enrichedEvents
+      return this.procedure && this.collectivite && this.eventsStructurants
     },
     documentEvents () {
       console.log('this.procedure.doc_type: ', this.procedure.doc_type)
       const documentsEvents = {
         PLU: PluEvents,
         SCOT: ScotEvents,
-        CC: ccEvents
+        CC: ccEvents,
+        POS: PluEvents
       }
       return documentsEvents[this.procedure.doc_type]
     },
@@ -208,10 +209,10 @@ export default
     },
     recommendedEvents () {
       console.log('TEST: ', this.documentEvents, ' this.internalProcedureType: ', this.internalProcedureType)
-      const filteredDocumentEvents = this.documentEvents.filter((e) => {
+      const filteredDocumentEvents = this.documentEvents?.filter((e) => {
         return e.scope_sugg.includes(this.internalProcedureType)
       })
-
+      if (!filteredDocumentEvents) { return null }
       if (this.events && this.events.length < 1) {
         console.log('HERE: ', filteredDocumentEvents[0])
         return [filteredDocumentEvents[0]]
