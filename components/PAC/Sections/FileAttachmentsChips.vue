@@ -89,7 +89,9 @@ export default {
     }
   },
   beforeDestroy () {
-    this.$supabase.removeChannel(this.subscription)
+    if (this.subscription) {
+      this.$supabase.removeChannel(this.subscription)
+    }
   },
   methods: {
     openDialog (file) {

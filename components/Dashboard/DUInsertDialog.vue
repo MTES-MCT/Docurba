@@ -146,6 +146,8 @@ export default {
           }
         })
 
+        this.$router.push(`/trames/projet-${project.id}`)
+
         this.isOpen = false
         this.$emit('insert')
       } else {

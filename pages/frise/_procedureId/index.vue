@@ -74,7 +74,7 @@
           <v-container>
             <v-row>
               <v-col cols="9">
-                <FriseEventCard v-if="$user?.id" :event="recommendedEvents[0]" suggestion @addSuggestedEvent="addSuggestedEvent" />
+                <FriseEventCard v-if="$user?.id && recommendedEvents[0]" :event="recommendedEvents[0]" suggestion @addSuggestedEvent="addSuggestedEvent" />
                 <FriseEventCard
                   v-for="event in enrichedEvents"
                   :id="`event-${event.id}`"
@@ -97,6 +97,7 @@
                           color="grey darken-1"
                           v-bind="attrs"
                           v-on="on"
+                          @click="scrollToStructurant(eventStructurant.type)"
                         >
                           <v-icon color="grey darken-2" class="mr-2">
                             {{ icons.mdiBookmark }}
@@ -148,9 +149,11 @@
 import axios from 'axios'
 import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical } from '@mdi/js'
 
+import slugify from 'slugify'
 import PluEvents from '@/assets/data/events/PLU_events.json'
 import ScotEvents from '@/assets/data/events/SCOT_events.json'
 import ccEvents from '@/assets/data/events/CC_events.json'
+
 export default
 {
   name: 'ProcedureTimelineEvents',
@@ -173,6 +176,7 @@ export default
       return this.procedure && this.collectivite && this.eventsStructurants && this.enrichedEvents
     },
     documentEvents () {
+      console.log('this.procedure.doc_type: ', this.procedure.doc_type)
       const documentsEvents = {
         PLU: PluEvents,
         SCOT: ScotEvents,
@@ -203,11 +207,13 @@ export default
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     },
     recommendedEvents () {
+      console.log('TEST: ', this.documentEvents, ' this.internalProcedureType: ', this.internalProcedureType)
       const filteredDocumentEvents = this.documentEvents.filter((e) => {
         return e.scope_sugg.includes(this.internalProcedureType)
       })
 
       if (this.events && this.events.length < 1) {
+        console.log('HERE: ', filteredDocumentEvents[0])
         return [filteredDocumentEvents[0]]
       }
       const lastEventType = filteredDocumentEvents.find((event) => {
@@ -235,7 +241,7 @@ export default
 
       if (secondairesTypes[this.procedure.type]) { return secondairesTypes[this.procedure.type] }
       if (['Elaboration', 'Modification'].includes(this.procedure.type)) {
-        if (isIntercommunal) { return 'ppi' } else { return 'pp' }
+        if (isIntercommunal && this.procedure.doc_type !== 'CC') { return 'ppi' } else { return 'pp' }
       }
       return 'aucun'
     }
@@ -261,6 +267,10 @@ export default
     }
   },
   methods: {
+    scrollToStructurant (clickedEvent) {
+      console.log('Scroll: ', clickedEvent)
+      this.$vuetify.goTo(`#${slugify(clickedEvent, { remove: /[*+~.()'"!:@]/g })}`)
+    },
     addSuggestedEvent (eventName) {
       this.$router.push(`/frise/${this.procedure.id}/add?eventType=${eventName}&typeDu=${this.procedure.doc_type}`)
     },

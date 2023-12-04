@@ -44,7 +44,7 @@ export default {
   },
   data () {
     return {
-      perimetre: this.communes.map(e => e.code)
+      perimetre: this.value
     }
   },
   watch: {

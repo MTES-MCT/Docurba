@@ -1,7 +1,7 @@
 <template>
-  <v-card flat :color="backgroundColor">
-    <v-card-text class="section-card">
-      <v-expansion-panels v-model="openedSections" multiple flat>
+  <v-card flat :color="backgroundColor" class="section-card">
+    <v-card-text class="section-card-text">
+      <v-expansion-panels flat :value="isOpen ? 0 : null" @change="isOpen = $event === 0">
         <v-hover v-slot="{hover}">
           <v-expansion-panel>
             <v-expansion-panel-header :color="backgroundColor">
@@ -68,6 +68,16 @@
                     </v-tooltip>
                   </h2>
                 </v-col>
+                <v-col v-if="(isOpen || hover) && !editable" cols="auto">
+                  <v-tooltip bottom>
+                    <template #activator="{on}">
+                      <v-btn icon small v-on="on" @click.stop="copyLinkToClipboard">
+                        <v-icon>{{ icons.mdiLinkVariant }}</v-icon>
+                      </v-btn>
+                    </template>
+                    Copier le lien vers la section
+                  </v-tooltip>
+                </v-col>
                 <v-col v-if="(isOpen || hover) && editable" cols="auto">
                   <v-tooltip bottom>
                     <template #activator="{on}">
@@ -89,7 +99,7 @@
                 <v-col v-if="(isOpen || hover || editEnabled) && isEditable" cols="auto" class="ml-4">
                   <v-tooltip v-if="!editEnabled" bottom>
                     <template #activator="{on}">
-                      <v-btn icon small v-on="on" @click.stop="editEnabled = true; openedSections = [0]">
+                      <v-btn icon small v-on="on" @click.stop="editEnabled = true; isOpen = true">
                         <v-icon color="primary lighten-2">
                           {{ icons.mdiPencil }}
                         </v-icon>
@@ -240,7 +250,8 @@ import axios from 'axios'
 import {
   mdiPlus, mdiPencil, mdiContentSave,
   mdiClose, mdiFileCompare,
-  mdiArrowDown, mdiArrowUp
+  mdiArrowDown, mdiArrowUp,
+  mdiLinkVariant
 } from '@mdi/js'
 import { encode } from 'js-base64'
 import departements from '@/assets/data/departements-france.json'
@@ -299,7 +310,8 @@ export default {
         mdiClose,
         mdiFileCompare,
         mdiArrowDown,
-        mdiArrowUp
+        mdiArrowUp,
+        mdiLinkVariant
       },
       deleteDialog: false,
       isSelected: selectedPaths.includes(this.section.path),
@@ -309,7 +321,7 @@ export default {
       sectionMarkdown: '',
       sectionHistory: null,
       editEnabled: false,
-      openedSections: [],
+      isOpen: false,
       saving: false,
       errorSaving: false,
       errorDiff: false,
@@ -319,9 +331,6 @@ export default {
     }
   },
   computed: {
-    isOpen () {
-      return this.openedSections.length
-    },
     isVisible () {
       return this.isSelected && this.parentSelected
     },
@@ -380,6 +389,19 @@ export default {
   mounted () {
     this.fetchSectionContent()
     this.fetchDataAttachments()
+
+    const defaultOpenedPath = this.$route.query.path
+    if (defaultOpenedPath && defaultOpenedPath.startsWith(this.section.path)) {
+      this.isOpen = true
+
+      // if (defaultOpenedPath === this.section.path) {
+      //   setTimeout(() => {
+      //     this.$el.scrollIntoView({
+      //       behavior: 'instant'
+      //     })
+      //   }, 2000)
+      // }
+    }
   },
   methods: {
     async fetchSectionContent () {
@@ -560,6 +582,10 @@ export default {
       }
 
       this.diff.visible = !this.diff.visible
+    },
+    copyLinkToClipboard () {
+      const { href } = this.$router.resolve({ ...this.$route, query: { ...this.$route.query, path: this.section.path } })
+      navigator.clipboard.writeText(location.origin + href)
     }
   }
 }
@@ -567,6 +593,10 @@ export default {
 
 <style scoped>
 .section-card {
+  scroll-margin-top: 150px;
+}
+
+.section-card-text {
   border: 1px solid #E3E3FD;
   border-color: #E3E3FD !important;
 }

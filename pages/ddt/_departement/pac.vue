@@ -12,7 +12,7 @@
           <v-spacer />
           <v-col cols="auto">
             <v-btn color="primary" depressed tile @click="creationDialog = true">
-              Céer un PAC
+              Créer un PAC
             </v-btn>
           </v-col>
         </v-row>
