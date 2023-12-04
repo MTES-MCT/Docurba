@@ -70,7 +70,7 @@
             </v-btn>
           </div>
         </v-card-title>
-        <v-card-text v-if="event.commentaire || event.description">
+        <v-card-text v-if="$user.id && (event.commentaire || event.description)">
           {{ event.commentaire || event.description }}
         </v-card-text>
         <v-card-actions v-if="event.attachements?.length">
