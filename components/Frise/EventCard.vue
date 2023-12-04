@@ -9,7 +9,7 @@
       <div v-if="suggestion" class="primary--text mb-1">
         Evénement suggéré
       </div>
-      <v-card :outlined="!suggestion" flat :color="suggestion ? 'primary lighten-4': ''">
+      <v-card :id="`${slugId}`" :outlined="!suggestion" flat :color="suggestion ? 'primary lighten-4': ''">
         <v-card-title class="font-weight-bold d-flex flex-nowrap">
           <div class="break-word flex-grow-0 d-flex flex-wrap align-self-start mr-4">
             <div>
@@ -24,12 +24,36 @@
             </v-chip>
           </div>
           <div v-if="!suggestion" class=" ml-auto flex-shrink-1 d-flex align-self-start">
-            <v-chip class="mr-2 font-weight-bold text-uppercase" dark color="grey darken-2" label>
-              {{ event.visibility === 'private' ? 'privé' : '' }}
-            </v-chip>
-            <v-chip class="text-uppercase" :color="creator.background" label>
-              {{ event.profiles?.poste || event.profiles?.side || creator.values[0] }}
-            </v-chip>
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-chip
+                  class="mr-2 font-weight-bold text-uppercase"
+                  dark
+                  color="grey darken-2"
+                  label
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  {{ event.visibility === 'private' ? 'privé' : '' }}
+                </v-chip>
+              </template>
+              Cet événement n’est visible que pour la collectivité et les services de l’État.
+            </v-tooltip>
+
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-chip
+                  class="text-uppercase"
+                  :color="creator.background"
+                  label
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  {{ event.profiles?.poste || event.profiles?.side || creator.values[0] }}
+                </v-chip>
+              </template>
+              Cet événement a été ajouté par  {{ event.profiles?.poste || event.profiles?.side || creator.values[0] }}.
+            </v-tooltip>
             <v-btn v-if="creator.values[0] != 'sudocu'" class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
               <v-icon color="grey darken-2">
                 {{ icons.mdiPencil }}
@@ -78,6 +102,7 @@
 
 <script>
 import { mdiPencil, mdiPaperclip, mdiBookmark } from '@mdi/js'
+import slugify from 'slugify'
 import actors from '@/assets/friseActors.json'
 
 export default {
@@ -106,6 +131,9 @@ export default {
     }
   },
   computed: {
+    slugId () {
+      if (this.event) { return slugify(this.event.type || this.event.name, { remove: /[*+~.()'"!:@]/g }) } else { return '' }
+    },
     creator () {
       let actor = this.event.profiles?.side || 'docurba'
       if (this.event.from_sudocuh) { actor = 'sudocu' }

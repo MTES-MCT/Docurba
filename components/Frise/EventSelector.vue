@@ -64,7 +64,7 @@ export default {
       }
       if (secondairesTypes[this.procedure.type]) { internalType = secondairesTypes[this.procedure.type] }
       if (['Elaboration', 'Modification'].includes(this.procedure.type)) {
-        if (isIntercommunal) { internalType = 'ppi' } else { internalType = 'pp' }
+        if (isIntercommunal && this.procedure.doc_type !== 'CC') { internalType = 'ppi' } else { internalType = 'pp' }
       }
 
       return this.documentEvents.filter(e => e.scope_liste.includes(internalType))
