@@ -177,8 +177,8 @@ export default
     },
     internalDocType () {
       let currDocType = this.procedure.doc_type
-      if (currDocType.includes('i')) {
-        currDocType = currDocType.replace('i', '')
+      if (currDocType.match(/i|H|M/)) {
+        currDocType = 'PLU'
       }
       return currDocType
     },
