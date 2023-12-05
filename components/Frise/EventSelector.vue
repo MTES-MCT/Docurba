@@ -2,6 +2,7 @@
   <v-row>
     <v-col :cols="isOther ? 4 : 12">
       <v-autocomplete
+        v-if="filteredEvents"
         v-model="selectedEvent"
         style="max-width:50%;"
         :items="filteredEvents"
@@ -36,22 +37,32 @@ export default {
     }
   },
   data () {
-    const documentsEvents = {
-      PLU: PluEvents,
-      SCOT: ScotEvents,
-      CC: ccEvents
-    }
-    const documentEvents = documentsEvents[this.procedure.doc_type]
-    const selectedEvent = documentEvents.find(event => event.name === this.eventType)
-
     return {
-      documentEvents,
-      customEvent: selectedEvent ? '' : this.eventType,
-      selectedEvent: selectedEvent ? selectedEvent.name : (this.eventType ? 'Autre' : '')
+      customEvent: null,
+      selectedEvent: null
     }
   },
   computed: {
+    documentEvents () {
+      const documentsEvents = {
+        PLU: PluEvents,
+        PLUi: PluEvents,
+        POS: PluEvents,
+        SCOT: ScotEvents,
+        CC: ccEvents
+      }
+      console.log('internalDocType:', this.internalDocType)
+      return documentsEvents[this.internalDocType]
+    },
+    internalDocType () {
+      let currDocType = this.procedure.doc_type
+      if (currDocType.includes('i')) {
+        currDocType = currDocType.replace('i', '')
+      }
+      return currDocType
+    },
     filteredEvents () {
+      console.log('this.procedure: ', this.procedure)
       let internalType = 'aucun'
       const isIntercommunal = this.procedure.current_perimetre.length > 1
 
@@ -63,8 +74,8 @@ export default {
         'Mise à jour': 'mj'
       }
       if (secondairesTypes[this.procedure.type]) { internalType = secondairesTypes[this.procedure.type] }
-      if (['Elaboration', 'Modification'].includes(this.procedure.type)) {
-        if (isIntercommunal && this.procedure.doc_type !== 'CC') { internalType = 'ppi' } else { internalType = 'pp' }
+      if (['Elaboration', 'Révision'].includes(this.procedure.type)) {
+        if (isIntercommunal && this.internalDocType !== 'CC') { internalType = 'ppi' } else { internalType = 'pp' }
       }
 
       return this.documentEvents.filter(e => e.scope_liste.includes(internalType))
@@ -86,6 +97,14 @@ export default {
         this.$emit('input', this.customEvent)
       }
     }
+  },
+  mounted () {
+    console.log('this.eventType: ', this.eventType)
+    const selectedEvent = this.documentEvents.find(event => event.name === this.eventType)
+    console.log('selectedEvent: ', selectedEvent)
+
+    this.customEvent = selectedEvent ? '' : this.eventType
+    this.selectedEvent = selectedEvent ? selectedEvent.name : (this.eventType ? 'Autre' : '')
   }
 }
 </script>

@@ -116,6 +116,7 @@ export default {
       this.schemas = schemas
       this.plans = plans
       console.log('schemas: ', schemas, ' plans: ', plans)
+      console.log('this.collectivite: ', this.collectivite.communes.map(e => e.type))
     }
   }
 }
