@@ -20,6 +20,7 @@
                   class="grey-border mb-8"
                   :procedure="procSec"
                   :censored="censored"
+                  @delete="$emit('delete', arguments[0])"
                 />
               </v-expansion-panel-content>
             </v-expansion-panel>
