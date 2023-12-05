@@ -5,7 +5,7 @@
         {{ formatDate }}
       </v-chip>
     </v-col>
-    <v-col cols="">
+    <v-col cols="10">
       <div v-if="suggestion" class="primary--text mb-1">
         Evénement suggéré
       </div>
@@ -73,7 +73,7 @@
         <v-card-text v-if="$user.id && (event.commentaire || event.description)">
           {{ event.commentaire || event.description }}
         </v-card-text>
-        <v-card-actions v-if="event.attachements?.length">
+        <v-card-actions v-if="event.attachements?.length" class="d-flex">
           <v-chip
             v-for="attachement in event.attachements"
             :key="attachement.id"
@@ -85,7 +85,7 @@
             <v-icon class="pr-2" color="grey darken-2">
               {{ icons.mdiPaperclip }}
             </v-icon>
-            {{ attachement.name }}
+            <span class="text-truncate">{{ attachement.name }}</span>
           </v-chip>
           <a
             v-for="attachement in event.attachements"

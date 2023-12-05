@@ -175,15 +175,24 @@ export default
     loaded () {
       return this.procedure && this.collectivite && this.eventsStructurants
     },
+    internalDocType () {
+      let currDocType = this.procedure.doc_type
+      if (currDocType.includes('i')) {
+        currDocType = currDocType.replace('i', '')
+      }
+      return currDocType
+    },
     documentEvents () {
       console.log('this.procedure.doc_type: ', this.procedure.doc_type)
       const documentsEvents = {
         PLU: PluEvents,
+        PLUi: PluEvents,
+        POS: PluEvents,
         SCOT: ScotEvents,
-        CC: ccEvents,
-        POS: PluEvents
+        CC: ccEvents
       }
-      return documentsEvents[this.procedure.doc_type]
+      // console.log('this.internalDocType: ', this.internalDocType)
+      return documentsEvents[this.internalDocType]
     },
     eventsStructurants () {
       return this.enrichedEvents.filter(e => e.structurant)
@@ -208,25 +217,22 @@ export default
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     },
     recommendedEvents () {
-      console.log('TEST: ', this.documentEvents, ' this.internalProcedureType: ', this.internalProcedureType)
+      console.log('internalProcedureType: ', this.internalProcedureType)
       const filteredDocumentEvents = this.documentEvents?.filter((e) => {
         return e.scope_sugg.includes(this.internalProcedureType)
       })
+      console.log('filteredDocumentEvents: ', filteredDocumentEvents)
       if (!filteredDocumentEvents) { return null }
       if (this.events && this.events.length < 1) {
-        console.log('HERE: ', filteredDocumentEvents[0])
         return [filteredDocumentEvents[0]]
       }
-      const lastEventType = filteredDocumentEvents.find((event) => {
-        return this.events[0].type === event.name
-      })
+      const lastEventType = filteredDocumentEvents.find(event => this.events[0].type === event.name)
       const lastEventOrder = lastEventType ? lastEventType.order : -1
 
       const recommendedEvents = [
         this.findRecommendedEventType(lastEventOrder, 2),
         this.findRecommendedEventType(lastEventOrder, 1)
       ]
-      console.log('recommendedEvents: ', recommendedEvents)
       return recommendedEvents.filter(e => !!e)
     },
     internalProcedureType () {
@@ -238,10 +244,10 @@ export default
         'Mise en comptabilité': 'mc',
         'Mise à jour': 'mj'
       }
-
+      console.log('internalDocType: ', this.internalDocType)
       if (secondairesTypes[this.procedure.type]) { return secondairesTypes[this.procedure.type] }
-      if (['Elaboration', 'Modification'].includes(this.procedure.type)) {
-        if (isIntercommunal && this.procedure.doc_type !== 'CC') { return 'ppi' } else { return 'pp' }
+      if (['Elaboration', 'Révision'].includes(this.procedure.type)) {
+        if (isIntercommunal && this.internalDocType !== 'CC') { return 'ppi' } else { return 'pp' }
       }
       return 'aucun'
     },
