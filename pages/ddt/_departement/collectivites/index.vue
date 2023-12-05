@@ -201,7 +201,6 @@ export default {
     }
   },
   async mounted () {
-    console.log((localStorage.getItem('docVersion') === docVersion))
     this.clickedOnDocLink = (localStorage.getItem('docVersion') === docVersion)
 
     const { data: epcis } = await axios({
