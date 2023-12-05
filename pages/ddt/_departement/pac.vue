@@ -37,7 +37,7 @@ export default {
   data () {
     return {
       projects: [],
-      search: '',
+      search: this.$route.query.search,
       icons: {
         mdiMagnify
       },
