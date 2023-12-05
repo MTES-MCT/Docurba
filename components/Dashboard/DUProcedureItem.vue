@@ -80,9 +80,12 @@
         <span class="primary--text text-decoration-underline mr-4 text--disabled">
           Info. générales
         </span>
-        <span class="primary--text text-decoration-underline mr-4 text--disabled">
+        <nuxt-link
+          class="primary--text text-decoration-underline mr-4"
+          :to="`/ddt/${$route.params.departement}/pac?search=${$route.params.collectiviteId}`"
+        >
           PAC
-        </span>
+        </nuxt-link>
         <!-- <span class="primary--text text-decoration-underline text--disabled">
           Note d'enjeux
         </span> -->
