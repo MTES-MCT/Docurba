@@ -51,6 +51,9 @@ export default {
       url: `/api/geo/${this.$route.params.collectiviteId.length > 5 ? 'intercommunalites' : 'communes'}/${this.$route.params.collectiviteId}`,
       method: 'get'
     })).data
+    if (this.$route.query.secondary_id) {
+      this.tab = 1
+    }
     console.log('collectivite: ', this.collectivite)
   }
 }

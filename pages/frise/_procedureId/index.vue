@@ -19,7 +19,7 @@
         </div>
       </v-col>
       <v-col cols="12" class="mb-2">
-        <v-btn v-if="$user?.profile?.side === 'etat'" color="primary" class="mr-2" outlined>
+        <v-btn v-if="$user?.profile?.side === 'etat'" color="primary" class="mr-2" outlined @click="addSubProcedure">
           Ajouter une procédure secondaire
         </v-btn>
         <v-btn depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
@@ -220,7 +220,6 @@ export default
       const lastEventType = filteredDocumentEvents.find((event) => {
         return this.events[0].type === event.name
       })
-      console.log('lastEventType: ', lastEventType, ' this.events[0].type: ', this.events[0].type, ' test: ', filteredDocumentEvents)
       const lastEventOrder = lastEventType ? lastEventType.order : -1
 
       const recommendedEvents = [
@@ -245,6 +244,10 @@ export default
         if (isIntercommunal && this.procedure.doc_type !== 'CC') { return 'ppi' } else { return 'pp' }
       }
       return 'aucun'
+    },
+    collectiviteId () {
+      const collecId = this.procedure.current_perimetre.length === 1 ? this.procedure.current_perimetre[0].inseeCode : this.procedure.collectivite_porteuse_id
+      return collecId
     }
   },
   async mounted () {
@@ -259,7 +262,8 @@ export default
 
       const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('*').eq('id', this.$route.params.procedureId)
       this.procedure = procedure[0]
-      this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}` })).data
+      // const collecId = this.procedure.current_perimetre.length === 1 ? this.procedure.current_perimetre[0].inseeCode : this.procedure.collectivite_porteuse_id
+      this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.collectiviteId}` })).data
       if (errorProcedure) { throw errorProcedure }
       await this.getEvents()
     } catch (error) {
@@ -268,6 +272,9 @@ export default
     }
   },
   methods: {
+    addSubProcedure () {
+      this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectiviteId}/procedure/add?secondary_id=${this.$route.params.procedureId}`)
+    },
     scrollToStructurant (clickedEvent) {
       console.log('Scroll: ', clickedEvent)
       this.$vuetify.goTo(`#${slugify(clickedEvent, { remove: /[*+~.()'"!:@]/g })}`)

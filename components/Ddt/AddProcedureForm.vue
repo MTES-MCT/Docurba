@@ -188,6 +188,9 @@ export default {
     }
   },
   computed: {
+    procedureParentDocType () {
+      return this.proceduresParents?.find(e => e.id === this.procedureParent)?.doc_type
+    },
     isLoaded () {
       return this.loaded && (this.procedureCategory === 'principale' || (this.procedureCategory === 'secondaire' && this.proceduresParents !== null))
     },
@@ -195,7 +198,7 @@ export default {
       return (this.collectivite.type === 'Commune' && this.perimetre.length > 1) || (this.collectivite.type !== 'Commune' && this.perimetre.length < this.communes.length) ? 'S' : ''
     },
     baseName () {
-      return `${this.typeProcedure} ${this.numberProcedure} de ${this.typeDu + this.postfixSectoriel} ${this.collectivite.intitule}`.replace(/\s+/g, ' ').trim()
+      return `${this.typeProcedure} ${this.numberProcedure} de ${(this.procedureParent ? this.procedureParentDocType : this.typeDu) + this.postfixSectoriel} ${this.collectivite.intitule}`.replace(/\s+/g, ' ').trim()
     },
     communes () {
       const coms = this.collectivite.communes || this.collectivite.intercommunalite.communes
@@ -207,7 +210,11 @@ export default {
       if (this.procedureCategory === 'secondaire') {
         const proceduresParents = await this.getProcedures()
         this.proceduresParents = proceduresParents
+        if (this.$route.query.secondary_id) {
+          this.procedureParent = this.$route.query.secondary_id
+        }
       }
+
       this.perimetre = this.collectivite.type === 'Commune' ? [this.collectivite.code] : this.communes.map(e => e.code)
       this.loaded = true
     } catch (error) {
@@ -217,21 +224,23 @@ export default {
   methods: {
     async getProcedures () {
       let query = this.$supabase.from('procedures').select('*').eq('is_principale', true).eq('status', 'opposable')
-
+      let ret = null
       if (this.collectivite.type !== 'Commune') {
         query = query.eq('collectivite_porteuse_id', this.collectivite.code)
       } else {
         query = query.contains('current_perimetre', `[{ "inseeCode": "${this.collectivite.code}" }]`)
       }
       const { data: procedures, error } = await query
-      console.log('procedures: ', procedures)
+      ret = procedures
+      if (this.collectivite.type !== 'Commune') {
+        ret = procedures.filter(e => e.current_perimetre.length > 1)
+      }
       if (error) { throw error }
-      return procedures
+      return ret
     },
     async createProcedure () {
       this.loadingSave = true
       try {
-        console.log('PERIM: ', this.perimetre)
         const detailedPerimetre = (await axios({ url: `/api/geo/communes?codes=${this.perimetre}`, method: 'get' })).data
         const fomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
 
@@ -250,11 +259,10 @@ export default {
         }).select()
         if (errorInsertProject) { throw errorInsertProject }
 
-        console.log('fomattedPerimetre: ', fomattedPerimetre, ' fomattedPerimetreL: ', fomattedPerimetre.length)
         await this.$supabase.from('procedures').insert({
           secondary_procedure_of: this.procedureParent,
           type: this.typeProcedure,
-          commentaire: this.objetProcedure && this.objetProcedure.includes('Autre') ? this.otherObjetProcedure : this.objetProcedure?.join(', '),
+          commentaire: this.objetProcedure && this.objetProcedure.includes('Autre') ? this.objetProcedure?.join(', ') + ' - ' + this.otherObjetProcedure : this.objetProcedure?.join(', '),
           collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
           is_principale: this.procedureCategory === 'principale',
           status: 'en cours',
