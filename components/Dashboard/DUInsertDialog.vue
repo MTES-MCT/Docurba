@@ -6,6 +6,17 @@
         <v-form>
           <v-row>
             <v-col cols="12">
+              <v-autocomplete
+                v-model="selectedCollectivite"
+                hide-details
+                :items="collectivites"
+                item-text="intitule"
+                return-object
+                filled
+                placeholder="Commune ou EPCI"
+              />
+            </v-col>
+            <v-col v-if="!!selectedCollectivite" cols="12">
               <v-text-field
                 v-model="newProject.name"
                 filled
@@ -13,7 +24,7 @@
                 label="Nom du document"
               />
             </v-col>
-            <v-col cols="12">
+            <v-col v-if="!!selectedCollectivite" cols="12">
               <v-select
                 v-model="newProject.doc_type"
                 :items="docTypes"
@@ -59,39 +70,34 @@ export default {
     value: {
       type: Boolean,
       default: false
-    },
-    collectivite: {
-      type: Object,
-      required: true
     }
   },
   data () {
-    // console.log('DUInsertDialog collectivite', this.collectivite)
-
-    const collectiviteId = this.collectivite.code
-    const isEpci = collectiviteId.length === 9
-    const towns = isEpci ? this.collectivite.communes : [this.collectivite]
-
     return {
       saving: false,
       snackbar: false,
-      isEpci,
+      collectivites: [],
+      selectedCollectivite: null,
       // This follow the keys of project table.
       newProject: {
         name: '',
         doc_type: '',
-        collectivite_id: collectiviteId,
         owner: this.$user.id,
-        towns, // idealy this is done automatically by the DB
-        epci: isEpci ? this.collectivite : null, // Same here, this should be made by the DB
-        region: this.collectivite.regionCode, // I think this collumn could be removed.
-        PAC: [], // this should be removede when collumn is moved to a PAC table,
-        trame: this.collectivite.departementCode // This should go in the PAC table as well
-        // towns_insee: null // No other values in DB for now ?
+        PAC: [] // this should be removede when collumn is moved to a PAC table,
       }
     }
   },
   computed: {
+    isEpci () {
+      return this.selectedCollectivite.code.length === 9
+    },
+    towns () {
+      if (this.selectedCollectivite) {
+        return this.selectedCollectivite.communes ? this.selectedCollectivite.communes : [this.selectedCollectivite]
+      } else {
+        return []
+      }
+    },
     docTypes () {
       return this.isEpci
         ? [
@@ -110,24 +116,37 @@ export default {
       }
     }
   },
+  mounted () {
+    this.fetchCollectivites()
+  },
   methods: {
     async insertProject () {
       this.saving = true
 
+      const project = Object.assign({
+        collectivite_id: this.selectedCollectivite.code,
+        towns: [...this.towns],
+        epci: this.isEpci,
+        region: this.selectedCollectivite.regionCode,
+        trame: this.selectedCollectivite.departementCode
+      }, this.newProject)
+
       const { data: projects, error } = await this.$supabase.from('projects')
-        .insert(this.newProject).select()
+        .insert(project).select()
 
       if (!error) {
         const project = projects[0]
 
         await axios({
           method: 'post',
-          url: `/api/trames/projects/dept-${this.$options.filters.deptToRef(this.collectivite.departementCode)}`,
+          url: `/api/trames/projects/dept-${this.$options.filters.deptToRef(this.selectedCollectivite.departementCode)}`,
           data: {
             userId: this.$user.id,
             projectId: project.id
           }
         })
+
+        this.$router.push(`/trames/projet-${project.id}`)
 
         this.isOpen = false
         this.$emit('insert')
@@ -136,6 +155,16 @@ export default {
       }
 
       this.saving = false
+    },
+    async fetchCollectivites () {
+      const departement = this.$user.profile.departement
+
+      if (departement) {
+        const { data: communes } = await axios(`/api/geo/communes?departementCode=${departement}`)
+        const { data: intercomunalites } = await axios(`/api/geo/intercommunalites?departementCode=${departement}`)
+
+        this.collectivites = [{ header: 'ECPI' }, ...intercomunalites, { divider: true }, { header: 'Communes' }, ...communes]
+      }
     },
     close () {
       this.$emit('input', false)

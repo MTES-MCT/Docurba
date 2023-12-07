@@ -33,8 +33,8 @@
     <v-spacer />
     <!-- This client only could be removed with proper user management server side -->
     <client-only>
-      <div v-if="!$vuetify.breakpoint.mobile" class="align-self-center">
-        <v-btn depressed tile text :to="{name: 'faq'}">
+      <div class="align-self-center">
+        <v-btn class="hidden-xs-only" depressed tile text :to="{name: 'faq'}">
           Besoin d'aide ?
         </v-btn>
         <v-btn v-if="!$user.id" depressed tile text :to="{name: 'login'}">

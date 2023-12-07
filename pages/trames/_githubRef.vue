@@ -5,6 +5,14 @@
         <PACEditingAdvicesCard :avoided-tags="(project && project.id) ? [] : ['projet']" />
       </v-col>
     </v-row>
+    <v-row v-if="project && collectivite">
+      <v-col>
+        <h1>{{ project.name }}</h1>
+        <h2 class="text-subtitle">
+          {{ collectivite.intitule }} ({{ collectivite.code }})
+        </h2>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col v-for="section in sections" :key="section.url" cols="12">
         <PACSectionCard
@@ -70,7 +78,8 @@ export default {
       editedSections: [],
       gitRef: this.$route.params.githubRef,
       loading: true,
-      beforeLeaveDialog: { visible: false, next: null }
+      beforeLeaveDialog: { visible: false, next: null },
+      collectivite: null
     }
   },
   async mounted () {
@@ -79,6 +88,9 @@ export default {
 
       const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
       this.project = projects ? projects[0] : {}
+
+      const { data: collectivite } = await axios(`/api/geo/collectivites/${this.project.collectivite_id}`)
+      this.collectivite = collectivite
     }
 
     const { data: sections } = await axios({
@@ -129,6 +141,7 @@ export default {
       })
 
       return Object.assign({
+        id: supSection?.id,
         diff: null,
         diffCount: 0,
         parent,

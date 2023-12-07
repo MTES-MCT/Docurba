@@ -1,3 +1,4 @@
+
 (async () => {
   const { PG_TEST_CONFIG, PG_DEV_CONFIG, PG_PROD_CONFIG } = require('./pg_secret_config.json')
   const { createClient } = require('@supabase/supabase-js')
@@ -26,7 +27,7 @@
       }
       // console.log('procedure: ', procedure)
       // console.log('formattedProject: ', formattedProject)
-      const { data: insertedProject, error: errorInsertedProject } = await supabase.from('projects').upsert(formattedProject, { onConflict: 'from_sudocuh', ignoreDuplicates: true }).select()
+      const { data: insertedProject, error: errorInsertedProject } = await supabase.from('projects').upsert(formattedProject, { onConflict: 'from_sudocuh', ignoreDuplicates: false }).select()
       if (errorInsertedProject) { throw errorInsertedProject }
       // console.log('insertedProject: ', insertedProject)
       docurbaProjectId = insertedProject?.[0]?.id
@@ -34,10 +35,11 @@
         docurbaProjectId = (await supabase.from('projects').select().eq('from_sudocuh', procedure.id)).data[0].id
       }
     }
+
     const formattedProcedure = {
       project_id: docurbaProjectId,
       type: procedure.type,
-      scot_name: procedure.name,
+      name: procedure.name,
       commentaire: procedure.description,
       current_perimetre: procedure.perimetre,
       initial_perimetre: procedure.perimetre,
@@ -53,13 +55,15 @@
       is_pluih: procedure?.is_pluih,
       is_pdu: procedure?.is_pdu,
       mandatory_pdu: procedure?.mandatory_pdu,
-      moe: null, // TODO: Est un object, soit detail sous traitant + cout, sois Interne
+      moe: procedure?.moe,
       volet_qualitatif: procedure?.volet_qualitatif,
-      is_sudocuh_scot: schemaOnly
+      is_sudocuh_scot: schemaOnly,
+      numero: procedure?.numero
     }
+    // console.log('ID procedure: ', procedure.id, 'formattedProcedure: ', procedure.numero)
     // console.log('formattedProcedure: ', formattedProcedure)
-
-    const { data: insertedProcedure, error: errorInsertedProcedure } = await supabase.from('procedures').upsert(formattedProcedure, { onConflict: 'from_sudocuh', ignoreDuplicates: true }).select()
+    // console.log('procedure?.moe: ', procedure?.moe)
+    const { data: insertedProcedure, error: errorInsertedProcedure } = await supabase.from('procedures').upsert(formattedProcedure, { onConflict: 'from_sudocuh', ignoreDuplicates: false }).select()
     if (errorInsertedProcedure) { throw errorInsertedProcedure }
     // console.log('insertedProcedure: ', insertedProcedure)
     let docurbaProcedureId = insertedProcedure?.[0]?.id
@@ -72,9 +76,12 @@
 
   async function processProcedures (collectiviteCode, { schemaOnly }) {
     const { collectivite, procedures, schemas } = (await axios({ url: `http://localhost:3000/api/urba/collectivites/${collectiviteCode}`, method: 'get' })).data
+
     if (!schemaOnly) {
       for (const procedure of procedures) {
+        // console.log('procedure: ', procedure)
         const { docurbaProcedureId: docurbaProcedurePrincipaleId, docurbaProjectId: docurbaProjectPrincipaleId } = await createFullProcedure(procedure, { isPrincipale: true, collectivite })
+        // console.log('procedure: ', procedure.id, ' ', procedure.doc_type, '  ', procedure.status)
         // console.log(' docurbaProcedureId, docurbaProjectId : ', docurbaProcedurePrincipaleId, docurbaProjectPrincipaleId)
         if (procedure.procSecs && procedure.procSecs.length > 0) {
           for (const procedureSecondaire of procedure.procSecs) {
@@ -96,6 +103,23 @@
   }
 
   async function insertEvents (events, { docurbaProcedureId, docurbaProjectId, schemaOnly }) {
+    // attachements: this.parseAttachment(e.nomdocument)
+
+    function parseAttachment (path) {
+      if (path) {
+        const attachment = { id: '', name: '', type: 'file' }
+        let temp = ''
+        const semiSplit = path.split(':')
+        if (semiSplit[0] === 'link') { attachment.type = 'link' }
+        semiSplit.length > 1 ? temp = semiSplit[1] : temp = semiSplit[0]
+        attachment.name = temp
+        attachment.id = 'sudocu/' + temp.split('_').slice(1).join('/')
+        return [attachment]
+      } else {
+        return []
+      }
+    }
+
     const formattedEvents = events?.map((event) => {
       const formattedEvent = {
         project_id: docurbaProjectId,
@@ -103,17 +127,18 @@
         type: event.libtypeevenement,
         is_valid: event.codestatutevenement === 'V',
         date_iso: event.dateevenement,
-        description: '',
+        description: event.commentaire,
         actors: null, // TODO: Voir si on trouve les noms dans Sudocu
-        attachements: null, // TODO: Ajouter proprement le lien attachments
+        attachements: parseAttachment(event.nomdocument),
         visibility: 'private',
         from_sudocuh: event.noserieevenement,
         is_sudocuh_scot: schemaOnly
       }
+      // console.log('attachements: ', formattedEvent.attachements)
       return formattedEvent
     })
     if (formattedEvents) {
-      const { data: insertedEvents, error: errorInsertedEvents } = await supabase.from('doc_frise_events').upsert(formattedEvents, { onConflict: 'from_sudocuh', ignoreDuplicates: true })
+      const { data: insertedEvents, error: errorInsertedEvents } = await supabase.from('doc_frise_events').upsert(formattedEvents, { onConflict: 'from_sudocuh', ignoreDuplicates: false })
       if (errorInsertedEvents) { throw errorInsertedEvents }
     }
 
@@ -126,17 +151,21 @@
     // const collectivites = epcis
     const len = collectivites.length
     // 1221 stopped schema
-    const startAt = 18701
-    const BATCH_SIZE = 50
-    const RATE = 150
+    const startAt = 26896
+    const BATCH_SIZE = 5
+    const RATE = 50
 
     let tempProms = []
+
+    // const testOne = collectivites.find(e => e.code === '37145')
+    // console.log('HERE TESt: ', testOne)
+    // await processProcedures(testOne.code, { schemaOnly: false })
 
     for (const [i, collec] of collectivites.entries()) {
       if (i >= startAt) {
         console.log('Processing ', i, ' of ', len, ' - code: ', collec.code)
 
-        const prom = processProcedures(collec.code, { schemaOnly: true })
+        const prom = processProcedures(collec.code, { schemaOnly: false })
         await new Promise((resolve, reject) => setTimeout(resolve, RATE))
         tempProms.push(prom)
         if (i % BATCH_SIZE === 0 || len - i < BATCH_SIZE) {
@@ -144,11 +173,6 @@
           console.log('Insert ', batch.length, ' in Supabase')
           tempProms = []
         }
-
-        // await processProcedures(collec.code, { schemaOnly: true })
-        // await new Promise((resolve, reject) => setTimeout(resolve, RATE))
-
-        // console.log('Inserted')
       }
     }
   } catch (error) {

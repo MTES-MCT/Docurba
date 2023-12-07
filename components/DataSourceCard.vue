@@ -3,19 +3,24 @@
     <v-card flat outlined>
       <v-card-title class="break-word">
         {{ source.title }}
-        <v-btn
-          v-if="selectable"
-          color="primary"
-          dark
-          absolute
-          top
-          right
-          fab
-          small
-          @click="$emit('input', !selected)"
-        >
-          <v-icon>{{ selected ? icons.mdiCheck : icons.mdiPlus }}</v-icon>
-        </v-btn>
+        <v-tooltip v-if="selectable" right>
+          <template #activator="{ on }">
+            <v-btn
+              color="primary"
+              dark
+              absolute
+              top
+              right
+              fab
+              small
+              v-on="on"
+              @click="$emit('input', !selected)"
+            >
+              <v-icon>{{ selected ? icons.mdiCheck : icons.mdiPlus }}</v-icon>
+            </v-btn>
+          </template>
+          Ajouter la donnée à la section de PAC
+        </v-tooltip>
       </v-card-title>
       <v-card-text>
         <v-row>

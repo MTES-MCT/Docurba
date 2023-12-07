@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { groupBy } from 'lodash'
 import regions from '@/assets/data/Regions.json'
 
 export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => {
@@ -133,6 +134,44 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
         ret.procedures = procedures ?? []
       }
       return ret
+    },
+    async getProjects (collectiviteId, { plans = true, schemas = true, eventsDetails = false } = {}) {
+      try {
+        console.log('Fetch: ', collectiviteId)
+        let query = $supabase.from('procedures')
+          .select('*, projects(*)').eq('archived', false)
+
+        if (collectiviteId.length > 5) {
+          query = query.eq('collectivite_porteuse_id', collectiviteId)
+        } else {
+          query = query.contains('current_perimetre', `[{ "inseeCode": "${collectiviteId}" }]`)
+        }
+
+        if (schemas && !plans) {
+          query = query.eq('doc_type', 'SCOT')
+        }
+        if (plans && !schemas) {
+          query = query.neq('doc_type', 'SCOT')
+        }
+        const { data, error } = await query.order('created_at', { ascending: false })
+        if (error) { throw error }
+
+        const groupedSubProcedures = groupBy(data, 'secondary_procedure_of')
+
+        const proceduresPrincipales = data.filter(e => e.is_principale)
+          .map((e) => {
+            const { projects, ...rest } = e
+            return { ...rest, project: projects, procSecs: groupedSubProcedures[e.id] }
+          })
+
+        const ret = {}
+        if (schemas) { ret.schemas = proceduresPrincipales.filter(e => e.doc_type === 'SCOT') }
+        if (plans) { ret.plans = proceduresPrincipales.filter(e => e.doc_type !== 'SCOT') }
+        console.log('ret: ', ret)
+        return ret
+      } catch (error) {
+        console.log(error)
+      }
     }
   })
 }
