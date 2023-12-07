@@ -19,8 +19,8 @@
             <v-tabs v-model="tab">
               <v-tab>Communes à valider</v-tab>
               <v-tab>Communes validées</v-tab>
-              <v-tab>SCOT à valider</v-tab>
-              <v-tab>SCOT validés</v-tab>
+              <!-- <v-tab>SCOT à valider</v-tab>
+              <v-tab>SCOT validés</v-tab> -->
             </v-tabs>
             <v-tabs-items v-model="tab">
               <v-tab-item>
