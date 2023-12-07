@@ -11,8 +11,6 @@ export default {
   //   }
   // },
   async mounted () {
-    this.redirectUser()
-
     const { data: roles } = await this.$supabase.from('github_ref_roles').select('*').match({
       role: 'admin',
       user_id: this.$user.id
@@ -34,13 +32,6 @@ export default {
         autoClose: 2000,
         showOnce: true,
         doNotShowAfterSubmit: true
-      }
-    }
-  },
-  methods: {
-    redirectUser () {
-      if (process.client && ((this.private && !this.$user.id) || !this.$isDev)) {
-        this.$router.push('/')
       }
     }
   }

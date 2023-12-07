@@ -105,8 +105,17 @@
         </v-tab>
         <v-tab
           :to="{
-            name:'ddt-departement-collectivites-enquete',
+            name: 'ddt-departement-pac',
             params: {departement: $user.profile.departement}
+          }"
+        >
+          Mes PAC
+        </v-tab>
+        <v-tab
+          v-if="ddtBetaTest"
+          :to="{
+            name:'ddt-departement-collectivites-enquete',
+            params: {departement: $route.params.departement}
           }"
         >
           Validation des procédures
@@ -121,6 +130,11 @@ import { mdiDotsVertical } from '@mdi/js'
 
 import '@gouvfr/dsfr/dist/css/header.css'
 import '@gouvfr/dsfr/dist/css/logo.css'
+
+const validationBetaDDT = [
+  '25', '29', '35', '56', '58',
+  '81', '89'
+]
 
 export default {
   props: {
@@ -145,6 +159,9 @@ export default {
       const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
 
       return `${scopes[poste]}-${this.$options.filters.deptToRef(code)}`
+    },
+    ddtBetaTest () {
+      return validationBetaDDT.includes(this.$route.params.departement)
     }
   },
   async mounted () {

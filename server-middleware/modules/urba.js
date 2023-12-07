@@ -173,10 +173,12 @@ module.exports = {
 
     console.log('getCollectiviteState', collectiviteCode)
 
-    function findEventByType (events, type, procedure_id) {
+    const communeData = communes.find(c => c.code === collectiviteCode)
+
+    function findEventByType (events, types, procedure_id) {
       return events.find((e) => {
         return (procedure_id ? e.procedure_id === procedure_id : true) &&
-          e.type === type
+          types.includes(e.type)
       })
     }
 
@@ -198,8 +200,8 @@ module.exports = {
         .in('procedure_id', principalsProcedures.map(p => p.id))
 
       events.sort((a, b) => {
-        const dateA = +dayjs(a.date_iso)
-        const dateB = +dayjs(b.date_iso)
+        const dateB = +dayjs(a.date_iso)
+        const dateA = +dayjs(b.date_iso)
 
         return dateA - dateB
       })
@@ -221,17 +223,19 @@ module.exports = {
       const codeEtat = `${codeEtaMap[opposableDocType]}${codeEtaMap[currentDocType]}`
       const codeEtat2 = `${codeEtaMap[opposableDocType]}${getColectiviteCode(opposableProcedure)}${codeEtaMap[currentDocType]}${getColectiviteCode(currentProcedures)}`
 
-      const currentArretEvent = lastCurrentProcedure ? findEventByType(events, 'Arrêt de projet', lastCurrentProcedure.id) : {}
-      const currentPAC = lastCurrentProcedure ? findEventByType(events, 'Porter à connaissance', lastCurrentProcedure.id) : {}
-      const currentPACcomp = lastCurrentProcedure ? findEventByType(events, 'Porter à connaissance complémentaire', lastCurrentProcedure.id) : {}
+      const approbationEventsType = ["Délibération d'approbation", "Arrêté d'abrogation", "Arrêté du Maire ou du Préfet ou de l'EPCI", 'Approbation du préfet']
+
+      const currentArretEvent = lastCurrentProcedure ? findEventByType(events, ['Arrêt de projet'], lastCurrentProcedure.id) : {}
+      const currentPAC = lastCurrentProcedure ? findEventByType(events, ['Porter à connaissance'], lastCurrentProcedure.id) : {}
+      const currentPACcomp = lastCurrentProcedure ? findEventByType(events, ['Porter à connaissance complémentaire'], lastCurrentProcedure.id) : {}
 
       const opposableEvents = opposableProcedure ? events.filter(e => e.procedure_id === opposableProcedure.id) : []
-      const opposablePrescriptionEvent = opposableProcedure ? findEventByType(opposableEvents, 'Prescription', opposableProcedure.id) : {}
-      const opposableArretEvent = opposableProcedure ? findEventByType(opposableEvents, 'Arrêt de projet', opposableProcedure.id) : {}
-      const opposabelAprobationEvent = opposableProcedure ? findEventByType(opposableEvents, 'Approbation du préfet', opposableProcedure.id) : {}
-      const opposableExecutoireEvent = opposableProcedure ? findEventByType(opposableEvents, 'Caractère exécutoire', opposableProcedure.id) : {}
-      const opposablePAC = opposableProcedure ? findEventByType(opposableEvents, 'Porter à connaissance', opposableProcedure.id) : {}
-      const opposablePACcomp = opposableProcedure ? findEventByType(opposableEvents, 'Porter à connaissance complémentaire', opposableProcedure.id) : {}
+      const opposablePrescriptionEvent = opposableProcedure ? findEventByType(opposableEvents, ['Prescription'], opposableProcedure.id) : {}
+      const opposableArretEvent = opposableProcedure ? findEventByType(opposableEvents, ['Arrêt de projet'], opposableProcedure.id) : {}
+      const opposabelAprobationEvent = opposableProcedure ? findEventByType(opposableEvents, approbationEventsType, opposableProcedure.id) : {}
+      const opposableExecutoireEvent = opposableProcedure ? findEventByType(opposableEvents, ['Caractère exécutoire'], opposableProcedure.id) : {}
+      const opposablePAC = opposableProcedure ? findEventByType(opposableEvents, ['Porter à connaissance'], opposableProcedure.id) : {}
+      const opposablePACcomp = opposableProcedure ? findEventByType(opposableEvents, ['Porter à connaissance complémentaire'], opposableProcedure.id) : {}
 
       // console.log(opposableExecutoireEvent)
 
@@ -245,8 +249,25 @@ module.exports = {
       const revisions = currentProcedures.filter(p => ['Révision', 'Révision allégée (ou RMS)', 'Révision simplifiée'].includes(p.type))
       const modifications = currentProcedures.filter(p => ['Modification', 'Modification simplifiée'].includes(p.type))
 
+      const collectivitePorteuseId = (lastCurrentProcedure || opposableProcedure || {
+        collectivite_porteuse_id: communeData.competencePLU ? collectiviteCode : communeData.intercommunaliteCode
+      }).collectivite_porteuse_id
+
+      const opposableDocLabel = opposableProcedure ? `${opposableProcedure.doc_type}${opposableProcedure.current_perimetre.length > 1 ? 'i' : ''}` : 'RNU'
+      const currentDocLabel = lastCurrentProcedure ? `${lastCurrentProcedure.doc_type}${lastCurrentProcedure.current_perimetre.length > 1 ? 'i' : ''}` : 'RNU'
+
       return {
+        epci_reg: '',
+        epci_region: '',
+        epci_dept: '',
+        epci_departement: '',
+        epci_type: '',
+        epci_nom: '',
+        epci_siren: communeData.intercommunaliteCode,
         code_insee: collectiviteCode,
+        com_nom: '',
+        collectivite_porteuse_sudocuh: collectivitePorteuseId,
+        collectivite_porteuse_banatic: communeData.competencePLU ? collectiviteCode : communeData.intercommunaliteCode,
         plan_etat_code1: codeEtat, //
         plan_libelle_etat_code1: codeEtatsLabels[codeEtat], //
         plan_code_etat_bcsi: codeEtat2, // Avoir le nouveau mode de calcul
@@ -255,7 +276,7 @@ module.exports = {
         type_pc_color: getStateColor(typesCurrentProc),
         pc_num_procedure: lastCurrentProcedure?.from_sudocuh || '', //
         pc_nb_communes: lastCurrentProcedure?.current_perimetre.length || '', //
-        pc_type_document: lastCurrentProcedure?.doc_type || '', //
+        pc_type_document: currentDocLabel || '', //
         pc_type_procedure: lastCurrentProcedure?.type || '', //
         pc_date_prescription: lastPrescriptionEvent?.date_iso || '', //
         pc_date_arret_projet: currentArretEvent?.date_iso || '', //
@@ -274,7 +295,7 @@ module.exports = {
         pc_cout_sst_ttc: '', // A priori on l'a
         pa_num_procedure: opposableProcedure?.from_sudocuh || '', //
         pa_nb_communes: opposableProcedure?.current_perimetre.length || '', //
-        pa_type_document: opposableProcedure?.doc_type || '', //
+        pa_type_document: opposableDocLabel, //
         pa_type_procedure: opposableProcedure?.type || '', //
         pa_sectoriel: opposableProcedure?.is_sectoriel || false, //
         pa_date_prescription: opposablePrescriptionEvent?.date_iso || '', //

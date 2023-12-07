@@ -171,6 +171,8 @@ export default {
             lighten4: '#F5F5FE'
           },
           grey: {
+            darken2: '#161616',
+            darken1: '#EEEEEE',
             base: '#DDDDDD'
           },
           secondary: '#e1000f',
@@ -201,6 +203,7 @@ export default {
           focus: '#6A6AF4',
           info: '#0762c8',
           success: '#008941',
+          'success-light': '#DFFEE6',
           error: '#e10600',
           rm300: '#f7bfc3',
           rm500: '#e1000f',

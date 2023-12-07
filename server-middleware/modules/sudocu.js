@@ -2,7 +2,10 @@
 import _ from 'lodash'
 import geo from './geo.js'
 const { createClient } = require('@supabase/supabase-js')
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+// const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+
+const { PG_DEV_CONFIG } = require('../../database/pg_secret_config.json')
+const supabase = createClient(PG_DEV_CONFIG.url, PG_DEV_CONFIG.admin_key)
 
 module.exports = {
   parseAttachment (path) {
@@ -38,7 +41,7 @@ module.exports = {
       return procedurePrincipale
     })
   },
-  enrich (procedures, proceduresPerimetres, collectivitesPorteuses) {
+  enrich (procedures, proceduresPerimetres, collectivitesPorteuses, { siSchema = false } = {}) {
     return procedures.map((procedure, idx) => {
     // Raccordements des périmètres aux procédures
       const collecPerim = proceduresPerimetres.data.find(i => i.procedure_id === procedure.noserieprocedure)
@@ -58,12 +61,14 @@ module.exports = {
       if (fullDetailsCollecPorteuse?.nbCommunes) {
         isSectoriel = collectivitePorteuse.nb_communes > 1 ? collectivitePorteuse.nb_communes < fullDetailsCollecPorteuse.nbCommunes : false
       }
-      // TODO: Ajouter Délibération d'approbation du prefet a ajouter
+
+      // siSchema -> partiellement ok
+      const isValid = (e, isSchema) => isSchema ? e.codestatutevenement === 'V' : (e.codestatutevenement === 'V' || e.codestatutevenement === 'AP')
+      console.log('isSchema: ', siSchema)
       statusInfos = {
         isSectoriel,
         // ou Arrêté d'abrogation OU Arrêté du Maire ou du Préfet ou de l'EPCI OU Approbation du préfet
-        //
-        hasDelibApprob: procedure.events?.some(e => ["Délibération d'approbation", "Arrêté d'abrogation", "Arrêté du Maire ou du Préfet ou de l'EPCI", 'Approbation du préfet'].includes(e.libtypeevenement) && e.codestatutevenement === 'V'),
+        hasDelibApprob: procedure.events?.some(e => ["Délibération d'approbation", "Arrêté d'abrogation", "Arrêté du Maire ou du Préfet ou de l'EPCI", 'Approbation du préfet'].includes(e.libtypeevenement) && isValid(e, siSchema)),
         hasAbandon: procedure.events?.some(e => ['Abandon', 'Abandon de la procédure'].includes(e.libtypeevenement)),
         hasAnnulation: procedure.events?.some(e => ['Caducité', 'Annulation de la procédure', 'Procédure caduque', 'Annulation TA'].includes(e.libtypeevenement) && e.codestatutevenement === 'V')
       }
@@ -181,7 +186,7 @@ module.exports = {
 
       // On fetch les procédures faisant parti du périmètre de la commune
       const rawPlanProcedures = await supabase.from('distinct_procedures_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false }).order('dateapprobation', { ascending: false }) // .order([{ column: 'last_event_date', order: 'desc' }, { column: 'dateapprobation', order: 'desc' }])
-      console.log('rawPlanProcedures: ', rawPlanProcedures.data[0])
+      // console.log('rawPlanProcedures: ', rawPlanProcedures.data[0])
       const rawSchemaProcedures = await supabase.from('distinct_procedures_schema_events').select('*').in('noserieprocedure', proceduresCollecIds).order('last_event_date', { ascending: false })
       if (rawPlanProcedures.error) { throw rawPlanProcedures }
       if (rawSchemaProcedures.error) { throw rawSchemaProcedures }
@@ -198,7 +203,7 @@ module.exports = {
       const schemaProceduresEvents = rawSchemaProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
 
       const planProcedures = this.enrich(planProceduresEvents, proceduresCollec, collectivitesPorteuses)
-      const schemaProcedures = this.enrich(schemaProceduresEvents, proceduresCollec, collectivitesPorteuses)
+      const schemaProcedures = this.enrich(schemaProceduresEvents, proceduresCollec, collectivitesPorteuses, { isSchema: true })
 
       // Formattage des procédures
       const formattedSchemaProcedures = schemaProcedures.map((e) => {
@@ -210,7 +215,7 @@ module.exports = {
           procedure_id: e.noserieprocedureratt,
           status_infos: e.statusInfos,
           doc_type: e.doc_type,
-          description: e.commentaire,
+          description: e.commentaireproc,
           launch_date: e.datelancement,
           approval_date: e.dateapprobation,
           abort_date: e.dateabandon,
@@ -221,16 +226,18 @@ module.exports = {
           events: e.events,
           perimetre: e.perimetre,
           procSecs: e.procSecs,
-          status: e.status
+          status: e.status,
+          numero: e.numero_procedure
         }
       })
       const formattedProcedures = planProcedures.map((e) => {
+        // console.log('id: ', e.noserieprocedure, ' e.numero_procedure: ', e.numero_procedure)
         return {
           actors: [],
           attachements: [],
           id: e.noserieprocedure,
           doc_type: e.doc_type,
-          description: e.commentaire,
+          description: e.commentaireproc,
           type: e.libtypeprocedure,
           procedure_id: e.noserieprocedureratt,
           launch_date: e.datelancement,
@@ -245,11 +252,13 @@ module.exports = {
           procSecs: e.procSecs,
           status: e.status,
           status_infos: e.statusInfos,
-          volet_qualitatif: e.volet_qualitatif ? e.volet_qualitatif[0] : null,
+          volet_qualitatif: e.volet_qualitatif,
           is_scot: e.is_scot,
           is_pluih: e.is_pluih,
           is_pdu: e.is_pdu,
-          mandatory_pdu: e.mandatory_pdu
+          mandatory_pdu: e.mandatory_pdu,
+          moe: e.moe,
+          numero: e.numero_procedure
         }
       })
 
@@ -260,7 +269,11 @@ module.exports = {
       // procedures: fullProcs
       // console.log('collectivite: ', collectivite, ' : ', fullProcs)
       // console.log('collectivite: ', collectivite)
-      return { collectivite, procedures: fullProcs, schemas: fullSchemas }
+      return {
+        collectivite,
+        procedures: fullProcs,
+        schemas: fullSchemas
+      }
     } catch (error) {
       console.log('ERROR: ', error)
     }

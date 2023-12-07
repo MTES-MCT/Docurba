@@ -40,7 +40,7 @@
   <v-container v-else class="fill-height">
     <v-row class="fill-height" justify="center" align="center">
       <v-col cols="auto">
-        <h2 class="text-h2 text-center">
+        <h2 class="text-h5 text-center">
           Aucune donnée n'est disponible pour le moment.
         </h2>
       </v-col>

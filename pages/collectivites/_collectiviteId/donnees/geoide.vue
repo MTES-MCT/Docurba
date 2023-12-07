@@ -43,7 +43,7 @@ export default {
   methods: {
     async fetchDatasets () {
       this.loading = true
-      const parsedInseeCode = this.communes.map(commune => `commune/${commune.id}`)
+      const parsedInseeCode = this.communes.map(commune => `commune/${commune.code}`)
       const { cards, themes } = await this.$daturba.getGeoIDE(parsedInseeCode.join(' or '))
 
       this.dataset = cards
