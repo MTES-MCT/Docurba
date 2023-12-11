@@ -141,7 +141,7 @@ export default {
   watch: {
     searchedScots () {
       if (this.page > (this.searchedScots.length / 10)) {
-        this.page = Math.ceil(this.searchedScots.length / 10)
+        this.page = Math.ceil(this.searchedScots.length / 10) || 1
       }
     },
     selectAll () {
@@ -169,7 +169,7 @@ export default {
             collectivite_code: collectivityCode,
             procedure_id: procedure.id,
             status: procedure.status,
-            departement: this.$user.profile.departement,
+            departement: this.$route.params.departement,
             doc_type: 'SCOT'
           })
         })

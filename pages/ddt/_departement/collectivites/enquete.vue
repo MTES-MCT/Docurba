@@ -19,8 +19,8 @@
             <v-tabs v-model="tab">
               <v-tab>Communes à valider</v-tab>
               <v-tab>Communes validées</v-tab>
-              <!-- <v-tab>SCOT à valider</v-tab>
-              <v-tab>SCOT validés</v-tab> -->
+              <v-tab>SCOT à valider</v-tab>
+              <v-tab>SCOT validés</v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab">
               <v-tab-item>
@@ -114,6 +114,8 @@ export default {
   },
   methods: {
     async fetchScots (validations) {
+      console.log('fetchScots validations', validations)
+
       // console.log('filteredScots', this.filteredScots)
       const { data: procedures } = await this.$supabase
         .rpc('scot_by_insee_codes', {
@@ -148,7 +150,7 @@ export default {
     updateScotsValidations (validations) {
       validations.forEach((validation) => {
         const scot = this.scots.find(s => s.code === validation.collectivite_code)
-        scot.validations.pussh(validation)
+        scot.validations.push(validation)
       })
     }
   }
