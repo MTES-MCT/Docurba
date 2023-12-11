@@ -13,6 +13,19 @@
           />
         </v-col>
         <v-spacer />
+        <v-col cols="auto" class="interco-select">
+          <v-select
+            v-model="search.interco"
+            placeholder="Intercommunalites"
+            solo
+            :items="intercommunalites"
+            item-text="intitule"
+            item-value="code"
+            flat
+            hide-details
+            clearable
+          />
+        </v-col>
         <v-col cols="auto" class="status-select">
           <v-select v-model="search.status" solo :items="search.statusList" flat hide-details />
         </v-col>
@@ -86,12 +99,17 @@ export default {
     validated: {
       type: Boolean,
       default: false
+    },
+    intercommunalites: {
+      type: Array,
+      default () { return [] }
     }
   },
   data () {
     return {
       search: {
         text: '',
+        interco: '',
         status: 'all',
         statusList: [{
           text: 'Tous les status',
@@ -123,6 +141,10 @@ export default {
           return false
         }
 
+        if (this.search.interco && collectivity.intercommunaliteCode !== this.search.interco) {
+          return false
+        }
+
         if (this.search.status !== 'all' && collectivity.loaded) {
           const searchedProcedure = collectivity.procedures.find(p => p.status === this.search.status)
           if (!searchedProcedure) { return false }
@@ -148,7 +170,7 @@ export default {
     },
     searchedCollectivities () {
       if (this.page > (this.searchedCollectivities.length / 10)) {
-        this.page = Math.ceil(this.searchedCollectivities.length / 10)
+        this.page = Math.ceil(this.searchedCollectivities.length / 10) || 1
       }
     },
     filteredCollectivities () {
@@ -233,6 +255,10 @@ export default {
 </script>
 
 <style scoped>
+.interco-select {
+  max-width: 300px;
+}
+
 .status-select {
   max-width: 200px;
 }
