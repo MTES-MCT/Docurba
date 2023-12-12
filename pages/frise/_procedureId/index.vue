@@ -75,13 +75,15 @@
             <v-row>
               <v-col cols="9">
                 <FriseEventCard v-if="$user?.id && recommendedEvents && recommendedEvents[0]" :event="recommendedEvents[0]" suggestion @addSuggestedEvent="addSuggestedEvent" />
-                <FriseEventCard
-                  v-for="event in enrichedEvents"
-                  :id="`event-${event.id}`"
-                  :key="event.id"
-                  :event="event"
-                  :type-du="procedure.doc_type"
-                />
+                <template v-for="event in enrichedEvents">
+                  <FriseEventCard
+                    v-if="event.visibility === 'public' || ($user.id && event.visibility === 'private')"
+                    :id="`event-${event.id}`"
+                    :key="event.id"
+                    :event="event"
+                    :type-du="procedure.doc_type"
+                  />
+                </template>
               </v-col>
               <v-col cols="3" class="my-6">
                 <p class="font-weight-bold">
@@ -217,11 +219,9 @@ export default
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     },
     recommendedEvents () {
-      console.log('internalProcedureType: ', this.internalProcedureType)
       const filteredDocumentEvents = this.documentEvents?.filter((e) => {
         return e.scope_sugg.includes(this.internalProcedureType)
       })
-      console.log('filteredDocumentEvents: ', filteredDocumentEvents)
       if (!filteredDocumentEvents) { return null }
       if (this.events && this.events.length < 1) {
         return [filteredDocumentEvents[0]]
@@ -241,10 +241,9 @@ export default
         'Révision à modalité simplifiée ou Révision allégée': 'rms',
         Modification: 'm',
         'Modification simplifiée': 'ms',
-        'Mise en comptabilité': 'mc',
+        'Mise en compatibilité': 'mc',
         'Mise à jour': 'mj'
       }
-      console.log('internalDocType: ', this.internalDocType)
       if (secondairesTypes[this.procedure.type]) { return secondairesTypes[this.procedure.type] }
       if (['Elaboration', 'Révision'].includes(this.procedure.type)) {
         if (isIntercommunal && this.internalDocType !== 'CC') { return 'ppi' } else { return 'pp' }
