@@ -24,10 +24,18 @@
             </v-tabs>
             <v-tabs-items v-model="tab">
               <v-tab-item>
-                <ProceduresCollectivitiesList :collectivities="unvalidatedCollectivities" @validations="updateValidations" />
+                <ProceduresCollectivitiesList
+                  :collectivities="unvalidatedCollectivities"
+                  :intercommunalites="intercommunalites"
+                  @validations="updateValidations"
+                />
               </v-tab-item>
               <v-tab-item>
-                <ProceduresCollectivitiesList :collectivities="validatedCollectivities" validated />
+                <ProceduresCollectivitiesList
+                  :collectivities="validatedCollectivities"
+                  :intercommunalites="intercommunalites"
+                  validated
+                />
               </v-tab-item>
               <v-tab-item>
                 <ProceduresScotList :scots="unvalidatedScots" :loaded="scotsLoaded" @validations="updateScotsValidations" />
@@ -82,7 +90,7 @@ export default {
   async mounted () {
     // Fetch communes for departement
     const departementCode = this.$route.params.departement
-    const collectivities = (await axios(`/api/geo/communes?departementCode=${departementCode}`)).data
+    const { data: collectivities } = await axios(`/api/geo/communes?departementCode=${departementCode}`)
 
     this.collectivities = collectivities.map((c) => {
       return Object.assign({
@@ -91,6 +99,9 @@ export default {
         loaded: false
       }, c)
     })
+
+    const { data: intercommunalites } = await axios(`/api/geo/intercommunalites?departementCode=${departementCode}`)
+    this.intercommunalites = intercommunalites
 
     // TODO: Add a filter to get only last 12 months validations
     const { data: validations } = await this.$supabase.from('procedures_validations').select('*')
