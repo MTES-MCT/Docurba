@@ -51,6 +51,14 @@ app.get('/collectivites/:code', (req, res) => {
   }
 })
 
+app.get('/collectivites/:code/center', (req, res) => {
+  if (req.params.code.length > 5) {
+    res.status(200).send(geo.getIntercommunaliteCenter(req.params.code))
+  } else {
+    res.status(200).send(geo.getCommuneCenter(req.params.code))
+  }
+})
+
 app.get('/geojson/:locality', (req, res) => {
   try {
     let geojson
