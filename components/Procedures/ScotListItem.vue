@@ -34,7 +34,7 @@
             nuxt
             small
             class="font-weight-bold"
-            :to="`/frise/${scot.code}`"
+            :to="`/ddt/${$route.params.departement}/collectivites?tab=scot&search=${scot.code}}`"
           >
             <span class="primary--text">Corriger</span>
             <v-icon small color="primary" class="ml-1">
