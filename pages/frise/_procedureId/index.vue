@@ -217,11 +217,9 @@ export default
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     },
     recommendedEvents () {
-      console.log('internalProcedureType: ', this.internalProcedureType)
       const filteredDocumentEvents = this.documentEvents?.filter((e) => {
         return e.scope_sugg.includes(this.internalProcedureType)
       })
-      console.log('filteredDocumentEvents: ', filteredDocumentEvents)
       if (!filteredDocumentEvents) { return null }
       if (this.events && this.events.length < 1) {
         return [filteredDocumentEvents[0]]
@@ -244,7 +242,6 @@ export default
         'Mise en comptabilité': 'mc',
         'Mise à jour': 'mj'
       }
-      console.log('internalDocType: ', this.internalDocType)
       if (secondairesTypes[this.procedure.type]) { return secondairesTypes[this.procedure.type] }
       if (['Elaboration', 'Révision'].includes(this.procedure.type)) {
         if (isIntercommunal && this.internalDocType !== 'CC') { return 'ppi' } else { return 'pp' }

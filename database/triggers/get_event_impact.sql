@@ -30,6 +30,11 @@ declare
     }';
 begin
 
+  if doc_type ILIKE 'PLU%' then
+    doc_type := 'PLU';
+  end if;
+  RAISE LOG 'doc_type PASSED IN FUNC: %', doc_type;
+
   select  (impactful_events->doc_type->'opposable')::jsonb ? event_processed.type into is_opposable_event;
   if is_opposable_event is true then
     RAISE LOG 'IS OPPOSABLE';
@@ -54,6 +59,6 @@ begin
     RAISE LOG 'IS ABANDON';
     return 'abandon';
   end if;
-  return new_status;
+  return null;
 end;
 $$;
