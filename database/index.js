@@ -94,6 +94,7 @@
     try {
       // DROP SCHEMA sudocu CASCADE;
       // DROP SCHEMA public CASCADE;
+      // grant usage on schema public to postgres, anon, authenticated, service_role;
       // grant select on all tables in schema public to postgres, anon, authenticated, service_role, supabase_admin;
       const test = await execute(`pg_restore -h ${config.host} -d ${config.database} -U ${config.user} ./database/dump/2023_12_07_dump`)
       console.log('Restored: ', test)

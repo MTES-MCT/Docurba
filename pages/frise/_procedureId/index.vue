@@ -75,13 +75,15 @@
             <v-row>
               <v-col cols="9">
                 <FriseEventCard v-if="$user?.id && recommendedEvents && recommendedEvents[0]" :event="recommendedEvents[0]" suggestion @addSuggestedEvent="addSuggestedEvent" />
-                <FriseEventCard
-                  v-for="event in enrichedEvents"
-                  :id="`event-${event.id}`"
-                  :key="event.id"
-                  :event="event"
-                  :type-du="procedure.doc_type"
-                />
+                <template v-for="event in enrichedEvents">
+                  <FriseEventCard
+                    v-if="event.visibility === 'public' || ($user.id && event.visibility === 'private')"
+                    :id="`event-${event.id}`"
+                    :key="event.id"
+                    :event="event"
+                    :type-du="procedure.doc_type"
+                  />
+                </template>
               </v-col>
               <v-col cols="3" class="my-6">
                 <p class="font-weight-bold">
@@ -239,7 +241,7 @@ export default
         'Révision à modalité simplifiée ou Révision allégée': 'rms',
         Modification: 'm',
         'Modification simplifiée': 'ms',
-        'Mise en comptabilité': 'mc',
+        'Mise en compatibilité': 'mc',
         'Mise à jour': 'mj'
       }
       if (secondairesTypes[this.procedure.type]) { return secondairesTypes[this.procedure.type] }
