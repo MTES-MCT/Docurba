@@ -258,7 +258,8 @@ export default {
             collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
             test: true
           }).select()
-          insertedProject = insertRet.data && insertRet.data[0] ? insertedProject[0].id : null
+          console.log('insertedProject: ', insertRet)
+          insertedProject = insertRet.data && insertRet.data[0] ? insertRet.data[0].id : null
           if (insertRet.error) { throw insertRet.error }
         }
         await this.$supabase.from('procedures').insert({
