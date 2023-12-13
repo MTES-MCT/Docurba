@@ -51,7 +51,12 @@ export default {
     }
   },
   async mounted () {
-    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
+    const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures')
+      .select('*')
+      .eq('id', this.$route.params.procedureId)
+    if (errorProcedure) { throw errorProcedure }
+    console.log('procedure: ', procedure)
+    // this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
   }
 }
 </script>

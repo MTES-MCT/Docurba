@@ -132,6 +132,7 @@ export default {
   },
   computed: {
     slugId () {
+      console.log('this.event: ', this.event)
       if (this.event) { return slugify(this.event.type || this.event.name, { remove: /[*+~.()'"!:@]/g }) } else { return '' }
     },
     creator () {

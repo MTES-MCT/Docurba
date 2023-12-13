@@ -20,11 +20,15 @@
       </v-col>
     </v-row>
     <DashboardDdtInfosTabs />
-    <v-row>
-      <v-col cols="12">
-        <div class="text-h2">
-          Description
-        </div>
+    <v-row v-if="procedure" class="white">
+      <v-col
+        v-for="town in procedure.current_perimetre"
+        :key="town.inseeCode"
+        cols="4"
+      >
+        <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: $route.params.departement, collectiviteId: town.inseeCode }, query: { isEpci: false } }">
+          {{ town.name }} ({{ town.inseeCode }})
+        </nuxt-link>
       </v-col>
     </v-row>
   </v-container>
@@ -36,11 +40,15 @@ export default {
   layout: 'ddt',
   data () {
     return {
-
+      procedure: null
     }
   },
   async mounted () {
-    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
+    const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures')
+      .select('*')
+      .eq('id', this.$route.params.procedureId)
+    if (errorProcedure) { throw errorProcedure }
+    this.procedure = procedure[0]
   }
 }
 </script>
