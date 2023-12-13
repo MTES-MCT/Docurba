@@ -132,13 +132,11 @@ export default {
   },
   computed: {
     slugId () {
-      console.log('this.event: ', this.event)
       if (this.event) { return slugify(this.event.type || this.event.name, { remove: /[*+~.()'"!:@]/g }) } else { return '' }
     },
     creator () {
       let actor = this.event.profiles?.side || 'docurba'
       if (this.event.from_sudocuh) { actor = 'sudocu' }
-      console.log('actor: ', actor)
       return actors.find((e) => {
         return e.values.includes(actor)
       })
@@ -151,7 +149,6 @@ export default {
     async downloadFile (attachement) {
       // TODO: Handle link type
       const path = this.event.from_sudocuh ? attachement.id : `${this.event.project_id}/${this.event.id}/${attachement.id}`
-      console.log('CHOSEN: ', path)
       const { data } = await this.$supabase.storage.from('doc-events-attachements').download(path)
 
       const link = this.$refs[`file-${attachement.id}`][0]
