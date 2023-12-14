@@ -64,6 +64,10 @@ export default {
     section: {
       type: Object,
       required: true
+    },
+    gitRef: {
+      type: String,
+      required: true
     }
   },
   data () {
@@ -84,11 +88,11 @@ export default {
   methods: {
     sendChangeRequest () {
       axios({
-        url: '/api/admin/help',
+        url: '/api/admin/help/pac',
         method: 'post',
         data: Object.assign({
-          section: this.section.name,
-          dir: this.section.path
+          path: this.section.path,
+          ref: this.gitRef
         }, this.change)
       })
 
