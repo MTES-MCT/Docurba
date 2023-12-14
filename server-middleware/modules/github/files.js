@@ -32,11 +32,13 @@ async function getFileContent (path, ref, format = 'raw') {
 }
 
 async function getFiles (path, ref, fetchContent = false) {
-  const { data: repo } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
+  let { data: repo } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
     path
   })
 
-  // console.log('getFiles', path)
+  if (!Array.isArray(repo)) {
+    repo = [repo]
+  }
 
   try {
     await Promise.all(repo.map(async (file) => {
@@ -72,7 +74,26 @@ async function getFiles (path, ref, fetchContent = false) {
   return repo
 }
 
+function addGhostSections (sections, ghostSections) {
+  for (const ghostSection of ghostSections) {
+    const ghostPath = ghostSection.path.replace('.md', '')
+    const existingSection = sections.find(s => s.path.replace('.md', '') === ghostPath)
+
+    if (existingSection) {
+      existingSection.inParentProject = true
+
+      if (ghostSection.children?.length) {
+        existingSection.children ??= []
+        addGhostSections(existingSection.children, ghostSection.children)
+      }
+    } else {
+      sections.push({ ...ghostSection, ghost: true })
+    }
+  }
+}
+
 module.exports = {
   getFileContent,
-  getFiles
+  getFiles,
+  addGhostSections
 }

@@ -2,10 +2,10 @@
 import _ from 'lodash'
 import geo from './geo.js'
 const { createClient } = require('@supabase/supabase-js')
-// const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
-const { PG_DEV_CONFIG } = require('../../database/pg_secret_config.json')
-const supabase = createClient(PG_DEV_CONFIG.url, PG_DEV_CONFIG.admin_key)
+// const { PG_DEV_CONFIG } = require('../../database/pg_secret_config.json')
+// const supabase = createClient(PG_DEV_CONFIG.url, PG_DEV_CONFIG.admin_key)
 
 module.exports = {
   parseAttachment (path) {

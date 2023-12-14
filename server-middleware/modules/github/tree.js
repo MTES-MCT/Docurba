@@ -89,5 +89,111 @@ module.exports = {
     } catch (err) {
       console.log(err, err.status)
     }
+  },
+  async copy (toRef, fromRef, path) {
+    const { data: fromHead } = await github('GET /repos/{owner}/{repo}/git/ref/heads/{ref}', {
+      ref: fromRef
+    })
+
+    const { data: toHead } = await github('GET /repos/{owner}/{repo}/git/ref/heads/{ref}', {
+      ref: toRef
+    })
+
+    const fromTreeSha = fromHead.object.sha
+    const toTreeSha = toHead.object.sha
+
+    const { data: fromTree } = await github('GET /repos/{owner}/{repo}/git/trees/{tree_sha}?recursive=1', {
+      tree_sha: fromTreeSha
+    })
+
+    const object = fromTree.tree.find(o => o.path === path)
+
+    if (!object) {
+      throw new Error('Object to copy not found')
+    }
+
+    const { data: newTree } = await github('POST /repos/{owner}/{repo}/git/trees', {
+      base_tree: toTreeSha,
+      tree: [
+        {
+          path: object.path,
+          mode: object.mode,
+          type: object.type,
+          sha: object.sha
+        }
+      ]
+    })
+
+    const { data: commit } = await github('POST /repos/{owner}/{repo}/git/commits', {
+      message: `Copy ${path} from ${fromRef}`,
+      tree: newTree.sha,
+      parents: [toTreeSha]
+    })
+
+    const { data: merge } = await github(`PATCH /repos/{owner}/{repo}/git/refs/heads/${toRef}`, {
+      ref: `refs/heads/${toRef}`,
+      sha: commit.sha,
+      force: true
+    })
+
+    return merge
+  },
+  findTree (tree, splitPath) {
+    if (!splitPath.length) {
+      return tree
+    }
+
+    const name = splitPath.shift()
+    const object = tree.children.find(o => o.name === name)
+
+    return this.findTree(object, splitPath)
+  },
+  async getTree (ref, path) {
+    const { data: head } = await github('GET /repos/{owner}/{repo}/git/ref/heads/{ref}', {
+      ref
+    })
+
+    const { data: rootTree } = await github('GET /repos/{owner}/{repo}/git/trees/{tree_sha}?recursive=1', {
+      tree_sha: head.object.sha
+    })
+
+    const objects = rootTree.tree.sort((a, b) => {
+      if (a.type === 'tree' && b.type !== 'tree') {
+        return -1
+      }
+      if (a.type !== 'tree' && b.type === 'tree') {
+        return 1
+      }
+
+      return a.path.localeCompare(b.path)
+    })
+
+    const root = {
+      path: '',
+      children: []
+    }
+
+    for (const object of objects) {
+      const splitPath = object.path.split('/')
+      const name = splitPath.pop()
+
+      const parent = this.findTree(root, splitPath)
+
+      if (name === 'intro.md' || name === 'intro') {
+        parent.introSha = object.sha
+        continue
+      }
+
+      parent.children.push({
+        name: name.replace('.md', ''),
+        path: object.path,
+        type: object.type === 'tree' ? 'dir' : 'file',
+        sha: object.sha,
+        url: object.url,
+        children: object.type === 'tree' ? [] : undefined
+      })
+    }
+
+    return this.findTree(root, path.split('/')).children
   }
 }
