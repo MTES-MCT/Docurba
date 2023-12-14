@@ -3,7 +3,7 @@ const express = require('express')
 const admin = require('./modules/admin.js')
 const github = require('./modules/github/github.js')
 const tree = require('./modules/github/tree.js')
-const { getFileContent, getFiles, addGhostSections } = require('./modules/github/files.js')
+const { getFileContent, getFiles } = require('./modules/github/files.js')
 
 const app = express()
 
@@ -35,17 +35,6 @@ app.post('/projects/:parentRef', async (req, res) => {
     res.status(200).send(newProjectBranch)
   } catch (err) {
     res.status(400).send(err)
-  }
-})
-
-app.put('/:ref/copy', async (req, res) => {
-  const { path, ghostRef } = req.body
-  // test should be replaced by region code.
-  try {
-    await tree.copy(req.params.ref, ghostRef, path)
-    res.status(200).end()
-  } catch (err) {
-    console.log('Error getting tree', err, err.status)
   }
 })
 
@@ -95,28 +84,21 @@ app.delete('/:ref', async (req, res) => {
 })
 
 app.get('/tree/:ref', async (req, res) => {
-  const { content, ghostRef, path = 'PAC' } = req.query
-
+  const { content } = req.query
+  // test should be replaced by region code.
   try {
-    if (content) {
-      const repo = await getFiles('/PAC', req.params.ref, content)
-      res.status(200).send(repo)
-      return
-    }
+    const repo = await getFiles('/PAC', req.params.ref, content)
 
-    const [repo, ghostRepo] = await Promise.all([
-      tree.getTree(req.params.ref, path),
-      ghostRef ? tree.getTree(ghostRef, path) : undefined
-    ])
-
-    if (ghostRef) {
-      addGhostSections(repo, ghostRepo)
-    }
-
+    // if (!error) {
     res.status(200).send(repo)
   } catch (err) {
     console.log('Error getting tree', err, err.status)
   }
+  // } else {
+  //   // eslint-disable-next-line no-console
+  //   console.log('error reading github:', error)
+  //   req.status(400).send(error)
+  // }
 })
 
 app.post('/tree/:ref', async (req, res) => {

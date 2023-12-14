@@ -64,10 +64,6 @@ export default {
     section: {
       type: Object,
       required: true
-    },
-    gitRef: {
-      type: String,
-      required: true
     }
   },
   data () {
@@ -91,8 +87,8 @@ export default {
         url: '/api/admin/help',
         method: 'post',
         data: Object.assign({
-          path: this.section.path,
-          ref: this.gitRef
+          section: this.section.name,
+          dir: this.section.path
         }, this.change)
       })
 

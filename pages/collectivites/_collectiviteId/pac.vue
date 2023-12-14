@@ -14,7 +14,6 @@
           :section="section"
           :git-ref="gitRef"
           :project="project"
-          :opened-path="$route.query.path"
         />
       </v-col>
     </v-row>

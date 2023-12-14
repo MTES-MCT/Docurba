@@ -12,27 +12,6 @@
           {{ collectivite.intitule }} ({{ collectivite.code }})
         </h2>
       </v-col>
-      <v-col>
-        <v-autocomplete
-          v-model="searchedSectionPath"
-          :loading="opening"
-          :items="autocompleteSectionItems"
-          filled
-          label="Rechercher une section"
-          item-text="name"
-          item-value="path"
-          @input="opening = true"
-        >
-          <template #item="data">
-            <v-list-item-content>
-              <v-list-item-subtitle :style="{ whiteSpace: 'normal' }">
-                {{ data.item.parentPathSubtitle }}
-              </v-list-item-subtitle>
-              <v-list-item-title>{{ data.item.name }}</v-list-item-title>
-            </v-list-item-content>
-          </template>
-        </v-autocomplete>
-      </v-col>
     </v-row>
     <v-row>
       <v-col v-for="section in sections" :key="section.url" cols="12">
@@ -40,13 +19,11 @@
           :section="section"
           :git-ref="gitRef"
           :project="project"
-          :opened-path="searchedSectionPath"
           editable
           @edited="toggleEdit"
           @selectionChange="saveSelection"
           @changeOrder="saveOrder"
           @changeTree="updateTreeData"
-          @opened="opening = false"
         />
       </v-col>
     </v-row>
@@ -102,35 +79,7 @@ export default {
       gitRef: this.$route.params.githubRef,
       loading: true,
       beforeLeaveDialog: { visible: false, next: null },
-      collectivite: null,
-      opening: false,
-      searchedSectionPath: null
-    }
-  },
-  computed: {
-    headRef () {
-      let headRef = 'main'
-
-      if (this.project && this.project.id) {
-        headRef = `dept-${this.$options.filters.deptToRef(this.project.trame)}`
-      }
-
-      if (this.gitRef.includes('dept-')) {
-        const dept = this.gitRef.replace('dept-', '')
-        // eslint-disable-next-line eqeqeq
-        const region = departements.find(d => d.code_departement == dept).code_region
-        headRef = `region-${region}`
-      }
-
-      return headRef
-    },
-    autocompleteSectionItems () {
-      const flatSections = this.getFlatSections(this.sections)
-      return flatSections.map(s => ({
-        name: s.name,
-        path: s.path,
-        parentPathSubtitle: s.path.substr(0, s.path.lastIndexOf('/')).replace('PAC/', '').replaceAll('/', ' / ')
-      }))
+      collectivite: null
     }
   },
   async mounted () {
@@ -146,10 +95,7 @@ export default {
 
     const { data: sections } = await axios({
       method: 'get',
-      url: `/api/trames/tree/${this.gitRef}`,
-      params: {
-        ghostRef: this.headRef
-      }
+      url: `/api/trames/tree/${this.gitRef}`
     })
 
     let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
@@ -198,6 +144,7 @@ export default {
         id: supSection?.id,
         diff: null,
         diffCount: 0,
+        parent,
         parentSha: supSection ? supSection.parent_sha : ''
       }, section)
     }
@@ -211,14 +158,48 @@ export default {
     this.getDiff(supSections)
   },
   methods: {
-    getFlatSections (sections) {
-      return sections.flatMap(s => [s, ...this.getFlatSections(s.children)])
-    },
+    // findSection (path, sections) {
+    //   const searchedSection = sections.find((section) => {
+    //     const sectionPath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
+    //     return sectionPath === path
+    //   })
+
+    //   sections.forEach()
+
+    //   return sections.find((section) => {
+    //     const sectionPath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
+    //     if (sectionPath === path) {
+    //       return true
+    //     } else if (section.children) {
+    //       return this.findSection(path)
+    //     }
+    //   })
+    // },
     async getDiff (supSections) {
+      let headRef = 'main'
+
+      if (this.project && this.project.id) {
+        headRef = `dept-${this.$options.filters.deptToRef(this.project.trame)}`
+      }
+
+      if (this.gitRef.includes('dept-')) {
+        const dept = this.gitRef.replace('dept-', '')
+        // eslint-disable-next-line eqeqeq
+        const region = departements.find(d => d.code_departement == dept).code_region
+        headRef = `region-${region}`
+      }
+
       // https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits
       const { data } = await axios({
-        url: `/api/trames/compare?basehead=${this.gitRef}...${this.headRef}`
+        url: `/api/trames/compare?basehead=${this.gitRef}...${headRef}`
       })
+
+      // This is to be used for gostSections
+      // const { data: missing } = await axios({
+      //   url: `/api/trames/compare?basehead=${headRef}...${this.gitRef}`
+      // })
+
+      // console.log(data, missing)
 
       const diffFiles = data.files.filter((file) => {
         const section = supSections.find((s) => {
@@ -229,7 +210,7 @@ export default {
       })
 
       this.sections.forEach((section) => {
-        this.setDiff(section, diffFiles, this.headRef)
+        this.setDiff(section, diffFiles, headRef)
       })
     },
     setDiff (section, diffFiles, diffRef) {
@@ -271,29 +252,11 @@ export default {
         PAC: this.project.PAC
       }).eq('id', this.project.id)
     },
-    findSection (sections, path) {
-      const section = sections.find(s => path.startsWith(s.path))
-
-      if (!section) {
-        throw new Error('Section not found')
-      }
-
-      if (section.path === path) {
-        return section
-      }
-
-      return this.findSection(section.children, path)
-    },
     async saveOrder (section, orderChange) {
-      // debugger
       const sectionPath = section.path
-      const parentPath = section.path.substr(0, section.path.lastIndexOf('/'))
+      const parent = section.parent
+      const changedSections = parent ? parent.children : this.sections
 
-      const sections = this.sections.includes(section)
-        ? this.sections
-        : this.findSection(this.sections, parentPath).children
-
-      const changedSections = sections.filter(s => !s.ghost)
       const changedSectionIndex = changedSections.findIndex(s => s.path === sectionPath)
       const newIndex = changedSectionIndex + orderChange
 
@@ -316,14 +279,8 @@ export default {
           }
         })
 
-        sections.sort((a, b) => {
-          if (a.ghost && !b.ghost) {
-            return 1
-          } else if (!a.ghost && b.ghost) {
-            return -1
-          } else {
-            return a.order - b.order
-          }
+        changedSections.sort((s1, s2) => {
+          return s1.order - s2.order
         })
 
         await this.$supabase.from('pac_sections').upsert(updatedSections).select()
@@ -402,11 +359,5 @@ export default {
 <style scoped>
 .collapse-transition {
   transition: max-width 200ms;
-}
-</style>
-
-<style>
-.v-autocomplete__content {
-  width: 0; /* will use min-width, so the autocomplete list will be the same width as the input */
 }
 </style>
