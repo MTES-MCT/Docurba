@@ -3,8 +3,14 @@ const _ = require('lodash')
 const { topology } = require('topojson-server')
 const { center } = require('@turf/turf')
 
-const communes = require('../Data/EnrichedCommunes.json')
-const intercommunalites = require('../Data/EnrichedIntercommunalites.json')
+// const communes = require('../Data/EnrichedCommunes.json')
+// const intercommunalites = require('../Data/EnrichedIntercommunalites.json')
+
+// const refCommunes = require('../Data/referentiels/communes.json')
+// const refGroupements = require('../Data/referentiels/groupements.json')
+
+const communes = require('../Data/referentiels/communes.json')
+const intercommunalites = require('../Data/referentiels/groupements.json')
 
 const departements = require('../Data/INSEE/departements.json')
 const regions = require('../Data/INSEE/regions.json')
@@ -16,14 +22,32 @@ const geojsonDepartements = require('../Data/geojson/departements-geo.json')
 const geojsonRegions = require('../Data/geojson/regions-geo.json')
 const topojsonFrance = require('../Data/geojson/france-topo.json')
 
+const cache = {
+  groupements: null,
+  communes: null
+}
+
 module.exports = {
+  getCollectivitesByDepartement (code) {
+    if (!cache.groupements[code] || !cache.communes[code]) {
+      cache.communes[code] = communes.filter(c => c.departementCode === code)
+      cache.groupements[code] = intercommunalites.filter(c => c.departementCode === code)
+    }
+
+    return cache[code]
+  },
   getCollectivite (code) {
     return code.length > 5 ? this.getIntercommunalite(code) : this.getCommune(code)
   },
-  getCollectivites (codes) {
-    const communes = this.getCommunes({ codes })
-    const intercommunalites = this.getIntercommunalites({ codes })
-    return [...communes, ...intercommunalites]
+  getCollectivites ({ codes, departement }) {
+    if (codes) {
+      const communes = this.getCommunes({ codes })
+      const intercommunalites = this.getIntercommunalites({ codes })
+      return [...communes, ...intercommunalites]
+    }
+    if (departement) {
+      this.getCollectivitesByDepartements(departement)
+    }
   },
   getCommunes (query) {
     const queryKeys = Object.keys(query)
