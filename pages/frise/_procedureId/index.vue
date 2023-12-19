@@ -22,7 +22,7 @@
         <v-btn v-if="$user?.profile?.side === 'etat'" color="primary" class="mr-2" outlined @click="addSubProcedure">
           Ajouter une procédure secondaire
         </v-btn>
-        <v-btn depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+        <v-btn v-if="$user?.id" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
           Ajouter un événement
         </v-btn>
         <v-menu v-if="$user?.profile?.side === 'etat'">
