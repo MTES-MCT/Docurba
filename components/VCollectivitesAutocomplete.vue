@@ -118,6 +118,14 @@ export default {
     async fetchCollectivites () {
       if (this.selectedDepartement) {
         this.loading = true
+
+        const collectivites = (await axios({
+          url: `/api/collectivites?departements=${this.selectedDepartement.code_departement}`,
+          method: 'get'
+        })).data
+
+        console.log('collectivites: ', collectivites)
+
         let towns = (await axios({
           url: '/api/communes',
           method: 'get',

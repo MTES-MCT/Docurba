@@ -33,6 +33,12 @@ app.get('/intercommunalites/:code', (req, res) => {
   }
 })
 
+app.get('/collectivites', (req, res) => {
+  console.log('ENDPOINT collectivites')
+  const communes = geo.getCollectivites(req.query)
+  res.status(200).send(communes)
+})
+
 app.get('/collectivites/:code', (req, res) => {
   if (req.params.code.length > 5) {
     const intercommunalite = geo.getIntercommunalite(req.params.code)

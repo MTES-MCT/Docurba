@@ -40,13 +40,14 @@ module.exports = {
     return code.length > 5 ? this.getIntercommunalite(code) : this.getCommune(code)
   },
   getCollectivites ({ codes, departement }) {
+    console.log('getCollectivites: ')
     if (codes) {
       const communes = this.getCommunes({ codes })
       const intercommunalites = this.getIntercommunalites({ codes })
       return [...communes, ...intercommunalites]
     }
     if (departement) {
-      this.getCollectivitesByDepartements(departement)
+      return this.getCollectivitesByDepartements(departement)
     }
   },
   getCommunes (query) {
