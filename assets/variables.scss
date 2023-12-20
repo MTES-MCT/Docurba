@@ -11,6 +11,15 @@
   src: url('~/assets/fonts/Marianne/fontes_desktop/Marianne-Regular.otf');
   src: url('~/assets/fonts/Marianne/fontes_web/Marianne-Regular.woff') format('woff'),
     url('~/assets/fonts/Marianne/fontes_web/Marianne-Regular.woff2') format('woff2');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Marianne';
+  src: url('~/assets/fonts/Marianne/fontes_desktop/Marianne-Medium.otf');
+  src: url('~/assets/fonts/Marianne/fontes_web/Marianne-Medium.woff') format('woff'),
+    url('~/assets/fonts/Marianne/fontes_web/Marianne-Medium.woff2') format('woff2');
+  font-weight: 500;
 }
 
 @font-face {
@@ -157,11 +166,11 @@
 
   .v-btn .v-btn__content {
     font-family: $heading-font-family;
-    text-transform: capitalize;
+    text-transform: unset;
   }
 
   .v-btn {
-      text-transform: capitalize;
+    text-transform: unset;
   }
 
   .break-word {
