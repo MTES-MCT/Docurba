@@ -41,7 +41,8 @@ export default {
     { src: '~/plugins/urbanisator.js' },
     { src: '~/plugins/sudocu.js', mode: 'client' },
     { src: '~/plugins/pdfMake.js', mode: 'client' },
-    { src: '~/plugins/analytics.js' }
+    { src: '~/plugins/analytics.js' },
+    { src: '~/plugins/gtag.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -92,7 +93,9 @@ export default {
         'script-src': [
           // "'self'",
           'https://stats.data.gouv.fr/piwik.js',
-          'https://tally.so/widgets/embed.js'
+          'https://tally.so/widgets/embed.js',
+          'https://www.googletagmanager.com/gtag/js',
+          'https://googleads.g.doubleclick.net/pagead/viewthroughconversion/11434835828/'
         ]
       }
       // addMeta: true

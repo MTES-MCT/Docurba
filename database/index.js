@@ -92,16 +92,22 @@
 
   async function loadDump (config) {
     try {
-      const test = await execute(`pg_restore -h ${config.host} -d ${config.database} -U ${config.user} ./database/dump/2023_11_19_dump`)
+      // DROP SCHEMA sudocu CASCADE;
+      // DROP SCHEMA public CASCADE;
+      // grant usage on schema public to postgres, anon, authenticated, service_role;
+      // grant select on all tables in schema public to postgres, anon, authenticated, service_role, supabase_admin;
+      const test = await execute(`pg_restore -h ${config.host} -d ${config.database} -U ${config.user} ./database/dump/2023_12_07_dump`)
       console.log('Restored: ', test)
     } catch (error) {
       console.log(error)
     }
   }
 
-  await loadDump(PG_DEV_CONFIG)
+  // await loadDump(PG_DEV_CONFIG)
+
   await createSudocuProcessedTables(PG_DEV_CONFIG)
   await createMaterializedViewProcedures(PG_DEV_CONFIG)
+
   // await exportProcessedSudocu(PG_TEST_CONFIG)
   // await importToDocurba(PG_PROD_CONFIG)
   // console.log('PG_TEST_CONFIG: ', PG_TEST_CONFIG)

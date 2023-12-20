@@ -173,7 +173,7 @@ export default {
       typeProcedure: '',
       typesProcedure: {
         principale: ['Elaboration', 'Révision'],
-        secondaire: ['Révision à modalité simplifiée ou Révision allégée', 'Modification', 'Modification simplifiée', 'Mise en comptabilité', 'Mise à jour']
+        secondaire: ['Révision à modalité simplifiée ou Révision allégée', 'Modification', 'Modification simplifiée', 'Mise en compatibilité', 'Mise à jour']
       },
       procedureParent: null,
       proceduresParents: null,
@@ -246,19 +246,22 @@ export default {
 
         // const regions = [...new Set(detailedPerimetre.map(e => e.regionCode))]
         const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
-
-        const { data: insertedProject, error: errorInsertProject } = await this.$supabase.from('projects').insert({
-          name: `${this.typeProcedure} ${this.typeDu}`,
-          doc_type: this.typeDu,
-          region: this.collectivite.regionCode,
-          collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
-          current_perimetre: fomattedPerimetre,
-          initial_perimetre: fomattedPerimetre,
-          collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
-          test: true
-        }).select()
-        if (errorInsertProject) { throw errorInsertProject }
-
+        let insertedProject = null
+        if (this.procedureCategory === 'principale') {
+          const insertRet = await this.$supabase.from('projects').insert({
+            name: `${this.typeProcedure} ${this.typeDu}`,
+            doc_type: this.typeDu,
+            region: this.collectivite.regionCode,
+            collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
+            current_perimetre: fomattedPerimetre,
+            initial_perimetre: fomattedPerimetre,
+            collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
+            test: true
+          }).select()
+          console.log('insertedProject: ', insertRet)
+          insertedProject = insertRet.data && insertRet.data[0] ? insertRet.data[0].id : null
+          if (insertRet.error) { throw insertRet.error }
+        }
         await this.$supabase.from('procedures').insert({
           secondary_procedure_of: this.procedureParent,
           type: this.typeProcedure,
@@ -270,12 +273,12 @@ export default {
           is_scot: null,
           is_pluih: this.typeDu === 'PLUiH',
           is_pdu: null,
-          doc_type: this.typeDu,
+          doc_type: this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType,
           departements,
           numero: this.procedureCategory === 'principale' ? '1' : this.numberProcedure,
           current_perimetre: fomattedPerimetre,
           initial_perimetre: fomattedPerimetre,
-          project_id: insertedProject[0].id,
+          project_id: insertedProject,
           name: (this.baseName + ' ' + this.nameComplement).trim(),
           owner_id: this.$user.id,
           testing: true

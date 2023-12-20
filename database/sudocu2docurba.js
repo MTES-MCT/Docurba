@@ -40,6 +40,7 @@
       project_id: docurbaProjectId,
       type: procedure.type,
       name: procedure.name,
+      created_at: procedure.created_at,
       commentaire: procedure.description,
       current_perimetre: procedure.perimetre,
       initial_perimetre: procedure.perimetre,
@@ -151,9 +152,9 @@
     // const collectivites = epcis
     const len = collectivites.length
     // 1221 stopped schema
-    const startAt = 26896
-    const BATCH_SIZE = 5
-    const RATE = 50
+    const startAt = 1
+    const BATCH_SIZE = 10
+    const RATE = 100
 
     let tempProms = []
 
