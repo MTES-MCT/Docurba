@@ -1,0 +1,97 @@
+<template>
+  <v-container>
+    <v-row>
+      <v-col cols="12">
+        <h1>Mes porter à connaissance (PAC)</h1>
+      </v-col>
+      <v-col v-if="!loading" cols="12">
+        <v-row align="end">
+          <v-col cols="4">
+            <v-text-field v-model="search" outlined hide-details label="Recherche" :append-icon="icons.mdiMagnify" />
+          </v-col>
+          <v-spacer />
+          <v-col cols="auto">
+            <v-btn color="primary" depressed tile @click="creationDialog = true">
+              Créer un PAC
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col v-for="project in filteredProjects" :key="project.key" cols="12">
+            <DashboardEmptyProjectCard :project="project" :collectivity="project.collectivity" />
+          </v-col>
+        </v-row>
+      </v-col>
+      <VGlobalLoader v-else />
+    </v-row>
+    <DashboardDUInsertDialog v-model="creationDialog" @insert="fetchProjects" />
+  </v-container>
+</template>
+
+<script>
+import { mdiMagnify } from '@mdi/js'
+import axios from 'axios'
+
+export default {
+  layout: 'ddt',
+  data () {
+    return {
+      projects: [],
+      search: this.$route.query.search,
+      icons: {
+        mdiMagnify
+      },
+      intercomunalites: [],
+      communes: [],
+      creationDialog: false,
+      loading: true
+    }
+  },
+  computed: {
+    filteredProjects () {
+      if (!this.search) { return this.projects }
+
+      const normalizedSearch = this.search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+
+      return this.projects.filter((project) => {
+        let searchString = `${project.name} ${project.doc_type} ${project.collectivity.intitule} ${project.collectivity.code}`
+        searchString = searchString.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+
+        return searchString.includes(normalizedSearch)
+      })
+    }
+  },
+  async mounted () {
+    const departement = this.$route.params.departement
+
+    const { data: communes } = await axios(`/api/geo/communes?departementCode=${departement}`)
+    const { data: intercomunalites } = await axios(`/api/geo/intercommunalites?departementCode=${departement}`)
+
+    // console.log(communes, intercomunalites)
+
+    this.communes = communes
+    this.intercomunalites = intercomunalites
+
+    await this.fetchProjects()
+    this.loading = false
+  },
+  methods: {
+    findCollectivity (code) {
+      return this.intercomunalites.find(i => i.code === code) || this.communes.find(c => c.code === code)
+    },
+    async fetchProjects () {
+      const { data: projects } = await this.$supabase.from('projects').select('id, name, doc_type, towns, collectivite_id, PAC, trame, region').match({
+        owner: this.$user.id,
+        archived: false
+      })
+
+      projects.forEach((project) => {
+        const collectivity = this.findCollectivity(project.collectivite_id)
+        project.collectivity = collectivity
+      })
+
+      this.projects = projects.filter(project => !!project.collectivity)
+    }
+  }
+}
+</script>

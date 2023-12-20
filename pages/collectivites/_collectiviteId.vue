@@ -3,14 +3,15 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <h1>{{ collectivite.intituleComplet }} </h1>
+          <h1>{{ collectivite.intitule }} ({{ collectivite.code }})</h1>
         </v-col>
       </v-row>
     </v-container>
     <nuxt-child
+      v-if="loaded"
       :is-epci="isEpci"
       :collectivite="collectivite"
-      :procedures="procedures"
+      :procedures="plans"
       :communes="isEpci ? collectivite.communes : [collectivite]"
       :schemas="schemas"
       @snackMessage="Object.assign(snackbar, {visible: true, message: arguments[0]})"
@@ -33,8 +34,9 @@ export default {
         message: ''
       },
       collectivite: null,
-      procedures: [],
-      schemas: []
+      plans: [],
+      schemas: [],
+      loaded: false
     }
   },
   computed: {
@@ -43,11 +45,18 @@ export default {
     }
   },
   async mounted () {
-    const { collectivite, schemas, procedures } = (await axios({ url: `/api/urba/collectivites/${this.$route.params.collectiviteId}`, method: 'get' })).data
-
-    this.collectivite = collectivite
-    this.schemas = schemas
-    this.procedures = procedures
+    await this.getProcedures()
+    this.loaded = true
+  },
+  methods: {
+    async getProcedures () {
+      console.log('this.$route.params.collectiviteId: ', this.$route.params.collectiviteId)
+      this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
+      const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
+      this.schemas = schemas
+      this.plans = plans
+      console.log('schemas: ', schemas, ' plans: ', plans)
+    }
   }
 }
 </script>

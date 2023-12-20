@@ -1,0 +1,1166 @@
+[
+  {
+    "name": "Publication du périmètre par le préfet",
+    "order": 1,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Délibération de l'établissement public qui prescrit",
+    "order": 2,
+    "law": "",
+    "phases": "Définition des modalités",
+    "scope_liste": [
+      "pp",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "m",
+      "ms"
+    ],
+    "structurant": true,
+    "impact": "en cours"
+  },
+  {
+    "name": "Délibération ou arrêté définissant les objectifs et modalités concertation",
+    "order": 3,
+    "law": "",
+    "phases": "Définition des modalités",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Notification du projet ou demande de DUP (MECDU)",
+    "order": 4,
+    "law": "art. L. 153-8 (1°) du code de l'urbanisme",
+    "phases": "Définition des modalités",
+    "scope_liste": [
+      "ppi"
+    ],
+    "scope_sugg": [
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Recrutement d'un bureau d'études",
+    "order": 5,
+    "law": "",
+    "phases": "Définition des modalités",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Recrutement d'un AMO",
+    "order": 6,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Réunion des PPA",
+    "order": 7,
+    "law": "",
+    "phases": "Toutes phases",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Réunion de concertation grand public",
+    "order": 8,
+    "law": "",
+    "phases": "Toutes phases",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Phase de construction du diagnostic et état initial de l'environnement",
+    "order": 9,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Transmission du porter-à-connaissance",
+    "order": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": "",
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Prise en compte du porter à connaissance dans le projet",
+    "order": 11,
+    "law": "L. 132-2 du CU",
+    "phases": "Diagnostic",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Demande de la note d'enjeux",
+    "order": 12,
+    "law": "L. 132-4-1 du CU",
+    "phases": "Diagnostic ou PAS",
+    "scope_liste": [
+      "ppi"
+    ],
+    "scope_sugg": [
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Transmission de la note d'enjeux",
+    "order": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": "",
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Prise en compte de la note d'enjeux dans le projet",
+    "order": 9,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Transmission du porter à connaissance complémentaire",
+    "order": 15,
+    "law": "",
+    "phases": "Toutes phases",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Présentation du diagnostic aux PPA",
+    "order": 16,
+    "law": "",
+    "phases": "Diagnostic",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Lancement de l'évaluation environnementale du projet",
+    "order": 17,
+    "law": "Elaboration : L. 104-1 (3°bis) et R. 104-11 (I-1°) du CU\nRévision : L. 104-1 (3°bis) et R. 104-11 (I-2°) du CU",
+    "phases": "EE",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Phase de construction du projet d'aménagement stratégique (PAS)",
+    "order": 18,
+    "law": "",
+    "phases": "PAS",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Présentation du PAS aux PPA",
+    "order": 19,
+    "law": "",
+    "phases": "PAS",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Intégration des retours sur le PAS",
+    "order": 20,
+    "law": "",
+    "phases": "PAS",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Débat sur le PAS",
+    "order": 21,
+    "law": "L. 153-12 du CU",
+    "phases": "PAS",
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [
+      "pp"
+    ],
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Phase de construction du rapport de présentation",
+    "order": 22,
+    "law": "",
+    "phases": "Rapport de présentation",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Phase de construction du document d'orientation et d'objectifs (DOO)",
+    "order": 23,
+    "law": "",
+    "phases": "DOO",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Présentation du projet complet de SCoT finalisé aux PPA avant l'arrêt",
+    "order": 24,
+    "law": "",
+    "phases": "Pré-arrêt",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Intégration des derniers retours sur le SCoT",
+    "order": 25,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Consultation de l'autorité environnementale au cas par cas ad'hoc",
+    "order": 26,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "rms",
+      "m",
+      "ms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Exemption d'évaluation environnementale",
+    "order": 27,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Soumission à évaluation environnementale",
+    "order": 28,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Délibération de bilan de la concertation",
+    "order": 29,
+    "law": "R. 153-3",
+    "phases": "Concertation",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Notification du dossier aux PPA et communes concernées",
+    "order": 30,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "m",
+      "ms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Délibération qui arrête le projet de SCoT",
+    "order": 31,
+    "law": "L. 153-14",
+    "phases": "Arrêt du projet",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Saisine de l'Autorité environnementale pour avis",
+    "order": 32,
+    "law": "art. R. 104-23",
+    "phases": "Arrêt du projet",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Saisine de la CDNPS pour avis",
+    "order": 33,
+    "law": "L121-27 (loi littorale)\nL 122-7 et L.122-14 (loi montagne)\nL. 153-16",
+    "phases": "Arrêt du projet",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Saisine de la CDPENAF pour avis",
+    "order": 34,
+    "law": "L. 153-16\nL151-11 à 13",
+    "phases": "Arrêt du projet",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Consultation des PPA",
+    "order": 35,
+    "law": "L. 153-16\nL132-7",
+    "phases": "Arrêt du projet",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Consultation du comité régional de l'habitat et de l'hébergement",
+    "order": 36,
+    "law": "L. 153-16",
+    "phases": "Arrêt du projet",
+    "scope_liste": [
+      "ppi"
+    ],
+    "scope_sugg": [
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Réception avis de l'autorité environnementale",
+    "order": 37,
+    "law": "",
+    "phases": "Arrêt du projet",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Avis de la CDPENAF",
+    "order": 38,
+    "law": "",
+    "phases": "?",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Avis de la CDNPS",
+    "order": 39,
+    "law": "",
+    "phases": "?",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Avis de l'État",
+    "order": 40,
+    "law": "",
+    "phases": "Arrêt du projet",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Avis de l'Etat sur l'analyse de la consomation d'ENAF et la modération de cette consommation",
+    "order": 41,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "m"
+    ],
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Examen conjoint des PPA",
+    "order": 42,
+    "law": "L. 153-34 et R. 153-12",
+    "phases": "",
+    "scope_liste": [
+      "rms"
+    ],
+    "scope_sugg": [
+      "rms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Publicité sur mise à disposition du public",
+    "order": 43,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "ms"
+    ],
+    "scope_sugg": [
+      "ms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Début de mise à disposition du public",
+    "order": 44,
+    "law": "L. 153-47 CU",
+    "phases": "",
+    "scope_liste": [
+      "ms"
+    ],
+    "scope_sugg": [
+      "ms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Fin de mise à disposition du public",
+    "order": 45,
+    "law": "L. 153-47 CU",
+    "phases": "",
+    "scope_liste": [
+      "ms"
+    ],
+    "scope_sugg": [
+      "ms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Arrêté d'enquête publique",
+    "order": 46,
+    "law": "L. 153-19",
+    "phases": "Enquête publique",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms",
+      "m"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Début d'enquête publique",
+    "order": 47,
+    "law": "",
+    "phases": "Enquête publique",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms",
+      "m"
+    ],
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Fin d'enquête publique",
+    "order": 48,
+    "law": "",
+    "phases": "Enquête publique",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms",
+      "m"
+    ],
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Rapport du commissaire enquêteur",
+    "order": 49,
+    "law": "",
+    "phases": "Enquête publique",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms",
+      "m"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Intégration des retours faits pendant l'enquête publique",
+    "order": 50,
+    "law": "",
+    "phases": "Enquête publique",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms",
+      "m"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Abandon",
+    "order": 51,
+    "law": "",
+    "phases": "Avant l'approbation",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": "abandon"
+  },
+  {
+    "name": "Délibération d'approbation",
+    "order": 52,
+    "law": "L. 153-21 (2°)",
+    "phases": "Approbation",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "structurant": true,
+    "impact": "opposable"
+  },
+  {
+    "name": "Transmission au contrôle de légalité",
+    "order": 53,
+    "law": "L. 153-23",
+    "phases": "Caractère exécutoire",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Intégration des retours suite au contrôle de légalité",
+    "order": 54,
+    "law": "",
+    "phases": "",
+    "scope_liste": "",
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Publicité dans la presse",
+    "order": 55,
+    "law": "R. 153-21",
+    "phases": "Caractère exécutoire",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Affichage",
+    "order": 56,
+    "law": "R. 153-21",
+    "phases": "Caractère exécutoire",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Affichage au siège de l'EPCI et dans toutes les communes",
+    "order": 57,
+    "law": "R. 153-21",
+    "phases": "Caractère exécutoire",
+    "scope_liste": [
+      "ppi"
+    ],
+    "scope_sugg": [
+      "ppi"
+    ],
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Publication du SCoT sur le GPU",
+    "order": 58,
+    "law": "L. 153-23",
+    "phases": "Caractère exécutoire",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms",
+      "m"
+    ],
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "",
+    "order": "",
+    "law": "",
+    "phases": "",
+    "scope_liste": "",
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": "opposable"
+  },
+  {
+    "name": "Recours gracieux de l'État",
+    "order": 60,
+    "law": "",
+    "phases": "?",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Modification du périmètre",
+    "order": 61,
+    "law": "",
+    "phases": "",
+    "scope_liste": "",
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Avis de la commune sur le dossier de MC",
+    "order": 62,
+    "law": "",
+    "phases": "",
+    "scope_liste": "",
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Arrêté d'abrogation",
+    "order": 63,
+    "law": "",
+    "phases": "",
+    "scope_liste": "",
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "DUP emportant mise en compatibilité",
+    "order": 64,
+    "law": "",
+    "phases": "",
+    "scope_liste": "",
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Retrait de la délibération de prescription",
+    "order": 65,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Retrait de la délibération d'approbation",
+    "order": 66,
+    "law": "",
+    "phases": "",
+    "scope_liste": "",
+    "scope_sugg": "",
+    "structurant": "",
+    "impact": ""
+  },
+  {
+    "name": "Désistement recours gracieux de l’État",
+    "order": 67,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Annulation TA partielle",
+    "order": 68,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Annulation TA totale",
+    "order": 69,
+    "law": "",
+    "phases": "?",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": "annule"
+  },
+  {
+    "name": "Déclaration d'intérêt général",
+    "order": 70,
+    "law": "",
+    "phases": "?",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": "",
+    "impact": ""
+  },
+  {
+    "name": "Rapport d'artificialisation des sols",
+    "order": 71,
+    "law": "L. 153-27 dernier alinéa du CU\n\n\nArticle L 22-31-1 (code général collectivités territoriales)",
+    "phases": "Bilan/évaluation",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": "",
+    "structurant": "",
+    "impact": ""
+  },
+  {
+    "name": "Evaluation du SCoT au bout de 6 ans ou révision substantielle si besoin",
+    "order": 72,
+    "law": "L. 153-27 du CU",
+    "phases": "Bilan/évaluation",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": [
+      "pp",
+      "ppi"
+    ],
+    "structurant": true,
+    "impact": ""
+  },
+  {
+    "name": "Caducité",
+    "order": 73,
+    "law": "",
+    "phases": "?",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": "",
+    "structurant": "",
+    "impact": ""
+  }
+]

@@ -1,33 +1,144 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row v-if="collectivite">
+      <v-col cols="12" class="pb-0 mt-6">
+        <nuxt-link :to="backToCollectivite" class="text-decoration-none d-flex align-center">
+          <v-icon color="primary" small class="mr-2">
+            {{ icons.mdiChevronLeft }}
+          </v-icon>
+          {{ collectivite.intitule }}
+        </nuxt-link>
+      </v-col>
+    </v-row>
+    <v-row v-if="collectivite && procedure">
       <v-col cols="12">
-        <!-- <nuxt-link :to="back">
-          Retour
-        </nuxt-link> -->
-        <h1 class="text-h1">
-          Feuille de route partagée
-        </h1>
-        <!-- {{ collectivite }} -->
+        <div class="d-flex align-center">
+          <h1 class="text-h1">
+            {{ procedure.doc_type }} de {{ collectivite.intitule }}
+          </h1>
+        </div>
+      </v-col>
+      <v-col cols="12" class="mb-2">
+        <v-btn v-if="$user?.profile?.side === 'etat'" color="primary" class="mr-2" outlined @click="addSubProcedure">
+          Ajouter une procédure secondaire
+        </v-btn>
+        <v-btn depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+          Ajouter un événement
+        </v-btn>
+        <v-menu v-if="$user?.profile?.side === 'etat'">
+          <template #activator="{ on, attrs }">
+            <v-btn icon color="primary" v-bind="attrs" v-on="on">
+              <v-icon> {{ icons.mdiDotsVertical }}</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-dialog v-model="dialog" width="500">
+              <template #activator="{ on, attrs }">
+                <v-list-item link v-bind="attrs" v-on="on">
+                  <v-list-item-title>
+                    Supprimer
+                  </v-list-item-title>
+                </v-list-item>
+              </template>
+
+              <v-card>
+                <v-card-title class="text-h5 error white--text">
+                  Cette action est irréversible.
+                </v-card-title>
+
+                <v-card-text class="pt-4">
+                  Êtes-vous sur de vouloir supprimer cette procédure ? Il ne sera pas possible de revenir en arrière.
+                </v-card-text>
+
+                <v-divider />
+
+                <v-card-actions>
+                  <v-spacer />
+                  <v-btn color="primary" text @click="dialog = false">
+                    Annuler
+                  </v-btn>
+                  <v-btn color="error" depressed @click="archiveProcedure(procedure.id)">
+                    Supprimer
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-list>
+        </v-menu>
       </v-col>
     </v-row>
     <v-row v-if="loaded">
-      <v-col cols="8">
-        <v-card outlined>
-          <v-card-text>
-            <FriseDocTimeline :events="events" :censored="!isVerified" />
-          </v-card-text>
+      <v-col cols="12">
+        <v-card outlined class="mb-16">
+          <v-container>
+            <v-row>
+              <v-col cols="9">
+                <FriseEventCard v-if="$user?.id && recommendedEvents && recommendedEvents[0]" :event="recommendedEvents[0]" suggestion @addSuggestedEvent="addSuggestedEvent" />
+                <FriseEventCard
+                  v-for="event in enrichedEvents"
+                  :id="`event-${event.id}`"
+                  :key="event.id"
+                  :event="event"
+                  :type-du="procedure.doc_type"
+                />
+              </v-col>
+              <v-col cols="3" class="my-6">
+                <p class="font-weight-bold">
+                  Événements clés
+                </p>
+                <div class="mb-4">
+                  <div v-for="(eventStructurant, i) in eventsStructurants" :key="i" class="mb-2">
+                    <v-tooltip bottom>
+                      <template #activator="{ on, attrs }">
+                        <v-chip
+                          label
+                          class="mb-2"
+                          color="grey darken-1"
+                          v-bind="attrs"
+                          v-on="on"
+                          @click="scrollToStructurant(eventStructurant.type)"
+                        >
+                          <v-icon color="grey darken-2" class="mr-2">
+                            {{ icons.mdiBookmark }}
+                          </v-icon>
+                          <span class="text-truncate">
+                            {{ eventStructurant.type }}
+                          </span>
+                        </v-chip>
+                      </template>
+                      {{ eventStructurant.type }}
+                    </v-tooltip>
+                  </div>
+                </div>
+                <p class="font-weight-bold">
+                  Ressources
+                </p>
+                <p>
+                  <v-tooltip v-for="attachment in attachments" :key="attachment.id" bottom>
+                    <template #activator="{ on, attrs }">
+                      <v-chip
+                        label
+                        class="mb-2"
+                        color="grey darken-1"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        <v-icon color="grey darken-2" class="mr-2">
+                          {{ icons.mdiPaperclip }}
+                        </v-icon>
+                        <span class="text-truncate">
+                          {{ attachment.name }}
+                        </span>
+                      </v-chip>
+                    </template>
+                    {{ attachment.name }}
+                  </v-tooltip>
+                </p>
+              </v-col>
+            </v-row>
+          </v-container>
         </v-card>
-      </v-col>
-      <v-col cols="4">
-        <v-row class="sticky-row">
-          <v-col cols="12">
-            <FriseCheckpointsCard :events="events" />
-          </v-col>
-          <v-col cols="12">
-            <FriseLastUpdatesCard :events="events" />
-          </v-col>
-        </v-row>
       </v-col>
     </v-row>
     <VGlobalLoader v-else />
@@ -35,35 +146,114 @@
 </template>
 
 <script>
-import _ from 'lodash'
-export default {
+import axios from 'axios'
+import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical } from '@mdi/js'
+
+import slugify from 'slugify'
+import PluEvents from '@/assets/data/events/PLU_events.json'
+import ScotEvents from '@/assets/data/events/SCOT_events.json'
+import ccEvents from '@/assets/data/events/CC_events.json'
+
+export default
+{
   name: 'ProcedureTimelineEvents',
-  layout ({ $user }) {
-    // console.log('$user?.profile: ', $user?.profile)
-    if ($user?.profile?.side === 'etat' && $user?.profile?.verified) {
-      return 'ddt'
-    } else {
-      return 'default'
-    }
-  },
   data () {
     return {
-      loaded: false,
       collectivite: null,
-      events: []
+      procedure: null,
+      events: [],
+      dialog: false,
+      icons: {
+        mdiBookmark,
+        mdiPaperclip,
+        mdiChevronLeft,
+        mdiDotsVertical
+      }
     }
   },
   computed: {
-    back () {
-      return {}
-      // if (this.$user.id && this.$user.scope && this.$user.scope.dept) {
-      //   return { name: 'ddt-departement-collectivites-collectiviteId', params: { departement: $route.params.departement, collectiviteId: $route.params.collectiviteId } }
-      // } else {
-      //   return { name: 'ddt-departement-collectivites-collectiviteId', params: { departement: $route.params.departement, collectiviteId: $route.params.collectiviteId } }
-      // }
+    loaded () {
+      return this.procedure && this.collectivite && this.eventsStructurants
+    },
+    internalDocType () {
+      let currDocType = this.procedure.doc_type
+      if (currDocType.match(/i|H|M/)) {
+        currDocType = 'PLU'
+      }
+      return currDocType
+    },
+    documentEvents () {
+      console.log('this.procedure.doc_type: ', this.procedure.doc_type)
+      const documentsEvents = {
+        PLU: PluEvents,
+        PLUi: PluEvents,
+        POS: PluEvents,
+        SCOT: ScotEvents,
+        CC: ccEvents
+      }
+      // console.log('this.internalDocType: ', this.internalDocType)
+      return documentsEvents[this.internalDocType]
+    },
+    eventsStructurants () {
+      return this.enrichedEvents.filter(e => e.structurant)
+    },
+    enrichedEvents () {
+      return this.events.map((event) => {
+        const ev = this.documentEvents.find(x => x.name === event.type)
+        return { ...event, structurant: !!ev?.structurant }
+      })
+    },
+    attachments () {
+      return this.events.map(e => e.attachements).flat()
+    },
+    backToCollectivite () {
+      if (this.$user.id && this.$user.profile && this.$user.profile.side === 'etat') {
+        return `/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`
+      } else {
+        return `/collectivites/${this.collectivite.code}`
+      }
     },
     isVerified () {
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
+    },
+    recommendedEvents () {
+      console.log('internalProcedureType: ', this.internalProcedureType)
+      const filteredDocumentEvents = this.documentEvents?.filter((e) => {
+        return e.scope_sugg.includes(this.internalProcedureType)
+      })
+      console.log('filteredDocumentEvents: ', filteredDocumentEvents)
+      if (!filteredDocumentEvents) { return null }
+      if (this.events && this.events.length < 1) {
+        return [filteredDocumentEvents[0]]
+      }
+      const lastEventType = filteredDocumentEvents.find(event => this.events[0].type === event.name)
+      const lastEventOrder = lastEventType ? lastEventType.order : -1
+
+      const recommendedEvents = [
+        this.findRecommendedEventType(lastEventOrder, 2),
+        this.findRecommendedEventType(lastEventOrder, 1)
+      ]
+      return recommendedEvents.filter(e => !!e)
+    },
+    internalProcedureType () {
+      const isIntercommunal = this.procedure.current_perimetre.length > 1
+      const secondairesTypes = {
+        'Révision à modalité simplifiée ou Révision allégée': 'rms',
+        Modification: 'm',
+        'Modification simplifiée': 'ms',
+        'Mise en comptabilité': 'mc',
+        'Mise à jour': 'mj'
+      }
+      console.log('internalDocType: ', this.internalDocType)
+      if (secondairesTypes[this.procedure.type]) { return secondairesTypes[this.procedure.type] }
+      if (['Elaboration', 'Révision'].includes(this.procedure.type)) {
+        if (isIntercommunal && this.internalDocType !== 'CC') { return 'ppi' } else { return 'pp' }
+      }
+      return 'aucun'
+    },
+    collectiviteId () {
+      const collecId = this.procedure.current_perimetre.length === 1 ? this.procedure.current_perimetre[0].inseeCode : this.procedure.collectivite_porteuse_id
+      return collecId
     }
   },
   async mounted () {
@@ -76,60 +266,56 @@ export default {
         })
       }
 
+      const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('*').eq('id', this.$route.params.procedureId)
+      this.procedure = procedure[0]
+      // const collecId = this.procedure.current_perimetre.length === 1 ? this.procedure.current_perimetre[0].inseeCode : this.procedure.collectivite_porteuse_id
+      this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.collectiviteId}` })).data
+      if (errorProcedure) { throw errorProcedure }
       await this.getEvents()
-      this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.log('ERROR MOUNTED: ', error)
+      console.log('ERROR: ', error)
     }
   },
   methods: {
+    addSubProcedure () {
+      this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectiviteId}/procedure/add?secondary_id=${this.$route.params.procedureId}`)
+    },
+    scrollToStructurant (clickedEvent) {
+      console.log('Scroll: ', clickedEvent)
+      this.$vuetify.goTo(`#${slugify(clickedEvent, { remove: /[*+~.()'"!:@]/g })}`)
+    },
+    addSuggestedEvent (eventName) {
+      this.$router.push(`/frise/${this.procedure.id}/add?eventType=${eventName}&typeDu=${this.procedure.doc_type}`)
+    },
+    async  archiveProcedure (idProcedure) {
+      try {
+        console.log('idProcedure to archive: ', idProcedure)
+        const { error } = await this.$supabase
+          .from('procedures')
+          .update({ archived: true })
+          .eq('id', idProcedure)
+
+        if (error) { throw error }
+        this.$emit('delete', idProcedure)
+        this.dialog = false
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    findRecommendedEventType (order, priority) {
+      return this.documentEvents.find((eventType) => {
+        return eventType.order > order
+      })
+    },
     async getEvents () {
-      // this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.procedureId)
-      // const { data: eventsDocruba, error: errorDocurba } = await this.$supabase.from('doc_frise_events').select('*').eq('project_id', this.projectId)
-
-      const eventsSudocu = await this.$sudocu.getProcedureEvents(this.$route.params.procedureId)
-
-      const { data: procedureDocurba, error: errorProcedureDocurba } = await this.$supabase.from('projects').select('*, doc_frise_events(*)').eq('sudocuh_procedure_id', this.$route.params.procedureId)
-      if (errorProcedureDocurba) { throw errorProcedureDocurba }
-      const eventsDocurba = procedureDocurba?.[0]?.doc_frise_events ?? []
-      // const { data: procedureDocurba, error: errorProcedureDocurba } = await this.$supabase.from('projects').select('*').eq('sudocuh_procedure_id', this.$route.params.procedureId)
-      // if (errorProcedureDocurba) {
-      //   console.log('errorProcedureDocurba: ', errorProcedureDocurba)
-      // }
-      // console.log('procedureDocurba: ', procedureDocurba)
-      // const { data, error } = await this.$supabase.from('projects').insert([newProject]).select()
-
-      this.events = _.orderBy(eventsSudocu.map((e) => {
-        return {
-          from_sudocuh: true,
-          date_iso: e.dateevenement,
-          type: e.libtypeevenement, // + ' - ',  + e.libstatutevenement,
-          status: e.libstatutevenement,
-          description: '', // e.commentaire + ' - Document sur le reseau: ' + e.nomdocument,
-          actors: [],
-          attachements: e.attachements,
-          docType: e.codetypedocument,
-          idProcedure: e.noserieprocedure,
-          typeProcedure: e.libtypeprocedure,
-          idProcedurePrincipal: e.noserieprocedureratt,
-          commentaireDgd: e.commentairedgd,
-          commentaireProcedure: e.commentaireproc,
-          commentaire: e.commentaire,
-          dateLancement: e.datelancement,
-          dateApprobation: e.dateapprobation,
-          dateAbandon: e.dateabandon,
-          dateExecutoire: e.dateexecutoire
-        }
-      }).concat(eventsDocurba), 'date_iso', 'desc')
+      const { data: events, error: errorEvents } = await this.$supabase.from('doc_frise_events')
+        .select('*, profiles(*)')
+        .eq('procedure_id', this.$route.params.procedureId)
+        .order('date_iso', { ascending: false })
+      if (errorEvents) { throw errorEvents }
+      this.events = events
     }
   }
 }
 </script>
-
-<style scoped>
-.sticky-row {
-  position: sticky;
-  top: 180px;
-}
-</style>

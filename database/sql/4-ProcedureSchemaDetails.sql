@@ -10,6 +10,8 @@ CREATE OR REPLACE VIEW procedureSchemaDetails AS
   c.sicompetenceplan,
   c.noserietypecollectivite,
   c.libtypecollectivite,
-  c.codetypecollectivite
+  c.codetypecollectivite,
+  p.noprocedure
   FROM sudocu.procedureschema ps
+  left join sudocu.procedure p on p.noserieprocedure = ps.noseriecollectivite
   LEFT JOIN public.collectivitesdetails c ON c.noseriecollectivite = ps.noseriecollectivite;

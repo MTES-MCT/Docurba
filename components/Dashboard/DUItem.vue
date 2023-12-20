@@ -2,7 +2,7 @@
   <div class="mb-4">
     <v-card outlined class="no-border-radius-bottom">
       <v-card-text>
-        <DashboardDUProcedureItem :procedure="procedure" :censored="censored" />
+        <DashboardDUProcedureItem :procedure="procedure" :censored="censored" @delete="$emit('delete', arguments[0])" />
       </v-card-text>
     </v-card>
     <v-container v-if="procedure.procSecs?.length > 0">
@@ -20,6 +20,7 @@
                   class="grey-border mb-8"
                   :procedure="procSec"
                   :censored="censored"
+                  @delete="$emit('delete', arguments[0])"
                 />
               </v-expansion-panel-content>
             </v-expansion-panel>

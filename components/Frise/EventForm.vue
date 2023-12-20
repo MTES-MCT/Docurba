@@ -1,104 +1,81 @@
 <template>
-  <v-row v-if="!loading">
+  <v-row v-if="!loading" class="mb-8">
     <v-col cols="12">
-      <v-card outlined>
-        <v-card-title class="text-h3 black--text">
-          Eléments obligatoires
-        </v-card-title>
-        <v-card-text>
+      <v-card outlined class="pa-4">
+        <v-container>
           <v-row>
-            <v-col cols="6">
-              <v-row>
-                <v-col cols="10">
-                  <!-- <v-text-field v-model="event.type" hide-details filled label="Type" /> -->
-                  <FriseEventSelector v-model="event.type" />
-                </v-col>
-                <v-col cols="6">
-                  <VTextDatePicker v-model="event.date_iso" label="Date" />
-                </v-col>
-                <v-col cols="12">
-                  <v-textarea
-                    v-model="event.description"
-                    label="Description courte"
-                    filled
-                    placeholder="Vous pouvez inscrire ici une description qui sera visible par tous"
-                  />
-                </v-col>
-              </v-row>
+            <v-col cols="12">
+              <FriseEventSelector v-model="event.type" :procedure="procedure" />
             </v-col>
-            <v-col cols="6">
-              <div>
-                <span class="label">Partie prenantes</span>
-                <v-checkbox
-                  v-for="actor in actorsList"
-                  :key="actor"
-                  v-model="event.actors"
-                  :value="actor"
-                  :label="actor"
-                  hide-details
-                />
-              </div>
-              <div class="mt-6">
-                <v-select
-                  v-model="event.visibility"
-                  persistent-hint
-                  hint="Si vous voulez uniquement afficher cet évènements aux agents de l'Etat et acteurs de collectivités, choissez 'Privé'"
-                  label="Visibilité de l'évènement"
-                  filled
-                  :items="[{value: 'public', text: 'Publique'}, {value: 'private', text: 'Privé'}]"
-                />
-              </div>
+            <v-col cols="12">
+              <VTextDatePicker v-model="event.date_iso" label="Date de l'évènement" />
+            </v-col>
+            <v-col cols="12">
+              <v-textarea
+                v-model="event.description"
+                label="Description"
+                filled
+                hide-details=""
+                placeholder="Vous pouvez inscrire ici une description qui sera visible par tous"
+              />
+            </v-col>
+            <v-col cols="12">
+              <v-select
+                v-model="event.visibility"
+                persistent-hint
+                hint="Si vous voulez uniquement afficher cet évènements aux agents de l'Etat et acteurs de collectivités, choissez 'Privé'"
+                label="Visibilité de l'évènement"
+                filled
+                :items="[{value: 'public', text: 'Publique'}, {value: 'private', text: 'Privé'}]"
+              />
+            </v-col>
+            <v-col cols="12">
+              <FriseEventAttachementsCard v-model="attachements" />
             </v-col>
           </v-row>
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col cols="12">
-      <FriseEventAttachementsCard v-model="attachements" />
-    </v-col>
-    <v-col cols="12">
-      <v-card outlined>
-        <v-card-text>
-          <v-row>
-            <v-spacer />
-            <v-col cols="auto">
-              <v-btn color="primary" outlined tile @click="$emit('cancel')">
-                Annuler
-              </v-btn>
-            </v-col>
-            <v-col v-if="eventId" cols="auto">
-              <v-dialog v-model="deleteModal" max-width="320px">
-                <template #activator="{on}">
-                  <v-btn tile outlined color="error" v-on="on">
-                    Supprimer
-                  </v-btn>
-                </template>
-                <v-card>
-                  <v-card-title>
-                    Confirmer la suppression ?
-                  </v-card-title>
-                  <v-card-text>
-                    Cette action est définitive.
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer />
-                    <v-btn color="primary" outlined @click="deleteModal = false">
-                      Annuler
+
+          <v-col cols="12">
+            <v-row>
+              <v-spacer />
+              <v-col cols="auto">
+                <v-btn color="primary" outlined tile :to="`/frise/${procedure.id}`">
+                  Annuler
+                </v-btn>
+              </v-col>
+              <v-col v-if="eventId" cols="auto">
+                <v-dialog v-model="deleteModal" max-width="320px">
+                  <template #activator="{on}">
+                    <v-btn tile outlined color="error" v-on="on">
+                      Supprimer
                     </v-btn>
-                    <v-btn color="error" @click="deleteEvent">
-                      <v-icon>{{ icons.mdiTrashCan }}</v-icon> Supprimer
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </v-col>
-            <v-col cols="auto">
-              <v-btn :loading="saving" color="primary" tile @click="saveEvent">
-                {{ eventId ? 'Modifier' : 'Créer' }}
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-card-text>
+                  </template>
+                  <v-card>
+                    <v-card-title>
+                      Confirmer la suppression ?
+                    </v-card-title>
+                    <v-card-text>
+                      Cette action est définitive.
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer />
+                      <v-btn color="primary" outlined @click="deleteModal = false">
+                        Annuler
+                      </v-btn>
+                      <v-btn color="error" @click="deleteEvent">
+                        <v-icon>{{ icons.mdiTrashCan }}</v-icon> Supprimer
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-col>
+              <v-col cols="auto">
+                <v-btn :loading="saving" color="primary" tile @click="saveEvent">
+                  {{ eventId ? 'Modifier' : 'Créer' }}
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-container>
       </v-card>
     </v-col>
   </v-row>
@@ -110,10 +87,18 @@ import { mdiTrashCan } from '@mdi/js'
 
 export default {
   props: {
-    projectId: {
+    typeDu: {
       type: String,
+      required: true
+    },
+    procedure: {
+      type: Object,
+      required: true
+    },
+    value: {
+      type: Object,
       default () {
-        return this.$route.params.procedureId
+        return {}
       }
     },
     eventId: {
@@ -128,38 +113,27 @@ export default {
       type: this.$route.query.eventType || '',
       date_iso: this.$dayjs().format('YYYY-MM-DD'),
       description: '',
-      actors: [],
       attachements: [],
-      visibility: 'public'
+      visibility: 'private'
     }
 
     return {
       collectivite: null,
-      eventsSudocu: null,
       defaultEvent,
       event: Object.assign({}, defaultEvent, {
-        description: this.$isDev ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' : '',
-        project_id: this.projectId
-      }),
+        description: this.$isDev ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' : '',
+        project_id: this.procedure.project_id,
+        procedure_id: this.procedure.id,
+        test: !!this.$isDev
+      }, this.value),
       attachements: [],
-      icons: {
-        mdiTrashCan
-      },
+      icons: { mdiTrashCan },
       loading: !!this.eventId,
       saving: false,
-      deleteModal: false,
-      actorsList: ['Collectivité', 'DDT', 'Bureau d’étude']
+      deleteModal: false
     }
   },
-  async mounted () {
-    this.eventsSudocu = await this.$sudocu.getProcedureEvents(this.$route.params.procedureId)
-    if (this.eventId) {
-      // fetch event Docurba
-      const { data: events } = await this.$supabase.from('doc_frise_events').select('*').eq('id', this.eventId)
-      this.event = Object.assign({}, events[0])
-      this.attachements = this.event.attachements || []
-    }
-
+  mounted () {
     this.loading = false
   },
   methods: {
@@ -172,34 +146,16 @@ export default {
         if (attachement.state === 'new') {
           return this.$supabase.storage
             .from('doc-events-attachements')
-            .upload(`${this.projectId}/${eventId}/${attachement.id}`, attachement.file)
+            .upload(`${this.procedure.project_id}/${eventId}/${attachement.id}`, attachement.file)
         } else if (attachement.state === 'removed') {
-          // console.log(`${this.projectId}/${eventId}/${attachement.id}`)
           return this.$supabase.storage.from('doc-events-attachements')
-            .remove([`${this.projectId}/${eventId}/${attachement.id}`])
+            .remove([`${this.procedure.project_id}/${eventId}/${attachement.id}`])
         } else { return null }
       }))
     },
     async saveEvent () {
       try {
         this.saving = true
-
-        // Check if there is a previous Sudocu history
-        const { data: procedureDocurba, error: errorProcedureDocurba } = await this.$supabase.from('projects').select('*').eq('sudocuh_procedure_id', this.$route.params.procedureId)
-        if (errorProcedureDocurba) { throw errorProcedureDocurba }
-
-        this.event.project_id = procedureDocurba?.[0]?.id
-        if (procedureDocurba.length === 0) {
-          const newProject = Object.assign({
-            owner: this.$user.id,
-            doc_type: this.eventsSudocu[0].codetypedocument,
-            sudocuh_procedure_id: this.eventsSudocu[0].noserieprocedure
-          })
-          const { data: newProjectDocurba, error: errorNewProjectDocurba } = await this.$supabase.from('projects').insert([newProject]).select()
-          if (errorNewProjectDocurba) { throw errorNewProjectDocurba }
-          this.event.project_id = newProjectDocurba[0].id
-        }
-        // end
 
         this.event.attachements = this.attachements.filter((attachement) => {
           return attachement.state !== 'removed'
@@ -208,22 +164,25 @@ export default {
           return { id, name }
         })
 
+        const upsertEvent = { ...this.event, profile_id: this.$user.id }
         if (this.eventId) {
-          await this.$supabase.from('doc_frise_events').update(this.event).eq('id', this.eventId)
+          await this.$supabase.from('doc_frise_events').update(upsertEvent).eq('id', this.eventId)
           await this.saveAttachements(this.eventId)
         } else {
-          const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert([this.event]).select()
+          console.log('upsertEvent: ', upsertEvent)
+          const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(upsertEvent).select()
+          console.log('savedEvents: ', savedEvents)
           await this.saveAttachements(savedEvents[0].id)
         }
         this.saving = false
-        this.$router.push(`/frise/${this.$route.params.procedureId}`)
+        this.$router.push(`/frise/${this.procedure.id}`)
       } catch (error) {
         console.log(error)
       }
     },
     async deleteEvent () {
       await this.$supabase.from('doc_frise_events').delete().eq('id', this.eventId)
-      this.$router.push({ name: 'frise-procedureId', params: { procedureId: this.$route.params.procedureId }, query: this.$route.query })
+      this.$router.push({ name: 'frise-procedureId', params: { procedureId: this.procedure.id }, query: this.$route.query })
     }
   }
 }

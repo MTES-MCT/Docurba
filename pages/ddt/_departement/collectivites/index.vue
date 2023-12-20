@@ -1,6 +1,17 @@
 <template>
   <v-container>
     <v-row>
+      <v-col v-if="!clickedOnDocLink" cols="12">
+        <v-alert type="info">
+          Zoom sur les dernières améliorations des fonctionnalités de Docurba.
+          <a
+            class="white--text"
+            href="https://pad.incubateur.net/FUz6ITnHSC6wVv1rvIipyg?view"
+            target="_blank"
+            @click="showClose"
+          >Découvrez la documentation</a>
+        </v-alert>
+      </v-col>
       <v-col cols="12">
         <h1>Mes collectivités - {{ $route.params.departement }}</h1>
       </v-col>
@@ -36,6 +47,7 @@
               :headers="headersEpci"
               :items="collectivites"
               class="elevation-1"
+              :custom-filter="customFilter"
               :search="search"
               :loading="!epci"
               loading-text="Chargement des collectivités..."
@@ -74,6 +86,7 @@
               class="elevation-1"
               :loading="!communes"
               loading-text="Chargement des collectivités..."
+              :custom-filter="customFilter"
               :search="search"
             >
               <!-- eslint-disable-next-line -->
@@ -126,6 +139,8 @@
 <script>
 import axios from 'axios'
 
+const docVersion = '1.0'
+
 export default {
   name: 'CollectiviteDU',
   layout: 'ddt',
@@ -135,28 +150,29 @@ export default {
       lastProcedures: null,
       epci: null,
       communes: null,
-      scope: 0
+      scope: 0,
+      clickedOnDocLink: true
     }
   },
   computed: {
     headers () {
       return [
-        { text: 'Nom', align: 'start', value: 'name' },
-        { text: 'Code INSEE', align: 'start', value: 'code' },
-        { text: 'Compétence', value: 'competence' },
-        { text: 'Intercommunalité', value: 'intercommunalite' },
+        { text: 'Nom', align: 'start', value: 'name', filterable: true },
+        { text: 'Code INSEE', align: 'start', value: 'code', filterable: true },
+        { text: 'Compétence', value: 'competence', filterable: false },
+        { text: 'Intercommunalité', value: 'intercommunalite', filterable: false },
         // { text: 'Date de création', value: 'dateCreation' },
-        { text: 'Actions', value: 'actions' }
+        { text: 'Actions', value: 'actions', filterable: false }
       ]
     },
     headersEpci () {
       return [
-        { text: 'Nom', align: 'start', value: 'name' },
-        { text: 'SIREN', align: 'start', value: 'code' },
-        { text: 'Type', value: 'type' },
-        { text: 'Compétence', value: 'competence' },
+        { text: 'Nom', align: 'start', value: 'name', filterable: true },
+        { text: 'SIREN', align: 'start', value: 'code', filterable: true },
+        { text: 'Type', value: 'type', filterable: false },
+        { text: 'Compétence', value: 'competence', filterable: false },
         // { text: 'Date de création', value: 'dateCreation' },
-        { text: 'Actions', value: 'actions' }
+        { text: 'Actions', value: 'actions', filterable: false }
       ]
     },
     collectivites () {
@@ -185,6 +201,8 @@ export default {
     }
   },
   async mounted () {
+    this.clickedOnDocLink = (localStorage.getItem('docVersion') === docVersion)
+
     const { data: epcis } = await axios({
       url: '/api/geo/intercommunalites',
       method: 'get',
@@ -251,6 +269,20 @@ export default {
         frpProcPrincipalPath: { name: 'foo' }
       }
     })
+  },
+  methods: {
+    customFilter (value, search, item) {
+      if (!search?.length || !value?.length) { return true }
+
+      const normalizedValue = value.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+      const normalizedSearch = search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+
+      return normalizedValue.includes(normalizedSearch)
+    },
+    showClose () {
+      this.clickedOnDocLink = true
+      localStorage.setItem('docVersion', docVersion)
+    }
   }
 }
 </script>

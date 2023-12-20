@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="collectivite && procedures">
+  <v-container v-if="collectivite">
     <v-row>
       <v-col cols="12">
         <h1 class="text-h1">
@@ -20,28 +20,35 @@
         </div>
       </v-col>
     </v-row>
-    <v-row>
+    <template v-if="loaded">
+      <v-row>
+        <v-col cols="12">
+          <v-alert type="info">
+            Date du dernier extract de données Sudocuh vers Docurba: <b>19 Novembre 2023</b>
+          </v-alert>
+        </v-col>
+        <v-col cols="12">
+          <p class="text-h2">
+            Documents d'urbanisme
+          </p>
+          <p class="text-h6">
+            Documents d’urbanisme disponibles pour la commune recherchée :
+          </p>
+        </v-col>
+      </v-row>
+      <DashboardDUItemsList
+        :collectivite="collectivite"
+        :procedures="plans"
+        :schemas="schemas"
+        @deleteProcedure="getProcedures"
+      />
+    </template>
+
+    <v-row v-else>
       <v-col cols="12">
-        <v-alert type="info">
-          Date du dernier extract de données Sudocuh vers Docurba: <b>19 Novembre 2023</b>
-        </v-alert>
-      </v-col>
-      <v-col cols="12">
-        <p class="text-h2">
-          Documents d'urbanisme
-        </p>
-        <p class="text-h6">
-          Documents d’urbanisme disponibles pour la commune recherchée :
-        </p>
+        <VGlobalLoader />
       </v-col>
     </v-row>
-    <DashboardDUItemsList
-      :collectivite="collectivite"
-      :procedures="procedures"
-      :projects="projects"
-      :schemas="schemas"
-      @inserted="fetchProjects"
-    />
   </v-container>
 </template>
 <script>
@@ -54,33 +61,25 @@ export default {
   layout: 'ddt',
   data () {
     return {
-      linkedEpci: null,
+      loaded: false,
       tab: null,
       collectivite: null,
-      procedures: [],
-      sudocuProcedures: [],
-      projects: [],
+      plans: [],
       schemas: [],
-      icons: {
-        mdiArrowLeft
-      }
+      icons: { mdiArrowLeft }
     }
   },
   async mounted () {
-    const { collectivite, schemas, procedures: sudocuProcedures } = (await axios({ url: `/api/urba/collectivites/${this.$route.params.collectiviteId}`, method: 'get' })).data
-    this.collectivite = collectivite
-    this.schemas = schemas
-    this.sudocuProcedures = sudocuProcedures
-    console.log('this.sudocuProcedures: ', this.sudocuProcedures)
-    const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
-    this.procedures = [...this.sudocuProcedures, ...procedures]
-    this.projects = projects
+    await this.getProcedures()
+    this.loaded = true
   },
   methods: {
-    async fetchProjects () {
-      const { procedures, projects } = await this.$urbanisator.getProjectsProcedures(this.$route.params.collectiviteId)
-      this.procedures = [...this.sudocuProcedures, ...procedures]
-      this.projects = projects
+    async getProcedures () {
+      this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
+      const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
+      this.schemas = schemas
+      this.plans = plans
+      console.log('schemas: ', schemas, ' plans: ', plans)
     }
   }
 }

@@ -16,13 +16,16 @@ create materialized view distinct_procedures_events as
     MAX(dateexecutoire) as dateexecutoire,
     MAX(commentaire) as commentaire,
     MAX(nomdocument) as nomdocument,
-    jsonb_agg(volet_qualitatif) as volet_qualitatif,
-    bool_and(sipsmv) as is_scot,
-    bool_and(sipsmv) as is_pluih,
-    bool_and(sipsmv) as is_pdu,
-    bool_and(sipsmv) as mandatory_pdu,
+    jsonb_agg(volet_qualitatif)->0 as volet_qualitatif,
+    jsonb_agg(moe)->0 as moe,
+    bool_and(sipsmv) as is_psmv,
+    bool_and(sipluiscot) as is_scot,
+    bool_and(siplhpluih) as is_pluih,
+    bool_and(sipdu) as is_pdu,
+    bool_and(siobligationpdu) as mandatory_pdu,
     MAX(libstatutevenement) as last_event_statut,
-    MAX(sudocu_procedure_events.codecollectivite) as codecollectivite
+    MAX(sudocu_procedure_events.codecollectivite) as codecollectivite,
+    MAX(noprocedure) as numero_procedure
     from sudocu_procedure_events
     LEFT JOIN procedureplandetails pp ON pp.noserieprocedure = sudocu_procedure_events.noserieprocedure
     GROUP BY sudocu_procedure_events.noserieprocedure

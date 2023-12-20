@@ -5,9 +5,6 @@
 
 <script>
 export default {
-  // async asyncData ({ $daturba, route }) {
-  //   return await $daturba.getData(route.query.region, route.query.insee)
-  // },
   data () {
     return {
       dataset: [],
