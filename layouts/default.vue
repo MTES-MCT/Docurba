@@ -5,6 +5,7 @@
       <nuxt />
     </v-main>
     <LayoutsFooter />
+    <VConsentSnackbar />
     <v-snackbar
       v-model="snackbar.val"
       multi-line

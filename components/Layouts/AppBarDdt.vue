@@ -74,6 +74,21 @@
                 Guide
               </v-list-item-title>
             </v-list-item>
+            <v-list-item link href="https://pad.incubateur.net/s/8Yrfr_VA8" target="_blank">
+              <v-list-item-title>
+                Tutoriel pour le suivi des procédures
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item link href="https://pad.incubateur.net/s/zG4jtJNL9" target="_blank">
+              <v-list-item-title>
+                Tutoriel pour l'élaboration des PAC
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item link href="https://pad.incubateur.net/s/A_BpJ3_NH" target="_blank">
+              <v-list-item-title>
+                Rapide aperçu des dernières améliorations de l'outil.
+              </v-list-item-title>
+            </v-list-item>
             <v-list-item link @click="signOut">
               <v-list-item-title>
                 Déconnexion

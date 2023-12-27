@@ -7,7 +7,7 @@
           {{ procedure.name }}
         </span>
         <div v-else>
-          <span>{{ procedure.doc_type }}</span><span v-if="procedure.current_perimetre.length > 1">-i<span v-if="procedure.is_sectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')">S</span></span>
+          <span>{{ procedure.doc_type }}</span><span v-if="procedure.current_perimetre.length > 1">-i<span v-if="procedure.is_sectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')">S</span><span v-if="procedure.is_pluih">H</span><span v-if="procedure.is_pdu">D</span></span>
           <span> {{ procedure.current_perimetre.length === 1 ? procedure.current_perimetre[0].name + ' (' + procedure.current_perimetre[0].inseeCode + ')' : '' }}</span>
           <span v-if="procedure.numero">numéro {{ procedure.numero }}</span>
         </div>
@@ -77,9 +77,12 @@
         <span class="primary--text text-decoration-underline mr-4 text--disabled">
           DGD
         </span>
-        <span class="primary--text text-decoration-underline mr-4 text--disabled">
+        <nuxt-link
+          class="primary--text text-decoration-underline mr-4"
+          :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}/volet_qualitatif`"
+        >
           Info. générales
-        </span>
+        </nuxt-link>
         <nuxt-link
           class="primary--text text-decoration-underline mr-4"
           :to="`/ddt/${$route.params.departement}/pac?search=${$route.params.collectiviteId}`"

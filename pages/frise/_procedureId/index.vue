@@ -22,7 +22,7 @@
         <v-btn v-if="$user?.profile?.side === 'etat'" color="primary" class="mr-2" outlined @click="addSubProcedure">
           Ajouter une procédure secondaire
         </v-btn>
-        <v-btn depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+        <v-btn v-if="$user?.id" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
           Ajouter un événement
         </v-btn>
         <v-menu v-if="$user?.profile?.side === 'etat'">
@@ -74,7 +74,7 @@
           <v-container>
             <v-row>
               <v-col cols="9">
-                <FriseEventCard v-if="$user?.id && recommendedEvents && recommendedEvents[0]" :event="recommendedEvents[0]" suggestion @addSuggestedEvent="addSuggestedEvent" />
+                <FriseEventCard v-if="$user?.id && recommendedEvent" :event="recommendedEvent" suggestion @addSuggestedEvent="addSuggestedEvent" />
                 <template v-for="event in enrichedEvents">
                   <FriseEventCard
                     v-if="event.visibility === 'public' || ($user.id && event.visibility === 'private')"
@@ -163,8 +163,9 @@ export default
     return {
       collectivite: null,
       procedure: null,
-      events: [],
+      events: null,
       dialog: false,
+      loaded: false,
       icons: {
         mdiBookmark,
         mdiPaperclip,
@@ -174,9 +175,6 @@ export default
     }
   },
   computed: {
-    loaded () {
-      return this.procedure && this.collectivite && this.eventsStructurants
-    },
     internalDocType () {
       let currDocType = this.procedure.doc_type
       if (currDocType.match(/i|H|M/)) {
@@ -185,7 +183,6 @@ export default
       return currDocType
     },
     documentEvents () {
-      console.log('this.procedure.doc_type: ', this.procedure.doc_type)
       const documentsEvents = {
         PLU: PluEvents,
         PLUi: PluEvents,
@@ -193,7 +190,6 @@ export default
         SCOT: ScotEvents,
         CC: ccEvents
       }
-      // console.log('this.internalDocType: ', this.internalDocType)
       return documentsEvents[this.internalDocType]
     },
     eventsStructurants () {
@@ -218,22 +214,13 @@ export default
     isVerified () {
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     },
-    recommendedEvents () {
-      const filteredDocumentEvents = this.documentEvents?.filter((e) => {
-        return e.scope_sugg.includes(this.internalProcedureType)
-      })
+    recommendedEvent () {
+      const filteredDocumentEvents = this.documentEvents?.filter(e => e.scope_sugg.includes(this.internalProcedureType))
       if (!filteredDocumentEvents) { return null }
-      if (this.events && this.events.length < 1) {
-        return [filteredDocumentEvents[0]]
-      }
+      if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
       const lastEventType = filteredDocumentEvents.find(event => this.events[0].type === event.name)
-      const lastEventOrder = lastEventType ? lastEventType.order : -1
-
-      const recommendedEvents = [
-        this.findRecommendedEventType(lastEventOrder, 2),
-        this.findRecommendedEventType(lastEventOrder, 1)
-      ]
-      return recommendedEvents.filter(e => !!e)
+      if (!lastEventType) { return filteredDocumentEvents[0] }
+      return filteredDocumentEvents.find(e => e.order === lastEventType.order - 1)
     },
     internalProcedureType () {
       const isIntercommunal = this.procedure.current_perimetre.length > 1
@@ -267,10 +254,10 @@ export default
 
       const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('*').eq('id', this.$route.params.procedureId)
       this.procedure = procedure[0]
-      // const collecId = this.procedure.current_perimetre.length === 1 ? this.procedure.current_perimetre[0].inseeCode : this.procedure.collectivite_porteuse_id
       this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.collectiviteId}` })).data
       if (errorProcedure) { throw errorProcedure }
-      await this.getEvents()
+      this.events = await this.getEvents()
+      this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log('ERROR: ', error)
@@ -281,20 +268,14 @@ export default
       this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectiviteId}/procedure/add?secondary_id=${this.$route.params.procedureId}`)
     },
     scrollToStructurant (clickedEvent) {
-      console.log('Scroll: ', clickedEvent)
       this.$vuetify.goTo(`#${slugify(clickedEvent, { remove: /[*+~.()'"!:@]/g })}`)
     },
     addSuggestedEvent (eventName) {
       this.$router.push(`/frise/${this.procedure.id}/add?eventType=${eventName}&typeDu=${this.procedure.doc_type}`)
     },
-    async  archiveProcedure (idProcedure) {
+    async archiveProcedure (idProcedure) {
       try {
-        console.log('idProcedure to archive: ', idProcedure)
-        const { error } = await this.$supabase
-          .from('procedures')
-          .update({ archived: true })
-          .eq('id', idProcedure)
-
+        const { error } = await this.$supabase.from('procedures').update({ archived: true }).eq('id', idProcedure)
         if (error) { throw error }
         this.$emit('delete', idProcedure)
         this.dialog = false
@@ -302,18 +283,13 @@ export default
         console.log(error)
       }
     },
-    findRecommendedEventType (order, priority) {
-      return this.documentEvents.find((eventType) => {
-        return eventType.order > order
-      })
-    },
     async getEvents () {
       const { data: events, error: errorEvents } = await this.$supabase.from('doc_frise_events')
         .select('*, profiles(*)')
         .eq('procedure_id', this.$route.params.procedureId)
         .order('date_iso', { ascending: false })
       if (errorEvents) { throw errorEvents }
-      this.events = events
+      return events
     }
   }
 }

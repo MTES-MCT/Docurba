@@ -68,16 +68,17 @@ export default {
 
       const secondairesTypes = {
         'Révision à modalité simplifiée ou Révision allégée': 'rms',
+        'Révision allégée (ou RMS)': 'rms',
         Modification: 'm',
         'Modification simplifiée': 'ms',
-        'Mise en comptabilité': 'mc',
+        'Mise en compatibilité': 'mc',
         'Mise à jour': 'mj'
       }
       if (secondairesTypes[this.procedure.type]) { internalType = secondairesTypes[this.procedure.type] }
       if (['Elaboration', 'Révision'].includes(this.procedure.type)) {
         if (isIntercommunal && this.internalDocType !== 'CC') { internalType = 'ppi' } else { internalType = 'pp' }
       }
-
+      console.log(' this.documentEvents: ', this.documentEvents, ' internalType: ', internalType, ' this.procedure.type: ', this.procedure.type)
       return this.documentEvents.filter(e => e.scope_liste.includes(internalType))
         .map(event => event.name)
         .sort((a, b) => a.order - b.order).concat(['Autre'])

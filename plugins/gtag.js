@@ -1,7 +1,5 @@
 export default (_, inject) => {
   inject('gtag', () => {
-    // console.log('GTAG')
-
     const gtagScript = document.createElement('script')
     gtagScript.async = true
     gtagScript.setAttribute('src', 'https://www.googletagmanager.com/gtag/js?id=AW-11434835828')

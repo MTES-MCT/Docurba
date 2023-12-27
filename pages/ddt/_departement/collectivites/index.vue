@@ -46,6 +46,7 @@
             <v-data-table
               :headers="headersEpci"
               :items="collectivites"
+              :items-per-page="50"
               class="elevation-1"
               :custom-filter="customFilter"
               :search="search"
@@ -83,6 +84,7 @@
               v-if="communes"
               :headers="headers"
               :items="communes"
+              :items-per-page="50"
               class="elevation-1"
               :loading="!communes"
               loading-text="Chargement des collectivités..."

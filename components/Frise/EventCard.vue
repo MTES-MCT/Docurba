@@ -39,7 +39,6 @@
               </template>
               Cet événement n’est visible que pour la collectivité et les services de l’État.
             </v-tooltip>
-
             <v-tooltip bottom>
               <template #activator="{ on, attrs }">
                 <v-chip
@@ -54,7 +53,7 @@
               </template>
               Cet événement a été ajouté par  {{ event.profiles?.poste || event.profiles?.side || creator.values[0] }}.
             </v-tooltip>
-            <v-btn v-if="creator.values[0] != 'sudocu'" class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
+            <v-btn v-if="creator.values[0] != 'sudocu' && ($user.profile?.side === 'etat' || event.profile_id=== $user.id )" class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
               <v-icon color="grey darken-2">
                 {{ icons.mdiPencil }}
               </v-icon>
@@ -137,7 +136,6 @@ export default {
     creator () {
       let actor = this.event.profiles?.side || 'docurba'
       if (this.event.from_sudocuh) { actor = 'sudocu' }
-      console.log('actor: ', actor)
       return actors.find((e) => {
         return e.values.includes(actor)
       })
@@ -150,7 +148,6 @@ export default {
     async downloadFile (attachement) {
       // TODO: Handle link type
       const path = this.event.from_sudocuh ? attachement.id : `${this.event.project_id}/${this.event.id}/${attachement.id}`
-      console.log('CHOSEN: ', path)
       const { data } = await this.$supabase.storage.from('doc-events-attachements').download(path)
 
       const link = this.$refs[`file-${attachement.id}`][0]
