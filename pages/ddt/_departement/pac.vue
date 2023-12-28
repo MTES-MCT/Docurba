@@ -65,7 +65,7 @@
                   <v-menu offset-y left>
                     <template #activator="{ attrs, on }">
                       <v-btn
-                        :loading="loadingPdf"
+                        :loading="loadingPdf.includes(item.id)"
                         :style="{ borderRadius: '4px' }"
                         class="ml-4"
                         color="primary"
@@ -146,7 +146,7 @@ export default {
       shareDialog: false,
       shareProject: null,
       loading: true,
-      loadingPdf: false
+      loadingPdf: []
     }
   },
   computed: {
@@ -200,9 +200,9 @@ export default {
       this.shareDialog = true
     },
     async downloadPdf (project) {
-      this.loadingPdf = true
+      this.loadingPdf.push(project.id)
       await this.$pdf.pdfFromRef(`projet-${project.id}`, project)
-      this.loadingPdf = false
+      this.loadingPdf = this.loadingPdf.filter(id => id !== project.id)
     }
   }
 }
