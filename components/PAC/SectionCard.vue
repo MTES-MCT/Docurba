@@ -53,7 +53,7 @@
                       </template>
                     </PACEditingParentDiffDialog>
                     <v-badge v-if="section.diffCount && isEditable" color="primary" class="ml-2" inline :content="section.diffCount" />
-                    <v-badge v-if="ghostCount && isEditable" color="" class="ghost-count-badge ml-2" inline :content="ghostCount" />
+                    <v-badge v-if="ghostCount && editable" color="" class="ghost-count-badge ml-2" inline :content="ghostCount" />
                     <v-tooltip v-if="section.isDuplicated" top max-width="300px">
                       <template #activator="{on}">
                         <v-chip
@@ -141,7 +141,7 @@
                         </v-icon>
                       </v-btn>
                     </template>
-                    Ajouter la section à la trame
+                    Ajouter la section
                   </v-tooltip>
                 </v-col>
               </v-row>
