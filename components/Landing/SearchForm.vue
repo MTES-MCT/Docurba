@@ -1,30 +1,34 @@
 <template>
   <v-form ref="form" v-model="valid">
-    <v-row justify="center" align="center">
-      <v-col cols="12" md="10">
-        <VCollectivitesAutocomplete
-          v-model="selectedCollectivite"
-          :cols-dep="4"
-          :cols-town="8"
-          :input-props="{
-            rules: [$rules.required]
-          }"
-        />
-      </v-col>
-      <v-col cols="auto" md="2">
-        <v-btn
-          depressed
-          color="primary"
-          :loading="searchLoading"
-          @click="toPublicDashboard"
-        >
-          <v-icon class="mr-2" small>
-            {{ icons.mdiMagnify }}
-          </v-icon>
-          Rechercher
-        </v-btn>
-      </v-col>
-    </v-row>
+    <v-container fluid :style="{ padding: 0 }">
+      <v-row>
+        <v-col cols="12" md="10">
+          <VCollectivitesAutocomplete
+            v-model="selectedCollectivite"
+            :cols-dep="4"
+            :cols-town="8"
+            :input-props="{
+              rules: [$rules.required],
+              outlined: true,
+              style: {
+                background: '#fff'
+              }
+            }"
+          />
+        </v-col>
+        <v-col cols="12" md="2">
+          <v-btn
+            :style="{ width: '100%', height: '2.5rem' }"
+            depressed
+            color="primary"
+            :loading="searchLoading"
+            @click="toPublicDashboard"
+          >
+            Accéder
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-form>
 </template>
 
