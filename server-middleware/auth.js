@@ -13,10 +13,12 @@ const slack = require('./modules/slack.js')
 app.post('/password', async (req, res) => {
   // console.log('/password body', req.body)
 
-  const { data: user, error } = await supabase.auth.admin.generateLink({
+  const { data, error } = await supabase.auth.admin.generateLink({
     type: 'recovery',
     email: req.body.email
   })
+
+  const { data: profile } = await supabase.from('profiles').select('firstname, lastname').eq('email', req.body.email)
 
   // The user will be redirected to this url in case of password recovery.
   // https://docurba.beta.gouv.fr/#access_token=XXX&expires_in=3600&refresh_token=XXX&token_type=bearer&type=recovery
@@ -24,12 +26,14 @@ app.post('/password', async (req, res) => {
   // https://ixxbyuandbmplfnqtxyw.supabase.co/auth/v1/verify?token=XXX&type=recovery&redirect_to=https://docurba.beta.gouv.fr/
   // console.log('user.action_link', user.action_link)
 
-  if (!error && user && user.properties.action_link) {
+  if (!error && data && data.properties.action_link) {
     sendgrid.sendEmail({
       to: req.body.email,
       template_id: 'd-06e865fdc30d42a398fdc6bc532deb82',
       dynamic_template_data: {
-        redirectURL: user.properties.action_link
+        redirectURL: data.properties.action_link,
+        firstname: profile.firstname,
+        lastname: profile.lastname
       }
     })
 
