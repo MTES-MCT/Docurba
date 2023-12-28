@@ -2,6 +2,8 @@ const supabase = require('./supabase.js')
 const pipedrive = require('./pipedrive.js')
 const sendgrid = require('./sendgrid.js')
 
+const regions = require('./Data/INSEE/regions.json')
+
 module.exports = {
   async updateUserRole (userData, role) {
     const { data, error } = await supabase.from('github_ref_roles').update({ role }).match({
@@ -12,20 +14,19 @@ module.exports = {
     // eslint-disable-next-line no-console
     console.log('updateUserRole', data, error)
 
-    if (role === 'ddt' && !error) {
-      // TODO: Send email Validation de compte.
-      // d-939bd4723dd04edcad17e6584b7641f3
-      // {firstname, dept}
-
-      const { data: { firstname, lastname, departement } } = await supabase.from('profiles').select('firstname, lastname, departement')
+    if ((role === 'ddt' || role === 'dreal') && !error) {
+      const { data: { firstname, lastname, departement, region } } = await supabase.from('profiles').select('firstname, lastname, departement, region')
+      const regionName = regions.find(r => r.code === region)
 
       sendgrid.sendEmail({
         to: userData.email,
-        template_id: 'd-939bd4723dd04edcad17e6584b7641f3',
+        template_id: role === 'ddt' ? 'd-939bd4723dd04edcad17e6584b7641f3' : 'd-3d9f4b96863d4c6e8d4c9489f6d8eb6e',
         dynamic_template_data: {
           firstname,
           lastname,
-          departement
+          departement: departement || '',
+          regionName: regionName || '',
+          region
         }
       })
 
