@@ -17,12 +17,15 @@ module.exports = {
       // d-939bd4723dd04edcad17e6584b7641f3
       // {firstname, dept}
 
+      const { data: { firstname, lastname, departement } } = await supabase.from('profiles').select('firstname, lastname, departement')
+
       sendgrid.sendEmail({
         to: userData.email,
-        template_id: 'd-06e865fdc30d42a398fdc6bc532deb82',
+        template_id: 'd-939bd4723dd04edcad17e6584b7641f3',
         dynamic_template_data: {
-          firstname: userData.firstname || '',
-          dept: userData.departement
+          firstname,
+          lastname,
+          departement
         }
       })
 
