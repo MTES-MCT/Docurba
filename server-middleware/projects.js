@@ -4,9 +4,7 @@ app.use(express.json())
 
 const _ = require('lodash')
 
-const { createClient } = require('@supabase/supabase-js')
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
-
+const supabase = require('./modules/supabase.js')
 const sendgrid = require('./modules/sendgrid.js')
 
 const hour = 1000 * 60 * 60

@@ -1,14 +1,12 @@
+const axios = require('axios')
 const express = require('express')
 const app = express()
-const { createClient } = require('@supabase/supabase-js')
-
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-const axios = require('axios')
 const sendgrid = require('./modules/sendgrid.js')
+const supabase = require('./modules/supabase.js')
 
 // modules
 const admin = require('./modules/admin.js')

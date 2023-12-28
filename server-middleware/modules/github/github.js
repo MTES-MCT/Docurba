@@ -6,8 +6,7 @@ const octokit = new Octokit({
   auth: token
 })
 
-const { createClient } = require('@supabase/supabase-js')
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+const supabase = require('../supabase.js')
 
 module.exports = async function (path, options = {}) {
   const headers = {}

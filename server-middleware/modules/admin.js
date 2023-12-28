@@ -1,6 +1,4 @@
-const { createClient } = require('@supabase/supabase-js')
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
-
+const supabase = require('./supabase.js')
 const pipedrive = require('./pipedrive.js')
 const sendgrid = require('./sendgrid.js')
 

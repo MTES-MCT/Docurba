@@ -1,16 +1,14 @@
 /* eslint-disable camelcase */
 
-import { createClient } from '@supabase/supabase-js'
 import { groupBy, uniq } from 'lodash'
 import dayjs from 'dayjs'
 import communes from '../Data/EnrichedCommunes.json'
 import intercommunalites from '../Data/EnrichedIntercommunalites.json'
 // import regions from '../Data/INSEE/regions.json'
 import departements from '../Data/INSEE/departements.json'
+import supabase from './supabase.js'
 
 // import enqueteData from '../../static/json/communes.json'
-
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 const codeEtaMap = {
   RNU: '9',

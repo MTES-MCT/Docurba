@@ -3,7 +3,10 @@
   const { PG_TEST_CONFIG, PG_DEV_CONFIG, PG_PROD_CONFIG } = require('./pg_secret_config.json')
   const { createClient } = require('@supabase/supabase-js')
 
-  const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', PG_PROD_CONFIG.admin_key)
+  const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', PG_PROD_CONFIG.admin_key, {
+    auth: { persistSession: false }
+  })
+
   const axios = require('axios')
   const epcis = require('../server-middleware/Data/EnrichedIntercommunalites.json')
   const communes = require('../server-middleware/Data/EnrichedCommunes.json')
