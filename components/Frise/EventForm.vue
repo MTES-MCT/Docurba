@@ -126,7 +126,7 @@ export default {
         procedure_id: this.procedure.id,
         test: !!this.$isDev
       }, this.value),
-      attachements: [],
+      attachements: this.value?.attachements ? this.value?.attachements : [],
       icons: { mdiTrashCan },
       loading: !!this.eventId,
       saving: false,
@@ -144,12 +144,9 @@ export default {
 
       await Promise.all(modifiedAttachements.map((attachement) => {
         if (attachement.state === 'new') {
-          return this.$supabase.storage
-            .from('doc-events-attachements')
-            .upload(`${this.procedure.project_id}/${eventId}/${attachement.id}`, attachement.file)
+          return this.$supabase.storage.from('doc-events-attachements').upload(`${this.procedure.project_id}/${eventId}/${attachement.id}`, attachement.file)
         } else if (attachement.state === 'removed') {
-          return this.$supabase.storage.from('doc-events-attachements')
-            .remove([`${this.procedure.project_id}/${eventId}/${attachement.id}`])
+          return this.$supabase.storage.from('doc-events-attachements').remove([`${this.procedure.project_id}/${eventId}/${attachement.id}`])
         } else { return null }
       }))
     },
@@ -157,21 +154,15 @@ export default {
       try {
         this.saving = true
 
-        this.event.attachements = this.attachements.filter((attachement) => {
-          return attachement.state !== 'removed'
-        }).map((attachement) => {
-          const { id, name } = attachement
-          return { id, name }
-        })
+        this.event.attachements = this.attachements.filter(attachement => attachement.state !== 'removed')
+          .map(attachement => ({ id: attachement.id, name: attachement.name }))
 
         const upsertEvent = { ...this.event, profile_id: this.$user.id }
         if (this.eventId) {
           await this.$supabase.from('doc_frise_events').update(upsertEvent).eq('id', this.eventId)
           await this.saveAttachements(this.eventId)
         } else {
-          console.log('upsertEvent: ', upsertEvent)
           const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(upsertEvent).select()
-          console.log('savedEvents: ', savedEvents)
           await this.saveAttachements(savedEvents[0].id)
         }
         this.saving = false
@@ -181,6 +172,7 @@ export default {
       }
     },
     async deleteEvent () {
+      this.saveAttachements(this.eventId)
       await this.$supabase.from('doc_frise_events').delete().eq('id', this.eventId)
       this.$router.push({ name: 'frise-procedureId', params: { procedureId: this.procedure.id }, query: this.$route.query })
     }
