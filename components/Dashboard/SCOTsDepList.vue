@@ -49,7 +49,6 @@
 </template>
 
 <script>
-import _ from 'lodash'
 
 export default {
   name: 'SCOTsDepList',
@@ -71,12 +70,10 @@ export default {
   },
   async mounted () {
     // je peux regarder les périmetres des SCoT, selectionner que ceux qui sont appliquer sur des code INSEE qui commence par le code département comme ca je peux les lister
-    const { data } = await this.$supabase.from('temp_scots').select().eq('collectivite_departement_code', this.$route.params.departement)
-    const scots = data.map(e => e.procedures).reduce((acc, curr) => [...acc, ...curr], [])
-    console.log('SCoTs: ', scots)
-    const distinctScots = _.uniqBy(scots, e => e.id)
-    console.log('distinct SCoTs: ', distinctScots)
-    this.scots = distinctScots
+    const { data } = await this.$supabase.from('procedures').select().is('is_scot', true).contains('departements', [this.$route.params.departement])
+    console.log('DATA SCOT: ', data)
+
+    this.scots = data
   }
 }
 </script>
