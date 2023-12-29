@@ -204,7 +204,7 @@ export default {
           codes
         })
 
-      // console.log('procedures', codes.length, procedures)
+      console.log('procedures', codes.length, procedures)
 
       this.collectivities.filter(c => codes.includes(c.code)).forEach((collectivite) => {
         if (!collectivite.loaded) {
