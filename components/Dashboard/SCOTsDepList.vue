@@ -53,20 +53,34 @@ import _ from 'lodash'
 
 export default {
   name: 'SCOTsDepList',
+  props: {
+    search: {
+      type: String,
+      default: ''
+    }
+  },
   data () {
     return {
       scots: null
     }
   },
   computed: {
+    searchedScots () {
+      const normalizedSearch = this.search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+
+      return this.scots.filter((scot) => {
+        const normalizedValue = scot.name.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+        return normalizedValue.includes(normalizedSearch)
+      })
+    },
     opposables () {
-      return this.scots.filter(e => e.status === 'opposable')
+      return this.searchedScots.filter(e => e.status === 'opposable')
     },
     ongoing () {
-      return this.scots.filter(e => e.status === 'en cours')
+      return this.searchedScots.filter(e => e.status === 'en cours')
     },
     previous () {
-      return this.scots.filter(e => e.status !== 'en cours' && e.status !== 'opposable')
+      return this.searchedScots.filter(e => e.status !== 'en cours' && e.status !== 'opposable')
     }
   },
   async mounted () {

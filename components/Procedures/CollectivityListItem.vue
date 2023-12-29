@@ -13,7 +13,7 @@
           class="py-2"
         >
           <v-chip small label color="alt-beige" class="font-weight-bold">
-            {{ procedure.doc_type }}
+            {{ procedure.doc_type }}{{ (procedure.doc_type === 'PLU' && procedure.current_perimetre.length > 1) ? 'i' : '' }}
           </v-chip>
           <v-chip small label :color="procedure.status === 'opposable' ? 'success-light' : 'bf200'">
             <span

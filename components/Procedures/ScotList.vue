@@ -52,7 +52,7 @@
           <v-btn color="primary" :loading="loadingValidation" :disabled="!loadingValidation && selectedScots.length === 0" @click="validateSelection">
             Valider {{
               selectedScots.length ?
-                `${selectedScots.length} commune${selectedScots.length > 1 ? 's' : ''}`
+                `${selectedScots.length} SCOT`
                 : ''
             }}
           </v-btn>
@@ -66,7 +66,7 @@
       <v-row justify="center" class="my-5">
         <v-col cols="auto">
           <h4 class="text-h4">
-            Aucune communes {{ validated ? 'validées' : 'à valider' }}
+            Aucun SCOT {{ validated ? 'validé' : 'à valider' }}
           </h4>
         </v-col>
       </v-row>
@@ -141,7 +141,7 @@ export default {
   watch: {
     searchedScots () {
       if (this.page > (this.searchedScots.length / 10)) {
-        this.page = Math.ceil(this.searchedScots.length / 10)
+        this.page = Math.ceil(this.searchedScots.length / 10) || 1
       }
     },
     selectAll () {
@@ -169,7 +169,7 @@ export default {
             collectivite_code: collectivityCode,
             procedure_id: procedure.id,
             status: procedure.status,
-            departement: this.$user.profile.departement,
+            departement: this.$route.params.departement,
             doc_type: 'SCOT'
           })
         })
