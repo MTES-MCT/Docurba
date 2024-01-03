@@ -23,13 +23,13 @@
         <v-expansion-panels flat>
           <v-expansion-panel class="border-light">
             <v-expansion-panel-header>
-              <h3>{{ collectivite.communes?.length }} communes dans votre EPCI</h3>
+              <h3>{{ collectivite.membres?.length }} membres dans cet EPCI</h3>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-container>
                 <v-row>
                   <v-col
-                    v-for="town in collectivite.communes"
+                    v-for="town in collectivite.membres"
                     :key="town.code"
                     cols="4"
                     class="pt-0 pl-0"
@@ -116,7 +116,7 @@ export default {
       this.schemas = schemas
       this.plans = plans
       console.log('schemas: ', schemas, ' plans: ', plans)
-      console.log('this.collectivite: ', this.collectivite.communes.map(e => e.type))
+      console.log('this.collectivite: ', this.collectivite.membres)
     }
   }
 }
