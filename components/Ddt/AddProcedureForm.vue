@@ -173,7 +173,7 @@ export default {
       typeProcedure: '',
       typesProcedure: {
         principale: ['Elaboration', 'Révision'],
-        secondaire: ['Révision à modalité simplifiée ou Révision allégée', 'Modification', 'Modification simplifiée', 'Mise en comptabilité', 'Mise à jour']
+        secondaire: ['Révision à modalité simplifiée ou Révision allégée', 'Modification', 'Modification simplifiée', 'Mise en compatibilité', 'Mise à jour']
       },
       procedureParent: null,
       proceduresParents: null,

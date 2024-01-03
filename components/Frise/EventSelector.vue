@@ -71,7 +71,7 @@ export default {
         'Révision allégée (ou RMS)': 'rms',
         Modification: 'm',
         'Modification simplifiée': 'ms',
-        'Mise en comptabilité': 'mc',
+        'Mise en compatibilité': 'mc',
         'Mise à jour': 'mj'
       }
       if (secondairesTypes[this.procedure.type]) { internalType = secondairesTypes[this.procedure.type] }
