@@ -154,7 +154,6 @@ export default {
       })
     },
     filteredCollectivities () {
-      console.log(this.searchedCollectivities)
       const pageIndex = (this.page - 1) * 10
       return this.searchedCollectivities.slice(pageIndex, pageIndex + 10)
     },

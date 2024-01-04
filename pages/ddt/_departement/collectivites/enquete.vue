@@ -114,7 +114,7 @@ export default {
   },
   methods: {
     async fetchScots (validations) {
-      console.log('fetchScots validations', validations)
+      // console.log('fetchScots validations', validations)
 
       // console.log('filteredScots', this.filteredScots)
       const { data: procedures } = await this.$supabase
