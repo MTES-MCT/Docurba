@@ -22,8 +22,9 @@ app.post('/help', async (req, res) => {
     }
   })
 
-  const { data: profile } = await supabase.from('profiles').select('firstname, lastname').eq('email', email)
-
+  const { data: profiles } = await supabase.from('profiles').select('firstname, lastname').eq('email', email)
+  const profile = profiles[0]
+  console.log(profile, profile.firstname, profile.lastname)
   // Send a confirmation email to the user.
   sendgrid.sendEmail({
     to: email,

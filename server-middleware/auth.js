@@ -24,7 +24,8 @@ app.post('/password', async (req, res) => {
   // console.log('user.action_link', user.action_link)
 
   if (!error && properties && properties.action_link) {
-    const { data: profile } = await supabase.from('profiles').select('firstname, lastname').eq('email', req.body.email)
+    const { data: profiles } = await supabase.from('profiles').select('firstname, lastname').eq('email', req.body.email)
+    const profile = profiles[0]
 
     sendgrid.sendEmail({
       to: req.body.email,
@@ -62,7 +63,8 @@ async function magicLinkSignIn ({ email, shouldExist, redirectBasePath }) {
     throw new Error('Vous devez créer un compte avant de pouvoir vous connecter.')
   }
   if (properties && properties.action_link) {
-    const { data: profile } = await supabase.from('profiles').select('firstname, lastname').eq('email', email)
+    const { data: profiles } = await supabase.from('profiles').select('firstname, lastname').eq('email', email)
+    const profile = profiles[0]
 
     sendgrid.sendEmail({
       to: email,

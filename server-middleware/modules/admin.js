@@ -15,7 +15,9 @@ module.exports = {
     console.log('updateUserRole', data, error)
 
     if ((role === 'ddt' || role === 'dreal') && !error) {
-      const { data: { firstname, lastname, departement, region } } = await supabase.from('profiles').select('firstname, lastname, departement, region')
+      const { data: profiles } = await supabase.from('profiles').select('firstname, lastname, departement, region')
+      const profile = profiles[0]
+      const { firstname, lastname, departement, region } = profile
       const regionName = regions.find(r => r.code === region)
 
       sendgrid.sendEmail({
@@ -26,7 +28,7 @@ module.exports = {
           lastname,
           departement: departement || '',
           regionName: regionName || '',
-          region
+          region: (+region).toString()
         }
       })
 
