@@ -1,20 +1,18 @@
+const axios = require('axios')
 const express = require('express')
 const app = express()
-const { createClient } = require('@supabase/supabase-js')
-
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-const axios = require('axios')
 const sendgrid = require('./modules/sendgrid.js')
+const supabase = require('./modules/supabase.js')
 
 // modules
 const admin = require('./modules/admin.js')
 const slack = require('./modules/slack.js')
 
-app.post('/notify/admin/acte', (req, res) => {
+app.post('/notify/admin/acte', async (req, res) => {
   // eslint-disable-next-line no-console
   console.log('Notify team in slack')
   const { userData } = req.body
@@ -29,6 +27,8 @@ app.post('/notify/admin/acte', (req, res) => {
   })
 
   console.log("'Notify team in slack userData: ", userData)
+
+  // const { data: { firstname, lastname, departement, region } } = await supabase.from('profiles').select('firstname, lastname, departement, region')
 
   sendgrid.sendEmail(
     {

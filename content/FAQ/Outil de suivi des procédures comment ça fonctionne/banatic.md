@@ -1,5 +1,5 @@
 ---
-question: "Qu'est-ce que "Banatic"?"
+question: Qu'est-ce que "Banatic" ?
 visible: true
 scope: ['ddt']
 order: 3

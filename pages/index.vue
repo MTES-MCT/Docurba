@@ -64,13 +64,7 @@
 export default {
   name: 'Landing',
   data () {
-    return {
-      loginDialogState: {
-        open: false,
-        signupMode: false
-      }
-
-    }
+    return {}
   }
 }
 

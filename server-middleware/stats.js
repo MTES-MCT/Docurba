@@ -7,10 +7,8 @@ const customParseFormat = require('dayjs/plugin/customParseFormat')
 dayjs.extend(customParseFormat)
 const _ = require('lodash')
 
-const { createClient } = require('@supabase/supabase-js')
 const github = require('./modules/github/github.js')
-
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+const supabase = require('./modules/supabase.js')
 
 const docurbaTeamIds = [
   '66a506fd-100c-44e3-bab0-252874d5482b',

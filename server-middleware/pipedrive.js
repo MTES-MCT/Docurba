@@ -3,10 +3,8 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 
-const { createClient } = require('@supabase/supabase-js')
-
+const supabase = require('./modules/supabase.js')
 const pipedrive = require('./modules/pipedrive.js')
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 app.post('/collectivite_inscrite', async (req, res) => {
   console.log('-- COLLECTIVITE INSCRITE PIPEDRIVE --')

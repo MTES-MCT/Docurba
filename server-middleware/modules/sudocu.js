@@ -2,12 +2,16 @@
 import _ from 'lodash'
 import EnrichedCommunes from '../Data/EnrichedCommunes.json'
 import geo from './geo.js'
+// const supabase = require('./modules/supabase.js')
 
-const { createClient } = require('@supabase/supabase-js')
+// const { createClient } = require('@supabase/supabase-js')
 // const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
+const { createClient } = require('@supabase/supabase-js')
 const { PG_DEV_CONFIG } = require('../../database/pg_secret_config.json')
-const supabase = createClient(PG_DEV_CONFIG.url, PG_DEV_CONFIG.admin_key)
+const supabase = createClient(PG_DEV_CONFIG.url, PG_DEV_CONFIG.admin_key, {
+  auth: { persistSession: false }
+})
 
 module.exports = {
   parseAttachment (path) {
