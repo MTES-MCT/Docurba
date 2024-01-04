@@ -45,6 +45,7 @@
       name: procedure.name,
       created_at: procedure.created_at,
       commentaire: procedure.description,
+      departements: procedure.departements,
       current_perimetre: procedure.perimetre,
       initial_perimetre: procedure.perimetre,
       collectivite_porteuse_id: procedure.collectivite_porteuse.code_collectivite_porteuse,
@@ -64,6 +65,7 @@
       is_sudocuh_scot: schemaOnly,
       numero: procedure?.numero
     }
+    // console.log('departements: ', formattedProcedure.departements)
     // console.log('ID procedure: ', procedure.id, 'formattedProcedure: ', procedure.numero)
     // console.log('formattedProcedure: ', formattedProcedure)
     // console.log('procedure?.moe: ', procedure?.moe)
@@ -129,6 +131,7 @@
         project_id: docurbaProjectId,
         procedure_id: docurbaProcedureId,
         type: event.libtypeevenement,
+        code: event.codetypeevenement,
         is_valid: event.codestatutevenement === 'V',
         date_iso: event.dateevenement,
         description: event.commentaire,
@@ -138,7 +141,7 @@
         from_sudocuh: event.noserieevenement,
         is_sudocuh_scot: schemaOnly
       }
-      // console.log('attachements: ', formattedEvent.attachements)
+      // console.log('code: ', formattedEvent.code)
       return formattedEvent
     })
     if (formattedEvents) {
@@ -155,7 +158,7 @@
     // const collectivites = epcis
     const len = collectivites.length
     // 1221 stopped schema
-    const startAt = 1
+    const startAt = 32590
     const BATCH_SIZE = 10
     const RATE = 100
 

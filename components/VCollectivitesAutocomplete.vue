@@ -23,7 +23,7 @@
           hide-details
           :no-data-text="loading ? 'Chargement ...' : 'Selectionnez un département'"
           :items="collectivites"
-          item-text="name"
+          item-text="intitule"
           autocomplete="off"
           :error-messages="errors"
           return-object
@@ -80,24 +80,24 @@ export default {
     }
   },
   data () {
-    const enrichedDepartements = departements.map(d => Object.assign({
-      text: `${d.nom_departement} - ${d.code_departement}`
-    }, d))
-
+    const enrichedDepartements = departements.map(d => ({
+      ...d,
+      text: `${d.nom_departement} - ${d.code_departement}`,
+      code_departement: d.code_departement.toString().padStart(2, '0')
+    }))
     let defaultDepartement = null
 
     if (this.defaultDepartementCode) {
       defaultDepartement = enrichedDepartements.find((d) => {
-        // eslint-disable-next-line
-        return d.code_departement == this.defaultDepartementCode
+        return d.code_departement.toString() === this.defaultDepartementCode
       })
     }
 
     return {
       selectedDepartement: defaultDepartement,
-      selectedCollectivite: Object.assign({}, this.value),
+      selectedCollectivite: { ...this.value },
       departements: enrichedDepartements,
-      collectivites: (this.value && this.value.name) ? [Object.assign({}, this.value)] : [],
+      collectivites: (this.value && this.value.name) ? [{ ...this.value }] : [],
       loading: false
     }
   },
@@ -109,31 +109,26 @@ export default {
   async mounted () {
     await this.fetchCollectivites()
     if (this.value) {
-      this.selectedCollectivite = this.collectivites.find((e) => {
-        return e?.EPCI?.toString() === this.value.collectivite_id || e?.code_commune_INSEE?.toString() === this.value.collectivite_id
-      })
+      this.selectedCollectivite = this.collectivites.find(e => e.code === this.value.code)
     }
   },
   methods: {
     async fetchCollectivites () {
       if (this.selectedDepartement) {
         this.loading = true
-        let towns = (await axios({
-          url: '/api/communes',
-          method: 'get',
-          params: { departements: this.selectedDepartement.code_departement }
-        })).data
+        try {
+          const collectivites = (await axios.get(`/api/geo/collectivites?departements=${this.selectedDepartement.code_departement}`)).data
 
-        let epcis = (await axios({
-          url: '/api/epci',
-          method: 'get',
-          params: { departement: this.selectedDepartement.code_departement }
-        })).data
-
-        epcis = epcis.map(e => ({ name: e.label, ...e, departement: this.selectedDepartement.code_departement, type: 'epci' }))
-        towns = towns.map(e => ({ name: e.nom_commune_complet, departement: this.selectedDepartement.code_departement, type: 'commune', ...e }))
-        this.collectivites = [{ header: 'ECPI' }, ...epcis, { divider: true }, { header: 'Communes' }, ...towns]
-        this.loading = false
+          const BANATIC_EPCI_TYPES = ['CA', 'CC', 'CU', 'METRO', 'MET69']
+          const epcis = collectivites.groupements.filter(e => BANATIC_EPCI_TYPES.includes(e.type))
+          const autres = collectivites.groupements.filter(e => !BANATIC_EPCI_TYPES.includes(e.type))
+          this.collectivites = [{ header: 'Groupements' }, ...autres, { divider: true },
+            { header: 'ECPI' }, ...epcis, { divider: true },
+            { header: 'Communes' }, ...collectivites.communes]
+          this.loading = false
+        } catch (error) {
+          console.log(error)
+        }
       }
     }
   }
