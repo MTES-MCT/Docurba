@@ -197,12 +197,11 @@ module.exports = {
 
       // Fetch des collectivités porteuses des différentes procédures
       const collecsPorteusesIds = [...new Set(proceduresCollec.data.map(e => e.code_collectivite_porteuse))]
-      const collectivitesPorteuses = geo.getCollectivites(collecsPorteusesIds)
 
+      const collectivitesPorteuses = geo.getCollectivites({ codes: collecsPorteusesIds })
       // Raccordement des events à leur procédure
       const planProceduresEvents = rawPlanProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
       const schemaProceduresEvents = rawSchemaProcedures.data.map(procedure => ({ ...procedure, events: allProceduresEvents[procedure.noserieprocedure] }))
-
       const planProcedures = this.enrich(planProceduresEvents, proceduresCollec, collectivitesPorteuses)
       const schemaProcedures = this.enrich(schemaProceduresEvents, proceduresCollec, collectivitesPorteuses, { isSchema: true })
 
