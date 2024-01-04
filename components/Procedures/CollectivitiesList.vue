@@ -154,6 +154,7 @@ export default {
       })
     },
     filteredCollectivities () {
+      console.log(this.searchedCollectivities)
       const pageIndex = (this.page - 1) * 10
       return this.searchedCollectivities.slice(pageIndex, pageIndex + 10)
     },
@@ -199,12 +200,12 @@ export default {
     async fetchCollectivitiesProcedures (codes) {
       // console.log('filteredCollectivities', this.filteredCollectivities)
 
-      const { data: procedures } = await this.$supabase
+      let { data: procedures } = await this.$supabase
         .rpc('procedures_by_insee_codes', {
           codes
         })
 
-      console.log('procedures', codes.length, procedures)
+      procedures = procedures.filter(p => !p.archived)
 
       this.collectivities.filter(c => codes.includes(c.code)).forEach((collectivite) => {
         if (!collectivite.loaded) {
