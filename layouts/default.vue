@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <LayoutsAppBar />
+    <LayoutsAppBar :flat="$route.name === 'index'" />
     <v-main :class="$route.name.startsWith('login') ? 'beige' : ''">
       <nuxt />
     </v-main>
@@ -43,10 +43,6 @@
 </template>
 
 <script>
-// import '@gouvfr/dsfr/dist/css/core.css'
-import '@gouvfr/dsfr/dist/css/footer.css'
-import '@gouvfr/dsfr/dist/css/logo.css'
-
 import axios from 'axios'
 import qs from 'qs'
 
@@ -93,19 +89,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .v-footer.footer-fr {
-    border-top: 2px #000091 solid !important;
-    /* border-top-color: var(--v-bf500); */
-  }
-
-  .footer-fr ul {
-    list-style: none;
-  }
-
-  .footer-fr a {
-    color: #1e1e1e;
-    text-decoration: none;
-  }
-</style>

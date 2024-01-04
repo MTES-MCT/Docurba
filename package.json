@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@getvim/execute": "^1.0.0",
-    "@gouvfr/dsfr": "^1.1.0",
     "@json2csv/node": "^7.0.3",
     "@mdi/js": "^6.1.95",
     "@nuxt/content": "^1.14.0",

@@ -1,6 +1,6 @@
 <template>
   <v-footer app absolute color="white pt-12">
-    <v-container>
+    <v-container fluid :style="{ maxWidth: '1160px' }" class="pa-0">
       <v-row>
         <v-col cols="12" md="6">
           <h5>Ressources</h5>
@@ -15,16 +15,24 @@
               <a href="https://pad.incubateur.net/s/MVwW7cGNh#Nos-webinaires">Webinaires</a>
             </li>
             <li>
-              <nuxt-link to="/accessibilite">Accessibilité</nuxt-link>
+              <nuxt-link to="/accessibilite">
+                Accessibilité
+              </nuxt-link>
             </li>
             <li>
-              <nuxt-link to="/confidentialite">Politique de confidentialité</nuxt-link>
+              <nuxt-link to="/confidentialite">
+                Politique de confidentialité
+              </nuxt-link>
             </li>
             <li>
-              <nuxt-link to="/mentions-legales">Mentions légales</nuxt-link>
+              <nuxt-link to="/mentions-legales">
+                Mentions légales
+              </nuxt-link>
             </li>
             <li>
-              <nuxt-link to="/stats">Statistiques</nuxt-link>
+              <nuxt-link to="/stats">
+                Statistiques
+              </nuxt-link>
             </li>
           </ul>
         </v-col>
@@ -32,7 +40,9 @@
           <v-row>
             <v-col>
               <h5>Newsletter</h5>
-              <p class="mt-4">Suivez l’avancée de Docurba tous les mois.</p>
+              <p class="mt-4">
+                Suivez l’avancée de Docurba tous les mois.
+              </p>
               <LandingNewsLetterForm />
             </v-col>
           </v-row>

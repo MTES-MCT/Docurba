@@ -1,7 +1,7 @@
 <template>
   <LayoutsCustomApp extended-app-bar private>
     <template #headerPageTitle>
-      - {{ project ? project.name : '' }}
+      {{ project ? project.name : '' }}
     </template>
     <template #headerExtension>
       <v-tabs show-arrows>

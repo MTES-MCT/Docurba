@@ -3,9 +3,9 @@
     <main class="landing">
       <header class="hero-section">
         <h1 class="text-center">
-          Docurba vous accompagne dans l'élaboration de vos
-          <span class="highlight">PLU</span>
+          Docurba vous accompagne dans l'élaboration de vos <LandingWordSlider />
         </h1>
+
         <div class="search">
           <p>Pour commencer, accédez aux ressources de votre territoire :</p>
           <LandingSearchForm />
@@ -109,7 +109,7 @@ export default {
 h1 {
   font-size: 3.5rem;
   font-weight: 700;
-  line-height: 1.5;
+  line-height: 64px;
 }
 
 h2 {
@@ -132,12 +132,6 @@ section > article {
   max-width: 760px;
 }
 
-.highlight {
-  display: inline-block;
-  background-color: #FCE552;
-  padding: 0 0.5rem;
-}
-
 .landing-container {
   display: flex;
   justify-content: center;
@@ -149,7 +143,7 @@ section > article {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 7rem;
+  gap: 232px;
 }
 
 .hero-section {
@@ -164,11 +158,12 @@ section > article {
   max-width: 960px;
   padding: 2.5rem 3rem;
   border: 1px solid #DDDDDD;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
   background-color: #F9F8F6;
 }
 
 .search > p {
+  font-size: 18px;
   font-weight: 700;
 }
 
@@ -275,6 +270,7 @@ section.signup {
 @media screen and (max-width: 960px) {
   h1 {
     font-size: 2.5rem;
+    line-height: 48px;
   }
 
   h2 {

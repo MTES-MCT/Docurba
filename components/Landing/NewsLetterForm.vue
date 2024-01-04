@@ -4,7 +4,7 @@
       <v-text-field
         v-model="email"
         hide-details
-        filled
+        outlined
         dense
         placeholder="Votre adresse électronique (ex. : nom@domaine.fr)"
         :loading="loading"
@@ -15,17 +15,12 @@
       <v-btn
         color="primary"
         depressed
+        outlined
         height="41px"
-        tile
         @click="sendEmail"
       >
         S'abonner
       </v-btn>
-    </v-col>
-    <v-col cols="12">
-      <p class="text-caption mt-2">
-        En renseignant votre adresse électronique, vous acceptez de recevoir nos actualités par courriel. Vous pouvez vous désinscrire à tout moment à l’aide des liens de désinscription ou en nous contactant.
-      </p>
     </v-col>
   </v-row>
 </template>
