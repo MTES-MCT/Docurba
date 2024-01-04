@@ -4,5 +4,7 @@ export default (_, inject) => {
   const supabaseUrl = 'https://ixxbyuandbmplfnqtxyw.supabase.co'
   const supabaseAdminKey = process.env.SUPABASE_ADMIN_KEY
 
-  inject('supAdmin', createClient(supabaseUrl, supabaseAdminKey))
+  inject('supAdmin', createClient(supabaseUrl, supabaseAdminKey, {
+    auth: { persistSession: false }
+  }))
 }

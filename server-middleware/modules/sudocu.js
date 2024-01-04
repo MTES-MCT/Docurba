@@ -1,11 +1,17 @@
 // TODO: Import supabase
 import _ from 'lodash'
+import EnrichedCommunes from '../Data/EnrichedCommunes.json'
 import geo from './geo.js'
-const { createClient } = require('@supabase/supabase-js')
+// const supabase = require('./modules/supabase.js')
+
+// const { createClient } = require('@supabase/supabase-js')
 // const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
+const { createClient } = require('@supabase/supabase-js')
 const { PG_DEV_CONFIG } = require('../../database/pg_secret_config.json')
-const supabase = createClient(PG_DEV_CONFIG.url, PG_DEV_CONFIG.admin_key)
+const supabase = createClient(PG_DEV_CONFIG.url, PG_DEV_CONFIG.admin_key, {
+  auth: { persistSession: false }
+})
 
 module.exports = {
   parseAttachment (path) {
@@ -64,7 +70,6 @@ module.exports = {
 
       // siSchema -> partiellement ok
       const isValid = (e, isSchema) => isSchema ? e.codestatutevenement === 'V' : (e.codestatutevenement === 'V' || e.codestatutevenement === 'AP')
-      console.log('isSchema: ', siSchema)
       statusInfos = {
         isSectoriel,
         // ou Arrêté d'abrogation OU Arrêté du Maire ou du Préfet ou de l'EPCI OU Approbation du préfet
@@ -205,6 +210,17 @@ module.exports = {
       const planProcedures = this.enrich(planProceduresEvents, proceduresCollec, collectivitesPorteuses)
       const schemaProcedures = this.enrich(schemaProceduresEvents, proceduresCollec, collectivitesPorteuses, { isSchema: true })
 
+      function findDepartements (arrPerimetre) {
+        const temp = arrPerimetre.map((commune) => {
+          const matched = EnrichedCommunes.find(ec => ec.code === commune.inseeCode)
+          if (!matched) {
+            console.log('Not found inseeCode: ', commune.inseeCode)
+          }
+          return matched?.departementCode
+        })
+
+        return [...new Set(temp.filter(e => e))]
+      }
       // Formattage des procédures
       const formattedSchemaProcedures = schemaProcedures.map((e) => {
         return {
@@ -224,6 +240,7 @@ module.exports = {
           last_updated_at: e.last_event_date,
           collectivite_porteuse: e.collectivitePorteuse,
           events: e.events,
+          departements: findDepartements(e.perimetre),
           perimetre: e.perimetre,
           procSecs: e.procSecs,
           status: e.status,
@@ -248,6 +265,7 @@ module.exports = {
           last_updated_at: e.last_event_date,
           collectivite_porteuse: e.collectivitePorteuse,
           events: e.events,
+          departements: findDepartements(e.perimetre),
           perimetre: e.perimetre,
           procSecs: e.procSecs,
           status: e.status,

@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <LayoutsAppBar />
+
     <v-main :class="$route.name.startsWith('login') ? 'beige' : ''">
       <nuxt />
     </v-main>

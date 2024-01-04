@@ -2,8 +2,7 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 
-const { createClient } = require('@supabase/supabase-js')
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+const supabase = require('./modules/supabase.js')
 
 // modules
 const sendgrid = require('./modules/sendgrid.js')
@@ -13,7 +12,7 @@ const slack = require('./modules/slack.js')
 app.post('/password', async (req, res) => {
   // console.log('/password body', req.body)
 
-  const { data: user, error } = await supabase.auth.admin.generateLink({
+  const { data: { properties }, error } = await supabase.auth.admin.generateLink({
     type: 'recovery',
     email: req.body.email
   })
@@ -24,12 +23,17 @@ app.post('/password', async (req, res) => {
   // https://ixxbyuandbmplfnqtxyw.supabase.co/auth/v1/verify?token=XXX&type=recovery&redirect_to=https://docurba.beta.gouv.fr/
   // console.log('user.action_link', user.action_link)
 
-  if (!error && user && user.properties.action_link) {
+  if (!error && properties && properties.action_link) {
+    const { data: profiles } = await supabase.from('profiles').select('firstname, lastname').eq('email', req.body.email)
+    const profile = profiles[0]
+
     sendgrid.sendEmail({
       to: req.body.email,
       template_id: 'd-06e865fdc30d42a398fdc6bc532deb82',
       dynamic_template_data: {
-        redirectURL: user.properties.action_link
+        redirectURL: properties.action_link,
+        firstname: profile.firstname,
+        lastname: profile.lastname
       }
     })
 
@@ -59,11 +63,16 @@ async function magicLinkSignIn ({ email, shouldExist, redirectBasePath }) {
     throw new Error('Vous devez créer un compte avant de pouvoir vous connecter.')
   }
   if (properties && properties.action_link) {
+    const { data: profiles } = await supabase.from('profiles').select('firstname, lastname').eq('email', email)
+    const profile = profiles[0]
+
     sendgrid.sendEmail({
       to: email,
       template_id: 'd-766d017b51124a108cabc985d0dbf451',
       dynamic_template_data: {
-        redirectURL: properties.action_link
+        redirectURL: properties.action_link,
+        firstname: profile.firstname,
+        lastname: profile.lastname
       }
     })
   }

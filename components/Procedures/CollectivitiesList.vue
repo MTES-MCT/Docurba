@@ -199,12 +199,12 @@ export default {
     async fetchCollectivitiesProcedures (codes) {
       // console.log('filteredCollectivities', this.filteredCollectivities)
 
-      const { data: procedures } = await this.$supabase
+      let { data: procedures } = await this.$supabase
         .rpc('procedures_by_insee_codes', {
           codes
         })
 
-      console.log('procedures', codes.length, procedures)
+      procedures = procedures.filter(p => !p.archived)
 
       this.collectivities.filter(c => codes.includes(c.code)).forEach((collectivite) => {
         if (!collectivite.loaded) {

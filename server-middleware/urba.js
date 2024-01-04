@@ -1,13 +1,12 @@
 /* eslint-disable no-console */
 import express from 'express'
-import { createClient } from '@supabase/supabase-js'
+import supabase from './modules/supabase.js'
 import urba from './modules/urba.js'
 import sudocu from './modules/sudocu.js'
 import sido from './modules/sido.js'
+
 const app = express()
 app.use(express.json())
-
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 // app.get('/communes', (req, res) => {
 

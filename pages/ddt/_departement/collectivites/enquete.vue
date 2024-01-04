@@ -114,7 +114,7 @@ export default {
   },
   methods: {
     async fetchScots (validations) {
-      console.log('fetchScots validations', validations)
+      // console.log('fetchScots validations', validations)
 
       // console.log('filteredScots', this.filteredScots)
       const { data: procedures } = await this.$supabase
@@ -122,7 +122,7 @@ export default {
           codes: this.collectivities.map(c => c.code)
         })
 
-      console.log('OPPOSABLE SCOTS', procedures.filter(p => p.status === 'opposable').map(p => `${p.name} - ${p.collectivite_porteuse_id} - ${p.id}`))
+      // console.log('OPPOSABLE SCOTS', procedures.filter(p => p.status === 'opposable').map(p => `${p.name} - ${p.collectivite_porteuse_id} - ${p.id}`))
 
       const groupedProcedures = groupBy(procedures, p => p.collectivite_porteuse_id)
       const collectivitiesCodes = Object.keys(groupedProcedures)

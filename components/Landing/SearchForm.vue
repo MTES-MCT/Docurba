@@ -47,7 +47,7 @@ export default {
       if (!this.valid) {
         this.$refs.form.validate()
       } else {
-        const collectiviteId = this.selectedCollectivite.type === 'epci' ? this.selectedCollectivite.EPCI : this.selectedCollectivite.code_commune_INSEE
+        const collectiviteId = this.selectedCollectivite.code
 
         this.$analytics({
           category: 'public',

@@ -3,6 +3,7 @@ CREATE TABLE public.sudocu_procedure_events AS
 SELECT events.noserieevenement,
   events.noserieprocedureratt,
   events.libtypeevenement,
+  events.codetypeevenement,
   events.codetypedocument,
   events.libtypedocument,
   events.dateevenement,

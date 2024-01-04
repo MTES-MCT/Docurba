@@ -1,9 +1,7 @@
 /* eslint-disable no-console */
-const { createClient } = require('@supabase/supabase-js')
+const supabase = require('../supabase.js')
 const github = require('./github.js')
 const { getFileContent } = require('./files.js')
-
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 module.exports = {
   async changeName (ref, section, newName) {
