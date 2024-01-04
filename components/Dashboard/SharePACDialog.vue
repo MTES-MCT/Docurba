@@ -36,7 +36,9 @@
           </template>
         </v-combobox>
 
-        <p>Partagé avec :</p>
+        <p v-if="sharings?.length">
+          Partagé avec :
+        </p>
         <div class="sharing-list">
           <div v-for="sharing in sharings" :key="sharing.id" class="sharing">
             <div class="sharing-user">
