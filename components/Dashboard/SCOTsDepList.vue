@@ -68,7 +68,9 @@ export default {
       const normalizedSearch = this.search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
 
       return this.scots.filter((scot) => {
-        const normalizedValue = scot.name.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+        // This current perimetre usage is to bypass an import anomalie
+        const name = scot.name || scot.current_perimetre[0].name
+        const normalizedValue = name.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
         return normalizedValue.includes(normalizedSearch)
       })
     },
