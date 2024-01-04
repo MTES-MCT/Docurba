@@ -130,7 +130,7 @@
             </v-data-table>
           </v-tab-item>
           <v-tab-item>
-            <DashboardSCOTsDepList />
+            <DashboardSCOTsDepList :search="search" />
           </v-tab-item>
         </v-tabs-items>
       </v-col>
@@ -143,16 +143,22 @@ import axios from 'axios'
 
 const docVersion = '1.0'
 
+const tabs = {
+  epci: 0,
+  communes: 1,
+  scot: 2
+}
+
 export default {
   name: 'CollectiviteDU',
   layout: 'ddt',
   data () {
     return {
-      search: '',
+      search: this.$route.query.search || '',
       lastProcedures: null,
       epci: null,
       communes: null,
-      scope: 0,
+      scope: tabs[this.$route.query.tab] || 0,
       clickedOnDocLink: true
     }
   },
