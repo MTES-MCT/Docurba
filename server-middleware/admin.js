@@ -37,24 +37,4 @@ app.post('/help', async (req, res) => {
   res.status(200).send('OK')
 })
 
-app.post('/pac', (req, res) => {
-  const { userData, pacData } = req.body
-
-  // console.log(userData, pacData)
-
-  slack.requestPAC(userData, pacData)
-
-  // Todo: Test this email is working.
-  sendgrid.sendEmail({
-    to: [userData.email],
-    template_id: 'd-adea54033fba4a2b9d6f814297f2eca7',
-    dynamic_template_data: {
-      firstname: userData.user_metadata.firstname,
-      doc_type: pacData.doc_type,
-      commune: pacData.town.nom_commune
-      // town: pacData.tow
-    }
-  })
-})
-
 module.exports = app
