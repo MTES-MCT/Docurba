@@ -45,40 +45,40 @@ app.post('/password', async (req, res) => {
   }
 })
 
-async function magicLinkSignIn ({ email, shouldExist, redirectBasePath }) {
-  const { data: { user, properties }, error } = await supabase.auth.admin.generateLink({
-    type: 'magiclink',
-    email,
-    options: {
-      redirectTo: redirectBasePath
-    }
-  })
+async function magicLinkSignIn ({ email, redirectBasePath }) {
+  const { data: profiles } = await supabase.from('profiles').select('firstname, lastname').eq('email', email)
+  const profile = profiles[0]
 
-  if (error) {
-    console.log('ERROR magicLinkSignIn: ', error)
-    throw error
-  }
-
-  if (shouldExist && !user.email_confirmed_at) {
+  if (!profile) {
     throw new Error('Vous devez créer un compte avant de pouvoir vous connecter.')
-  }
-
-  if (properties && properties.action_link) {
-    const { data: profiles } = await supabase.from('profiles').select('firstname, lastname').eq('email', email)
-    const profile = profiles[0]
-
-    sendgrid.sendEmail({
-      to: email,
-      template_id: 'd-766d017b51124a108cabc985d0dbf451',
-      dynamic_template_data: {
-        redirectURL: properties.action_link,
-        firstname: profile.firstname,
-        lastname: profile.lastname
+  } else {
+    const { data: { user, properties }, error } = await supabase.auth.admin.generateLink({
+      type: 'magiclink',
+      email,
+      options: {
+        redirectTo: redirectBasePath
       }
     })
-  }
 
-  return user
+    if (error) {
+      console.log('ERROR magicLinkSignIn: ', error)
+      throw error
+    }
+
+    if (properties && properties.action_link) {
+      sendgrid.sendEmail({
+        to: email,
+        template_id: 'd-766d017b51124a108cabc985d0dbf451',
+        dynamic_template_data: {
+          redirectURL: properties.action_link,
+          firstname: profile.firstname,
+          lastname: profile.lastname
+        }
+      })
+    }
+
+    return user
+  }
 }
 
 async function getRedirectPath (emailProfile) {
@@ -95,7 +95,6 @@ app.post('/signinCollectivite', async (req, res) => {
 
     const user = await magicLinkSignIn({
       email: req.body.email,
-      shouldExist: true,
       redirectBasePath: req.body.redirectTo + path
     })
 
@@ -108,11 +107,37 @@ app.post('/signinCollectivite', async (req, res) => {
 
 app.post('/signupCollectivite', async (req, res) => {
   try {
+    const { data: { user }, error: creationError } = await supabase.auth.admin.createUser({
+      email: req.body.userData.email
+    })
+
+    console.log('user created in signup', user)
+
+    if (creationError) { throw creationError }
+
+    // Insert new profile
+    const { data: insertedProfile, error: errorInsertProfile } = await supabase.from('profiles').insert({
+      ...req.body.userData,
+      side: 'collectivite',
+      user_id: user.id
+    }).select()
+
+    if (errorInsertProfile) { throw errorInsertProfile }
+
     // Send email to connect
-    const user = await magicLinkSignIn({
+    await magicLinkSignIn({
       email: req.body.userData.email,
       redirectBasePath: req.body.redirectTo
     })
+
+    slack.requestCollectiviteAccess(insertedProfile[0])
+
+    // SI pas de recovery_sent_at et pas de email_confirmed_at -> first co
+    // if (!connectionUser.email_confirmed_at && !connectionUser.recovery_sent_at) {
+    //   slack.requestCollectiviteAccess(insertedProfile[0])
+    // } else {
+    //   throw new Error('Vous avez déjà un compte associé à cette adresse email. Nous vous avons renvoyé un email de connexion.')
+    // }
 
     // Update pipedrive
     await pipedrive.signupCollectivite({
@@ -120,19 +145,6 @@ app.post('/signupCollectivite', async (req, res) => {
       detailsCollectivite: req.body.detailsCollectivite
     })
 
-    // SI pas de recovery_sent_at et pas de email_confirmed_at -> first co
-    if (!user.email_confirmed_at && !user.recovery_sent_at) {
-      const { data: insertedProfile, error: errorInsertProfile } = await supabase.from('profiles').insert({
-        ...req.body.userData,
-        side: 'collectivite',
-        user_id: user.id
-      }).select()
-
-      if (errorInsertProfile) { throw errorInsertProfile }
-      slack.requestCollectiviteAccess(insertedProfile[0])
-    } else {
-      throw new Error('Vous avez déjà un compte associé à cette adresse email. Nous vous avons renvoyé un email de connexion.')
-    }
     res.status(200).send(user)
   } catch (error) {
     console.log('ERROR /auth/signupCollectivite : ', error.message)
