@@ -195,14 +195,14 @@ export default {
       return this.loaded && (this.procedureCategory === 'principale' || (this.procedureCategory === 'secondaire' && this.proceduresParents !== null))
     },
     postfixSectoriel () {
-      return (this.collectivite.type === 'Commune' && this.perimetre.length > 1) || (this.collectivite.type !== 'Commune' && this.perimetre.length < this.communes.length) ? 'S' : ''
+      return (this.collectivite.type === 'COM' && this.perimetre.length > 1) || (this.collectivite.type !== 'COM' && this.perimetre.length < this.communes.length) ? 'S' : ''
     },
     baseName () {
       return `${this.typeProcedure} ${this.numberProcedure} de ${(this.procedureParent ? this.procedureParentDocType : this.typeDu) + this.postfixSectoriel} ${this.collectivite.intitule}`.replace(/\s+/g, ' ').trim()
     },
     communes () {
-      const coms = this.collectivite.communes || this.collectivite.intercommunalite.communes
-      return uniqBy(coms, 'code').filter(e => e.type === 'Commune')
+      const coms = this.collectivite.membres || this.collectivite.intercommunalite.membres
+      return uniqBy(coms, 'code').filter(e => e.type === 'COM')
     }
   },
   async mounted () {
@@ -214,8 +214,7 @@ export default {
           this.procedureParent = this.$route.query.secondary_id
         }
       }
-
-      this.perimetre = this.collectivite.type === 'Commune' ? [this.collectivite.code] : this.communes.map(e => e.code)
+      this.perimetre = this.collectivite.type === 'COM' ? [this.collectivite.code] : this.communes.map(e => e.code)
       this.loaded = true
     } catch (error) {
       console.log(error)
@@ -225,14 +224,14 @@ export default {
     async getProcedures () {
       let query = this.$supabase.from('procedures').select('*').eq('is_principale', true).eq('status', 'opposable')
       let ret = null
-      if (this.collectivite.type !== 'Commune') {
+      if (this.collectivite.type !== 'COM') {
         query = query.eq('collectivite_porteuse_id', this.collectivite.code)
       } else {
         query = query.contains('current_perimetre', `[{ "inseeCode": "${this.collectivite.code}" }]`)
       }
       const { data: procedures, error } = await query
       ret = procedures
-      if (this.collectivite.type !== 'Commune') {
+      if (this.collectivite.type !== 'COM') {
         ret = procedures.filter(e => e.current_perimetre.length > 1)
       }
       if (error) { throw error }
