@@ -101,7 +101,7 @@ export default {
   methods: {
     defaultUserData () {
       return {
-        email: this.$isDev ? `test_${this.$dayjs().format('DD-MM-YY+hhmm')}@docurba.beta.gouv.fr` : '',
+        email: this.$isDev ? `fabien+${this.$dayjs().format('DD-MM-YY-hhmm')}@quantedsquare.com` : '',
         firstname: this.$isDev ? 'Test' : '',
         lastname: this.$isDev ? 'Test' : '',
         password: this.$isDev ? 'docurba12345' : '',
