@@ -14,7 +14,7 @@ module.exports = {
     console.log('updateUserRole', data, error)
 
     if (role === 'admin' && !error) {
-      const { data: profiles } = await supabase.from('profiles').select('firstname, lastname, departement, region, poste')
+      const { data: profiles } = await supabase.from('profiles').select('firstname, lastname, departement, region, poste').eq('email', userData.email)
       const profile = profiles[0]
       const { firstname, lastname, departement, region } = profile
       const regionName = regions.find(r => r.code === region)
