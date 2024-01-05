@@ -3,7 +3,6 @@ const app = express()
 app.use(express.json())
 
 const sendgrid = require('./modules/sendgrid.js')
-const slack = require('./modules/slack.js')
 const supabase = require('./modules/supabase.js')
 
 app.post('/help', async (req, res) => {
@@ -23,8 +22,8 @@ app.post('/help', async (req, res) => {
   })
 
   const { data: profiles } = await supabase.from('profiles').select('firstname, lastname').eq('email', email)
-  const profile = profiles[0]
-  console.log(profile, profile.firstname, profile.lastname)
+  const profile = profiles[0] || {}
+
   // Send a confirmation email to the user.
   sendgrid.sendEmail({
     to: email,

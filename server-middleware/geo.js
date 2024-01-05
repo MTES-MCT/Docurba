@@ -35,7 +35,7 @@ app.get('/intercommunalites/:code', (req, res) => {
 
 app.get('/collectivites', (req, res) => {
   const collectivites = geo.getCollectivites(req.query)
-  console.log('collectivitesSEND: ', collectivites)
+  // console.log('collectivitesSEND: ', collectivites)
   if (collectivites) {
     res.status(200).send(collectivites)
   } else {
