@@ -38,7 +38,7 @@
         docurbaProjectId = (await supabase.from('projects').select().eq('from_sudocuh', procedure.id)).data[0].id
       }
     }
-
+    // console.log('FROM: ', procedure.id, ' Is_SCOT: ', (procedure.is_scot || schemaOnly))
     const formattedProcedure = {
       project_id: docurbaProjectId,
       type: procedure.type,
@@ -56,7 +56,7 @@
       sudocu_secondary_procedure_of: !isPrincipale && procedure.procedure_id ? procedure.procedure_id : null,
       doc_type: docType,
       is_sectoriel: !!procedure.status_infos?.isSectoriel,
-      is_scot: procedure.is_scot || schemaOnly,
+      is_scot: !!(procedure.is_scot || schemaOnly),
       is_pluih: procedure?.is_pluih,
       is_pdu: procedure?.is_pdu,
       mandatory_pdu: procedure?.mandatory_pdu,
@@ -73,6 +73,7 @@
     if (errorInsertedProcedure) { throw errorInsertedProcedure }
     // console.log('insertedProcedure: ', insertedProcedure)
     let docurbaProcedureId = insertedProcedure?.[0]?.id
+    // console.log('insertedProcedure: ', insertedProcedure)
     if (insertedProcedure.length === 0) {
       docurbaProcedureId = (await supabase.from('procedures').select().eq('from_sudocuh', procedure.id)).data[0].id
     }
@@ -82,7 +83,8 @@
 
   async function processProcedures (collectiviteCode, { schemaOnly }) {
     const { collectivite, procedures, schemas } = (await axios({ url: `http://localhost:3000/api/urba/collectivites/${collectiviteCode}`, method: 'get' })).data
-
+    // console.log('schemas: ', schemas)
+    // console.log('procedures: ', procedures)
     if (!schemaOnly) {
       for (const procedure of procedures) {
         // console.log('procedure: ', procedure)
@@ -164,15 +166,15 @@
 
     let tempProms = []
 
-    // const testOne = collectivites.find(e => e.code === '37145')
-    // console.log('HERE TESt: ', testOne)
+    // const testOne = collectivites.find(e => e.code === '08409')
+    // console.log('HERE TEST: ', testOne)
     // await processProcedures(testOne.code, { schemaOnly: false })
 
     for (const [i, collec] of collectivites.entries()) {
       if (i >= startAt) {
         console.log('Processing ', i, ' of ', len, ' - code: ', collec.code)
 
-        const prom = processProcedures(collec.code, { schemaOnly: false })
+        const prom = processProcedures(collec.code, { schemaOnly: true })
         await new Promise((resolve, reject) => setTimeout(resolve, RATE))
         tempProms.push(prom)
         if (i % BATCH_SIZE === 0 || len - i < BATCH_SIZE) {

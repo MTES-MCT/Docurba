@@ -90,7 +90,9 @@ export default {
   async mounted () {
     // Fetch communes for departement
     const departementCode = this.$route.params.departement
-    const { data: collectivities } = await axios(`/api/geo/communes?departementCode=${departementCode}`)
+    const { data: collectivities } = await axios(`/api/geo/communes?departementCode=${departementCode}&type=COM`)
+
+    // console.log('enquete collectivities', collectivities)
 
     this.collectivities = collectivities.map((c) => {
       return Object.assign({

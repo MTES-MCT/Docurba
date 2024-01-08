@@ -13,15 +13,15 @@ module.exports = {
     // eslint-disable-next-line no-console
     console.log('updateUserRole', data, error)
 
-    if ((role === 'ddt' || role === 'dreal') && !error) {
-      const { data: profiles } = await supabase.from('profiles').select('firstname, lastname, departement, region')
+    if (role === 'admin' && !error) {
+      const { data: profiles } = await supabase.from('profiles').select('firstname, lastname, departement, region, poste').eq('email', userData.email)
       const profile = profiles[0]
       const { firstname, lastname, departement, region } = profile
       const regionName = regions.find(r => r.code === region)
 
       sendgrid.sendEmail({
         to: userData.email,
-        template_id: role === 'ddt' ? 'd-939bd4723dd04edcad17e6584b7641f3' : 'd-3d9f4b96863d4c6e8d4c9489f6d8eb6e',
+        template_id: profile.poste === 'ddt' ? 'd-939bd4723dd04edcad17e6584b7641f3' : 'd-3d9f4b96863d4c6e8d4c9489f6d8eb6e',
         dynamic_template_data: {
           firstname,
           lastname,

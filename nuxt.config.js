@@ -42,7 +42,8 @@ export default {
     { src: '~/plugins/sudocu.js', mode: 'client' },
     { src: '~/plugins/pdfMake.js', mode: 'client' },
     { src: '~/plugins/analytics.js' },
-    { src: '~/plugins/gtag.js', mode: 'client' }
+    { src: '~/plugins/gtag.js', mode: 'client' },
+    { src: '~/plugins/stonly.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -95,7 +96,8 @@ export default {
           'https://stats.data.gouv.fr/piwik.js',
           'https://tally.so/widgets/embed.js',
           'https://www.googletagmanager.com/gtag/js',
-          'https://googleads.g.doubleclick.net/pagead/viewthroughconversion/11434835828/'
+          'https://googleads.g.doubleclick.net/pagead/viewthroughconversion/11434835828/',
+          'https://stonly.com/js/widget/v2/'
         ]
       }
       // addMeta: true

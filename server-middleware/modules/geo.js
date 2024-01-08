@@ -35,21 +35,21 @@ module.exports = {
       cache[code].communes = communes.filter(c => c.departementCode === code)
       cache[code].groupements = intercommunalites.filter(c => c.departementCode === code)
     }
-    console.log('cache: ', cache)
+    // console.log('cache: ', cache)
     return cache[code]
   },
   getCollectivite (code) {
     return code.length > 5 ? this.getIntercommunalite(code) : this.getCommune(code)
   },
   getCollectivites ({ codes, departements }) {
-    console.log('getCollectivites: ')
+    // console.log('getCollectivites: ')
     if (codes) {
       const communes = this.getCommunes({ codes })
       const intercommunalites = this.getIntercommunalites({ codes })
       return [...communes, ...intercommunalites]
     }
     if (departements) {
-      console.log('DEP: ', departements)
+      // console.log('DEP: ', departements)
       return this.getCollectivitesByDepartements(departements)
     }
   },
