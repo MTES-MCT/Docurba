@@ -49,6 +49,18 @@ app.put('/:ref/copy', async (req, res) => {
   }
 })
 
+app.get('/:ref/head', async (req, res) => {
+  try {
+    const { data: head } = await github('GET /repos/{owner}/{repo}/git/ref/heads/{ref}', { ref: req.params.ref })
+
+    res.status(200).send({
+      sha: head.object.sha
+    })
+  } catch (err) {
+    console.log('Error getting head', err, err.status)
+  }
+})
+
 app.post('/:ref', async (req, res) => {
   const { ref } = req.params
   const { commit } = req.body

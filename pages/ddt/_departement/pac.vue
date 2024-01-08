@@ -24,6 +24,7 @@
       </v-col>
       <VGlobalLoader v-else />
     </v-row>
+    <PACTrameGhostSectionsDialog />
     <DashboardDUInsertDialog v-model="creationDialog" @insert="fetchProjects" />
   </v-container>
 </template>

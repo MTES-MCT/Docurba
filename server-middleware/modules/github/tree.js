@@ -147,12 +147,8 @@ module.exports = {
     return this.findTree(object, splitPath)
   },
   async getTree (ref, path) {
-    const { data: head } = await github('GET /repos/{owner}/{repo}/git/ref/heads/{ref}', {
+    const { data: rootTree } = await github('GET /repos/{owner}/{repo}/git/trees/{ref}?recursive=1', {
       ref
-    })
-
-    const { data: rootTree } = await github('GET /repos/{owner}/{repo}/git/trees/{tree_sha}?recursive=1', {
-      tree_sha: head.object.sha
     })
 
     const objects = rootTree.tree.sort((a, b) => {
