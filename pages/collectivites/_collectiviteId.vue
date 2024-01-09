@@ -12,7 +12,7 @@
       :is-epci="isEpci"
       :collectivite="collectivite"
       :procedures="plans"
-      :communes="isEpci ? collectivite.communes : [collectivite]"
+      :communes="communes"
       :schemas="schemas"
       @snackMessage="Object.assign(snackbar, {visible: true, message: arguments[0]})"
     />
@@ -34,6 +34,7 @@ export default {
         message: ''
       },
       collectivite: null,
+      communes: [],
       plans: [],
       schemas: [],
       loaded: false
@@ -52,6 +53,7 @@ export default {
     async getProcedures () {
       console.log('this.$route.params.collectiviteId: ', this.$route.params.collectiviteId)
       this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
+      this.communes = this.isEpci ? this.collectivite.membres.filter(m => m.type.startsWith('COM')) : [this.collectivite]
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
       this.schemas = schemas
       this.plans = plans
