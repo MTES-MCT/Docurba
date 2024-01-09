@@ -31,11 +31,10 @@ export default {
     collectivite: {
       type: Object,
       required: true
-    }
-  },
-  data () {
-    return {
-      communes: []
+    },
+    communes: {
+      type: Array,
+      required: true
     }
   },
   mounted () {
@@ -54,8 +53,6 @@ export default {
       })
     }
     // End Analytics
-
-    this.communes = this.isEpci ? this.collectivite.communes : [this.collectivite]
   }
 }
 </script>

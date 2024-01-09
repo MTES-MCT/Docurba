@@ -99,7 +99,7 @@ export default {
       return this.communes.map((e) => {
         const enriched = {
           ...e,
-          urlGeoRisque: `https://www.georisques.gouv.fr/mes-risques/connaitre-les-risques-pres-de-chez-moi/rapport2?form-commune=true&codeInsee=${e.code}&city=${e.intitule}`
+          urlGeoRisque: `https://www.georisques.gouv.fr/mes-risques/connaitre-les-risques-pres-de-chez-moi/rapport2?form-commune=true&codeInsee=${e.code}&city=${e.intitule}&typeForm=commune`
         }
         return enriched
       })
