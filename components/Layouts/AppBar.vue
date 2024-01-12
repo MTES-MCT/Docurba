@@ -40,7 +40,7 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item link href="https://pad.incubateur.net/s/MVwW7cGNh#Nos-Guides-d%E2%80%99utilisation" target="_blank">
+            <v-list-item link href="https://pad.numerique.gouv.fr/s/lzpwuS7N0#%F0%9F%93%96-Nos-Guides-d%E2%80%99utilisation" target="_blank">
               <v-list-item-title>
                 Guide d'utilisation
               </v-list-item-title>
@@ -50,7 +50,7 @@
                 FAQ
               </v-list-item-title>
             </v-list-item>
-            <v-list-item link href="https://pad.incubateur.net/s/MVwW7cGNh#Nos-webinaires" target="_blank">
+            <v-list-item link href="https://pad.numerique.gouv.fr/s/lzpwuS7N0#%F0%9F%93%BA-Nos-webinaires-et-formations-en-ligne" target="_blank">
               <v-list-item-title>
                 Webinaires
               </v-list-item-title>
