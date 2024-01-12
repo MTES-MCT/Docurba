@@ -27,7 +27,7 @@
           <div class="slideshow__slides-container">
             <LandingSlidingTabs v-model="tab" :options="tabs" />
             <div class="slideshow__slides-container__slide">
-              <img :src="`/images/landing/slideshow/${tab}.svg`">
+              <img :src="`/images/landing/slideshow/${tab}.png`">
             </div>
           </div>
         </section>
@@ -48,7 +48,7 @@
             <h2>
               Services de l'État
             </h2>
-            <p>Créez vos Porter à Connaissance plus rapidement grâce à une centralisation et mise à jour constante des éléments nationaux et régionaux, et profitez d'une visibilité en temps réel sur l'avancement des procédures d'urbanisme de vos collectivités.</p>
+            <p>Partagez le socle de PAC national public mis à jour aux collectivités, créez vos PAC en ligne et profitez d'une visibilité en temps réel sur l'avancement des procédures d'urbanisme de vos collectivités.</p>
           </article>
         </section>
 
