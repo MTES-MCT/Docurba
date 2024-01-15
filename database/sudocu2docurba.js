@@ -3,7 +3,10 @@
   const { PG_TEST_CONFIG, PG_DEV_CONFIG, PG_PROD_CONFIG } = require('./pg_secret_config.json')
   const { createClient } = require('@supabase/supabase-js')
 
-  const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', PG_PROD_CONFIG.admin_key)
+  const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', PG_PROD_CONFIG.admin_key, {
+    auth: { persistSession: false }
+  })
+
   const axios = require('axios')
   const epcis = require('../server-middleware/Data/EnrichedIntercommunalites.json')
   const communes = require('../server-middleware/Data/EnrichedCommunes.json')
@@ -35,13 +38,14 @@
         docurbaProjectId = (await supabase.from('projects').select().eq('from_sudocuh', procedure.id)).data[0].id
       }
     }
-
+    // console.log('FROM: ', procedure.id, ' Is_SCOT: ', (procedure.is_scot || schemaOnly))
     const formattedProcedure = {
       project_id: docurbaProjectId,
       type: procedure.type,
       name: procedure.name,
       created_at: procedure.created_at,
       commentaire: procedure.description,
+      departements: procedure.departements,
       current_perimetre: procedure.perimetre,
       initial_perimetre: procedure.perimetre,
       collectivite_porteuse_id: procedure.collectivite_porteuse.code_collectivite_porteuse,
@@ -52,7 +56,7 @@
       sudocu_secondary_procedure_of: !isPrincipale && procedure.procedure_id ? procedure.procedure_id : null,
       doc_type: docType,
       is_sectoriel: !!procedure.status_infos?.isSectoriel,
-      is_scot: procedure.is_scot || schemaOnly,
+      is_scot: !!(procedure.is_scot || schemaOnly),
       is_pluih: procedure?.is_pluih,
       is_pdu: procedure?.is_pdu,
       mandatory_pdu: procedure?.mandatory_pdu,
@@ -61,6 +65,7 @@
       is_sudocuh_scot: schemaOnly,
       numero: procedure?.numero
     }
+    // console.log('departements: ', formattedProcedure.departements)
     // console.log('ID procedure: ', procedure.id, 'formattedProcedure: ', procedure.numero)
     // console.log('formattedProcedure: ', formattedProcedure)
     // console.log('procedure?.moe: ', procedure?.moe)
@@ -68,6 +73,7 @@
     if (errorInsertedProcedure) { throw errorInsertedProcedure }
     // console.log('insertedProcedure: ', insertedProcedure)
     let docurbaProcedureId = insertedProcedure?.[0]?.id
+    // console.log('insertedProcedure: ', insertedProcedure)
     if (insertedProcedure.length === 0) {
       docurbaProcedureId = (await supabase.from('procedures').select().eq('from_sudocuh', procedure.id)).data[0].id
     }
@@ -77,7 +83,8 @@
 
   async function processProcedures (collectiviteCode, { schemaOnly }) {
     const { collectivite, procedures, schemas } = (await axios({ url: `http://localhost:3000/api/urba/collectivites/${collectiviteCode}`, method: 'get' })).data
-
+    // console.log('schemas: ', schemas)
+    // console.log('procedures: ', procedures)
     if (!schemaOnly) {
       for (const procedure of procedures) {
         // console.log('procedure: ', procedure)
@@ -126,6 +133,7 @@
         project_id: docurbaProjectId,
         procedure_id: docurbaProcedureId,
         type: event.libtypeevenement,
+        code: event.codetypeevenement,
         is_valid: event.codestatutevenement === 'V',
         date_iso: event.dateevenement,
         description: event.commentaire,
@@ -135,7 +143,7 @@
         from_sudocuh: event.noserieevenement,
         is_sudocuh_scot: schemaOnly
       }
-      // console.log('attachements: ', formattedEvent.attachements)
+      // console.log('code: ', formattedEvent.code)
       return formattedEvent
     })
     if (formattedEvents) {
@@ -152,21 +160,21 @@
     // const collectivites = epcis
     const len = collectivites.length
     // 1221 stopped schema
-    const startAt = 1
+    const startAt = 32590
     const BATCH_SIZE = 10
     const RATE = 100
 
     let tempProms = []
 
-    // const testOne = collectivites.find(e => e.code === '37145')
-    // console.log('HERE TESt: ', testOne)
+    // const testOne = collectivites.find(e => e.code === '08409')
+    // console.log('HERE TEST: ', testOne)
     // await processProcedures(testOne.code, { schemaOnly: false })
 
     for (const [i, collec] of collectivites.entries()) {
       if (i >= startAt) {
         console.log('Processing ', i, ' of ', len, ' - code: ', collec.code)
 
-        const prom = processProcedures(collec.code, { schemaOnly: false })
+        const prom = processProcedures(collec.code, { schemaOnly: true })
         await new Promise((resolve, reject) => setTimeout(resolve, RATE))
         tempProms.push(prom)
         if (i % BATCH_SIZE === 0 || len - i < BATCH_SIZE) {

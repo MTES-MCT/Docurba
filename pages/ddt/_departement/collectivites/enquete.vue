@@ -19,8 +19,8 @@
             <v-tabs v-model="tab">
               <v-tab>Communes à valider</v-tab>
               <v-tab>Communes validées</v-tab>
-              <!-- <v-tab>SCOT à valider</v-tab>
-              <v-tab>SCOT validés</v-tab> -->
+              <v-tab>SCOT à valider</v-tab>
+              <v-tab>SCOT validés</v-tab>
             </v-tabs>
             <v-tabs-items v-model="tab">
               <v-tab-item>
@@ -90,7 +90,9 @@ export default {
   async mounted () {
     // Fetch communes for departement
     const departementCode = this.$route.params.departement
-    const { data: collectivities } = await axios(`/api/geo/communes?departementCode=${departementCode}`)
+    const { data: collectivities } = await axios(`/api/geo/communes?departementCode=${departementCode}&type=COM`)
+
+    // console.log('enquete collectivities', collectivities)
 
     this.collectivities = collectivities.map((c) => {
       return Object.assign({
@@ -114,11 +116,15 @@ export default {
   },
   methods: {
     async fetchScots (validations) {
+      // console.log('fetchScots validations', validations)
+
       // console.log('filteredScots', this.filteredScots)
       const { data: procedures } = await this.$supabase
         .rpc('scot_by_insee_codes', {
           codes: this.collectivities.map(c => c.code)
         })
+
+      // console.log('OPPOSABLE SCOTS', procedures.filter(p => p.status === 'opposable').map(p => `${p.name} - ${p.collectivite_porteuse_id} - ${p.id}`))
 
       const groupedProcedures = groupBy(procedures, p => p.collectivite_porteuse_id)
       const collectivitiesCodes = Object.keys(groupedProcedures)
@@ -148,7 +154,7 @@ export default {
     updateScotsValidations (validations) {
       validations.forEach((validation) => {
         const scot = this.scots.find(s => s.code === validation.collectivite_code)
-        scot.validations.pussh(validation)
+        scot.validations.push(validation)
       })
     }
   }

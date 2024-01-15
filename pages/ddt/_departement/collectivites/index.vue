@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container v-if="epcis && communes">
     <v-row>
       <v-col v-if="!clickedOnDocLink" cols="12">
         <v-alert type="info">
@@ -25,13 +25,6 @@
             style="max-width:500px"
             label="Rechercher"
           />
-          <!-- <v-divider class="my-4" />
-          <div class="d-flex">
-            <v-select flat solo label="Compétence" :items="['Peut-importe', 'Oui', 'Non']" />
-            <v-select flat solo label="Toutes procédures principales" :items="['Peut-importe', 'Oui', 'Non']" />
-            <v-select flat solo label="Tous les status" :items="['Peut-importe', 'Oui', 'Non']" />
-            <v-select flat solo label="Tous SCoT" :items="['Peut-importe', 'Oui', 'Non']" />
-          </div> -->
         </div>
       </v-col>
       <v-col cols="12">
@@ -45,23 +38,23 @@
           <v-tab-item>
             <v-data-table
               :headers="headersEpci"
-              :items="collectivites"
+              :items="epcis"
               :items-per-page="50"
               class="elevation-1"
               :custom-filter="customFilter"
               :search="search"
-              :loading="!epci"
+              :loading="!epcis"
               loading-text="Chargement des collectivités..."
             >
               <template #top />
 
               <!-- eslint-disable-next-line -->
             <template #item.competence="{ item }">
-                <div v-if="item.competenceSudocu || item.competenceBanatic" class="d-flex">
-                  <div class="competence-tag-sudocu mr-2" :style="{visibility: item.competenceSudocu ? 'visible' : 'hidden'}">
+                <div v-if="item.competenceSudocu || item.competencePLU" class="d-flex">
+                  <!-- <div class="competence-tag-sudocu mr-2" :style="{visibility: item.competenceSudocu ? 'visible' : 'hidden'}">
                     C <span class="caption text-lowercase">Sudocu</span>
-                  </div>
-                  <div class="competence-tag-banatic mr-2" :style="{visibility: item.competenceBanatic ? 'visible' : 'hidden'}">
+                  </div> -->
+                  <div class="competence-tag-banatic mr-2" :style="{visibility: item.competencePLU ? 'visible' : 'hidden'}">
                     C <span class="caption text-lowercase">BANATIC</span>
                   </div>
                 </div>
@@ -72,7 +65,7 @@
               <!-- eslint-disable-next-line -->
             <template #item.actions="{ item }">
                 <div>
-                  <v-btn depressed color="primary" :to="item.detailsPath">
+                  <v-btn depressed color="primary" :to="item.path">
                     Consulter
                   </v-btn>
                 </div>
@@ -94,9 +87,9 @@
               <!-- eslint-disable-next-line -->
             <template #item.intercommunalite="{ item }">
 
-                <div v-if="item.intercommunaliteCode">
-                  <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.intercommunaliteCode}/epci`">
-                    {{ item.intercommunaliteName }}
+                <div v-if="item.code">
+                  <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.code}/epci`">
+                    {{ item.intitule }}
                   </nuxt-link>
                 </div>
                 <div v-else>
@@ -106,11 +99,11 @@
 
               <!-- eslint-disable-next-line -->
             <template #item.competence="{ item }">
-                <div v-if="item.competenceSudocu || item.competenceBanatic" class="d-flex">
+                <div v-if="item.competenceSudocu || item.competencePLU" class="d-flex">
                   <div class="competence-tag-sudocu mr-2" :style="{visibility: item.competenceSudocu ? 'visible' : 'hidden'}">
                     C <span class="caption text-lowercase">Sudocu</span>
                   </div>
-                  <div class="competence-tag-banatic mr-2" :style="{visibility: item.competenceBanatic ? 'visible' : 'hidden'}">
+                  <div class="competence-tag-banatic mr-2" :style="{visibility: item.competencePLU ? 'visible' : 'hidden'}">
                     C <span class="caption text-lowercase">BANATIC</span>
                   </div>
                 </div>
@@ -122,7 +115,7 @@
               <!-- eslint-disable-next-line -->
             <template #item.actions="{ item }">
                 <div>
-                  <v-btn depressed color="primary" :to="item.detailsPath">
+                  <v-btn depressed color="primary" :to="item.path">
                     Consulter
                   </v-btn>
                 </div>
@@ -130,7 +123,7 @@
             </v-data-table>
           </v-tab-item>
           <v-tab-item>
-            <DashboardSCOTsDepList />
+            <DashboardSCOTsDepList :search="search" />
           </v-tab-item>
         </v-tabs-items>
       </v-col>
@@ -143,134 +136,52 @@ import axios from 'axios'
 
 const docVersion = '1.0'
 
+const tabs = {
+  epci: 0,
+  communes: 1,
+  scot: 2
+}
+
 export default {
   name: 'CollectiviteDU',
   layout: 'ddt',
   data () {
     return {
-      search: '',
+      search: this.$route.query.search || '',
       lastProcedures: null,
-      epci: null,
+      epcis: null,
       communes: null,
-      scope: 0,
+      scope: tabs[this.$route.query.tab] || 0,
       clickedOnDocLink: true
     }
   },
   computed: {
     headers () {
       return [
-        { text: 'Nom', align: 'start', value: 'name', filterable: true },
+        { text: 'Nom', align: 'start', value: 'intitule', filterable: true },
         { text: 'Code INSEE', align: 'start', value: 'code', filterable: true },
         { text: 'Compétence', value: 'competence', filterable: false },
-        { text: 'Intercommunalité', value: 'intercommunalite', filterable: false },
-        // { text: 'Date de création', value: 'dateCreation' },
+        { text: 'Intercommunalité', value: 'type', filterable: false },
         { text: 'Actions', value: 'actions', filterable: false }
       ]
     },
     headersEpci () {
       return [
-        { text: 'Nom', align: 'start', value: 'name', filterable: true },
+        { text: 'Nom', align: 'start', value: 'intitule', filterable: true },
         { text: 'SIREN', align: 'start', value: 'code', filterable: true },
         { text: 'Type', value: 'type', filterable: false },
         { text: 'Compétence', value: 'competence', filterable: false },
-        // { text: 'Date de création', value: 'dateCreation' },
         { text: 'Actions', value: 'actions', filterable: false }
       ]
-    },
-    collectivites () {
-      if (!this.epci) { return [] }
-
-      return this.epci.map((collectivite) => {
-        return {
-          name: collectivite.intitule,
-          code: collectivite.code,
-          competenceSudocu: collectivite.hasCompetence,
-          competenceBanatic: collectivite.competences.plu,
-          // dateCreation: collectivite.dateCreation,
-          type: `${collectivite.labelJuridique} (${collectivite.nbCommunes})`,
-          lastProc: '',
-          status: '',
-          detailsPath: {
-            name: 'ddt-departement-collectivites-collectiviteId-epci',
-            params: {
-              departement: this.$route.params.departement,
-              collectiviteId: collectivite.code
-            }
-          },
-          frpProcPrincipalPath: { name: 'foo' }
-        }
-      })
     }
   },
   async mounted () {
     this.clickedOnDocLink = (localStorage.getItem('docVersion') === docVersion)
 
-    const { data: epcis } = await axios({
-      url: '/api/geo/intercommunalites',
-      method: 'get',
-      params: {
-        departementCode: this.$route.params.departement
-      }
-    })
-
-    const { data: communes } = await axios({
-      url: '/api/geo/communes',
-      method: 'get',
-      params: {
-        departementCode: this.$route.params.departement
-      }
-    })
-
-    const collecsInsee = communes.map(e => e.code.padStart(5, '0')).concat(epcis.map(e => e.code))
-    const { data: sudocuCollectivites, error: errorSudocuCollectivites } = await this.$supabase.from('sudocu_collectivites').select().in('codecollectivite', collecsInsee)
-
-    // eslint-disable-next-line no-console
-    if (errorSudocuCollectivites) { console.log('errorSudocuCollectivites: ', errorSudocuCollectivites) }
-
-    this.epci = epcis.map((e) => {
-      const sudoEpci = sudocuCollectivites.find((i) => {
-        return i.codecollectivite === e.code
-      })
-      // if (!sudoEpci) {
-      //   // console.log('not found sudoEpci: ', e)
-      // }
-      // // console.log('sudoEpci: ', sudoEpci)
-      return {
-        ...e,
-        hasCompetence: sudoEpci?.sicompetenceplan ?? false
-      }
-    })
-
-    const communesUniq = [...new Map(communes.map(item => [item.code, item])).values()]
-    // console.log('this.epci ici: ', communesUniq, ' sudocuCollectivites: ', sudocuCollectivites)
-    this.communes = communesUniq.map((commune) => {
-      const sudoCom = sudocuCollectivites.find(i => i.codecollectivite === commune.code)
-      // if (!sudoCom) {
-      //   consolcommune.log('not found: ', e)
-      // }
-      // consolcommune.log('sudoCom: ', sudoCom)
-      return {
-        name: commune.intitule,
-        code: commune.code,
-        competenceSudocu: sudoCom?.sicompetenceplan,
-        competenceBanatic: commune.competencePLU,
-        type: 'Commune',
-        lastProc: '',
-        status: '',
-        intercommunaliteName: commune.intercommunaliteName,
-        departementCode: commune.departementCode,
-        // dateCreation: commune.dateCreation,
-        intercommunaliteCode: commune.intercommunaliteCode,
-        detailsPath: {
-          name: 'ddt-departement-collectivites-collectiviteId-commune',
-          params: {
-            departement: this.$route.params.departement,
-            collectiviteId: commune.code
-          }
-        },
-        frpProcPrincipalPath: { name: 'foo' }
-      }
-    })
+    const { data: collectivites } = await axios.get(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
+    console.log('collec: ', collectivites)
+    this.epcis = collectivites.groupements.map(e => ({ ...e, path: `/ddt/${e.departementCode}/collectivites/${e.code}/epci` }))
+    this.communes = collectivites.communes.map(e => ({ ...e, path: `/ddt/${e.departementCode}/collectivites/${e.code}/commune` }))
   },
   methods: {
     customFilter (value, search, item) {

@@ -154,11 +154,6 @@ export default {
       error: null
     }
   },
-  computed: {
-    selectedCollectiviteId () {
-      return this.selectedCollectivite.EPCI || this.selectedCollectivite.code_commune_INSEE || null
-    }
-  },
   methods: {
     async signUp () {
       // console.log('signup')
@@ -170,7 +165,11 @@ export default {
           method: 'post',
           url: '/api/auth/signupCollectivite',
           data: {
-            userData: { ...this.userData, collectivite_id: this.selectedCollectiviteId, departement: this.selectedCollectivite.departement },
+            userData: {
+              ...this.userData,
+              collectivite_id: this.selectedCollectivite.code,
+              departement: this.selectedCollectivite.departement
+            },
             detailsCollectivite: this.selectedCollectivite,
             redirectTo: window.location.origin
           }
@@ -178,7 +177,7 @@ export default {
         // console.log('ret: ', ret)
         this.$router.push({
           name: 'login-collectivites-explain',
-          query: { collectivite_id: this.selectedCollectiviteId }
+          query: { collectivite_id: this.selectedCollectivite.code }
         })
       } catch (error) {
         // eslint-disable-next-line no-console
