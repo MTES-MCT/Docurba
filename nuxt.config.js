@@ -93,7 +93,7 @@ export default {
         // 'default-src': ["'self'"],
         'script-src': [
           // "'self'",
-          'https://stats.data.gouv.fr/piwik.js',
+          'https://stats.beta.gouv.fr/',
           'https://tally.so/widgets/embed.js',
           'https://www.googletagmanager.com/gtag/js',
           'https://googleads.g.doubleclick.net/pagead/viewthroughconversion/11434835828/',

@@ -47,8 +47,8 @@ export default {
         this.$matomo([
           'trackEvent',
           'Socle de PAC',
-          'Georisques',
-          `${this.$route.query.document} - ${code}`
+          'INPN',
+          this.$route.params.collectiviteId
         ])
       })
     }

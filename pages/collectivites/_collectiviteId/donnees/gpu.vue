@@ -73,6 +73,12 @@ export default {
       return this.areas.filter(a => !!this.documents.find(doc => doc.grid.name === a.code))
     }
   },
+  mounted () {
+    this.$matomo([
+      'trackEvent', 'Socle de PAC', 'GPU',
+      this.collectivite.code
+    ])
+  },
   async created () {
     this.areas = [
       { code: this.collectivite.code, intitule: this.collectivite.intitule },
