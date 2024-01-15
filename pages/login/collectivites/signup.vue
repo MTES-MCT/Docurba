@@ -83,6 +83,9 @@
                         large
                         :cols-dep="4"
                         :cols-town="8"
+                        :input-props="{
+                          filled: true
+                        }"
                       />
                       <span v-if="userData.poste === 'be' || userData.poste === 'agence_urba'">
                         *Notez qu’il sera toujours possible d’élargir et modifier votre périmètre par la suite

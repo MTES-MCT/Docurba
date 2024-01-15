@@ -1,7 +1,7 @@
 <template>
   <LayoutsCustomApp>
     <template v-if="!loading" #headerPageTitle>
-      - {{ (project && project.id ? project.name : $route.params.githubRef) | githubRef }}
+      {{ (project && project.id ? project.name : $route.params.githubRef) | githubRef }}
     </template>
     <v-container v-if="!loading">
       <v-row>

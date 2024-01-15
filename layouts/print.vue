@@ -7,8 +7,6 @@
 </template>
 
 <script>
-import '@gouvfr/dsfr/dist/css/header.css'
-import '@gouvfr/dsfr/dist/css/logo.css'
 export default {
   // head () {
   //   return {

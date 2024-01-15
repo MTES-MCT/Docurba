@@ -1,6 +1,43 @@
 <template>
   <v-app>
-    <LayoutsAppBarDdt />
+    <LayoutsAppBar flat extended>
+      <v-tabs v-if="$user.profile.verified" align-with-title class="header-tabs">
+        <v-tab
+          v-if="$user.profile.poste === 'ddt'"
+          :to="{
+            name: 'ddt-departement-collectivites',
+            params: {departement: $user.profile.departement}
+          }"
+        >
+          Mes collectivites
+        </v-tab>
+        <v-tab
+          :to="{
+            name: 'trames-githubRef',
+            params: {githubRef: trameRef}
+          }"
+        >
+          Trame de PAC {{ trameRef.includes('region') ? 'régionale' : 'départementale' }}
+        </v-tab>
+        <v-tab
+          :to="{
+            name: 'ddt-departement-pac',
+            params: {departement: $user.profile.departement}
+          }"
+        >
+          Mes PAC
+        </v-tab>
+        <v-tab
+          v-if="ddtBetaTest"
+          :to="{
+            name:'ddt-departement-collectivites-enquete',
+            params: {departement: $route.params.departement}
+          }"
+        >
+          Validation des procédures
+        </v-tab>
+      </v-tabs>
+    </LayoutsAppBar>
     <v-main class="beige">
       <v-container v-if="isLoading" class="fill-height">
         <v-row justify="center" align="center">
@@ -30,11 +67,12 @@
 </template>
 
 <script>
-// import '@gouvfr/dsfr/dist/css/core.css'
-import '@gouvfr/dsfr/dist/css/footer.css'
-import '@gouvfr/dsfr/dist/css/logo.css'
-
 import axios from 'axios'
+
+const validationBetaDDT = [
+  '25', '29', '35', '56', '58',
+  '81', '89'
+]
 
 export default {
   name: 'DdtLayout',
@@ -45,6 +83,16 @@ export default {
     isAllowed () {
       // console.log('this.$user?.profile: ', this.$user.profile)
       return (this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified) || this.$isDev
+    },
+    trameRef () {
+      const scopes = { ddt: 'dept', dreal: 'region' }
+      const poste = this.$user.profile.poste
+      const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
+
+      return `${scopes[poste]}-${this.$options.filters.deptToRef(code)}`
+    },
+    ddtBetaTest () {
+      return validationBetaDDT.includes(this.$route.params.departement)
     }
   },
   async mounted () {
@@ -66,18 +114,13 @@ export default {
 }
 </script>
 
-<style scoped>
-  .v-footer.footer-fr {
-    border-top: 2px #000091 solid !important;
-    /* border-top-color: var(--v-bf500); */
-  }
-
-  .footer-fr ul {
-    list-style: none;
-  }
-
-  .footer-fr a {
-    color: #1e1e1e;
-    text-decoration: none;
-  }
+<style>
+.header-tabs {
+  border-top: solid 1px var(--v-grey-base);
+  border-bottom: solid 1px var(--v-grey-base);
+}
+.header-tabs .v-tab {
+  color: var(--v-typo-base) !important;
+  text-transform: none;
+}
 </style>

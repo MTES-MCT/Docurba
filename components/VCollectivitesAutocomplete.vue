@@ -7,7 +7,6 @@
         :items="departements"
         placeholder="Departement"
         hide-details
-        filled
         autocomplete="off"
         return-object
         :dense="!large"
@@ -27,7 +26,6 @@
           autocomplete="off"
           :error-messages="errors"
           return-object
-          filled
           placeholder="Commune ou EPCI"
           :loading="loading"
           :dense="!large"
