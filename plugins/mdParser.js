@@ -4,6 +4,8 @@ import remarkRehype from 'remark-rehype'
 import rehypeRaw from 'rehype-raw'
 import rehypeSanitize from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
+import rehypeParse from 'rehype-parse'
+import rehypeMinifyWhitespace from 'rehype-minify-whitespace'
 
 import jsonCompiler from '@nuxt/content/parsers/markdown/compilers/json.js'
 import { defaultSchema } from '@/assets/sanitizeSchema.js'
@@ -26,12 +28,32 @@ export default (_, inject) => {
     .use(rehypeSanitize, defaultSchema)
     .use(rehypeStringify)
 
+  const markdownProcessor = unified()
+    .use(remarkParse)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
+    .use(rehypeSanitize)
+    .use(rehypeMinifyWhitespace)
+    .use(jsonCompiler)
+
+  const htmlProcessor = unified()
+    .use(rehypeParse)
+    .use(rehypeSanitize)
+    .use(rehypeMinifyWhitespace)
+    .use(jsonCompiler)
+
   inject('md', {
     parse (text) {
       return mdParser.processSync(text).contents
     },
     compile (text) {
       return mdCompiler.processSync(text).result
+    },
+    processMarkdown (text) {
+      return markdownProcessor.processSync(text).result
+    },
+    processHtml (text) {
+      return htmlProcessor.processSync(text).result
     }
   })
 }

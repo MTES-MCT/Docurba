@@ -359,6 +359,7 @@ export default {
   }
 }
 </script>
+
 <style scoped>
 .tvwysiwyg-editor >>> .ProseMirror:focus {
   outline: none;
@@ -372,5 +373,11 @@ export default {
 
 .typo-select {
   width: 72px;
+}
+</style>
+
+<style>
+.tvwysiwyg-editor h1, .tvwysiwyg-editor h2, .tvwysiwyg-editor h3, .tvwysiwyg-editor h4, .tvwysiwyg-editor p {
+  margin-bottom: 14px;
 }
 </style>

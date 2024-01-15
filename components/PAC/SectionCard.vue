@@ -610,4 +610,21 @@ export default {
 .pac-section-content img {
   max-width: 100%;
 }
+
+.pac-section-content p:empty:before {
+  content: ' ';
+  white-space: pre;
+}
+
+.pac-section-content h1, .pac-section-content h2, .pac-section-content h3, .pac-section-content h4, .pac-section-content p {
+  margin-bottom: 14px;
+}
+
+.ghost-count-badge .v-badge__badge {
+  background-color: var(--v-primary-lighten4);
+  border: 1px dashed #1765c9 !important;
+  color: #1765c9 !important;
+  display: inline-flex;
+  align-items: center;
+}
 </style>
