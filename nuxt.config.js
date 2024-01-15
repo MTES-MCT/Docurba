@@ -97,7 +97,8 @@ export default {
           'https://tally.so/widgets/embed.js',
           'https://www.googletagmanager.com/gtag/js',
           'https://googleads.g.doubleclick.net/pagead/viewthroughconversion/11434835828/',
-          'https://stonly.com/js/widget/v2/'
+          'https://stonly.com/js/widget/v2/',
+          'http://docurba-metabase.osc-fr1.scalingo.io/'
         ]
       }
       // addMeta: true
