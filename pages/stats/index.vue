@@ -3,7 +3,7 @@
     <v-row justify="center">
       <v-col cols="12" class="iframe-container">
         <iframe
-          src="http://docurba-metabase.osc-fr1.scalingo.io/public/dashboard/64ca74aa-b566-44a5-b381-bda8f8602f05"
+          src="https://docurba-metabase.osc-fr1.scalingo.io/public/dashboard/64ca74aa-b566-44a5-b381-bda8f8602f05"
           frameborder="0"
           allowtransparency
           class="iframe"
