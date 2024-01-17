@@ -19,7 +19,7 @@
                 </v-col>
                 <v-col cols="" class="p-relative">
                   <v-btn
-                    v-show="lastEditDate && editable"
+                    v-if="lastEditDate && editable"
                     absolute
                     text
                     disabled
@@ -324,7 +324,6 @@ export default {
       sectionText: '',
       // sectionContent: { body: null },
       sectionMarkdown: '',
-      sectionHistory: null,
       editEnabled: false,
       isOpen: false,
       saving: false,
@@ -380,8 +379,8 @@ export default {
       }
     },
     lastEditDate () {
-      if (this.sectionHistory) {
-        return this.$dayjs(this.sectionHistory.commit.author.date).format('DD MMM YYYY')
+      if (this.section.editDate) {
+        return this.$dayjs(this.section.editDate).format('DD MMM YYYY')
       } else {
         return ''
       }
@@ -418,6 +417,10 @@ export default {
           value: this.section.name,
           data: this.section
         })
+
+        if (!this.section.ghost && this.editable && this.section.children[0] && !this.section.children[0].editDate) {
+          this.fetchChildrenHistories()
+        }
       }
     },
     isSelected () {
@@ -455,7 +458,7 @@ export default {
   },
   methods: {
     async fetchSectionContent () {
-      const path = `/${this.section.path}${this.section.type === 'dir' ? '/intro.md' : ''}`
+      const path = `${this.section.path}${this.section.type === 'dir' ? '/intro.md' : ''}`
 
       const { data: sectionContent } = await axios({
         method: 'get',
@@ -475,19 +478,23 @@ export default {
         // eslint-disable-next-line no-console
         console.log(err, sectionContent)
       }
+    },
+    async fetchChildrenHistories () {
+      const { data: histories } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
+        params: {
+          paths: this.section.children
+            .filter(child => !child.ghost)
+            .map(child => child.type === 'file' ? child.path : (child.path + '/intro.md'))
+        }
+      })
 
-      if (this.editable) {
-        const { data: sectionHistory } = await axios({
-          method: 'get',
-          url: '/api/trames/history',
-          params: {
-            path,
-            ref: this.gitRef
-          }
-        })
-
-        this.sectionHistory = sectionHistory
-      }
+      // eslint-disable-next-line vue/no-mutating-props
+      this.section.children = this.section.children.map((child) => {
+        return {
+          ...child,
+          editDate: histories.find(h => h.path.replace('/intro.md', '') === child.path)?.commit?.date
+        }
+      })
     },
     async fetchDataAttachments () {
       const { data } = await this.$supabase.from('pac_sections_data').select('*').match({
@@ -543,6 +550,15 @@ export default {
           // eslint-disable-next-line vue/no-mutating-props
           this.section.sha = savedFile.sha
         }
+
+        const { data: history } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
+          params: {
+            paths: [this.section.type === 'file' ? this.section.path : (this.section.path + '/intro.md')]
+          }
+        })
+
+        // eslint-disable-next-line vue/no-mutating-props
+        this.section.editDate = history[0]?.commit?.date
 
         if (this.project && this.project.id) {
           this.$notifications.notifyUpdate(this.project.id)

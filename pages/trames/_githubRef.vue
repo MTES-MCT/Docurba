@@ -160,6 +160,14 @@ export default {
         'main'
     ])
 
+    const { data: histories } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
+      params: {
+        paths: sections
+          .filter(s => !s.ghost)
+          .map(s => s.type === 'file' ? s.path : (s.path + '/intro.md'))
+      }
+    })
+
     // This code should prevent using multiple value when parsing.
     const groupedSupSections = groupBy(supSections, s => s.path)
     supSections = Object.keys(groupedSupSections).map((path) => {
@@ -203,7 +211,9 @@ export default {
     }
 
     this.sections = sections.map((section) => {
-      return parseSection(section, supSections)
+      const s = parseSection(section, supSections)
+      s.editDate = histories.find(h => h.path.replace('/intro.md', '') === s.path)?.commit?.date
+      return s
     })
 
     this.loading = false

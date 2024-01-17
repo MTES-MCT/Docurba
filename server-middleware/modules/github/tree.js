@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
+const crypto = require('crypto')
 const supabase = require('../supabase.js')
 const github = require('./github.js')
+const githubGql = require('./github-graphql.js')
 const { getFileContent } = require('./files.js')
 
 module.exports = {
@@ -189,5 +191,46 @@ module.exports = {
     }
 
     return this.findTree(root, path.split('/')).children
+  },
+  async getHistories (ref, paths) {
+    function hash (string) {
+      return crypto.createHash('shake256', { outputLength: 8 }).update(string).digest('hex')
+    }
+
+    const gqlQuery = `ref(qualifiedName: "${ref}") {
+      target {
+        ... on Commit {
+          ${
+            paths
+              .map(path => `${'hash_' + hash(path)}: blame(path: "${path.replaceAll('"', '\\"')}") {
+                ranges {
+                  commit {
+                    committedDate
+                  }
+                }
+              }`)
+              .join('\n')
+          }
+        }
+      }
+    }`
+
+    const blameRangesByFile = (await githubGql(gqlQuery)).ref.target
+
+    return paths.map((path) => {
+      const blame = blameRangesByFile['hash_' + hash(path)]
+      const commit = blame?.ranges[0]?.commit
+
+      if (!commit) {
+        return { path }
+      }
+
+      return {
+        path,
+        commit: {
+          date: commit.committedDate
+        }
+      }
+    })
   }
 }

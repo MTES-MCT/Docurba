@@ -1,8 +1,8 @@
-/* eslint-disable no-console */
 const express = require('express')
-const admin = require('./modules/admin.js')
+const { createClient } = require('@supabase/supabase-js')
 const github = require('./modules/github/github.js')
 const tree = require('./modules/github/tree.js')
+const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 const { getFileContent, getFiles, addGhostSections } = require('./modules/github/files.js')
 
 const app = express()
@@ -158,17 +158,10 @@ app.get('/file', async (req, res) => {
   }
 })
 
-app.get('/history', async (req, res) => {
+app.get('/tree/:ref/history', async (req, res) => {
   try {
-    const { path, ref } = req.query
-
-    const { data: commits } = await github('GET /repos/{owner}/{repo}/commits', {
-      path,
-      sha: ref,
-      per_page: 1
-    })
-
-    res.status(200).send(commits[0])
+    const historiesByPath = await tree.getHistories(req.params.ref, req.query.paths)
+    res.status(200).send(historiesByPath)
   } catch (err) {
     console.log('error getting history', err)
     res.status(400).send(err)
