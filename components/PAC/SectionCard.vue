@@ -30,15 +30,15 @@
                     Modifié le: {{ lastEditDate }}
                   </v-btn>
                   <h2 class="d-flex align-center">
-                    <span v-if="!editEnabled" :class="section.ghost ? 'section-title--ghost' : 'section-title'">{{ section.name }}</span>
                     <v-text-field
-                      v-else
+                      v-if="editEnabled && titleEditable"
                       v-model="sectionName"
                       dense
                       filled
                       hide-details
                       @click.stop
                     />
+                    <span v-else :class="section.ghost ? 'section-title--ghost' : 'section-title'">{{ section.name }}</span>
                     <PACEditingParentDiffDialog v-if="section.diff && isEditable" :section="section" :git-ref="gitRef">
                       <template #default="{on}">
                         <v-chip
@@ -207,6 +207,7 @@
                     :git-ref="section.ghost ? headRef : gitRef"
                     :project="project"
                     :editable="editable && !section.ghost"
+                    :title-editable="editable && !section.ghost"
                     :deletable="editable && !section.ghost"
                     :parent-selected="isVisible"
                     :opened-path="openedPath"
@@ -283,6 +284,10 @@ export default {
       required: true
     },
     editable: {
+      type: Boolean,
+      default: false
+    },
+    titleEditable: {
       type: Boolean,
       default: false
     },
