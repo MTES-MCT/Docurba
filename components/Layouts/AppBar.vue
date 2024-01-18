@@ -7,14 +7,15 @@
     class="app-bar"
     height="94px"
   >
-    <img src="@/assets/images/republique-francaise.svg" class="app-bar__logo">
-    <img src="@/assets/images/republique-francaise-short.svg" class="app-bar__logo--short">
+    <div class="app-bar-title">
+      <img src="@/assets/images/republique-francaise.svg" class="app-bar-title__logo">
+      <img src="@/assets/images/republique-francaise-short.svg" class="app-bar-title__logo--short">
 
-    <v-app-bar-title>
       <nuxt-link to="/" title="Accueil - Docurba" class="app-bar-title__link">
         Docurba
       </nuxt-link>
-    </v-app-bar-title>
+    </div>
+
     <div class="app-bar__page-title">
       <slot name="pageTitle" />
     </div>
@@ -169,14 +170,14 @@ export default {
   padding: 8px 40px;
 }
 
-.app-bar__logo {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  margin-right: 40px;
+.app-bar-title {
+  width: auto !important;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
 }
 
-.app-bar__logo--short {
-  margin-right: 16px;
+.app-bar-title__logo--short {
   display: none;
 }
 
@@ -203,11 +204,15 @@ export default {
 }
 
 @media screen and (max-width: 960px) {
-  .app-bar__logo {
+  .app-bar-title {
+    gap: 1rem;
+  }
+
+  .app-bar-title__logo {
     display: none;
   }
 
-  .app-bar__logo--short {
+  .app-bar-title__logo--short {
     display: block;
   }
 
