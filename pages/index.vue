@@ -135,7 +135,7 @@ section > article {
 .landing-container {
   display: flex;
   justify-content: center;
-  padding: 4rem 1rem;
+  padding: 3rem 1rem 4rem 1rem;
 }
 
 .landing {
@@ -143,7 +143,7 @@ section > article {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 232px;
+  gap: 8rem;
 }
 
 .hero-section {
@@ -151,6 +151,7 @@ section > article {
   flex-direction: column;
   align-items: center;
   gap: 3.5rem;
+  padding: 6.5rem 0;
 }
 
 .search {
@@ -275,6 +276,18 @@ section.signup {
 
   h2 {
     font-size: 1.5rem;
+  }
+
+  .landing {
+    gap: 2.5rem
+  }
+
+  .landing-container {
+    padding-top: 1rem;
+  }
+
+  .hero-section {
+    padding: 2.5rem 0;
   }
 
   .sections-container {
