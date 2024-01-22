@@ -1,9 +1,14 @@
 /* eslint-disable no-console */
 import express from 'express'
+import { mapValues, get } from 'lodash'
 import supabase from './modules/supabase.js'
 import urba from './modules/urba.js'
-import sudocu from './modules/sudocu.js'
+// import sudocu from './modules/sudocu.js'
 import sido from './modules/sido.js'
+import procedures from './modules/procedures.js'
+import departements from './Data/INSEE/departements.json'
+
+import sudocuhCommunes from './modules/exportMaps/sudocuhCommunes.js'
 
 const app = express()
 app.use(express.json())
@@ -23,15 +28,15 @@ app.get('/documents/collectivites', async (req, res) => {
   }
 })
 
-app.get('/collectivites/:code', async (req, res) => {
-  try {
-    const collectiviteDetails = await sudocu.getProceduresCollectivite(req.params.code)
-    res.status(200).send(collectiviteDetails)
-  } catch (error) {
-    console.log(error)
-    res.status(404).send(error)
-  }
-})
+// app.get('/collectivites/:code', async (req, res) => {
+//   try {
+//     const collectiviteDetails = await sudocu.getProceduresCollectivite(req.params.code)
+//     res.status(200).send(collectiviteDetails)
+//   } catch (error) {
+//     console.log(error)
+//     res.status(404).send(error)
+//   }
+// })
 
 app.get('/sido_csv', async (req, res) => {
   console.log('OKOKOK')
@@ -76,6 +81,25 @@ app.get('/state/:collectiviteCode', async (req, res) => {
     console.log('error', err)
     res.status(400).send(err)
   }
+})
+
+app.get('/exports/departements/:code', async (req, res) => {
+  const communesCodes = departements.find(d => d.code === req.params.code).communes.map(c => c.code)
+  const communes = await procedures.getCommunes(communesCodes)
+
+  console.log(communes[0])
+
+  const mapedCommunes = communes.map((c) => {
+    return mapValues(sudocuhCommunes, key => get(c, key, ''))
+  })
+
+  res.status(200).send(mapedCommunes)
+})
+
+app.get('/exports/communes/:inseeCode', async (req, res) => {
+  const commune = await procedures.getCommune(req.params.inseeCode)
+
+  res.status(200).send(mapValues(sudocuhCommunes, key => get(commune, key, '')))
 })
 
 module.exports = app
