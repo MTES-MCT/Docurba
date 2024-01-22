@@ -528,13 +528,12 @@ export default {
 
       if (this.section.name !== this.sectionName) {
         const nameIndex = filePath.lastIndexOf(this.section.name)
-        filePath = `${filePath.substring(0, nameIndex)}${this.sectionName}${this.section.type === 'file' ? '.md' : ''}`
+        filePath = `${filePath.substring(0, nameIndex)}${this.sectionName}${this.section.type === 'file' ? '.md' : '/intro.md'}`
 
         await this.updateName()
       }
 
       try {
-        // console.log('is path updated ?', filePath)
         const { data: { data: { content: savedFile } } } = await axios({
           method: 'post',
           url: `/api/trames/${this.gitRef}`,
@@ -558,7 +557,7 @@ export default {
 
         const { data: history } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
           params: {
-            paths: [this.section.type === 'file' ? this.section.path : (this.section.path + '/intro.md')]
+            paths: [filePath]
           }
         })
 
@@ -570,6 +569,8 @@ export default {
         }
 
         // this.sectionContent.body = this.$md.compile(this.sectionMarkdown)
+
+        // TODO FIX : FRONT DOES NOT REFRESH WHEN CHANGE NAME
         this.sectionText = this.sectionMarkdown
         this.editEnabled = false
       } catch (err) {
