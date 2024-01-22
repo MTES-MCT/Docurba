@@ -112,9 +112,8 @@
         </v-container>
       </v-col>
     </v-row>
-
     <DashboardSharePACDialog v-if="shareProject" v-model="shareDialog" :project="shareProject" />
-
+    <PACTrameGhostSectionsDialog />
     <DashboardDUInsertDialog v-model="creationDialog" @insert="fetchProjects" />
   </v-container>
 </template>

@@ -1,6 +1,6 @@
 <template>
   <v-card flat :color="backgroundColor" class="section-card">
-    <v-card-text class="section-card-text">
+    <v-card-text :class="section.ghost ? 'section-card-text--ghost' : 'section-card-text'">
       <v-expansion-panels flat :value="isOpen ? 0 : null" @change="isOpen = $event === 0">
         <v-hover v-slot="{hover}">
           <v-expansion-panel>
@@ -9,6 +9,7 @@
                 <v-col v-if="project.id && editable" cols="auto">
                   <v-checkbox
                     v-model="isSelected"
+                    :disabled="section.ghost"
                     :color="isVisible ? 'primary' : 'g600'"
                     hide-details
                     class="mt-0"
@@ -18,7 +19,7 @@
                 </v-col>
                 <v-col cols="" class="p-relative">
                   <v-btn
-                    v-show="lastEditDate && editable"
+                    v-if="lastEditDate && editable"
                     absolute
                     text
                     disabled
@@ -28,16 +29,16 @@
                   >
                     Modifié le: {{ lastEditDate }}
                   </v-btn>
-                  <h2 class="section-title d-flex align-center">
-                    <span v-if="!editEnabled">{{ section.name }}</span>
+                  <h2 class="d-flex align-center">
                     <v-text-field
-                      v-else
+                      v-if="editEnabled && titleEditable"
                       v-model="sectionName"
                       dense
                       filled
                       hide-details
                       @click.stop
                     />
+                    <span v-else :class="section.ghost ? 'section-title--ghost' : 'section-title'">{{ section.name }}</span>
                     <PACEditingParentDiffDialog v-if="section.diff && isEditable" :section="section" :git-ref="gitRef">
                       <template #default="{on}">
                         <v-chip
@@ -52,6 +53,7 @@
                       </template>
                     </PACEditingParentDiffDialog>
                     <v-badge v-if="section.diffCount && isEditable" color="primary" class="ml-2" inline :content="section.diffCount" />
+                    <v-badge v-if="ghostCount && editable" color="" class="ghost-count-badge ml-2" inline :content="ghostCount" />
                     <v-tooltip v-if="section.isDuplicated" top max-width="300px">
                       <template #activator="{on}">
                         <v-chip
@@ -78,7 +80,7 @@
                     Copier le lien vers la section
                   </v-tooltip>
                 </v-col>
-                <v-col v-if="(isOpen || hover) && editable" cols="auto">
+                <v-col v-if="(isOpen || hover) && editable && !section.ghost" cols="auto">
                   <v-tooltip bottom>
                     <template #activator="{on}">
                       <v-btn icon small v-on="on" @click.stop="$emit('changeOrder', section, -1)">
@@ -130,6 +132,18 @@
                     v-on="$listeners"
                   />
                 </v-col>
+                <v-col v-if="section.ghost" cols="auto">
+                  <v-tooltip bottom>
+                    <template #activator="{on}">
+                      <v-btn icon small :loading="saving" v-on="on" @click.stop="copyGhostSection">
+                        <v-icon color="primary lighten-2">
+                          {{ icons.mdiPlus }}
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    Ajouter la section
+                  </v-tooltip>
+                </v-col>
               </v-row>
             </v-expansion-panel-header>
             <v-expansion-panel-content class="rounded">
@@ -149,7 +163,7 @@
                     />
                     <v-tooltip bottom>
                       <template #activator="{on}">
-                        <v-btn icon tile v-on="on" @click="toggleDiff">
+                        <v-btn icon tile :disabled="!section.inParentProject" v-on="on" @click="toggleDiff">
                           <v-icon>{{ icons.mdiFileCompare }}</v-icon>
                         </v-btn>
                       </template>
@@ -163,7 +177,7 @@
               </v-row>
               <v-row v-else>
                 <v-col cols="12" :style="{position: 'relative'}">
-                  <PACEditingReadOnlyCard v-if="editable && !isEditable" :section="section" class="mt-4" />
+                  <PACEditingReadOnlyCard v-if="!section.ghost && editable && !isEditable" :section="section" :git-ref="gitRef" class="mt-4" />
                   <nuxt-content class="pac-section-content mt-4" :document="sectionContent" />
                 </v-col>
               </v-row>
@@ -185,18 +199,19 @@
               <v-row v-if="section.children && section.children.length">
                 <v-col
                   v-for="child in section.children"
-                  :key="child.url"
+                  :key="child.path"
                   cols="12"
                 >
                   <PACSectionCard
                     :section="child"
-                    :git-ref="gitRef"
+                    :git-ref="section.ghost ? headRef : gitRef"
                     :project="project"
-                    :editable="editable"
-                    :deletable="editable"
+                    :editable="editable && !section.ghost"
+                    :title-editable="editable && !section.ghost"
+                    :deletable="editable && !section.ghost"
                     :parent-selected="isVisible"
-                    v-on="$listeners"
-                    @removed="sectionRemoved"
+                    :opened-path="openedPath"
+                    v-on="{ ...$listeners, removed: sectionRemoved }"
                   />
                 </v-col>
               </v-row>
@@ -205,7 +220,7 @@
         </v-hover>
       </v-expansion-panels>
       <PACEditingGitAddSectionDialog
-        v-if="editable && isOpen"
+        v-if="editable && isOpen && !section.ghost"
         :parent="section"
         :git-ref="gitRef"
         @added="sectionAdded"
@@ -272,6 +287,10 @@ export default {
       type: Boolean,
       default: false
     },
+    titleEditable: {
+      type: Boolean,
+      default: false
+    },
     deletable: {
       type: Boolean,
       default: false
@@ -283,22 +302,13 @@ export default {
     parentSelected: {
       type: Boolean,
       default: true
+    },
+    openedPath: {
+      type: String,
+      default: null
     }
   },
   data () {
-    let headRef = 'main'
-
-    if (this.project && this.project.id) {
-      headRef = `dept-${this.project.trame}`
-    }
-
-    if (this.gitRef.includes('dept-')) {
-      const dept = this.gitRef.replace('dept-', '')
-      // eslint-disable-next-line eqeqeq
-      const region = departements.find(d => d.code_departement == dept).code_region
-      headRef = `region-${region}`
-    }
-
     const selectedPaths = this.project.PAC || []
     // const sectionPath = this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path
 
@@ -319,22 +329,40 @@ export default {
       sectionText: '',
       // sectionContent: { body: null },
       sectionMarkdown: '',
-      sectionHistory: null,
       editEnabled: false,
       isOpen: false,
       saving: false,
       errorSaving: false,
       errorDiff: false,
-      headRef,
-      diff: { body: null, visible: false, label: `Trame ${headRef.includes('dept-') ? 'départementale' : 'régionale'}` },
+      diff: { body: null, visible: false, label: `Trame ${this.project?.id ? 'départementale' : 'régionale'}` },
       dataAttachments: []
     }
   },
   computed: {
+    headRef () {
+      let headRef = 'main'
+
+      if (this.project && this.project.id) {
+        headRef = `dept-${this.$options.filters.deptToRef(this.project.trame)}`
+      }
+
+      if (this.gitRef.includes('dept-')) {
+        const dept = this.gitRef.replace('dept-', '')
+        // eslint-disable-next-line eqeqeq
+        const region = departements.find(d => d.code_departement == dept).code_region
+        headRef = `region-${region}`
+      }
+
+      return headRef
+    },
     isVisible () {
       return this.isSelected && this.parentSelected
     },
     backgroundColor () {
+      if (this.section.ghost) {
+        return 'primary lighten-4'
+      }
+
       if (this.project.id && (!this.isSelected || !this.parentSelected)) {
         return 'g300'
       }
@@ -352,15 +380,34 @@ export default {
       if (this.gitRef === 'main') {
         return this.editable
       } else {
-        return this.editable && !cadreJuridique.includes(this.section.path)
+        return this.editable && !cadreJuridique.includes(this.section.path) && !this.section.ghost
       }
     },
     lastEditDate () {
-      if (this.sectionHistory) {
-        return this.$dayjs(this.sectionHistory.commit.author.date).format('DD MMM YYYY')
+      if (this.section.editDate) {
+        return this.$dayjs(this.section.editDate).format('DD MMM YYYY')
       } else {
         return ''
       }
+    },
+    ghostCount () {
+      if (this.section.ghost) { return 0 }
+
+      let count = 0
+
+      function countGhostChildren (children) {
+        for (const child of children) {
+          if (child.ghost) {
+            ++count
+          } else if (child.children?.length) {
+            countGhostChildren(child.children)
+          }
+        }
+      }
+
+      countGhostChildren(this.section.children)
+
+      return count
     }
   },
   watch: {
@@ -375,6 +422,10 @@ export default {
           value: this.section.name,
           data: this.section
         })
+
+        if (!this.section.ghost && this.editable && this.section.children[0] && !this.section.children[0].editDate) {
+          this.fetchChildrenHistories()
+        }
       }
     },
     isSelected () {
@@ -384,35 +435,42 @@ export default {
         value: this.section.name,
         data: this.section
       })
+    },
+    openedPath: {
+      handler (path) {
+        if (path && path.startsWith(this.section.path)) {
+          this.isOpen = true
+
+          if (this.openedPath && this.openedPath === this.section.path && this.$el) {
+            this.$el.scrollIntoView({ behavior: 'smooth' })
+            this.$emit('opened')
+          }
+        }
+      },
+      immediate: true
     }
   },
-  mounted () {
-    this.fetchSectionContent()
-    this.fetchDataAttachments()
+  async mounted () {
+    await Promise.all([
+      this.fetchSectionContent(),
+      this.fetchDataAttachments()
+    ])
 
-    const defaultOpenedPath = this.$route.query.path
-    if (defaultOpenedPath && defaultOpenedPath.startsWith(this.section.path)) {
-      this.isOpen = true
-
-      // if (defaultOpenedPath === this.section.path) {
-      //   setTimeout(() => {
-      //     this.$el.scrollIntoView({
-      //       behavior: 'instant'
-      //     })
-      //   }, 2000)
-      // }
+    if (this.openedPath && this.openedPath === this.section.path) {
+      this.$el.scrollIntoView({ behavior: 'smooth' })
+      this.$emit('opened')
     }
   },
   methods: {
     async fetchSectionContent () {
-      const path = `/${this.section.path}${this.section.type === 'dir' ? '/intro.md' : ''}`
+      const path = `${this.section.path}${this.section.type === 'dir' ? '/intro.md' : ''}`
 
       const { data: sectionContent } = await axios({
         method: 'get',
         url: '/api/trames/file',
         params: {
           path,
-          ref: this.gitRef
+          ref: this.section.ghost ? this.headRef : this.gitRef
         }
       })
 
@@ -425,19 +483,23 @@ export default {
         // eslint-disable-next-line no-console
         console.log(err, sectionContent)
       }
+    },
+    async fetchChildrenHistories () {
+      const { data: histories } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
+        params: {
+          paths: this.section.children
+            .filter(child => !child.ghost)
+            .map(child => child.type === 'file' ? child.path : (child.path + '/intro.md'))
+        }
+      })
 
-      if (this.editable) {
-        const { data: sectionHistory } = await axios({
-          method: 'get',
-          url: '/api/trames/history',
-          params: {
-            path,
-            ref: this.gitRef
-          }
-        })
-
-        this.sectionHistory = sectionHistory
-      }
+      // eslint-disable-next-line vue/no-mutating-props
+      this.section.children = this.section.children.map((child) => {
+        return {
+          ...child,
+          editDate: histories.find(h => h.path.replace('/intro.md', '') === child.path)?.commit?.date
+        }
+      })
     },
     async fetchDataAttachments () {
       const { data } = await this.$supabase.from('pac_sections_data').select('*').match({
@@ -473,7 +535,6 @@ export default {
 
       try {
         // console.log('is path updated ?', filePath)
-
         const { data: { data: { content: savedFile } } } = await axios({
           method: 'post',
           url: `/api/trames/${this.gitRef}`,
@@ -494,6 +555,15 @@ export default {
           // eslint-disable-next-line vue/no-mutating-props
           this.section.sha = savedFile.sha
         }
+
+        const { data: history } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
+          params: {
+            paths: [this.section.type === 'file' ? this.section.path : (this.section.path + '/intro.md')]
+          }
+        })
+
+        // eslint-disable-next-line vue/no-mutating-props
+        this.section.editDate = history[0]?.commit?.date
 
         if (this.project && this.project.id) {
           this.$notifications.notifyUpdate(this.project.id)
@@ -516,6 +586,24 @@ export default {
       })
 
       this.saving = false
+    },
+    async copyGhostSection () {
+      this.saving = true
+
+      await axios({
+        method: 'put',
+        url: `/api/trames/${this.gitRef}/copy`,
+        data: {
+          ghostRef: this.headRef,
+          path: this.section.path
+        }
+      })
+
+      // eslint-disable-next-line vue/no-mutating-props
+      this.section.ghost = false
+      this.saving = false
+
+      this.$emit('changeOrder', this.section, 0)
     },
     updateSectionType (introFile) {
       if (this.section.type === 'file') {
@@ -540,7 +628,7 @@ export default {
         data: newSection
       })
     },
-    sectionRemoved (section) {
+    async sectionRemoved (section) {
       const duplicated = this.section.children.find(c => c.name === section.name)
       if (duplicated) { duplicated.isDuplicated = false }
 
@@ -548,6 +636,19 @@ export default {
       this.section.children = this.section.children.filter((c) => {
         return c.path !== section.path
       })
+
+      const { data } = await axios.get(`/api/trames/tree/${this.headRef}`, {
+        params: {
+          path: this.section.path // parent section path
+        }
+      })
+
+      const ghostSection = data.find(s => s.name === section.name)
+      if (ghostSection) {
+        ghostSection.ghost = true
+        // eslint-disable-next-line vue/no-mutating-props
+        this.section.children.push(ghostSection)
+      }
     },
     selectionChange () {
       this.$emit('selectionChange', {
@@ -597,12 +698,22 @@ export default {
 }
 
 .section-card-text {
-  border: 1px solid #E3E3FD;
-  border-color: #E3E3FD !important;
+  border: 1px solid var(--v-primary-lighten1);
+  border-color: var(--v-primary-lighten1) !important;
+}
+
+.section-card-text--ghost {
+  background-color: var(--v-primary-lighten4);
+  border: 1px dashed #1765c9 !important;
 }
 
 .section-title {
   font-size: 20px;
+}
+
+.section-title--ghost {
+  font-size: 20px;
+  opacity: 0.5;
 }
 </style>
 
@@ -626,5 +737,9 @@ export default {
   color: #1765c9 !important;
   display: inline-flex;
   align-items: center;
+}
+
+.v-item-group.v-expansion-panels, .v-item-group.v-expansion-panels .v-expansion-panel, .v-item-group.v-expansion-panels .v-expansion-panel-header, .v-item-group.v-expansion-panels .v-expansion-panel-content {
+  transition: none !important;
 }
 </style>

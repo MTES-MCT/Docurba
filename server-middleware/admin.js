@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 
+const issues = require('./modules/github/issues.js')
 const sendgrid = require('./modules/sendgrid.js')
 const supabase = require('./modules/supabase.js')
 
@@ -34,6 +35,12 @@ app.post('/help', async (req, res) => {
     }
   })
 
+  res.status(200).send('OK')
+})
+
+app.post('/help/pac', async (req, res) => {
+  const { title, message, email, ref, path } = req.body
+  await issues.createIssue(title, message, email, ref, path)
   res.status(200).send('OK')
 })
 

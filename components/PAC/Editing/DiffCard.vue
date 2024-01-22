@@ -5,7 +5,7 @@
         {{ label }}
       </v-toolbar-title>
     </v-toolbar>
-    <v-card-text class="pt-3">
+    <v-card-text class="pt-3 diff-card-text">
       <nuxt-content class="pac-section-content" :document="diff" />
     </v-card-text>
   </v-card>
@@ -25,3 +25,10 @@ export default {
   }
 }
 </script>
+
+<style>
+.diff-card-text {
+  height: calc(100vh - 285px);
+  overflow: auto;
+}
+</style>
