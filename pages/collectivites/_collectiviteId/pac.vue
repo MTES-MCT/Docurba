@@ -73,6 +73,7 @@ export default {
       const filteredSections = sections.filter((section) => {
         const isAllowed = (!section.path.includes('PAC/Introduction/PAC valid') &&
           !section.path.includes('PP-du-territoire') &&
+          !section.path.includes("Politiques publiques s'appliquant sur le territoire") &&
           !section.path.includes('PAC/Annexes'))
 
         if (!isAllowed) {

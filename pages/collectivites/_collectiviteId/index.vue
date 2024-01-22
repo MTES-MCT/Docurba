@@ -8,17 +8,11 @@
         <v-alert border="left" colored-border color="focus" elevation="1">
           <div class="ml-2">
             <p>Vous êtes l’un des élus, technicien de collectivité, ou bureau d’étude qui gérez cette collectivité.</p>
-            <AuthCollectiviteAccessDialog v-if="!$user.id" label="Demander l'accès" />
-            <v-btn v-else :to="actionsCards[0].to" nuxt color="primary">
+            <v-btn :to="actionsCards[0].to" nuxt color="primary">
               Démarrer une procédure
             </v-btn>
           </div>
         </v-alert>
-        <!-- <p>Vous êtes l’un des élus, technicien de collectivité, ou bureau d’étude qui gérez cette collectivité.</p>
-        <AuthCollectiviteAccessDialog v-if="!$user.id" label="Demander l'accès" />
-        <v-btn v-else :to="actionsCards[0].to" nuxt color="primary">
-          Démarrer une procédure
-        </v-btn> -->
       </v-col>
     </v-row>
     <v-row>
