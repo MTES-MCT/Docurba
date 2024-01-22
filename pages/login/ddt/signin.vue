@@ -87,6 +87,7 @@
 
           <v-snackbar
             v-model="snackbar.val"
+            app
             :timeout="4000"
           >
             {{ snackbar.text }}

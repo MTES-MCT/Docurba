@@ -1,7 +1,6 @@
 <template>
   <v-app-bar
     app
-    clipped-left
     :flat="flat"
     color="white"
     class="app-bar"
