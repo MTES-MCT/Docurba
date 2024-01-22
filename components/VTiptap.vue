@@ -368,7 +368,7 @@ export default {
 .text-editor {
   min-height: calc(100vh - 285px);
   max-height: calc(100vh - 285px);
-  overflow: scroll;
+  overflow: auto;
 }
 
 .typo-select {
