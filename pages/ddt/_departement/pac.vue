@@ -86,11 +86,11 @@
                       <v-list-item @click="downloadPdf(item)">
                         <v-list-item-title>Télécharger en PDF</v-list-item-title>
                       </v-list-item>
-                      <!-- <v-list-item>
+                      <v-list-item @click="archive(item)">
                         <v-list-item-title :style="{ color: '#e10600' }">
                           Supprimer le PAC
                         </v-list-item-title>
-                      </v-list-item> -->
+                      </v-list-item>
                     </v-list>
                   </v-menu>
 
@@ -202,6 +202,10 @@ export default {
       this.loadingPdf.push(project.id)
       await this.$pdf.pdfFromRef(`projet-${project.id}`, project)
       this.loadingPdf = this.loadingPdf.filter(id => id !== project.id)
+    },
+    async archive (project) {
+      await this.$supabase.from('projects').update({ archived: true }).eq('id', project.id)
+      this.projects = this.projects.filter(p => p.id !== project.id)
     }
   }
 }
