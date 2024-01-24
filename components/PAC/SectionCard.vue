@@ -4,7 +4,7 @@
       <v-expansion-panels flat :value="isOpen ? 0 : null" @change="isOpen = $event === 0">
         <v-hover v-slot="{hover}">
           <v-expansion-panel>
-            <v-expansion-panel-header :color="backgroundColor">
+            <v-expansion-panel-header :color="backgroundColor" :style="{ height: '60px' }">
               <v-row align="center" dense>
                 <v-col v-if="project.id && editable" cols="auto">
                   <v-checkbox
@@ -280,8 +280,6 @@ import {
 import { encode } from 'js-base64'
 import departements from '@/assets/data/departements-france.json'
 
-import cadreJuridique from '@/assets/data/CadreJuridique.json'
-
 export default {
   props: {
     section: {
@@ -394,7 +392,9 @@ export default {
       if (this.gitRef === 'main') {
         return this.editable
       } else {
-        return this.editable && !cadreJuridique.includes(this.section.path) && !this.section.ghost
+        return this.editable &&
+          !this.section.ghost &&
+          !(this.section.path.startsWith('PAC/Cadre juridique') || this.section.path.startsWith('PAC/Cadre-juridique'))
       }
     },
     lastEditDate () {
@@ -419,14 +419,16 @@ export default {
         }
       }
 
-      countGhostChildren(this.section.children)
+      if (this.section.children) {
+        countGhostChildren(this.section.children)
+      }
 
       return count
     }
   },
   watch: {
     editEnabled () {
-      this.$emit('edited', this.section.path, this.editEnabled)
+      this.$emit('editing', this.section.path, this.editEnabled)
     },
     isOpen () {
       if (this.isOpen) {

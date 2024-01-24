@@ -11,6 +11,37 @@
         <h2 class="text-subtitle">
           {{ collectivite.intitule }} ({{ collectivite.code }})
         </h2>
+
+        <div class="mt-4">
+          <v-btn color="primary" depressed :disabled="editingSections.length > 0" @click="editable = !editable">
+            {{ editable ? 'Prévisualiser' : 'Éditer' }}
+          </v-btn>
+          <v-btn color="primary" outlined class="ml-2" @click="shareDialog = true">
+            Partager
+          </v-btn>
+          <v-menu offset-y left>
+            <template #activator="{ attrs, on }">
+              <v-btn
+                :loading="loadingPdf"
+                class="ml-2"
+                color="primary"
+                :style="{ borderRadius: '4px' }"
+                icon
+                outlined
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>{{ icons.mdiDotsVertical }}</v-icon>
+              </v-btn>
+            </template>
+
+            <v-list>
+              <v-list-item @click="downloadPdf">
+                <v-list-item-title>Télécharger en PDF</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
       </v-col>
       <v-col>
         <v-autocomplete
@@ -35,14 +66,14 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col v-for="section in sections" :key="section.url" cols="12">
+      <v-col v-for="section in filteredSections" :key="section.url" cols="12">
         <PACSectionCard
           :section="section"
           :git-ref="gitRef"
           :project="project"
           :opened-path="searchedSectionPath"
-          editable
-          @edited="toggleEdit"
+          :editable="editable"
+          @editing="handleEditing"
           @selectionChange="saveSelection"
           @changeOrder="saveOrder"
           @changeTree="updateTreeData"
@@ -50,6 +81,7 @@
         />
       </v-col>
     </v-row>
+
     <v-dialog v-model="beforeLeaveDialog.visible" width="500">
       <v-card>
         <v-card-title>
@@ -69,6 +101,8 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <DashboardSharePACDialog v-if="project" v-model="shareDialog" :project="project" />
   </v-container>
   <v-container v-else class="fill-height">
     <v-row justify="center" align="center">
@@ -82,13 +116,14 @@
 <script>
 import axios from 'axios'
 import { groupBy } from 'lodash'
+import { mdiDotsVertical } from '@mdi/js'
 import orderSections from '@/mixins/orderSections.js'
 import departements from '@/assets/data/departements-france.json'
 
 export default {
   mixins: [orderSections],
   beforeRouteLeave (to, from, next) {
-    if (this.editedSections.length) {
+    if (this.editingSections.length) {
       this.beforeLeaveDialog.next = next
       this.beforeLeaveDialog.visible = true
     } else { next() }
@@ -96,22 +131,28 @@ export default {
   layout: 'ddt',
   data () {
     return {
-      project: {},
+      icons: {
+        mdiDotsVertical
+      },
+      project: null,
       sections: [],
-      editedSections: [],
+      editingSections: [],
       gitRef: this.$route.params.githubRef,
       loading: true,
       beforeLeaveDialog: { visible: false, next: null },
       collectivite: null,
+      editable: false,
       opening: false,
-      searchedSectionPath: null
+      searchedSectionPath: null,
+      shareDialog: false,
+      loadingPdf: false
     }
   },
   computed: {
     headRef () {
       let headRef = 'main'
 
-      if (this.project && this.project.id) {
+      if (this.project?.id) {
         headRef = `dept-${this.$options.filters.deptToRef(this.project.trame)}`
       }
 
@@ -131,6 +172,25 @@ export default {
         path: s.path,
         parentPathSubtitle: s.path.substr(0, s.path.lastIndexOf('/')).replace('PAC/', '').replaceAll('/', ' / ')
       }))
+    },
+    filteredSections () {
+      const paths = this.project.PAC
+
+      function filterSelectedSections (sections) {
+        const filtered = sections.filter(section => paths.includes(section.path))
+
+        return filtered.map((section) => {
+          return Object.assign({}, section, {
+            children: section.children ? filterSelectedSections(section.children) : []
+          })
+        })
+      }
+
+      if (this.project && paths && !this.editable) {
+        return filterSelectedSections(this.sections)
+      }
+
+      return this.sections
     }
   },
   async mounted () {
@@ -138,10 +198,12 @@ export default {
       const projectId = this.gitRef.replace('projet-', '')
 
       const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-      this.project = projects ? projects[0] : {}
+      this.project = projects ? projects[0] : null
 
       const { data: collectivite } = await axios(`/api/geo/collectivites/${this.project.collectivite_id}`)
       this.collectivite = collectivite
+    } else {
+      this.editable = true
     }
 
     const { data: sections } = await axios({
@@ -392,18 +454,20 @@ export default {
       // Finaly section.name need to be updated.
       section.name = newName
     },
-    toggleEdit (sectionPath, val) {
-      if (val) {
-        this.editedSections.push(sectionPath)
+    handleEditing (sectionPath, editing) {
+      if (editing) {
+        this.editingSections.push(sectionPath)
       } else {
-        const sectionIndex = this.editedSections.indexOf(sectionPath)
+        const sectionIndex = this.editingSections.indexOf(sectionPath)
         if (sectionIndex >= 0) {
-          this.editedSections.splice(sectionIndex, 1)
+          this.editingSections.splice(sectionIndex, 1)
         }
       }
     },
-    toggleParentSectionsDisplay () {
-      console.log('toggleParentSectionsDisplay')
+    async downloadPdf () {
+      this.loadingPdf = true
+      await this.$pdf.pdfFromRef(`projet-${this.project.id}`, this.project)
+      this.loadingPdf = false
     }
   }
 }
