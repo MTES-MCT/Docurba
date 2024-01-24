@@ -1,5 +1,6 @@
 ---
 name: draftmode_v1
+visible: false
 tag: projet
 ---
 
