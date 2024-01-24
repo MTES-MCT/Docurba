@@ -75,7 +75,9 @@ export default {
   },
   methods: {
     async getProcedures () {
+      console.log('getProcedures')
       this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
+      console.log('api collectivite')
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
       this.schemas = schemas
       this.plans = plans

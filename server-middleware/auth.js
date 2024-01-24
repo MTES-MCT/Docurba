@@ -2,6 +2,7 @@
 const express = require('express')
 const app = express()
 app.use(express.json())
+const SibApiV3Sdk = require('sib-api-v3-sdk')
 
 const supabase = require('./modules/supabase.js')
 
@@ -109,6 +110,22 @@ app.post('/signupCollectivite', async (req, res) => {
   try {
     const { data: { user }, error: creationError } = await supabase.auth.admin.createUser({
       email: req.body.userData.email
+    })
+    const defaultClient = SibApiV3Sdk.ApiClient.instance
+    const apiKey = defaultClient.authentications['api-key']
+    apiKey.apiKey = process.env.BREVO_API_KEY
+
+    const apiInstance = new SibApiV3Sdk.ContactsApi()
+    const createContact = new SibApiV3Sdk.CreateContact()
+
+    createContact.email = req.body.userData.email
+    createContact.listIds = [27]
+    createContact.attributes = { NEWUSER_OPTIN: req.body.userData.optin }
+
+    apiInstance.createContact(createContact).then(function (data) {
+      console.log('API called successfully. Returned data: ' + JSON.stringify(data))
+    }, function (error) {
+      console.error(error)
     })
 
     console.log('user created in signup', user)

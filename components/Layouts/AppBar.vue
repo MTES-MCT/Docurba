@@ -157,8 +157,8 @@ export default {
     await this.$user.isReady
   },
   methods: {
-    signOut () {
-      this.$supabase.auth.signOut()
+    async signOut () {
+      await this.$supabase.auth.signOut()
       this.$router.push('/')
     }
   }

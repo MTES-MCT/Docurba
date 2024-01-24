@@ -24,7 +24,7 @@
             </v-chip>
           </div>
           <div v-if="!suggestion" class=" ml-auto flex-shrink-1 d-flex align-self-start">
-            <v-tooltip bottom>
+            <v-tooltip v-if="event.visibility === 'private'" bottom>
               <template #activator="{ on, attrs }">
                 <v-chip
                   class="mr-2 font-weight-bold text-uppercase"
