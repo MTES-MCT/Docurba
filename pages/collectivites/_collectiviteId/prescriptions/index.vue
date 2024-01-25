@@ -106,7 +106,7 @@
       </v-alert>
     </template>
 
-    <v-snackbar v-model="snackClip" color="primary">
+    <v-snackbar v-model="snackClip" app color="primary">
       L'addresse est copiée dans le presse papier
       <template #action="{ attrs }">
         <v-btn

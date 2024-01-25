@@ -1,5 +1,12 @@
 <template>
-  <v-snackbar v-model="opened" light :timeout="-1" bottom left>
+  <v-snackbar
+    v-model="opened"
+    app
+    light
+    :timeout="-1"
+    bottom
+    left
+  >
     <b>Nous utilisons des cookies dans notre stratégie de déploiement.
       Vous pouvez en apprendre plus <nuxt-link to="/confidentialite">
         ici

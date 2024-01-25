@@ -8,6 +8,7 @@
     <VConsentSnackbar />
     <v-snackbar
       v-model="snackbar.val"
+      app
       multi-line
       vertical
       color="error"

@@ -116,6 +116,7 @@ Promis, seul un contenu court et pertinent vous sera envoyÃ© une fois par mois ğ
               </v-card>
               <v-snackbar
                 v-model="snackbar.val"
+                app
                 :timeout="4000"
               >
                 {{ snackbar.text }}

@@ -36,7 +36,9 @@
           </template>
         </v-combobox>
 
-        <p>Partagé avec :</p>
+        <p v-if="sharings?.length">
+          Partagé avec :
+        </p>
         <div class="sharing-list">
           <div v-for="sharing in sharings" :key="sharing.id" class="sharing">
             <div class="sharing-user">
@@ -71,19 +73,14 @@
       </v-card-text>
     </v-card>
 
-    <!-- <v-snackbar
-      v-model="snackbar"
+    <v-snackbar
+      v-model="successSnackbar"
+      :timeout="4000"
+      top
+      color="success"
     >
-      Une erreur est survenue à la creation de votre document.
-      <template #action>
-        <v-btn
-          text
-          @click="snackbar = false"
-        >
-          Fermer
-        </v-btn>
-      </template>
-    </v-snackbar> -->
+      Porter à Connaissance partagé
+    </v-snackbar>
   </v-dialog>
 </template>
 
@@ -114,7 +111,8 @@ export default {
       ],
       error: null,
       sharings: [],
-      loading: false
+      loading: false,
+      successSnackbar: false
     }
   },
   watch: {
@@ -169,6 +167,7 @@ export default {
       this.emailsInput = []
       this.sharings.push(...savedSharings)
       this.loading = false
+      this.successSnackbar = true
     },
     async cancelSharing (email) {
       this.sharings = this.sharings.filter(s => s.user_email !== email)
@@ -178,19 +177,9 @@ export default {
       })
     },
     async updateRole (sharing, newRole) {
-      const { data: updatedSharing, error } = await this.$supabase.from('projects_sharing').update({
+      await this.$supabase.from('projects_sharing').update({
         role: newRole
-      }).eq('id', sharing.id).select()
-
-      if (!error) {
-        // TODO: Add a feedback here that the change is good.
-
-        // eslint-disable-next-line no-console
-        console.log(updatedSharing)
-      } else {
-        // eslint-disable-next-line no-console
-        console.log(error)
-      }
+      }).eq('id', sharing.id)
     },
     colorFromString (str) {
       let hash = 0
