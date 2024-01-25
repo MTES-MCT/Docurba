@@ -1,10 +1,12 @@
-
+import { uniq } from 'lodash'
 import dayjs from 'dayjs'
 import communes from '../Data/referentiels/communes.json'
 import groupements from '../Data/referentiels/groupements.json'
 import regions from '../Data/INSEE/regions.json'
 import departements from '../Data/INSEE/departements.json'
 import supabase from './supabase.js'
+
+import sudocuhCodes from './sudocuhCodes.js'
 
 const eventsCategs = {
   approbation: ["Délibération d'approbation", "Arrêté d'abrogation", "Arrêté du Maire ou du Préfet ou de l'EPCI", 'Approbation du préfet'],
@@ -15,7 +17,7 @@ const eventsCategs = {
   exec: ['Caractère exécutoire']
 }
 
-const eventsTypes = Object.keys(eventsCategs).flatMap(key => eventsCategs[key])
+// const eventsTypes = Object.keys(eventsCategs).flatMap(key => eventsCategs[key])
 
 const proceduresCategs = {
   revision: ['Révision', 'Révision allégée (ou RMS)', 'Révision simplifiée'],
@@ -56,17 +58,17 @@ function filterProcedures (procedures) {
 
 module.exports = {
   getCommuneMetadata (inseeCode) {
-    const commune = communes.find(c => c.code === inseeCode)
-    const interco = groupements.find(i => i.code === commune.intercommunaliteCode)
+    const commune = communes.find(c => c.code === inseeCode && c.type === 'COM')
     const communeDepartement = departements.find(d => d.code === commune.departementCode)
-    const intercoDepartement = departements.find(d => d.code === interco.departementCode)
     const communeRegion = regions.find(r => r.code === commune.regionCode)
-    const intercoRegion = regions.find(r => r.code === interco.regionCode)
 
-    const intercommunalite = Object.assign({
-      region: intercoRegion,
-      departement: intercoDepartement
-    }, interco)
+    let intercommunalite = groupements.find(i => i.code === commune.intercommunaliteCode)
+    if (intercommunalite) {
+      intercommunalite = Object.assign({
+        region: regions.find(r => r.code === intercommunalite.regionCode),
+        departement: departements.find(d => d.code === intercommunalite.departementCode)
+      }, intercommunalite)
+    }
 
     return Object.assign({
       intercommunalite,
@@ -75,10 +77,14 @@ module.exports = {
     }, commune)
   },
   async fetchProcedures (inseeCodes) {
-    const { data: procedures } = await supabase
+    const { data: procedures, error } = await supabase
       .rpc('procedures_by_insee_codes', {
         codes: inseeCodes
       })
+
+    if (error) {
+      console.log('fetchProcedures error', error)
+    }
 
     return procedures
   },
@@ -88,7 +94,11 @@ module.exports = {
         procedures_ids: procedures.map(p => p.id)
       })
 
-    return events
+    return events.map((e) => {
+      return Object.assign(e, {
+        year: dayjs(e.date_iso).format('YYYY')
+      })
+    })
   },
   async getCommuneProcedures (inseeCode, procedures, events) {
     if (!procedures) {
@@ -107,6 +117,10 @@ module.exports = {
       Object.keys(eventsCategs).forEach((key) => {
         eventsByType[key] = findEventByType(procedureEvents, eventsCategs[key])
       })
+
+      if (eventsByType.prescription && eventsByType.approbation) {
+        eventsByType.approbationDelay = dayjs(eventsByType.approbation.date_iso).diff(eventsByType.prescription.date_iso, 'day')
+      }
 
       return Object.assign({
         events: sortEvents(procedureEvents),
@@ -141,6 +155,12 @@ module.exports = {
     const planOpposable = planOpposables[0]
     const planCurrent = planCurrents[0]
 
+    const collectivitePorteuse = (planCurrent || planOpposable)?.collectivite_porteuse_id || inseeCode
+
+    const sCodes = sudocuhCodes.getAllCodes(planOpposable, planCurrent, collectivitePorteuse)
+
+    const currentsDocTypes = uniq(planCurrents.map(p => p.doc_type)).join(', ')
+
     return Object.assign({
       scots,
       scotOpposables,
@@ -153,11 +173,16 @@ module.exports = {
       planCurrents,
       planCurrent,
       revisions,
-      modifications
+      modifications,
+      collectivitePorteuse,
+      sudocuhCodes: sCodes,
+      currentsDocTypes
     }, commune)
   },
   async getCommunes (inseeCodes) {
     const procedures = await this.fetchProcedures(inseeCodes)
+    console.log('getCommunes', inseeCodes[0], procedures ? procedures.length : 'no procedures')
+
     const events = await this.fetchEvents(procedures)
 
     const communes = inseeCodes.map((inseeCode) => {

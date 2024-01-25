@@ -5,6 +5,9 @@
         <v-text-field v-model="departementCode" :hint="`${requestTime} sec`" persistent-hint filled small />
       </v-col>
       <v-col cols="auto">
+        <v-checkbox v-model="asCsv" label="csv" />
+      </v-col>
+      <v-col cols="auto">
         <v-btn
           color="principal"
           depressed
@@ -19,12 +22,11 @@
     <v-row>
       <v-col cols="12">
         <v-textarea
-          v-model="communeJSON"
+          v-model="displayedText"
           outlined
           readonly
           auto-grow
           persistent-hint
-          :hint="`found ${allData.length} communes`"
         />
       </v-col>
     </v-row>
@@ -38,16 +40,13 @@ export default {
   data () {
     return {
       departementCode: '01',
-      allData: [],
-      json: {},
+      displayedText: '',
+      asCsv: false,
       timer: 0,
       loading: false
     }
   },
   computed: {
-    communeJSON () {
-      return JSON.stringify(this.json, null, 4)
-    },
     requestTime () {
       return Math.round(this.timer / 1000).toString()
     }
@@ -55,11 +54,15 @@ export default {
   methods: {
     async fetchCommunes () {
       this.loading = true
-      this.timer = +new Date()
-      const { data: communesData } = await axios(`/api/urba/exports/departements/${this.departementCode}`)
-      this.timer = +new Date() - this.timer
-      this.allData = communesData
-      this.json = communesData[0]
+      const start = +new Date()
+      const { data: communesData } = await axios(`/api/urba/exports/departements/${this.departementCode}?csv=${this.asCsv}`)
+      this.timer = +new Date() - start
+
+      if (this.asCsv) {
+        this.displayedText = communesData
+      } else {
+        this.displayedText = JSON.stringify(communesData[0], null, 4)
+      }
 
       this.loading = false
     }

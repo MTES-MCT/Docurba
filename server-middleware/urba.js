@@ -1,3 +1,5 @@
+import { AsyncParser } from '@json2csv/node'
+
 /* eslint-disable no-console */
 import express from 'express'
 import { mapValues, get } from 'lodash'
@@ -9,6 +11,8 @@ import procedures from './modules/procedures.js'
 import departements from './Data/INSEE/departements.json'
 
 import sudocuhCommunes from './modules/exportMaps/sudocuhCommunes.js'
+
+const csvParser = new AsyncParser()
 
 const app = express()
 app.use(express.json())
@@ -87,13 +91,16 @@ app.get('/exports/departements/:code', async (req, res) => {
   const communesCodes = departements.find(d => d.code === req.params.code).communes.map(c => c.code)
   const communes = await procedures.getCommunes(communesCodes)
 
-  console.log(communes[0])
-
   const mapedCommunes = communes.map((c) => {
     return mapValues(sudocuhCommunes, key => get(c, key, ''))
   })
 
-  res.status(200).send(mapedCommunes)
+  if (req.query.csv) {
+    const csv = await csvParser.parse(mapedCommunes).promise()
+    res.status(200).send(csv)
+  } else {
+    res.status(200).send(mapedCommunes)
+  }
 })
 
 app.get('/exports/communes/:inseeCode', async (req, res) => {

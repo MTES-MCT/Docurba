@@ -8,15 +8,15 @@ export default {
   epci_siren: 'intercommunalite.code',
   code_insee: 'code',
   com_nom: 'intitule',
-  // collectivite_porteuse_sudocuh: collectivitePorteuseId,
+  collectivite_porteuse: 'collectivitePorteuse',
   // collectivite_porteuse_banatic: ''
-  // plan_etat_code1: codeEtat, //
-  // plan_libelle_etat_code1: codeEtatsLabels[codeEtat], //
-  // plan_etat_code2: codeEtat, //
-  // plan_libelle_etat_code2: codeEtatsLabels[codeEtat], //
-  // plan_code_etat_bcsi: '',
-  // plan_libelle_code_etat_bcsi: '',
-  // types_pc: typesCurrentProc.join(' '),
+  plan_etat_code1: 'sudocuhCodes.etat.code', //
+  plan_libelle_etat_code1: 'sudocuhCodes.etat.label', //
+  plan_etat_code2: 'sudocuhCodes.etat2.code', //
+  plan_libelle_etat_code2: 'sudocuhCodes.etat2.label', //
+  plan_code_etat_bcsi: 'sudocuhCodes.bcsi.code',
+  plan_libelle_code_etat_bcsi: 'sudocuhCodes.bcsi.label',
+  types_pc: 'currentsDocTypes',
   // type_pc_color: getStateColor(typesCurrentProc),
   pc_num_procedure: 'planCurrent.from_sudocuh', //
   pc_nb_communes: 'planCurrent.current_perimetre.length',
@@ -47,10 +47,10 @@ export default {
   pa_date_pac: 'planOpposable.date_iso', //
   pa_date_pac_comp: 'planOpposable.pacComp.date_iso', //
   pa_date_approbation: 'planOpposable.approbation.date_iso', //
-  // pa_annee_prescription: '', //
-  // pa_annee_approbation: '', //
+  pa_annee_prescription: 'planOpposable.prescription.year', //
+  pa_annee_approbation: 'planOpposable.approbation.year', //
   pa_date_executoire: 'planOpposable.exec.date_iso', //
-  // pa_delai_approbation: dayjs(opposableExecutoireEvent?.date_iso).diff(opposablePrescriptionEvent?.date_iso, 'day'), //
+  pa_delai_approbation: 'planOpposable.approbationDelay', //
   pa_plui_valant_scot: 'planOpposable.is_scot', //
   pa_pluih: 'planOpposable.is_pluih', //
   // pa_pluih_num_procedure: '', // // Pas de ref dans Docurba
