@@ -70,7 +70,7 @@
         <PACSectionCard
           :section="section"
           :git-ref="gitRef"
-          :project="project"
+          :project="project || {}"
           :opened-path="searchedSectionPath"
           :editable="editable"
           @editing="handleEditing"
@@ -174,7 +174,7 @@ export default {
       }))
     },
     filteredSections () {
-      const paths = this.project.PAC
+      const paths = this.project?.PAC
 
       function filterSelectedSections (sections) {
         const filtered = sections.filter(section => paths.includes(section.path))
@@ -215,9 +215,9 @@ export default {
     })
 
     let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
-        `projet-${this.project.id}`,
-        `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.trame) : ''}`,
-        `region-${this.project.towns ? this.project.towns[0].regionCode : ''}`,
+        `projet-${this.project?.id}`,
+        `dept-${this.project?.towns ? this.$options.filters.deptToRef(this.project.trame) : ''}`,
+        `region-${this.project?.towns ? this.project.towns[0].regionCode : ''}`,
         this.gitRef,
         'main'
     ])
