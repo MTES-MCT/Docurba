@@ -17,7 +17,7 @@
       @snackMessage="Object.assign(snackbar, {visible: true, message: arguments[0]})"
     />
     <VGlobalLoader v-else />
-    <v-snackbar v-model="snackbar.visible" top right color="success">
+    <v-snackbar v-model="snackbar.visible" app top right color="success">
       {{ snackbar.message }}
     </v-snackbar>
   </div>

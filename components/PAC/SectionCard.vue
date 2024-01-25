@@ -4,7 +4,7 @@
       <v-expansion-panels flat :value="isOpen ? 0 : null" @change="isOpen = $event === 0">
         <v-hover v-slot="{hover}">
           <v-expansion-panel>
-            <v-expansion-panel-header :color="backgroundColor">
+            <v-expansion-panel-header :color="backgroundColor" :style="{ height: '60px' }">
               <v-row align="center" dense>
                 <v-col v-if="project.id && editable" cols="auto">
                   <v-checkbox
@@ -204,6 +204,7 @@
                 >
                   <PACSectionCard
                     :section="child"
+                    :parent="section"
                     :git-ref="section.ghost ? headRef : gitRef"
                     :project="project"
                     :editable="editable && !section.ghost"
@@ -241,7 +242,7 @@
         </template>
       </PACEditingGitAddSectionDialog>
     </v-card-text>
-    <v-snackbar v-model="errorSaving" top :timeout="-1" color="error">
+    <v-snackbar v-model="errorSaving" app top :timeout="-1" color="error">
       Une erreur s'est produite, vos modifications sur "{{ section.name }}" ne sont pas sauvegardées.
       <template #action>
         <v-btn icon @click="errorSaving = false">
@@ -249,7 +250,15 @@
         </v-btn>
       </template>
     </v-snackbar>
-    <v-snackbar v-model="errorDiff" top :timeout="4000" color="error">
+    <v-snackbar v-model="errorRename" app top :timeout="4000" color="error">
+      Une section au même niveau porte déjà ce nom.
+      <template #action>
+        <v-btn icon @click="errorRename = false">
+          <v-icon>{{ icons.mdiClose }}</v-icon>
+        </v-btn>
+      </template>
+    </v-snackbar>
+    <v-snackbar v-model="errorDiff" app top :timeout="4000" color="error">
       La section {{ section.name }} n'est pas trouvable au niveau {{ diff.label }}.
       <template #action>
         <v-btn icon @click="errorDiff = false">
@@ -271,13 +280,15 @@ import {
 import { encode } from 'js-base64'
 import departements from '@/assets/data/departements-france.json'
 
-import cadreJuridique from '@/assets/data/CadreJuridique.json'
-
 export default {
   props: {
     section: {
       type: Object,
       required: true
+    },
+    parent: {
+      type: Object,
+      default: null
     },
     gitRef: {
       type: String,
@@ -333,6 +344,7 @@ export default {
       isOpen: false,
       saving: false,
       errorSaving: false,
+      errorRename: false,
       errorDiff: false,
       diff: { body: null, visible: false, label: `Trame ${this.project?.id ? 'départementale' : 'régionale'}` },
       dataAttachments: []
@@ -380,7 +392,9 @@ export default {
       if (this.gitRef === 'main') {
         return this.editable
       } else {
-        return this.editable && !cadreJuridique.includes(this.section.path) && !this.section.ghost
+        return this.editable &&
+          !this.section.ghost &&
+          !(this.section.path.startsWith('PAC/Cadre juridique') || this.section.path.startsWith('PAC/Cadre-juridique'))
       }
     },
     lastEditDate () {
@@ -405,14 +419,16 @@ export default {
         }
       }
 
-      countGhostChildren(this.section.children)
+      if (this.section.children) {
+        countGhostChildren(this.section.children)
+      }
 
       return count
     }
   },
   watch: {
     editEnabled () {
-      this.$emit('edited', this.section.path, this.editEnabled)
+      this.$emit('editing', this.section.path, this.editEnabled)
     },
     isOpen () {
       if (this.isOpen) {
@@ -508,33 +524,35 @@ export default {
       })
       this.dataAttachments = data
     },
-    async updateName () {
-      const { path, type, name } = this.section
-
-      await axios({
-        method: 'post',
-        url: `/api/trames/tree/${this.gitRef}`,
-        data: {
-          section: { path, type, name },
-          newName: this.sectionName
-        }
-      })
-
-      this.$emit('changeTree', this.section, this.sectionName)
-    },
     async saveSection () {
       this.saving = true
       let filePath = this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path
 
       if (this.section.name !== this.sectionName) {
         const nameIndex = filePath.lastIndexOf(this.section.name)
-        filePath = `${filePath.substring(0, nameIndex)}${this.sectionName}${this.section.type === 'file' ? '.md' : ''}`
+        filePath = `${filePath.substring(0, nameIndex)}${this.sectionName}${this.section.type === 'file' ? '.md' : '/intro.md'}`
 
-        await this.updateName()
+        if (this.parent.children.some(c => c.name === this.sectionName)) {
+          this.errorRename = true
+          this.saving = false
+          return
+        }
+
+        const { path, type, name } = this.section
+
+        await axios({
+          method: 'post',
+          url: `/api/trames/tree/${this.gitRef}`,
+          data: {
+            section: { path, type, name },
+            newName: this.sectionName
+          }
+        })
+
+        this.$emit('changeTree', this.section, this.sectionName)
       }
 
       try {
-        // console.log('is path updated ?', filePath)
         const { data: { data: { content: savedFile } } } = await axios({
           method: 'post',
           url: `/api/trames/${this.gitRef}`,
@@ -558,7 +576,7 @@ export default {
 
         const { data: history } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
           params: {
-            paths: [this.section.type === 'file' ? this.section.path : (this.section.path + '/intro.md')]
+            paths: [filePath]
           }
         })
 
@@ -570,6 +588,8 @@ export default {
         }
 
         // this.sectionContent.body = this.$md.compile(this.sectionMarkdown)
+
+        // TODO FIX : FRONT DOES NOT REFRESH WHEN CHANGE NAME
         this.sectionText = this.sectionMarkdown
         this.editEnabled = false
       } catch (err) {

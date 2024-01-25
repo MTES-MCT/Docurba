@@ -19,7 +19,7 @@
       <v-spacer />
       <v-dialog v-model="dialog" min-width="600px" max-width="600px">
         <template #activator="{on}">
-          <v-snackbar v-model="snackbar">
+          <v-snackbar v-model="snackbar" app>
             Votre demande de changement à été transmise.
           </v-snackbar>
           <v-btn color="white" outlined v-on="on">
