@@ -93,8 +93,6 @@ export default {
     const secondaryProcedures = groupBy(procedures, p => p.secondary_procedure_of)
     const principalsProcedures = procedures.filter(p => p.is_principale)
 
-    console.log('SCOTS', secondaryProcedures, principalsProcedures)
-
     principalsProcedures.forEach((p) => {
       p.procSecs = secondaryProcedures[p.id]
     })
