@@ -20,6 +20,7 @@
           Trame de PAC {{ trameRef.includes('region') ? 'régionale' : 'départementale' }}
         </v-tab>
         <v-tab
+          v-if="$user.profile.poste === 'ddt'"
           :to="{
             name: 'ddt-departement-pac',
             params: {departement: $user.profile.departement}
