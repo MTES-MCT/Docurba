@@ -15,7 +15,7 @@
               </v-expansion-panel-header>
               <v-expansion-panel-content class="primary lighten-4">
                 <DashboardDUSubProcedureItem
-                  v-for="procSec in procedure.procSecs"
+                  v-for="procSec in secondaryProcs"
                   :key="'procSec_' +procSec.id"
                   class="grey-border mb-8"
                   :procedure="procSec"
@@ -31,6 +31,8 @@
   </div>
 </template>
 <script>
+import dayjs from 'dayjs'
+
 export default {
   name: 'DUItem',
   props: {
@@ -43,19 +45,29 @@ export default {
       default: () => false
     }
   },
-  computed: {
-    step () {
-      if (this.procedure.abort_date) {
-        return `Abandon (${this.procedure.abort_date})`
-      } else if (this.procedure.enforceable_date) {
-        return `Executoire (${this.procedure.enforceable_date})`
-      } else if (this.procedure.approval_date) {
-        return `Approbation (${this.procedure.approval_date})`
-      } else if (this.procedure.launch_date) {
-        return `Lancement (${this.procedure.launch_date})`
-      }
-      return '-'
+  data () {
+    const secondaryProcs = [...(this.procedure.procSecs || [])].sort((a, b) => {
+      return +dayjs(b.created_at || 0) - +dayjs(a.created_at || 0)
+    })
+
+    return {
+      secondaryProcs
     }
+  },
+  computed: {
+    // This is not used ?
+    // step () {
+    //   if (this.procedure.abort_date) {
+    //     return `Abandon (${this.procedure.abort_date})`
+    //   } else if (this.procedure.enforceable_date) {
+    //     return `Executoire (${this.procedure.enforceable_date})`
+    //   } else if (this.procedure.approval_date) {
+    //     return `Approbation (${this.procedure.approval_date})`
+    //   } else if (this.procedure.launch_date) {
+    //     return `Lancement (${this.procedure.launch_date})`
+    //   }
+    //   return '-'
+    // }
   }
 }
 </script>
