@@ -60,10 +60,10 @@
                   :items="proceduresParents"
                 >
                   <template #selection="{item}">
-                    {{ item.type }} du {{ item.doc_type }} {{ item.status }} (collec. porteuse {{ item.collectivite_porteuse_id }})
+                    {{ item.type }} du {{ item | docType }} {{ item.status }} (collec. porteuse {{ item.collectivite_porteuse_id }})
                   </template>
                   <template #item="{item}">
-                    {{ item.type }} du {{ item.doc_type }} {{ item.status }} (collec. porteuse {{ item.collectivite_porteuse_id }})
+                    {{ item.type }} du {{ item | docType }} {{ item.status }} (collec. porteuse {{ item.collectivite_porteuse_id }})
                   </template>
                 </v-select>
               </validation-provider>

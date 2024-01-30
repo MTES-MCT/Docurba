@@ -1,8 +1,23 @@
+import Vue from 'vue'
 import axios from 'axios'
 import { groupBy } from 'lodash'
 import regions from '@/assets/data/Regions.json'
 
 export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => {
+  Vue.filter('docType', function (procedure) {
+    if (procedure.doc_type === 'PLU') {
+      let docType = procedure.doc_type
+      if (procedure.initial_perimetre.length > 1) { docType += 'i' }
+      if (procedure.is_sectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')) {
+        docType += 'S'
+      }
+      if (procedure.is_pluih) { docType += 'H' }
+      if (procedure.is_pdu) { docType += 'D' }
+
+      return docType
+    } else { return procedure.doc_type }
+  })
+
   inject('urbanisator', {
     isEpci (collectiviteId) {
       return collectiviteId.toString().length > 5
