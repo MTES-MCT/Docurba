@@ -80,7 +80,7 @@
               Créez votre compte sur Docurba pour éditer vos procédures ou Porter à Connaissance et accélérer vos projets d'urbanisme dès maintenant.
             </p>
           </article>
-          <v-btn color="primary" depressed>
+          <v-btn color="primary" :to="'/login'" depressed>
             S'inscrire
           </v-btn>
         </section>

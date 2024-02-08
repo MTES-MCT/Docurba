@@ -24,6 +24,36 @@
     <!-- This client only could be removed with proper user management server side -->
     <client-only>
       <div class="app-bar__actions">
+        <v-menu v-if="!$user.id" offset-y open-on-hover>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              text
+              color="primary"
+              class="hidden-xs-only"
+              v-bind="attrs"
+              v-on="on"
+            >
+              Solutions
+              <v-icon right>
+                {{ icons.mdiChevronDown }}
+              </v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-subheader class="text-caption text-none">
+              Docurba pour:
+            </v-subheader>
+            <v-list-item :to="'/collectivites-territoriales'">
+              <v-list-item-title>Les Collectivités</v-list-item-title>
+            </v-list-item>
+            <v-list-item :to="'/bureau-etude-urbanisme'">
+              <v-list-item-title>Les Bureaux d'Etudes</v-list-item-title>
+            </v-list-item>
+            <v-list-item :to="'/ddt-ddtm-dreal'">
+              <v-list-item-title>Les Services de l'Etat</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
         <v-menu offset-y open-on-hover>
           <template #activator="{ on, attrs }">
             <v-btn
