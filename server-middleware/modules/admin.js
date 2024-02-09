@@ -17,7 +17,7 @@ module.exports = {
       const { data: profiles } = await supabase.from('profiles').select('firstname, lastname, departement, region, poste').eq('email', userData.email)
       const profile = profiles[0]
       const { firstname, lastname, departement, region } = profile
-      const regionName = regions.find(r => r.code === region)
+      const regionData = regions.find(r => r.code === region)
 
       sendgrid.sendEmail({
         to: userData.email,
@@ -26,7 +26,7 @@ module.exports = {
           firstname,
           lastname,
           departement: departement || '',
-          regionName: regionName || '',
+          regionName: regionData?.intitule || '',
           region: (+region).toString()
         }
       })

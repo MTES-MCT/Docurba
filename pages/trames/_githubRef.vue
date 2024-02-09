@@ -11,22 +11,77 @@
         <h2 class="text-subtitle">
           {{ collectivite.intitule }} ({{ collectivite.code }})
         </h2>
+
+        <div class="mt-4">
+          <v-btn color="primary" depressed :disabled="editingSections.length > 0" @click="editable = !editable">
+            {{ editable ? 'Prévisualiser' : 'Éditer' }}
+          </v-btn>
+          <v-btn color="primary" outlined class="ml-2" @click="shareDialog = true">
+            Partager
+          </v-btn>
+          <v-menu offset-y left>
+            <template #activator="{ attrs, on }">
+              <v-btn
+                :loading="loadingPdf"
+                class="ml-2"
+                color="primary"
+                :style="{ borderRadius: '4px' }"
+                icon
+                outlined
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>{{ icons.mdiDotsVertical }}</v-icon>
+              </v-btn>
+            </template>
+
+            <v-list>
+              <v-list-item @click="downloadPdf">
+                <v-list-item-title>Télécharger en PDF</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+      </v-col>
+      <v-col>
+        <v-autocomplete
+          v-model="searchedSectionPath"
+          :loading="opening"
+          :items="autocompleteSectionItems"
+          filled
+          label="Rechercher une section"
+          item-text="name"
+          item-value="path"
+          @input="opening = true"
+        >
+          <template #item="data">
+            <v-list-item-content>
+              <v-list-item-subtitle :style="{ whiteSpace: 'normal' }">
+                {{ data.item.parentPathSubtitle }}
+              </v-list-item-subtitle>
+              <v-list-item-title>{{ data.item.name }}</v-list-item-title>
+            </v-list-item-content>
+          </template>
+        </v-autocomplete>
       </v-col>
     </v-row>
     <v-row>
-      <v-col v-for="section in sections" :key="section.url" cols="12">
+      <v-col v-for="section in filteredSections" :key="section.url" cols="12">
         <PACSectionCard
           :section="section"
           :git-ref="gitRef"
-          :project="project"
-          editable
-          @edited="toggleEdit"
+          :project="project || {}"
+          :opened-path="searchedSectionPath"
+          :editable="editable"
+          @editing="handleEditing"
           @selectionChange="saveSelection"
           @changeOrder="saveOrder"
           @changeTree="updateTreeData"
+          @opened="opening = false"
         />
       </v-col>
     </v-row>
+
     <v-dialog v-model="beforeLeaveDialog.visible" width="500">
       <v-card>
         <v-card-title>
@@ -46,6 +101,8 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <DashboardSharePACDialog v-if="project" v-model="shareDialog" :project="project" />
   </v-container>
   <v-container v-else class="fill-height">
     <v-row justify="center" align="center">
@@ -59,13 +116,14 @@
 <script>
 import axios from 'axios'
 import { groupBy } from 'lodash'
+import { mdiDotsVertical } from '@mdi/js'
 import orderSections from '@/mixins/orderSections.js'
 import departements from '@/assets/data/departements-france.json'
 
 export default {
   mixins: [orderSections],
   beforeRouteLeave (to, from, next) {
-    if (this.editedSections.length) {
+    if (this.editingSections.length) {
       this.beforeLeaveDialog.next = next
       this.beforeLeaveDialog.visible = true
     } else { next() }
@@ -73,13 +131,66 @@ export default {
   layout: 'ddt',
   data () {
     return {
-      project: {},
+      icons: {
+        mdiDotsVertical
+      },
+      project: null,
       sections: [],
-      editedSections: [],
+      editingSections: [],
       gitRef: this.$route.params.githubRef,
       loading: true,
       beforeLeaveDialog: { visible: false, next: null },
-      collectivite: null
+      collectivite: null,
+      editable: false,
+      opening: false,
+      searchedSectionPath: null,
+      shareDialog: false,
+      loadingPdf: false
+    }
+  },
+  computed: {
+    headRef () {
+      let headRef = 'main'
+
+      if (this.project?.id) {
+        headRef = `dept-${this.$options.filters.deptToRef(this.project.trame)}`
+      }
+
+      if (this.gitRef.includes('dept-')) {
+        const dept = this.gitRef.replace('dept-', '')
+        // eslint-disable-next-line eqeqeq
+        const region = departements.find(d => d.code_departement == dept).code_region
+        headRef = `region-${region}`
+      }
+
+      return headRef
+    },
+    autocompleteSectionItems () {
+      const flatSections = this.getFlatSections(this.sections)
+      return flatSections.map(s => ({
+        name: s.name,
+        path: s.path,
+        parentPathSubtitle: s.path.substr(0, s.path.lastIndexOf('/')).replace('PAC/', '').replaceAll('/', ' / ')
+      }))
+    },
+    filteredSections () {
+      const paths = this.project?.PAC
+
+      function filterSelectedSections (sections) {
+        const filtered = sections.filter(section => paths.includes(section.path))
+
+        return filtered.map((section) => {
+          return Object.assign({}, section, {
+            children: section.children ? filterSelectedSections(section.children) : []
+          })
+        })
+      }
+
+      if (this.project && paths && !this.editable) {
+        return filterSelectedSections(this.sections)
+      }
+
+      return this.sections
     }
   },
   async mounted () {
@@ -87,24 +198,37 @@ export default {
       const projectId = this.gitRef.replace('projet-', '')
 
       const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-      this.project = projects ? projects[0] : {}
+      this.project = projects ? projects[0] : null
 
       const { data: collectivite } = await axios(`/api/geo/collectivites/${this.project.collectivite_id}`)
       this.collectivite = collectivite
+    } else {
+      this.editable = true
     }
 
     const { data: sections } = await axios({
       method: 'get',
-      url: `/api/trames/tree/${this.gitRef}`
+      url: `/api/trames/tree/${this.gitRef}`,
+      params: {
+        ghostRef: this.headRef
+      }
     })
 
     let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
-        `projet-${this.project.id}`,
-        `dept-${this.project.towns ? this.$options.filters.deptToRef(this.project.trame) : ''}`,
-        `region-${this.project.towns ? this.project.towns[0].regionCode : ''}`,
+        `projet-${this.project?.id}`,
+        `dept-${this.project?.towns ? this.$options.filters.deptToRef(this.project.trame) : ''}`,
+        `region-${this.project?.towns ? this.project.towns[0].regionCode : ''}`,
         this.gitRef,
         'main'
     ])
+
+    const { data: histories } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
+      params: {
+        paths: sections
+          .filter(s => !s.ghost)
+          .map(s => s.type === 'file' ? s.path : (s.path + '/intro.md'))
+      }
+    })
 
     // This code should prevent using multiple value when parsing.
     const groupedSupSections = groupBy(supSections, s => s.path)
@@ -144,13 +268,14 @@ export default {
         id: supSection?.id,
         diff: null,
         diffCount: 0,
-        parent,
         parentSha: supSection ? supSection.parent_sha : ''
       }, section)
     }
 
     this.sections = sections.map((section) => {
-      return parseSection(section, supSections)
+      const s = parseSection(section, supSections)
+      s.editDate = histories.find(h => h.path.replace('/intro.md', '') === s.path)?.commit?.date
+      return s
     })
 
     this.loading = false
@@ -158,48 +283,14 @@ export default {
     this.getDiff(supSections)
   },
   methods: {
-    // findSection (path, sections) {
-    //   const searchedSection = sections.find((section) => {
-    //     const sectionPath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
-    //     return sectionPath === path
-    //   })
-
-    //   sections.forEach()
-
-    //   return sections.find((section) => {
-    //     const sectionPath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
-    //     if (sectionPath === path) {
-    //       return true
-    //     } else if (section.children) {
-    //       return this.findSection(path)
-    //     }
-    //   })
-    // },
+    getFlatSections (sections) {
+      return sections.flatMap(s => [s, ...this.getFlatSections(s.children)])
+    },
     async getDiff (supSections) {
-      let headRef = 'main'
-
-      if (this.project && this.project.id) {
-        headRef = `dept-${this.$options.filters.deptToRef(this.project.trame)}`
-      }
-
-      if (this.gitRef.includes('dept-')) {
-        const dept = this.gitRef.replace('dept-', '')
-        // eslint-disable-next-line eqeqeq
-        const region = departements.find(d => d.code_departement == dept).code_region
-        headRef = `region-${region}`
-      }
-
       // https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits
       const { data } = await axios({
-        url: `/api/trames/compare?basehead=${this.gitRef}...${headRef}`
+        url: `/api/trames/compare?basehead=${this.gitRef}...${this.headRef}`
       })
-
-      // This is to be used for gostSections
-      // const { data: missing } = await axios({
-      //   url: `/api/trames/compare?basehead=${headRef}...${this.gitRef}`
-      // })
-
-      // console.log(data, missing)
 
       const diffFiles = data.files.filter((file) => {
         const section = supSections.find((s) => {
@@ -210,7 +301,7 @@ export default {
       })
 
       this.sections.forEach((section) => {
-        this.setDiff(section, diffFiles, headRef)
+        this.setDiff(section, diffFiles, this.headRef)
       })
     },
     setDiff (section, diffFiles, diffRef) {
@@ -252,11 +343,29 @@ export default {
         PAC: this.project.PAC
       }).eq('id', this.project.id)
     },
-    async saveOrder (section, orderChange) {
-      const sectionPath = section.path
-      const parent = section.parent
-      const changedSections = parent ? parent.children : this.sections
+    findSection (sections, path) {
+      const section = sections.find(s => path.startsWith(s.path))
 
+      if (!section) {
+        throw new Error('Section not found')
+      }
+
+      if (section.path === path) {
+        return section
+      }
+
+      return this.findSection(section.children, path)
+    },
+    async saveOrder (section, orderChange) {
+      // debugger
+      const sectionPath = section.path
+      const parentPath = section.path.substr(0, section.path.lastIndexOf('/'))
+
+      const sections = this.sections.includes(section)
+        ? this.sections
+        : this.findSection(this.sections, parentPath).children
+
+      const changedSections = sections.filter(s => !s.ghost)
       const changedSectionIndex = changedSections.findIndex(s => s.path === sectionPath)
       const newIndex = changedSectionIndex + orderChange
 
@@ -279,8 +388,14 @@ export default {
           }
         })
 
-        changedSections.sort((s1, s2) => {
-          return s1.order - s2.order
+        sections.sort((a, b) => {
+          if (a.ghost && !b.ghost) {
+            return 1
+          } else if (!a.ghost && b.ghost) {
+            return -1
+          } else {
+            return a.order - b.order
+          }
         })
 
         await this.$supabase.from('pac_sections').upsert(updatedSections).select()
@@ -339,18 +454,20 @@ export default {
       // Finaly section.name need to be updated.
       section.name = newName
     },
-    toggleEdit (sectionPath, val) {
-      if (val) {
-        this.editedSections.push(sectionPath)
+    handleEditing (sectionPath, editing) {
+      if (editing) {
+        this.editingSections.push(sectionPath)
       } else {
-        const sectionIndex = this.editedSections.indexOf(sectionPath)
+        const sectionIndex = this.editingSections.indexOf(sectionPath)
         if (sectionIndex >= 0) {
-          this.editedSections.splice(sectionIndex, 1)
+          this.editingSections.splice(sectionIndex, 1)
         }
       }
     },
-    toggleParentSectionsDisplay () {
-      console.log('toggleParentSectionsDisplay')
+    async downloadPdf () {
+      this.loadingPdf = true
+      await this.$pdf.pdfFromRef(`projet-${this.project.id}`, this.project)
+      this.loadingPdf = false
     }
   }
 }
@@ -359,5 +476,11 @@ export default {
 <style scoped>
 .collapse-transition {
   transition: max-width 200ms;
+}
+</style>
+
+<style>
+.v-autocomplete__content {
+  width: 0; /* will use min-width, so the autocomplete list will be the same width as the input */
 }
 </style>

@@ -83,10 +83,24 @@
                         large
                         :cols-dep="4"
                         :cols-town="8"
+                        :input-props="{
+                          filled: true
+                        }"
                       />
                       <span v-if="userData.poste === 'be' || userData.poste === 'agence_urba'">
                         *Notez qu’il sera toujours possible d’élargir et modifier votre périmètre par la suite
                       </span>
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-checkbox
+                        v-model="userData.optin"
+                        label="Cochez cette case afin de recevoir nos lettres d'informations mensuelles pour ne rien louper aux dernières actualités de Docurba.
+Promis, seul un contenu court et pertinent vous sera envoyé une fois par mois 🌎"
+                        color="primary"
+                        hide-details
+                      />
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -102,6 +116,7 @@
               </v-card>
               <v-snackbar
                 v-model="snackbar.val"
+                app
                 :timeout="4000"
               >
                 {{ snackbar.text }}
@@ -142,7 +157,8 @@ export default {
         poste: '', // 'elu',
         other_poste: '', // 'test',
         tel: this.$isDev ? '0669487499' : '', // '0669487499',
-        collectivite_id: '' // '45678'
+        collectivite_id: '', // '45678'
+        optin: false
       },
       snackbar: {
         text: '',

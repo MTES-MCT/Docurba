@@ -1,5 +1,6 @@
 ---
 name: preredaction_v1
+visible: false
 tag: trame
 ---
 

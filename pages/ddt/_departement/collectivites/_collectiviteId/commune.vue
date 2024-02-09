@@ -24,7 +24,7 @@
       <v-row>
         <v-col cols="12">
           <v-alert type="info">
-            Date du dernier extract de données Sudocuh vers Docurba: <b>13 Décembre 2023</b>
+            Date du dernier extract de données Sudocuh vers Docurba: <b>11 Janvier 2024</b>
           </v-alert>
         </v-col>
         <v-col cols="12">
@@ -75,7 +75,9 @@ export default {
   },
   methods: {
     async getProcedures () {
+      console.log('getProcedures')
       this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
+      console.log('api collectivite')
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
       this.schemas = schemas
       this.plans = plans

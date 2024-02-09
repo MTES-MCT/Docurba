@@ -48,6 +48,7 @@
     </v-card>
     <v-snackbar
       v-model="snackbar"
+      app
     >
       Une erreur est survenue à la creation de votre document.
       <template #action>

@@ -7,7 +7,6 @@
         :items="departements"
         placeholder="Departement"
         hide-details
-        filled
         autocomplete="off"
         return-object
         :dense="!large"
@@ -27,7 +26,7 @@
           autocomplete="off"
           :error-messages="errors"
           return-object
-          filled
+          :filter="customFilter"
           placeholder="Commune ou EPCI"
           :loading="loading"
           :dense="!large"
@@ -113,6 +112,13 @@ export default {
     }
   },
   methods: {
+    customFilter (item, search, value) {
+      if (search?.length === 0 || value?.length === 0) { return true }
+      const normalizedValue = value.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+      const normalizedSearch = search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+
+      return normalizedValue.includes(normalizedSearch)
+    },
     async fetchCollectivites () {
       if (this.selectedDepartement) {
         this.loading = true

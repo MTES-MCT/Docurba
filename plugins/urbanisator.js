@@ -1,8 +1,23 @@
+import Vue from 'vue'
 import axios from 'axios'
 import { groupBy } from 'lodash'
 import regions from '@/assets/data/Regions.json'
 
 export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => {
+  Vue.filter('docType', function (procedure) {
+    if (procedure.doc_type === 'PLU') {
+      let docType = procedure.doc_type
+      if (procedure.initial_perimetre.length > 1) { docType += 'i' }
+      if (procedure.is_sectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')) {
+        docType += 'S'
+      }
+      if (procedure.is_pluih) { docType += 'H' }
+      if (procedure.is_pdu) { docType += 'D' }
+
+      return docType
+    } else { return procedure.doc_type }
+  })
+
   inject('urbanisator', {
     isEpci (collectiviteId) {
       return collectiviteId.toString().length > 5
@@ -135,8 +150,9 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
       }
       return ret
     },
-    async getProjects (collectiviteId, { plans = true, schemas = true, eventsDetails = false } = {}) {
+    async getProjects (collectiviteId, { plans = true, schemas = true } = {}) {
       try {
+        // eslint-disable-next-line no-console
         console.log('Fetch: ', collectiviteId)
         let query = $supabase.from('procedures')
           .select('*, projects(*)').eq('archived', false)
@@ -154,7 +170,11 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
           query = query.neq('doc_type', 'SCOT')
         }
         const { data, error } = await query.order('created_at', { ascending: false })
-        if (error) { throw error }
+        if (error) {
+          // eslint-disable-next-line no-console
+          console.log('urbanisator.getProjects error', error)
+          throw error
+        }
 
         const groupedSubProcedures = groupBy(data, 'secondary_procedure_of')
 
@@ -167,9 +187,11 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
         const ret = {}
         if (schemas) { ret.schemas = proceduresPrincipales.filter(e => e.doc_type === 'SCOT') }
         if (plans) { ret.plans = proceduresPrincipales.filter(e => e.doc_type !== 'SCOT') }
+        // eslint-disable-next-line no-console
         console.log('ret: ', ret)
         return ret
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error)
       }
     }

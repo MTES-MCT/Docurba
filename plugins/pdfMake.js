@@ -44,31 +44,33 @@ export default ({ $md, $isDev, $supabase }, inject) => {
     pdfFromContent (pdfData, filename = 'PAC') {
       Object.assign(pdfData, {
         pageSize: 'A4',
-        pageMargins: 65,
+        pageMargins: 40,
         styles: {
           title: { fontSize: 40, alignment: 'center' },
           tocTitle: { fontSize: 18 },
-          h1: { fontSize: 30, alignment: 'left' },
-          h2: { fontSize: 24, alignment: 'left' },
-          h3: { fontSize: 20, alignment: 'left' },
-          h4: { fontSize: 18, alignment: 'left' },
-          h5: { fontSize: 16, alignment: 'left' },
-          h6: { fontSize: 14, alignment: 'left' },
+          h1: { fontSize: 24, alignment: 'left' },
+          h2: { fontSize: 20, alignment: 'left' },
+          h3: { fontSize: 18, alignment: 'left' },
+          h4: { fontSize: 16, alignment: 'left' },
+          h5: { fontSize: 14, alignment: 'left' },
+          h6: { fontSize: 12, alignment: 'left' },
           a: { decoration: 'underline', color: '#000091' },
-          p: { fontSize: 12, alignment: 'justify' },
-          footer: { fontSize: 12, alignment: 'right' },
-          ddt: { fontSize: 12, alignment: 'right' }
+          p: { fontSize: 10, alignment: 'justify', margin: [0, 10, 0, 0] },
+          list: { margin: [0, 10, 0, 0] },
+          footer: { fontSize: 10, alignment: 'right' },
+          ddt: { fontSize: 10, alignment: 'right' }
         },
         defaultStyle: {
           font: 'Marianne',
-          fontSize: 12,
+          fontSize: 10,
+          lineHeight: 1.1,
           alignment: 'justify'
         },
         footer (currentPage, pageCount) {
           return {
             text: currentPage > 1 ? `${currentPage.toString()}` : '', // /${pageCount}`,
             style: 'footer',
-            margin: [65, 10]
+            margin: [40, 10]
           }
         },
         pageBreakBefore (currentNode, followingNodesOnPage, nodesOnNextPage, previousNodesOnPage) {
@@ -115,10 +117,6 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           for (const attachment of sectionAttachments) {
             attachmentElements.push(
               {
-                type: 'text',
-                value: '\n'
-              },
-              {
                 type: 'element',
                 tag: 'li',
                 children: [
@@ -141,23 +139,21 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           }
 
           section.body.children.push({
-            type: 'text',
-            value: '\n'
-          }, {
             type: 'element',
             tag: 'ul',
             props: {},
             children: attachmentElements
-          }, {
-            type: 'text',
-            value: '\n'
           })
         }
       }
 
       function parseSection (section, paths) {
         if (section.content) {
-          section.body = $md.compile(section.content)
+          if (section.content.startsWith('<')) {
+            section.body = $md.processHtml(section.content)
+          } else {
+            section.body = $md.processMarkdown(section.content)
+          }
         }
 
         pushAttachments(section)
@@ -220,12 +216,6 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             newParams.style = 'a'
           }
 
-          if (element.tag === 'li') {
-            if (element.children[0].value === '\n') {
-              element.children.splice(0, 1)
-            }
-          }
-
           if (element.tag === 'strong' || element.bold) {
             newParams.bold = true
           }
@@ -270,8 +260,9 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           }
         } else if (element.tag === 'ul' || element.tag === 'ol') {
           pdfContent.content.push({
-            [element.tag]: extractText(element.children.filter(c => c !== '\n' && c.value !== '\n')),
-            headlineLevel
+            [element.tag]: extractText(element.children),
+            headlineLevel,
+            style: 'list'
           })
         } else if (element.tag === 'img') {
           if (element.props.src) {
@@ -318,7 +309,9 @@ export default ({ $md, $isDev, $supabase }, inject) => {
               } else {
                 text.children.push(child)
               }
-            } else { text.children.push(child.value) }
+            } else {
+              text.children.push(child.value)
+            }
           })
 
           if (text.children.length) {

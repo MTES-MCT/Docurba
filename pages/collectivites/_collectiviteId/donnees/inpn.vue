@@ -31,11 +31,10 @@ export default {
     collectivite: {
       type: Object,
       required: true
-    }
-  },
-  data () {
-    return {
-      communes: []
+    },
+    communes: {
+      type: Array,
+      required: true
     }
   },
   mounted () {
@@ -48,14 +47,12 @@ export default {
         this.$matomo([
           'trackEvent',
           'Socle de PAC',
-          'Georisques',
-          `${this.$route.query.document} - ${code}`
+          'INPN',
+          this.$route.params.collectiviteId
         ])
       })
     }
     // End Analytics
-
-    this.communes = this.isEpci ? this.collectivite.communes : [this.collectivite]
   }
 }
 </script>

@@ -19,7 +19,7 @@
         </div>
       </v-col>
       <v-col cols="12" class="mb-2">
-        <v-btn v-if="$user?.profile?.side === 'etat'" color="primary" class="mr-2" outlined @click="addSubProcedure">
+        <v-btn v-if="$user?.profile?.side === 'etat' && !procedure.secondary_procedure_of" color="primary" class="mr-2" outlined @click="addSubProcedure">
           Ajouter une procédure secondaire
         </v-btn>
         <v-btn v-if="$user?.id" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
@@ -268,7 +268,9 @@ export default
       this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectiviteId}/procedure/add?secondary_id=${this.$route.params.procedureId}`)
     },
     scrollToStructurant (clickedEvent) {
-      this.$vuetify.goTo(`#${slugify(clickedEvent, { remove: /[*+~.()'"!:@]/g })}`)
+      if (clickedEvent) {
+        this.$vuetify.goTo(`#${slugify(clickedEvent, { remove: /[*+~.()'"!:@]/g })}`)
+      }
     },
     addSuggestedEvent (eventName) {
       this.$router.push(`/frise/${this.procedure.id}/add?eventType=${eventName}&typeDu=${this.procedure.doc_type}`)

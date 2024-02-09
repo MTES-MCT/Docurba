@@ -1,7 +1,7 @@
 <template>
   <LayoutsCustomApp>
     <template v-if="!loading" #headerPageTitle>
-      - {{ (project && project.id ? project.name : $route.params.githubRef) | githubRef }}
+      {{ (project && project.id ? project.name : $route.params.githubRef) | githubRef }}
     </template>
     <v-container v-if="!loading">
       <v-row>
@@ -61,7 +61,8 @@ export default {
     this.orderSections(sections, supSections)
 
     if (this.project && this.project.id) {
-      this.sections = this.filterSectionsForProject(sections)
+      this.sections = sections
+      // this.sections = this.filterSectionsForProject(sections)
     } else {
       this.sections = this.filterPublicsections(sections)
     }

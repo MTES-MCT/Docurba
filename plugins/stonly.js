@@ -14,17 +14,18 @@ export default ({ $supabase }, inject) => {
     }, e.send())
   }(window, document, 'script', 'https://stonly.com/js/widget/v2/'))
 
-  $supabase.auth.onAuthStateChange(async (_, session) => {
+  $supabase.auth.onAuthStateChange((_, session) => {
     if (session) {
       const userId = session.user.id
-      const { data: profiles } = await $supabase.from('profiles').select('side, poste').eq('user_id', userId)
-
-      if (profiles[0]) {
-        const { side, poste } = profiles[0]
-        window.StonlyWidget('identify', userId, {
-          side, poste
-        })
-      }
+      $supabase.from('profiles').select('side, poste').eq('user_id', userId).then(({ data: profiles, error }) => {
+        if (error) { console.log('Profile Stonely fetch error: ', error) }
+        if (profiles[0]) {
+          const { side, poste } = profiles[0]
+          window.StonlyWidget('identify', userId, {
+            side, poste
+          })
+        }
+      })
     }
   })
 

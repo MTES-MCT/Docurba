@@ -31,9 +31,9 @@ app.post('/notify/shared', (req, res) => {
       if (notification) {
         sendgrid.sendEmail({
           to: sharing.user_email,
-          template_id: (admin && admin.role === 'ddt') ? 'd-bdd5ef31891546bcb6401fb6cdf2d391' : 'd-daf95559ce09481ca8d42d6e026fb9f3',
+          template_id: sharing.role === 'write' ? 'd-bdd5ef31891546bcb6401fb6cdf2d391' : 'd-daf95559ce09481ca8d42d6e026fb9f3',
           dynamic_template_data: {
-            project_id: sharing.project_id,
+            project_id: 'projet-' + sharing.project_id,
             firstname: sharedByData.firstname,
             lastname: sharedByData.lastname,
             dept: admin ? admin.dept : '00'
@@ -74,7 +74,7 @@ app.post('/notify/update', async (req, res) => {
           to: sharing.user_email,
           template_id: 'd-2b1d871bc04141e69c56e5a89dc20a74',
           dynamic_template_data: {
-            project_id: projectId
+            project_id: 'projet-' + projectId
           }
         }).then(async () => {
           await supabase.from('projects_sharing').update({

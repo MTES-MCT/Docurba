@@ -23,7 +23,7 @@
               <v-select
                 v-model="event.visibility"
                 persistent-hint
-                hint="Si vous voulez uniquement afficher cet évènements aux agents de l'Etat et acteurs de collectivités, choissez 'Privé'"
+                hint="Les événements privés sont visibles uniquement par la DDT et la collectivité en charge de la procédure, ainsi que par le bureau d’études le cas échéant."
                 label="Visibilité de l'évènement"
                 filled
                 :items="[{value: 'public', text: 'Publique'}, {value: 'private', text: 'Privé'}]"
