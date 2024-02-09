@@ -9,7 +9,8 @@
       <div v-if="suggestion" class="primary--text mb-1">
         Evénement suggéré
       </div>
-      <v-card :id="`${slugId}`" :outlined="!suggestion" flat :color="suggestion ? 'primary lighten-4': ''">
+      <!-- The event- is here to prevent errors since ids should start with a letter: https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id -->
+      <v-card :id="`event-${event.id}`" :outlined="!suggestion" flat :color="suggestion ? 'primary lighten-4': ''">
         <v-card-title class="font-weight-bold d-flex flex-nowrap">
           <div class="break-word flex-grow-0 d-flex flex-wrap align-self-start mr-4">
             <div>
@@ -101,7 +102,6 @@
 
 <script>
 import { mdiPencil, mdiPaperclip, mdiBookmark } from '@mdi/js'
-import slugify from 'slugify'
 import actors from '@/assets/friseActors.json'
 
 export default {
@@ -130,9 +130,6 @@ export default {
     }
   },
   computed: {
-    slugId () {
-      if (this.event) { return slugify(this.event.type || this.event.name, { remove: /[*+~.()'"!:@]/g }) } else { return '' }
-    },
     creator () {
       let actor = this.event.profiles?.side || 'docurba'
       if (this.event.from_sudocuh) { actor = 'sudocu' }

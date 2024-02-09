@@ -99,7 +99,7 @@
                           color="grey darken-1"
                           v-bind="attrs"
                           v-on="on"
-                          @click="scrollToStructurant(eventStructurant.type)"
+                          @click="scrollToStructurant(eventStructurant.id)"
                         >
                           <v-icon color="grey darken-2" class="mr-2">
                             {{ icons.mdiBookmark }}
@@ -151,7 +151,6 @@
 import axios from 'axios'
 import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical } from '@mdi/js'
 
-import slugify from 'slugify'
 import PluEvents from '@/assets/data/events/PLU_events.json'
 import ScotEvents from '@/assets/data/events/SCOT_events.json'
 import ccEvents from '@/assets/data/events/CC_events.json'
@@ -267,9 +266,10 @@ export default
     addSubProcedure () {
       this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectiviteId}/procedure/add?secondary_id=${this.$route.params.procedureId}`)
     },
-    scrollToStructurant (clickedEvent) {
-      if (clickedEvent) {
-        this.$vuetify.goTo(`#${slugify(clickedEvent, { remove: /[*+~.()'"!:@]/g })}`)
+    scrollToStructurant (eventId) {
+      if (eventId) {
+        // The event- is here to prevent errors since ids should start with a letter: https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id
+        this.$vuetify.goTo(`#event-${eventId}`)
       }
     },
     addSuggestedEvent (eventName) {
