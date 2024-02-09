@@ -51,6 +51,15 @@
         <VRegionAutocomplete v-model="userData.region" label="Votre region" :error-messages="errors" />
       </validation-provider>
     </v-col>
+    <v-col cols="12">
+      <v-checkbox
+        v-model="userData.optin"
+        label="Cochez cette case afin de recevoir nos lettres d'informations mensuelles pour ne rien louper aux dernières actualités de Docurba.
+Promis, seul un contenu court et pertinent vous sera envoyé une fois par mois 🌎"
+        color="primary"
+        hide-details
+      />
+    </v-col>
   </v-row>
 </template>
 
@@ -108,7 +117,8 @@ export default {
         poste: null,
         other_poste: null,
         departement: null,
-        region: null
+        region: null,
+        optin: false
       }
     }
   }
