@@ -61,6 +61,7 @@ export default async ({ $supabase, app }, inject) => {
           // console.log('profiles', data)
           if (data[0]) {
             user.profile = data[0]
+
             resolve(true)
           } else if (retry) {
             setTimeout(async () => {
