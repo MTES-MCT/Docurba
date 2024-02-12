@@ -31,7 +31,7 @@ module.exports = async function (path, options = {}) {
   try {
     const res = await octokit.request(path, Object.assign({
       headers,
-      owner: 'UngererFabien',
+      owner: 'nyko28',
       repo: 'France-PAC'
     }, options))
 
