@@ -77,7 +77,6 @@
                 <FriseEventCard v-if="$user?.id && recommendedEvent" :event="recommendedEvent" suggestion @addSuggestedEvent="addSuggestedEvent" />
                 <template v-for="event in enrichedEvents">
                   <FriseEventCard
-                    v-if="event.visibility === 'public' || isAdmin"
                     :id="`event-${event.id}`"
                     :key="event.id"
                     :event="event"
@@ -175,9 +174,11 @@ export default
   },
   computed: {
     isAdmin () {
-      return this.$user?.profile?.side === 'etat' ||
-        (this.$user?.profile?.colectivite_id === this.collectivite.code ||
-        this.$user?.profile?.colectivite_id === this.collectivite.intercommunaliteCode)
+      if (!this.$user.id) { return false }
+
+      return this.$user.profile?.side === 'etat' ||
+        (this.$user.profile?.colectivite_id === this.collectivite.code ||
+        this.$user.profile?.colectivite_id === this.collectivite.intercommunaliteCode)
     },
     internalDocType () {
       let currDocType = this.procedure.doc_type
@@ -200,13 +201,16 @@ export default
       return this.enrichedEvents.filter(e => e.structurant)
     },
     enrichedEvents () {
+      console.log(this.isAdmin)
       return this.events.map((event) => {
         const ev = this.documentEvents.find(x => x.name === event.type)
         return { ...event, structurant: !!ev?.structurant }
+      }).filter((event) => {
+        return event.visibility === 'public' || this.isAdmin
       })
     },
     attachments () {
-      return this.events.map(e => e.attachements).flat()
+      return this.enrichedEvents.map(e => e.attachements).flat()
     },
     backToCollectivite () {
       if (this.$user.id && this.$user.profile && this.$user.profile.side === 'etat') {
