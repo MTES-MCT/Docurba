@@ -1,5 +1,3 @@
-const fs = require('fs')
-
 const { Octokit } = require('octokit')
 
 const octokit = new Octokit({
@@ -8,7 +6,7 @@ const octokit = new Octokit({
 
 module.exports = async function (repoQuery) {
   return (await octokit.graphql(`query {
-    repository(name: "France-PAC", owner: "UngererFabien") {
+    repository(name: "${process.env.GITHUB_PAC_REPO_NAME}", owner: "${process.env.GITHUB_PAC_REPO_OWNER}") {
       ${repoQuery}
     }
   }`)).repository

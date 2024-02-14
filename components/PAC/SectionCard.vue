@@ -279,6 +279,7 @@ import {
 } from '@mdi/js'
 import { encode } from 'js-base64'
 import departements from '@/assets/data/departements-france.json'
+import cadreJuridiqueMainSections from '@/assets/data/cadre-juridique-main-sections.json'
 
 export default {
   props: {
@@ -394,7 +395,7 @@ export default {
       } else {
         return this.editable &&
           !this.section.ghost &&
-          !(this.section.path.startsWith('PAC/Cadre juridique') || this.section.path.startsWith('PAC/Cadre-juridique'))
+          !cadreJuridiqueMainSections.includes(this.section.path)
       }
     },
     lastEditDate () {
