@@ -74,7 +74,7 @@
           <v-container>
             <v-row>
               <v-col cols="9">
-                <FriseEventCard v-if="$user?.id && recommendedEvent" :event="recommendedEvent" suggestion @addSuggestedEvent="addSuggestedEvent" />
+                <FriseEventCard v-if="$user?.id && recommendedEvent && isAdmin" :event="recommendedEvent" suggestion @addSuggestedEvent="addSuggestedEvent" />
                 <template v-for="event in enrichedEvents">
                   <FriseEventCard
                     :id="`event-${event.id}`"
@@ -177,8 +177,8 @@ export default
       if (!this.$user.id) { return false }
 
       return this.$user.profile?.side === 'etat' ||
-        (this.$user.profile?.colectivite_id === this.collectivite.code ||
-        this.$user.profile?.colectivite_id === this.collectivite.intercommunaliteCode)
+        (this.$user.profile?.collectivite_id === this.collectivite.code ||
+        this.$user.profile?.collectivite_id === this.collectivite.intercommunaliteCode)
     },
     internalDocType () {
       let currDocType = this.procedure.doc_type
@@ -201,7 +201,6 @@ export default
       return this.enrichedEvents.filter(e => e.structurant)
     },
     enrichedEvents () {
-      console.log(this.isAdmin)
       return this.events.map((event) => {
         const ev = this.documentEvents.find(x => x.name === event.type)
         return { ...event, structurant: !!ev?.structurant }
