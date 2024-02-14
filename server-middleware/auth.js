@@ -131,8 +131,16 @@ app.post('/signupCollectivite', async (req, res) => {
 
     const profile = insertedProfile[0]
 
+    const listMap = {
+      be: 21,
+      autre: 34,
+      employe_mairie: 22,
+      elu: 22,
+      agence_urba: 21
+    }
+
     sibApi.optinNewsLetter(req.body.userData.email, req.body.userData.optin, [
-      profile.poste === 'be' ? 21 : 22
+      listMap[profile.poste]
     ])
 
     // Send email to connect
