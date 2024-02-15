@@ -25,7 +25,7 @@
             </v-chip>
           </div>
           <div v-if="!suggestion" class=" ml-auto flex-shrink-1 d-flex align-self-start">
-            <v-tooltip v-if="event.visibility === 'private'" bottom>
+            <v-tooltip v-if="event.visibility === 'private' && !(event.from_sudocuh && event.structurant)" bottom>
               <template #activator="{ on, attrs }">
                 <v-chip
                   class="mr-2 font-weight-bold text-uppercase"
@@ -35,7 +35,7 @@
                   v-bind="attrs"
                   v-on="on"
                 >
-                  {{ event.visibility === 'private' ? 'privé' : '' }}
+                  Privé
                 </v-chip>
               </template>
               Cet événement n’est visible que pour la collectivité et les services de l’État.

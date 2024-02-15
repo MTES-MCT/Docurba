@@ -205,7 +205,8 @@ export default
         const ev = this.documentEvents.find(x => x.name === event.type)
         return { ...event, structurant: !!ev?.structurant }
       }).filter((event) => {
-        return event.visibility === 'public' || this.isAdmin
+        return event.visibility === 'public' || this.isAdmin ||
+          (event.from_sudocuh && event.structurant)
       })
     },
     attachments () {

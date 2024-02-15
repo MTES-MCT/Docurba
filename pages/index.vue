@@ -38,6 +38,9 @@
               Collectivités
             </h2>
             <p>Soyez certain de ne plus rater d'étape et retrouvez facilement toutes les informations utiles à l'élaboration de vos documents d'urbanisme.</p>
+            <nuxt-link class="primary--text landing-card-btn text-decoration-none pb-1" :to="'/collectivites-territoriales'">
+              En apprendre plus
+            </nuxt-link>
           </article>
           <img class="collectivites__image" src="/images/landing/collectivites.png">
         </section>
@@ -49,6 +52,9 @@
               Services de l'État
             </h2>
             <p>Partagez le socle de PAC national public mis à jour aux collectivités, créez vos PAC en ligne et profitez d'une visibilité en temps réel sur l'avancement des procédures d'urbanisme de vos collectivités.</p>
+            <nuxt-link class="primary--text landing-card-btn text-decoration-none pb-1" :to="'/ddt-ddtm-dreal'">
+              En apprendre plus
+            </nuxt-link>
           </article>
         </section>
 
@@ -59,6 +65,9 @@
                 Bureaux d'études
               </h2>
               <p>Accédez à toutes les données de vos territoires en quelques clics et offrez des procédures structurées pour guider vos collectivités. </p>
+              <nuxt-link class="primary--text landing-card-btn landing-yellow text-decoration-none pb-1" :to="'/bureau-etude-urbanisme'">
+                En apprendre plus
+              </nuxt-link>
             </article>
           </section>
           <section class="neutral">
@@ -331,5 +340,14 @@ section.signup {
   section.neutral {
     padding: 2rem;
   }
+}
+
+.landing-card-btn {
+    border-bottom: 4px solid #000091;
+    width: fit-content;
+  }
+
+.landing-card-btn.landing-yellow {
+  border-bottom: 4px solid #FCE552;
 }
 </style>
