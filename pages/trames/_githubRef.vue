@@ -311,7 +311,7 @@ export default {
         return file.filename === sectionPath && file.status === 'modified'
       })
 
-      const level = diffRef.includes('dept-') ? 'départemental' : 'régional'
+      const level = diffRef.includes('dept-') ? 'départemental' : (diffRef.includes('region-') ? 'régional' : 'national')
 
       if (diffFile) {
         section.diff = {
