@@ -357,7 +357,6 @@ export default {
       return this.findSection(section.children, path)
     },
     async saveOrder (section, orderChange) {
-      // debugger
       const sectionPath = section.path
       const parentPath = section.path.substr(0, section.path.lastIndexOf('/'))
 

@@ -643,6 +643,7 @@ export default {
       // A Section card could also use a computed based on children length to determine if it's a dir or a file and adapt its path accordingly.
       // eslint-disable-next-line vue/no-mutating-props
       this.section.children.push(newSection)
+      this.$emit('changeOrder', newSection, 0)
 
       this.$analytics({
         category: 'pac',
