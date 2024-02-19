@@ -122,12 +122,7 @@ app.get('/tree/:ref', async (req, res) => {
     ])
 
     if (ghostRef) {
-      // TODO : temporary for issue #378, remove after script to merge Cadre juridique section
-      const filteredGhostRepo = ghostRepo.filter(section =>
-        section.path !== 'PAC/Cadre-juridique-et-grands-principes-de-la-planification' &&
-        section.path !== 'PAC/Cadre juridique et grands principes de la planification')
-
-      addGhostSections(repo, filteredGhostRepo)
+      addGhostSections(repo, ghostRepo)
     }
 
     res.status(200).send(repo)

@@ -279,7 +279,6 @@ import {
 } from '@mdi/js'
 import { encode } from 'js-base64'
 import departements from '@/assets/data/departements-france.json'
-import cadreJuridiqueMainSections from '@/assets/data/cadre-juridique-main-sections.json'
 
 export default {
   props: {
@@ -395,7 +394,10 @@ export default {
       } else {
         return this.editable &&
           !this.section.ghost &&
-          !cadreJuridiqueMainSections.includes(this.section.path)
+          !(
+            this.section.path.startsWith('PAC/Cadre juridique et grands principes de la planification/') &&
+            this.section.inParentProject
+          )
       }
     },
     lastEditDate () {
