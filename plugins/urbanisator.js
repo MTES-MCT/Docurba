@@ -7,7 +7,7 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
   Vue.filter('docType', function (procedure) {
     if (procedure.doc_type === 'PLU') {
       let docType = procedure.doc_type
-      if (procedure.initial_perimetre.length > 1) { docType += 'i' }
+      if (procedure.current_perimetre.length > 1) { docType += 'i' }
       if (procedure.is_sectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')) {
         docType += 'S'
       }
