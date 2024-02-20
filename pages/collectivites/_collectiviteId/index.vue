@@ -97,6 +97,7 @@ export default {
     }
   },
   data () {
+    console.log('collectivite', this.collectivite)
     return {
       actionsCards: [
         {

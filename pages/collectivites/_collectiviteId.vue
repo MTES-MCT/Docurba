@@ -61,10 +61,19 @@ export default {
       this.communes = this.isEpci ? this.collectivite.membres.filter(m => m.type.startsWith('COM')) : [this.collectivite]
 
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
+
       this.schemas = schemas
       this.plans = plans
 
-      // console.log('schemas: ', schemas, ' plans: ', plans)
+      console.log('TEST plans: ', plans)
+
+      if (this.collectivite.comd) {
+        this.collectivite.comd.forEach(async (comd) => {
+          const { plans } = await this.$urbanisator.getProjects(comd.code)
+
+          console.log('TEST comd', comd.code, plans)
+        })
+      }
     }
   }
 }

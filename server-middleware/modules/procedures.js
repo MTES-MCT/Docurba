@@ -35,7 +35,7 @@ function sortProceduresByEvenCateg (procedures, eventCateg) {
     const dateA = a[eventCateg] ? +dayjs(a[eventCateg].date_iso) : 0
     const dateB = b[eventCateg] ? +dayjs(b[eventCateg].date_iso) : 0
 
-    return dateA - dateB
+    return dateB - dateA
   })
 }
 
@@ -45,10 +45,10 @@ function findEventByType (events, types) {
 }
 
 function filterProcedures (procedures) {
-  const sortedProcedures = sortProceduresByEvenCateg(procedures)
+  const sortedProcedures = sortProceduresByEvenCateg(procedures, 'prescription')
 
   let opposables = sortedProcedures.filter(p => p.status === 'opposable')
-  opposables = sortProceduresByEvenCateg(opposables, 'approbation')
+  opposables = sortProceduresByEvenCateg(opposables, 'prescription')
 
   let currents = sortedProcedures.filter(p => p.status === 'en cours')
   currents = sortProceduresByEvenCateg(currents, 'prescription')
@@ -83,10 +83,10 @@ module.exports = {
       })
 
     if (error) {
-      console.log('fetchProcedures error', error)
+      console.log('fetchProcedures error', inseeCodes[0], error)
     }
 
-    return procedures
+    return procedures.filter(p => p.doc_type !== 'SD')
   },
   async fetchEvents (procedures) {
     const { data: events } = await supabase
@@ -109,7 +109,9 @@ module.exports = {
       events = await this.fetchEvents(procedures)
     }
 
-    return procedures.map((procedure) => {
+    // console.log('procedures', procedures)
+
+    return procedures.filter(p => !p.archived).map((procedure) => {
       const procedureEvents = events.filter(e => e.procedure_id === procedure.id)
 
       const eventsByType = {}
@@ -149,11 +151,16 @@ module.exports = {
       currents: planCurrents
     } = filterProcedures(procedures.filter(p => p.doc_type !== 'SCOT'))
 
+    // console.log(planCurrents.map(p => p.prescription.date_iso))
+
     const revisions = planCurrents.filter(p => proceduresCategs.revision.includes(p.type))
     const modifications = planCurrents.filter(p => proceduresCategs.modification.includes(p.type))
 
     const planOpposable = planOpposables[0]
     const planCurrent = planCurrents[0]
+
+    // console.log('opposable', planOpposable)
+    // console.log('planCurrent', planCurrent)
 
     const collectivitePorteuse = (planCurrent || planOpposable)?.collectivite_porteuse_id || inseeCode
 
@@ -181,7 +188,7 @@ module.exports = {
   },
   async getCommunes (inseeCodes) {
     const procedures = await this.fetchProcedures(inseeCodes)
-    console.log('getCommunes', inseeCodes[0], procedures ? procedures.length : 'no procedures')
+    // console.log('getCommunes', inseeCodes[0], procedures ? procedures.length : 'no procedures')
 
     const events = await this.fetchEvents(procedures)
 

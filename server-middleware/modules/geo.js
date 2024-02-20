@@ -79,6 +79,8 @@ module.exports = {
     })
 
     if (commune) {
+      const comd = communes.filter(c => c.type === 'COMD' && c.codeParent === codeInsee)
+
       const departement = Object.assign({}, departements.find(d => d.code === commune.departementCode))
       delete departement.communes
       delete departement.region
@@ -86,7 +88,8 @@ module.exports = {
       return Object.assign({
         intercommunalite: intercommunalites.find(i => i.code === commune.intercommunaliteCode),
         region: regions.find(r => r.code === commune.regionCode),
-        departement
+        departement,
+        comd
       }, commune)
     } else {
       return null
