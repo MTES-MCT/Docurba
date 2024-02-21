@@ -160,7 +160,7 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
         if (collectiviteId.length > 5) {
           query = query.eq('collectivite_porteuse_id', collectiviteId)
         } else {
-          query = query.contains('current_perimetre', `[{ "inseeCode": "${collectiviteId}" }]`)
+          query = query.contains('initial_perimetre', `[{ "inseeCode": "${collectiviteId}" }]`)
         }
 
         if (schemas && !plans) {
