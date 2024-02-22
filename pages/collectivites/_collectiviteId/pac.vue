@@ -80,7 +80,7 @@ export default {
         if (!isAllowed) {
           return false
         } else if (docType === 'PLU') {
-          return !section.name.includes('PLUi') && !section.name.includes('carte communale')
+          return ((!section.name.includes('PLUi') && !section.name.includes('carte communale')) || /PLU(\W|$)/.test(section.name))
         } else if (docType.includes('PLUi')) {
           return !section.name.includes(' PLU ') && !section.name.includes('carte communale')
         } else {
