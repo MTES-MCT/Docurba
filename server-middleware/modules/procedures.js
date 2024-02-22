@@ -86,7 +86,7 @@ module.exports = {
       console.log('fetchProcedures error', inseeCodes[0], error)
     }
 
-    return procedures.filter(p => p.doc_type !== 'SD')
+    return procedures.filter(p => p.doc_type_code !== 'SD')
   },
   async fetchEvents (procedures) {
     const { data: events } = await supabase
@@ -140,7 +140,7 @@ module.exports = {
       procedures: scots,
       opposables: scotOpposables,
       currents: scotCurrents
-    } = filterProcedures(procedures.filter(p => p.doc_type === 'SCOT'))
+    } = filterProcedures(procedures.filter(p => p.doc_type_code === 'SCOT'))
 
     const scotOpposable = scotOpposables[0]
     const scotCurrent = scotCurrents[0]
@@ -149,7 +149,7 @@ module.exports = {
       procedures: plans,
       opposables: planOpposables,
       currents: planCurrents
-    } = filterProcedures(procedures.filter(p => p.doc_type !== 'SCOT'))
+    } = filterProcedures(procedures.filter(p => p.doc_type_code !== 'SCOT'))
 
     // console.log(planCurrents.map(p => p.prescription.date_iso))
 
@@ -166,7 +166,7 @@ module.exports = {
 
     const sCodes = sudocuhCodes.getAllCodes(planOpposable, planCurrent, collectivitePorteuse)
 
-    const currentsDocTypes = uniq(planCurrents.map(p => p.doc_type)).join(', ')
+    const currentsDocTypes = uniq(planCurrents.map(p => p.doc_type_code)).join(', ')
 
     return Object.assign({
       scots,
