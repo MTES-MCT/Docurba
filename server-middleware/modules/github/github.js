@@ -31,8 +31,8 @@ module.exports = async function (path, options = {}) {
   try {
     const res = await octokit.request(path, Object.assign({
       headers,
-      owner: 'UngererFabien',
-      repo: 'France-PAC'
+      owner: process.env.GITHUB_PAC_REPO_OWNER,
+      repo: process.env.GITHUB_PAC_REPO_NAME
     }, options))
 
     // console.log('github res --> ', res)
