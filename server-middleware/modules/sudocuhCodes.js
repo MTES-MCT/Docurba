@@ -36,8 +36,9 @@ function getProcedureCode2 (procedure, porteuseId) {
     // Pas de communes
     return '9'
   } else if (procedure.current_perimetre.length > 1) {
-    const group = groupements.find(g => g.code === porteuseId)
-    const isSectoriel = group ? group.membres.length > procedure.current_perimetre.length : procedure.is_sectoriel
+    // const group = groupements.find(g => g.code === porteuseId)
+    // const isSectoriel = group ? group.membres.filter(m => m.type === 'COM').length > procedure.current_perimetre.length : procedure.is_sectoriel
+    const isSectoriel = procedure.is_sectoriel
     if (isSectoriel) {
     // if (procedure.is_sectoriel) {
       return '3'
@@ -56,8 +57,9 @@ function getCodeComp (procedure, porteuseId) {
 
   if (isEPCI) {
     if (procedure.current_perimetre.length > 1) {
-      const group = groupements.find(g => g.code === porteuseId)
-      const isSectoriel = group ? group.membres.length > procedure.current_perimetre.length : procedure.is_sectoriel
+      // const group = groupements.find(g => g.code === porteuseId)
+      // const isSectoriel = group ? group.membres.filter(m => m.type === 'COM').length > procedure.current_perimetre.length : procedure.is_sectoriel
+      const isSectoriel = procedure.is_sectoriel
       if (isSectoriel) {
       // if (procedure.is_sectoriel) {
         return '3'
@@ -102,6 +104,36 @@ module.exports = {
       etat: this.getCodeEtat(planOpposable, planCurrent),
       etat2: this.getCodeEtat2(planOpposable, planCurrent, collectivitePorteuse),
       bcsi: this.getCodeBcsi(planOpposable, planCurrent, collectivitePorteuse)
+    }
+  },
+  getCodesScot (scot) {
+    let simple = ''
+
+    if (scot.status === 'opposable') {
+      simple = '30'
+    } else if (scot.status === 'en cours') {
+      if (scot.type === 'Révision') {
+        simple = '20'
+      } else {
+        simple = '5'
+      }
+    }
+
+    let detail = '2'
+
+    if (scot.status === 'en cours') {
+      if (scot.deliberation) {
+        detail = '3'
+      }
+
+      if (scot.arret) {
+        detail = '4'
+      }
+    }
+
+    return {
+      simple,
+      detailed: `${simple}${detail}`
     }
   }
 }

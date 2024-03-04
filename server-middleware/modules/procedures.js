@@ -1,9 +1,11 @@
-import { uniq } from 'lodash'
+import { uniq, orderBy } from 'lodash'
 import dayjs from 'dayjs'
 import communes from '../Data/referentiels/communes.json'
 import groupements from '../Data/referentiels/groupements.json'
 import regions from '../Data/INSEE/regions.json'
 import departements from '../Data/INSEE/departements.json'
+import scotsCorrespondance from '../Data/referentiels/sudocuh/scot_name_id_correspondence.json'
+import scotEtats from '../Data/referentiels/sudocuh/sudocuh_etat_schema.json'
 import supabase from './supabase.js'
 
 import sudocuhCodes from './sudocuhCodes.js'
@@ -12,9 +14,11 @@ const eventsCategs = {
   approbation: ["Délibération d'approbation", "Arrêté d'abrogation", "Arrêté du Maire ou du Préfet ou de l'EPCI", 'Approbation du préfet'],
   arret: ['Arrêt de projet'],
   pac: ['Porter à connaissance'],
+  deliberation: ["Délibération de l'Etab Pub sur les modalités de concertation", "Délibération de l'Etablissement Public"],
   pacComp: ['Porter à connaissance complémentaire'],
   prescription: ['Prescription', "Delibération de l'établissement public", 'Publication de périmetre'],
-  exec: ['Caractère exécutoire']
+  exec: ['Caractère exécutoire'],
+  fin: ["Fin d'échéance"]
 }
 
 // const eventsTypes = Object.keys(eventsCategs).flatMap(key => eventsCategs[key])
@@ -24,6 +28,11 @@ const proceduresCategs = {
   modification: ['Modification', 'Modification simplifiée']
 }
 
+function logProcedures (procedures, logName = 'logProcedures') {
+  // eslint-disable-next-line no-console
+  return console.log(logName, procedures.map(p => `${p.id} ${p.doc_type_code} ${p.type} ${p.prescription?.date_iso} ${p.current_perimetre.length}`))
+}
+
 function sortEvents (events) {
   return events.sort((a, b) => {
     return +dayjs(a.date_iso) - +dayjs(b.date_iso)
@@ -31,6 +40,12 @@ function sortEvents (events) {
 }
 
 function sortProceduresByEvenCateg (procedures, eventCateg) {
+  // ASK CLAIRE: Quelle est la règle si CC en cour + PLUi en cours.
+  // return orderBy(procedures, [
+  //   p => p.current_perimetre.length,
+  //   p => p[eventCateg]?.date_iso
+  // ], ['desc', 'desc'])
+
   return procedures.sort((a, b) => {
     const dateA = a[eventCateg] ? +dayjs(a[eventCateg].date_iso) : 0
     const dateB = b[eventCateg] ? +dayjs(b[eventCateg].date_iso) : 0
@@ -50,7 +65,9 @@ function filterProcedures (procedures) {
   let opposables = sortedProcedures.filter(p => p.status === 'opposable')
   opposables = sortProceduresByEvenCateg(opposables, 'prescription')
 
-  let currents = sortedProcedures.filter(p => p.status === 'en cours')
+  let currents = sortedProcedures.filter(p => p.status === 'en cours').filter((p) => {
+    return p.from_sudocuh ? !!p.prescription : true
+  })
   currents = sortProceduresByEvenCateg(currents, 'prescription')
 
   return { procedures: sortedProcedures, opposables, currents }
@@ -81,7 +98,6 @@ module.exports = {
       .rpc('procedures_by_insee_codes', {
         codes: inseeCodes
       })
-
     if (error) {
       console.log('fetchProcedures error', inseeCodes[0], error)
     }
@@ -100,7 +116,7 @@ module.exports = {
       })
     })
   },
-  async getCommuneProcedures (inseeCode, procedures, events) {
+  async enrichProcedures (inseeCode, procedures, events) {
     if (!procedures) {
       procedures = await this.fetchProcedures([inseeCode])
     }
@@ -133,7 +149,7 @@ module.exports = {
   async getCommune (inseeCode, rawProcedures, events) {
     const commune = this.getCommuneMetadata(inseeCode)
 
-    let procedures = await this.getCommuneProcedures(inseeCode, rawProcedures, events)
+    let procedures = await this.enrichProcedures(inseeCode, rawProcedures, events)
     procedures = sortProceduresByEvenCateg(procedures, 'prescription')
 
     const {
@@ -151,13 +167,17 @@ module.exports = {
       currents: planCurrents
     } = filterProcedures(procedures.filter(p => p.doc_type_code !== 'SCOT'))
 
-    // console.log(planCurrents.map(p => p.prescription.date_iso))
+    logProcedures(planOpposables, 'planOpposables')
+    logProcedures(planCurrents, 'planCurrents')
 
     const revisions = planCurrents.filter(p => proceduresCategs.revision.includes(p.type))
     const modifications = planCurrents.filter(p => proceduresCategs.modification.includes(p.type))
 
     const planOpposable = planOpposables[0]
-    const planCurrent = planCurrents[0]
+    // Add a specific filter: PLU cannot be current if there is a opposable PLUi.
+    const planCurrent = planCurrents.filter((p) => {
+      return (planOpposable && planOpposable.current_perimetre.length > 1) ? p.current_perimetre.length > 1 : true
+    })[0]
 
     // console.log('opposable', planOpposable)
     // console.log('planCurrent', planCurrent)
@@ -205,5 +225,80 @@ module.exports = {
     })
 
     return await Promise.all(communes)
+  },
+  async getScots () {
+    const { data: procedures, error } = await supabase.from('procedures_duplicate').select('*').match({
+      doc_type_code: 'SCOT',
+      is_principale: true
+    }).in('status', ['opposable', 'en cours'])
+
+    console.log('procedures', procedures.length, error)
+
+    const scots = await this.enrichProcedures(null, procedures)
+
+    scots.forEach((scot) => {
+      scot.codes = sudocuhCodes.getCodesScot(scot)
+    })
+
+    const scotsData = scotEtats.map((scotEtat) => {
+      const currentScot = scots.find((s) => {
+        // eslint-disable-next-line eqeqeq
+        return scotEtat.noserieprocedurecour && (s.from_sudocuh == scotEtat.noserieprocedurecour)
+      })
+
+      const opposableScot = scots.find((s) => {
+        // eslint-disable-next-line eqeqeq
+        return scotEtat.noserieprocedureapp && (s.from_sudocuh == scotEtat.noserieprocedureapp)
+      })
+
+      const displayedScot = currentScot || opposableScot
+
+      if (displayedScot) {
+        displayedScot.scotId = scotEtat.noserieschema
+      }
+
+      return displayedScot
+    }).filter((s) => {
+      return !!s && (s.fin ? !dayjs(s.fin.date_iso).isBefore('01-01-2024') : true)
+    })
+
+    // const scotsByName = {}
+    // const scotsById = {}
+
+    // function sanitizeScotName (name) {
+    //   return name.replace(/\s+|-/g, '')
+    // }
+
+    // scots.forEach((p) => {
+    //   const scotData = scotsCorrespondance.find(s => sanitizeScotName(s.nomschema) === sanitizeScotName(p.name))
+
+    //   if (scotData) {
+    //     if (scotsById[scotData.noserieschema]) {
+    //       scotsById[scotData.noserieschema].push(p)
+    //     } else {
+    //       scotsById[scotData.noserieschema] = [p]
+    //     }
+    //   }
+
+    //   if (scotsByName[sanitizeScotName(p.name)]) {
+    //     scotsByName[sanitizeScotName(p.name)].push(p)
+    //   } else {
+    //     scotsByName[sanitizeScotName(p.name)] = [p]
+    //   }
+    // })
+
+    console.log('NB scots', scots.length)
+    console.log('NB Matched scots', scotsData.length)
+    // console.log('NB scots by name', Object.keys(scotsByName).length)
+    // console.log('NB Scots by id', Object.keys(scotsById).length)
+
+    return scotsData
+
+    // return Object.keys(scotsById).map((scotId) => {
+    //   const s = sortProceduresByEvenCateg(scotsById[scotId], 'prescription')[0]
+    //   console.log(s.name, scotId)
+    //   s.scotId = scotId
+    //   return s
+    // })
   }
 }

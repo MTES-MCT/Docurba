@@ -11,6 +11,7 @@ import procedures from './modules/procedures.js'
 import departements from './Data/INSEE/departements.json'
 
 import sudocuhCommunes from './modules/exportMaps/sudocuhCommunes.js'
+import sudocuhScots from './modules/exportMaps/sudocuhScots.js'
 
 const csvParser = new AsyncParser()
 
@@ -107,6 +108,38 @@ app.get('/exports/communes/:inseeCode', async (req, res) => {
   const commune = await procedures.getCommune(req.params.inseeCode)
 
   res.status(200).send(mapValues(sudocuhCommunes, key => get(commune, key, '')))
+})
+
+app.get('/exports/communes', async (req, res) => {
+  const inseeCodes = req.body.inseeCodes
+  const communes = await procedures.getCommunes(inseeCodes)
+
+  // const mapedCommunes = communes.map((c) => {
+  //   return mapValues(sudocuhCommunes, key => get(c, key, ''))
+  // })
+
+  if (req.query.csv) {
+    const csv = await csvParser.parse(communes).promise()
+    res.status(200).send(csv)
+  } else {
+    res.status(200).send(communes)
+  }
+})
+
+app.get('/exports/scots', async (req, res) => {
+  const scots = await procedures.getScots()
+  const mapedScots = scots.map((c) => {
+    return mapValues(sudocuhScots, key => get(c, key, ''))
+  })
+
+  // console.log('mapedScots', scots)
+
+  if (req.query.csv) {
+    const csv = await csvParser.parse(mapedScots).promise()
+    res.status(200).send(csv)
+  } else {
+    res.status(200).send(mapedScots)
+  }
 })
 
 module.exports = app
