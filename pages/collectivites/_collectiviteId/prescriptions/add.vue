@@ -383,8 +383,6 @@ export default {
         // console.log('submitPrescription')
         this.loadingSave = true
 
-        console.log('submitPrescription', this.collectivite)
-
         // TODO: Add column verified or accepted sur les prescription with fill automatically if the user posting is a verified connected one.
         const prescription = {
           epci: this.isEpci ? this.collectivite : null,
@@ -403,7 +401,8 @@ export default {
           procedure_type: this.typeProcedure,
           ms_scope: this.MSScope,
           procedure_number: this.numberProcedure,
-          user_id: this.$user.id || null
+          user_id: this.$user.id || null,
+          email: this.$user?.email || this.$route.query.email
         }
 
         if (this.docType === 'link') {
