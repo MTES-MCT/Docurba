@@ -9,7 +9,7 @@ module.exports = {
   async changeName (ref, section, newName) {
     // console.log(ref, section, newName)
 
-    const { data: head } = await github(`GET /repos/UngererFabien/France-PAC/git/ref/heads/${ref}`, {
+    const { data: head } = await github(`GET /repos/{owner}/{repo}/git/ref/heads/${ref}`, {
       ref
     })
 

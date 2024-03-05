@@ -294,7 +294,7 @@ export default {
 
       const diffFiles = data.files.filter((file) => {
         const section = supSections.find((s) => {
-          return file.filename === s.path
+          return file.filename.replace('/intro.md', '') === s.path
         })
 
         return file.changes > 0 && (!section || section.parent_sha !== file.sha)
@@ -308,12 +308,12 @@ export default {
       const sectionPath = section.type === 'dir' ? `${section.path}/intro.md` : section.path
 
       const diffFile = diffFiles.find((file) => {
-        return file.filename === sectionPath && file.status === 'modified'
+        return file.filename === sectionPath && file.changes > 0
       })
 
-      const level = diffRef.includes('dept-') ? 'départemental' : 'régional'
-
       if (diffFile) {
+        const level = diffRef.includes('dept-') ? 'départemental' : (diffRef.includes('region-') ? 'régional' : 'national')
+
         section.diff = {
           path: diffFile.filename,
           ref: diffRef,
@@ -327,7 +327,7 @@ export default {
           return diffCount + this.setDiff(child, diffFiles, diffRef)
         }, 0)
 
-        return section.diffCount
+        return section.diffCount + (diffFile ? 1 : 0)
       } else {
         return diffFile ? 1 : 0
       }
@@ -357,7 +357,6 @@ export default {
       return this.findSection(section.children, path)
     },
     async saveOrder (section, orderChange) {
-      // debugger
       const sectionPath = section.path
       const parentPath = section.path.substr(0, section.path.lastIndexOf('/'))
 

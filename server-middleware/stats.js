@@ -102,7 +102,7 @@ app.get('/diff', async (req, res) => {
 
       const basehead = `main...dept-${dept.code_departement}`
 
-      const { data: diff } = await github(`GET /repos/UngererFabien/France-PAC/compare/${basehead}`, {
+      const { data: diff } = await github(`GET /repos/{owner}/{repo}/compare/${basehead}`, {
         basehead,
         per_page: 10,
         page: 1

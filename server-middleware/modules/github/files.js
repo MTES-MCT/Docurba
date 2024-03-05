@@ -5,7 +5,7 @@ async function getFileContent (path, ref, format = 'raw') {
   // console.log('Get File', format, path)
 
   try {
-    const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
+    const { data: file } = await github(`GET /repos/{owner}/{repo}/contents${encodeURIComponent(path)}?ref=${ref}`, {
       path,
       mediaType: {
         format
@@ -18,7 +18,7 @@ async function getFileContent (path, ref, format = 'raw') {
   } catch (err) {
     // If a file was saved as intro instead of intro.md we have this fail safe.
     // Need to clean all the branches to change that.
-    const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path.replace('.md', ''))}?ref=${ref}`, {
+    const { data: file } = await github(`GET /repos/{owner}/{repo}/contents${encodeURIComponent(path.replace('.md', ''))}?ref=${ref}`, {
       path,
       mediaType: {
         format
@@ -32,7 +32,7 @@ async function getFileContent (path, ref, format = 'raw') {
 }
 
 async function getFiles (path, ref, fetchContent = false) {
-  let { data: repo } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
+  let { data: repo } = await github(`GET /repos/{owner}/{repo}/contents${encodeURIComponent(path)}?ref=${ref}`, {
     path
   })
 

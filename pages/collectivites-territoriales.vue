@@ -1,6 +1,6 @@
 <template>
   <v-container class="landing-container">
-    <v-row align="center" justify="center" justify-md="start" class="landing-header">
+    <v-row align="center" justify="center" justify-md="start" class="landing-header mt-11 pt-10 pb-16 mb-10">
       <v-col cols="12" sm="8" md="6">
         <h5 class="text-h5 text-bold">
           Collectivités
@@ -78,6 +78,7 @@
 
 <style scoped>
 .landing-container {
+  max-width: 1160px;
   display: flex;
   flex-direction: column;
   gap: 2.5rem;

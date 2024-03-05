@@ -75,7 +75,8 @@ export default {
         password: '',
         departement: null,
         poste: null,
-        region: null
+        region: null,
+        optin: false
       },
       error: null
     }
@@ -96,7 +97,7 @@ export default {
         axios({
           method: 'post',
           url: '/api/auth/hooksSignupStateAgent',
-          data: { ...profile, departement: this.userData.departement }
+          data: { ...profile, ...this.userData, departement: this.userData.departement }
         })
         this.$router.push({ name: 'login-ddt-explain' })
       } catch (error) {

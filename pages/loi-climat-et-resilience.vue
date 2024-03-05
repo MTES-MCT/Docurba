@@ -1,16 +1,30 @@
 <template>
   <v-container class="landing-container">
     <header class="hero-section">
-      <h1 class="text-center">
-        Loi Climat & Résilience
-      </h1>
-      <p>Faciliter son intégration dans vos documents d’urbanisme avec Docurba</p>
+      <div class="text-center">
+        <h1 class="text-center pb-4">
+          Loi Climat & Résilience
+        </h1>
+        <h3 class="text-h5">
+          Faciliter son intégration dans vos documents d’urbanisme avec Docurba
+        </h3>
+      </div>
 
       <div class="search">
         <p>Pour commencer, accédez aux ressources de votre territoire :</p>
         <LandingSearchForm />
       </div>
     </header>
+    <v-row justify="center" class="mt-16 mb-6">
+      <v-col cols="auto" class="text-center">
+        <h2 class="text-h2 pb-4">
+          Un accompagnement à chaque étape
+        </h2>
+        <p class="simple-text">
+          Docurba centralise les ressources nécessaires à chaque étape de vos procédures d’urbanisme pour plus de rapidité, une meilleure conformité, et une visibilité en temps réel.
+        </p>
+      </v-col>
+    </v-row>
     <v-row align="center" justify="center" justify-md="start" class="landing-header">
       <v-col cols="12" sm="8" md="6">
         <h5 class="text-h5 text-bold">
@@ -117,6 +131,7 @@ h1 {
 }
 
 .landing-container {
+  max-width: 1160px;
   display: flex;
   flex-direction: column;
   gap: 2.5rem;
@@ -138,5 +153,9 @@ h1 {
   height: auto;
   max-height: 628px;
   max-width: 50%;
+}
+
+.simple-text {
+  max-width: 760px;
 }
 </style>

@@ -22,12 +22,12 @@ app.post('/projects/:parentRef', async (req, res) => {
   const { parentRef } = req.params
   const { userId, projectId } = req.body
 
-  const { data: parentBranch } = await github(`GET /repos/UngererFabien/France-PAC/git/ref/heads/${parentRef}`, {
+  const { data: parentBranch } = await github(`GET /repos/{owner}/{repo}/git/ref/heads/${parentRef}`, {
     ref: parentRef
   })
 
   try {
-    const newProjectBranch = await github('POST /repos/UngererFabien/France-PAC/git/refs', {
+    const newProjectBranch = await github('POST /repos/{owner}/{repo}/git/refs', {
       ref: `refs/heads/projet-${projectId}`,
       sha: parentBranch.object.sha
     })
@@ -78,7 +78,7 @@ app.post('/:ref', async (req, res) => {
 
   // We assign the branch and commiter manually to make sure it cannot be overide in commit.
   // Someone miss using a userId should not be able to modify anithing else than what this userId is allowed.
-  const commitRes = await github(`PUT /repos/UngererFabien/France-PAC/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
+  const commitRes = await github(`PUT /repos/{owner}/{repo}/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
     branch: ref,
     committer: {
       name: 'Fabien', // allowedRole.user_email.replace(/@(.*)/, ''),
@@ -94,7 +94,7 @@ app.delete('/:ref', async (req, res) => {
   const { ref } = req.params
   const { userId, commit } = req.body
 
-  const commitRes = await github(`DELETE /repos/UngererFabien/France-PAC/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
+  const commitRes = await github(`DELETE /repos/{owner}/{repo}/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
     branch: ref,
     committer: {
       name: 'Fabien', // allowedRole.user_email.replace(/@(.*)/, ''),
@@ -122,12 +122,7 @@ app.get('/tree/:ref', async (req, res) => {
     ])
 
     if (ghostRef) {
-      // TODO : temporary for issue #378, remove after script to merge Cadre juridique section
-      const filteredGhostRepo = ghostRepo.filter(section =>
-        section.path !== 'PAC/Cadre-juridique-et-grands-principes-de-la-planification' &&
-        section.path !== 'PAC/Cadre juridique et grands principes de la planification')
-
-      addGhostSections(repo, filteredGhostRepo)
+      addGhostSections(repo, ghostRepo)
     }
 
     res.status(200).send(repo)
@@ -178,7 +173,7 @@ app.get('/compare', async (req, res) => {
     const { basehead } = req.query
 
     // https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits
-    const { data } = await github(`GET /repos/UngererFabien/France-PAC/compare/${basehead}`, {
+    const { data } = await github(`GET /repos/{owner}/{repo}/compare/${basehead}`, {
       basehead,
       per_page: 10,
       page: 1

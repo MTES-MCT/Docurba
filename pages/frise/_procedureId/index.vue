@@ -22,7 +22,7 @@
         <v-btn v-if="$user?.profile?.side === 'etat' && !procedure.secondary_procedure_of" color="primary" class="mr-2" outlined @click="addSubProcedure">
           Ajouter une procédure secondaire
         </v-btn>
-        <v-btn v-if="$user?.id" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+        <v-btn v-if="$user?.id && isAdmin" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
           Ajouter un événement
         </v-btn>
         <v-menu v-if="$user?.profile?.side === 'etat'">
@@ -74,10 +74,9 @@
           <v-container>
             <v-row>
               <v-col cols="9">
-                <FriseEventCard v-if="$user?.id && recommendedEvent" :event="recommendedEvent" suggestion @addSuggestedEvent="addSuggestedEvent" />
+                <FriseEventCard v-if="$user?.id && recommendedEvent && isAdmin" :event="recommendedEvent" suggestion @addSuggestedEvent="addSuggestedEvent" />
                 <template v-for="event in enrichedEvents">
                   <FriseEventCard
-                    v-if="event.visibility === 'public' || ($user.id && event.visibility === 'private')"
                     :id="`event-${event.id}`"
                     :key="event.id"
                     :event="event"
@@ -99,7 +98,7 @@
                           color="grey darken-1"
                           v-bind="attrs"
                           v-on="on"
-                          @click="scrollToStructurant(eventStructurant.type)"
+                          @click="scrollToStructurant(eventStructurant.id)"
                         >
                           <v-icon color="grey darken-2" class="mr-2">
                             {{ icons.mdiBookmark }}
@@ -151,7 +150,6 @@
 import axios from 'axios'
 import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical } from '@mdi/js'
 
-import slugify from 'slugify'
 import PluEvents from '@/assets/data/events/PLU_events.json'
 import ScotEvents from '@/assets/data/events/SCOT_events.json'
 import ccEvents from '@/assets/data/events/CC_events.json'
@@ -175,6 +173,13 @@ export default
     }
   },
   computed: {
+    isAdmin () {
+      if (!this.$user.id) { return false }
+
+      return this.$user.profile?.side === 'etat' ||
+        (this.$user.profile?.collectivite_id === this.collectivite.code ||
+        this.$user.profile?.collectivite_id === this.collectivite.intercommunaliteCode)
+    },
     internalDocType () {
       let currDocType = this.procedure.doc_type
       if (currDocType.match(/i|H|M/)) {
@@ -199,10 +204,13 @@ export default
       return this.events.map((event) => {
         const ev = this.documentEvents.find(x => x.name === event.type)
         return { ...event, structurant: !!ev?.structurant }
+      }).filter((event) => {
+        return event.visibility === 'public' || this.isAdmin ||
+          (event.from_sudocuh && event.structurant)
       })
     },
     attachments () {
-      return this.events.map(e => e.attachements).flat()
+      return this.enrichedEvents.map(e => e.attachements).flat()
     },
     backToCollectivite () {
       if (this.$user.id && this.$user.profile && this.$user.profile.side === 'etat') {
@@ -267,9 +275,10 @@ export default
     addSubProcedure () {
       this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectiviteId}/procedure/add?secondary_id=${this.$route.params.procedureId}`)
     },
-    scrollToStructurant (clickedEvent) {
-      if (clickedEvent) {
-        this.$vuetify.goTo(`#${slugify(clickedEvent, { remove: /[*+~.()'"!:@]/g })}`)
+    scrollToStructurant (eventId) {
+      if (eventId) {
+        // The event- is here to prevent errors since ids should start with a letter: https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id
+        this.$vuetify.goTo(`#event-${eventId}`)
       }
     },
     addSuggestedEvent (eventName) {

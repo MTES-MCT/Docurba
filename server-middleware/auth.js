@@ -2,7 +2,8 @@
 const express = require('express')
 const app = express()
 app.use(express.json())
-const SibApiV3Sdk = require('sib-api-v3-sdk')
+
+const sibApi = require('./modules/sibApi.js')
 
 const supabase = require('./modules/supabase.js')
 
@@ -111,22 +112,6 @@ app.post('/signupCollectivite', async (req, res) => {
     const { data: { user }, error: creationError } = await supabase.auth.admin.createUser({
       email: req.body.userData.email
     })
-    const defaultClient = SibApiV3Sdk.ApiClient.instance
-    const apiKey = defaultClient.authentications['api-key']
-    apiKey.apiKey = process.env.BREVO_API_KEY
-
-    const apiInstance = new SibApiV3Sdk.ContactsApi()
-    const createContact = new SibApiV3Sdk.CreateContact()
-
-    createContact.email = req.body.userData.email
-    createContact.listIds = [27]
-    createContact.attributes = { NEWUSER_OPTIN: req.body.userData.optin }
-
-    apiInstance.createContact(createContact).then(function (data) {
-      console.log('API called successfully. Returned data: ' + JSON.stringify(data))
-    }, function (error) {
-      console.error(error)
-    })
 
     console.log('user created in signup', user)
 
@@ -139,12 +124,29 @@ app.post('/signupCollectivite', async (req, res) => {
       user_id: user.id
     }).select()
 
-    if (errorInsertProfile) { throw errorInsertProfile }
+    if (errorInsertProfile) {
+      // console.log('Error in profile creation', errorInsertProfile)
+      throw errorInsertProfile
+    }
+
+    const profile = insertedProfile[0]
+
+    const listMap = {
+      be: 21,
+      autre: 34,
+      employe_mairie: 22,
+      elu: 22,
+      agence_urba: 21
+    }
+
+    sibApi.optinNewsLetter(req.body.userData.email, req.body.userData.optin, [
+      listMap[profile.poste]
+    ])
 
     // Send email to connect
     await magicLinkSignIn({
       email: req.body.userData.email,
-      redirectBasePath: req.body.redirectTo
+      redirectBasePath: req.body.redirectTo + `/collectivites/${profile.collectivite_id}?isEpci=${profile.collectivite_id.length > 5}`
     })
 
     slack.requestCollectiviteAccess(insertedProfile[0])
@@ -171,6 +173,8 @@ app.post('/signupCollectivite', async (req, res) => {
 
 app.post('/hooksSignupStateAgent', async (req, res) => {
   await slack.requestStateAgentAccess(req.body)
+
+  sibApi.optinNewsLetter(req.body.email, req.body.optin, [33])
   // Push in the good pipedrive
   // TODO: Attention au changement de nom dept / departement dans Signin() (pipedrive.js) & dans la fonction updateUserRole() (admin.js)
   // Verifier le validation Slack par la suite

@@ -7,7 +7,7 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
   Vue.filter('docType', function (procedure) {
     if (procedure.doc_type === 'PLU') {
       let docType = procedure.doc_type
-      if (procedure.initial_perimetre.length > 1) { docType += 'i' }
+      if (procedure.current_perimetre.length > 1) { docType += 'i' }
       if (procedure.is_sectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')) {
         docType += 'S'
       }
@@ -160,7 +160,7 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
         if (collectiviteId.length > 5) {
           query = query.eq('collectivite_porteuse_id', collectiviteId)
         } else {
-          query = query.contains('current_perimetre', `[{ "inseeCode": "${collectiviteId}" }]`)
+          query = query.contains('initial_perimetre', `[{ "inseeCode": "${collectiviteId}" }]`)
         }
 
         if (schemas && !plans) {
