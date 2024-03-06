@@ -16,7 +16,7 @@
             </li>
             <li>
               <nuxt-link to="/accessibilite">
-                Accessibilité
+                Accessibilité: non conforme
               </nuxt-link>
             </li>
             <li>

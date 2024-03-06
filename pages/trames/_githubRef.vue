@@ -344,17 +344,14 @@ export default {
       }).eq('id', this.project.id)
     },
     findSection (sections, path) {
-      const section = sections.find(s => path.startsWith(s.path))
+      const flatSections = this.getFlatSections(sections)
+      const section = flatSections.find(s => s.path === path)
 
       if (!section) {
         throw new Error('Section not found')
       }
 
-      if (section.path === path) {
-        return section
-      }
-
-      return this.findSection(section.children, path)
+      return section
     },
     async saveOrder (section, orderChange) {
       const sectionPath = section.path

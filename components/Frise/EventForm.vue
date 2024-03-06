@@ -2,80 +2,84 @@
   <v-row v-if="!loading" class="mb-8">
     <v-col cols="12">
       <v-card outlined class="pa-4">
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <FriseEventSelector v-model="event.type" :procedure="procedure" />
-            </v-col>
-            <v-col cols="12">
-              <VTextDatePicker v-model="event.date_iso" label="Date de l'évènement" />
-            </v-col>
-            <v-col cols="12">
-              <v-textarea
-                v-model="event.description"
-                label="Description"
-                filled
-                hide-details=""
-                placeholder="Vous pouvez inscrire ici une description qui sera visible par tous"
-              />
-            </v-col>
-            <v-col cols="12">
-              <v-select
-                v-model="event.visibility"
-                persistent-hint
-                hint="Les événements privés sont visibles uniquement par la DDT et la collectivité en charge de la procédure, ainsi que par le bureau d’études le cas échéant."
-                label="Visibilité de l'évènement"
-                filled
-                :items="[{value: 'public', text: 'Publique'}, {value: 'private', text: 'Privé'}]"
-              />
-            </v-col>
-            <v-col cols="12">
-              <FriseEventAttachementsCard v-model="attachements" />
-            </v-col>
-          </v-row>
+        <validation-observer ref="observerEventForm" v-slot="{ handleSubmit }">
+          <form @submit.prevent="handleSubmit(saveEvent)">
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <FriseEventSelector v-model="event.type" :procedure="procedure" />
+                </v-col>
+                <v-col cols="12">
+                  <VTextDatePicker v-model="event.date_iso" label="Date de l'évènement" />
+                </v-col>
+                <v-col cols="12">
+                  <v-textarea
+                    v-model="event.description"
+                    label="Description"
+                    filled
+                    hide-details=""
+                    placeholder="Vous pouvez inscrire ici une description qui sera visible par tous"
+                  />
+                </v-col>
+                <v-col cols="12">
+                  <v-select
+                    v-model="event.visibility"
+                    persistent-hint
+                    hint="Les événements privés sont visibles uniquement par la DDT et la collectivité en charge de la procédure, ainsi que par le bureau d’études le cas échéant."
+                    label="Visibilité de l'évènement"
+                    filled
+                    :items="[{value: 'public', text: 'Publique'}, {value: 'private', text: 'Privé'}]"
+                  />
+                </v-col>
+                <v-col cols="12">
+                  <FriseEventAttachementsCard v-model="attachements" />
+                </v-col>
+              </v-row>
 
-          <v-col cols="12">
-            <v-row>
-              <v-spacer />
-              <v-col cols="auto">
-                <v-btn color="primary" outlined tile :to="`/frise/${procedure.id}`">
-                  Annuler
-                </v-btn>
-              </v-col>
-              <v-col v-if="eventId" cols="auto">
-                <v-dialog v-model="deleteModal" max-width="320px">
-                  <template #activator="{on}">
-                    <v-btn tile outlined color="error" v-on="on">
-                      Supprimer
+              <v-col cols="12">
+                <v-row>
+                  <v-spacer />
+                  <v-col cols="auto">
+                    <v-btn color="primary" outlined tile :to="`/frise/${procedure.id}`">
+                      Annuler
                     </v-btn>
-                  </template>
-                  <v-card>
-                    <v-card-title>
-                      Confirmer la suppression ?
-                    </v-card-title>
-                    <v-card-text>
-                      Cette action est définitive.
-                    </v-card-text>
-                    <v-card-actions>
-                      <v-spacer />
-                      <v-btn color="primary" outlined @click="deleteModal = false">
-                        Annuler
-                      </v-btn>
-                      <v-btn color="error" @click="deleteEvent">
-                        <v-icon>{{ icons.mdiTrashCan }}</v-icon> Supprimer
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
+                  </v-col>
+                  <v-col v-if="eventId" cols="auto">
+                    <v-dialog v-model="deleteModal" max-width="320px">
+                      <template #activator="{on}">
+                        <v-btn tile outlined color="error" v-on="on">
+                          Supprimer
+                        </v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>
+                          Confirmer la suppression ?
+                        </v-card-title>
+                        <v-card-text>
+                          Cette action est définitive.
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-spacer />
+                          <v-btn color="primary" outlined @click="deleteModal = false">
+                            Annuler
+                          </v-btn>
+                          <v-btn color="error" @click="deleteEvent">
+                            <v-icon>{{ icons.mdiTrashCan }}</v-icon> Supprimer
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                  </v-col>
+                  <v-col cols="auto">
+                    <v-btn type="submit" :loading="saving" color="primary" tile>
+                      {{ eventId ? 'Modifier' : 'Créer' }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
               </v-col>
-              <v-col cols="auto">
-                <v-btn :loading="saving" color="primary" tile @click="saveEvent">
-                  {{ eventId ? 'Modifier' : 'Créer' }}
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-container>
+            </v-container>
+          </form>
+        </validation-observer>
       </v-card>
     </v-col>
   </v-row>
@@ -85,8 +89,9 @@
 <script>
 import axios from 'axios'
 import { mdiTrashCan } from '@mdi/js'
-
+import FormInput from '@/mixins/FormInput.js'
 export default {
+  mixins: [FormInput],
   props: {
     typeDu: {
       type: String,

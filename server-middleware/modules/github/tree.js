@@ -190,7 +190,7 @@ module.exports = {
       })
     }
 
-    return this.findTree(root, path.split('/')).children
+    return this.findTree(root, path.split('/')).children ?? []
   },
   async getHistories (ref, paths) {
     function hash (string) {

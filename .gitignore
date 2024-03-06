@@ -96,6 +96,7 @@ scripts/
 # Deploy file with env variables
 deploy.yaml
 deploy_dev.yaml
+deploy_pre.yaml
 dispatch.yaml
 
 database/pg_secret_config.json
