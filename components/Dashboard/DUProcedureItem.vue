@@ -60,7 +60,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="pb-0 d-flex">
-        <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
+        <DashboardDUModalPerimetre v-if="procedure.initial_perimetre" :towns="procedure.initial_perimetre" />
         <nuxt-link :to="`/frise/${procedure.id}`">
           <span class="primary--text text-decoration-underline mr-4">
             Feuille de route partagée
@@ -129,7 +129,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="d-flex align-center justify-end pb-0">
-        <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
+        <DashboardDUModalPerimetre v-if="procedure.initial_perimetre" :towns="procedure.initial_perimetre" />
         <v-spacer />
         <v-btn text color="primary" :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <v-icon small color="primary" class="mr-2">

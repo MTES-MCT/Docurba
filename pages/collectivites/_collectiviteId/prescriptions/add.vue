@@ -386,7 +386,7 @@ export default {
         // TODO: Add column verified or accepted sur les prescription with fill automatically if the user posting is a verified connected one.
         const prescription = {
           epci: this.isEpci ? this.collectivite : null,
-          towns: this.isEpci ? this.collectivite.communes.map(e => e.code) : [this.collectivite.code],
+          towns: this.isEpci ? this.collectivite.membres.map(e => e.code) : [this.collectivite.code],
           attachments: null,
           type: this.docType,
           acte_type: this.acteType,
@@ -401,13 +401,16 @@ export default {
           procedure_type: this.typeProcedure,
           ms_scope: this.MSScope,
           procedure_number: this.numberProcedure,
-          user_id: this.$user.id || null
+          user_id: this.$user.id || null,
+          email: this.$user?.email || this.$route.query.email
         }
+
         if (this.docType === 'link') {
           prescription.link_url = this.link
         } else if (this.docType === 'attachments') {
           prescription.attachments = await this.uploadFiles()
         }
+
         await this.$supabase.from('prescriptions').insert([prescription])
         this.loadingSave = false
 
@@ -418,6 +421,7 @@ export default {
           isEpci: this.isEpci,
           attachements: prescription.attachments || [{ name: 'lien', url: prescription.link_url }]
         }
+
         await axios({
           url: '/api/slack/notify/admin/acte',
           method: 'post',
@@ -450,7 +454,7 @@ export default {
         this.$vuetify.goTo('error--text:first-of-type')
         this.loadingSave = false
         // eslint-disable-next-line no-console
-        console.log(error)
+        console.log('submitPrescription error', error)
       }
     }
   }
