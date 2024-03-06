@@ -197,9 +197,10 @@
                 </v-col>
               </v-row>
               <v-row v-if="section.children && section.children.length">
+                <!-- use path without '.md' extension as key because we don't wan't to re-render the section card when a file section becomes a directory -->
                 <v-col
                   v-for="child in section.children"
-                  :key="child.path"
+                  :key="child.path.replace('.md', '')"
                   cols="12"
                 >
                   <PACSectionCard
