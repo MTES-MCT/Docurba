@@ -504,11 +504,17 @@ export default {
       }
     },
     async fetchChildrenHistories () {
+      const paths = this.section.children
+        .filter(child => !child.ghost)
+        .map(child => child.type === 'file' ? child.path : (child.path + '/intro.md'))
+
+      if (!paths.length) {
+        return
+      }
+
       const { data: histories } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
         params: {
-          paths: this.section.children
-            .filter(child => !child.ghost)
-            .map(child => child.type === 'file' ? child.path : (child.path + '/intro.md'))
+          paths
         }
       })
 
@@ -686,11 +692,13 @@ export default {
     },
     async fetchDiff () {
       try {
+        const type = this.section.parentType ?? this.section.type
+
         const { data: diffSectionContent } = await axios({
           method: 'get',
           url: '/api/trames/file',
           params: {
-            path: this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path,
+            path: type === 'dir' ? `${this.section.path}/intro.md` : this.section.path,
             ref: this.headRef
           }
         })
