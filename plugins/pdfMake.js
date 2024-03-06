@@ -48,12 +48,12 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         styles: {
           title: { fontSize: 40, alignment: 'center' },
           tocTitle: { fontSize: 18 },
-          h1: { fontSize: 24, alignment: 'left' },
-          h2: { fontSize: 20, alignment: 'left' },
-          h3: { fontSize: 18, alignment: 'left' },
-          h4: { fontSize: 16, alignment: 'left' },
-          h5: { fontSize: 14, alignment: 'left' },
-          h6: { fontSize: 12, alignment: 'left' },
+          h1: { fontSize: 24, alignment: 'left', margin: [0, 12, 0, 0] },
+          h2: { fontSize: 20, alignment: 'left', margin: [0, 12, 0, 0] },
+          h3: { fontSize: 18, alignment: 'left', margin: [0, 12, 0, 0] },
+          h4: { fontSize: 16, alignment: 'left', margin: [0, 12, 0, 0] },
+          h5: { fontSize: 14, alignment: 'left', margin: [0, 12, 0, 0] },
+          h6: { fontSize: 12, alignment: 'left', margin: [0, 12, 0, 0] },
           a: { decoration: 'underline', color: '#000091' },
           p: { fontSize: 10, alignment: 'justify', margin: [0, 10, 0, 0] },
           list: { margin: [0, 10, 0, 0] },
@@ -191,10 +191,10 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             text: project.name,
             style: 'title',
             margin: [0, 200, 0, 0]
+          },
+          {
+            toc: { title: { text: 'SOMMAIRE' } }
           }
-          // {
-          //   toc: { title: { text: project.name, style: 'h1' } }
-          // }
         ],
         images: {
           logo: `${baseUrl}/images/Republique_Francaise.jpg`
@@ -245,17 +245,11 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         } else if (element.tag.includes('h')) {
           const text = extractText(element.children)
 
-          const isToc = ['h1', 'h2', 'h3'].includes(element.tag)
-
           if (text.length) {
             pdfContent.content.push({
               text,
               style: element.tag,
-              tocItem: isToc ? element.tocId : false,
-              tocMargin: element.tocMargin,
-              tocStyle: 'a',
-              headlineLevel,
-              margin: [0, 10, 0, 0]
+              headlineLevel
             })
           }
         } else if (element.tag === 'ul' || element.tag === 'ol') {
@@ -292,10 +286,8 @@ export default ({ $md, $isDev, $supabase }, inject) => {
       const elementsTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'img']
       // const textTags = ['strong', 'u', 'a']
 
-      const tocs = []
-
-      function pushElements (body, tocId, tocMargin) {
-        if (body.children) {
+      function pushElements (body) {
+        if (body?.children) {
           let text = { tag: 'p', children: [] }
 
           body.children.forEach((child) => {
@@ -305,7 +297,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
                   elements.push(text)
                   text = { tag: 'p', children: [] }
                 }
-                elements.push(Object.assign(child, { tocId, tocMargin }))
+                elements.push(child)
               } else {
                 text.children.push(child)
               }
@@ -320,38 +312,47 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         }
       }
 
-      function findBodies (children, level) {
-        children.forEach((child, index) => {
-          tocs.push({
-            toc: {
-              id: `${level}-${child.path}`,
-              title: {
-                text: '',
-                style: 'tocTitle'
+      function findBodies (children, level, tocId) {
+        children.forEach((child) => {
+          elements.push({
+            tag: `h${level + 2}`,
+            children: [
+              {
+                text: child.name,
+                tocItem: true,
+                tocMargin: [16 * level, 0, 0, 0],
+                tocStyle: 'a'
               }
-            }
+            ]
           })
 
-          if (child.body) { pushElements(child.body, `${level}-${child.path}`, [15 * level, 0, 0, 0]) }
-          if (child.children) { findBodies(child.children, level + 1) }
+          if (child.body) { pushElements(child.body) }
+          if (child.children) { findBodies(child.children, level + 1, tocId) }
         })
       }
 
-      roots.forEach((root) => {
-        if (root.path !== 'PAC/Introduction') {
-          tocs.push({
-            toc: {
-              id: root.name,
-              title: {
-                text: root.name, style: 'h6'
-              }
-            }
-          })
-        }
+      const tocs = []
 
-        elements.push({ tag: 'pageBreak', children: [] })
-        pushElements(root.body, root.name)
-        findBodies(root.children, 0)
+      roots.forEach((root) => {
+        elements.push(
+          {
+            tag: 'pageBreak',
+            children: []
+          },
+          {
+            tag: 'h1',
+            children: [
+              {
+                text: root.name,
+                tocItem: true,
+                tocStyle: 'h6'
+              }
+            ]
+          }
+        )
+
+        pushElements(root.body)
+        findBodies(root.children, 0, root.name)
       })
 
       pdfContent.content.push(...tocs)
