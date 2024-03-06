@@ -159,6 +159,12 @@ export default {
 
       const { data: savedSharings } = await this.$supabase.from('projects_sharing').insert(newSharings).select()
 
+      this.$analytics({
+        category: 'pac',
+        name: 'share_project',
+        value: this.project.name
+      })
+
       axios.post('/api/projects/notify/shared', {
         sharings: newSharings,
         sharedByData: this.$user.user_metadata

@@ -1,6 +1,4 @@
-export default ({ $analytics, route }) => {
-  // console.log('analytics midleware', process.client, process.server, route.path)
-
+export default ({ $analytics, route, app }) => {
   $analytics({
     category: 'page view',
     name: process.client ? 'navigate' : 'land',

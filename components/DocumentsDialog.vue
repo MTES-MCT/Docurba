@@ -146,6 +146,12 @@ export default {
 
       const { data, error } = await this.$supabase.from('projects').insert([newProject]).select()
 
+      this.$analytics({
+        category: 'pac',
+        name: 'create_project',
+        value: this.projectData.name
+      })
+
       if (!error && data && data[0]) {
         const project = data[0]
         this.projects.push(project)

@@ -282,6 +282,13 @@ export default {
           owner_id: this.$user.id,
           testing: true
         })
+
+        this.$analytics({
+          category: 'procedures',
+          name: 'create_procedure',
+          value: (this.baseName + ' ' + this.nameComplement).trim()
+        })
+
         this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`)
       } catch (error) {
         this.error = error

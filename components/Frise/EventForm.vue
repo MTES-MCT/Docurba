@@ -83,6 +83,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { mdiTrashCan } from '@mdi/js'
 
 export default {
@@ -165,6 +166,22 @@ export default {
           const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(upsertEvent).select()
           await this.saveAttachements(savedEvents[0].id)
         }
+
+        this.$analytics({
+          category: 'frp',
+          name: this.eventId ? 'update_event' : 'create_event',
+          value: this.event.type
+        })
+
+        axios({
+          url: '/api/slack/notify/frp',
+          method: 'post',
+          data: {
+            userData: this.$user.profile,
+            eventData: upsertEvent
+          }
+        })
+
         this.saving = false
         this.$router.push(`/frise/${this.procedure.id}`)
       } catch (error) {

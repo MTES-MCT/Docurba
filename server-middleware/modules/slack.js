@@ -1,4 +1,5 @@
 const axios = require('axios')
+const { method } = require('lodash')
 
 module.exports = {
   requestDepotActe (userData) {
@@ -132,6 +133,41 @@ module.exports = {
             text: {
               type: 'mrkdwn',
               text: `- Type: ${pacData.doc_type} \n - Nom: ${pacData.name}`
+            }
+          },
+          {
+            type: 'divider'
+          }
+        ]
+      }
+    })
+  },
+  notifyFrpEvent (userData, eventData) {
+    return axios({
+      url: process.env.SLACK_EVENT_CTBE,
+      method: 'post',
+      data: {
+        text: `Nouvel event ${eventData.type}`,
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: `Nouvel event ${eventData.type}`
+            }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `- Frise: https://docurba.beta.gouv.fr/frise/${eventData.procedure_id}`
+            }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `- User: ${userData.email}, ${userData.poste}`
             }
           },
           {
