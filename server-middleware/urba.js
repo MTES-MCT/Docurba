@@ -103,6 +103,22 @@ app.get('/exports/departements/:code', async (req, res) => {
   }
 })
 
+app.get('/exports/communes', async (req, res) => {
+  const inseeCodes = req.body.inseeCodes
+  const communes = await procedures.getCommunes(inseeCodes)
+
+  if (req.query.csv) {
+    const mapedCommunes = communes.map((c) => {
+      return mapValues(sudocuhCommunes, key => get(c, key, ''))
+    })
+
+    const csv = await csvParser.parse(mapedCommunes).promise()
+    res.status(200).send(csv)
+  } else {
+    res.status(200).send(communes)
+  }
+})
+
 app.get('/exports/communes/:inseeCode', async (req, res) => {
   const commune = await procedures.getCommune(req.params.inseeCode)
 
