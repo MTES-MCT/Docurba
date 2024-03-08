@@ -1,11 +1,8 @@
+/* eslint-disable no-console */
 import { AsyncParser } from '@json2csv/node'
 
-/* eslint-disable no-console */
 import express from 'express'
 import { mapValues, get } from 'lodash'
-// import supabase from './modules/supabase.js'
-// // import sudocu from './modules/sudocu.js'
-// import sido from './modules/sido.js'
 import procedures from './modules/procedures.js'
 import departements from './Data/INSEE/departements.json'
 

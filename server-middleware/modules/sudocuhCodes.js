@@ -69,7 +69,7 @@ function getCodeComp (procedure, porteuseId) {
   } else { return '1' }
 }
 
-module.exports = {
+export default {
   getCodeEtat (planOpposable, planCurrent) {
     const code = `${codeEtaMap[getProcedureType(planOpposable)]}${codeEtaMap[getProcedureType(planCurrent)]}`
     return {

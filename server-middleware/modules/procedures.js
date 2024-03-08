@@ -71,7 +71,7 @@ function filterProcedures (procedures) {
   return { procedures: sortedProcedures, opposables, currents }
 }
 
-module.exports = {
+export default {
   getCommuneMetadata (inseeCode) {
     const commune = communes.find(c => c.code === inseeCode && c.type === 'COM')
     const communeDepartement = departements.find(d => d.code === commune.departementCode)
