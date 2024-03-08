@@ -28,7 +28,7 @@ const codeEtatsLabels = {
 }
 
 function getProcedureType (procedure) {
-  return procedure ? (procedure.doc_type_code || 'RNU') : 'RNU'
+  return procedure ? (procedure.doc_type || 'RNU') : 'RNU'
 }
 
 function getProcedureCode2 (procedure, porteuseId) {

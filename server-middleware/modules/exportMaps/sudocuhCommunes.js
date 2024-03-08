@@ -37,6 +37,7 @@ export default {
   // pc_nom_sst: '', // A priori on l'a
   // pc_cout_sst_ht: '', // A priori on l'a
   // pc_cout_sst_ttc: '', // A priori on l'a
+  pa_id: 'planOpposable.id',
   pa_num_procedure: 'planOpposable.from_sudocuh',
   pa_nb_communes: 'planOpposable.current_perimetre.length',
   pa_type_document: 'planOpposable.doc_type', //

@@ -28,7 +28,7 @@ const proceduresCategs = {
 
 function logProcedures (procedures, logName = 'logProcedures') {
   // eslint-disable-next-line no-console
-  return console.log(logName, procedures.map(p => `${p.id} ${p.doc_type_code} ${p.type} ${p.prescription?.date_iso} ${p.current_perimetre.length}`))
+  return console.log(logName, procedures.map(p => `${p.id} ${p.doc_type} ${p.type} ${p.prescription?.date_iso} ${p.current_perimetre.length}`))
 }
 
 function sortEvents (events) {
@@ -100,7 +100,7 @@ module.exports = {
       console.log('fetchProcedures error', inseeCodes[0], error)
     }
 
-    return procedures.filter(p => p.doc_type_code !== 'SD')
+    return procedures.filter(p => p.doc_type !== 'SD')
   },
   async fetchEvents (procedures) {
     const { data: events } = await supabase
@@ -154,7 +154,7 @@ module.exports = {
       procedures: scots,
       opposables: scotOpposables,
       currents: scotCurrents
-    } = filterProcedures(procedures.filter(p => p.doc_type_code === 'SCOT'))
+    } = filterProcedures(procedures.filter(p => p.doc_type === 'SCOT'))
 
     const scotOpposable = scotOpposables[0]
     const scotCurrent = scotCurrents[0]
@@ -163,7 +163,7 @@ module.exports = {
       procedures: plans,
       opposables: planOpposables,
       currents: planCurrents
-    } = filterProcedures(procedures.filter(p => p.doc_type_code !== 'SCOT'))
+    } = filterProcedures(procedures.filter(p => p.doc_type !== 'SCOT'))
 
     logProcedures(planOpposables, 'planOpposables')
     logProcedures(planCurrents, 'planCurrents')
@@ -184,7 +184,7 @@ module.exports = {
 
     const sCodes = sudocuhCodes.getAllCodes(planOpposable, planCurrent, collectivitePorteuse)
 
-    const currentsDocTypes = uniq(planCurrents.map(p => p.doc_type_code)).join(', ')
+    const currentsDocTypes = uniq(planCurrents.map(p => p.doc_type)).join(', ')
 
     return Object.assign({
       scots,
