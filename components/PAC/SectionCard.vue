@@ -7,14 +7,14 @@
             <v-expansion-panel-header :color="backgroundColor" :style="{ height: '60px' }">
               <v-row align="center" dense>
                 <v-col v-if="project.id && editable" cols="auto">
-                  <v-checkbox
-                    v-model="isSelected"
+                  <v-simple-checkbox
+                    :value="isSelected"
                     :disabled="section.ghost"
                     :color="isVisible ? 'primary' : 'g600'"
                     hide-details
                     class="mt-0"
+                    @input="selectionChange"
                     @click.prevent.stop
-                    @change="selectionChange"
                   />
                 </v-col>
                 <v-col cols="" class="p-relative">
@@ -321,9 +321,6 @@ export default {
     }
   },
   data () {
-    const selectedPaths = this.project.PAC || []
-    // const sectionPath = this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path
-
     return {
       icons: {
         mdiPlus,
@@ -336,7 +333,6 @@ export default {
         mdiLinkVariant
       },
       deleteDialog: false,
-      isSelected: selectedPaths.includes(this.section.path),
       sectionName: this.section.name,
       sectionText: '',
       // sectionContent: { body: null },
@@ -367,6 +363,10 @@ export default {
       }
 
       return headRef
+    },
+    isSelected () {
+      const selectedPaths = this.project.PAC || []
+      return selectedPaths.includes(this.section.path)
     },
     isVisible () {
       return this.isSelected && this.parentSelected
@@ -635,8 +635,23 @@ export default {
 
       this.$emit('changeOrder', this.section, 0)
     },
-    updateSectionType (introFile) {
+    async updateSectionType (introFile) {
       if (this.section.type === 'file') {
+        const newPath = this.section.path.replace('.md', '')
+
+        // if parent was a file and its order was saved, we remove the ".md" to keep the same order
+        await this.$supabase.from('pac_sections').update({ path: newPath }).eq('ref', this.gitRef).eq('path', `${newPath}.md`)
+
+        if (this.project?.id) {
+          const selectedParentPathIndex = this.project.PAC.findIndex(p => p === `${newPath}.md`)
+          if (selectedParentPathIndex > -1) {
+            // if parent was a file and was selected, we remove the ".md" to keep it selected as a dir
+            // eslint-disable-next-line vue/no-mutating-props
+            this.project.PAC[selectedParentPathIndex] = newPath
+            await this.$supabase.from('projects').update({ PAC: this.project.PAC }).eq('id', this.project?.id)
+          }
+        }
+
         // eslint-disable-next-line vue/no-mutating-props
         this.section.type = 'dir'
         // eslint-disable-next-line vue/no-mutating-props
@@ -684,7 +699,7 @@ export default {
     selectionChange () {
       this.$emit('selectionChange', {
         path: this.section.path,
-        selected: this.isSelected
+        selected: !this.isSelected
       })
     },
     cancelEditing () {
