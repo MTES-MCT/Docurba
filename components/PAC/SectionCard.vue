@@ -149,7 +149,7 @@
             <v-expansion-panel-content class="rounded">
               <v-row v-if="editEnabled">
                 <v-col :cols="(diff.visible && diff.body) ? 6 : 12">
-                  <VTiptap v-if="editEnabled" v-model="sectionMarkdown" class="mt-6">
+                  <VTiptap v-if="editEnabled" v-model="sectionMarkdown" :depth="depth" class="mt-6">
                     <PACSectionsFileAttachmentsDialog
                       :section="section"
                       :git-ref="gitRef"
@@ -367,6 +367,9 @@ export default {
     isSelected () {
       const selectedPaths = this.project.PAC || []
       return selectedPaths.includes(this.section.path)
+    },
+    depth () {
+      return [...(this.section.path.matchAll('/'))].length - 1
     },
     isVisible () {
       return this.isSelected && this.parentSelected
@@ -775,8 +778,32 @@ export default {
   white-space: pre;
 }
 
-.pac-section-content h1, .pac-section-content h2, .pac-section-content h3, .pac-section-content h4, .pac-section-content p {
+.pac-section-content h1, .pac-section-content h2, .pac-section-content h3, .pac-section-content h4, .pac-section-content h5, .pac-section-content h6, .pac-section-content p {
   margin-bottom: 14px;
+}
+
+.pac-section-content h1 {
+  font-size: 28px;
+}
+
+.pac-section-content h2 {
+  font-size: 24px;
+}
+
+.pac-section-content h3 {
+  font-size: 20px;
+}
+
+.pac-section-content h4 {
+  font-size: 18px;
+}
+
+.pac-section-content h5 {
+  font-size: 16px;
+}
+
+.pac-section-content h6 {
+  font-size: 14px;
 }
 
 .ghost-count-badge .v-badge__badge {
