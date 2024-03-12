@@ -228,7 +228,7 @@ export default
       if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
       const lastEventType = filteredDocumentEvents.find(event => this.events[0].type === event.name)
       if (!lastEventType) { return filteredDocumentEvents[0] }
-      return filteredDocumentEvents.find(e => e.order === lastEventType.order - 1)
+      return filteredDocumentEvents.find(e => e.order === lastEventType.order + 1)
     },
     internalProcedureType () {
       const isIntercommunal = this.procedure.current_perimetre.length > 1
