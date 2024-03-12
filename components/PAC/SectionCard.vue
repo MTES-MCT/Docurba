@@ -197,9 +197,10 @@
                 </v-col>
               </v-row>
               <v-row v-if="section.children && section.children.length">
+                <!-- use path without '.md' extension as key because we don't wan't to re-render the section card when a file section becomes a directory -->
                 <v-col
                   v-for="child in section.children"
-                  :key="child.path"
+                  :key="child.path.replace('.md', '')"
                   cols="12"
                 >
                   <PACSectionCard
@@ -504,11 +505,17 @@ export default {
       }
     },
     async fetchChildrenHistories () {
+      const paths = this.section.children
+        .filter(child => !child.ghost)
+        .map(child => child.type === 'file' ? child.path : (child.path + '/intro.md'))
+
+      if (!paths.length) {
+        return
+      }
+
       const { data: histories } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
         params: {
-          paths: this.section.children
-            .filter(child => !child.ghost)
-            .map(child => child.type === 'file' ? child.path : (child.path + '/intro.md'))
+          paths
         }
       })
 
@@ -686,11 +693,13 @@ export default {
     },
     async fetchDiff () {
       try {
+        const type = this.section.parentType ?? this.section.type
+
         const { data: diffSectionContent } = await axios({
           method: 'get',
           url: '/api/trames/file',
           params: {
-            path: this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path,
+            path: type === 'dir' ? `${this.section.path}/intro.md` : this.section.path,
             ref: this.headRef
           }
         })

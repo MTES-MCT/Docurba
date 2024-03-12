@@ -81,6 +81,7 @@ function addGhostSections (sections, ghostSections) {
 
     if (existingSection) {
       existingSection.inParentProject = true
+      existingSection.parentType = ghostSection.type
 
       if (ghostSection.children?.length) {
         existingSection.children ??= []
