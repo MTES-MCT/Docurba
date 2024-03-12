@@ -1,7 +1,5 @@
 import Vue from 'vue'
-import axios from 'axios'
 import { groupBy } from 'lodash'
-import regions from '@/assets/data/Regions.json'
 
 export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => {
   Vue.filter('docType', function (procedure) {
@@ -19,13 +17,6 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
   })
 
   inject('urbanisator', {
-    async getCollectivite (code) {
-      if (code.length > 5) {
-        return (await axios({ url: `/api/geo/intercommunalites/${code}`, method: 'get' })).data
-      } else {
-        return (await axios({ url: `/api/geo/communes/${code}`, method: 'get' })).data
-      }
-    },
     async getCommuneProcedures (inseeCode) {
       const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*').eq('collectivite_code', inseeCode)
       const { data: procedures } = await $supabase.from('procedures_duplicate')
