@@ -32,13 +32,13 @@ export default (_, inject) => {
     .use(remarkParse)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
-    .use(rehypeSanitize)
+    .use(rehypeSanitize, defaultSchema)
     .use(rehypeMinifyWhitespace)
     .use(jsonCompiler)
 
   const htmlProcessor = unified()
     .use(rehypeParse)
-    .use(rehypeSanitize)
+    .use(rehypeSanitize, defaultSchema)
     .use(rehypeMinifyWhitespace)
     .use(jsonCompiler)
 

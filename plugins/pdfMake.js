@@ -234,56 +234,71 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         })
       }
 
-      function addElementToContent (element) {
+      function transformElementToContent (element) {
         const headlineLevel = element.headlineLevel
 
         if (!element.tag) {
-          pdfContent.content.push({
+          return {
             text: element.value || element,
             headlineLevel
-          })
-        } else if (/^h[1-6]$/.test(element.tag)) {
+          }
+        }
+
+        if (/^h[1-6]$/.test(element.tag)) {
           const text = extractText(element.children)
 
           if (text.length) {
-            pdfContent.content.push({
+            return {
               text,
               style: element.tag,
               headlineLevel
-            })
+            }
           }
-        } else if (element.tag === 'ul' || element.tag === 'ol') {
-          pdfContent.content.push({
+        }
+
+        if (element.tag === 'ul' || element.tag === 'ol') {
+          return {
             [element.tag]: extractText(element.children),
             headlineLevel,
             style: 'list'
-          })
-        } else if (element.tag === 'img') {
+          }
+        }
+
+        if (element.tag === 'img') {
           if (element.props.src) {
             if (element.props.src === IMAGE_SRC_TO_REPLACE) {
               // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
               element.props.src = IMAGE_SRC_REPLACEMENT
             }
 
-            pdfContent.content.push({
+            pdfContent.images[`SRC:${element.props.src}`] = element.props.src.includes('http') ? element.props.src : `${baseUrl}${element.props.src}`
+            return {
               image: `SRC:${element.props.src}`,
               width: 450,
               headlineLevel
-            })
-
-            pdfContent.images[`SRC:${element.props.src}`] = element.props.src.includes('http') ? element.props.src : `${baseUrl}${element.props.src}`
+            }
           }
-        } else {
-          pdfContent.content.push({
-            stack: extractText(element.children),
-            style: element.tag,
-            headlineLevel
-          })
+        }
+
+        if (element.tag === 'div' && element.props.className.includes('column-block')) {
+          return {
+            columns: element.children
+              .filter(div => div.props.className === 'column')
+              .map(col => ({
+                stack: col.children.map(colChild => transformElementToContent(colChild))
+              }))
+          }
+        }
+
+        return {
+          stack: extractText(element.children),
+          style: element.tag,
+          headlineLevel
         }
       }
 
       const elements = []
-      const elementsTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'img']
+      const elementsTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'img', 'div']
       // const textTags = ['strong', 'u', 'a']
 
       function pushElements (body, depth) {
@@ -351,7 +366,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         if (element.tag === 'pageBreak') {
           elements[index + 1].headlineLevel = 1
         }
-        addElementToContent(element)
+        pdfContent.content.push(transformElementToContent(element))
       })
 
       await this.pdfFromContent(pdfContent, `${project.doc_type} - ${project.name}`)

@@ -70,13 +70,42 @@
     >
       <v-icon>{{ icons.mdiFormatListNumbered }}</v-icon>
     </v-btn>
+    <v-btn
+      depressed
+      tile
+      icon
+      @click="
+        editor
+          .chain()
+          .focus()
+          .setColumns(2, true)
+          .run()
+      "
+    >
+      <v-icon>{{ icons.mdiFormatColumns }}</v-icon>
+    </v-btn>
+    <v-btn
+      depressed
+      tile
+      icon
+      @click="
+        editor
+          .chain()
+          .focus()
+          .unsetColumns()
+          .run()
+      "
+    >
+      <v-icon>{{ icons.mdiFormatAlignJustify }}</v-icon>
+    </v-btn>
   </v-toolbar-items>
 </template>
 
 <script>
 import {
   mdiFormatBold, mdiFormatUnderline, mdiFormatItalic,
-  mdiFormatListBulleted, mdiFormatListNumbered
+  mdiFormatListBulleted, mdiFormatListNumbered, mdiFormatColumns,
+  mdiFormatAlignJustify
 } from '@mdi/js'
 
 export default {
@@ -93,7 +122,9 @@ export default {
         mdiFormatUnderline,
         mdiFormatItalic,
         mdiFormatListBulleted,
-        mdiFormatListNumbered
+        mdiFormatListNumbered,
+        mdiFormatColumns,
+        mdiFormatAlignJustify
       }
     }
   }

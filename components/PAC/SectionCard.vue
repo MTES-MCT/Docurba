@@ -778,6 +778,15 @@ export default {
   white-space: pre;
 }
 
+.pac-section-content .column-block {
+  width: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 24px;
+  padding: 8px 0;
+}
+
 .pac-section-content h1, .pac-section-content h2, .pac-section-content h3, .pac-section-content h4, .pac-section-content h5, .pac-section-content h6, .pac-section-content p {
   margin-bottom: 14px;
 }

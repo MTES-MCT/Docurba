@@ -148,6 +148,7 @@
 <script>
 import { Editor, EditorContent } from '@tiptap/vue-2'
 import StarterKit from '@tiptap/starter-kit'
+import { ColumnsExtension } from '@tiptap-extend/columns'
 import { Underline } from '@tiptap/extension-underline'
 import { Link } from '@tiptap/extension-link'
 import { Image } from '@tiptap/extension-image'
@@ -195,7 +196,13 @@ export default {
 
     return {
       editor: new Editor({
-        extensions: [StarterKit, Underline, Link, Image],
+        extensions: [
+          StarterKit,
+          ColumnsExtension,
+          Underline,
+          Link,
+          Image
+        ],
         content: this.value,
         onUpdate: () => {
           this.$emit('input', this.editor.getHTML())
@@ -384,6 +391,23 @@ export default {
 </style>
 
 <style>
+.ProseMirror .column-block {
+  width: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 24px;
+  padding: 8px 0;
+}
+
+.ProseMirror .column {
+  overflow: hidden;
+  border: 1px gray dashed;
+  border-radius: 8px;
+  padding: 8px;
+  margin: -8px;
+}
+
 .tvwysiwyg-editor h1, .tvwysiwyg-editor h2, .tvwysiwyg-editor h3, .tvwysiwyg-editor h4, .tvwysiwyg-editor h5, .tvwysiwyg-editor h6, .tvwysiwyg-editor p {
   margin-bottom: 14px;
 }
