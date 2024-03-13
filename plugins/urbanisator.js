@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { groupBy } from 'lodash'
 
-export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => {
+export default ({ $supabase, $dayjs }, inject) => {
   Vue.filter('docType', function (procedure) {
     if (procedure.doc_type === 'PLU') {
       let docType = procedure.doc_type
@@ -17,17 +17,27 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
   })
 
   inject('urbanisator', {
+    isEpci (collectiviteId) {
+      return collectiviteId.length > 5
+    },
     async getCommuneProcedures (inseeCode) {
       const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*').eq('collectivite_code', inseeCode)
       const { data: procedures } = await $supabase.from('procedures_duplicate')
-        .select('*, projects(*)').eq('archived', false)
+        .select('*').eq('archived', false)
         .in('id', perimetre.map(p => p.procedure_id))
+
+      procedures.forEach((procedure) => {
+        const perim = perimetre.find(p => p.procedure_id === procedure.id)
+        if (procedure.status === 'opposable' && !perim.opposable) {
+          procedure.status = 'precedent'
+        }
+      })
 
       return procedures
     },
     async getIntercoProcedures (collectiviteId) {
       const { data: procedures } = await $supabase.from('procedures_duplicate')
-        .select('*, projects(*)').eq('archived', false)
+        .select('*').eq('archived', false)
         .eq('collectivite_porteuse_id', collectiviteId)
 
       return procedures
@@ -38,7 +48,7 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
 
       procedures.forEach((procedure) => {
         // This is to manage legacy structure
-        procedure.current_perimetre = perimetre.filter(p => p.procedure_id)
+        procedure.current_perimetre = perimetre.filter(p => p.procedure_id === procedure.id)
         procedure.current_perimetre.forEach((c) => {
           c.inseeCode = c.collectivite_code
         })
@@ -64,6 +74,10 @@ export default ({ route, store, $supabase, $user, $dayjs, $sudocu }, inject) => 
             const { projects, ...rest } = p
             return { ...rest, project: projects, procSecs: groupedSubProcedures[p.id] }
           })
+
+        proceduresPrincipales.sort((a, b) => {
+          return +$dayjs(a.created_at) - +$dayjs(b.created_at)
+        })
 
         const schemas = proceduresPrincipales.filter(e => e.doc_type === 'SCOT')
         const plans = proceduresPrincipales.filter(e => e.doc_type !== 'SCOT')

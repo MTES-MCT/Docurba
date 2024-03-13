@@ -39,7 +39,6 @@ export default {
     { src: '~/plugins/notifications.js', mode: 'client' },
     { src: '~/plugins/githubRefs.js' },
     { src: '~/plugins/urbanisator.js' },
-    { src: '~/plugins/sudocu.js', mode: 'client' },
     { src: '~/plugins/pdfMake.js', mode: 'client' },
     { src: '~/plugins/analytics.js' },
     { src: '~/plugins/gtag.js', mode: 'client' },
