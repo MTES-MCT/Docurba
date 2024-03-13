@@ -65,8 +65,7 @@ app.post('/notify/admin', (req, res) => {
 })
 
 app.post('/notify/frp', (req, res) => {
-  const { userData, eventData } = req.body
-  slack.notifyFrpEvent(userData, eventData).then((res) => {
+  slack.notifyFrpEvent(req.body).then((res) => {
     // eslint-disable-next-line no-console
     console.log('Slack then: ', res.data)
   }).catch((err) => {

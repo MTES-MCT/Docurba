@@ -1,5 +1,5 @@
 const axios = require('axios')
-const { method } = require('lodash')
+const geo = require('./geo.js')
 
 module.exports = {
   requestDepotActe (userData) {
@@ -142,7 +142,13 @@ module.exports = {
       }
     })
   },
-  notifyFrpEvent (userData, eventData) {
+  notifyFrpEvent ({
+    eventData,
+    userData,
+    procedureData
+  }) {
+    const collectivite = geo.getCollectivite(procedureData.collectivite_porteuse_id)
+
     return axios({
       url: process.env.SLACK_EVENT_CTBE,
       method: 'post',
@@ -168,6 +174,13 @@ module.exports = {
             text: {
               type: 'mrkdwn',
               text: `- User: ${userData.email}, ${userData.poste}`
+            }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `- Collectivite: ${collectivite.intitule}(${collectivite.code}), departement ${collectivite.departementCode}`
             }
           },
           {

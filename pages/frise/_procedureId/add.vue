@@ -45,7 +45,7 @@ export default {
         this.$nuxt.setLayout('ddt')
       }
     })
-    const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('project_id, id, type, doc_type, current_perimetre').eq('id', this.$route.params.procedureId)
+    const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('project_id, id, type, doc_type, current_perimetre, collectivite_porteuse_id').eq('id', this.$route.params.procedureId)
     if (errorProcedure) { throw errorProcedure }
     this.procedure = procedure[0]
   }

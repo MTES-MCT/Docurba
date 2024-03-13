@@ -124,7 +124,6 @@ export default {
     }
 
     return {
-      collectivite: null,
       defaultEvent,
       event: Object.assign({}, defaultEvent, {
         description: this.$isDev ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' : '',
@@ -183,7 +182,8 @@ export default {
           method: 'post',
           data: {
             userData: this.$user.profile,
-            eventData: upsertEvent
+            eventData: upsertEvent,
+            procedureData: this.procedure
           }
         })
 
