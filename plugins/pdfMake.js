@@ -54,6 +54,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           h4: { fontSize: 16, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
           h5: { fontSize: 14, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
           h6: { fontSize: 12, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
+          mark: { background: '#ffff00' },
           a: { decoration: 'underline', color: '#000091' },
           p: { fontSize: 10, alignment: 'justify', margin: [0, 10, 0, 0] },
           list: { margin: [0, 10, 0, 0] },
@@ -224,6 +225,10 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             newParams.italics = true
           }
 
+          if (element.tag === 'mark') {
+            newParams.style = 'mark'
+          }
+
           if (element.children && element.children.length) {
             content.text = extractText(element.children, Object.assign({}, params, newParams))
           } else if (!element.children) {
@@ -264,26 +269,24 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           }
         }
 
-        if (element.tag === 'img') {
-          if (element.props.src) {
-            if (element.props.src === IMAGE_SRC_TO_REPLACE) {
-              // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
-              element.props.src = IMAGE_SRC_REPLACEMENT
-            }
+        if (element.tag === 'img' && element.props.src) {
+          if (element.props.src === IMAGE_SRC_TO_REPLACE) {
+            // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
+            element.props.src = IMAGE_SRC_REPLACEMENT
+          }
 
-            pdfContent.images[`SRC:${element.props.src}`] = element.props.src.includes('http') ? element.props.src : `${baseUrl}${element.props.src}`
-            return {
-              image: `SRC:${element.props.src}`,
-              width: 450,
-              headlineLevel
-            }
+          pdfContent.images[`SRC:${element.props.src}`] = element.props.src.includes('http') ? element.props.src : `${baseUrl}${element.props.src}`
+          return {
+            image: `SRC:${element.props.src}`,
+            width: 450,
+            headlineLevel
           }
         }
 
-        if (element.tag === 'div' && element.props.className.includes('column-block')) {
+        if (element.tag === 'div' && element.props.dataType === 'columnBlock') {
           return {
             columns: element.children
-              .filter(div => div.props.className === 'column')
+              .filter(div => div.props.dataType === 'column')
               .map(col => ({
                 stack: col.children.map(colChild => transformElementToContent(colChild))
               }))

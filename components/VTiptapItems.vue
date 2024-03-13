@@ -50,6 +50,20 @@
         editor
           .chain()
           .focus()
+          .toggleHighlight()
+          .run()
+      "
+    >
+      <v-icon>{{ icons.mdiFormatColorHighlight }}</v-icon>
+    </v-btn>
+    <v-btn
+      depressed
+      tile
+      icon
+      @click="
+        editor
+          .chain()
+          .focus()
           .toggleBulletList()
           .run()
       "
@@ -105,7 +119,7 @@
 import {
   mdiFormatBold, mdiFormatUnderline, mdiFormatItalic,
   mdiFormatListBulleted, mdiFormatListNumbered, mdiFormatColumns,
-  mdiFormatAlignJustify
+  mdiFormatAlignJustify, mdiFormatColorHighlight
 } from '@mdi/js'
 
 export default {
@@ -124,7 +138,8 @@ export default {
         mdiFormatListBulleted,
         mdiFormatListNumbered,
         mdiFormatColumns,
-        mdiFormatAlignJustify
+        mdiFormatAlignJustify,
+        mdiFormatColorHighlight
       }
     }
   }
