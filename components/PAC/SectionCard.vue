@@ -7,14 +7,14 @@
             <v-expansion-panel-header :color="backgroundColor" :style="{ height: '60px' }">
               <v-row align="center" dense>
                 <v-col v-if="project.id && editable" cols="auto">
-                  <v-checkbox
-                    v-model="isSelected"
+                  <v-simple-checkbox
+                    :value="isSelected"
                     :disabled="section.ghost"
                     :color="isVisible ? 'primary' : 'g600'"
                     hide-details
                     class="mt-0"
+                    @input="selectionChange"
                     @click.prevent.stop
-                    @change="selectionChange"
                   />
                 </v-col>
                 <v-col cols="" class="p-relative">
@@ -149,7 +149,7 @@
             <v-expansion-panel-content class="rounded">
               <v-row v-if="editEnabled">
                 <v-col :cols="(diff.visible && diff.body) ? 6 : 12">
-                  <VTiptap v-if="editEnabled" v-model="sectionMarkdown" class="mt-6">
+                  <VTiptap v-if="editEnabled" v-model="sectionMarkdown" :depth="depth" class="mt-6">
                     <PACSectionsFileAttachmentsDialog
                       :section="section"
                       :git-ref="gitRef"
@@ -321,9 +321,6 @@ export default {
     }
   },
   data () {
-    const selectedPaths = this.project.PAC || []
-    // const sectionPath = this.section.type === 'dir' ? `${this.section.path}/intro.md` : this.section.path
-
     return {
       icons: {
         mdiPlus,
@@ -336,7 +333,6 @@ export default {
         mdiLinkVariant
       },
       deleteDialog: false,
-      isSelected: selectedPaths.includes(this.section.path),
       sectionName: this.section.name,
       sectionText: '',
       // sectionContent: { body: null },
@@ -367,6 +363,13 @@ export default {
       }
 
       return headRef
+    },
+    isSelected () {
+      const selectedPaths = this.project.PAC || []
+      return selectedPaths.includes(this.section.path)
+    },
+    depth () {
+      return [...(this.section.path.matchAll('/'))].length - 1
     },
     isVisible () {
       return this.isSelected && this.parentSelected
@@ -635,8 +638,23 @@ export default {
 
       this.$emit('changeOrder', this.section, 0)
     },
-    updateSectionType (introFile) {
+    async updateSectionType (introFile) {
       if (this.section.type === 'file') {
+        const newPath = this.section.path.replace('.md', '')
+
+        // if parent was a file and its order was saved, we remove the ".md" to keep the same order
+        await this.$supabase.from('pac_sections').update({ path: newPath }).eq('ref', this.gitRef).eq('path', `${newPath}.md`)
+
+        if (this.project?.id) {
+          const selectedParentPathIndex = this.project.PAC.findIndex(p => p === `${newPath}.md`)
+          if (selectedParentPathIndex > -1) {
+            // if parent was a file and was selected, we remove the ".md" to keep it selected as a dir
+            // eslint-disable-next-line vue/no-mutating-props
+            this.project.PAC[selectedParentPathIndex] = newPath
+            await this.$supabase.from('projects').update({ PAC: this.project.PAC }).eq('id', this.project?.id)
+          }
+        }
+
         // eslint-disable-next-line vue/no-mutating-props
         this.section.type = 'dir'
         // eslint-disable-next-line vue/no-mutating-props
@@ -684,7 +702,7 @@ export default {
     selectionChange () {
       this.$emit('selectionChange', {
         path: this.section.path,
-        selected: this.isSelected
+        selected: !this.isSelected
       })
     },
     cancelEditing () {
@@ -760,8 +778,32 @@ export default {
   white-space: pre;
 }
 
-.pac-section-content h1, .pac-section-content h2, .pac-section-content h3, .pac-section-content h4, .pac-section-content p {
+.pac-section-content h1, .pac-section-content h2, .pac-section-content h3, .pac-section-content h4, .pac-section-content h5, .pac-section-content h6, .pac-section-content p {
   margin-bottom: 14px;
+}
+
+.pac-section-content h1 {
+  font-size: 28px;
+}
+
+.pac-section-content h2 {
+  font-size: 24px;
+}
+
+.pac-section-content h3 {
+  font-size: 20px;
+}
+
+.pac-section-content h4 {
+  font-size: 18px;
+}
+
+.pac-section-content h5 {
+  font-size: 16px;
+}
+
+.pac-section-content h6 {
+  font-size: 14px;
 }
 
 .ghost-count-badge .v-badge__badge {

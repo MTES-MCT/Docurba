@@ -149,21 +149,6 @@ export default {
         }
       })
 
-      if (this.projectId && parentWasFile) {
-        const { data: projects } = await this.$supabase.from('projects').select('PAC').eq('id', this.projectId)
-        const paths = projects[0].PAC
-
-        const selectedParentPathIndex = paths.findIndex(p => p === `${dir}.md`)
-        if (selectedParentPathIndex > 0) {
-          // if parent was a file and was selected, we remove the ".md" to keep it selected as a dir
-          paths[selectedParentPathIndex] = dir
-          await this.$supabase.from('projects').update({ PAC: paths }).eq('id', this.projectId)
-        }
-
-        // if parent was a file and its order was saved, we remove the ".md" to keep the same order
-        await this.$supabase.from('pac_sections').update({ path: dir }).eq('ref', this.gitRef).eq('path', `${dir}.md`)
-      }
-
       file.name = file.name.replace('.md', '')
       file.children = []
 
