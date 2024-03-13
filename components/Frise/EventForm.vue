@@ -87,6 +87,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import { mdiTrashCan } from '@mdi/js'
 import FormInput from '@/mixins/FormInput.js'
 export default {
@@ -123,7 +124,6 @@ export default {
     }
 
     return {
-      collectivite: null,
       defaultEvent,
       event: Object.assign({}, defaultEvent, {
         description: this.$isDev ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' : '',
@@ -170,6 +170,23 @@ export default {
           const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(upsertEvent).select()
           await this.saveAttachements(savedEvents[0].id)
         }
+
+        this.$analytics({
+          category: 'frp',
+          name: this.eventId ? 'update_event' : 'create_event',
+          value: this.event.type
+        })
+
+        axios({
+          url: '/api/slack/notify/frp',
+          method: 'post',
+          data: {
+            userData: this.$user.profile,
+            eventData: upsertEvent,
+            procedureData: this.procedure
+          }
+        })
+
         this.saving = false
         this.$router.push(`/frise/${this.procedure.id}`)
       } catch (error) {

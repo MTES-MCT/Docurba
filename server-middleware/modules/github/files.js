@@ -46,7 +46,10 @@ async function getFiles (path, ref, fetchContent = false) {
 
       if (file.type === 'dir') {
         file.children = await getFiles(file.path, ref, fetchContent === 'all' ? fetchContent : false)
-        const intro = file.children.find(child => child.name === 'intro')
+
+        // take "/intro" if "/intro.md" not found
+        // TODO : delete or rename every "/intro"
+        const intro = file.children.find(child => child.path.endsWith('/intro.md')) ?? file.children.find(child => child.path.endsWith('/intro'))
 
         // if intro is not found. It might be impossible to delete the folder in the UI.
         // Also clicking on the folder will fail to fetch a file intro.md.

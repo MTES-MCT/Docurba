@@ -12,7 +12,7 @@ const supabase = require('./modules/supabase.js')
 const admin = require('./modules/admin.js')
 const slack = require('./modules/slack.js')
 
-app.post('/notify/admin/acte', async (req, res) => {
+app.post('/notify/admin/acte', (req, res) => {
   // eslint-disable-next-line no-console
   console.log('Notify team in slack')
   const { userData } = req.body
@@ -62,6 +62,16 @@ app.post('/notify/admin', (req, res) => {
   // }
 
   res.status(200).send('OK')
+})
+
+app.post('/notify/frp', (req, res) => {
+  slack.notifyFrpEvent(req.body).then((res) => {
+    // eslint-disable-next-line no-console
+    console.log('Slack then: ', res.data)
+  }).catch((err) => {
+    // eslint-disable-next-line no-console
+    console.log('Slack catch', err.response.data)
+  })
 })
 
 async function collectiviteValidation (data, responseUrl) {

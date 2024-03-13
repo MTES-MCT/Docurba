@@ -181,7 +181,7 @@ module.exports = {
       console.log('Person not found, creating one')
       person = await this.addPerson(data)
       const deal = {
-        title: `${data.poste} de ${data.detailsCollectivite.name} (${data.detailsCollectivite.departement})`,
+        title: `${data.poste} de ${data.detailsCollectivite.intitule} (${data.detailsCollectivite.departementCode})`,
         personId: person.id,
         stageId: this.COLLECTIVITE_DEAL.TRY_INSCRIPTION
       }

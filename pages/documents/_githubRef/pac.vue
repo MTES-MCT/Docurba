@@ -61,8 +61,7 @@ export default {
     this.orderSections(sections, supSections)
 
     if (this.project && this.project.id) {
-      this.sections = sections
-      // this.sections = this.filterSectionsForProject(sections)
+      this.sections = this.filterSectionsForProject(sections)
     } else {
       this.sections = this.filterPublicsections(sections)
     }

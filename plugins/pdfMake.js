@@ -48,12 +48,12 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         styles: {
           title: { fontSize: 40, alignment: 'center' },
           tocTitle: { fontSize: 18 },
-          h1: { fontSize: 24, alignment: 'left', margin: [0, 12, 0, 0] },
-          h2: { fontSize: 20, alignment: 'left', margin: [0, 12, 0, 0] },
-          h3: { fontSize: 18, alignment: 'left', margin: [0, 12, 0, 0] },
-          h4: { fontSize: 16, alignment: 'left', margin: [0, 12, 0, 0] },
-          h5: { fontSize: 14, alignment: 'left', margin: [0, 12, 0, 0] },
-          h6: { fontSize: 12, alignment: 'left', margin: [0, 12, 0, 0] },
+          h1: { fontSize: 24, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
+          h2: { fontSize: 20, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
+          h3: { fontSize: 18, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
+          h4: { fontSize: 16, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
+          h5: { fontSize: 14, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
+          h6: { fontSize: 12, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
           a: { decoration: 'underline', color: '#000091' },
           p: { fontSize: 10, alignment: 'justify', margin: [0, 10, 0, 0] },
           list: { margin: [0, 10, 0, 0] },
@@ -242,7 +242,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             text: element.value || element,
             headlineLevel
           })
-        } else if (element.tag.includes('h')) {
+        } else if (/^h[1-6]$/.test(element.tag)) {
           const text = extractText(element.children)
 
           if (text.length) {
@@ -286,13 +286,20 @@ export default ({ $md, $isDev, $supabase }, inject) => {
       const elementsTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'img']
       // const textTags = ['strong', 'u', 'a']
 
-      function pushElements (body) {
+      function pushElements (body, depth) {
         if (body?.children) {
           let text = { tag: 'p', children: [] }
 
           body.children.forEach((child) => {
             if (child.type === 'element') {
               if (elementsTags.includes(child.tag)) {
+                if (/^h[1-6]$/.test(child.tag)) {
+                  const headerLevel = Number(child.tag.charAt(1))
+                  if (headerLevel <= depth) {
+                    child.tag = `h${Math.min(depth + 1, 6)}`
+                  }
+                }
+
                 if (text.children.length) {
                   elements.push(text)
                   text = { tag: 'p', children: [] }
@@ -312,50 +319,33 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         }
       }
 
-      function findBodies (children, level, tocId) {
+      function findBodies (children, depth) {
         children.forEach((child) => {
+          if (depth === 0) {
+            elements.push({
+              tag: 'pageBreak',
+              children: []
+            })
+          }
+
           elements.push({
-            tag: `h${level + 2}`,
+            tag: `h${depth + 1}`,
             children: [
               {
                 text: child.name,
                 tocItem: true,
-                tocMargin: [16 * level, 0, 0, 0],
+                tocMargin: [16 * depth, 0, 0, 0],
                 tocStyle: 'a'
               }
             ]
           })
 
-          if (child.body) { pushElements(child.body) }
-          if (child.children) { findBodies(child.children, level + 1, tocId) }
+          if (child.body) { pushElements(child.body, depth) }
+          if (child.children) { findBodies(child.children, depth + 1) }
         })
       }
 
-      const tocs = []
-
-      roots.forEach((root) => {
-        elements.push(
-          {
-            tag: 'pageBreak',
-            children: []
-          },
-          {
-            tag: 'h1',
-            children: [
-              {
-                text: root.name,
-                tocItem: true,
-                tocStyle: 'h6'
-              }
-            ]
-          }
-        )
-
-        pushElements(root.body)
-        findBodies(root.children, 0, root.name)
-      })
-
-      pdfContent.content.push(...tocs)
+      findBodies(roots, 0)
 
       elements.forEach((element, index) => {
         if (element.tag === 'pageBreak') {

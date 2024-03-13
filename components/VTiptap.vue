@@ -155,8 +155,9 @@ import { Image } from '@tiptap/extension-image'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
-  mdiUndo, mdiRedo, mdiFormatHeader1, mdiFormatText,
-  mdiFormatHeader2, mdiFormatHeader3, mdiFormatHeader4,
+  mdiUndo, mdiRedo, mdiFormatText,
+  mdiFormatHeader1, mdiFormatHeader2, mdiFormatHeader3,
+  mdiFormatHeader4, mdiFormatHeader5, mdiFormatHeader6,
   mdiFormatBold, mdiFormatUnderline, mdiFormatItalic,
   mdiFormatListBulleted, mdiFormatListNumbered, mdiLink,
   mdiCheck, mdiFileImage, mdiDotsVertical
@@ -228,8 +229,8 @@ export default {
   computed: {
     typos () {
       const defaultTypos = [{
-        icon: mdiFormatHeader4,
-        value: 4
+        icon: mdiFormatHeader6,
+        value: 6
       }, {
         icon: mdiFormatText,
         value: 0
@@ -244,6 +245,12 @@ export default {
       }, {
         icon: mdiFormatHeader3,
         value: 3
+      }, {
+        icon: mdiFormatHeader4,
+        value: 4
+      }, {
+        icon: mdiFormatHeader5,
+        value: 5
       }].filter(t => t.value > this.depth).concat(defaultTypos)
     },
     readonlyBody () {
@@ -377,7 +384,31 @@ export default {
 </style>
 
 <style>
-.tvwysiwyg-editor h1, .tvwysiwyg-editor h2, .tvwysiwyg-editor h3, .tvwysiwyg-editor h4, .tvwysiwyg-editor p {
+.tvwysiwyg-editor h1, .tvwysiwyg-editor h2, .tvwysiwyg-editor h3, .tvwysiwyg-editor h4, .tvwysiwyg-editor h5, .tvwysiwyg-editor h6, .tvwysiwyg-editor p {
   margin-bottom: 14px;
+}
+
+.tvwysiwyg-editor h1 {
+  font-size: 28px;
+}
+
+.tvwysiwyg-editor h2 {
+  font-size: 24px;
+}
+
+.tvwysiwyg-editor h3 {
+  font-size: 20px;
+}
+
+.tvwysiwyg-editor h4 {
+  font-size: 18px;
+}
+
+.tvwysiwyg-editor h5 {
+  font-size: 16px;
+}
+
+.tvwysiwyg-editor h6 {
+  font-size: 14px;
 }
 </style>
