@@ -48,16 +48,18 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         styles: {
           title: { fontSize: 40, alignment: 'center' },
           tocTitle: { fontSize: 18 },
-          h1: { fontSize: 24, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
-          h2: { fontSize: 20, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
-          h3: { fontSize: 18, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
-          h4: { fontSize: 16, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
-          h5: { fontSize: 14, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
-          h6: { fontSize: 12, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
+          h1: { fontSize: 24, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h2: { fontSize: 20, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h3: { fontSize: 18, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h4: { fontSize: 16, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h5: { fontSize: 14, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h6: { fontSize: 12, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
           mark: { background: '#ffff00' },
           a: { decoration: 'underline', color: '#000091' },
-          p: { fontSize: 10, alignment: 'justify', margin: [0, 10, 0, 0] },
-          list: { margin: [0, 10, 0, 0] },
+          p: { fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 10] },
+          list: { margin: [0, 0, 0, 10] },
+          table: { margin: [0, 0, 0, 10] },
+          th: { fillColor: '#f1f3f5', bold: true },
           footer: { fontSize: 10, alignment: 'right' },
           ddt: { fontSize: 10, alignment: 'right' }
         },
@@ -263,7 +265,10 @@ export default ({ $md, $isDev, $supabase }, inject) => {
 
         if (element.tag === 'ul' || element.tag === 'ol') {
           return {
-            [element.tag]: extractText(element.children),
+            [element.tag]: element.children.map(listItem => ({
+              style: listItem.tag, // li
+              stack: listItem.children.map(listItemChild => transformElementToContent(listItemChild))
+            })),
             headlineLevel,
             style: 'list'
           }
@@ -293,6 +298,50 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           }
         }
 
+        if (element.tag === 'table') {
+          const tableRowElements = element.children[0].children
+          const columnsCount = Math.max(...tableRowElements.map(row => row.children.length))
+
+          const tableContent = {
+            style: 'table',
+            table: {
+              headerRows: 1,
+              widths: new Array(columnsCount).fill('*'),
+              body: tableRowElements.map(row => row.children.flatMap((cell) => {
+                const cellContent = {
+                  style: cell.tag, // th or td
+                  rowSpan: Number(cell.props.rowSpan ?? 1),
+                  colSpan: Number(cell.props.colSpan ?? 1),
+                  stack: cell.children.map((cellChild, index) => {
+                    const content = transformElementToContent(cellChild)
+                    if (index === cell.children.length - 1) {
+                      // remove the margin of the last element
+                      content.margin = [0, 0, 0, 0]
+                    }
+                    return content
+                  }),
+                  borderColor: new Array(4).fill('#ced4da')
+                }
+
+                // insert empty cells for col spans
+                return [cellContent, ...(new Array(cellContent.colSpan - 1).fill(''))]
+              }))
+            }
+          }
+
+          // insert empty cells for row spans
+          const rows = tableContent.table.body
+          rows.forEach((row, rowIndex) => {
+            row.forEach((cell, cellIndex) => {
+              if (cell.rowSpan > 1) {
+                rows[rowIndex + 1].splice(cellIndex, 0, ...(new Array(cell.colSpan).fill('')))
+              }
+            })
+          })
+
+          return tableContent
+        }
+
         return {
           stack: extractText(element.children),
           style: element.tag,
@@ -301,7 +350,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
       }
 
       const elements = []
-      const elementsTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'img', 'div']
+      const elementsTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'img', 'div', 'table']
       // const textTags = ['strong', 'u', 'a']
 
       function pushElements (body, depth) {

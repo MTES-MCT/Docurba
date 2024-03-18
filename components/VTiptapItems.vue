@@ -112,6 +112,10 @@
     >
       <v-icon>{{ icons.mdiFormatAlignJustify }}</v-icon>
     </v-btn>
+
+    <v-btn depressed tile icon @click="editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()">
+      <v-icon>{{ icons.mdiTablePlus }}</v-icon>
+    </v-btn>
   </v-toolbar-items>
 </template>
 
@@ -119,7 +123,7 @@
 import {
   mdiFormatBold, mdiFormatUnderline, mdiFormatItalic,
   mdiFormatListBulleted, mdiFormatListNumbered, mdiFormatColumns,
-  mdiFormatAlignJustify, mdiFormatColorHighlight
+  mdiFormatAlignJustify, mdiFormatColorHighlight, mdiTablePlus
 } from '@mdi/js'
 
 export default {
@@ -139,7 +143,8 @@ export default {
         mdiFormatListNumbered,
         mdiFormatColumns,
         mdiFormatAlignJustify,
-        mdiFormatColorHighlight
+        mdiFormatColorHighlight,
+        mdiTablePlus
       }
     }
   }

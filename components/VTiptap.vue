@@ -97,6 +97,11 @@
         <slot />
       </v-toolbar-items>
     </v-toolbar>
+
+    <v-toolbar v-if="editor.isActive('table')" flat dense color="g100">
+      <VTiptapTableItems :editor="editor" />
+    </v-toolbar>
+
     <v-card-text
       id="VTipTap-TextArea"
       class="pb-1 pt-3 text-editor"
@@ -147,12 +152,16 @@
 </template>
 <script>
 import { Editor, EditorContent } from '@tiptap/vue-2'
-import StarterKit from '@tiptap/starter-kit'
+import { StarterKit } from '@tiptap/starter-kit'
 import { ColumnsExtension } from '@tiptap-extend/columns'
 import { Highlight } from '@tiptap/extension-highlight'
 import { Underline } from '@tiptap/extension-underline'
 import { Link } from '@tiptap/extension-link'
 import { Image } from '@tiptap/extension-image'
+import { Table } from '@tiptap/extension-table'
+import { TableCell } from '@tiptap/extension-table-cell'
+import { TableHeader } from '@tiptap/extension-table-header'
+import { TableRow } from '@tiptap/extension-table-row'
 
 import { v4 as uuidv4 } from 'uuid'
 
@@ -203,7 +212,11 @@ export default {
           Highlight,
           Underline,
           Link,
-          Image
+          Image,
+          Table,
+          TableRow,
+          TableHeader,
+          TableCell
         ],
         content: this.value,
         onUpdate: () => {
@@ -436,5 +449,52 @@ export default {
 
 .tvwysiwyg-editor h6 {
   font-size: 14px;
+}
+
+.tiptap table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+ .tiptap table td, .tiptap table th {
+  min-width: 1em;
+  border: 2px solid #ced4da;
+  padding: 3px 5px;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
+ .tiptap table td > *, .tiptap table th > * {
+  margin-bottom: 0;
+}
+ .tiptap table th {
+  font-weight: bold;
+  text-align: left;
+  background-color: #f1f3f5;
+}
+ .tiptap table .selectedCell:after {
+  z-index: 2;
+  position: absolute;
+  content: "";
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(200, 200, 255, 0.4);
+  pointer-events: none;
+}
+ .tiptap table .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: -2px;
+  width: 4px;
+  background-color: #adf;
+  pointer-events: none;
+}
+ .tiptap table p {
+  margin: 0;
 }
 </style>
