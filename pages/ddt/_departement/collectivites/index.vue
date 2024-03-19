@@ -16,116 +16,52 @@
         <h1>Mes collectivités - {{ $route.params.departement }}</h1>
       </v-col>
       <v-col cols="12">
-        <div style="background-color: #F6F6F6;border: 1px solid #DDDDDD;border-radius:4px;" class="pa-6">
-          <v-text-field
-            v-model="search"
-            filled
-            hide-details=""
-            dense
-            style="max-width:500px"
-            label="Rechercher"
-          />
-        </div>
-      </v-col>
-      <v-col cols="12">
-        <v-tabs v-model="scope">
-          <v-tab>EPCI</v-tab>
-          <v-tab>Communes</v-tab>
-          <v-tab>SCOTs</v-tab>
-        </v-tabs>
+        <v-data-table
+          :headers="headers"
+          :items="epcis"
+          :items-per-page="10"
+          class="elevation-1 pa-8"
+          :custom-filter="customFilter"
+          :search="search"
+          :loading="!epcis"
+          loading-text="Chargement des collectivités..."
+        >
+          <template #top>
+            <div class="d-flex  align-center justify-space-between">
+              <v-select
+                flat
+                background-color="alt-beige"
+                hide-details
+                solo
+                dense
+                :items="['foo', 'bar']"
+                style="max-width:150px"
+              />
+              <v-spacer />
+              <v-text-field
+                v-model="search"
+                outlined
+                hide-details
+                dense
+                style="max-width:400px"
+                label="Rechercher une collectivité..."
+              />
+            </div>
+          </template>
 
-        <v-tabs-items v-model="scope">
-          <v-tab-item>
-            <v-data-table
-              :headers="headersEpci"
-              :items="epcis"
-              :items-per-page="50"
-              class="elevation-1"
-              :custom-filter="customFilter"
-              :search="search"
-              :loading="!epcis"
-              loading-text="Chargement des collectivités..."
-            >
-              <template #top />
-
-              <!-- eslint-disable-next-line -->
-            <template #item.competence="{ item }">
-                <div v-if="item.competenceSudocu || item.competencePLU" class="d-flex">
-                  <!-- <div class="competence-tag-sudocu mr-2" :style="{visibility: item.competenceSudocu ? 'visible' : 'hidden'}">
-                    C <span class="caption text-lowercase">Sudocu</span>
-                  </div> -->
-                  <div class="competence-tag-banatic mr-2" :style="{visibility: item.competencePLU ? 'visible' : 'hidden'}">
-                    C <span class="caption text-lowercase">BANATIC</span>
-                  </div>
-                </div>
-                <div v-else>
-                  -
-                </div>
-              </template>
-              <!-- eslint-disable-next-line -->
+          <!-- eslint-disable-next-line -->
+          <template #item.name="{ item }">
+            <span>test</span>
+          </template>
+          <!-- eslint-disable-next-line -->
             <template #item.actions="{ item }">
-                <div>
-                  <v-btn depressed color="primary" :to="item.path">
-                    Consulter
-                  </v-btn>
-                </div>
-              </template>
-            </v-data-table>
-          </v-tab-item>
-          <v-tab-item>
-            <v-data-table
-              v-if="communes"
-              :headers="headers"
-              :items="communes"
-              :items-per-page="50"
-              class="elevation-1"
-              :loading="!communes"
-              loading-text="Chargement des collectivités..."
-              :custom-filter="customFilter"
-              :search="search"
-            >
-              <!-- eslint-disable-next-line -->
-            <template #item.intercommunalite="{ item }">
-
-                <div v-if="item.code">
-                  <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.code}/epci`">
-                    {{ item.intitule }}
-                  </nuxt-link>
-                </div>
-                <div v-else>
-                  -
-                </div>
-              </template>
-
-              <!-- eslint-disable-next-line -->
-            <template #item.competence="{ item }">
-                <div v-if="item.competenceSudocu || item.competencePLU" class="d-flex">
-                  <div class="competence-tag-sudocu mr-2" :style="{visibility: item.competenceSudocu ? 'visible' : 'hidden'}">
-                    C <span class="caption text-lowercase">Sudocu</span>
-                  </div>
-                  <div class="competence-tag-banatic mr-2" :style="{visibility: item.competencePLU ? 'visible' : 'hidden'}">
-                    C <span class="caption text-lowercase">BANATIC</span>
-                  </div>
-                </div>
-                <div v-else>
-                  -
-                </div>
-              </template>
-
-              <!-- eslint-disable-next-line -->
-            <template #item.actions="{ item }">
-                <div>
-                  <v-btn depressed color="primary" :to="item.path">
-                    Consulter
-                  </v-btn>
-                </div>
-              </template>
-            </v-data-table>
-          </v-tab-item>
-          <v-tab-item>
-            <DashboardSCOTsDepList :search="search" />
-          </v-tab-item>
-        </v-tabs-items>
+            <div>
+              <v-btn depressed color="primary" :to="item.path">
+                Consulter
+              </v-btn>
+            </div>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
   </v-container>
@@ -158,20 +94,10 @@ export default {
   computed: {
     headers () {
       return [
-        { text: 'Nom', align: 'start', value: 'intitule', filterable: true },
-        { text: 'Code INSEE', align: 'start', value: 'code', filterable: true },
-        { text: 'Compétence', value: 'competence', filterable: false },
-        { text: 'Intercommunalité', value: 'type', filterable: false },
-        { text: 'Actions', value: 'actions', filterable: false }
-      ]
-    },
-    headersEpci () {
-      return [
-        { text: 'Nom', align: 'start', value: 'intitule', filterable: true },
-        { text: 'SIREN', align: 'start', value: 'code', filterable: true },
-        { text: 'Type', value: 'type', filterable: false },
-        { text: 'Compétence', value: 'competence', filterable: false },
-        { text: 'Actions', value: 'actions', filterable: false }
+        { text: 'Nom', align: 'start', value: 'name', filterable: true },
+        { text: 'Type', align: 'start', value: 'type', filterable: true },
+        { text: 'Procédures', value: 'procedures', filterable: false },
+        { text: 'SCOTs', value: 'scots', filterable: false }
       ]
     }
   },

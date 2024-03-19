@@ -20,6 +20,10 @@ export default ({ $supabase, $dayjs }, inject) => {
     isEpci (collectiviteId) {
       return collectiviteId.length > 5
     },
+    async getCommunesProcedures (departementCode) {
+      const { data } = await $supabase.from('procedures_perimetres, procedures_duplicate(*)').select('*').eq('departement', departementCode)
+      console.log('data: ', data)
+    },
     async getCommuneProcedures (inseeCode) {
       const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*').eq('collectivite_code', inseeCode)
       const { data: procedures } = await $supabase.from('procedures_duplicate')
