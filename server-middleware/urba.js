@@ -2,24 +2,21 @@ import { AsyncParser } from '@json2csv/node'
 
 /* eslint-disable no-console */
 import express from 'express'
-import { mapValues, get } from 'lodash'
+import { mapValues, get, uniq } from 'lodash'
 import supabase from './modules/supabase.js'
 import urba from './modules/urba.js'
-// import sudocu from './modules/sudocu.js'
 import sido from './modules/sido.js'
 import procedures from './modules/procedures.js'
 import departements from './Data/INSEE/departements.json'
 
+// exports maps
+import prescriptionsMap from './modules/exportMaps/prescriptions.js'
 import sudocuhCommunes from './modules/exportMaps/sudocuhCommunes.js'
 
 const csvParser = new AsyncParser()
 
 const app = express()
 app.use(express.json())
-
-// app.get('/communes', (req, res) => {
-
-// })
 
 app.get('/documents/collectivites', async (req, res) => {
   try {
@@ -31,16 +28,6 @@ app.get('/documents/collectivites', async (req, res) => {
     res.status(400).send('')
   }
 })
-
-// app.get('/collectivites/:code', async (req, res) => {
-//   try {
-//     const collectiviteDetails = await sudocu.getProceduresCollectivite(req.params.code)
-//     res.status(200).send(collectiviteDetails)
-//   } catch (error) {
-//     console.log(error)
-//     res.status(404).send(error)
-//   }
-// })
 
 app.get('/sido_csv', async (req, res) => {
   console.log('OKOKOK')
@@ -56,14 +43,6 @@ app.get('/sido_csv', async (req, res) => {
     res.send(data)
   }
 })
-
-// app.get('/intercommunalites', (req, res) => {
-
-// })
-
-// app.get('/intercommunalites/:code', (req, res) => {
-
-// })
 
 app.get('/documents/count', async (req, res) => {
   try {
@@ -105,8 +84,22 @@ app.get('/exports/departements/:code', async (req, res) => {
 
 app.get('/exports/communes/:inseeCode', async (req, res) => {
   const commune = await procedures.getCommune(req.params.inseeCode)
-
   res.status(200).send(mapValues(sudocuhCommunes, key => get(commune, key, '')))
+})
+
+app.get('/exports/prescriptions', async (req, res) => {
+  const { data: prescriptions } = await supabase.from('prescriptions').select('*')
+
+  if (req.query.csv) {
+    const mappedPrescriptions = prescriptions.map((prescription) => {
+      return mapValues(prescriptionsMap, key => get(prescription, key, ''))
+    })
+
+    const csv = await csvParser.parse(mappedPrescriptions).promise()
+    res.status(200).attachment('prescriptions.csv').send(csv)
+  } else {
+    res.status(200).send(prescriptions)
+  }
 })
 
 module.exports = app

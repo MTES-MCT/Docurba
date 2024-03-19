@@ -29,7 +29,14 @@ async function handleRedirect ($supabase, event, user, router) {
 
     if (user.profile.side === 'collectivite') {
       if (!user.profile.successfully_logged_once) {
-        axios({ url: '/api/pipedrive/collectivite_inscrite', method: 'post', data: { userData: { email: user.email } } })
+        axios({
+          url: '/api/pipedrive/collectivite_inscrite',
+          method: 'post',
+          data: {
+            userData: { email: user.email }
+          }
+        })
+
         await $supabase.from('profiles').update({ successfully_logged_once: true }).eq('user_id', user.id)
       }
     }
