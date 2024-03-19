@@ -1,9 +1,10 @@
 import axios from 'axios'
 import pdfMake from 'pdfmake/build/pdfmake'
-// import pdfFonts from 'pdfmake/build/vfs_fonts'
+import { A4 } from 'pdfmake/src/standardPageSizes'
 import orderSections from '@/mixins/orderSections.js'
 import departements from '@/assets/data/INSEE/departements_small.json'
 
+// import pdfFonts from 'pdfmake/build/vfs_fonts'
 // pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 // This is only to speed up in test. Do not push in prod.
@@ -31,6 +32,8 @@ export default ({ $md, $isDev, $supabase }, inject) => {
   const IMAGE_SRC_TO_REPLACE = 'https://sante.gouv.fr/local/adapt-img/608/10x/IMG/jpg/Etat_de_sante_population.jpg?1680693100'
   const IMAGE_SRC_REPLACEMENT = `${baseUrl}/images/pac/Etat_de_sante_population.jpg`
 
+  const PAGE_MARGINS = 40
+
   pdfMake.fonts = {
     Marianne: {
       normal: `${baseUrl}/fonts/Marianne/fontes_desktop/Marianne-Regular.otf`,
@@ -44,7 +47,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
     pdfFromContent (pdfData, filename = 'PAC') {
       Object.assign(pdfData, {
         pageSize: 'A4',
-        pageMargins: 40,
+        pageMargins: PAGE_MARGINS,
         styles: {
           title: { fontSize: 40, alignment: 'center' },
           tocTitle: { fontSize: 18 },
@@ -251,6 +254,14 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           }
         }
 
+        if (element.tag === 'p') {
+          return {
+            stack: element.children.map(child => transformElementToContent(child)),
+            style: element.tag,
+            headlineLevel
+          }
+        }
+
         if (/^h[1-6]$/.test(element.tag)) {
           const text = extractText(element.children)
 
@@ -280,10 +291,13 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             element.props.src = IMAGE_SRC_REPLACEMENT
           }
 
+          const maxWidth = A4[0] - (PAGE_MARGINS * 2)
+          const pxToPtRatio = 0.75
+
           pdfContent.images[`SRC:${element.props.src}`] = element.props.src.includes('http') ? element.props.src : `${baseUrl}${element.props.src}`
           return {
             image: `SRC:${element.props.src}`,
-            width: 450,
+            width: element.props.width ? Math.min(element.props.width * pxToPtRatio, maxWidth) : maxWidth,
             headlineLevel
           }
         }

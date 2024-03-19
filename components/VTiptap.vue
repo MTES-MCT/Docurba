@@ -173,6 +173,7 @@ import {
   mdiFormatListBulleted, mdiFormatListNumbered, mdiLink,
   mdiCheck, mdiFileImage, mdiDotsVertical
 } from '@mdi/js'
+import { Resizable } from '@/plugins/tiptap-resizable'
 
 export default {
   name: 'TvWYSIWYG',
@@ -200,10 +201,6 @@ export default {
     }
   },
   data () {
-    Image.configure({
-      allowBase64: true
-    })
-
     return {
       editor: new Editor({
         extensions: [
@@ -212,7 +209,11 @@ export default {
           Highlight,
           Underline,
           Link,
-          Image,
+          Image.configure({
+            allowBase64: true,
+            inline: true
+          }),
+          Resizable,
           Table,
           TableRow,
           TableHeader,
