@@ -9,6 +9,7 @@ export default ({ $supabase, $user, $isDev, app }, inject) => {
       collectiviteId
     } = route.params
 
+    // TODO: ajouter le handle des gitRef ici
     const {
       projectId,
       procedureId
