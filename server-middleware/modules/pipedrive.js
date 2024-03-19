@@ -135,8 +135,14 @@ module.exports = {
     }
   },
   async addPerson (userData) {
+    // console.log(' addPerson userData: ', userData)
     const personData = pipedrive.NewPerson.constructFromObject({
       name: `${userData.firstname} ${userData.lastname}`,
+      phone: [{
+        value: userData.tel,
+        primary: 'true',
+        label: ''
+      }],
       email: [{
         value: userData.email,
         primary: 'true',
@@ -145,7 +151,7 @@ module.exports = {
       [this.CUSTOM_FIELDS.CHARGE_DE.key]: userData.customRoles ?? []
       // primaryEmail: userData.email // This does not work -> https://devcommunity.pipedrive.com/t/persons-primary-email-error-bug/5784/3
     })
-
+    // console.log('personData after: ', personData)
     const { data, error } = await personsApi.addPerson(personData)
 
     if (data && !error) {
@@ -184,7 +190,7 @@ module.exports = {
         personId: person.id,
         stageId: this.COLLECTIVITE_DEAL.TRY_INSCRIPTION
       }
-      console.log('deal, :', deal)
+      // console.log('deal, :', deal)
       await this.addDeal(deal)
     }
   },
