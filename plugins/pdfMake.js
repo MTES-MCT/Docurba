@@ -320,7 +320,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             style: 'table',
             table: {
               headerRows: 1,
-              widths: new Array(columnsCount).fill('*'),
+              widths: new Array(columnsCount).fill('auto'),
               body: tableRowElements.map(row => row.children.flatMap((cell) => {
                 const cellContent = {
                   style: cell.tag, // th or td

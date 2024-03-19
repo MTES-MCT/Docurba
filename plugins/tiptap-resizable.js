@@ -1,5 +1,5 @@
 import { Extension } from '@tiptap/core'
-import throttle from 'lodash-es/throttle'
+import throttle from 'lodash/throttle'
 
 // original code: https://github.com/KID-1912/tiptap-extension-resizable
 
