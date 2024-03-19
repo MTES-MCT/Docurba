@@ -6,7 +6,6 @@ const defaultClient = pipedrive.ApiClient.instance
 // Configure API key authorization: apiToken
 const apiToken = defaultClient.authentications.api_key
 apiToken.apiKey = process.env.PIPEDRIVE_API_KEY
-
 const personsApi = new pipedrive.PersonsApi()
 const organizationsApi = new pipedrive.OrganizationsApi()
 const dealsApi = new pipedrive.DealsApi()
@@ -167,6 +166,7 @@ module.exports = {
   async addDeal (dealData) {
     const newDealData = pipedrive.NewDeal.constructFromObject(dealData)
     const { success, data } = await dealsApi.addDeal(newDealData)
+    console.log(' success: ', success, 'data: ', data)
     return { data, success }
   },
   updateDeal (dealId, data) {
@@ -175,13 +175,12 @@ module.exports = {
   },
   async signupCollectivite (data) {
     console.log('-- SIGNUP COLLECTIVITE PIPEDRIVE --')
-
     let { person } = await this.findPerson(data.email)
     if (!person) {
       console.log('Person not found, creating one')
       person = await this.addPerson(data)
       const deal = {
-        title: `${data.poste} de ${data.detailsCollectivite.name} (${data.detailsCollectivite.departement})`,
+        title: `${data.poste} de ${data.detailsCollectivite.intitule} (${data.detailsCollectivite.departementCode})`,
         personId: person.id,
         stageId: this.COLLECTIVITE_DEAL.TRY_INSCRIPTION
       }
@@ -192,10 +191,10 @@ module.exports = {
   async movePersonDealTo (email, from, to) {
     const { person } = await this.findPerson(email)
     const personDeals = await this.getPersonDeals(person.id)
-    console.log('personDeals: ', personDeals)
+    // console.log('personDeals: ', personDeals)
     const dealIdToUpdate = personDeals.filter(e => e.stage_id === from)[0]?.id
     console.log('dealIdToUpdate: ', dealIdToUpdate)
-    await this.updateDeal(dealIdToUpdate, { stage_id: to })
+    if (dealIdToUpdate) { await this.updateDeal(dealIdToUpdate, { stage_id: to }) }
   },
   async signupStateAgent (userData) {
     try {
