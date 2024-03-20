@@ -5,6 +5,7 @@ import express from 'express'
 import { mapValues, get } from 'lodash'
 import procedures from './modules/procedures.js'
 import departements from './Data/INSEE/departements.json'
+import supabase from './supabase.js'
 
 // exports maps
 import prescriptionsMap from './modules/exportMaps/prescriptions.js'
