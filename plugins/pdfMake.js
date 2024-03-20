@@ -1,9 +1,10 @@
 import axios from 'axios'
 import pdfMake from 'pdfmake/build/pdfmake'
-// import pdfFonts from 'pdfmake/build/vfs_fonts'
+import { A4 } from 'pdfmake/src/standardPageSizes'
 import orderSections from '@/mixins/orderSections.js'
 import departements from '@/assets/data/INSEE/departements_small.json'
 
+// import pdfFonts from 'pdfmake/build/vfs_fonts'
 // pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 // This is only to speed up in test. Do not push in prod.
@@ -31,6 +32,8 @@ export default ({ $md, $isDev, $supabase }, inject) => {
   const IMAGE_SRC_TO_REPLACE = 'https://sante.gouv.fr/local/adapt-img/608/10x/IMG/jpg/Etat_de_sante_population.jpg?1680693100'
   const IMAGE_SRC_REPLACEMENT = `${baseUrl}/images/pac/Etat_de_sante_population.jpg`
 
+  const PAGE_MARGINS = 40
+
   pdfMake.fonts = {
     Marianne: {
       normal: `${baseUrl}/fonts/Marianne/fontes_desktop/Marianne-Regular.otf`,
@@ -44,19 +47,22 @@ export default ({ $md, $isDev, $supabase }, inject) => {
     pdfFromContent (pdfData, filename = 'PAC') {
       Object.assign(pdfData, {
         pageSize: 'A4',
-        pageMargins: 40,
+        pageMargins: PAGE_MARGINS,
         styles: {
           title: { fontSize: 40, alignment: 'center' },
           tocTitle: { fontSize: 18 },
-          h1: { fontSize: 24, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
-          h2: { fontSize: 20, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
-          h3: { fontSize: 18, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
-          h4: { fontSize: 16, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
-          h5: { fontSize: 14, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
-          h6: { fontSize: 12, bold: true, alignment: 'left', margin: [0, 12, 0, 0] },
+          h1: { fontSize: 24, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h2: { fontSize: 20, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h3: { fontSize: 18, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h4: { fontSize: 16, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h5: { fontSize: 14, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h6: { fontSize: 12, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          mark: { background: '#ffff00' },
           a: { decoration: 'underline', color: '#000091' },
-          p: { fontSize: 10, alignment: 'justify', margin: [0, 10, 0, 0] },
-          list: { margin: [0, 10, 0, 0] },
+          p: { fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 10] },
+          list: { margin: [0, 0, 0, 10] },
+          table: { margin: [0, 0, 0, 10] },
+          th: { fillColor: '#f1f3f5', bold: true },
           footer: { fontSize: 10, alignment: 'right' },
           ddt: { fontSize: 10, alignment: 'right' }
         },
@@ -224,6 +230,10 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             newParams.italics = true
           }
 
+          if (element.tag === 'mark') {
+            newParams.style = 'mark'
+          }
+
           if (element.children && element.children.length) {
             content.text = extractText(element.children, Object.assign({}, params, newParams))
           } else if (!element.children) {
@@ -234,56 +244,127 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         })
       }
 
-      function addElementToContent (element) {
+      function transformElementToContent (element) {
         const headlineLevel = element.headlineLevel
 
         if (!element.tag) {
-          pdfContent.content.push({
+          return {
             text: element.value || element,
             headlineLevel
-          })
-        } else if (/^h[1-6]$/.test(element.tag)) {
+          }
+        }
+
+        if (element.tag === 'p') {
+          return {
+            stack: element.children.map(child => transformElementToContent(child)),
+            style: element.tag,
+            headlineLevel
+          }
+        }
+
+        if (/^h[1-6]$/.test(element.tag)) {
           const text = extractText(element.children)
 
           if (text.length) {
-            pdfContent.content.push({
+            return {
               text,
               style: element.tag,
               headlineLevel
-            })
+            }
           }
-        } else if (element.tag === 'ul' || element.tag === 'ol') {
-          pdfContent.content.push({
-            [element.tag]: extractText(element.children),
+        }
+
+        if (element.tag === 'ul' || element.tag === 'ol') {
+          return {
+            [element.tag]: element.children.map(listItem => ({
+              style: listItem.tag, // li
+              stack: listItem.children.map(listItemChild => transformElementToContent(listItemChild))
+            })),
             headlineLevel,
             style: 'list'
-          })
-        } else if (element.tag === 'img') {
-          if (element.props.src) {
-            if (element.props.src === IMAGE_SRC_TO_REPLACE) {
-              // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
-              element.props.src = IMAGE_SRC_REPLACEMENT
-            }
-
-            pdfContent.content.push({
-              image: `SRC:${element.props.src}`,
-              width: 450,
-              headlineLevel
-            })
-
-            pdfContent.images[`SRC:${element.props.src}`] = element.props.src.includes('http') ? element.props.src : `${baseUrl}${element.props.src}`
           }
-        } else {
-          pdfContent.content.push({
-            stack: extractText(element.children),
-            style: element.tag,
+        }
+
+        if (element.tag === 'img' && element.props.src) {
+          if (element.props.src === IMAGE_SRC_TO_REPLACE) {
+            // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
+            element.props.src = IMAGE_SRC_REPLACEMENT
+          }
+
+          const maxWidth = A4[0] - (PAGE_MARGINS * 2)
+          const pxToPtRatio = 0.75
+
+          pdfContent.images[`SRC:${element.props.src}`] = element.props.src.includes('http') ? element.props.src : `${baseUrl}${element.props.src}`
+          return {
+            image: `SRC:${element.props.src}`,
+            width: element.props.width ? Math.min(element.props.width * pxToPtRatio, maxWidth) : maxWidth,
             headlineLevel
+          }
+        }
+
+        if (element.tag === 'div' && element.props.dataType === 'columnBlock') {
+          return {
+            columns: element.children
+              .filter(div => div.props.dataType === 'column')
+              .map(col => ({
+                stack: col.children.map(colChild => transformElementToContent(colChild))
+              }))
+          }
+        }
+
+        if (element.tag === 'table') {
+          const tableRowElements = element.children[0].children
+          const columnsCount = Math.max(...tableRowElements.map(row => row.children.length))
+
+          const tableContent = {
+            style: 'table',
+            table: {
+              headerRows: 1,
+              widths: new Array(columnsCount).fill('auto'),
+              body: tableRowElements.map(row => row.children.flatMap((cell) => {
+                const cellContent = {
+                  style: cell.tag, // th or td
+                  rowSpan: Number(cell.props.rowSpan ?? 1),
+                  colSpan: Number(cell.props.colSpan ?? 1),
+                  stack: cell.children.map((cellChild, index) => {
+                    const content = transformElementToContent(cellChild)
+                    if (index === cell.children.length - 1) {
+                      // remove the margin of the last element
+                      content.margin = [0, 0, 0, 0]
+                    }
+                    return content
+                  }),
+                  borderColor: new Array(4).fill('#ced4da')
+                }
+
+                // insert empty cells for col spans
+                return [cellContent, ...(new Array(cellContent.colSpan - 1).fill(''))]
+              }))
+            }
+          }
+
+          // insert empty cells for row spans
+          const rows = tableContent.table.body
+          rows.forEach((row, rowIndex) => {
+            row.forEach((cell, cellIndex) => {
+              if (cell.rowSpan > 1) {
+                rows[rowIndex + 1].splice(cellIndex, 0, ...(new Array(cell.colSpan).fill('')))
+              }
+            })
           })
+
+          return tableContent
+        }
+
+        return {
+          stack: extractText(element.children),
+          style: element.tag,
+          headlineLevel
         }
       }
 
       const elements = []
-      const elementsTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'img']
+      const elementsTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'img', 'div', 'table']
       // const textTags = ['strong', 'u', 'a']
 
       function pushElements (body, depth) {
@@ -351,7 +432,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         if (element.tag === 'pageBreak') {
           elements[index + 1].headlineLevel = 1
         }
-        addElementToContent(element)
+        pdfContent.content.push(transformElementToContent(element))
       })
 
       await this.pdfFromContent(pdfContent, `${project.doc_type} - ${project.name}`)

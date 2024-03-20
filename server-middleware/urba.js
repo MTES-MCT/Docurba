@@ -6,6 +6,8 @@ import { mapValues, get } from 'lodash'
 import procedures from './modules/procedures.js'
 import departements from './Data/INSEE/departements.json'
 
+// exports maps
+import prescriptionsMap from './modules/exportMaps/prescriptions.js'
 import sudocuhCommunes from './modules/exportMaps/sudocuhCommunes.js'
 
 const csvParser = new AsyncParser()
@@ -47,8 +49,22 @@ app.get('/exports/communes', async (req, res) => {
 
 app.get('/exports/communes/:inseeCode', async (req, res) => {
   const commune = await procedures.getCommune(req.params.inseeCode)
-
   res.status(200).send(mapValues(sudocuhCommunes, key => get(commune, key, '')))
+})
+
+app.get('/exports/prescriptions', async (req, res) => {
+  const { data: prescriptions } = await supabase.from('prescriptions').select('*')
+
+  if (req.query.csv) {
+    const mappedPrescriptions = prescriptions.map((prescription) => {
+      return mapValues(prescriptionsMap, key => get(prescription, key, ''))
+    })
+
+    const csv = await csvParser.parse(mappedPrescriptions).promise()
+    res.status(200).attachment('prescriptions.csv').send(csv)
+  } else {
+    res.status(200).send(prescriptions)
+  }
 })
 
 module.exports = app

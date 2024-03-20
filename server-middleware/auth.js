@@ -48,7 +48,7 @@ app.post('/password', async (req, res) => {
 })
 
 async function magicLinkSignIn ({ email, redirectBasePath }) {
-  const { data: profiles } = await supabase.from('profiles').select('firstname, lastname').eq('email', email)
+  const { data: profiles } = await supabase.from('profiles').select('firstname, lastname, successfully_logged_once, collectivite_id').eq('email', email)
   const profile = profiles[0]
 
   if (!profile) {
@@ -58,7 +58,7 @@ async function magicLinkSignIn ({ email, redirectBasePath }) {
       type: 'magiclink',
       email,
       options: {
-        redirectTo: redirectBasePath
+        redirectTo: profile.successfully_logged_once ? `https://docurba.beta.gouv.fr/collectivites/${profile.collectivite_id}/` : redirectBasePath
       }
     })
 
@@ -70,11 +70,12 @@ async function magicLinkSignIn ({ email, redirectBasePath }) {
     if (properties && properties.action_link) {
       sendgrid.sendEmail({
         to: email,
-        template_id: 'd-766d017b51124a108cabc985d0dbf451',
+        template_id: profile.successfully_logged_once ? 'd-7a75390ea3334b66a5d9cfb9fa76e077' : 'd-766d017b51124a108cabc985d0dbf451',
         dynamic_template_data: {
           redirectURL: properties.action_link,
           firstname: profile.firstname,
           lastname: profile.lastname
+          // dashboard_url: `https://docurba.beta.gouv.fr/collectivites/${profile.collectivite_id}/`
         }
       })
     }
