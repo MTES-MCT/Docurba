@@ -778,6 +778,15 @@ export default {
   white-space: pre;
 }
 
+.pac-section-content .column-block {
+  width: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 24px;
+  padding: 8px 0;
+}
+
 .pac-section-content h1, .pac-section-content h2, .pac-section-content h3, .pac-section-content h4, .pac-section-content h5, .pac-section-content h6, .pac-section-content p {
   margin-bottom: 14px;
 }
@@ -816,5 +825,52 @@ export default {
 
 .v-item-group.v-expansion-panels, .v-item-group.v-expansion-panels .v-expansion-panel, .v-item-group.v-expansion-panels .v-expansion-panel-header, .v-item-group.v-expansion-panels .v-expansion-panel-content {
   transition: none !important;
+}
+
+.pac-section-content table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+ .pac-section-content table td, .pac-section-content table th {
+  min-width: 1em;
+  border: 2px solid #ced4da;
+  padding: 3px 5px;
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
+ .pac-section-content table td > *, .pac-section-content table th > * {
+  margin-bottom: 0;
+}
+ .pac-section-content table th {
+  font-weight: bold;
+  text-align: left;
+  background-color: #f1f3f5;
+}
+ .pac-section-content table .selectedCell:after {
+  z-index: 2;
+  position: absolute;
+  content: "";
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(200, 200, 255, 0.4);
+  pointer-events: none;
+}
+ .pac-section-content table .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: -2px;
+  width: 4px;
+  background-color: #adf;
+  pointer-events: none;
+}
+ .pac-section-content table p {
+  margin: 0;
 }
 </style>

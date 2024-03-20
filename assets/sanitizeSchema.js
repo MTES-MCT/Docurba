@@ -88,7 +88,7 @@ export const defaultSchema = {
       ['disabled', true]
     ],
     li: [['className', 'task-list-item']],
-    div: ['itemScope', 'itemType'],
+    div: [['className', 'column-block', 'column'], ['dataType', 'columnBlock', 'column'], 'itemScope', 'itemType'],
     blockquote: ['cite'],
     del: ['cite'],
     ins: ['cite'],
