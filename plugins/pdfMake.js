@@ -10,15 +10,6 @@ import departements from '@/assets/data/INSEE/departements_small.json'
 // This is only to speed up in test. Do not push in prod.
 // import sections from '@/assets/test/sections.json'
 
-pdfMake.fonts = {
-  Marianne: {
-    normal: 'https://docurba.beta.gouv.fr/fonts/Marianne/fontes_desktop/Marianne-Regular.otf',
-    bold: 'https://docurba.beta.gouv.fr/fonts/Marianne/fontes_desktop/Marianne-Bold.otf',
-    italics: 'https://docurba.beta.gouv.fr/fonts/Marianne/fontes_desktop/Marianne-RegularItalic.otf',
-    bolditalics: 'https://docurba.beta.gouv.fr/fonts/Marianne/fontes_desktop/Marianne-BoldItalic.otf'
-  }
-}
-
 const SOURCE_LABEL = {
   BASE_TERRITORIALE: 'Base territoriale',
   GEORISQUES: 'GéoRisques',
@@ -31,6 +22,8 @@ export default ({ $md, $isDev, $supabase }, inject) => {
   // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
   const IMAGE_SRC_TO_REPLACE = 'https://sante.gouv.fr/local/adapt-img/608/10x/IMG/jpg/Etat_de_sante_population.jpg?1680693100'
   const IMAGE_SRC_REPLACEMENT = `${baseUrl}/images/pac/Etat_de_sante_population.jpg`
+
+  const NARROW_NOBREAK_SPACE = ' '
 
   const PAGE_MARGINS = 40
 
@@ -238,7 +231,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           if (element.children && element.children.length) {
             content.text = extractText(element.children, Object.assign({}, params, newParams))
           } else if (!element.children) {
-            content.text = element.value || element
+            content.text = element.value?.replaceAll(NARROW_NOBREAK_SPACE, ' ') || element
           }
 
           return content
