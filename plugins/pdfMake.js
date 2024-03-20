@@ -60,6 +60,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           mark: { background: '#ffff00' },
           a: { decoration: 'underline', color: '#000091' },
           p: { fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 10] },
+          img: { margin: [0, 0, 0, 10] },
           list: { margin: [0, 0, 0, 10] },
           table: { margin: [0, 0, 0, 10] },
           th: { fillColor: '#f1f3f5', bold: true },
@@ -250,14 +251,6 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         if (!element.tag) {
           return {
             text: element.value || element,
-            headlineLevel
-          }
-        }
-
-        if (element.tag === 'p') {
-          return {
-            stack: element.children.map(child => transformElementToContent(child)),
-            style: element.tag,
             headlineLevel
           }
         }
