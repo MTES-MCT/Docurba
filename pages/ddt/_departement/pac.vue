@@ -58,7 +58,10 @@
                 </template>
                 <!-- eslint-disable-next-line vue/valid-v-slot -->
                 <template #item.actions="{ item }">
-                  <span>
+                  <span v-if="item.sharing">
+                    partagé le {{ new Date(item.sharing.created_at).toLocaleDateString() }} par {{ item.sharing.shared_by.firstname }} {{ item.sharing.shared_by.lastname }}
+                  </span>
+                  <span v-else>
                     créé le {{ new Date(item.created_at).toLocaleDateString() }}
                   </span>
 
@@ -80,13 +83,13 @@
                     </template>
 
                     <v-list>
-                      <v-list-item @click="openShareDialog(item)">
+                      <v-list-item v-if="!item.sharing" @click="openShareDialog(item)">
                         <v-list-item-title>Partager ce PAC</v-list-item-title>
                       </v-list-item>
                       <v-list-item @click="downloadPdf(item)">
                         <v-list-item-title>Télécharger en PDF</v-list-item-title>
                       </v-list-item>
-                      <v-list-item @click="archive(item)">
+                      <v-list-item v-if="!item.sharing" @click="archive(item)">
                         <v-list-item-title :style="{ color: '#e10600' }">
                           Supprimer le PAC
                         </v-list-item-title>
@@ -94,7 +97,14 @@
                     </v-list>
                   </v-menu>
 
-                  <v-btn elevation="0" depressed :to="`/trames/projet-${item.id}`" class="ml-4 edit-button">
+                  <v-btn
+                    elevation="0"
+                    depressed
+                    :to="item.sharing?.role === 'read'
+                      ? `/documents/projet-${item.id}/pac`
+                      : `/trames/projet-${item.id}`"
+                    class="ml-4 edit-button"
+                  >
                     Consulter
                     <v-icon right>
                       {{ icons.mdiArrowRight }}
@@ -120,7 +130,6 @@
 
 <script>
 import { mdiMagnify, mdiDotsVertical, mdiArrowRight } from '@mdi/js'
-import axios from 'axios'
 
 export default {
   layout: 'ddt',
@@ -139,8 +148,6 @@ export default {
         mdiDotsVertical,
         mdiArrowRight
       },
-      intercomunalites: [],
-      communes: [],
       creationDialog: false,
       shareDialog: false,
       shareProject: null,
@@ -158,33 +165,47 @@ export default {
     }
   },
   async mounted () {
-    const departement = this.$route.params.departement
-
-    const { data: communes } = await axios(`/api/geo/communes?departementCode=${departement}`)
-    const { data: intercomunalites } = await axios(`/api/geo/intercommunalites?departementCode=${departement}`)
-
-    this.communes = communes
-    this.intercomunalites = intercomunalites
-
     await this.fetchProjects()
     this.loading = false
   },
   methods: {
-    findCollectivity (code) {
-      return this.intercomunalites.find(i => i.code === code) || this.communes.find(c => c.code === code)
-    },
     async fetchProjects () {
-      const { data: projects } = await this.$supabase.from('projects').select('id, name, doc_type, towns, collectivite_id, PAC, trame, region, created_at').match({
-        owner: this.$user.id,
-        archived: false
-      })
+      const { data: ownProjects } = await this.$supabase
+        .from('projects')
+        .select('id, name, doc_type, towns, collectivite_id, trame, region, created_at')
+        .not('collectivite_id', 'is', null)
+        .match({
+          owner: this.$user.id,
+          archived: false
+        })
 
-      projects.forEach((project) => {
-        const collectivity = this.findCollectivity(project.collectivite_id)
-        project.collectivity = collectivity
-      })
+      const { data: sharings } = await this.$supabase
+        .from('projects_sharing')
+        .select('id, role, created_at, profiles (user_id, firstname, lastname), projects (id, name, doc_type, towns, collectivite_id, trame, region, created_at)')
+        .not('projects.collectivite_id', 'is', null)
+        .match({
+          user_email: this.$user.email,
+          'projects.archived': false
+        })
 
-      this.projects = projects.filter(project => !!project.collectivity)
+      this.projects = [
+        ...ownProjects,
+        ...sharings
+          .filter(sharing => sharing.projects)
+          .map(sharing => ({
+            ...sharing.projects,
+            sharing: {
+              id: sharing.id,
+              shared_by: {
+                ...sharing.profiles
+              },
+              role: sharing.role,
+              created_at: sharing.created_at
+            }
+          }))
+      ].sort((a, b) => {
+        return new Date(b.sharing?.created_at ?? b.created_at) - new Date(a.sharing?.created_at ?? a.created_at)
+      })
     },
     customFilter (value, search, item) {
       if (!search?.length || !value?.length) { return true }
