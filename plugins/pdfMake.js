@@ -284,6 +284,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           return {
             image: `SRC:${element.props.src}`,
             width: element.props.width ? Math.min(element.props.width * pxToPtRatio, maxWidth) : maxWidth,
+            style: 'img',
             headlineLevel
           }
         }
@@ -362,8 +363,8 @@ export default ({ $md, $isDev, $supabase }, inject) => {
               if (elementsTags.includes(child.tag)) {
                 if (/^h[1-6]$/.test(child.tag)) {
                   const headerLevel = Number(child.tag.charAt(1))
-                  if (headerLevel <= depth) {
-                    child.tag = `h${Math.min(depth + 1, 6)}`
+                  if (depth + 2 > headerLevel) {
+                    child.tag = `h${Math.min(depth + 2, 6)}`
                   }
                 }
 

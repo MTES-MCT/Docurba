@@ -274,7 +274,7 @@ export default {
       }, {
         icon: mdiFormatHeader5,
         value: 5
-      }].filter(t => t.value > this.depth).concat(defaultTypos)
+      }].filter(t => this.depth + 1 < t.value).concat(defaultTypos)
     },
     readonlyBody () {
       return {
