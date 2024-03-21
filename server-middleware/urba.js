@@ -2,10 +2,10 @@
 import { AsyncParser } from '@json2csv/node'
 
 import express from 'express'
-import { mapValues, get } from 'lodash'
+import { mapValues, get, uniq } from 'lodash'
 import procedures from './modules/procedures.js'
 import departements from './Data/INSEE/departements.json'
-import supabase from './supabase.js'
+import supabase from './modules/supabase.js'
 
 // exports maps
 import prescriptionsMap from './modules/exportMaps/prescriptions.js'
@@ -55,6 +55,13 @@ app.get('/exports/communes/:inseeCode', async (req, res) => {
 
 app.get('/exports/prescriptions', async (req, res) => {
   const { data: prescriptions } = await supabase.from('prescriptions').select('*')
+
+  const userIds = uniq(prescriptions.map(p => p.user_id).filter(id => !!id))
+  const { data: profiles } = await supabase.from('profiles').select('*').in('user_id', userIds)
+
+  prescriptions.forEach((p) => {
+    p.profile = profiles.find(profile => p.user_id === profile.user_id)
+  })
 
   if (req.query.csv) {
     const mappedPrescriptions = prescriptions.map((prescription) => {
