@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="epcis && communes">
+  <v-container v-if="collectivites">
     <v-row>
       <v-col v-if="!clickedOnDocLink" cols="12">
         <v-alert type="info">
@@ -16,172 +16,132 @@
         <h1>Mes collectivités - {{ $route.params.departement }}</h1>
       </v-col>
       <v-col cols="12">
-        <div style="background-color: #F6F6F6;border: 1px solid #DDDDDD;border-radius:4px;" class="pa-6">
-          <v-text-field
-            v-model="search"
-            filled
-            hide-details=""
-            dense
-            style="max-width:500px"
-            label="Rechercher"
-          />
-        </div>
-      </v-col>
-      <v-col cols="12">
-        <v-tabs v-model="scope">
-          <v-tab>EPCI</v-tab>
-          <v-tab>Communes</v-tab>
-          <v-tab>SCOTs</v-tab>
-        </v-tabs>
-
-        <v-tabs-items v-model="scope">
-          <v-tab-item>
-            <v-data-table
-              :headers="headersEpci"
-              :items="epcis"
-              :items-per-page="50"
-              class="elevation-1"
-              :custom-filter="customFilter"
-              :search="search"
-              :loading="!epcis"
-              loading-text="Chargement des collectivités..."
-            >
-              <template #top />
-
-              <!-- eslint-disable-next-line -->
-            <template #item.competence="{ item }">
-                <div v-if="item.competenceSudocu || item.competencePLU" class="d-flex">
-                  <!-- <div class="competence-tag-sudocu mr-2" :style="{visibility: item.competenceSudocu ? 'visible' : 'hidden'}">
-                    C <span class="caption text-lowercase">Sudocu</span>
-                  </div> -->
-                  <div class="competence-tag-banatic mr-2" :style="{visibility: item.competencePLU ? 'visible' : 'hidden'}">
-                    C <span class="caption text-lowercase">BANATIC</span>
+        <v-data-table
+          :headers="headers"
+          :items="collectivites"
+          :items-per-page="10"
+          class="elevation-1 pa-8"
+          :custom-filter="customFilter"
+          :search="search"
+          :loading="!collectivites"
+          loading-text="Chargement des collectivités..."
+        >
+          <template #top>
+            <div class="d-flex  align-center justify-space-between">
+              <v-select
+                v-model="selectedCollectiviteTypesFilter"
+                flat
+                background-color="alt-beige"
+                hide-details
+                solo
+                multiple
+                dense
+                :items="collectiviteTypeFilterItems"
+                style="max-width:350px"
+              >
+                <template #selection="{item, index}">
+                  <div v-if="collectiviteTypeFilterItems.length === selectedCollectiviteTypesFilter.length && index === 0">
+                    Tous types de collectivité
                   </div>
-                </div>
-                <div v-else>
-                  -
-                </div>
-              </template>
-              <!-- eslint-disable-next-line -->
-            <template #item.actions="{ item }">
-                <div>
-                  <v-btn depressed color="primary" :to="item.path">
-                    Consulter
-                  </v-btn>
-                </div>
-              </template>
-            </v-data-table>
-          </v-tab-item>
-          <v-tab-item>
-            <v-data-table
-              v-if="communes"
-              :headers="headers"
-              :items="communes"
-              :items-per-page="50"
-              class="elevation-1"
-              :loading="!communes"
-              loading-text="Chargement des collectivités..."
-              :custom-filter="customFilter"
-              :search="search"
-            >
-              <!-- eslint-disable-next-line -->
-            <template #item.intercommunalite="{ item }">
+                  <span v-else-if="collectiviteTypeFilterItems.length !== selectedCollectiviteTypesFilter.length">
+                    {{ item.text }}<span v-if="index !== selectedCollectiviteTypesFilter.length - 1">,&nbsp;</span>
+                  </span>
+                </template>
+              </v-select>
+              <v-spacer />
+              <v-text-field
+                v-model="search"
+                outlined
+                hide-details
+                dense
+                style="max-width:400px"
+                label="Rechercher une collectivité..."
+              />
+            </div>
+          </template>
 
-                <div v-if="item.code">
-                  <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.code}/epci`">
-                    {{ item.intitule }}
-                  </nuxt-link>
-                </div>
-                <div v-else>
-                  -
-                </div>
-              </template>
-
-              <!-- eslint-disable-next-line -->
-            <template #item.competence="{ item }">
-                <div v-if="item.competenceSudocu || item.competencePLU" class="d-flex">
-                  <div class="competence-tag-sudocu mr-2" :style="{visibility: item.competenceSudocu ? 'visible' : 'hidden'}">
-                    C <span class="caption text-lowercase">Sudocu</span>
-                  </div>
-                  <div class="competence-tag-banatic mr-2" :style="{visibility: item.competencePLU ? 'visible' : 'hidden'}">
-                    C <span class="caption text-lowercase">BANATIC</span>
-                  </div>
-                </div>
-                <div v-else>
-                  -
-                </div>
-              </template>
-
-              <!-- eslint-disable-next-line -->
-            <template #item.actions="{ item }">
-                <div>
-                  <v-btn depressed color="primary" :to="item.path">
-                    Consulter
-                  </v-btn>
-                </div>
-              </template>
-            </v-data-table>
-          </v-tab-item>
-          <v-tab-item>
-            <DashboardSCOTsDepList :search="search" />
-          </v-tab-item>
-        </v-tabs-items>
+          <!-- eslint-disable-next-line -->
+          <template #item.name="{ item }">
+            <span>{{ item.code }} {{ item.intitule }}</span>
+          </template>
+          <!-- eslint-disable-next-line -->
+            <template #item.procedures="{ item }">
+            <div v-for="plan in item.plans" :key="plan.id">
+              {{ plan.doc_type }} &nbsp;
+              {{ plan.id }}
+            </div>
+          </template>
+          <!-- eslint-disable-next-line -->
+          <template #item.scots="{ item }">
+            <div v-for="scot in item.scots" :key="scot.id">
+              {{ scot.doc_type }} &nbsp;
+              {{ scot.id }}
+            </div>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-import axios from 'axios'
-
+import { groupBy, filter } from 'lodash'
 const docVersion = '1.0'
-
-const tabs = {
-  epci: 0,
-  communes: 1,
-  scot: 2
-}
-
 export default {
   name: 'CollectiviteDU',
   layout: 'ddt',
   data () {
     return {
+      selectedCollectiviteTypesFilter: ['COM', 'CA', 'CC', 'EPT', 'SM', 'SIVU', 'PETR'],
+      collectiviteTypeFilterItems: [
+        { text: 'Communes', value: 'COM' },
+        { text: 'CA', value: 'CA' },
+        { text: 'CC', value: 'CC' },
+        { text: 'EPT', value: 'EPT' },
+        { text: 'SM', value: 'SM' },
+        { text: 'SIVU', value: 'SIVU' },
+        { text: 'PETR', value: 'PETR' }
+      ],
       search: this.$route.query.search || '',
-      lastProcedures: null,
-      epcis: null,
-      communes: null,
-      scope: tabs[this.$route.query.tab] || 0,
+      referentiel: null,
       clickedOnDocLink: true
     }
   },
   computed: {
     headers () {
       return [
-        { text: 'Nom', align: 'start', value: 'intitule', filterable: true },
-        { text: 'Code INSEE', align: 'start', value: 'code', filterable: true },
-        { text: 'Compétence', value: 'competence', filterable: false },
-        { text: 'Intercommunalité', value: 'type', filterable: false },
-        { text: 'Actions', value: 'actions', filterable: false }
+        { text: 'Nom', align: 'start', value: 'name', filterable: true },
+        { text: 'Type', align: 'start', value: 'type', filterable: true },
+        { text: 'Procédures', value: 'procedures', filterable: false },
+        { text: 'SCOTs', value: 'scots', filterable: false }
       ]
     },
-    headersEpci () {
-      return [
-        { text: 'Nom', align: 'start', value: 'intitule', filterable: true },
-        { text: 'SIREN', align: 'start', value: 'code', filterable: true },
-        { text: 'Type', value: 'type', filterable: false },
-        { text: 'Compétence', value: 'competence', filterable: false },
-        { text: 'Actions', value: 'actions', filterable: false }
-      ]
+    collectivites () {
+      return this.referentiel?.filter(e => this.selectedCollectiviteTypesFilter.includes(e.type))
     }
   },
   async mounted () {
-    this.clickedOnDocLink = (localStorage.getItem('docVersion') === docVersion)
+    const rawProcedures = this.$urbanisator.getProceduresByCommunes(this.$route.params.departement)
+    const rawReferentiel = fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
 
-    const { data: collectivites } = await axios.get(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
-    console.log('collec: ', collectivites)
-    this.epcis = collectivites.groupements.map(e => ({ ...e, path: `/ddt/${e.departementCode}/collectivites/${e.code}/epci` }))
-    this.communes = collectivites.communes.map(e => ({ ...e, path: `/ddt/${e.departementCode}/collectivites/${e.code}/commune` }))
+    const [procedures, referentiel] = await Promise.all([rawProcedures, rawReferentiel])
+    const { communes, groupements } = await referentiel.json()
+    // TODO: Faire la meme chose sur les SCoTs
+    const enrichedGroups = groupements.map((groupement) => {
+      const proceduresGroupement = groupement.membres.map(membre => procedures[membre.code]?.plans).flat().filter(e => e)
+      const perimetre = groupBy(proceduresGroupement, e => e.procedure_id)
+      const proceduresPerimInter = filter(perimetre, e => e.length > 1)
+      const proceduresInter = proceduresPerimInter.map(e => e?.[0].procedures_duplicate)
+      return { ...groupement, plans: proceduresInter }
+    })
+
+    const enrichedCommunes = communes.map(e => ({
+      ...e,
+      plans: procedures[e.code]?.plans.map(y => y.procedures_duplicate),
+      scots: procedures[e.code]?.scots.map(y => y.procedures_duplicate)
+    }))
+    const flattenReferentiel = [...enrichedGroups, ...enrichedCommunes]
+    this.referentiel = flattenReferentiel
   },
   methods: {
     customFilter (value, search, item) {

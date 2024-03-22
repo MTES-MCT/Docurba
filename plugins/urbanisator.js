@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { groupBy } from 'lodash'
+import { groupBy, uniqBy, mapValues } from 'lodash'
 
 export default ({ $supabase, $dayjs }, inject) => {
   Vue.filter('docType', function (procedure) {
@@ -19,6 +19,40 @@ export default ({ $supabase, $dayjs }, inject) => {
   inject('urbanisator', {
     isEpci (collectiviteId) {
       return collectiviteId.length > 5
+    },
+    async getProceduresByCommunes (departementCode) {
+      // TODO: Update postgres to make order works
+      // TODO: Optimise with index, selected fields, order and limit
+      const { data } = await $supabase.from('procedures_perimetres')
+        .select('*, procedures_duplicate(*, doc_frise_events_duplicate(*))')
+        .eq('departement', departementCode)
+        // .order('date_iso', { referencedTable: 'procedures_duplicate.doc_frise_events_duplicate', ascending: false })
+      const groupedProceduresPerim = groupBy(data, e => e.collectivite_code)
+      const planScotsSeparated = mapValues(groupedProceduresPerim, (e) => {
+        const plans = e.filter(e => !e.procedures_duplicate.is_scot)
+        const scots = e.filter(e => e.procedures_duplicate.is_scot)
+        return { scots, plans }
+      })
+      return planScotsSeparated
+    },
+    async getProceduresForDept (departementCode, { minimal = false } = {}) {
+      // TODO: Update postgres to make order works
+      // TODO: Optimise with index, selected fields, order and limit
+      let select = '*, procedures_duplicate(*, doc_frise_events_duplicate(*))'
+      if (minimal) {
+        select = '*, procedures_duplicate(*, doc_frise_events_duplicate(*))'
+      }
+      const { data } = await $supabase.from('procedures_perimetres')
+        .select(select)
+        .eq('departement', departementCode)
+        // .order('date_iso', { referencedTable: 'procedures_duplicate.doc_frise_events_duplicate', ascending: false })
+      const groupedProceduresPerim = groupBy(data, e => e.procedure_id)
+      const procedures = data.map((e) => {
+        const lastEvent = e.procedures_duplicate.doc_frise_events_duplicate[0]
+        const prescriptionDate = e.procedures_duplicate.doc_frise_events_duplicate.find(e => e.code === 'PRES')
+        return { ...e, perimetre: groupedProceduresPerim[e.procedure_id], last_event: lastEvent, prescription: prescriptionDate }
+      })
+      return uniqBy(procedures, e => e.procedure_id)
     },
     async getCommuneProcedures (inseeCode) {
       const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*').eq('collectivite_code', inseeCode)
