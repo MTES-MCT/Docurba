@@ -1,5 +1,6 @@
 const axios = require('axios')
 const geo = require('./geo.js')
+const supabase = require('./supabase.js')
 
 module.exports = {
   requestDepotActe (userData) {
@@ -165,45 +166,47 @@ module.exports = {
   }) {
     const collectivite = geo.getCollectivite(procedureData.collectivite_porteuse_id)
 
+    const data = {
+      text: `Nouvel event ${eventData.type}`,
+      blocks: [
+        {
+          type: 'header',
+          text: {
+            type: 'plain_text',
+            text: `Nouvel event ${eventData.type}`
+          }
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `- Frise: https://docurba.beta.gouv.fr/frise/${eventData.procedure_id}`
+          }
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `- User: ${userData.email}, ${userData.poste}`
+          }
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `- Collectivite: ${collectivite.intitule}(${collectivite.code}), departement ${collectivite.departementCode}`
+          }
+        },
+        {
+          type: 'divider'
+        }
+      ]
+    }
+
     return axios({
       url: process.env.SLACK_EVENT_CTBE,
       method: 'post',
-      data: {
-        text: `Nouvel event ${eventData.type}`,
-        blocks: [
-          {
-            type: 'header',
-            text: {
-              type: 'plain_text',
-              text: `Nouvel event ${eventData.type}`
-            }
-          },
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `- Frise: https://docurba.beta.gouv.fr/frise/${eventData.procedure_id}`
-            }
-          },
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `- User: ${userData.email}, ${userData.poste}`
-            }
-          },
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `- Collectivite: ${collectivite.intitule}(${collectivite.code}), departement ${collectivite.departementCode}`
-            }
-          },
-          {
-            type: 'divider'
-          }
-        ]
-      }
+      data
     })
   }
 }
