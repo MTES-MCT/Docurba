@@ -150,6 +150,7 @@
     </v-card-text>
   </v-card>
 </template>
+
 <script>
 import { Editor, EditorContent } from '@tiptap/vue-2'
 import { StarterKit } from '@tiptap/starter-kit'
@@ -210,8 +211,7 @@ export default {
           Underline,
           Link,
           Image.configure({
-            allowBase64: true,
-            inline: true
+            allowBase64: true
           }),
           Resizable,
           Table,
@@ -424,7 +424,7 @@ export default {
   margin: -8px;
 }
 
-.tvwysiwyg-editor h1, .tvwysiwyg-editor h2, .tvwysiwyg-editor h3, .tvwysiwyg-editor h4, .tvwysiwyg-editor h5, .tvwysiwyg-editor h6, .tvwysiwyg-editor p {
+.tvwysiwyg-editor h1, .tvwysiwyg-editor h2, .tvwysiwyg-editor h3, .tvwysiwyg-editor h4, .tvwysiwyg-editor h5, .tvwysiwyg-editor h6, .tvwysiwyg-editor p, .tvwysiwyg-editor img {
   margin-bottom: 14px;
 }
 
