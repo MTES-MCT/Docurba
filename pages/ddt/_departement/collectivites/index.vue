@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="collectivites">
+  <v-container>
     <v-row>
       <v-col v-if="!clickedOnDocLink" cols="12">
         <v-alert type="info">
@@ -15,19 +15,24 @@
       <v-col cols="12">
         <h1>Mes collectivités - {{ $route.params.departement }}</h1>
       </v-col>
-      <v-col cols="12">
+      <v-col v-if="!collectivites" cols="12">
+        <v-skeleton-loader
+          type="table"
+        />
+      </v-col>
+      <v-col v-else cols="12">
         <v-data-table
           :headers="headers"
           :items="collectivites"
           :items-per-page="10"
-          class="elevation-1 pa-8"
+          class="elevation-1 pa-8 collectivites-dt"
           :custom-filter="customFilter"
           :search="search"
           :loading="!collectivites"
           loading-text="Chargement des collectivités..."
         >
           <template #top>
-            <div class="d-flex  align-center justify-space-between">
+            <div class="d-flex align-center justify-space-between mb-6">
               <v-select
                 v-model="selectedCollectiviteTypesFilter"
                 flat
@@ -62,13 +67,30 @@
 
           <!-- eslint-disable-next-line -->
           <template #item.name="{ item }">
-            <span>{{ item.code }} {{ item.intitule }}</span>
+            <div class="my-5">
+              <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`" class="text-decoration-none font-weight-bold">
+                {{ item.code }} {{ item.intitule }}
+              </nuxt-link>
+            </div>
           </template>
           <!-- eslint-disable-next-line -->
             <template #item.procedures="{ item }">
-            <div v-for="plan in item.plans" :key="plan.id">
-              {{ plan.doc_type }} &nbsp;
-              {{ plan.id }}
+            <div class="my-6">
+              <div v-for="(plan, index) in item.plans" :key="plan.id" class="mb-4">
+                <template v-if="index < 2">
+                  <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${plan.id}`">
+                    {{ plan.doc_type_code }}
+                    {{ plan.id }}
+                  </nuxt-link>
+                  <v-chip class="ml-2 success--text font-weight-bold" small label color="success-light">
+                    OPPOSABLE
+                  </v-chip>
+                  <v-chip class="ml-2 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
+                    EN COURS
+                  </v-chip>
+                </template>
+                <a v-else class="font-weight-bold">+ {{ item.plans.length - 2 }} procédures</a>
+              </div>
             </div>
           </template>
           <!-- eslint-disable-next-line -->
@@ -110,10 +132,10 @@ export default {
   computed: {
     headers () {
       return [
-        { text: 'Nom', align: 'start', value: 'name', filterable: true },
-        { text: 'Type', align: 'start', value: 'type', filterable: true },
-        { text: 'Procédures', value: 'procedures', filterable: false },
-        { text: 'SCOTs', value: 'scots', filterable: false }
+        { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '30%' },
+        { text: 'Type', align: 'start', value: 'type', filterable: true, width: '10%' },
+        { text: 'Procédures', value: 'procedures', filterable: false, width: '30%' },
+        { text: 'SCOTs', value: 'scots', filterable: false, width: '30%' }
       ]
     },
     collectivites () {
@@ -145,6 +167,7 @@ export default {
   },
   methods: {
     customFilter (value, search, item) {
+      console.log('search: ', search, ' value: ', value, ' item: ', item)
       if (!search?.length || !value?.length) { return true }
 
       const normalizedValue = value.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
@@ -159,31 +182,12 @@ export default {
   }
 }
 </script>
+
 <style lang="scss">
-.competence-tag-sudocu{
-  background: #FEECC2;
-  border-radius: 4px;
-  text-transform: uppercase;
-  color: #716043;
-  font-family: 'Marianne';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 24px;
-  padding: 0px 8px;
+.collectivites-dt {
+  tr th{
+    font-size: 14px !important;
+    color: #000 !important;
+  }
 }
-
-.competence-tag-banatic{
-  background: var(--v-primary-base);
-  border-radius: 4px;
-  text-transform: uppercase;
-  color: var(--v-primary-lighten1);
-  font-family: 'Marianne';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 24px;
-  padding: 0px 8px;
-}
-
 </style>

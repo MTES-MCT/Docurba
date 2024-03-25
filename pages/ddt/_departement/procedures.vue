@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="procedures">
+  <v-container>
     <v-row>
       <v-col cols="12" class="d-flex align-center justify-space-between pb-0 pt-4">
         <h1>Mes Procédures</h1>
@@ -12,19 +12,24 @@
           </v-btn>
         </div>
       </v-col>
-      <v-col cols="12">
+      <v-col v-if="!procedures" cols="12">
+        <v-skeleton-loader
+          type="table"
+        />
+      </v-col>
+      <v-col v-else cols="12">
         <v-data-table
           :headers="headers"
           :items="procedures"
           :items-per-page="10"
-          class="elevation-1 pa-8"
+          class="elevation-1 pa-8 procedures-dt"
           :custom-filter="customFilter"
           :search="search"
           :loading="!procedures"
           loading-text="Chargement des collectivités..."
         >
           <template #top>
-            <div class="d-flex  align-center justify-space-between">
+            <div class="d-flex  align-center justify-space-between mb-6">
               <v-select
                 v-model="selectedTypesFilter"
                 flat
@@ -102,24 +107,30 @@
 
           <!-- eslint-disable-next-line -->
           <template #item.name="{ item }">
-            <span>{{ item.procedures_duplicate.doc_type }} {{ item.procedures_duplicate.id }}</span>
-          </template>
-
-          <!-- eslint-disable-next-line -->
-            <template #item.perimetre="{ item }">
-            <div>
-              {{ item.perimetre?.length }} communes
+            <div class="d-flex align-center my-5">
+              <a class="d-inline-block font-weight-bold text-truncate" style="max-width: 300px;">{{ item.procedures_duplicate.doc_type }} {{ item.procedures_duplicate.id }}</a>
+              <v-chip class="ml-2 success--text font-weight-bold" small label color="success-light">
+                OPPOSABLE
+              </v-chip>
+              <v-chip class="ml-2 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
+                EN COURS
+              </v-chip>
             </div>
           </template>
 
           <!-- eslint-disable-next-line -->
+            <template #item.perimetre="{ item }">
+            <DashboardPerimetreDialog :perimetre="item.perimetre" :doc-name="`${item.procedures_duplicate.doc_type}${item.procedures_duplicate.id}`" />
+          </template>
+
+          <!-- eslint-disable-next-line -->
           <template #item.prescription="{ item }">
-            <span>{{ item.prescription?.date_iso }}</span>
+            <span class="mention-grey--text">{{ item.prescription?.date_iso }}</span>
           </template>
 
           <!-- eslint-disable-next-line -->
           <template #item.last_event="{ item }">
-            <span>{{ item.last_event?.date_iso }} - {{ item.last_event?.type }}</span>
+            <span class="mention-grey--text">{{ item.last_event?.date_iso }} - {{ item.last_event?.type }}</span>
           </template>
         </v-data-table>
       </v-col>
@@ -128,6 +139,8 @@
 </template>
 
 <script>
+import dayjs from 'dayjs'
+
 export default {
   name: 'ProceduresDepartement',
   layout: 'ddt',
@@ -148,14 +161,19 @@ export default {
   computed: {
     headers () {
       return [
-        { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '40%' },
-        { text: 'Périmetre', align: 'start', value: 'perimetre', filterable: false },
-        { text: 'Prescription', value: 'prescription', filterable: false },
+        { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '45%' },
+        { text: 'Périmetre', align: 'start', value: 'perimetre', filterable: false, width: '150px' },
+        { text: 'Prescription', value: 'prescription', filterable: false, width: '135px' },
         { text: 'Dernier évènement', value: 'last_event', filterable: false }
       ]
     },
     procedures () {
-      return this.rawProcedures?.filter(e => this.selectedDocumentsFilter.includes(e.procedures_duplicate.doc_type))
+      return this.rawProcedures?.map((e) => {
+        if (e.prescription?.date_iso) {
+          e.prescription.date_iso = dayjs(e.date_iso).format('DD/MM/YY')
+        }
+        return e
+      }).filter(e => this.selectedDocumentsFilter.includes(e.procedures_duplicate.doc_type))
     }
   },
   async mounted () {
@@ -175,30 +193,13 @@ export default {
 }
 </script>
 <style lang="scss">
-.competence-tag-sudocu{
-  background: #FEECC2;
-  border-radius: 4px;
-  text-transform: uppercase;
-  color: #716043;
-  font-family: 'Marianne';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 24px;
-  padding: 0px 8px;
+.procedures-dt {
+  tr td{
+    border-bottom: none !important;
+  }
+  tr th{
+    font-size: 14px !important;
+    color: #000 !important;
+  }
 }
-
-.competence-tag-banatic{
-  background: var(--v-primary-base);
-  border-radius: 4px;
-  text-transform: uppercase;
-  color: var(--v-primary-lighten1);
-  font-family: 'Marianne';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 24px;
-  padding: 0px 8px;
-}
-
 </style>
