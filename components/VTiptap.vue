@@ -85,6 +85,7 @@
               depressed
               tile
               icon
+              :disabled="editor.isActive('bulletList')"
               v-on="on"
               @click="$refs['imageFileInput'].click()"
             >

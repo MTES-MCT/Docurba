@@ -16,6 +16,12 @@ const SOURCE_LABEL = {
   INPN: 'INPN'
 }
 
+const PAGE_MARGINS = 40
+const MAX_WIDTH = A4[0] - (PAGE_MARGINS * 2)
+const COLUMN_GAP = 12
+
+const NARROW_NOBREAK_SPACE = ' '
+
 export default ({ $md, $isDev, $supabase }, inject) => {
   const baseUrl = $isDev ? 'http://localhost:3000' : location.origin
 
@@ -24,10 +30,6 @@ export default ({ $md, $isDev, $supabase }, inject) => {
     'https://sante.gouv.fr/local/adapt-img/608/10x/IMG/jpg/Etat_de_sante_population.jpg?1680693100': `${baseUrl}/images/Etat_de_sante_population.jpg`,
     'https://lh4.googleusercontent.com/iw_QbyDpmWeaIpHvqGXuugWtrHxRSRSAIijQ7qIZhg6QVFEvVkTcBXbnoGUobHmTHvwT43aRCxuuvarl-84pdJo7I0YkY7rYJgZFGqrN5lvql59O0J_KvLpO1jZIdqUzXCNjIeAdikbS4vKr8CBuTjg': `${baseUrl}/images/ORT.png`
   }
-
-  const NARROW_NOBREAK_SPACE = ' '
-
-  const PAGE_MARGINS = 40
 
   pdfMake.fonts = {
     Marianne: {
@@ -256,10 +258,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
 
         if (element.tag === 'ul' || element.tag === 'ol') {
           return {
-            [element.tag]: element.children.map(listItem => ({
-              style: listItem.tag, // li
-              stack: listItem.children.map(listItemChild => transformElementToContent(listItemChild))
-            })),
+            [element.tag]: extractText(element.children),
             headlineLevel,
             style: 'list'
           }
@@ -275,13 +274,10 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             element.props.src = element.props.src.replace('https://docurba.beta.gouv.fr', baseUrl)
           }
 
-          const maxWidth = A4[0] - (PAGE_MARGINS * 2)
-          const pxToPtRatio = 0.75
-
           pdfContent.images[`SRC:${element.props.src}`] = element.props.src.includes('http') ? element.props.src : `${baseUrl}${element.props.src}`
           return {
             image: `SRC:${element.props.src}`,
-            width: element.props.width ? Math.min(element.props.width * pxToPtRatio, maxWidth) : maxWidth,
+            width: element.props.width ? Math.min(element.props.width, MAX_WIDTH) : MAX_WIDTH,
             style: 'img',
             headlineLevel
           }
@@ -292,8 +288,15 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             columns: element.children
               .filter(div => div.props.dataType === 'column')
               .map(col => ({
-                stack: col.children.map(colChild => transformElementToContent(colChild))
-              }))
+                stack: col.children.map((colChild) => {
+                  // if there is an image in a column, set size to full column size
+                  if (colChild.tag === 'img') {
+                    colChild.props.width = (MAX_WIDTH - COLUMN_GAP) / 2
+                  }
+                  return transformElementToContent(colChild)
+                })
+              })),
+            columnGap: COLUMN_GAP
           }
         }
 
@@ -427,7 +430,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
     },
     getTitle (githubRef, project) {
       if (project) {
-        return this.project.name
+        return project.name
       }
 
       if (githubRef.startsWith('dept')) {
