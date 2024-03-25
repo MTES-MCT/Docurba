@@ -7,7 +7,23 @@ module.exports = {
       url: process.env.SLACK_WEBHOOK,
       method: 'post',
       data: {
-        text: `Vérification de l'email ${userData.email} pour le depot d'acte de ${userData.isEpci ? 'l\'EPCI' : 'la commune'}:  ${userData.collectivite.intitule} (${userData.collectivite.region.intitule})`
+        text: `Vérification de l'email ${userData.email} pour le depot d'acte de ${userData.isEpci ? 'l\'EPCI' : 'la commune'}:  ${userData.collectivite.intitule} (${userData.collectivite.region.intitule})`,
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: `Vérification de l'email ${userData.email} pour le depot d'acte de ${userData.isEpci ? 'l\'EPCI' : 'la commune'}:  ${userData.collectivite.intitule} (${userData.collectivite.region.intitule})`
+            }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `https://docurba.beta.gouv.fr/collectivites/${userData.collectivite.code}/prescriptions`
+            }
+          }
+        ]
       }
     })
   },
