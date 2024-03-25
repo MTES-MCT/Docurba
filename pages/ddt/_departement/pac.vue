@@ -172,7 +172,7 @@ export default {
     async fetchProjects () {
       const { data: ownProjects } = await this.$supabase
         .from('projects')
-        .select('id, name, doc_type, towns, collectivite_id, trame, region, created_at')
+        .select('id, name, doc_type, towns, collectivite_id, trame, region, PAC, created_at')
         .not('collectivite_id', 'is', null)
         .match({
           owner: this.$user.id,
@@ -181,7 +181,7 @@ export default {
 
       const { data: sharings } = await this.$supabase
         .from('projects_sharing')
-        .select('id, role, created_at, profiles (user_id, firstname, lastname), projects (id, name, doc_type, towns, collectivite_id, trame, region, created_at)')
+        .select('id, role, created_at, profiles (user_id, firstname, lastname), projects (id, name, doc_type, towns, collectivite_id, trame, region, PAC, created_at)')
         .not('projects.collectivite_id', 'is', null)
         .match({
           user_email: this.$user.email,

@@ -1,7 +1,7 @@
 import axios from 'axios'
 import pdfMake from 'pdfmake/build/pdfmake'
 import { A4 } from 'pdfmake/src/standardPageSizes'
-import orderSections from '@/mixins/orderSections.js'
+import mixin from '@/mixins/orderSections.js'
 import departements from '@/assets/data/INSEE/departements_small.json'
 
 // import pdfFonts from 'pdfmake/build/vfs_fonts'
@@ -20,8 +20,10 @@ export default ({ $md, $isDev, $supabase }, inject) => {
   const baseUrl = $isDev ? 'http://localhost:3000' : location.origin
 
   // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
-  const IMAGE_SRC_TO_REPLACE = 'https://sante.gouv.fr/local/adapt-img/608/10x/IMG/jpg/Etat_de_sante_population.jpg?1680693100'
-  const IMAGE_SRC_REPLACEMENT = `${baseUrl}/images/pac/Etat_de_sante_population.jpg`
+  const IMAGES_TO_REPLACE = {
+    'https://sante.gouv.fr/local/adapt-img/608/10x/IMG/jpg/Etat_de_sante_population.jpg?1680693100': `${baseUrl}/images/Etat_de_sante_population.jpg`,
+    'https://lh4.googleusercontent.com/iw_QbyDpmWeaIpHvqGXuugWtrHxRSRSAIijQ7qIZhg6QVFEvVkTcBXbnoGUobHmTHvwT43aRCxuuvarl-84pdJo7I0YkY7rYJgZFGqrN5lvql59O0J_KvLpO1jZIdqUzXCNjIeAdikbS4vKr8CBuTjg': `${baseUrl}/images/ORT.png`
+  }
 
   const NARROW_NOBREAK_SPACE = ' '
 
@@ -83,29 +85,16 @@ export default ({ $md, $isDev, $supabase }, inject) => {
     },
     // fetchGithubRef could go into its own plugin/mixin.
     async fetchGithubRef (githubRef, project) {
-      const { data: [{ PAC: selectedSections }] } = await $supabase.from('projects').select('PAC').eq('id', project.id)
-
       const { data: sections } = await axios({
         method: 'get',
         url: `${baseUrl}/api/trames/tree/${githubRef}?content=all`
       })
 
-      function deptToRef (deptCode) {
-        if (deptCode?.includes('A') || deptCode?.includes('B')) {
-          return deptCode
-        } else {
-          return +deptCode
-        }
-      }
+      const { data: supSections } = await $supabase.from('pac_sections')
+        .select('*')
+        .in('ref', window.$nuxt.$options.filters.allHeadRefs(githubRef, project))
 
-      const { data: supSections } = await $supabase.from('pac_sections').select('*').in('ref', [
-        githubRef,
-        `dept-${deptToRef(project?.trame)}`,
-        `region-${project?.towns ? project.towns[0].regionCode : ''}`,
-        'main'
-      ])
-
-      orderSections.methods.orderSections(sections, supSections)
+      mixin.methods.orderSections(sections, supSections)
 
       const { data: attachments } = await $supabase.from('pac_sections_data').select('*').eq('ref', githubRef)
 
@@ -159,12 +148,15 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         pushAttachments(section)
 
         if (section.children) {
-          section.children = section.children.filter(c => paths.includes(c.path))
+          if (paths) {
+            section.children = section.children.filter(c => paths.includes(c.path))
+          }
           section.children.forEach(c => parseSection(c, paths))
         }
       }
 
-      const parsedSections = sections.filter(s => selectedSections.includes(s.path))
+      const selectedSections = project?.PAC
+      const parsedSections = selectedSections ? sections.filter(s => selectedSections.includes(s.path)) : sections
       parsedSections.forEach(s => parseSection(s, selectedSections))
 
       return parsedSections
@@ -172,23 +164,25 @@ export default ({ $md, $isDev, $supabase }, inject) => {
     async pdfFromRef (githubRef, project) {
       const roots = await this.fetchGithubRef(githubRef, project)
 
-      const dept = departements.find(d => d.code === project.trame)
+      const dept = departements.find(d => d.code === project?.trame)
 
       const pdfContent = {
         content: [
           {
-            columns: [{
-              width: 100,
-              fit: [100, 100],
-              image: 'logo'
-            }, {
-              width: '*',
-              text: `Direction départementale des territoires \n ${dept.intitule}`,
-              style: 'ddt'
-            }]
+            columns: [
+              {
+                width: 100,
+                fit: [100, 100],
+                image: 'logo'
+              }, {
+                width: '*',
+                text: project ? `Direction départementale des territoires \n ${dept.intitule}` : '',
+                style: 'ddt'
+              }
+            ]
           },
           {
-            text: project.name,
+            text: this.getTitle(githubRef, project),
             style: 'title',
             margin: [0, 200, 0, 0]
           },
@@ -272,9 +266,13 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         }
 
         if (element.tag === 'img' && element.props.src) {
-          if (element.props.src === IMAGE_SRC_TO_REPLACE) {
+          if (IMAGES_TO_REPLACE[element.props.src]) {
             // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
-            element.props.src = IMAGE_SRC_REPLACEMENT
+            element.props.src = IMAGES_TO_REPLACE[element.props.src]
+          }
+
+          if ($isDev && element.props.src.startsWith('https://docurba.beta.gouv.fr')) {
+            element.props.src = element.props.src.replace('https://docurba.beta.gouv.fr', baseUrl)
           }
 
           const maxWidth = A4[0] - (PAGE_MARGINS * 2)
@@ -422,7 +420,25 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         pdfContent.content.push(transformElementToContent(element))
       })
 
-      await this.pdfFromContent(pdfContent, `${project.doc_type} - ${project.name}`)
+      await this.pdfFromContent(
+        pdfContent,
+        project ? `${project.doc_type} - ${project.name}` : this.getTitle(githubRef)
+      )
+    },
+    getTitle (githubRef, project) {
+      if (project) {
+        return this.project.name
+      }
+
+      if (githubRef.startsWith('dept')) {
+        return 'Trame départementale'
+      }
+      if (githubRef.startsWith('region')) {
+        return 'Trame régionale'
+      }
+      if (githubRef === 'main') {
+        return 'Trame nationale'
+      }
     }
   }
 

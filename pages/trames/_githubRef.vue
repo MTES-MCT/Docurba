@@ -5,10 +5,12 @@
         <PACEditingAdvicesCard :avoided-tags="(project && project.id) ? [] : ['projet']" />
       </v-col>
     </v-row>
-    <v-row v-if="project && collectivite">
+    <v-row>
       <v-col>
-        <h1>{{ project.name }}</h1>
-        <h2 class="text-subtitle">
+        <h1 v-if="title">
+          {{ title }}
+        </h1>
+        <h2 v-if="collectivite" class="text-subtitle">
           {{ collectivite.intitule }} ({{ collectivite.code }})
         </h2>
 
@@ -16,7 +18,7 @@
           <v-btn color="primary" depressed :disabled="editingSections.length > 0" @click="editable = !editable">
             {{ editable ? 'Prévisualiser' : 'Éditer' }}
           </v-btn>
-          <v-btn color="primary" outlined class="ml-2" @click="shareDialog = true">
+          <v-btn v-if="project" color="primary" outlined class="ml-2" @click="shareDialog = true">
             Partager
           </v-btn>
           <v-menu offset-y left>
@@ -118,7 +120,6 @@ import axios from 'axios'
 import { groupBy } from 'lodash'
 import { mdiDotsVertical } from '@mdi/js'
 import orderSections from '@/mixins/orderSections.js'
-import departements from '@/assets/data/departements-france.json'
 
 export default {
   mixins: [orderSections],
@@ -150,20 +151,7 @@ export default {
   },
   computed: {
     headRef () {
-      let headRef = 'main'
-
-      if (this.project?.id) {
-        headRef = `dept-${this.$options.filters.deptToRef(this.project.trame)}`
-      }
-
-      if (this.gitRef.includes('dept-')) {
-        const dept = this.gitRef.replace('dept-', '')
-        // eslint-disable-next-line eqeqeq
-        const region = departements.find(d => d.code_departement == dept).code_region
-        headRef = `region-${region}`
-      }
-
-      return headRef
+      return this.$options.filters.headRef(this.gitRef, this.project)
     },
     autocompleteSectionItems () {
       const flatSections = this.getFlatSections(this.sections)
@@ -191,6 +179,23 @@ export default {
       }
 
       return this.sections
+    },
+    title () {
+      if (this.project) {
+        return this.project.name
+      }
+
+      if (this.gitRef.startsWith('dept')) {
+        return 'Trame départementale'
+      }
+      if (this.gitRef.startsWith('region')) {
+        return 'Trame régionale'
+      }
+      if (this.gitRef === 'main') {
+        return 'Trame nationale'
+      }
+
+      return null
     }
   },
   async mounted () {
@@ -202,8 +207,6 @@ export default {
 
       const { data: collectivite } = await axios(`/api/geo/collectivites/${this.project.collectivite_id}`)
       this.collectivite = collectivite
-    } else {
-      this.editable = true
     }
 
     const { data: sections } = await axios({
@@ -214,13 +217,10 @@ export default {
       }
     })
 
-    let { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
-        `projet-${this.project?.id}`,
-        `dept-${this.project?.towns ? this.$options.filters.deptToRef(this.project.trame) : ''}`,
-        `region-${this.project?.towns ? this.project.towns[0].regionCode : ''}`,
-        this.gitRef,
-        'main'
-    ])
+    let { data: supSections } = await this.$supabase
+      .from('pac_sections')
+      .select('*')
+      .in('ref', this.$options.filters.allHeadRefs(this.gitRef, this.project))
 
     const { data: histories } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
       params: {
@@ -462,7 +462,7 @@ export default {
     },
     async downloadPdf () {
       this.loadingPdf = true
-      await this.$pdf.pdfFromRef(`projet-${this.project.id}`, this.project)
+      await this.$pdf.pdfFromRef(this.gitRef, this.project)
       this.loadingPdf = false
     }
   }

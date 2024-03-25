@@ -279,7 +279,6 @@ import {
   mdiLinkVariant
 } from '@mdi/js'
 import { encode } from 'js-base64'
-import departements from '@/assets/data/departements-france.json'
 
 export default {
   props: {
@@ -349,20 +348,7 @@ export default {
   },
   computed: {
     headRef () {
-      let headRef = 'main'
-
-      if (this.project && this.project.id) {
-        headRef = `dept-${this.$options.filters.deptToRef(this.project.trame)}`
-      }
-
-      if (this.gitRef.includes('dept-')) {
-        const dept = this.gitRef.replace('dept-', '')
-        // eslint-disable-next-line eqeqeq
-        const region = departements.find(d => d.code_departement == dept).code_region
-        headRef = `region-${region}`
-      }
-
-      return headRef
+      return this.$options.filters.headRef(this.gitRef, this.project)
     },
     isSelected () {
       const selectedPaths = this.project.PAC || []
