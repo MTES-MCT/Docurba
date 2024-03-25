@@ -21,7 +21,9 @@ export default ({ $supabase, $dayjs }, inject) => {
       return collectiviteId.length > 5
     },
     async getCommuneProcedures (inseeCode) {
-      const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*').eq('collectivite_code', inseeCode)
+      const { data: perimetre } = await $supabase.from('procedures_perimetres')
+        .select('*')
+        .eq('collectivite_code', inseeCode)
       const { data: procedures } = await $supabase.from('procedures_duplicate')
         .select('*').eq('archived', false)
         .in('id', perimetre.map(p => p.procedure_id))
@@ -52,6 +54,14 @@ export default ({ $supabase, $dayjs }, inject) => {
         procedure.current_perimetre.forEach((c) => {
           c.inseeCode = c.collectivite_code
         })
+
+        // update status
+        if (procedure.status === 'opposable') {
+          const isOpposable = !!procedure.current_perimetre.find(p => p.opposable)
+          if (!isOpposable) {
+            procedure.status = 'precedent'
+          }
+        }
       })
 
       return procedures

@@ -93,7 +93,7 @@ export default {
   },
   async fetchProcedures (inseeCodes) {
     const { data: procedures, error } = await supabase
-      .rpc('procedures_by_insee_codes', {
+      .rpc('procedures_duplicate_by_insee_codes', {
         codes: inseeCodes
       })
     if (error) {
@@ -104,7 +104,7 @@ export default {
   },
   async fetchEvents (procedures) {
     const { data: events } = await supabase
-      .rpc('events_by_procedures_ids', {
+      .rpc('events_duplicate_by_procedures_ids', {
         procedures_ids: procedures.map(p => p.id)
       })
 
