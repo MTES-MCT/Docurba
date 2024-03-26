@@ -52,7 +52,23 @@
               >
                 <!-- eslint-disable-next-line vue/valid-v-slot -->
                 <template #item.name="{ item }">
-                  <div :style="{ fontWeight: 700 }">
+                  <v-text-field
+                    v-if="item.renameMode"
+                    v-model="item.newName"
+                    autofocus
+                    hide-details
+                    @keydown.enter="renameProject(item)"
+                  >
+                    <template #append-outer>
+                      <v-btn icon color="primary" @click="renameProject(item)">
+                        <v-icon>{{ icons.mdiCheck }}</v-icon>
+                      </v-btn>
+                      <v-btn icon @click="toggleRenameMode(item, false)">
+                        <v-icon>{{ icons.mdiClose }}</v-icon>
+                      </v-btn>
+                    </template>
+                  </v-text-field>
+                  <div v-else :style="{ fontWeight: 700 }">
                     {{ item.name }}
                   </div>
                 </template>
@@ -68,7 +84,7 @@
                   <v-menu offset-y left>
                     <template #activator="{ attrs, on }">
                       <v-btn
-                        :loading="loadingPdf.includes(item.id)"
+                        :loading="item.loadingPdf"
                         :style="{ borderRadius: '4px' }"
                         class="ml-4"
                         color="primary"
@@ -88,6 +104,9 @@
                       </v-list-item>
                       <v-list-item @click="downloadPdf(item)">
                         <v-list-item-title>Télécharger en PDF</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item v-if="!item.sharing" @click="toggleRenameMode(item, true)">
+                        <v-list-item-title>Renommer</v-list-item-title>
                       </v-list-item>
                       <v-list-item v-if="!item.sharing" @click="archive(item)">
                         <v-list-item-title :style="{ color: '#e10600' }">
@@ -129,7 +148,7 @@
 </template>
 
 <script>
-import { mdiMagnify, mdiDotsVertical, mdiArrowRight } from '@mdi/js'
+import { mdiMagnify, mdiDotsVertical, mdiArrowRight, mdiCheck, mdiClose } from '@mdi/js'
 
 export default {
   layout: 'ddt',
@@ -146,13 +165,14 @@ export default {
       icons: {
         mdiMagnify,
         mdiDotsVertical,
-        mdiArrowRight
+        mdiArrowRight,
+        mdiCheck,
+        mdiClose
       },
       creationDialog: false,
       shareDialog: false,
       shareProject: null,
-      loading: true,
-      loadingPdf: []
+      loading: true
     }
   },
   computed: {
@@ -220,13 +240,41 @@ export default {
       this.shareDialog = true
     },
     async downloadPdf (project) {
-      this.loadingPdf.push(project.id)
+      project.loadingPdf = true
       await this.$pdf.pdfFromRef(`projet-${project.id}`, project)
-      this.loadingPdf = this.loadingPdf.filter(id => id !== project.id)
+      delete project.loadingPdf
+      // force v-data-table to refresh
+      this.projects = [...this.projects]
     },
     async archive (project) {
       await this.$supabase.from('projects').update({ archived: true }).eq('id', project.id)
       this.projects = this.projects.filter(p => p.id !== project.id)
+    },
+    toggleRenameMode (project, enable) {
+      if (enable) {
+        project.newName = project.name
+        project.renameMode = enable
+      } else {
+        delete project.newName
+        delete project.renameMode
+      }
+
+      // force v-data-table to refresh
+      this.projects = [...this.projects]
+    },
+    async renameProject (project) {
+      if (!project.newName.trim().length) {
+        return
+      }
+
+      await this.$supabase.from('projects').update({ name: project.newName }).eq('id', project.id)
+      project.name = project.newName
+
+      delete project.newName
+      delete project.renameMode
+
+      // force v-data-table to refresh
+      this.projects = [...this.projects]
     }
   }
 }

@@ -7,7 +7,24 @@
     </v-row>
     <v-row>
       <v-col>
-        <h1 v-if="title">
+        <v-text-field
+          v-if="project && renameMode"
+          v-model="newName"
+          autofocus
+          hide-details
+          class="rename-field"
+          @keydown.enter="renameProject"
+        >
+          <template #append-outer>
+            <v-btn icon color="primary" @click="renameProject">
+              <v-icon>{{ icons.mdiCheck }}</v-icon>
+            </v-btn>
+            <v-btn icon @click="toggleRenameMode(false)">
+              <v-icon>{{ icons.mdiClose }}</v-icon>
+            </v-btn>
+          </template>
+        </v-text-field>
+        <h1 v-else>
           {{ title }}
         </h1>
         <h2 v-if="collectivite" class="text-subtitle">
@@ -40,6 +57,9 @@
             <v-list>
               <v-list-item @click="downloadPdf">
                 <v-list-item-title>Télécharger en PDF</v-list-item-title>
+              </v-list-item>
+              <v-list-item v-if="project" @click="toggleRenameMode(true)">
+                <v-list-item-title>Renommer le PAC</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -118,7 +138,7 @@
 <script>
 import axios from 'axios'
 import { groupBy } from 'lodash'
-import { mdiDotsVertical } from '@mdi/js'
+import { mdiDotsVertical, mdiCheck, mdiClose } from '@mdi/js'
 import orderSections from '@/mixins/orderSections.js'
 
 export default {
@@ -133,7 +153,7 @@ export default {
   data () {
     return {
       icons: {
-        mdiDotsVertical
+        mdiDotsVertical, mdiCheck, mdiClose
       },
       project: null,
       sections: [],
@@ -146,7 +166,9 @@ export default {
       opening: false,
       searchedSectionPath: null,
       shareDialog: false,
-      loadingPdf: false
+      loadingPdf: false,
+      renameMode: false,
+      newName: ''
     }
   },
   computed: {
@@ -464,6 +486,19 @@ export default {
       this.loadingPdf = true
       await this.$pdf.pdfFromRef(this.gitRef, this.project)
       this.loadingPdf = false
+    },
+    toggleRenameMode (enable) {
+      this.newName = this.project.name
+      this.renameMode = enable
+    },
+    async renameProject () {
+      if (!this.newName.trim().length) {
+        return
+      }
+
+      await this.$supabase.from('projects').update({ name: this.newName }).eq('id', this.project.id)
+      this.project.name = this.newName
+      this.renameMode = false
     }
   }
 }
@@ -478,5 +513,18 @@ export default {
 <style>
 .v-autocomplete__content {
   width: 0; /* will use min-width, so the autocomplete list will be the same width as the input */
+}
+
+.rename-field {
+  padding: 0;
+  margin: 0;
+  max-width: 24rem;
+}
+
+.rename-field input {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 48px;
+  max-height: 48px;
 }
 </style>
