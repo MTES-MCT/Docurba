@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import { groupBy } from 'lodash'
+import { groupBy, uniq } from 'lodash'
+import axios from 'axios'
 
 export default ({ $supabase, $dayjs }, inject) => {
   Vue.filter('docType', function (procedure) {
@@ -48,11 +49,19 @@ export default ({ $supabase, $dayjs }, inject) => {
       const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*')
         .in('procedure_id', procedures.map(p => p.id))
 
+      const { data: collectivites } = await axios({
+        url: '/api/geo/collectivites',
+        params: { codes: uniq(perimetre.map(p => p.collectivite_code)) }
+      })
+
       procedures.forEach((procedure) => {
         // This is to manage legacy structure
         procedure.current_perimetre = perimetre.filter(p => p.procedure_id === procedure.id)
         procedure.current_perimetre.forEach((c) => {
+          const commune = collectivites.find(com => com.code === c.collectivite_code)
+
           c.inseeCode = c.collectivite_code
+          c.name = commune.intitule
         })
 
         // update status
@@ -86,7 +95,7 @@ export default ({ $supabase, $dayjs }, inject) => {
           })
 
         proceduresPrincipales.sort((a, b) => {
-          return +$dayjs(a.created_at) - +$dayjs(b.created_at)
+          return +$dayjs(b.created_at) - +$dayjs(a.created_at)
         })
 
         const schemas = proceduresPrincipales.filter(e => e.doc_type === 'SCOT')

@@ -112,6 +112,8 @@ export default {
     }
   },
   data () {
+    console.log(this.procedures?.filter(p => p.current_perimetre.length === 1))
+
     return {
       tab: null,
       insertDialog: false
