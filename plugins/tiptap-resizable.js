@@ -12,10 +12,10 @@ export const Resizable = Extension.create({
       handlerStyle: {
         width: '8px',
         height: '8px',
-        background: '#07c160'
+        background: '#0063CB'
       },
       layerStyle: {
-        border: '2px solid #07c160'
+        border: '2px solid #0063CB'
       }
     }
   },
@@ -64,9 +64,9 @@ export const Resizable = Extension.create({
       const resizeElement = this.storage.resizeElement
       const resizeNode = this.storage.resizeNode
       if (!resizeElement) { return }
-      if (/bottom/.test(e.target.className)) {
+      if (e.target.classList.contains('handler')) {
         let startX = e.screenX
-        const dir = e.target.classList.contains('bottom-left') ? -1 : 1
+        const dir = e.target.className.includes('left') ? -1 : 1
         const mousemoveHandle = (e) => {
           const width = resizeElement.clientWidth
           const distanceX = e.screenX - startX
@@ -108,6 +108,8 @@ export const Resizable = Extension.create({
       const dir = name.split('-')
       item.style[dir[0]] = parseInt(item.style.width) / -2 + 'px'
       item.style[dir[1]] = parseInt(item.style.height) / -2 + 'px'
+      if (name === 'top-left') { item.style.cursor = 'nw-resize' }
+      if (name === 'top-right') { item.style.cursor = 'ne-resize' }
       if (name === 'bottom-left') { item.style.cursor = 'sw-resize' }
       if (name === 'bottom-right') { item.style.cursor = 'se-resize' }
       fragment.appendChild(item)

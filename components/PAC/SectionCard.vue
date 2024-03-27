@@ -213,7 +213,7 @@
                     :deletable="editable && !section.ghost"
                     :parent-selected="isVisible"
                     :opened-path="openedPath"
-                    v-on="{ ...$listeners, removed: sectionRemoved }"
+                    v-on="{ ...$listeners, removed: sectionRemoved, introCreated: updateSectionType }"
                   />
                 </v-col>
               </v-row>
@@ -279,7 +279,6 @@ import {
   mdiLinkVariant
 } from '@mdi/js'
 import { encode } from 'js-base64'
-import departements from '@/assets/data/departements-france.json'
 
 export default {
   props: {
@@ -349,20 +348,7 @@ export default {
   },
   computed: {
     headRef () {
-      let headRef = 'main'
-
-      if (this.project && this.project.id) {
-        headRef = `dept-${this.$options.filters.deptToRef(this.project.trame)}`
-      }
-
-      if (this.gitRef.includes('dept-')) {
-        const dept = this.gitRef.replace('dept-', '')
-        // eslint-disable-next-line eqeqeq
-        const region = departements.find(d => d.code_departement == dept).code_region
-        headRef = `region-${region}`
-      }
-
-      return headRef
+      return this.$options.filters.headRef(this.gitRef, this.project)
     },
     isSelected () {
       const selectedPaths = this.project.PAC || []
@@ -636,9 +622,13 @@ export default {
       this.section.ghost = false
       this.saving = false
 
-      this.$emit('changeOrder', this.section, 0)
+      if (this.section.type === 'file') {
+        this.$emit('introCreated')
+      } else {
+        this.$emit('changeOrder', this.section, 0)
+      }
     },
-    async updateSectionType (introFile) {
+    async updateSectionType () {
       if (this.section.type === 'file') {
         const newPath = this.section.path.replace('.md', '')
 
@@ -660,7 +650,7 @@ export default {
         // eslint-disable-next-line vue/no-mutating-props
         this.section.path = this.section.path.replace('.md', '')
         // eslint-disable-next-line vue/no-mutating-props
-        this.section.introSha = introFile.sha
+        this.section.introSha = this.section.sha
       }
     },
     sectionAdded (newSection) {

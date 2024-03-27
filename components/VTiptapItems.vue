@@ -42,20 +42,27 @@
     >
       <v-icon>{{ icons.mdiFormatUnderline }}</v-icon>
     </v-btn>
-    <v-btn
-      depressed
-      tile
-      icon
-      @click="
-        editor
-          .chain()
-          .focus()
-          .toggleHighlight()
-          .run()
-      "
-    >
-      <v-icon>{{ icons.mdiFormatColorHighlight }}</v-icon>
-    </v-btn>
+    <v-tooltip bottom>
+      <template #activator="{ on, attrs }">
+        <v-btn
+          depressed
+          tile
+          icon
+          v-bind="attrs"
+          v-on="on"
+          @click="
+            editor
+              .chain()
+              .focus()
+              .toggleHighlight()
+              .run()
+          "
+        >
+          <v-icon>{{ icons.mdiFormatColorHighlight }}</v-icon>
+        </v-btn>
+      </template>
+      Surligner
+    </v-tooltip>
     <v-btn
       depressed
       tile
@@ -84,38 +91,66 @@
     >
       <v-icon>{{ icons.mdiFormatListNumbered }}</v-icon>
     </v-btn>
-    <v-btn
-      depressed
-      tile
-      icon
-      @click="
-        editor
-          .chain()
-          .focus()
-          .setColumns(2, true)
-          .run()
-      "
-    >
-      <v-icon>{{ icons.mdiFormatColumns }}</v-icon>
-    </v-btn>
-    <v-btn
-      depressed
-      tile
-      icon
-      @click="
-        editor
-          .chain()
-          .focus()
-          .unsetColumns()
-          .run()
-      "
-    >
-      <v-icon>{{ icons.mdiFormatAlignJustify }}</v-icon>
-    </v-btn>
 
-    <v-btn depressed tile icon @click="editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()">
-      <v-icon>{{ icons.mdiTablePlus }}</v-icon>
-    </v-btn>
+    <v-tooltip bottom>
+      <template #activator="{ on, attrs }">
+        <v-btn
+          depressed
+          tile
+          icon
+          v-bind="attrs"
+          v-on="on"
+          @click="
+            editor
+              .chain()
+              .focus()
+              .setColumns(2, true)
+              .run()
+          "
+        >
+          <v-icon>{{ icons.mdiFormatColumns }}</v-icon>
+        </v-btn>
+      </template>
+      Formatter en colonnes
+    </v-tooltip>
+
+    <v-tooltip bottom>
+      <template #activator="{ on, attrs }">
+        <v-btn
+          depressed
+          tile
+          icon
+          v-bind="attrs"
+          v-on="on"
+          @click="
+            editor
+              .chain()
+              .focus()
+              .unsetColumns()
+              .run()
+          "
+        >
+          <v-icon>{{ icons.mdiFormatAlignJustify }}</v-icon>
+        </v-btn>
+      </template>
+      Formatter en pleine page
+    </v-tooltip>
+
+    <v-tooltip bottom>
+      <template #activator="{ on, attrs }">
+        <v-btn
+          depressed
+          tile
+          icon
+          v-bind="attrs"
+          v-on="on"
+          @click="editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()"
+        >
+          <v-icon>{{ icons.mdiTablePlus }}</v-icon>
+        </v-btn>
+      </template>
+      Ajouter un tableau
+    </v-tooltip>
   </v-toolbar-items>
 </template>
 

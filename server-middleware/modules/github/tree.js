@@ -106,22 +106,51 @@ module.exports = {
       tree_sha: fromTreeSha
     })
 
-    const object = fromTree.tree.find(o => o.path === path)
+    const { data: toTree } = await github('GET /repos/{owner}/{repo}/git/trees/{tree_sha}?recursive=1', {
+      tree_sha: toTreeSha
+    })
 
-    if (!object) {
+    const objectToCopy = fromTree.tree.find(o => o.path === path)
+
+    if (!objectToCopy) {
       throw new Error('Object to copy not found')
+    }
+
+    const treeOverride = [
+      {
+        path: objectToCopy.path,
+        mode: objectToCopy.mode,
+        type: objectToCopy.type,
+        sha: objectToCopy.sha
+      }
+    ]
+
+    const parentPath = path.substring(0, path.lastIndexOf('/'))
+    const introToMove = toTree.tree.find(o => o.path === `${parentPath}.md`)
+
+    // if the parent section is not a dir in the destination tree, we need to move it as an intro
+    if (introToMove) {
+      treeOverride.push(
+        // copy intro from '{path}.md' to '{path}/intro.md'
+        {
+          path: `${parentPath}/intro.md`,
+          mode: introToMove.mode,
+          type: introToMove.type,
+          sha: introToMove.sha
+        },
+        // remove old intro '{path}.md'
+        {
+          path: `${parentPath}.md`,
+          mode: introToMove.mode,
+          type: introToMove.type,
+          sha: null // passing null deletes the file
+        }
+      )
     }
 
     const { data: newTree } = await github('POST /repos/{owner}/{repo}/git/trees', {
       base_tree: toTreeSha,
-      tree: [
-        {
-          path: object.path,
-          mode: object.mode,
-          type: object.type,
-          sha: object.sha
-        }
-      ]
+      tree: treeOverride
     })
 
     const { data: commit } = await github('POST /repos/{owner}/{repo}/git/commits', {
