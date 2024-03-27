@@ -377,7 +377,7 @@ export default {
     },
     async saveOrder (section, orderChange) {
       const sectionPath = section.path
-      const parentPath = section.path.substr(0, section.path.lastIndexOf('/'))
+      const parentPath = section.path.substring(0, section.path.lastIndexOf('/'))
 
       const sections = this.sections.includes(section)
         ? this.sections
