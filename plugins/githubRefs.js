@@ -41,4 +41,29 @@ export default () => {
       return (codeString.length < 2 ? '0' : '') + codeString
     } else { return deptCode }
   })
+
+  Vue.filter('headRef', function (gitRef, project) {
+    if (gitRef.startsWith('projet-')) {
+      return `dept-${window.$nuxt.$options.filters.deptToRef(project.trame)}`
+    }
+
+    if (gitRef.startsWith('dept-')) {
+      const deptCode = gitRef.replace('dept-', '')
+      // eslint-disable-next-line eqeqeq
+      const regionCode = departements.find(d => d.code_departement == deptCode).code_region
+      return `region-${regionCode}`
+    }
+
+    return 'main'
+  })
+
+  Vue.filter('allHeadRefs', function (gitRef, project) {
+    const refs = [gitRef]
+
+    while (refs.at(-1) !== 'main') {
+      refs.push(window.$nuxt.$options.filters.headRef(refs.at(-1), project))
+    }
+
+    return refs
+  })
 }

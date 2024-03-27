@@ -24,14 +24,14 @@
           tile
           icon
           v-bind="attrs"
-          :disabled="!editor.can().toggleHeaderColumn()"
+          :disabled="!editor.can().toggleHeaderRow()"
           v-on="on"
-          @click="editor.chain().focus().toggleHeaderColumn().run()"
+          @click="editor.chain().focus().toggleHeaderRow().run()"
         >
-          <v-icon>{{ icons.mdiDockLeft }}</v-icon>
+          <v-icon>{{ icons.mdiDockTop }}</v-icon>
         </v-btn>
       </template>
-      Activer colonne d'en-tête
+      Activer ligne d'en-tête
     </v-tooltip>
 
     <v-tooltip bottom>
@@ -41,14 +41,14 @@
           tile
           icon
           v-bind="attrs"
-          :disabled="!editor.can().toggleHeaderRow()"
+          :disabled="!editor.can().toggleHeaderColumn()"
           v-on="on"
-          @click="editor.chain().focus().toggleHeaderRow().run()"
+          @click="editor.chain().focus().toggleHeaderColumn().run()"
         >
           <v-icon>{{ icons.mdiDockLeft }}</v-icon>
         </v-btn>
       </template>
-      Activer ligne d'en-tête
+      Activer colonne d'en-tête
     </v-tooltip>
 
     <v-tooltip bottom>

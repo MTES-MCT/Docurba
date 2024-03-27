@@ -52,20 +52,39 @@
               >
                 <!-- eslint-disable-next-line vue/valid-v-slot -->
                 <template #item.name="{ item }">
-                  <div :style="{ fontWeight: 700 }">
+                  <v-text-field
+                    v-if="item.renameMode"
+                    v-model="item.newName"
+                    autofocus
+                    hide-details
+                    @keydown.enter="renameProject(item)"
+                  >
+                    <template #append-outer>
+                      <v-btn icon color="primary" @click="renameProject(item)">
+                        <v-icon>{{ icons.mdiCheck }}</v-icon>
+                      </v-btn>
+                      <v-btn icon @click="toggleRenameMode(item, false)">
+                        <v-icon>{{ icons.mdiClose }}</v-icon>
+                      </v-btn>
+                    </template>
+                  </v-text-field>
+                  <div v-else :style="{ fontWeight: 700 }">
                     {{ item.name }}
                   </div>
                 </template>
                 <!-- eslint-disable-next-line vue/valid-v-slot -->
                 <template #item.actions="{ item }">
-                  <span>
+                  <span v-if="item.sharing">
+                    partagé le {{ new Date(item.sharing.created_at).toLocaleDateString() }} par {{ item.sharing.shared_by.firstname }} {{ item.sharing.shared_by.lastname }}
+                  </span>
+                  <span v-else>
                     créé le {{ new Date(item.created_at).toLocaleDateString() }}
                   </span>
 
                   <v-menu offset-y left>
                     <template #activator="{ attrs, on }">
                       <v-btn
-                        :loading="loadingPdf.includes(item.id)"
+                        :loading="item.loadingPdf"
                         :style="{ borderRadius: '4px' }"
                         class="ml-4"
                         color="primary"
@@ -80,13 +99,16 @@
                     </template>
 
                     <v-list>
-                      <v-list-item @click="openShareDialog(item)">
+                      <v-list-item v-if="!item.sharing" @click="openShareDialog(item)">
                         <v-list-item-title>Partager ce PAC</v-list-item-title>
                       </v-list-item>
                       <v-list-item @click="downloadPdf(item)">
                         <v-list-item-title>Télécharger en PDF</v-list-item-title>
                       </v-list-item>
-                      <v-list-item @click="archive(item)">
+                      <v-list-item v-if="!item.sharing" @click="toggleRenameMode(item, true)">
+                        <v-list-item-title>Renommer</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item v-if="!item.sharing" @click="archive(item)">
                         <v-list-item-title :style="{ color: '#e10600' }">
                           Supprimer le PAC
                         </v-list-item-title>
@@ -94,7 +116,14 @@
                     </v-list>
                   </v-menu>
 
-                  <v-btn elevation="0" depressed :to="`/trames/projet-${item.id}`" class="ml-4 edit-button">
+                  <v-btn
+                    elevation="0"
+                    depressed
+                    :to="item.sharing?.role === 'read'
+                      ? `/documents/projet-${item.id}/pac`
+                      : `/trames/projet-${item.id}`"
+                    class="ml-4 edit-button"
+                  >
                     Consulter
                     <v-icon right>
                       {{ icons.mdiArrowRight }}
@@ -119,8 +148,7 @@
 </template>
 
 <script>
-import { mdiMagnify, mdiDotsVertical, mdiArrowRight } from '@mdi/js'
-import axios from 'axios'
+import { mdiMagnify, mdiDotsVertical, mdiArrowRight, mdiCheck, mdiClose } from '@mdi/js'
 
 export default {
   layout: 'ddt',
@@ -137,15 +165,14 @@ export default {
       icons: {
         mdiMagnify,
         mdiDotsVertical,
-        mdiArrowRight
+        mdiArrowRight,
+        mdiCheck,
+        mdiClose
       },
-      intercomunalites: [],
-      communes: [],
       creationDialog: false,
       shareDialog: false,
       shareProject: null,
-      loading: true,
-      loadingPdf: []
+      loading: true
     }
   },
   computed: {
@@ -158,33 +185,47 @@ export default {
     }
   },
   async mounted () {
-    const departement = this.$route.params.departement
-
-    const { data: communes } = await axios(`/api/geo/communes?departementCode=${departement}`)
-    const { data: intercomunalites } = await axios(`/api/geo/intercommunalites?departementCode=${departement}`)
-
-    this.communes = communes
-    this.intercomunalites = intercomunalites
-
     await this.fetchProjects()
     this.loading = false
   },
   methods: {
-    findCollectivity (code) {
-      return this.intercomunalites.find(i => i.code === code) || this.communes.find(c => c.code === code)
-    },
     async fetchProjects () {
-      const { data: projects } = await this.$supabase.from('projects').select('id, name, doc_type, towns, collectivite_id, PAC, trame, region, created_at').match({
-        owner: this.$user.id,
-        archived: false
-      })
+      const { data: ownProjects } = await this.$supabase
+        .from('projects')
+        .select('id, name, doc_type, towns, collectivite_id, trame, region, PAC, created_at')
+        .not('collectivite_id', 'is', null)
+        .match({
+          owner: this.$user.id,
+          archived: false
+        })
 
-      projects.forEach((project) => {
-        const collectivity = this.findCollectivity(project.collectivite_id)
-        project.collectivity = collectivity
-      })
+      const { data: sharings } = await this.$supabase
+        .from('projects_sharing')
+        .select('id, role, created_at, profiles (user_id, firstname, lastname), projects (id, name, doc_type, towns, collectivite_id, trame, region, PAC, created_at)')
+        .not('projects.collectivite_id', 'is', null)
+        .match({
+          user_email: this.$user.email,
+          'projects.archived': false
+        })
 
-      this.projects = projects.filter(project => !!project.collectivity)
+      this.projects = [
+        ...ownProjects,
+        ...sharings
+          .filter(sharing => sharing.projects)
+          .map(sharing => ({
+            ...sharing.projects,
+            sharing: {
+              id: sharing.id,
+              shared_by: {
+                ...sharing.profiles
+              },
+              role: sharing.role,
+              created_at: sharing.created_at
+            }
+          }))
+      ].sort((a, b) => {
+        return new Date(b.sharing?.created_at ?? b.created_at) - new Date(a.sharing?.created_at ?? a.created_at)
+      })
     },
     customFilter (value, search, item) {
       if (!search?.length || !value?.length) { return true }
@@ -199,13 +240,41 @@ export default {
       this.shareDialog = true
     },
     async downloadPdf (project) {
-      this.loadingPdf.push(project.id)
+      project.loadingPdf = true
       await this.$pdf.pdfFromRef(`projet-${project.id}`, project)
-      this.loadingPdf = this.loadingPdf.filter(id => id !== project.id)
+      delete project.loadingPdf
+      // force v-data-table to refresh
+      this.projects = [...this.projects]
     },
     async archive (project) {
       await this.$supabase.from('projects').update({ archived: true }).eq('id', project.id)
       this.projects = this.projects.filter(p => p.id !== project.id)
+    },
+    toggleRenameMode (project, enable) {
+      if (enable) {
+        project.newName = project.name
+        project.renameMode = enable
+      } else {
+        delete project.newName
+        delete project.renameMode
+      }
+
+      // force v-data-table to refresh
+      this.projects = [...this.projects]
+    },
+    async renameProject (project) {
+      if (!project.newName.trim().length) {
+        return
+      }
+
+      await this.$supabase.from('projects').update({ name: project.newName }).eq('id', project.id)
+      project.name = project.newName
+
+      delete project.newName
+      delete project.renameMode
+
+      // force v-data-table to refresh
+      this.projects = [...this.projects]
     }
   }
 }

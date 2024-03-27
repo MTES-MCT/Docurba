@@ -122,7 +122,7 @@ export default {
           }
         })
 
-        const { data: { data: { content: parentIntro } } } = await axios({
+        await axios({
           method: 'post',
           url: `/api/trames/${this.gitRef}`,
           data: {
@@ -134,7 +134,7 @@ export default {
           }
         })
 
-        this.$emit('introCreated', parentIntro)
+        this.$emit('introCreated')
       }
 
       const { data: { data: { content: file } } } = await axios({

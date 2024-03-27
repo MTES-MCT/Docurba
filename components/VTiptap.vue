@@ -85,6 +85,7 @@
               depressed
               tile
               icon
+              :disabled="editor.isActive('bulletList')"
               v-on="on"
               @click="$refs['imageFileInput'].click()"
             >
@@ -274,7 +275,7 @@ export default {
       }, {
         icon: mdiFormatHeader5,
         value: 5
-      }].filter(t => t.value > this.depth).concat(defaultTypos)
+      }].filter(t => this.depth + 1 < t.value).concat(defaultTypos)
     },
     readonlyBody () {
       return {
