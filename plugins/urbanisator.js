@@ -21,30 +21,6 @@ export default ({ $supabase, $dayjs }, inject) => {
     isEpci (collectiviteId) {
       return collectiviteId.length > 5
     },
-    async getCommuneProcedures (inseeCode) {
-      const { data: perimetre } = await $supabase.from('procedures_perimetres')
-        .select('*')
-        .eq('collectivite_code', inseeCode)
-      const { data: procedures } = await $supabase.from('procedures_duplicate')
-        .select('*').eq('archived', false)
-        .in('id', perimetre.map(p => p.procedure_id))
-
-      procedures.forEach((procedure) => {
-        const perim = perimetre.find(p => p.procedure_id === procedure.id)
-        if (procedure.status === 'opposable' && !perim.opposable) {
-          procedure.status = 'precedent'
-        }
-      })
-
-      return procedures
-    },
-    async getIntercoProcedures (collectiviteId) {
-      const { data: procedures } = await $supabase.from('procedures_duplicate')
-        .select('*').eq('archived', false)
-        .eq('collectivite_porteuse_id', collectiviteId)
-
-      return procedures
-    },
     async getProceduresPerimetre (procedures) {
       const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*')
         .in('procedure_id', procedures.map(p => p.id))
@@ -57,6 +33,7 @@ export default ({ $supabase, $dayjs }, inject) => {
       procedures.forEach((procedure) => {
         // This is to manage legacy structure
         procedure.current_perimetre = perimetre.filter(p => p.procedure_id === procedure.id)
+
         procedure.current_perimetre.forEach((c) => {
           const commune = collectivites.find(com => com.code === c.collectivite_code)
 
@@ -75,17 +52,25 @@ export default ({ $supabase, $dayjs }, inject) => {
 
       return procedures
     },
+    async getCollectiviteProcedures (collectiviteId) {
+      const { data: collectivite } = await axios(`/api/geo/collectivites/${collectiviteId}`)
+      const collectivites = [collectivite]
+      if (collectivite.membres) { collectivites.push(...collectivite.membres) }
+
+      const { data: perimetres } = await $supabase.from('procedures_perimetres')
+        .select('*').in('collectivite_code', collectivites.filter(c => c.type === 'COM').map(c => c.code))
+
+      const proceduresIds = uniq(perimetres.map(p => p.procedure_id))
+
+      const { data: procedures } = await $supabase.from('procedures_duplicate')
+        .select('*').eq('archived', false)
+        .in('id', proceduresIds)
+
+      return await this.getProceduresPerimetre(procedures)
+    },
     async getProjects (collectiviteId) {
       try {
-        let procedures = []
-
-        if (collectiviteId.length > 5) {
-          procedures = await this.getIntercoProcedures(collectiviteId)
-        } else {
-          procedures = await this.getCommuneProcedures(collectiviteId)
-        }
-
-        procedures = await this.getProceduresPerimetre(procedures)
+        const procedures = await this.getCollectiviteProcedures(collectiviteId)
         const groupedSubProcedures = groupBy(procedures, 'secondary_procedure_of')
 
         const proceduresPrincipales = procedures.filter(p => p.is_principale)
