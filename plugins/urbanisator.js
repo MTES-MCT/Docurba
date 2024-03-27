@@ -38,6 +38,7 @@ export default ({ $supabase, $dayjs }, inject) => {
     async getProceduresForDept (departementCode, { minimal = false } = {}) {
       // TODO: Update postgres to make order works
       // TODO: Optimise with index, selected fields, order and limit
+      // TODO: Essayer de faire le fetch depuis procedure_duplicate et filter
       let select = '*, procedures_duplicate(*, doc_frise_events_duplicate(*))'
       if (minimal) {
         select = '*, procedures_duplicate(*, doc_frise_events_duplicate(*))'
@@ -49,7 +50,7 @@ export default ({ $supabase, $dayjs }, inject) => {
       const groupedProceduresPerim = groupBy(data, e => e.procedure_id)
       const procedures = data.map((e) => {
         const lastEvent = e.procedures_duplicate.doc_frise_events_duplicate[0]
-        const prescriptionDate = e.procedures_duplicate.doc_frise_events_duplicate.find(e => e.code === 'PRES')
+        const prescriptionDate = e.procedures_duplicate.doc_frise_events_duplicate.find(y => y.code === 'PRES')
         return { ...e, perimetre: groupedProceduresPerim[e.procedure_id], last_event: lastEvent, prescription: prescriptionDate }
       })
       return uniqBy(procedures, e => e.procedure_id)

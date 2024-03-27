@@ -1,7 +1,7 @@
 <template>
   <div>
     <slot>
-      <div class="primary--text" style="font-weight: 500;" @click.stop="dialog = true">
+      <div class="primary--text" style="font-weight: 500; cursor:pointer;" @click.stop="dialog = true">
         {{ perimetre?.length }} communes
       </div>
     </slot>
@@ -12,7 +12,7 @@
       <v-container class="pa-10 white">
         <v-row>
           <v-col cols="12" class="pt-0 pb-8 d-flex justify-end">
-            <div class="font-weight-bold primary--text" @click="dialog = false">
+            <div style="font-weight: 500; cursor:pointer;" class=" primary--text" @click="dialog = false">
               Fermer x
             </div>
           </v-col>
@@ -75,18 +75,13 @@ export default {
     }
   },
   watch: {
-    async dialog (newVal, oldVal) {
+    async dialog (newVal) {
       if (newVal) {
         const rawReferentiel = await fetch(`/api/geo/collectivites?codes=${this.perimetre.map(e => e.collectivite_code)}`)
         const referentiel = await rawReferentiel.json()
         this.fullPerimetre = referentiel.filter(e => this.perimetre.map(y => y.collectivite_code).includes(e.code))
-        console.log('this.fullPerimetre: ', this.fullPerimetre)
       }
     }
   }
-  // async mounted () {
-  //   // const rawReferentiel = await fetch(`/api/geo/collectivites?codes=${this.perimetre.map(e => e.collectivite_code)}`)
-  //   // console.log('rawReferentiel: ', rawReferentiel)
-  // }
 }
 </script>

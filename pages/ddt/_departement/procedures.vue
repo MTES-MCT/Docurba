@@ -108,11 +108,16 @@
           <!-- eslint-disable-next-line -->
           <template #item.name="{ item }">
             <div class="d-flex align-center my-5">
-              <a class="d-inline-block font-weight-bold text-truncate" style="max-width: 300px;">{{ item.procedures_duplicate.doc_type }} {{ item.procedures_duplicate.id }}</a>
-              <v-chip class="ml-2 success--text font-weight-bold" small label color="success-light">
+              <nuxt-link class="d-inline-block font-weight-bold text-truncate text-decoration-none" style="max-width: 300px;" :to="`/frise/${item.procedure_id}`">
+                {{ item.name }}
+              </nuxt-link>
+              <v-chip v-if="item.opposable" class="ml-2 success--text font-weight-bold" small label color="success-light">
                 OPPOSABLE
               </v-chip>
-              <v-chip class="ml-2 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
+              <v-chip v-else-if="!item.opposable && item.procedures_duplicate.status === 'opposable'" class="ml-2 font-weight-bold" small label>
+                ARCHIVE
+              </v-chip>
+              <v-chip v-else class="ml-2 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
                 EN COURS
               </v-chip>
             </div>
@@ -170,21 +175,41 @@ export default {
     procedures () {
       return this.rawProcedures?.map((e) => {
         if (e.prescription?.date_iso) {
-          e.prescription.date_iso = dayjs(e.date_iso).format('DD/MM/YY')
+          e.prescription.date_iso = e.date_iso ? dayjs(e.date_iso).format('DD/MM/YY') : null
         }
         return e
-      }).filter(e => this.selectedDocumentsFilter.includes(e.procedures_duplicate.doc_type))
+      }).filter((e) => {
+        return this.selectedDocumentsFilter.includes(e.procedures_duplicate.doc_type) &&
+          ((this.selectedTypesFilter.includes('pp') && e.procedures_duplicate.is_principale) ||
+          (this.selectedTypesFilter.includes('ps') && !e.procedures_duplicate.is_principale)) &&
+          (((this.selectedStatusFilter.includes('opposable') && e.opposable) ||
+          (this.selectedStatusFilter.includes('en_cours') && (!e.opposable && !(e.procedures_duplicate.status === 'opposable'))) ||
+          (this.selectedStatusFilter.includes('archived') && (!e.opposable && e.procedures_duplicate.status === 'opposable'))))
+      })
     }
   },
   async mounted () {
-    // TODO: Générer un nom pour toutes les procédures dans le field name pour ne pas avoir a fetch le referentiel tous le temps
-    this.rawProcedures = await this.$urbanisator.getProceduresForDept(this.$route.params.departement)
+    const promProcedures = await this.$urbanisator.getProceduresForDept(this.$route.params.departement)
+    const rawReferentiel = fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
+
+    const [rawProcedures, referentiel] = await Promise.all([promProcedures, rawReferentiel])
+    const { communes, groupements } = await referentiel.json()
+    this.rawProcedures = rawProcedures.map((e) => {
+      let porteuse = null
+      if (e.perimetre.length > 1) {
+        porteuse = groupements.find(grp => grp.code === e.procedures_duplicate.collectivite_porteuse_id)
+      } else {
+        porteuse = communes.find(com => com.code === e.perimetre[0].collectivite_code)
+      }
+      const name = `${e.procedures_duplicate.doc_type} ${porteuse?.intitule}`
+      return { ...e, name }
+    })
   },
   methods: {
     customFilter (value, search, item) {
-      if (!search?.length || !value?.length) { return true }
+      if (!search?.length) { return true }
 
-      const normalizedValue = value.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+      const normalizedValue = item.name.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
       const normalizedSearch = search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
 
       return normalizedValue.includes(normalizedSearch)

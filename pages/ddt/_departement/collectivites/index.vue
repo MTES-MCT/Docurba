@@ -79,17 +79,23 @@
               <div v-for="(plan, index) in item.plans" :key="plan.id" class="mb-4">
                 <template v-if="index < 2">
                   <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${plan.id}`">
-                    {{ plan.doc_type_code }}
-                    {{ plan.id }}
+                    {{ plan.doc_type }}
+                    <!-- {{ plan.id }} -->
                   </nuxt-link>
-                  <v-chip class="ml-2 success--text font-weight-bold" small label color="success-light">
+
+                  <v-chip v-if="plan.opposable" class="ml-2 success--text font-weight-bold" small label color="success-light">
                     OPPOSABLE
                   </v-chip>
-                  <v-chip class="ml-2 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
+                  <v-chip v-else-if="!plan.opposable && plan.status === 'opposable'" class="ml-2 font-weight-bold" small label>
+                    ARCHIVE
+                  </v-chip>
+                  <v-chip v-else class="ml-2 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
                     EN COURS
                   </v-chip>
                 </template>
-                <a v-else class="font-weight-bold">+ {{ item.plans.length - 2 }} procédures</a>
+                <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
+                  + {{ item.plans.length - 2 }} procédures
+                </nuxt-link>
               </div>
             </div>
           </template>
@@ -159,7 +165,10 @@ export default {
 
     const enrichedCommunes = communes.map(e => ({
       ...e,
-      plans: procedures[e.code]?.plans.map(y => y.procedures_duplicate),
+      plans: procedures[e.code]?.plans.map((y) => {
+        const proc = y.procedures_duplicate
+        return { ...proc, opposable: y.opposable }
+      }),
       scots: procedures[e.code]?.scots.map(y => y.procedures_duplicate)
     }))
     const flattenReferentiel = [...enrichedGroups, ...enrichedCommunes]
@@ -167,10 +176,9 @@ export default {
   },
   methods: {
     customFilter (value, search, item) {
-      console.log('search: ', search, ' value: ', value, ' item: ', item)
-      if (!search?.length || !value?.length) { return true }
-
-      const normalizedValue = value.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+      if (!search?.length) { return true }
+      const itemValue = item.intitule + item.code
+      const normalizedValue = itemValue.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
       const normalizedSearch = search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
 
       return normalizedValue.includes(normalizedSearch)
