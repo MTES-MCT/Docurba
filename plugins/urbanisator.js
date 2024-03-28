@@ -21,7 +21,7 @@ export default ({ $supabase, $dayjs }, inject) => {
     isEpci (collectiviteId) {
       return collectiviteId.length > 5
     },
-    async getProceduresPerimetre (procedures) {
+    async getProceduresPerimetre (procedures, collectiviteId) {
       const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*')
         .in('procedure_id', procedures.map(p => p.id))
 
@@ -43,7 +43,15 @@ export default ({ $supabase, $dayjs }, inject) => {
 
         // update status
         if (procedure.status === 'opposable') {
-          const isOpposable = !!procedure.current_perimetre.find(p => p.opposable)
+          let isOpposable = false
+
+          if (collectiviteId.length > 5) {
+            isOpposable = !!procedure.current_perimetre.find(p => p.opposable)
+          } else {
+            console.log(collectiviteId, procedure.current_perimetre[0])
+            isOpposable = !!procedure.current_perimetre.find(p => p.opposable && p.collectivite_code === collectiviteId)
+          }
+
           if (!isOpposable) {
             procedure.status = 'precedent'
           }
@@ -66,7 +74,7 @@ export default ({ $supabase, $dayjs }, inject) => {
         .select('*').eq('archived', false)
         .in('id', proceduresIds)
 
-      return await this.getProceduresPerimetre(procedures)
+      return await this.getProceduresPerimetre(procedures, collectiviteId)
     },
     async getProjects (collectiviteId) {
       try {

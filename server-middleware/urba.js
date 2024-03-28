@@ -16,6 +16,13 @@ const csvParser = new AsyncParser()
 const app = express()
 app.use(express.json())
 
+app.get('/departements/:code', async (req, res) => {
+  const communesCodes = departements.find(d => d.code === req.params.code).communes.map(c => c.code)
+  const communes = await procedures.getCommunes(communesCodes)
+
+  res.status(200).send(communes)
+})
+
 app.get('/exports/departements/:code', async (req, res) => {
   const communesCodes = departements.find(d => d.code === req.params.code).communes.map(c => c.code)
   const communes = await procedures.getCommunes(communesCodes)
