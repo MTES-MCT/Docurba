@@ -182,48 +182,76 @@ module.exports = {
       ref
     })
 
-    const objects = rootTree.tree.sort((a, b) => {
-      if (a.type === 'tree' && b.type !== 'tree') {
-        return -1
-      }
-      if (a.type !== 'tree' && b.type === 'tree') {
-        return 1
-      }
-
-      return a.path.localeCompare(b.path)
-    })
-
-    const root = {
-      path: '',
-      children: []
-    }
-
-    for (const object of objects) {
-      const splitPath = object.path.split('/')
+    const branches = rootTree.tree.filter(b => b.path.startsWith(path)).map((branche) => {
+      const splitPath = branche.path.split('/')
       const name = splitPath.pop()
 
-      const parent = this.findTree(root, splitPath)
-
-      if (name === 'intro.md' || name === 'intro') {
-        parent.introSha = object.sha
-        continue
-      }
-
-      if (!parent) {
-        console.log(object, parent)
-      }
-
-      parent.children.push({
+      return {
         name: name.replace('.md', ''),
-        path: object.path,
-        type: object.type === 'tree' ? 'dir' : 'file',
-        sha: object.sha,
-        url: object.url,
-        children: object.type === 'tree' ? [] : undefined
-      })
-    }
+        depth: splitPath.length,
+        path: branche.path,
+        type: branche.type === 'tree' ? 'dir' : 'file',
+        sha: branche.sha,
+        url: branche.url,
+        children: branche.type === 'tree' ? [] : undefined
+      }
+    }).filter(b => b.depth > 0)
 
-    return this.findTree(root, path.split('/')).children ?? []
+    branches.forEach((branche) => {
+      const parent = branches.find((b) => {
+        return b.type === 'dir' && b.depth === (branche.depth - 1) &&
+          branche.path.includes(`${b.path}/${branche.name}`)
+      })
+
+      if (branche.name === 'intro.md' || branche.name === 'intro') {
+        parent.introSha = branche.sha
+      } else if (parent) {
+        parent.children.push(branche)
+      }
+    })
+
+    return branches.filter(b => b.depth === 1)
+
+    // console.log(branches.filter(b => b.depth === 1))
+
+    // const objects = rootTree.tree.sort((a, b) => {
+    //   if (a.type === 'tree' && b.type !== 'tree') {
+    //     return -1
+    //   }
+    //   if (a.type !== 'tree' && b.type === 'tree') {
+    //     return 1
+    //   }
+
+    //   return a.path.localeCompare(b.path)
+    // })
+
+    // const root = {
+    //   path: '',
+    //   children: []
+    // }
+
+    // for (const object of objects) {
+    //   const splitPath = object.path.split('/')
+    //   const name = splitPath.pop()
+
+    //   const parent = this.findTree(root, splitPath)
+
+    //   if (name === 'intro.md' || name === 'intro') {
+    //     parent.introSha = object.sha
+    //     continue
+    //   }
+
+    //   parent.children.push({
+    //     name: name.replace('.md', ''),
+    //     path: object.path,
+    //     type: object.type === 'tree' ? 'dir' : 'file',
+    //     sha: object.sha,
+    //     url: object.url,
+    //     children: object.type === 'tree' ? [] : undefined
+    //   })
+    // }
+
+    // return this.findTree(root, path.split('/')).children ?? []
   },
   async getHistories (ref, paths) {
     function hash (string) {
