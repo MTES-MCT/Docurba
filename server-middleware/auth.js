@@ -114,8 +114,6 @@ app.post('/signupCollectivite', async (req, res) => {
       email: req.body.userData.email
     })
 
-    console.log('user created in signup', user)
-
     if (creationError) { throw creationError }
 
     // Insert new profile
