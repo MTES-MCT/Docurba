@@ -3,13 +3,12 @@
     <v-row>
       <v-col v-if="!clickedOnDocLink" cols="12">
         <v-alert type="info">
-          Zoom sur les dernières améliorations des fonctionnalités de Docurba.
+          Découvrez les nouveautés de Docurba, rejoignez-nous pour le Flash Info.
           <a
             class="white--text"
-            href="https://pad.incubateur.net/FUz6ITnHSC6wVv1rvIipyg?view"
+            href="https://app.livestorm.co/mte/flash-info-de-docurba?type=detailed"
             target="_blank"
-            @click="showClose"
-          >Découvrez la documentation</a>
+          >Détails et inscriptions ici.</a>
         </v-alert>
       </v-col>
       <v-col cols="12">

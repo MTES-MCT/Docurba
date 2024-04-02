@@ -209,6 +209,10 @@ module.exports = {
         continue
       }
 
+      if (!parent) {
+        console.log(object, parent)
+      }
+
       parent.children.push({
         name: name.replace('.md', ''),
         path: object.path,
