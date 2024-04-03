@@ -168,7 +168,7 @@ export default {
   methods: {
     async  archiveProcedure (idProcedure) {
       try {
-        console.log('idProcedure to archive: ', idProcedure)
+        // console.log('idProcedure to archive: ', idProcedure)
         const { error } = await this.$supabase
           .from('procedures')
           .update({ archived: true })
@@ -178,6 +178,7 @@ export default {
         this.$emit('delete', idProcedure)
         this.dialog = false
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error)
       }
     }

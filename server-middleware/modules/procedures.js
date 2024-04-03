@@ -12,9 +12,15 @@ const eventsCategs = {
   approbation: ["Délibération d'approbation", "Arrêté d'abrogation", "Arrêté du Maire ou du Préfet ou de l'EPCI", 'Approbation du préfet'],
   arret: ['Arrêt de projet'],
   pac: ['Porter à connaissance'],
+  deliberation: ["Délibération de l'Etab Pub sur les modalités de concertation", "Délibération de l'Etablissement Public"],
   pacComp: ['Porter à connaissance complémentaire'],
-  prescription: ['Prescription', "Delibération de l'établissement public", 'Publication de périmetre'],
-  exec: ['Caractère exécutoire']
+  prescription: [
+    'Prescription',
+    "Delibération de l'établissement public", "Délibération de l'Etablissement Public", // SCOT
+    'Publication de périmètre', 'Publication périmètre' // SCOT
+  ],
+  exec: ['Caractère exécutoire'],
+  fin: ["Fin d'échéance"]
 }
 
 // const eventsTypes = Object.keys(eventsCategs).flatMap(key => eventsCategs[key])
@@ -24,6 +30,11 @@ const proceduresCategs = {
   modification: ['Modification', 'Modification simplifiée']
 }
 
+function logProcedures (procedures, logName = 'logProcedures') {
+  // eslint-disable-next-line no-console
+  return console.log(logName, procedures.map(p => `${p.id} ${p.doc_type} ${p.type} ${p.prescription?.date_iso} ${p.current_perimetre.length}`))
+}
+
 function sortEvents (events) {
   return events.sort((a, b) => {
     return +dayjs(a.date_iso) - +dayjs(b.date_iso)
@@ -31,11 +42,17 @@ function sortEvents (events) {
 }
 
 function sortProceduresByEvenCateg (procedures, eventCateg) {
+  // ASK CLAIRE: Quelle est la règle si CC en cour + PLUi en cours.
+  // return orderBy(procedures, [
+  //   p => p.current_perimetre.length,
+  //   p => p[eventCateg]?.date_iso
+  // ], ['desc', 'desc'])
+
   return procedures.sort((a, b) => {
     const dateA = a[eventCateg] ? +dayjs(a[eventCateg].date_iso) : 0
     const dateB = b[eventCateg] ? +dayjs(b[eventCateg].date_iso) : 0
 
-    return dateA - dateB
+    return dateB - dateA
   })
 }
 
@@ -45,18 +62,20 @@ function findEventByType (events, types) {
 }
 
 function filterProcedures (procedures) {
-  const sortedProcedures = sortProceduresByEvenCateg(procedures)
+  const sortedProcedures = sortProceduresByEvenCateg(procedures, 'prescription')
 
   let opposables = sortedProcedures.filter(p => p.status === 'opposable')
-  opposables = sortProceduresByEvenCateg(opposables, 'approbation')
+  opposables = sortProceduresByEvenCateg(opposables, 'prescription')
 
-  let currents = sortedProcedures.filter(p => p.status === 'en cours')
+  let currents = sortedProcedures.filter(p => p.status === 'en cours').filter((p) => {
+    return p.from_sudocuh ? !!p.prescription : true
+  })
   currents = sortProceduresByEvenCateg(currents, 'prescription')
 
   return { procedures: sortedProcedures, opposables, currents }
 }
 
-module.exports = {
+export default {
   getCommuneMetadata (inseeCode) {
     const commune = communes.find(c => c.code === inseeCode && c.type === 'COM')
     const communeDepartement = departements.find(d => d.code === commune.departementCode)
@@ -81,12 +100,11 @@ module.exports = {
       .rpc('procedures_by_insee_codes', {
         codes: inseeCodes
       })
-
     if (error) {
-      console.log('fetchProcedures error', error)
+      console.log('fetchProcedures error', inseeCodes[0], error)
     }
 
-    return procedures
+    return procedures.filter(p => p.doc_type !== 'SD')
   },
   async fetchEvents (procedures) {
     const { data: events } = await supabase
@@ -100,7 +118,7 @@ module.exports = {
       })
     })
   },
-  async getCommuneProcedures (inseeCode, procedures, events) {
+  async enrichProcedures (inseeCode, procedures, events) {
     if (!procedures) {
       procedures = await this.fetchProcedures([inseeCode])
     }
@@ -109,7 +127,9 @@ module.exports = {
       events = await this.fetchEvents(procedures)
     }
 
-    return procedures.map((procedure) => {
+    // console.log('procedures', procedures)
+
+    return procedures.filter(p => !p.archived).map((procedure) => {
       const procedureEvents = events.filter(e => e.procedure_id === procedure.id)
 
       const eventsByType = {}
@@ -131,7 +151,7 @@ module.exports = {
   async getCommune (inseeCode, rawProcedures, events) {
     const commune = this.getCommuneMetadata(inseeCode)
 
-    let procedures = await this.getCommuneProcedures(inseeCode, rawProcedures, events)
+    let procedures = await this.enrichProcedures(inseeCode, rawProcedures, events)
     procedures = sortProceduresByEvenCateg(procedures, 'prescription')
 
     const {
@@ -149,11 +169,20 @@ module.exports = {
       currents: planCurrents
     } = filterProcedures(procedures.filter(p => p.doc_type !== 'SCOT'))
 
+    // logProcedures(planOpposables, 'planOpposables')
+    // logProcedures(planCurrents, 'planCurrents')
+
     const revisions = planCurrents.filter(p => proceduresCategs.revision.includes(p.type))
     const modifications = planCurrents.filter(p => proceduresCategs.modification.includes(p.type))
 
     const planOpposable = planOpposables[0]
-    const planCurrent = planCurrents[0]
+    // Add a specific filter: PLU cannot be current if there is a opposable PLUi.
+    const planCurrent = planCurrents.filter((p) => {
+      return (planOpposable && planOpposable.current_perimetre.length > 1) ? p.current_perimetre.length > 1 : true
+    })[0]
+
+    // console.log('opposable', planOpposable)
+    // console.log('planCurrent', planCurrent)
 
     const collectivitePorteuse = (planCurrent || planOpposable)?.collectivite_porteuse_id || inseeCode
 
@@ -181,7 +210,7 @@ module.exports = {
   },
   async getCommunes (inseeCodes) {
     const procedures = await this.fetchProcedures(inseeCodes)
-    console.log('getCommunes', inseeCodes[0], procedures ? procedures.length : 'no procedures')
+    // console.log('getCommunes', inseeCodes[0], procedures ? procedures.length : 'no procedures')
 
     const events = await this.fetchEvents(procedures)
 

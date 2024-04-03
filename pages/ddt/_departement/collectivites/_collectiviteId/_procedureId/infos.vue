@@ -44,19 +44,6 @@
 <script>
 export default {
   name: 'InformationsGenerales',
-  layout: 'ddt',
-  data () {
-    return {
-
-    }
-  },
-  async mounted () {
-    const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures')
-      .select('*')
-      .eq('id', this.$route.params.procedureId)
-    if (errorProcedure) { throw errorProcedure }
-    console.log('procedure: ', procedure)
-    // this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
-  }
+  layout: 'ddt'
 }
 </script>

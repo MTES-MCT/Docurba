@@ -217,25 +217,28 @@ export default {
       this.perimetre = this.collectivite.type === 'COM' ? [this.collectivite.code] : this.communes.map(e => e.code)
       this.loaded = true
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error)
     }
   },
   methods: {
     async getProcedures () {
       let query = this.$supabase.from('procedures').select('*').eq('is_principale', true).eq('status', 'opposable')
-      let ret = null
+
       if (this.collectivite.type !== 'COM') {
         query = query.eq('collectivite_porteuse_id', this.collectivite.code)
       } else {
         query = query.contains('current_perimetre', `[{ "inseeCode": "${this.collectivite.code}" }]`)
       }
+
       const { data: procedures, error } = await query
-      ret = procedures
-      if (this.collectivite.type !== 'COM') {
-        ret = procedures.filter(e => e.current_perimetre.length > 1)
-      }
       if (error) { throw error }
-      return ret
+
+      if (this.collectivite.type !== 'COM') {
+        return procedures.filter(e => e.current_perimetre.length > 1)
+      }
+
+      return procedures
     },
     async createProcedure () {
       this.loadingSave = true
@@ -257,6 +260,7 @@ export default {
             collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
             test: true
           }).select()
+
           console.log('insertedProject: ', insertRet)
           insertedProject = insertRet.data && insertRet.data[0] ? insertRet.data[0].id : null
           if (insertRet.error) { throw insertRet.error }
