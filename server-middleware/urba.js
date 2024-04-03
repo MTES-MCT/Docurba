@@ -23,6 +23,13 @@ app.get('/departements/:code', async (req, res) => {
   res.status(200).send(communes)
 })
 
+app.get('/communes/:inseeCode', async (req, res) => {
+  const start = Date.now()
+  const commune = await procedures.getCommune(req.params.inseeCode)
+  res.status(200).send(commune)
+  console.log(Date.now() - start)
+})
+
 app.get('/exports/departements/:code', async (req, res) => {
   const communesCodes = departements.find(d => d.code === req.params.code).communes.map(c => c.code)
   const communes = await procedures.getCommunes(communesCodes)
@@ -57,7 +64,11 @@ app.get('/exports/communes', async (req, res) => {
 
 app.get('/exports/communes/:inseeCode', async (req, res) => {
   const commune = await procedures.getCommune(req.params.inseeCode)
-  res.status(200).send(mapValues(sudocuhCommunes, key => get(commune, key, '')))
+  if (req.query.csv) {
+    res.status(200).send(mapValues(sudocuhCommunes, key => get(commune, key, '')))
+  } else {
+    res.status(200).send(commune)
+  }
 })
 
 app.get('/exports/prescriptions', async (req, res) => {

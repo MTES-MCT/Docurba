@@ -70,7 +70,7 @@ export default ({ $supabase, $dayjs }, inject) => {
 
       const proceduresIds = uniq(perimetres.map(p => p.procedure_id))
 
-      const { data: procedures } = await $supabase.from('procedures_duplicate')
+      const { data: procedures } = await $supabase.from('procedures')
         .select('*').eq('archived', false)
         .in('id', proceduresIds)
 

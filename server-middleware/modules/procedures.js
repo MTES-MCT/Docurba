@@ -14,7 +14,11 @@ const eventsCategs = {
   pac: ['Porter à connaissance'],
   deliberation: ["Délibération de l'Etab Pub sur les modalités de concertation", "Délibération de l'Etablissement Public"],
   pacComp: ['Porter à connaissance complémentaire'],
-  prescription: ['Prescription', "Delibération de l'établissement public", 'Publication de périmetre'],
+  prescription: [
+    'Prescription',
+    "Delibération de l'établissement public", "Délibération de l'Etablissement Public", // SCOT
+    'Publication de périmètre', 'Publication périmètre' // SCOT
+  ],
   exec: ['Caractère exécutoire'],
   fin: ["Fin d'échéance"]
 }
@@ -93,7 +97,7 @@ export default {
   },
   async fetchProcedures (inseeCodes) {
     const { data: procedures, error } = await supabase
-      .rpc('procedures_duplicate_by_insee_codes', {
+      .rpc('procedures_by_insee_codes', {
         codes: inseeCodes
       })
     if (error) {
@@ -104,7 +108,7 @@ export default {
   },
   async fetchEvents (procedures) {
     const { data: events } = await supabase
-      .rpc('events_duplicate_by_procedures_ids', {
+      .rpc('events_by_procedures_ids', {
         procedures_ids: procedures.map(p => p.id)
       })
 
