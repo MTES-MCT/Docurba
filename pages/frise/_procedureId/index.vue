@@ -148,6 +148,7 @@
 
 <script>
 import axios from 'axios'
+import _ from 'lodash'
 import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical } from '@mdi/js'
 
 import PluEvents from '@/assets/data/events/PLU_events.json'
@@ -224,11 +225,13 @@ export default
     },
     recommendedEvent () {
       const filteredDocumentEvents = this.documentEvents?.filter(e => e.scope_sugg.includes(this.internalProcedureType))
+
       if (!filteredDocumentEvents) { return null }
       if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
       const lastEventType = filteredDocumentEvents.find(event => this.events[0].type === event.name)
       if (!lastEventType) { return filteredDocumentEvents[0] }
-      return filteredDocumentEvents.find(e => e.order === lastEventType.order + 1)
+
+      return filteredDocumentEvents.find(e => _.gt(e.order, lastEventType.order))
     },
     internalProcedureType () {
       const isIntercommunal = this.procedure.current_perimetre.length > 1
@@ -299,6 +302,8 @@ export default
         .select('*, profiles(*)')
         .eq('procedure_id', this.$route.params.procedureId)
         .order('date_iso', { ascending: false })
+        .order('created_at', { ascending: false })
+
       if (errorEvents) { throw errorEvents }
       return events
     }
