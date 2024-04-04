@@ -12,6 +12,12 @@
           Mes collectivites
         </v-tab>
         <v-tab
+          v-if="$user.profile.poste === 'ddt'"
+          :to="`/ddt/${$user.profile.departement}/procedures`"
+        >
+          Mes procédures
+        </v-tab>
+        <v-tab
           :to="{
             name: 'trames-githubRef',
             params: {githubRef: trameRef}

@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { groupBy, uniq } from 'lodash'
+import { groupBy, uniqBy, mapValues, uniq } from 'lodash'
 import axios from 'axios'
 
 export default ({ $supabase, $dayjs }, inject) => {
@@ -20,6 +20,63 @@ export default ({ $supabase, $dayjs }, inject) => {
   inject('urbanisator', {
     isEpci (collectiviteId) {
       return collectiviteId.length > 5
+    },
+    async getProceduresByCommunes (departementCode) {
+      // TODO: Update postgres to make order works
+      // TODO: Optimise with index, selected fields, order and limit
+      const { data } = await $supabase.from('procedures_perimetres')
+        .select('*, procedures(*, doc_frise_events(*))')
+        .eq('departement', departementCode)
+        // .order('date_iso', { referencedTable: 'procedures.doc_frise_events', ascending: false })
+      const groupedProceduresPerim = groupBy(data, e => e.collectivite_code)
+      const planScotsSeparated = mapValues(groupedProceduresPerim, (e) => {
+        const plans = e.filter(e => !e.procedures.is_scot)
+        const scots = e.filter(e => e.procedures.is_scot)
+        return { scots, plans }
+      })
+      return planScotsSeparated
+    },
+    async getProceduresForDept (departementCode, { minimal = false } = {}) {
+      // TODO: Update postgres to make order works
+      // TODO: Optimise with index, selected fields, order and limit
+      // TODO: Essayer de faire le fetch depuis procedure et filter
+      let select = '*, procedures(*, doc_frise_events(*))'
+      if (minimal) {
+        select = '*, procedures(*, doc_frise_events(*))'
+      }
+      const { data } = await $supabase.from('procedures_perimetres')
+        .select(select)
+        .eq('departement', departementCode)
+        // .order('date_iso', { referencedTable: 'procedures.doc_frise_events', ascending: false })
+      const groupedProceduresPerim = groupBy(data, e => e.procedure_id)
+      const procedures = data.map((e) => {
+        const lastEvent = e.procedures.doc_frise_events[0]
+        const prescriptionDate = e.procedures.doc_frise_events.find(y => y.code === 'PRES')
+        return { ...e, perimetre: groupedProceduresPerim[e.procedure_id], last_event: lastEvent, prescription: prescriptionDate }
+      })
+      return uniqBy(procedures, e => e.procedure_id)
+    },
+    async getCommuneProcedures (inseeCode) {
+      const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*').eq('collectivite_code', inseeCode)
+      const { data: procedures } = await $supabase.from('procedures')
+        .select('*').eq('archived', false)
+        .in('id', perimetre.map(p => p.procedure_id))
+
+      procedures.forEach((procedure) => {
+        const perim = perimetre.find(p => p.procedure_id === procedure.id)
+        if (procedure.status === 'opposable' && !perim.opposable) {
+          procedure.status = 'precedent'
+        }
+      })
+
+      return procedures
+    },
+    async getIntercoProcedures (collectiviteId) {
+      const { data: procedures } = await $supabase.from('procedures')
+        .select('*').eq('archived', false)
+        .eq('collectivite_porteuse_id', collectiviteId)
+
+      return procedures
     },
     async getProceduresPerimetre (procedures, collectiviteId) {
       const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*')
