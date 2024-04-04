@@ -262,6 +262,7 @@ export default
 
       const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('*').eq('id', this.$route.params.procedureId)
       this.procedure = procedure[0]
+
       this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.collectiviteId}` })).data
       if (errorProcedure) { throw errorProcedure }
       this.events = await this.getEvents()
