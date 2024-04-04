@@ -1,7 +1,8 @@
 <template>
   <v-container v-if="epcis && communes">
     <v-row>
-      <v-col v-if="!clickedOnDocLink" cols="12">
+      <!-- <v-col v-if="!clickedOnDocLink" cols="12"> -->
+      <v-col cols="12">
         <v-alert type="info">
           Découvrez les nouveautés de Docurba, rejoignez-nous pour le Flash Info.
           <a

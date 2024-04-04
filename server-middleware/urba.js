@@ -24,14 +24,13 @@ app.get('/departements/:code', async (req, res) => {
 })
 
 app.get('/communes/:inseeCode', async (req, res) => {
-  const start = Date.now()
   const commune = await procedures.getCommune(req.params.inseeCode)
   res.status(200).send(commune)
-  console.log(Date.now() - start)
 })
 
 app.get('/exports/departements/:code', async (req, res) => {
-  const communesCodes = departements.find(d => d.code === req.params.code).communes.map(c => c.code)
+  const departement = departements.find(d => d.code === req.params.code)
+  const communesCodes = departement.communes.map(c => c.code)
   const communes = await procedures.getCommunes(communesCodes)
 
   const mapedCommunes = communes.map((c) => {
@@ -40,7 +39,7 @@ app.get('/exports/departements/:code', async (req, res) => {
 
   if (req.query.csv) {
     const csv = await csvParser.parse(mapedCommunes).promise()
-    res.status(200).send(csv)
+    res.status(200).attachment(`${req.params.code}_${departement.intitule}.csv`).send(csv)
   } else {
     res.status(200).send(mapedCommunes)
   }
@@ -48,27 +47,24 @@ app.get('/exports/departements/:code', async (req, res) => {
 
 app.get('/exports/communes', async (req, res) => {
   const inseeCodes = req.body.inseeCodes
+  console.log(inseeCodes)
   const communes = await procedures.getCommunes(inseeCodes)
 
-  if (req.query.csv) {
-    const mapedCommunes = communes.map((c) => {
-      return mapValues(sudocuhCommunes, key => get(c, key, ''))
-    })
+  const mapedCommunes = communes.map((c) => {
+    return mapValues(sudocuhCommunes, key => get(c, key, ''))
+  })
 
+  if (req.query.csv) {
     const csv = await csvParser.parse(mapedCommunes).promise()
-    res.status(200).send(csv)
+    res.status(200).attachment('communes.csv').send(csv)
   } else {
-    res.status(200).send(communes)
+    res.status(200).send(mapedCommunes)
   }
 })
 
 app.get('/exports/communes/:inseeCode', async (req, res) => {
   const commune = await procedures.getCommune(req.params.inseeCode)
-  if (req.query.csv) {
-    res.status(200).send(mapValues(sudocuhCommunes, key => get(commune, key, '')))
-  } else {
-    res.status(200).send(commune)
-  }
+  res.status(200).send(mapValues(sudocuhCommunes, key => get(commune, key, '')))
 })
 
 app.get('/exports/prescriptions', async (req, res) => {

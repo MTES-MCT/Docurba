@@ -10,7 +10,7 @@ module.exports = {
     const createContact = new SibApiV3Sdk.CreateContact()
 
     createContact.email = email
-    createContact.listIds = [27, ...lists]
+    createContact.listIds = optin ? [27, ...lists] : []
     createContact.attributes = { NEWUSER_OPTIN: optin }
 
     apiInstance.createContact(createContact).then(function (data) {

@@ -29,6 +29,7 @@
               :key="'du_' + i"
               :procedure="procedure"
               :censored="isPublic"
+              :collectivite="collectivite"
               @delete="$emit('deleteProcedure', arguments[0])"
             />
           </template>
@@ -49,6 +50,7 @@
               :key="'du_' + i"
               :procedure="procedure"
               :censored="isPublic"
+              :collectivite="collectivite"
               @delete="$emit('deleteProcedure', arguments[0])"
             />
           </template>
@@ -68,6 +70,7 @@
             :key="'du_' + i"
             :procedure="procedure"
             :censored="isPublic"
+            :collectivite="collectivite"
             @delete="$emit('deleteProcedure', arguments[0])"
           />
         </v-tab-item>

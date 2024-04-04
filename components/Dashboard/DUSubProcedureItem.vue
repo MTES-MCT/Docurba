@@ -48,7 +48,7 @@
         <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
         <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <span class="primary--text text-decoration-underline mr-4">
-            Feuille de route partagée
+            Feuille de route
           </span>
         </nuxt-link>
         <!-- <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-procedureId-dgd', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
@@ -121,7 +121,7 @@
           <v-icon small color="primary" class="mr-2">
             {{ icons.mdiArrowRight }}
           </v-icon>
-          Feuille de route publique
+          Feuille de route
         </v-btn>
       </v-col>
     </v-row>
