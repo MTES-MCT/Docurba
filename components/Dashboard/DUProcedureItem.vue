@@ -7,8 +7,9 @@
           {{ procedure.name }}
         </span>
         <div v-else>
-          <span>{{ procedure | docType }}</span>
-          <span> {{ procedure.current_perimetre.length === 1 ? procedure.current_perimetre[0].name + ' (' + procedure.current_perimetre[0].inseeCode + ')' : '' }}</span>
+          <span>{{ procedure | docType }} - </span>
+          <span v-if="procedure.current_perimetre.length === 1"> {{ procedure.current_perimetre[0].name + ' (' + procedure.current_perimetre[0].inseeCode + ')' }}</span>
+          <span v-else>{{ collectivite.intitule }}</span>
           <span v-if="procedure.numero">numéro {{ procedure.numero }}</span>
         </div>
 
@@ -63,7 +64,7 @@
         <DashboardDUModalPerimetre v-if="procedure.initial_perimetre" :towns="procedure.initial_perimetre" />
         <nuxt-link :to="`/frise/${procedure.id}`">
           <span class="primary--text text-decoration-underline mr-4">
-            Feuille de route partagée
+            Feuille de route
           </span>
         </nuxt-link>
         <!-- <nuxt-link :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}-dgd`">
@@ -135,7 +136,7 @@
           <v-icon small color="primary" class="mr-2">
             {{ icons.mdiArrowRight }}
           </v-icon>
-          Feuille de route publique
+          Feuille de route
         </v-btn>
       </v-col>
     </v-row>
@@ -149,6 +150,10 @@ export default {
   mixins: [BaseDUProcedureItem],
   props: {
     procedure: {
+      type: Object,
+      required: true
+    },
+    collectivite: {
       type: Object,
       required: true
     },
