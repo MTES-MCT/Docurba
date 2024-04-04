@@ -5,7 +5,6 @@ DECLARE
   event doc_frise_events;
   current_date_opposable text;
 BEGIN
-    -- Determine new status
     FOR event IN
       SELECT *
       FROM doc_frise_events
