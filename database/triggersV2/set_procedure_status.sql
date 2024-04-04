@@ -12,7 +12,7 @@ BEGIN
       AND (is_valid = true OR type = 'Abandon')
       ORDER BY date_iso DESC, type
     LOOP
-      new_status := get_event_impact(event, procedure.doc_type_code);
+      new_status := get_event_impact(event, procedure.doc_type);
       IF new_status = 'opposable' THEN
         current_date_opposable := event.date_iso;
       END IF;
@@ -27,7 +27,7 @@ BEGIN
     END IF;
 
     UPDATE procedures
-      SET status = new_status, date_opposable = current_date_opposable
+      SET status = new_status
       WHERE id = procedure.id;
 
     current_date_opposable := null;
