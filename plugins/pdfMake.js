@@ -1,22 +1,14 @@
 import axios from 'axios'
 import pdfMake from 'pdfmake/build/pdfmake'
-// import pdfFonts from 'pdfmake/build/vfs_fonts'
-import orderSections from '@/mixins/orderSections.js'
+import { A4 } from 'pdfmake/src/standardPageSizes'
+import mixin from '@/mixins/orderSections.js'
 import departements from '@/assets/data/INSEE/departements_small.json'
 
+// import pdfFonts from 'pdfmake/build/vfs_fonts'
 // pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 // This is only to speed up in test. Do not push in prod.
 // import sections from '@/assets/test/sections.json'
-
-pdfMake.fonts = {
-  Marianne: {
-    normal: 'https://docurba.beta.gouv.fr/fonts/Marianne/fontes_desktop/Marianne-Regular.otf',
-    bold: 'https://docurba.beta.gouv.fr/fonts/Marianne/fontes_desktop/Marianne-Bold.otf',
-    italics: 'https://docurba.beta.gouv.fr/fonts/Marianne/fontes_desktop/Marianne-RegularItalic.otf',
-    bolditalics: 'https://docurba.beta.gouv.fr/fonts/Marianne/fontes_desktop/Marianne-BoldItalic.otf'
-  }
-}
 
 const SOURCE_LABEL = {
   BASE_TERRITORIALE: 'Base territoriale',
@@ -24,12 +16,20 @@ const SOURCE_LABEL = {
   INPN: 'INPN'
 }
 
+const PAGE_MARGINS = 40
+const MAX_WIDTH = A4[0] - (PAGE_MARGINS * 2)
+const COLUMN_GAP = 12
+
+const NARROW_NOBREAK_SPACE = ' '
+
 export default ({ $md, $isDev, $supabase }, inject) => {
   const baseUrl = $isDev ? 'http://localhost:3000' : location.origin
 
   // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
-  const IMAGE_SRC_TO_REPLACE = 'https://sante.gouv.fr/local/adapt-img/608/10x/IMG/jpg/Etat_de_sante_population.jpg?1680693100'
-  const IMAGE_SRC_REPLACEMENT = `${baseUrl}/images/pac/Etat_de_sante_population.jpg`
+  const IMAGES_TO_REPLACE = {
+    'https://sante.gouv.fr/local/adapt-img/608/10x/IMG/jpg/Etat_de_sante_population.jpg?1680693100': `${baseUrl}/images/Etat_de_sante_population.jpg`,
+    'https://lh4.googleusercontent.com/iw_QbyDpmWeaIpHvqGXuugWtrHxRSRSAIijQ7qIZhg6QVFEvVkTcBXbnoGUobHmTHvwT43aRCxuuvarl-84pdJo7I0YkY7rYJgZFGqrN5lvql59O0J_KvLpO1jZIdqUzXCNjIeAdikbS4vKr8CBuTjg': `${baseUrl}/images/ORT.png`
+  }
 
   pdfMake.fonts = {
     Marianne: {
@@ -44,31 +44,37 @@ export default ({ $md, $isDev, $supabase }, inject) => {
     pdfFromContent (pdfData, filename = 'PAC') {
       Object.assign(pdfData, {
         pageSize: 'A4',
-        pageMargins: 65,
+        pageMargins: PAGE_MARGINS,
         styles: {
           title: { fontSize: 40, alignment: 'center' },
           tocTitle: { fontSize: 18 },
-          h1: { fontSize: 30, alignment: 'left' },
-          h2: { fontSize: 24, alignment: 'left' },
-          h3: { fontSize: 20, alignment: 'left' },
-          h4: { fontSize: 18, alignment: 'left' },
-          h5: { fontSize: 16, alignment: 'left' },
-          h6: { fontSize: 14, alignment: 'left' },
+          h1: { fontSize: 24, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h2: { fontSize: 20, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h3: { fontSize: 18, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h4: { fontSize: 16, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h5: { fontSize: 14, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          h6: { fontSize: 12, bold: true, alignment: 'left', margin: [0, 0, 0, 12] },
+          mark: { background: '#ffff00' },
           a: { decoration: 'underline', color: '#000091' },
-          p: { fontSize: 12, alignment: 'justify' },
-          footer: { fontSize: 12, alignment: 'right' },
-          ddt: { fontSize: 12, alignment: 'right' }
+          p: { fontSize: 10, alignment: 'justify', margin: [0, 0, 0, 10] },
+          img: { margin: [0, 0, 0, 10] },
+          list: { margin: [0, 0, 0, 10] },
+          table: { margin: [0, 0, 0, 10] },
+          th: { fillColor: '#f1f3f5', bold: true },
+          footer: { fontSize: 10, alignment: 'right' },
+          ddt: { fontSize: 10, alignment: 'right' }
         },
         defaultStyle: {
           font: 'Marianne',
-          fontSize: 12,
+          fontSize: 10,
+          lineHeight: 1.1,
           alignment: 'justify'
         },
         footer (currentPage, pageCount) {
           return {
             text: currentPage > 1 ? `${currentPage.toString()}` : '', // /${pageCount}`,
             style: 'footer',
-            margin: [65, 10]
+            margin: [40, 10]
           }
         },
         pageBreakBefore (currentNode, followingNodesOnPage, nodesOnNextPage, previousNodesOnPage) {
@@ -81,29 +87,16 @@ export default ({ $md, $isDev, $supabase }, inject) => {
     },
     // fetchGithubRef could go into its own plugin/mixin.
     async fetchGithubRef (githubRef, project) {
-      const { data: [{ PAC: selectedSections }] } = await $supabase.from('projects').select('PAC').eq('id', project.id)
-
       const { data: sections } = await axios({
         method: 'get',
         url: `${baseUrl}/api/trames/tree/${githubRef}?content=all`
       })
 
-      function deptToRef (deptCode) {
-        if (deptCode?.includes('A') || deptCode?.includes('B')) {
-          return deptCode
-        } else {
-          return +deptCode
-        }
-      }
+      const { data: supSections } = await $supabase.from('pac_sections')
+        .select('*')
+        .in('ref', window.$nuxt.$options.filters.allHeadRefs(githubRef, project))
 
-      const { data: supSections } = await $supabase.from('pac_sections').select('*').in('ref', [
-        githubRef,
-        `dept-${deptToRef(project?.trame)}`,
-        `region-${project?.towns ? project.towns[0].regionCode : ''}`,
-        'main'
-      ])
-
-      orderSections.methods.orderSections(sections, supSections)
+      mixin.methods.orderSections(sections, supSections)
 
       const { data: attachments } = await $supabase.from('pac_sections_data').select('*').eq('ref', githubRef)
 
@@ -114,10 +107,6 @@ export default ({ $md, $isDev, $supabase }, inject) => {
 
           for (const attachment of sectionAttachments) {
             attachmentElements.push(
-              {
-                type: 'text',
-                value: '\n'
-              },
               {
                 type: 'element',
                 tag: 'li',
@@ -141,34 +130,35 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           }
 
           section.body.children.push({
-            type: 'text',
-            value: '\n'
-          }, {
             type: 'element',
             tag: 'ul',
             props: {},
             children: attachmentElements
-          }, {
-            type: 'text',
-            value: '\n'
           })
         }
       }
 
       function parseSection (section, paths) {
         if (section.content) {
-          section.body = $md.compile(section.content)
+          if (section.content.startsWith('<')) {
+            section.body = $md.processHtml(section.content)
+          } else {
+            section.body = $md.processMarkdown(section.content)
+          }
         }
 
         pushAttachments(section)
 
         if (section.children) {
-          section.children = section.children.filter(c => paths.includes(c.path))
+          if (paths) {
+            section.children = section.children.filter(c => paths.includes(c.path))
+          }
           section.children.forEach(c => parseSection(c, paths))
         }
       }
 
-      const parsedSections = sections.filter(s => selectedSections.includes(s.path))
+      const selectedSections = project?.PAC
+      const parsedSections = selectedSections ? sections.filter(s => selectedSections.includes(s.path)) : sections
       parsedSections.forEach(s => parseSection(s, selectedSections))
 
       return parsedSections
@@ -176,29 +166,31 @@ export default ({ $md, $isDev, $supabase }, inject) => {
     async pdfFromRef (githubRef, project) {
       const roots = await this.fetchGithubRef(githubRef, project)
 
-      const dept = departements.find(d => d.code === project.trame)
+      const dept = departements.find(d => d.code === project?.trame)
 
       const pdfContent = {
         content: [
           {
-            columns: [{
-              width: 100,
-              fit: [100, 100],
-              image: 'logo'
-            }, {
-              width: '*',
-              text: `Direction départementale des territoires \n ${dept.intitule}`,
-              style: 'ddt'
-            }]
+            columns: [
+              {
+                width: 100,
+                fit: [100, 100],
+                image: 'logo'
+              }, {
+                width: '*',
+                text: project ? `Direction départementale des territoires \n ${dept.intitule}` : '',
+                style: 'ddt'
+              }
+            ]
           },
           {
-            text: project.name,
+            text: this.getTitle(githubRef, project),
             style: 'title',
             margin: [0, 200, 0, 0]
+          },
+          {
+            toc: { title: { text: 'SOMMAIRE' } }
           }
-          // {
-          //   toc: { title: { text: project.name, style: 'h1' } }
-          // }
         ],
         images: {
           logo: `${baseUrl}/images/Republique_Francaise.jpg`
@@ -220,12 +212,6 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             newParams.style = 'a'
           }
 
-          if (element.tag === 'li') {
-            if (element.children[0].value === '\n') {
-              element.children.splice(0, 1)
-            }
-          }
-
           if (element.tag === 'strong' || element.bold) {
             newParams.bold = true
           }
@@ -234,91 +220,166 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             newParams.italics = true
           }
 
+          if (element.tag === 'mark') {
+            newParams.style = 'mark'
+          }
+
           if (element.children && element.children.length) {
             content.text = extractText(element.children, Object.assign({}, params, newParams))
           } else if (!element.children) {
-            content.text = element.value || element
+            content.text = element.value?.replaceAll(NARROW_NOBREAK_SPACE, ' ') || element
           }
 
           return content
         })
       }
 
-      function addElementToContent (element) {
+      function transformElementToContent (element) {
         const headlineLevel = element.headlineLevel
 
         if (!element.tag) {
-          pdfContent.content.push({
+          return {
             text: element.value || element,
             headlineLevel
-          })
-        } else if (element.tag.includes('h')) {
+          }
+        }
+
+        if (/^h[1-6]$/.test(element.tag)) {
           const text = extractText(element.children)
 
-          const isToc = ['h1', 'h2', 'h3'].includes(element.tag)
-
           if (text.length) {
-            pdfContent.content.push({
+            return {
               text,
               style: element.tag,
-              tocItem: isToc ? element.tocId : false,
-              tocMargin: element.tocMargin,
-              tocStyle: 'a',
-              headlineLevel,
-              margin: [0, 10, 0, 0]
-            })
-          }
-        } else if (element.tag === 'ul' || element.tag === 'ol') {
-          pdfContent.content.push({
-            [element.tag]: extractText(element.children.filter(c => c !== '\n' && c.value !== '\n')),
-            headlineLevel
-          })
-        } else if (element.tag === 'img') {
-          if (element.props.src) {
-            if (element.props.src === IMAGE_SRC_TO_REPLACE) {
-              // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
-              element.props.src = IMAGE_SRC_REPLACEMENT
-            }
-
-            pdfContent.content.push({
-              image: `SRC:${element.props.src}`,
-              width: 450,
               headlineLevel
-            })
-
-            pdfContent.images[`SRC:${element.props.src}`] = element.props.src.includes('http') ? element.props.src : `${baseUrl}${element.props.src}`
+            }
           }
-        } else {
-          pdfContent.content.push({
-            stack: extractText(element.children),
-            style: element.tag,
+        }
+
+        if (element.tag === 'ul' || element.tag === 'ol') {
+          return {
+            [element.tag]: extractText(element.children),
+            headlineLevel,
+            style: 'list'
+          }
+        }
+
+        if (element.tag === 'img' && element.props.src) {
+          if (IMAGES_TO_REPLACE[element.props.src]) {
+            // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
+            element.props.src = IMAGES_TO_REPLACE[element.props.src]
+          }
+
+          if ($isDev && element.props.src.startsWith('https://docurba.beta.gouv.fr')) {
+            element.props.src = element.props.src.replace('https://docurba.beta.gouv.fr', baseUrl)
+          }
+
+          pdfContent.images[`SRC:${element.props.src}`] = element.props.src.includes('http') ? element.props.src : `${baseUrl}${element.props.src}`
+          return {
+            image: `SRC:${element.props.src}`,
+            width: element.props.width ? Math.min(element.props.width, MAX_WIDTH) : MAX_WIDTH,
+            style: 'img',
             headlineLevel
+          }
+        }
+
+        if (element.tag === 'div' && element.props.dataType === 'columnBlock') {
+          return {
+            columns: element.children
+              .filter(div => div.props.dataType === 'column')
+              .map(col => ({
+                stack: col.children.map((colChild) => {
+                  // if there is an image in a column, set size to full column size
+                  if (colChild.tag === 'img') {
+                    colChild.props.width = (MAX_WIDTH - COLUMN_GAP) / 2
+                  }
+                  return transformElementToContent(colChild)
+                })
+              })),
+            columnGap: COLUMN_GAP
+          }
+        }
+
+        if (element.tag === 'table') {
+          const tableRowElements = element.children[0].children
+          const columnsCount = Math.max(...tableRowElements.map(row => row.children.length))
+
+          const tableContent = {
+            style: 'table',
+            table: {
+              headerRows: 1,
+              widths: new Array(columnsCount).fill('auto'),
+              body: tableRowElements.map(row => row.children.flatMap((cell) => {
+                const cellContent = {
+                  style: cell.tag, // th or td
+                  rowSpan: Number(cell.props.rowSpan ?? 1),
+                  colSpan: Number(cell.props.colSpan ?? 1),
+                  stack: cell.children.map((cellChild, index) => {
+                    const content = transformElementToContent(cellChild)
+                    if (index === cell.children.length - 1) {
+                      // remove the margin of the last element
+                      content.margin = [0, 0, 0, 0]
+                    }
+                    return content
+                  }),
+                  borderColor: new Array(4).fill('#ced4da')
+                }
+
+                // insert empty cells for col spans
+                return [cellContent, ...(new Array(cellContent.colSpan - 1).fill(''))]
+              }))
+            }
+          }
+
+          // insert empty cells for row spans
+          const rows = tableContent.table.body
+          rows.forEach((row, rowIndex) => {
+            row.forEach((cell, cellIndex) => {
+              if (cell.rowSpan > 1) {
+                rows[rowIndex + 1].splice(cellIndex, 0, ...(new Array(cell.colSpan).fill('')))
+              }
+            })
           })
+
+          return tableContent
+        }
+
+        return {
+          stack: extractText(element.children),
+          style: element.tag,
+          headlineLevel
         }
       }
 
       const elements = []
-      const elementsTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'img']
+      const elementsTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'img', 'div', 'table']
       // const textTags = ['strong', 'u', 'a']
 
-      const tocs = []
-
-      function pushElements (body, tocId, tocMargin) {
-        if (body.children) {
+      function pushElements (body, depth) {
+        if (body?.children) {
           let text = { tag: 'p', children: [] }
 
           body.children.forEach((child) => {
             if (child.type === 'element') {
               if (elementsTags.includes(child.tag)) {
+                if (/^h[1-6]$/.test(child.tag)) {
+                  const headerLevel = Number(child.tag.charAt(1))
+                  if (depth + 2 > headerLevel) {
+                    child.tag = `h${Math.min(depth + 2, 6)}`
+                  }
+                }
+
                 if (text.children.length) {
                   elements.push(text)
                   text = { tag: 'p', children: [] }
                 }
-                elements.push(Object.assign(child, { tocId, tocMargin }))
+                elements.push(child)
               } else {
                 text.children.push(child)
               }
-            } else { text.children.push(child.value) }
+            } else {
+              text.children.push(child.value)
+            }
           })
 
           if (text.children.length) {
@@ -327,50 +388,60 @@ export default ({ $md, $isDev, $supabase }, inject) => {
         }
       }
 
-      function findBodies (children, level) {
-        children.forEach((child, index) => {
-          tocs.push({
-            toc: {
-              id: `${level}-${child.path}`,
-              title: {
-                text: '',
-                style: 'tocTitle'
+      function findBodies (children, depth) {
+        children.forEach((child) => {
+          if (depth === 0) {
+            elements.push({
+              tag: 'pageBreak',
+              children: []
+            })
+          }
+
+          elements.push({
+            tag: `h${depth + 1}`,
+            children: [
+              {
+                text: child.name,
+                tocItem: true,
+                tocMargin: [16 * depth, 0, 0, 0],
+                tocStyle: 'a'
               }
-            }
+            ]
           })
 
-          if (child.body) { pushElements(child.body, `${level}-${child.path}`, [15 * level, 0, 0, 0]) }
-          if (child.children) { findBodies(child.children, level + 1) }
+          if (child.body) { pushElements(child.body, depth) }
+          if (child.children) { findBodies(child.children, depth + 1) }
         })
       }
 
-      roots.forEach((root) => {
-        if (root.path !== 'PAC/Introduction') {
-          tocs.push({
-            toc: {
-              id: root.name,
-              title: {
-                text: root.name, style: 'h6'
-              }
-            }
-          })
-        }
-
-        elements.push({ tag: 'pageBreak', children: [] })
-        pushElements(root.body, root.name)
-        findBodies(root.children, 0)
-      })
-
-      pdfContent.content.push(...tocs)
+      findBodies(roots, 0)
 
       elements.forEach((element, index) => {
         if (element.tag === 'pageBreak') {
           elements[index + 1].headlineLevel = 1
         }
-        addElementToContent(element)
+        pdfContent.content.push(transformElementToContent(element))
       })
 
-      await this.pdfFromContent(pdfContent, `${project.doc_type} - ${project.name}`)
+      await this.pdfFromContent(
+        pdfContent,
+        project ? `${project.doc_type} - ${project.name}` : this.getTitle(githubRef)
+      )
+    },
+    getTitle (githubRef, project) {
+      if (project) {
+        return project.name
+      }
+
+      if (githubRef.startsWith('dept')) {
+        return 'Trame départementale'
+      }
+      if (githubRef.startsWith('region')) {
+        return 'Trame régionale'
+      }
+      if (githubRef === 'main') {
+        return 'Trame nationale'
+      }
     }
   }
 

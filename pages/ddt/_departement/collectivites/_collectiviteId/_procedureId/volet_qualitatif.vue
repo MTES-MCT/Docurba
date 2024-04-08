@@ -32,7 +32,7 @@
       <v-col v-if="rawDetails" cols="12">
         <div>
           <div class="font-weight-bold ">
-            Evaluation environnementale : {{ rawDetails[0].vq_sievaluationenvironnementale }}
+            Evaluation environnementale : {{ rawDetails.eval_environmental }}
           </div>
         </div>
       </v-col>
@@ -114,9 +114,9 @@
                 <v-chip v-if="typeof reglement.value === 'boolean'" :color="reglement.value ? 'success' : 'error'" small label class="text-uppercase mr-2">
                   {{ reglement.value ? 'Oui' : 'Non' }}
                 </v-chip>
-                <div v-else>
+                <span v-else>
                   {{ reglement.value }}
-                </div>
+                </span>
 
                 <v-tooltip bottom>
                   <template #activator="{ on, attrs }">
@@ -230,7 +230,7 @@ export default {
   computed: {
     voletQualitatif () {
       if (this.rawDetails) {
-        const details = this.rawDetails[0]
+        const details = this.rawDetails
         return [
           { title: 'siEvaluationEnvironement', value: details.vq_sievaluationenvironement, hint: 'siEvaluationEnvironement - Evaluation environnementale' },
           { title: 'siDocAmmenagmentComm', value: !!details.vq_sidocammenagmentcomm, hint: 'siDocAmmenagmentComm - Document d\'aménagement commerciale' },
@@ -269,33 +269,33 @@ export default {
     },
     loienes () {
       if (this.rawDetails) {
-        const details = this.rawDetails[0]
+        const details = this.rawDetails
         return {
           oaps: [
-            { title: 'Environnement', value: !!details.le_sienvironnement, hint: 'siEnvironnement - Environnement' },
-            { title: 'Paysage', value: !!details.le_sipaysage, hint: 'siPysage - Paysage' },
-            { title: 'Entrée en ville', value: !!details.le_sientreeville, hint: 'siEntreeville - Entrée de ville' },
-            { title: 'Patrimoine', value: !!details.le_sipatrimoine, hint: 'siPatrimoine - Patrimoine' },
-            { title: 'Lutte contre l\'insalubrité', value: !!details.le_silutteinsalubrite, hint: 'siLutteInsaLubrite - Lutte contre l\'insalubrité' },
-            { title: 'Renouvellement urbain', value: !!details.le_sirenouvellementurbain, hint: 'siRenouvellementUrbain - Renouvellement urbain' },
-            { title: 'Développement', value: !!details.le_sideveloppement, hint: 'siDeveloppement - Développement' },
+            { title: 'Environnement', value: !!details.is_environnement, hint: 'siEnvironnement - Environnement' },
+            { title: 'Paysage', value: !!details.is_paysage, hint: 'siPysage - Paysage' },
+            { title: 'Entrée en ville', value: !!details.is_entree_ville, hint: 'siEntreeville - Entrée de ville' },
+            { title: 'Patrimoine', value: !!details.is_patrimoine, hint: 'siPatrimoine - Patrimoine' },
+            { title: 'Lutte contre l\'insalubrité', value: !!details.is_lutte_insalubrite, hint: 'siLutteInsaLubrite - Lutte contre l\'insalubrité' },
+            { title: 'Renouvellement urbain', value: !!details.is_renouvel_urbain, hint: 'siRenouvellementUrbain - Renouvellement urbain' },
+            { title: 'Développement', value: !!details.is_developpement, hint: 'siDeveloppement - Développement' },
             // MIXITE FONCITONNELLE
-            { title: 'Échéancier d’ouverture à l’urbanisation', value: !!details.le_siecheancierouvertureurba, hint: 'siEcheancierOuvertureUrba - Echéancier d\'ouverture à l\'urbanisation' }
+            { title: 'Échéancier d’ouverture à l’urbanisation', value: !!details.is_ouverture_urbain, hint: 'siEcheancierOuvertureUrba - Echéancier d\'ouverture à l\'urbanisation' }
           // Adaptation du périmètre de plafonnement du stationnement
           ],
           reglements: [
             // STECAL
           // Nb STECAL
-            { title: 'STECAL', value: !!details.vq_sistecal, hint: 'sistecal --' }, // NO IN SCHEMA
-            { title: 'Nombre de STECAL', value: details.vq_nombrestecal, hint: 'nombrestecal' }, // NO IN SCHEMA
+            { title: 'STECAL', value: !!details.is_stecal, hint: 'sistecal --' }, // NO IN SCHEMA
+            { title: 'Nombre de STECAL', value: details.nb_stecal ?? '0', hint: 'nombrestecal' }, // NO IN SCHEMA
 
-            { title: 'Densité minimale', value: !!details.le_sidensitemin, hint: 'siDensiteMin - Densité minimale' },
+            { title: 'Densité minimale', value: !!details.is_densite_mini, hint: 'siDensiteMin - Densité minimale' },
             { title: 'Nombre maximal d’aires de stationnement', value: !!details.le_sinbrmaxairestationnement, hint: 'siNbrMaxAireStationnement - Nombre maximal d\'aires de stationnement' },
             // Prescriptions pour communications électroniques
             // RNU
-            { title: 'Obligation de réalisation d’aires de stationnement', value: !!details.le_siobligationstationnement, hint: 'siObligationStationnement - Obligation (minimale ou maximale) d\'aire de stationnement' }
-          ],
-          commentaire: { title: 'commentaire', value: details.le_commentaire, hint: 'commentaire - Commentaire' }
+            { title: 'Obligation de réalisation d’aires de stationnement', value: !!details.is_obligation_aire_statmnt, hint: 'siObligationStationnement - Obligation (minimale ou maximale) d\'aire de stationnement' }
+          ]
+          // commentaire: { title: 'commentaire', value: details.le_commentaire, hint: 'commentaire - Commentaire' }
         }
         // return [
         //   { title: 'Environnement', value: !!details.le_sienvironnement, hint: 'siEnvironnement - Environnement' },
@@ -346,10 +346,11 @@ export default {
     }
   },
   async mounted () {
-    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
-    console.log('this.$route.params: ', this.$route.params)
-    this.rawDetails = await this.$sudocu.getProcedureInfosDgd(this.$route.params.procedureId)
-    console.log('details: ', this.rawDetails)
+    const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures')
+      .select('*')
+      .eq('id', this.$route.params.procedureId)
+    if (errorProcedure) { throw errorProcedure }
+    this.rawDetails = procedure[0].volet_qualitatif
   }
 }
 </script>

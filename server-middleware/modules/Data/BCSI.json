@@ -1,0 +1,247 @@
+{
+  "du_codeEtat": {
+    "1111": {
+      "Lib_EtatD": "CC approuv\u00e9e - r\u00e9vision CC - Comp\u00e9tence commune",
+      "EtatS": {
+        "Code_EtatS": "11",
+        "Lib_EtatS": "CC approuv\u00e9e - en r\u00e9vision"
+      }
+    },
+    "1414": {
+      "Lib_EtatD": "CC approuv\u00e9e - r\u00e9vision CC - Comp\u00e9tence EPCI",
+      "EtatS": {
+        "Code_EtatS": "11",
+        "Lib_EtatS": "CC approuv\u00e9e - en r\u00e9vision"
+      }
+    },
+    "1131": {
+      "Lib_EtatD": "CC approuv\u00e9e - \u00e9laboration PLU - Comp\u00e9tence commune",
+      "EtatS": {
+        "Code_EtatS": "13",
+        "Lib_EtatS": "CC approuv\u00e9e - PLU ou PLUi en cours"
+      }
+    },
+    "1332": {
+      "Lib_EtatD": "CC-I sect approuv\u00e9e - \u00e9laboration PLU-I",
+      "EtatS": {
+        "Code_EtatS": "13",
+        "Lib_EtatS": "CC approuv\u00e9e - PLU ou PLUi en cours"
+      }
+    },
+    "1432": {
+      "Lib_EtatD": "CC approuv\u00e9e - \u00e9laboration PLU-I",
+      "EtatS": {
+        "Code_EtatS": "13",
+        "Lib_EtatS": "CC approuv\u00e9e - PLU ou PLUi en cours"
+      }
+    },
+    "1433": {
+      "Lib_EtatD": "CC approuv\u00e9e - \u00e9laboration PLU-I sectoriel",
+      "EtatS": {
+        "Code_EtatS": "13",
+        "Lib_EtatS": "CC approuv\u00e9e - PLU ou PLUi en cours"
+      }
+    },
+    "1434": {
+      "Lib_EtatD": "CC approuv\u00e9e - \u00e9laboration PLU - Comp\u00e9tence EPCI",
+      "EtatS": {
+        "Code_EtatS": "13",
+        "Lib_EtatS": "CC approuv\u00e9e - PLU ou PLUi en cours"
+      }
+    },
+    "1199": {
+      "Lib_EtatD": "CC approuv\u00e9e - aucune proc\u00e9dure en cours - Comp\u00e9tence commune",
+      "EtatS": {
+        "Code_EtatS": "19",
+        "Lib_EtatS": "CC approuv\u00e9e"
+      }
+    },
+    "1399": {
+      "Lib_EtatD": "CC-I sect approuv\u00e9e - aucune proc\u00e9dure en cours",
+      "EtatS": {
+        "Code_EtatS": "19",
+        "Lib_EtatS": "CC approuv\u00e9e"
+      }
+    },
+    "1499": {
+      "Lib_EtatD": "CC approuv\u00e9e - aucune proc\u00e9dure en cours - Comp\u00e9tence EPCI",
+      "EtatS": {
+        "Code_EtatS": "19",
+        "Lib_EtatS": "CC approuv\u00e9e"
+      }
+    },
+    "2131": {
+      "Lib_EtatD": "POS approuv\u00e9 - r\u00e9vision de PLU - Comp\u00e9tence commune",
+      "EtatS": {
+        "Code_EtatS": "23",
+        "Lib_EtatS": "POS approuv\u00e9 - PLU ou PLUi en cours"
+      }
+    },
+    "2432": {
+      "Lib_EtatD": "POS approuv\u00e9 - r\u00e9vision de PLU-I",
+      "EtatS": {
+        "Code_EtatS": "23",
+        "Lib_EtatS": "POS approuv\u00e9 - PLU ou PLUi en cours"
+      }
+    },
+    "2199": {
+      "Lib_EtatD": "POS approuv\u00e9 - aucune proc\u00e9dure en cours - Comp\u00e9tence commune",
+      "EtatS": {
+        "Code_EtatS": "29",
+        "Lib_EtatS": "POS approuv\u00e9"
+      }
+    },
+    "2499": {
+      "Lib_EtatD": "POS approuv\u00e9 - aucune proc\u00e9dure en cours - Comp\u00e9tence EPCI",
+      "EtatS": {
+        "Code_EtatS": "29",
+        "Lib_EtatS": "POS approuv\u00e9"
+      }
+    },
+    "3111": {
+      "Lib_EtatD": "PLU approuv\u00e9 - \u00e9laboration CC - Comp\u00e9tence commune",
+      "EtatS": {
+        "Code_EtatS": "31",
+        "Lib_EtatS": "PLU ou PLUi approuv\u00e9 - CC en \u00e9laboration"
+      }
+    },
+    "3131": {
+      "Lib_EtatD": "PLU approuv\u00e9 - r\u00e9vision de PLU - Comp\u00e9tence commune",
+      "EtatS": {
+        "Code_EtatS": "33",
+        "Lib_EtatS": "PLU ou PLUi approuv\u00e9 - en r\u00e9vision"
+      }
+    },
+    "3232": {
+      "Lib_EtatD": "PLU-I approuv\u00e9 - r\u00e9vision de PLU-I",
+      "EtatS": {
+        "Code_EtatS": "33",
+        "Lib_EtatS": "PLU ou PLUi approuv\u00e9 - en r\u00e9vision"
+      }
+    },
+    "3332": {
+      "Lib_EtatD": "PLU-I sect approuv\u00e9 - r\u00e9vision de PLU-I",
+      "EtatS": {
+        "Code_EtatS": "33",
+        "Lib_EtatS": "PLU ou PLUi approuv\u00e9 - en r\u00e9vision"
+      }
+    },
+    "3333": {
+      "Lib_EtatD": "PLU-I sect approuv\u00e9 - r\u00e9vision de PLU-I sectoriel",
+      "EtatS": {
+        "Code_EtatS": "33",
+        "Lib_EtatS": "PLU ou PLUi approuv\u00e9 - en r\u00e9vision"
+      }
+    },
+    "3432": {
+      "Lib_EtatD": "PLU approuv\u00e9 - r\u00e9vision de PLU-I",
+      "EtatS": {
+        "Code_EtatS": "33",
+        "Lib_EtatS": "PLU ou PLUi approuv\u00e9 - en r\u00e9vision"
+      }
+    },
+    "3433": {
+      "Lib_EtatD": "PLU approuv\u00e9 - r\u00e9vision de PLU-I sectoriel",
+      "EtatS": {
+        "Code_EtatS": "33",
+        "Lib_EtatS": "PLU ou PLUi approuv\u00e9 - en r\u00e9vision"
+      }
+    },
+    "3434": {
+      "Lib_EtatD": "PLU approuv\u00e9 - r\u00e9vision de PLU - Comp\u00e9tence EPCI",
+      "EtatS": {
+        "Code_EtatS": "33",
+        "Lib_EtatS": "PLU ou PLUi approuv\u00e9 - en r\u00e9vision"
+      }
+    },
+    "3199": {
+      "Lib_EtatD": "PLU approuv\u00e9 - aucune proc\u00e9dure en cours - Comp\u00e9tence commune",
+      "EtatS": {
+        "Code_EtatS": "39",
+        "Lib_EtatS": "PLU ou PLUi approuv\u00e9"
+      }
+    },
+    "3299": {
+      "Lib_EtatD": "PLU-I approuv\u00e9 - aucune proc\u00e9dure en cours",
+      "EtatS": {
+        "Code_EtatS": "39",
+        "Lib_EtatS": "PLU ou PLUi approuv\u00e9"
+      }
+    },
+    "3399": {
+      "Lib_EtatD": "PLU-I sect approuv\u00e9 - aucune proc\u00e9dure en cours",
+      "EtatS": {
+        "Code_EtatS": "39",
+        "Lib_EtatS": "PLU ou PLUi approuv\u00e9"
+      }
+    },
+    "3499": {
+      "Lib_EtatD": "PLU approuv\u00e9 - aucune proc\u00e9dure en cours - Comp\u00e9tence EPCI",
+      "EtatS": {
+        "Code_EtatS": "39",
+        "Lib_EtatS": "PLU ou PLUi approuv\u00e9"
+      }
+    },
+    "9911": {
+      "Lib_EtatD": "RNU - \u00e9laboration CC - Comp\u00e9tence commune",
+      "EtatS": {
+        "Code_EtatS": "91",
+        "Lib_EtatS": "RNU - CC en \u00e9laboration"
+      }
+    },
+    "9914": {
+      "Lib_EtatD": "RNU - \u00e9laboration CC - Comp\u00e9tence EPCI",
+      "EtatS": {
+        "Code_EtatS": "91",
+        "Lib_EtatS": "RNU - CC en \u00e9laboration"
+      }
+    },
+    "9931": {
+      "Lib_EtatD": "RNU - \u00e9laboration PLU - Comp\u00e9tence commune",
+      "EtatS": {
+        "Code_EtatS": "93",
+        "Lib_EtatS": "RNU - PLU ou PLUi en \u00e9laboration"
+      }
+    },
+    "9932": {
+      "Lib_EtatD": "RNU - \u00e9laboration PLU-I",
+      "EtatS": {
+        "Code_EtatS": "93",
+        "Lib_EtatS": "RNU - PLU ou PLUi en \u00e9laboration"
+      }
+    },
+    "9933": {
+      "Lib_EtatD": "RNU - \u00e9laboration PLU-I sectoriel",
+      "EtatS": {
+        "Code_EtatS": "93",
+        "Lib_EtatS": "RNU - PLU ou PLUi en \u00e9laboration"
+      }
+    },
+    "9934": {
+      "Lib_EtatD": "RNU - \u00e9laboration PLU - Comp\u00e9tence EPCI",
+      "EtatS": {
+        "Code_EtatS": "93",
+        "Lib_EtatS": "RNU - PLU ou PLUi en \u00e9laboration"
+      }
+    },
+    "9999": {
+      "Lib_EtatD": "RNU - aucune proc\u00e9dure en cours",
+      "EtatS": {
+        "Code_EtatS": "99",
+        "Lib_EtatS": "RNU"
+      }
+    }
+  },
+  "SuDocUH": {
+    "AnneeCOG": "2022",
+    "SuD_DateDump": "31/10/2023"
+  },
+  "compteur": {
+    "Code": 33
+  },
+  "request.path": "/sudocuh/api/du/codeetat/json",
+  "request.GET": null,
+  "export.type": "json",
+  "erreur": null,
+  "version": "1.0.1"
+}

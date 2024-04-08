@@ -1,9 +1,9 @@
-/* eslint-disable no-console */
 const express = require('express')
-const admin = require('./modules/admin.js')
+const { createClient } = require('@supabase/supabase-js')
 const github = require('./modules/github/github.js')
 const tree = require('./modules/github/tree.js')
-const { getFileContent, getFiles } = require('./modules/github/files.js')
+const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+const { getFileContent, getFiles, addGhostSections } = require('./modules/github/files.js')
 
 const app = express()
 
@@ -22,12 +22,12 @@ app.post('/projects/:parentRef', async (req, res) => {
   const { parentRef } = req.params
   const { userId, projectId } = req.body
 
-  const { data: parentBranch } = await github(`GET /repos/UngererFabien/France-PAC/git/ref/heads/${parentRef}`, {
+  const { data: parentBranch } = await github(`GET /repos/{owner}/{repo}/git/ref/heads/${parentRef}`, {
     ref: parentRef
   })
 
   try {
-    const newProjectBranch = await github('POST /repos/UngererFabien/France-PAC/git/refs', {
+    const newProjectBranch = await github('POST /repos/{owner}/{repo}/git/refs', {
       ref: `refs/heads/projet-${projectId}`,
       sha: parentBranch.object.sha
     })
@@ -35,6 +35,29 @@ app.post('/projects/:parentRef', async (req, res) => {
     res.status(200).send(newProjectBranch)
   } catch (err) {
     res.status(400).send(err)
+  }
+})
+
+app.put('/:ref/copy', async (req, res) => {
+  const { path, ghostRef } = req.body
+  // test should be replaced by region code.
+  try {
+    await tree.copy(req.params.ref, ghostRef, path)
+    res.status(200).end()
+  } catch (err) {
+    console.log('Error getting tree', err, err.status)
+  }
+})
+
+app.get('/:ref/head', async (req, res) => {
+  try {
+    const { data: head } = await github('GET /repos/{owner}/{repo}/git/ref/heads/{ref}', { ref: req.params.ref })
+
+    res.status(200).send({
+      sha: head.object.sha
+    })
+  } catch (err) {
+    console.log('Error getting head', err, err.status)
   }
 })
 
@@ -55,7 +78,7 @@ app.post('/:ref', async (req, res) => {
 
   // We assign the branch and commiter manually to make sure it cannot be overide in commit.
   // Someone miss using a userId should not be able to modify anithing else than what this userId is allowed.
-  const commitRes = await github(`PUT /repos/UngererFabien/France-PAC/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
+  const commitRes = await github(`PUT /repos/{owner}/{repo}/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
     branch: ref,
     committer: {
       name: 'Fabien', // allowedRole.user_email.replace(/@(.*)/, ''),
@@ -71,7 +94,7 @@ app.delete('/:ref', async (req, res) => {
   const { ref } = req.params
   const { userId, commit } = req.body
 
-  const commitRes = await github(`DELETE /repos/UngererFabien/France-PAC/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
+  const commitRes = await github(`DELETE /repos/{owner}/{repo}/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
     branch: ref,
     committer: {
       name: 'Fabien', // allowedRole.user_email.replace(/@(.*)/, ''),
@@ -84,21 +107,28 @@ app.delete('/:ref', async (req, res) => {
 })
 
 app.get('/tree/:ref', async (req, res) => {
-  const { content } = req.query
-  // test should be replaced by region code.
-  try {
-    const repo = await getFiles('/PAC', req.params.ref, content)
+  const { content, ghostRef, path = 'PAC' } = req.query
 
-    // if (!error) {
+  try {
+    if (content) {
+      const repo = await getFiles('/PAC', req.params.ref, content)
+      res.status(200).send(repo)
+      return
+    }
+
+    const [repo, ghostRepo] = await Promise.all([
+      tree.getTree(req.params.ref, path),
+      ghostRef ? tree.getTree(ghostRef, path) : undefined
+    ])
+
+    if (ghostRef) {
+      addGhostSections(repo, ghostRepo)
+    }
+
     res.status(200).send(repo)
   } catch (err) {
     console.log('Error getting tree', err, err.status)
   }
-  // } else {
-  //   // eslint-disable-next-line no-console
-  //   console.log('error reading github:', error)
-  //   req.status(400).send(error)
-  // }
 })
 
 app.post('/tree/:ref', async (req, res) => {
@@ -128,17 +158,10 @@ app.get('/file', async (req, res) => {
   }
 })
 
-app.get('/history', async (req, res) => {
+app.get('/tree/:ref/history', async (req, res) => {
   try {
-    const { path, ref } = req.query
-
-    const { data: commits } = await github('GET /repos/{owner}/{repo}/commits', {
-      path,
-      sha: ref,
-      per_page: 1
-    })
-
-    res.status(200).send(commits[0])
+    const historiesByPath = await tree.getHistories(req.params.ref, req.query.paths)
+    res.status(200).send(historiesByPath)
   } catch (err) {
     console.log('error getting history', err)
     res.status(400).send(err)
@@ -150,7 +173,7 @@ app.get('/compare', async (req, res) => {
     const { basehead } = req.query
 
     // https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits
-    const { data } = await github(`GET /repos/UngererFabien/France-PAC/compare/${basehead}`, {
+    const { data } = await github(`GET /repos/{owner}/{repo}/compare/${basehead}`, {
       basehead,
       per_page: 10,
       page: 1

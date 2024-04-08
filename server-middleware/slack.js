@@ -1,14 +1,12 @@
+const axios = require('axios')
 const express = require('express')
 const app = express()
-const { createClient } = require('@supabase/supabase-js')
-
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-const axios = require('axios')
 const sendgrid = require('./modules/sendgrid.js')
+const supabase = require('./modules/supabase.js')
 
 // modules
 const admin = require('./modules/admin.js')
@@ -29,6 +27,8 @@ app.post('/notify/admin/acte', (req, res) => {
   })
 
   console.log("'Notify team in slack userData: ", userData)
+
+  // const { data: { firstname, lastname, departement, region } } = await supabase.from('profiles').select('firstname, lastname, departement, region')
 
   sendgrid.sendEmail(
     {
@@ -62,6 +62,16 @@ app.post('/notify/admin', (req, res) => {
   // }
 
   res.status(200).send('OK')
+})
+
+app.post('/notify/frp', (req, res) => {
+  slack.notifyFrpEvent(req.body).then((res) => {
+    // eslint-disable-next-line no-console
+    console.log('Slack then: ', res.data)
+  }).catch((err) => {
+    // eslint-disable-next-line no-console
+    console.log('Slack catch', err.response.data)
+  })
 })
 
 async function collectiviteValidation (data, responseUrl) {

@@ -51,6 +51,15 @@
         <VRegionAutocomplete v-model="userData.region" label="Votre region" :error-messages="errors" />
       </validation-provider>
     </v-col>
+    <v-col cols="12">
+      <v-checkbox
+        v-model="userData.optin"
+        label="Cochez cette case afin de recevoir nos lettres d'informations mensuelles pour ne rien louper aux dernières actualités de Docurba.
+Promis, seul un contenu court et pertinent vous sera envoyé une fois par mois 🌎"
+        color="primary"
+        hide-details
+      />
+    </v-col>
   </v-row>
 </template>
 
@@ -101,14 +110,15 @@ export default {
   methods: {
     defaultUserData () {
       return {
-        email: this.$isDev ? `test_${this.$dayjs().format('DD-MM-YY+hhmm')}@docurba.beta.gouv.fr` : '',
+        email: this.$isDev ? `fabien+${this.$dayjs().format('DD-MM-YY-hhmm')}@quantedsquare.com` : '',
         firstname: this.$isDev ? 'Test' : '',
         lastname: this.$isDev ? 'Test' : '',
         password: this.$isDev ? 'docurba12345' : '',
         poste: null,
         other_poste: null,
         departement: null,
-        region: null
+        region: null,
+        optin: false
       }
     }
   }

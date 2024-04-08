@@ -48,7 +48,7 @@
         <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
         <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <span class="primary--text text-decoration-underline mr-4">
-            Feuille de route partagée
+            Feuille de route
           </span>
         </nuxt-link>
         <!-- <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-procedureId-dgd', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
@@ -65,9 +65,13 @@
         <span class="primary--text text-decoration-underline mr-4 text--disabled">
           DGD
         </span>
-        <span class="primary--text text-decoration-underline mr-4 text--disabled">
+        <nuxt-link
+          class="primary--text text-decoration-underline mr-4"
+          :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}/volet_qualitatif`"
+        >
           Info. générales
-        </span>
+        </nuxt-link>
+
         <span class="primary--text text-decoration-underline mr-4 text--disabled">
           PAC
         </span>
@@ -117,7 +121,7 @@
           <v-icon small color="primary" class="mr-2">
             {{ icons.mdiArrowRight }}
           </v-icon>
-          Feuille de route publique
+          Feuille de route
         </v-btn>
       </v-col>
     </v-row>
@@ -150,7 +154,7 @@ export default {
   methods: {
     async  archiveProcedure (idProcedure) {
       try {
-        console.log('idProcedure to archive: ', idProcedure)
+        // console.log('idProcedure to archive: ', idProcedure)
         const { error } = await this.$supabase
           .from('procedures')
           .update({ archived: true })
@@ -160,6 +164,7 @@ export default {
         this.$emit('delete', idProcedure)
         this.dialog = false
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error)
       }
     }

@@ -73,11 +73,17 @@ export default {
       return this.areas.filter(a => !!this.documents.find(doc => doc.grid.name === a.code))
     }
   },
+  mounted () {
+    this.$matomo([
+      'trackEvent', 'Socle de PAC', 'GPU',
+      this.collectivite.code
+    ])
+  },
   async created () {
     this.areas = [
       { code: this.collectivite.code, intitule: this.collectivite.intitule },
-      ...(this.collectivite.communes
-        ?.filter(commune => commune.type === 'Commune')
+      ...(this.collectivite.membres
+        ?.filter(commune => commune.type.startsWith('COM'))
         .map(({ code, intitule }) => { return { code, intitule } }) ?? []),
       { code: this.collectivite.departement.code, intitule: this.collectivite.departement.intitule },
       { code: 'R' + this.collectivite.region.code, intitule: this.collectivite.region.intitule },
@@ -101,9 +107,9 @@ export default {
       })
     )
 
-    const centerRes = await axios.get(`https://geo.api.gouv.fr/${this.isEpci ? 'epcis' : 'communes'}/${this.collectivite.code}?fields=centre`)
+    const centerRes = await axios.get(`/api/geo/collectivites/${this.collectivite.code}/center`)
 
-    const [x, y] = centerRes.data.centre.coordinates
+    const [x, y] = centerRes.data.coordinates
 
     this.documents = responses.flat().map((doc) => {
       if (doc.type === 'SUP') {

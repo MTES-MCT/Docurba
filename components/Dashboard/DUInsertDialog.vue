@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="isOpen" max-width="800px">
     <v-card>
-      <v-card-title>Création d'un nouveau document d'urbanisme</v-card-title>
+      <v-card-title>Création d'un nouveau porter-à-connaissance</v-card-title>
       <v-card-text>
         <v-form>
           <v-row>
@@ -48,6 +48,7 @@
     </v-card>
     <v-snackbar
       v-model="snackbar"
+      app
     >
       Une erreur est survenue à la creation de votre document.
       <template #action>
@@ -133,6 +134,12 @@ export default {
 
       const { data: projects, error } = await this.$supabase.from('projects')
         .insert(project).select()
+
+      this.$analytics({
+        category: 'pac',
+        name: 'create_project',
+        value: this.newProject.name
+      })
 
       if (!error) {
         const project = projects[0]

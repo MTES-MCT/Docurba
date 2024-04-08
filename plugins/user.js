@@ -12,7 +12,7 @@ const defaultUser = {
 }
 
 async function handleRedirect ($supabase, event, user, router) {
-  // console.log('handleRedirect: ', event, user)
+  console.log('handleRedirect: ', event, user)
   if (event === 'SIGNED_IN') {
     if (user.profile.poste === 'dreal') {
       function trameRef (user) {
@@ -28,10 +28,11 @@ async function handleRedirect ($supabase, event, user, router) {
     }
 
     if (user.profile.side === 'collectivite') {
-      if (!user.profile.successfully_logged_once) {
-        axios({ url: '/api/pipedrive/collectivite_inscrite', method: 'post', data: { userData: { email: user.email } } })
-        await $supabase.from('profiles').update({ successfully_logged_once: true }).eq('user_id', user.id)
-      }
+      console.log('SIGNED_IN COLLECTIVITEEEEE')
+      // if (!user.profile.successfully_logged_once) {
+      axios({ url: '/api/pipedrive/collectivite_inscrite', method: 'post', data: { userData: { email: user.email } } })
+      await $supabase.from('profiles').update({ successfully_logged_once: true }).eq('user_id', user.id)
+      // }
     }
   }
 }
@@ -61,6 +62,7 @@ export default async ({ $supabase, app }, inject) => {
           // console.log('profiles', data)
           if (data[0]) {
             user.profile = data[0]
+
             resolve(true)
           } else if (retry) {
             setTimeout(async () => {

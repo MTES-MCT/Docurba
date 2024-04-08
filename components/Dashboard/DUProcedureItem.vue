@@ -7,8 +7,9 @@
           {{ procedure.name }}
         </span>
         <div v-else>
-          <span>{{ procedure.doc_type }}</span><span v-if="procedure.current_perimetre.length > 1">-i<span v-if="procedure.is_sectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')">S</span></span>
-          <span> {{ procedure.current_perimetre.length === 1 ? procedure.current_perimetre[0].name + ' (' + procedure.current_perimetre[0].inseeCode + ')' : '' }}</span>
+          <span>{{ procedure | docType }} - </span>
+          <span v-if="procedure.current_perimetre.length === 1"> {{ procedure.current_perimetre[0].name + ' (' + procedure.current_perimetre[0].inseeCode + ')' }}</span>
+          <span v-else>{{ collectivite.intitule }}</span>
           <span v-if="procedure.numero">numéro {{ procedure.numero }}</span>
         </div>
 
@@ -60,10 +61,10 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="pb-0 d-flex">
-        <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
+        <DashboardDUModalPerimetre v-if="procedure.initial_perimetre" :towns="procedure.initial_perimetre" />
         <nuxt-link :to="`/frise/${procedure.id}`">
           <span class="primary--text text-decoration-underline mr-4">
-            Feuille de route partagée
+            Feuille de route
           </span>
         </nuxt-link>
         <!-- <nuxt-link :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}-dgd`">
@@ -77,9 +78,12 @@
         <span class="primary--text text-decoration-underline mr-4 text--disabled">
           DGD
         </span>
-        <span class="primary--text text-decoration-underline mr-4 text--disabled">
+        <nuxt-link
+          class="primary--text text-decoration-underline mr-4"
+          :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}/volet_qualitatif`"
+        >
           Info. générales
-        </span>
+        </nuxt-link>
         <nuxt-link
           class="primary--text text-decoration-underline mr-4"
           :to="`/ddt/${$route.params.departement}/pac?search=${$route.params.collectiviteId}`"
@@ -126,13 +130,13 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="d-flex align-center justify-end pb-0">
-        <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
+        <DashboardDUModalPerimetre v-if="procedure.initial_perimetre" :towns="procedure.initial_perimetre" />
         <v-spacer />
         <v-btn text color="primary" :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <v-icon small color="primary" class="mr-2">
             {{ icons.mdiArrowRight }}
           </v-icon>
-          Feuille de route publique
+          Feuille de route
         </v-btn>
       </v-col>
     </v-row>
@@ -146,6 +150,10 @@ export default {
   mixins: [BaseDUProcedureItem],
   props: {
     procedure: {
+      type: Object,
+      required: true
+    },
+    collectivite: {
       type: Object,
       required: true
     },
@@ -165,7 +173,7 @@ export default {
   methods: {
     async  archiveProcedure (idProcedure) {
       try {
-        console.log('idProcedure to archive: ', idProcedure)
+        // console.log('idProcedure to archive: ', idProcedure)
         const { error } = await this.$supabase
           .from('procedures')
           .update({ archived: true })
@@ -175,6 +183,7 @@ export default {
         this.$emit('delete', idProcedure)
         this.dialog = false
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error)
       }
     }

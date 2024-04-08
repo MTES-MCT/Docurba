@@ -5,7 +5,7 @@ async function getFileContent (path, ref, format = 'raw') {
   // console.log('Get File', format, path)
 
   try {
-    const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
+    const { data: file } = await github(`GET /repos/{owner}/{repo}/contents${encodeURIComponent(path)}?ref=${ref}`, {
       path,
       mediaType: {
         format
@@ -18,7 +18,7 @@ async function getFileContent (path, ref, format = 'raw') {
   } catch (err) {
     // If a file was saved as intro instead of intro.md we have this fail safe.
     // Need to clean all the branches to change that.
-    const { data: file } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path.replace('.md', ''))}?ref=${ref}`, {
+    const { data: file } = await github(`GET /repos/{owner}/{repo}/contents${encodeURIComponent(path.replace('.md', ''))}?ref=${ref}`, {
       path,
       mediaType: {
         format
@@ -32,11 +32,13 @@ async function getFileContent (path, ref, format = 'raw') {
 }
 
 async function getFiles (path, ref, fetchContent = false) {
-  const { data: repo } = await github(`GET /repos/UngererFabien/France-PAC/contents${encodeURIComponent(path)}?ref=${ref}`, {
+  let { data: repo } = await github(`GET /repos/{owner}/{repo}/contents${encodeURIComponent(path)}?ref=${ref}`, {
     path
   })
 
-  // console.log('getFiles', path)
+  if (!Array.isArray(repo)) {
+    repo = [repo]
+  }
 
   try {
     await Promise.all(repo.map(async (file) => {
@@ -44,7 +46,10 @@ async function getFiles (path, ref, fetchContent = false) {
 
       if (file.type === 'dir') {
         file.children = await getFiles(file.path, ref, fetchContent === 'all' ? fetchContent : false)
-        const intro = file.children.find(child => child.name === 'intro')
+
+        // take "/intro" if "/intro.md" not found
+        // TODO : delete or rename every "/intro"
+        const intro = file.children.find(child => child.path.endsWith('/intro.md')) ?? file.children.find(child => child.path.endsWith('/intro'))
 
         // if intro is not found. It might be impossible to delete the folder in the UI.
         // Also clicking on the folder will fail to fetch a file intro.md.
@@ -72,7 +77,27 @@ async function getFiles (path, ref, fetchContent = false) {
   return repo
 }
 
+function addGhostSections (sections, ghostSections) {
+  for (const ghostSection of ghostSections) {
+    const ghostPath = ghostSection.path.replace('.md', '')
+    const existingSection = sections.find(s => s.path.replace('.md', '') === ghostPath)
+
+    if (existingSection) {
+      existingSection.inParentProject = true
+      existingSection.parentType = ghostSection.type
+
+      if (ghostSection.children?.length) {
+        existingSection.children ??= []
+        addGhostSections(existingSection.children, ghostSection.children)
+      }
+    } else {
+      sections.push({ ...ghostSection, ghost: true })
+    }
+  }
+}
+
 module.exports = {
   getFileContent,
-  getFiles
+  getFiles,
+  addGhostSections
 }

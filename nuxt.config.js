@@ -39,9 +39,10 @@ export default {
     { src: '~/plugins/notifications.js', mode: 'client' },
     { src: '~/plugins/githubRefs.js' },
     { src: '~/plugins/urbanisator.js' },
-    { src: '~/plugins/sudocu.js', mode: 'client' },
     { src: '~/plugins/pdfMake.js', mode: 'client' },
-    { src: '~/plugins/analytics.js' }
+    { src: '~/plugins/analytics.js' },
+    { src: '~/plugins/gtag.js', mode: 'client' },
+    { src: '~/plugins/stonly.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -91,8 +92,12 @@ export default {
         // 'default-src': ["'self'"],
         'script-src': [
           // "'self'",
-          'https://stats.data.gouv.fr/piwik.js',
-          'https://tally.so/widgets/embed.js'
+          'https://stats.beta.gouv.fr/',
+          'https://tally.so/widgets/embed.js',
+          'https://www.googletagmanager.com/gtag/js',
+          'https://googleads.g.doubleclick.net/pagead/viewthroughconversion/11434835828/',
+          'https://stonly.com/js/widget/v2/',
+          'http://docurba-metabase.osc-fr1.scalingo.io/'
         ]
       }
       // addMeta: true

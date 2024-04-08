@@ -4,10 +4,9 @@ app.use(express.json())
 
 const _ = require('lodash')
 
-const { createClient } = require('@supabase/supabase-js')
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
-
+const supabase = require('./modules/supabase.js')
 const sendgrid = require('./modules/sendgrid.js')
+const geo = require('./modules/geo.js')
 
 const hour = 1000 * 60 * 60
 const day = hour * 24
@@ -25,20 +24,25 @@ app.post('/notify/shared', (req, res) => {
       // Find a sharing that was not notified.
       const notification = notifications.find(n => !n.notified)
 
-      const { data: admins } = await supabase.from('admin_users_dept')
-        .select('dept, role').eq('user_id', notification.shared_by)
-
+      const { data: admins } = await supabase.from('profiles')
+        .select('*').eq('user_id', notification.shared_by)
       const admin = admins[0]
+
+      const { data: projects } = await supabase.from('projects').select('*').eq('id', sharing.project_id)
+      const project = projects[0]
+
+      const collectivite = geo.getCollectivite(project.collectivite_id)
 
       if (notification) {
         sendgrid.sendEmail({
           to: sharing.user_email,
-          template_id: (admin && admin.role === 'ddt') ? 'd-bdd5ef31891546bcb6401fb6cdf2d391' : 'd-daf95559ce09481ca8d42d6e026fb9f3',
+          template_id: sharing.role === 'write' ? 'd-bdd5ef31891546bcb6401fb6cdf2d391' : 'd-daf95559ce09481ca8d42d6e026fb9f3',
           dynamic_template_data: {
-            project_id: sharing.project_id,
-            firstname: sharedByData.firstname,
-            lastname: sharedByData.lastname,
-            dept: admin ? admin.dept : '00'
+            project: 'projet-' + sharing.project_id,
+            firstname: admin.firstname || '',
+            lastname: admin.lastname || '',
+            dept: admin.dept,
+            collectivite: collectivite.intitule
           }
         }).then(async () => {
           await supabase.from('projects_sharing').update({
@@ -76,7 +80,7 @@ app.post('/notify/update', async (req, res) => {
           to: sharing.user_email,
           template_id: 'd-2b1d871bc04141e69c56e5a89dc20a74',
           dynamic_template_data: {
-            project_id: projectId
+            project_id: 'projet-' + projectId
           }
         }).then(async () => {
           await supabase.from('projects_sharing').update({

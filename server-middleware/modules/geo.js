@@ -1,27 +1,57 @@
 
 const _ = require('lodash')
 const { topology } = require('topojson-server')
+const { center } = require('@turf/turf')
 
-const communes = require('../Data/EnrichedCommunes.json')
-const intercommunalites = require('../Data/EnrichedIntercommunalites.json')
+// const communes = require('../Data/EnrichedCommunes.json')
+// const intercommunalites = require('../Data/EnrichedIntercommunalites.json')
+
+// const refCommunes = require('../Data/referentiels/communes.json')
+// const refGroupements = require('../Data/referentiels/groupements.json')
+
+const communes = require('../Data/referentiels/communes.json')
+const intercommunalites = require('../Data/referentiels/groupements.json')
 
 const departements = require('../Data/INSEE/departements.json')
 const regions = require('../Data/INSEE/regions.json')
 
 // const geojsonCommunes = require('../Data/communes-france-geo.json')
 const geojsonCommunes = require('../Data/geojson/communes-geo.json')
+const geojsonIntercommunalites = require('../Data/geojson/epci-geo.json')
 const geojsonDepartements = require('../Data/geojson/departements-geo.json')
 const geojsonRegions = require('../Data/geojson/regions-geo.json')
 const topojsonFrance = require('../Data/geojson/france-topo.json')
 
+const cache = {
+  groupements: {},
+  communes: {}
+}
+
 module.exports = {
+  // TODO: Should also work with multiple departement code
+  getCollectivitesByDepartements (code) {
+    if (!cache[code]) {
+      cache[code] = {}
+      cache[code].communes = communes.filter(c => c.departementCode === code)
+      cache[code].groupements = intercommunalites.filter(c => c.departementCode === code)
+    }
+    // console.log('cache: ', cache)
+    return cache[code]
+  },
   getCollectivite (code) {
     return code.length > 5 ? this.getIntercommunalite(code) : this.getCommune(code)
   },
-  getCollectivites (codes) {
-    const communes = this.getCommunes({ codes })
-    const intercommunalites = this.getIntercommunalites({ codes })
-    return [...communes, ...intercommunalites]
+  getCollectivites ({ codes, departements }) {
+    // console.log('getCollectivites: ')
+    if (codes) {
+      const communes = this.getCommunes({ codes })
+      const intercommunalites = this.getIntercommunalites({ codes })
+      return [...communes, ...intercommunalites]
+    }
+    if (departements) {
+      // console.log('DEP: ', departements)
+      return this.getCollectivitesByDepartements(departements)
+    }
   },
   getCommunes (query) {
     const queryKeys = Object.keys(query)
@@ -175,5 +205,19 @@ module.exports = {
   getRegionsTopoJson (codes = []) {
     const regionsCodes = Array.isArray(codes) ? codes : [codes]
     return this.getGeometries([], [], regionsCodes, false, 'topojson')
+  },
+  getCommuneCenter (code) {
+    const feature = geojsonCommunes.features.find(feat => feat.properties.com === code)
+    if (!feature) {
+      throw new Error('Commune introuvable')
+    }
+    return center(feature).geometry
+  },
+  getIntercommunaliteCenter (code) {
+    const feature = geojsonIntercommunalites.features.find(feat => feat.properties.epci === code)
+    if (!feature) {
+      throw new Error('EPCI introuvable')
+    }
+    return center(feature).geometry
   }
 }

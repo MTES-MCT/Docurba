@@ -1,118 +1,74 @@
 <template>
-  <v-footer app absolute inset class="footer-fr" color="white">
-    <v-row align="center" class="mt-4 ml-1">
-      <v-col cols="12" md="5">
-        <div class="fr-footer__brand">
-          <a class="fr-logo" href="/" title="république française">
-            <span class="fr-logo__title">république
-              <br>française</span>
-          </a>
-          <a class="fr-footer__brand-link" href="https://beta.gouv.fr/">
-            <img class="fr-footer__logo" src="https://d33wubrfki0l68.cloudfront.net/8a59b7696f7c0a39fa0904ddac1769a772e249e5/a88f5/assets/additional/images/logo-betagouvfr.svg" alt="gouv.fr">
-          </a>
-        </div>
-      </v-col>
-      <v-col cols="12" md="3">
-        <div class="text-caption">
-          Docurba est un projet d'innovation pour faciliter l’élaboration des documents d’urbanisme en prenant en compte les informations et enjeux environnementaux.
-        </div>
-      </v-col>
-      <v-col cols="12" md="4">
-        <div class="fr-footer__content">
-          <ul class="fr-footer__content-list">
-            <li class="fr-footer__content-item">
-              <a class="fr-footer__content-link" href="https://legifrance.gouv.fr">legifrance.gouv.fr</a>
+  <v-footer app absolute color="white pt-12">
+    <v-container fluid :style="{ maxWidth: '1160px' }" class="pa-0">
+      <v-row>
+        <v-col cols="12" md="6">
+          <h5>Ressources</h5>
+          <ul :style="{ listStyle: 'none' }" class="pa-0 mt-4">
+            <li>
+              <a href="https://pad.incubateur.net/s/MVwW7cGNh#Nos-Guides-d%E2%80%99utilisation" _target="blank">Guides d'utilisation</a>
             </li>
-            <li class="fr-footer__content-item">
-              <a class="fr-footer__content-link" href="https://gouvernement.fr">gouvernement.fr</a>
+            <li>
+              <a href="https://docurba.beta.gouv.fr/faq">FAQ</a>
             </li>
-            <li class="fr-footer__content-item">
-              <a class="fr-footer__content-link" href="https://service-public.fr">service-public.fr</a>
+            <li>
+              <a href="https://pad.incubateur.net/s/MVwW7cGNh#Nos-webinaires">Webinaires</a>
             </li>
-            <li class="fr-footer__content-item">
-              <a class="fr-footer__content-link" href="https://data.gouv.fr">data.gouv.fr</a>
+            <li>
+              <nuxt-link to="/accessibilite">
+                Accessibilité: non conforme
+              </nuxt-link>
+            </li>
+            <li>
+              <nuxt-link to="/confidentialite">
+                Politique de confidentialité
+              </nuxt-link>
+            </li>
+            <li>
+              <nuxt-link to="/mentions-legales">
+                Mentions légales
+              </nuxt-link>
+            </li>
+            <li>
+              <nuxt-link to="/stats">
+                Statistiques
+              </nuxt-link>
             </li>
           </ul>
-        </div>
-      </v-col>
-    </v-row>
-    <v-row no-gutters justify="center" class="px-0 mx-0 mt-4">
-      <v-col cols="12" class="px-0 mx-0">
-        <v-divider />
-      </v-col>
-      <v-col cols="auto">
-        <v-btn
-          depressed
-          tile
-          text
-          small
-          to="/accessibilite"
-          nuxt
-        >
-          Accessibilité
-        </v-btn>
-      </v-col>
-      <v-col cols="auto">
-        <v-btn
-          depressed
-          tile
-          text
-          small
-          to="/confidentialite"
-          nuxt
-        >
-          Politique de confidentialité
-        </v-btn>
-      </v-col>
-      <v-col cols="auto">
-        <v-btn
-          depressed
-          tile
-          text
-          small
-          to="/mentions-legales"
-          nuxt
-        >
-          Mentions légales
-        </v-btn>
-      </v-col>
-      <v-col cols="auto">
-        <v-btn
-          depressed
-          tile
-          text
-          small
-          to="/stats"
-          nuxt
-        >
-          Statistiques
-        </v-btn>
-      </v-col>
-    </v-row>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-row>
+            <v-col>
+              <h5>Newsletter</h5>
+              <p class="mt-4">
+                Suivez l’avancée de Docurba tous les mois.
+              </p>
+              <LandingNewsLetterForm />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <h5>Réseaux sociaux</h5>
+              <div class="mt-4 d-flex" :style="{ gap: '1rem' }">
+                <a href="https://www.linkedin.com/company/docurba/" target="_blank">
+                  <v-img max-width="40px" height="40px" :src="require('@/assets/images/icons/linkedin.svg')" />
+                </a>
+              </div>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-footer>
 </template>
-<script>
-// import '@gouvfr/dsfr/dist/css/core.css'
-import '@gouvfr/dsfr/dist/css/footer.css'
-import '@gouvfr/dsfr/dist/css/logo.css'
-
-export default {
-
-}
-</script>
 
 <style scoped>
-  .v-footer.footer-fr {
-    border-top: 2px #000091 solid !important;
-    /* border-top-color: var(--v-bf500); */
-  }
+h5 {
+  font-size: 22px;
+}
 
-  .footer-fr ul {
-    list-style: none;
-  }
-
-  .footer-fr a {
-    color: #1e1e1e;
-    text-decoration: none;
-  }
+a {
+  text-decoration: none;
+  color: inherit;
+}
 </style>

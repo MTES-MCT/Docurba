@@ -1,5 +1,6 @@
 ---
 name: SelectionCheckbox_v1
+visible: false
 tag: projet
 ---
 

@@ -41,7 +41,7 @@ export default {
       deep: true
     }).fetch()
 
-    this.advices = advices.filter(advice => !this.avoidedTags.includes(advice.tag))
+    this.advices = advices.filter(advice => !this.avoidedTags.includes(advice.tag) && advice.visible !== false)
   },
   methods: {
     markAsRed (advice) {

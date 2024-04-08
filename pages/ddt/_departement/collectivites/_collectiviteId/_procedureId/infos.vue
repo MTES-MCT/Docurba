@@ -44,14 +44,6 @@
 <script>
 export default {
   name: 'InformationsGenerales',
-  layout: 'ddt',
-  data () {
-    return {
-
-    }
-  },
-  async mounted () {
-    this.collectivite = await this.$urbanisator.getCurrentCollectivite(this.$route.params.collectiviteId, 'commune')
-  }
+  layout: 'ddt'
 }
 </script>

@@ -1,27 +1,35 @@
 <template>
   <v-row>
     <v-col :cols="isOther ? 4 : 12">
-      <v-autocomplete
-        v-if="filteredEvents"
-        v-model="selectedEvent"
-        style="max-width:50%;"
-        :items="filteredEvents"
-        hide-details
-        filled
-        label="Type"
-      />
+      <validation-provider v-slot="{ errors }" name="Type évènement" rules="required">
+        <v-autocomplete
+          v-if="filteredEvents"
+          v-model="selectedEvent"
+          :error-messages="errors"
+          style="max-width:50%;"
+          :items="filteredEvents"
+          hide-details
+          filled
+          label="Type"
+        />
+      </validation-provider>
     </v-col>
-    <v-col v-show="isOther">
-      <v-text-field v-model="customEvent" hide-details filled />
+    <v-col v-if="isOther">
+      <validation-provider v-slot="{ errors }" name="autre évènement" rules="required">
+        <v-text-field v-model="customEvent" filled :error-messages="errors" />
+      </validation-provider>
     </v-col>
   </v-row>
 </template>
 <script>
+import FormInput from '@/mixins/FormInput.js'
+
 import PluEvents from '@/assets/data/events/PLU_events.json'
 import ScotEvents from '@/assets/data/events/SCOT_events.json'
 import ccEvents from '@/assets/data/events/CC_events.json'
 
 export default {
+  mixins: [FormInput],
   model: {
     prop: 'eventType',
     event: 'input'
@@ -68,16 +76,17 @@ export default {
 
       const secondairesTypes = {
         'Révision à modalité simplifiée ou Révision allégée': 'rms',
+        'Révision allégée (ou RMS)': 'rms',
         Modification: 'm',
         'Modification simplifiée': 'ms',
-        'Mise en comptabilité': 'mc',
+        'Mise en compatibilité': 'mc',
         'Mise à jour': 'mj'
       }
       if (secondairesTypes[this.procedure.type]) { internalType = secondairesTypes[this.procedure.type] }
       if (['Elaboration', 'Révision'].includes(this.procedure.type)) {
         if (isIntercommunal && this.internalDocType !== 'CC') { internalType = 'ppi' } else { internalType = 'pp' }
       }
-
+      console.log(' this.documentEvents: ', this.documentEvents, ' internalType: ', internalType, ' this.procedure.type: ', this.procedure.type)
       return this.documentEvents.filter(e => e.scope_liste.includes(internalType))
         .map(event => event.name)
         .sort((a, b) => a.order - b.order).concat(['Autre'])

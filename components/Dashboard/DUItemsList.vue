@@ -29,6 +29,7 @@
               :key="'du_' + i"
               :procedure="procedure"
               :censored="isPublic"
+              :collectivite="collectivite"
               @delete="$emit('deleteProcedure', arguments[0])"
             />
           </template>
@@ -49,6 +50,7 @@
               :key="'du_' + i"
               :procedure="procedure"
               :censored="isPublic"
+              :collectivite="collectivite"
               @delete="$emit('deleteProcedure', arguments[0])"
             />
           </template>
@@ -68,6 +70,7 @@
             :key="'du_' + i"
             :procedure="procedure"
             :censored="isPublic"
+            :collectivite="collectivite"
             @delete="$emit('deleteProcedure', arguments[0])"
           />
         </v-tab-item>
@@ -112,6 +115,8 @@ export default {
     }
   },
   data () {
+    console.log(this.procedures?.filter(p => p.current_perimetre.length > 1))
+
     return {
       tab: null,
       insertDialog: false
@@ -126,12 +131,11 @@ export default {
     },
     DUCommunaux () {
       if (this.isEpci) {
-        return this.procedures?.filter(e => e.current_perimetre.length === 1)
+        return this.procedures?.filter(p => p.current_perimetre.length === 1)
       } else { return this.procedures }
     },
     DUInter () {
-      console.log('this.procedures: ', this.procedures)
-      return this.procedures?.filter(e => e.current_perimetre.length > 1)
+      return this.procedures?.filter(p => p.current_perimetre.length > 1)
     }
   }
 }

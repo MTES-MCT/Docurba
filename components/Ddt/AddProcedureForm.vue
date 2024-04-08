@@ -60,10 +60,10 @@
                   :items="proceduresParents"
                 >
                   <template #selection="{item}">
-                    {{ item.type }} du {{ item.doc_type }} {{ item.status }} (collec. porteuse {{ item.collectivite_porteuse_id }})
+                    {{ item.type }} du {{ item | docType }} {{ item.status }} (collec. porteuse {{ item.collectivite_porteuse_id }})
                   </template>
                   <template #item="{item}">
-                    {{ item.type }} du {{ item.doc_type }} {{ item.status }} (collec. porteuse {{ item.collectivite_porteuse_id }})
+                    {{ item.type }} du {{ item | docType }} {{ item.status }} (collec. porteuse {{ item.collectivite_porteuse_id }})
                   </template>
                 </v-select>
               </validation-provider>
@@ -173,7 +173,7 @@ export default {
       typeProcedure: '',
       typesProcedure: {
         principale: ['Elaboration', 'Révision'],
-        secondaire: ['Révision à modalité simplifiée ou Révision allégée', 'Modification', 'Modification simplifiée', 'Mise en comptabilité', 'Mise à jour']
+        secondaire: ['Révision à modalité simplifiée ou Révision allégée', 'Modification', 'Modification simplifiée', 'Mise en compatibilité', 'Mise à jour']
       },
       procedureParent: null,
       proceduresParents: null,
@@ -195,14 +195,14 @@ export default {
       return this.loaded && (this.procedureCategory === 'principale' || (this.procedureCategory === 'secondaire' && this.proceduresParents !== null))
     },
     postfixSectoriel () {
-      return (this.collectivite.type === 'Commune' && this.perimetre.length > 1) || (this.collectivite.type !== 'Commune' && this.perimetre.length < this.communes.length) ? 'S' : ''
+      return (this.collectivite.type === 'COM' && this.perimetre.length > 1) || (this.collectivite.type !== 'COM' && this.perimetre.length < this.communes.length) ? 'S' : ''
     },
     baseName () {
       return `${this.typeProcedure} ${this.numberProcedure} de ${(this.procedureParent ? this.procedureParentDocType : this.typeDu) + this.postfixSectoriel} ${this.collectivite.intitule}`.replace(/\s+/g, ' ').trim()
     },
     communes () {
-      const coms = this.collectivite.communes || this.collectivite.intercommunalite.communes
-      return uniqBy(coms, 'code').filter(e => e.type === 'Commune')
+      const coms = this.collectivite.membres || this.collectivite.intercommunalite.membres
+      return uniqBy(coms, 'code').filter(e => e.type === 'COM')
     }
   },
   async mounted () {
@@ -214,29 +214,31 @@ export default {
           this.procedureParent = this.$route.query.secondary_id
         }
       }
-
-      this.perimetre = this.collectivite.type === 'Commune' ? [this.collectivite.code] : this.communes.map(e => e.code)
+      this.perimetre = this.collectivite.type === 'COM' ? [this.collectivite.code] : this.communes.map(e => e.code)
       this.loaded = true
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error)
     }
   },
   methods: {
     async getProcedures () {
       let query = this.$supabase.from('procedures').select('*').eq('is_principale', true).eq('status', 'opposable')
-      let ret = null
-      if (this.collectivite.type !== 'Commune') {
+
+      if (this.collectivite.type !== 'COM') {
         query = query.eq('collectivite_porteuse_id', this.collectivite.code)
       } else {
         query = query.contains('current_perimetre', `[{ "inseeCode": "${this.collectivite.code}" }]`)
       }
+
       const { data: procedures, error } = await query
-      ret = procedures
-      if (this.collectivite.type !== 'Commune') {
-        ret = procedures.filter(e => e.current_perimetre.length > 1)
-      }
       if (error) { throw error }
-      return ret
+
+      if (this.collectivite.type !== 'COM') {
+        return procedures.filter(e => e.current_perimetre.length > 1)
+      }
+
+      return procedures
     },
     async createProcedure () {
       this.loadingSave = true
@@ -246,19 +248,23 @@ export default {
 
         // const regions = [...new Set(detailedPerimetre.map(e => e.regionCode))]
         const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
+        let insertedProject = null
+        if (this.procedureCategory === 'principale') {
+          const insertRet = await this.$supabase.from('projects').insert({
+            name: `${this.typeProcedure} ${this.typeDu}`,
+            doc_type: this.typeDu,
+            region: this.collectivite.regionCode,
+            collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
+            current_perimetre: fomattedPerimetre,
+            initial_perimetre: fomattedPerimetre,
+            collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
+            test: true
+          }).select()
 
-        const { data: insertedProject, error: errorInsertProject } = await this.$supabase.from('projects').insert({
-          name: `${this.typeProcedure} ${this.typeDu}`,
-          doc_type: this.typeDu,
-          region: this.collectivite.regionCode,
-          collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
-          current_perimetre: fomattedPerimetre,
-          initial_perimetre: fomattedPerimetre,
-          collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
-          test: true
-        }).select()
-        if (errorInsertProject) { throw errorInsertProject }
-
+          console.log('insertedProject: ', insertRet)
+          insertedProject = insertRet.data && insertRet.data[0] ? insertRet.data[0].id : null
+          if (insertRet.error) { throw insertRet.error }
+        }
         await this.$supabase.from('procedures').insert({
           secondary_procedure_of: this.procedureParent,
           type: this.typeProcedure,
@@ -270,16 +276,23 @@ export default {
           is_scot: null,
           is_pluih: this.typeDu === 'PLUiH',
           is_pdu: null,
-          doc_type: this.typeDu,
+          doc_type: this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType,
           departements,
           numero: this.procedureCategory === 'principale' ? '1' : this.numberProcedure,
           current_perimetre: fomattedPerimetre,
           initial_perimetre: fomattedPerimetre,
-          project_id: insertedProject[0].id,
+          project_id: insertedProject,
           name: (this.baseName + ' ' + this.nameComplement).trim(),
           owner_id: this.$user.id,
           testing: true
         })
+
+        this.$analytics({
+          category: 'procedures',
+          name: 'create_procedure',
+          value: (this.baseName + ' ' + this.nameComplement).trim()
+        })
+
         this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`)
       } catch (error) {
         this.error = error

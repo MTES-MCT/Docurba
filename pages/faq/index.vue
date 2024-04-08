@@ -126,7 +126,7 @@
         </v-tabs-items>
       </v-col>
     </v-row>
-    <v-snackbar v-model="helpSnackbar">
+    <v-snackbar v-model="helpSnackbar" app>
       Votre message à été envoyé !
     </v-snackbar>
   </v-container>

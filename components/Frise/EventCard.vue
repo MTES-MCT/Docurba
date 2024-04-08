@@ -9,7 +9,8 @@
       <div v-if="suggestion" class="primary--text mb-1">
         Evénement suggéré
       </div>
-      <v-card :id="`${slugId}`" :outlined="!suggestion" flat :color="suggestion ? 'primary lighten-4': ''">
+      <!-- The event- is here to prevent errors since ids should start with a letter: https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id -->
+      <v-card :id="`event-${event.id}`" :outlined="!suggestion" flat :color="suggestion ? 'primary lighten-4': ''">
         <v-card-title class="font-weight-bold d-flex flex-nowrap">
           <div class="break-word flex-grow-0 d-flex flex-wrap align-self-start mr-4">
             <div>
@@ -24,7 +25,7 @@
             </v-chip>
           </div>
           <div v-if="!suggestion" class=" ml-auto flex-shrink-1 d-flex align-self-start">
-            <v-tooltip bottom>
+            <v-tooltip v-if="event.visibility === 'private' && !(event.from_sudocuh && event.structurant)" bottom>
               <template #activator="{ on, attrs }">
                 <v-chip
                   class="mr-2 font-weight-bold text-uppercase"
@@ -34,12 +35,11 @@
                   v-bind="attrs"
                   v-on="on"
                 >
-                  {{ event.visibility === 'private' ? 'privé' : '' }}
+                  Privé
                 </v-chip>
               </template>
               Cet événement n’est visible que pour la collectivité et les services de l’État.
             </v-tooltip>
-
             <v-tooltip bottom>
               <template #activator="{ on, attrs }">
                 <v-chip
@@ -54,7 +54,7 @@
               </template>
               Cet événement a été ajouté par  {{ event.profiles?.poste || event.profiles?.side || creator.values[0] }}.
             </v-tooltip>
-            <v-btn v-if="creator.values[0] != 'sudocu'" class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
+            <v-btn v-if="creator.values[0] != 'sudocu' && ($user.profile?.side === 'etat' || event.profile_id === $user.id )" class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
               <v-icon color="grey darken-2">
                 {{ icons.mdiPencil }}
               </v-icon>
@@ -102,7 +102,6 @@
 
 <script>
 import { mdiPencil, mdiPaperclip, mdiBookmark } from '@mdi/js'
-import slugify from 'slugify'
 import actors from '@/assets/friseActors.json'
 
 export default {
@@ -131,13 +130,9 @@ export default {
     }
   },
   computed: {
-    slugId () {
-      if (this.event) { return slugify(this.event.type || this.event.name, { remove: /[*+~.()'"!:@]/g }) } else { return '' }
-    },
     creator () {
       let actor = this.event.profiles?.side || 'docurba'
       if (this.event.from_sudocuh) { actor = 'sudocu' }
-      console.log('actor: ', actor)
       return actors.find((e) => {
         return e.values.includes(actor)
       })
@@ -150,7 +145,6 @@ export default {
     async downloadFile (attachement) {
       // TODO: Handle link type
       const path = this.event.from_sudocuh ? attachement.id : `${this.event.project_id}/${this.event.id}/${attachement.id}`
-      console.log('CHOSEN: ', path)
       const { data } = await this.$supabase.storage.from('doc-events-attachements').download(path)
 
       const link = this.$refs[`file-${attachement.id}`][0]

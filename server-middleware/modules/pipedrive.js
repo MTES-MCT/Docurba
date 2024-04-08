@@ -6,7 +6,6 @@ const defaultClient = pipedrive.ApiClient.instance
 // Configure API key authorization: apiToken
 const apiToken = defaultClient.authentications.api_key
 apiToken.apiKey = process.env.PIPEDRIVE_API_KEY
-
 const personsApi = new pipedrive.PersonsApi()
 const organizationsApi = new pipedrive.OrganizationsApi()
 const dealsApi = new pipedrive.DealsApi()
@@ -136,8 +135,14 @@ module.exports = {
     }
   },
   async addPerson (userData) {
+    // console.log(' addPerson userData: ', userData)
     const personData = pipedrive.NewPerson.constructFromObject({
       name: `${userData.firstname} ${userData.lastname}`,
+      phone: [{
+        value: userData.tel,
+        primary: 'true',
+        label: ''
+      }],
       email: [{
         value: userData.email,
         primary: 'true',
@@ -146,7 +151,7 @@ module.exports = {
       [this.CUSTOM_FIELDS.CHARGE_DE.key]: userData.customRoles ?? []
       // primaryEmail: userData.email // This does not work -> https://devcommunity.pipedrive.com/t/persons-primary-email-error-bug/5784/3
     })
-
+    // console.log('personData after: ', personData)
     const { data, error } = await personsApi.addPerson(personData)
 
     if (data && !error) {
@@ -167,6 +172,7 @@ module.exports = {
   async addDeal (dealData) {
     const newDealData = pipedrive.NewDeal.constructFromObject(dealData)
     const { success, data } = await dealsApi.addDeal(newDealData)
+    console.log(' success: ', success, 'data: ', data)
     return { data, success }
   },
   updateDeal (dealId, data) {
@@ -175,27 +181,26 @@ module.exports = {
   },
   async signupCollectivite (data) {
     console.log('-- SIGNUP COLLECTIVITE PIPEDRIVE --')
-
     let { person } = await this.findPerson(data.email)
     if (!person) {
       console.log('Person not found, creating one')
       person = await this.addPerson(data)
       const deal = {
-        title: `${data.poste} de ${data.detailsCollectivite.name} (${data.detailsCollectivite.departement})`,
+        title: `${data.poste} de ${data.detailsCollectivite.intitule} (${data.detailsCollectivite.departementCode})`,
         personId: person.id,
         stageId: this.COLLECTIVITE_DEAL.TRY_INSCRIPTION
       }
-      console.log('deal, :', deal)
+      // console.log('deal, :', deal)
       await this.addDeal(deal)
     }
   },
   async movePersonDealTo (email, from, to) {
     const { person } = await this.findPerson(email)
     const personDeals = await this.getPersonDeals(person.id)
-    console.log('personDeals: ', personDeals)
+    // console.log('personDeals: ', personDeals)
     const dealIdToUpdate = personDeals.filter(e => e.stage_id === from)[0]?.id
     console.log('dealIdToUpdate: ', dealIdToUpdate)
-    await this.updateDeal(dealIdToUpdate, { stage_id: to })
+    if (dealIdToUpdate) { await this.updateDeal(dealIdToUpdate, { stage_id: to }) }
   },
   async signupStateAgent (userData) {
     try {

@@ -14,6 +14,7 @@
           :section="section"
           :git-ref="gitRef"
           :project="project"
+          :opened-path="$route.query.path"
         />
       </v-col>
     </v-row>
@@ -73,12 +74,13 @@ export default {
       const filteredSections = sections.filter((section) => {
         const isAllowed = (!section.path.includes('PAC/Introduction/PAC valid') &&
           !section.path.includes('PP-du-territoire') &&
+          !section.path.includes("Politiques publiques s'appliquant sur le territoire") &&
           !section.path.includes('PAC/Annexes'))
 
         if (!isAllowed) {
           return false
         } else if (docType === 'PLU') {
-          return !section.name.includes('PLUi') && !section.name.includes('carte communale')
+          return ((!section.name.includes('PLUi') && !section.name.includes('carte communale')) || /PLU(\W|$)/.test(section.name))
         } else if (docType.includes('PLUi')) {
           return !section.name.includes(' PLU ') && !section.name.includes('carte communale')
         } else {

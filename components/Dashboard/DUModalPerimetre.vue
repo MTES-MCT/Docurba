@@ -28,7 +28,7 @@
               class="pl-0"
             >
               <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: $route.params.departement, collectiviteId: town.inseeCode }, query: { isEpci: false } }">
-                {{ town.name }} ({{ town.inseeCode }})
+                {{ town.name }} ({{ town.inseeCode }}{{ town.type ? ` ${town.type}` : '' }})
               </nuxt-link>
             </v-col>
           </v-row>
