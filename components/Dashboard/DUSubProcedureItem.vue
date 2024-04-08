@@ -154,7 +154,6 @@ export default {
   methods: {
     async  archiveProcedure (idProcedure) {
       try {
-        // console.log('idProcedure to archive: ', idProcedure)
         const { error } = await this.$supabase
           .from('procedures')
           .delete()
