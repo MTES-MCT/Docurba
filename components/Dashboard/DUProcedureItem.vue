@@ -176,7 +176,7 @@ export default {
         // console.log('idProcedure to archive: ', idProcedure)
         const { error } = await this.$supabase
           .from('procedures')
-          .update({ archived: true })
+          .delete()
           .eq('id', idProcedure)
 
         if (error) { throw error }

@@ -244,9 +244,7 @@ export default {
       this.loadingSave = true
       try {
         const detailedPerimetre = (await axios({ url: `/api/geo/communes?codes=${this.perimetre}`, method: 'get' })).data
-        const fomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
-
-        // const regions = [...new Set(detailedPerimetre.map(e => e.regionCode))]
+        const oldFomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
         const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
         let insertedProject = null
         if (this.procedureCategory === 'principale') {
@@ -254,18 +252,17 @@ export default {
             name: `${this.typeProcedure} ${this.typeDu}`,
             doc_type: this.typeDu,
             region: this.collectivite.regionCode,
+            current_perimetre: oldFomattedPerimetre,
+            initial_perimetre: oldFomattedPerimetre,
             collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
-            current_perimetre: fomattedPerimetre,
-            initial_perimetre: fomattedPerimetre,
             collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
             test: true
           }).select()
 
-          console.log('insertedProject: ', insertRet)
           insertedProject = insertRet.data && insertRet.data[0] ? insertRet.data[0].id : null
           if (insertRet.error) { throw insertRet.error }
         }
-        await this.$supabase.from('procedures').insert({
+        const { data: insertedProcedure, error: errorInsertedProcedure } = await this.$supabase.from('procedures').insert({
           secondary_procedure_of: this.procedureParent,
           type: this.typeProcedure,
           commentaire: this.objetProcedure && this.objetProcedure.includes('Autre') ? this.objetProcedure?.join(', ') + ' - ' + this.otherObjetProcedure : this.objetProcedure?.join(', '),
@@ -276,16 +273,22 @@ export default {
           is_scot: null,
           is_pluih: this.typeDu === 'PLUiH',
           is_pdu: null,
+          current_perimetre: oldFomattedPerimetre,
+          initial_perimetre: oldFomattedPerimetre,
           doc_type: this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType,
           departements,
           numero: this.procedureCategory === 'principale' ? '1' : this.numberProcedure,
-          current_perimetre: fomattedPerimetre,
-          initial_perimetre: fomattedPerimetre,
           project_id: insertedProject,
           name: (this.baseName + ' ' + this.nameComplement).trim(),
           owner_id: this.$user.id,
           testing: true
-        })
+        }).select()
+        if (errorInsertedProcedure) {
+          console.log('errorInsertedProcedure: ', errorInsertedProcedure)
+        }
+
+        const fomattedPerimetre = detailedPerimetre.map(e => ({ collectivite_code: e.code, collectivite_type: e.type, procedure_id: insertedProcedure[0].id, opposable: false, departement: e.departementCode }))
+        await this.$supabase.from('procedures_perimetres').insert(fomattedPerimetre)
 
         this.$analytics({
           category: 'procedures',
