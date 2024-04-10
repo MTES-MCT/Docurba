@@ -3,6 +3,16 @@
     <v-container>
       <v-row>
         <v-col cols="12">
+          <v-alert type="info">
+            Découvrez les nouveautés de Docurba, rejoignez-nous pour le Flash Info.
+            <a
+              class="white--text"
+              href="https://app.livestorm.co/mte/flash-info-de-docurba?type=detailed"
+              target="_blank"
+            >Détails et inscriptions ici.</a>
+          </v-alert>
+        </v-col>
+        <v-col cols="12">
           <h1>{{ collectivite.intitule }} ({{ collectivite.code }})</h1>
         </v-col>
       </v-row>

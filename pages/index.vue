@@ -5,7 +5,14 @@
         <h1 class="text-center">
           Docurba vous accompagne dans l'élaboration de vos <LandingWordSlider />
         </h1>
-
+        <v-alert type="info">
+          Découvrez les nouveautés de Docurba, rejoignez-nous pour le Flash Info.
+          <a
+            class="white--text"
+            href="https://app.livestorm.co/mte/flash-info-de-docurba?type=detailed"
+            target="_blank"
+          >Détails et inscriptions ici.</a>
+        </v-alert>
         <div class="search">
           <p>Pour commencer, accédez aux ressources de votre territoire :</p>
           <LandingSearchForm />
