@@ -5,7 +5,7 @@ doc_type character varying,
 region character varying,
 PAC jsonb,
 owner uuid,
-id uuid,
+id uuid DEFAULT gen_random_uuid(),
 towns jsonb,
 epci jsonb,
 trame character varying,
@@ -24,3 +24,8 @@ from_sudocuh_procedure_id integer
 );
 
 ALTER TABLE public.projects ADD CONSTRAINT projects_pkey PRIMARY KEY (id);
+ALTER TABLE public.projects ADD CONSTRAINT projects_unique_from_sudocuh_procedure_id UNIQUE (from_sudocuh_procedure_id);
+
+
+
+

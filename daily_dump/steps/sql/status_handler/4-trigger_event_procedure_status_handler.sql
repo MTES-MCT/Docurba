@@ -4,7 +4,6 @@ declare
 procedure procedures;
 event_processed doc_frise_events;
 BEGIN
--- On va chercher la procedure de l'event
   IF TG_OP = 'UPDATE' OR TG_OP = 'INSERT' then
     event_processed := new;
   else

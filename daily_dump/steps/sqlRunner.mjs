@@ -66,7 +66,8 @@ async function setAllStatus (config) {
     '1-get_event_impact.sql',
     '2-set_procedure_status.sql',
     '3-set_all_procedures_status.sql',
-    '4-trigger_event_procedure_status_handler.sql'
+    '4-trigger_event_procedure_status_handler.sql',
+    '5-run_status.sql'
   ]
   try {
     const client = new Client(config)
@@ -92,7 +93,8 @@ async function createOriginalSchema (config) {
     '1-projects.sql',
     '2-procedures.sql',
     '3-procedures_perimetres.sql',
-    '4-doc_frise_events.sql'
+    '4-doc_frise_events.sql',
+    '5-rules.sql'
   ]
   try {
     const client = new Client(config)

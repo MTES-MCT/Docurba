@@ -1,5 +1,5 @@
 CREATE TABLE doc_frise_events (
-id uuid,
+id uuid DEFAULT gen_random_uuid(),
 project_id uuid,
 type text,
 date_iso character varying,
@@ -21,3 +21,4 @@ from_sudocuh_procedure_id integer
 ALTER TABLE public.doc_frise_events ADD CONSTRAINT doc_frise_events_pkey PRIMARY KEY (id);
 ALTER TABLE public.doc_frise_events ADD CONSTRAINT doc_frise_events_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id);
 ALTER TABLE public.doc_frise_events ADD CONSTRAINT public_doc_frise_events_procedure_id_fkey FOREIGN KEY (procedure_id) REFERENCES public.procedures(id);
+ALTER TABLE public.doc_frise_events ADD CONSTRAINT doc_frise_events_unique_from_sudocuh UNIQUE (from_sudocuh);

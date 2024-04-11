@@ -8,7 +8,7 @@ declare
   is_ongoing_event bool;
   is_annule_event bool;
   new_status text := NULL;
-  -- "Caractère exécutoire" a enlever de opposable du CC
+
   impactful_events jsonb := '{
       "CC": {
         "en cours": ["Délibération de prescription du conseil municipal"],
