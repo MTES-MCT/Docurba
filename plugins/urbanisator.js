@@ -31,8 +31,36 @@ export default ({ $supabase, $dayjs }, inject) => {
       })
 
       procedures.forEach((procedure) => {
+        procedure.procedures_perimetres = perimetre.filter(p => p.procedure_id === procedure.id).map((p) => {
+          const collectivite = collectivites.find(c => c.code === p.collectivite_code)
+          return Object.assign({}, collectivite, p)
+        })
+
+        // COMD specifique
+        if (procedure.procedures_perimetres.length === 2) {
+          procedure.procedures_perimetres = procedure.procedures_perimetres.filter((p) => {
+            return p.collectivite_type === 'COMD'
+          })
+        }
+
+        if (procedure.status === 'opposable') {
+          let isOpposable = false
+
+          if (collectiviteId.length > 5) {
+            isOpposable = !!procedure.procedures_perimetres.find(p => p.opposable)
+          } else {
+            isOpposable = !!procedure.procedures_perimetres.find((p) => {
+              return p.opposable && (p.collectivite_code === collectiviteId || p.collectivite_type === 'COMD')
+            })
+          }
+
+          if (!isOpposable) {
+            procedure.status = 'precedent'
+          }
+        }
+
         // This is to manage legacy structure
-        procedure.current_perimetre = perimetre.filter(p => p.procedure_id === procedure.id)
+        procedure.current_perimetre = perimetre.filter(p => p.procedure_id === procedure.id && p.collectivite_type !== 'COMD')
 
         procedure.current_perimetre.forEach((c) => {
           const commune = collectivites.find(com => com.code === c.collectivite_code)
@@ -40,22 +68,6 @@ export default ({ $supabase, $dayjs }, inject) => {
           c.inseeCode = c.collectivite_code
           c.name = commune.intitule
         })
-
-        // update status
-        if (procedure.status === 'opposable') {
-          let isOpposable = false
-
-          if (collectiviteId.length > 5) {
-            isOpposable = !!procedure.current_perimetre.find(p => p.opposable)
-          } else {
-            console.log(collectiviteId, procedure.current_perimetre[0])
-            isOpposable = !!procedure.current_perimetre.find(p => p.opposable && p.collectivite_code === collectiviteId)
-          }
-
-          if (!isOpposable) {
-            procedure.status = 'precedent'
-          }
-        }
       })
 
       return procedures

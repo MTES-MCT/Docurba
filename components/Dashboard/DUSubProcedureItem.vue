@@ -45,7 +45,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="d-flex">
-        <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
+        <DashboardDUModalPerimetre :perimetres="procedure.procedures_perimetres" />
         <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <span class="primary--text text-decoration-underline mr-4">
             Feuille de route
@@ -115,7 +115,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="d-flex align-center justify-end ">
-        <DashboardDUModalPerimetre v-if="procedure.current_perimetre" :towns="procedure.current_perimetre" />
+        <DashboardDUModalPerimetre :perimetres="procedure.procedures_perimetres" />
         <v-spacer />
         <v-btn text color="primary" :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <v-icon small color="primary" class="mr-2">

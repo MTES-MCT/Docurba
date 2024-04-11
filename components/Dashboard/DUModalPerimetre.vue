@@ -9,26 +9,26 @@
         class="primary--text text-decoration-underline mr-4"
         v-on="on"
       >
-        Liste des communes concernées ({{ towns.length }})
+        Liste des communes concernées ({{ perimetres.length }})
       </span>
     </template>
 
     <v-card>
       <v-card-title class="text-h5 primary white--text">
-        Liste des communes concernées ({{ towns.length }})
+        Liste des communes concernées ({{ perimetres.length }})
       </v-card-title>
 
       <v-card-text class="pb-0">
         <v-container class="py-8">
           <v-row>
             <v-col
-              v-for="town in sortedTowns"
-              :key="town.inseeCode"
+              v-for="collectivite in sortedCollectivites"
+              :key="collectivite.code + collectivite.collectivite_type"
               cols="4"
               class="pl-0"
             >
-              <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: $route.params.departement, collectiviteId: town.inseeCode }, query: { isEpci: false } }">
-                {{ town.name }} ({{ town.inseeCode }}{{ town.type ? ` ${town.type}` : '' }})
+              <nuxt-link :to="`/ddt/${$route.params.departement}/collectivites/${collectivite.code}/commune`">
+                {{ collectivite.intitule }} ({{ collectivite.code }} {{ collectivite.collectivite_type }})
               </nuxt-link>
             </v-col>
           </v-row>
@@ -54,7 +54,7 @@
 <script>
 export default {
   props: {
-    towns: {
+    perimetres: {
       type: Array,
       required: true
     }
@@ -65,8 +65,8 @@ export default {
     }
   },
   computed: {
-    sortedTowns () {
-      return [...this.towns].sort((a, b) => a.name.localeCompare(b.name))
+    sortedCollectivites () {
+      return [...this.perimetres].sort((a, b) => a.intitule.localeCompare(b.intitule))
     }
   }
 }
