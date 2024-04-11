@@ -1,20 +1,19 @@
-(async () => {
-  const { PG_TEST_CONFIG, PG_DEV_CONFIG, PG_PROD_CONFIG } = require('./pg_secret_config.json')
-  const { createClient } = require('@supabase/supabase-js')
-  const _ = require('lodash')
-  const fs = require('fs')
 
-  const supabaseSource = createClient(PG_DEV_CONFIG.url, PG_DEV_CONFIG.admin_key, {
+import fs from 'fs'
+
+const { createClient } = require('@supabase/supabase-js')
+
+async function sudocuhPlanToDocurba (configSource, configTraget) {
+  const supabaseSource = createClient(configSource.url, configSource.admin_key, {
     auth: { persistSession: false }
   })
 
-  const supabase = createClient(PG_PROD_CONFIG.url, PG_PROD_CONFIG.admin_key, {
+  const supabase = createClient(configTraget.url, configTraget.admin_key, {
     auth: { persistSession: false }
   })
 
-  // const axios = require('axios')
-  const epcis = require('../server-middleware/Data/referentiels/groupements.json')
-  const communes = require('../server-middleware/Data/referentiels/communes.json')
+  // const epcis = require('../server-middleware/Data/referentiels/groupements.json')
+  // const communes = require('../server-middleware/Data/referentiels/communes.json')
 
   const PROCEDURES_TYPES = require('./miscs/procedureTypes.json')
   const DOCUMENTS_TYPES = require('./miscs/documentTypes.json')
@@ -295,4 +294,6 @@
   // TODO: Generate les nouveaux procédure_perimetre ici
   // TODO: Generate un CSV des events ajoutés et des procédures ajouté depuis Sudocuh
   return true
-})()
+}
+
+export { sudocuhPlanToDocurba }

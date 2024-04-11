@@ -99,5 +99,6 @@ deploy_dev.yaml
 deploy_pre.yaml
 dispatch.yaml
 
+daily_dump/pg_secret_config.mjs
 database/pg_secret_config.json
 database/dump/
