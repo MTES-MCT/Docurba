@@ -1,9 +1,11 @@
 
 import fs from 'fs'
+import { AsyncParser } from '@json2csv/node'
 // const { createClient } = require('@supabase/supabase-js')
 import { createClient } from '@supabase/supabase-js'
 import DOCUMENTS_TYPES from '../miscs/documentTypes.mjs'
 import PROCEDURES_TYPES from '../miscs/proceduresTypes.mjs'
+import communesReferentiel from '../miscs/referentiels/communes.json'
 
 async function sudocuhPlanToDocurba (configSource, configTraget) {
   const supabaseSource = createClient(configSource.url, configSource.admin_key, {
@@ -47,9 +49,13 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   let pageSize = 10000
   let currentPage = 1
   let hasMore = true
+  let addedBufferProcedures = []
+  let addedBufferProjects = []
   /// ////////////////////////////////////////////////////////
   /// /////////// PROJECTS & PROCS. PRINCIPALES //////////////
   /// ////////////////////////////////////////////////////////
+
+  // TODO: Opti en commencant par add les projects ?
 
   console.log('Starting processing procedures principales.')
   while (hasMore) {
@@ -104,8 +110,10 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
         .select()
       if (errorInsertedProcedure) { console.log(errorInsertedProcedure) }
       console.log('Upserted ', insertedProcedures?.length, ' procedures principales.')
-      // On créer des projects pour toutes les nouvelles procedures principales
+      // On bufferise pour avoir un CSV par la suite
+      addedBufferProcedures = [...addedBufferProcedures, ...insertedProcedures]
 
+      // On créer des projects pour toutes les nouvelles procedures principales
       const formattedProjects = dataProcedures.map((procedure) => {
         const currDocType = getDocType(procedure.noserietypedocument)
         return {
@@ -125,6 +133,9 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
 
       if (errorInsertedProjects) { console.log(errorInsertedProjects) }
       console.log('Upserted ', insertedProjects?.length, ' projects.')
+      // On bufferise pour avoir un CSV par la suite
+      addedBufferProjects = [...addedBufferProjects, ...insertedProjects]
+
       // Update les nouvelles procédure pour leur assigner leur id_project
       // Ajouter les projects uniquement sur ceux insert dans un second temps
       if (insertedProjects) {
@@ -139,6 +150,31 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
     } else { hasMore = false }
   }
 
+  const parser = new AsyncParser()
+  if (addedBufferProjects.length > 0) {
+    const csvNewProjects = await parser.parse(addedBufferProjects).promise()
+    try {
+      fs.writeFileSync('./daily_dump/output/last_projects_added.csv', csvNewProjects, { flag: 'w' })
+      console.log('Projects successfully written to file.')
+    } catch (error) {
+      console.error('Error writing array to file:', error)
+    }
+  } else {
+    console.log('No new projects. File wont be written in output')
+  }
+
+  if (addedBufferProcedures.length > 0) {
+    const csvNewProcedures = await parser.parse(addedBufferProcedures).promise()
+    try {
+      fs.writeFileSync('./daily_dump/output/last_procedures_principales_added.csv', csvNewProcedures, { flag: 'w' })
+      console.log('Procedures successfully written to file.')
+    } catch (error) {
+      console.error('Error writing array to file:', error)
+    }
+  } else {
+    console.log('No new procedures. File wont be written in output')
+  }
+
   // TODO: Get in memory newly added procédures
 
   console.log('End processing for procedures principales.')
@@ -147,6 +183,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   /// /////////// PROCS SECONDAIRES //////////
   /// ////////////////////////////////////////
 
+  addedBufferProcedures = []
   currentPage = 1
   hasMore = true
 
@@ -201,12 +238,54 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
       // Fait le bulk upsert de procédures secondaires
       const { data: insertedProcedures, error: errorInsertedProcedure } = await supabase.from('procedures').upsert(formattedProcedures, { onConflict: 'from_sudocuh', ignoreDuplicates: true }).select()
       if (errorInsertedProcedure) { console.log(errorInsertedProcedure) }
+      addedBufferProcedures = [...addedBufferProcedures, ...insertedProcedures]
       console.log('Upserted ', insertedProcedures.length, ' procedures secondaires.')
       currentPage++
     } else { hasMore = false }
   }
 
+  if (addedBufferProcedures.length > 0) {
+    const csvNewProcedures = await parser.parse(addedBufferProcedures).promise()
+    try {
+      fs.writeFileSync('./daily_dump/output/last_procedures_secondaires_added.csv', csvNewProcedures, { flag: 'w' })
+      console.log('Procedures successfully written to file.')
+    } catch (error) {
+      console.error('Error writing array to file:', error)
+    }
+  } else {
+    console.log('No new procedures. File wont be written in output')
+  }
   console.log('End processing for procedures secondaires.')
+
+  /// ////////////////////////////////////
+  /// ///////////PERIMETRE  //////////////
+  /// ////////////////////////////////////
+
+  // TODO: addedBufferProcedures + addBifferProceduresSec
+  console.log('Starting processing perimeters.')
+  const formattedPerimetre = addedBufferProcedures
+    .filter(e => e.current_perimetre)
+    .map((procedure) => {
+      return procedure.current_perimetre.map((commune) => {
+        const comDetail = communesReferentiel.find(e => e.code === commune.inseeCode)
+        if (!comDetail) {
+          console.log('Not found: ', commune)
+        }
+        // console.log(commune.departementCode, ' -- ', commune)
+        return {
+          collectivite_code: commune.inseeCode,
+          collectivite_type: comDetail?.type ?? 'UNKWN',
+          procedure_id: procedure.id,
+          departement: comDetail?.departementCode ?? 'UNKWN',
+          opposable: false
+        }
+      })
+    })
+    .flat()
+
+  const { error } = await supabase.from('procedures_perimetres').insert(formattedPerimetre)
+  if (error) { console.log(error) }
+  console.log('End processing for procedures perimetres.')
 
   /// //////////////////////////////////////////////////////////////////
   /// /////////// MAPPING ID PROCEDURES SUDOCU / DOCURBA  //////////////
@@ -231,7 +310,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   // console.log('proceduresMapping: ', proceduresMapping.slice(0, 30))
 
   try {
-    fs.writeFileSync('./database/miscs/output.json', JSON.stringify(proceduresMapping), { flag: 'w' })
+    fs.writeFileSync('./daily_dump/output/mapping_procedures_docurba_sudocuh.json', JSON.stringify(proceduresMapping), { flag: 'w' })
     console.log('Array successfully written to file.')
   } catch (error) {
     console.error('Error writing array to file:', error)
@@ -246,6 +325,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   currentPage = 1
   pageSize = 10000
   hasMore = true
+  let addedBufferEvents = []
 
   console.log('Starting processing events.')
   while (hasMore) {
@@ -283,15 +363,26 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
       })
       console.log('Mapped ', currentPage, formattedEvents?.length)
       // TODO: On bulk upsert les nouveaux events
-      const { data: insertedEvents, error: errorInsertedEvents } = await supabase.from('doc_frise_events').upsert(formattedEvents, { onConflict: 'from_sudocuh', ignoreDuplicates: false })
+      const { data: insertedEvents, error: errorInsertedEvents } = await supabase.from('doc_frise_events').upsert(formattedEvents, { onConflict: 'from_sudocuh', ignoreDuplicates: false }).select()
+      addedBufferEvents = [...addedBufferEvents, ...insertedEvents]
       if (errorInsertedEvents) { console.log(errorInsertedEvents) }
       currentPage++
     } else { hasMore = false }
   }
+
+  if (addedBufferEvents.length > 0) {
+    const csvNewProcedures = await parser.parse(addedBufferEvents).promise()
+    try {
+      fs.writeFileSync('./daily_dump/output/last_events_added.csv', csvNewProcedures, { flag: 'w' })
+      console.log('Procedures successfully written to file.')
+    } catch (error) {
+      console.error('Error writing array to file:', error)
+    }
+  } else {
+    console.log('No new procedures. File wont be written in output')
+  }
   console.log('End processing events.')
 
-  // TODO: Generate les nouveaux procédure_perimetre ici
-  // TODO: Generate un CSV des events ajoutés et des procédures ajouté depuis Sudocuh
   return true
 }
 

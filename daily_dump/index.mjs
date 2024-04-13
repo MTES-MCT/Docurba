@@ -31,9 +31,9 @@ try {
   /// ///// PART 2 ////////
   /// /////////////////////
 
-  // await sudocuhPlanToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_DEV_CONFIG)
+  await sudocuhPlanToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_DEV_CONFIG)
   // await sudocuhScotToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_DEV_CONFIG)
-  await setAllStatus(CONFIG.PG_DEV_CONFIG)
+  // await setAllStatus(CONFIG.PG_DEV_CONFIG)
   // TODO: Create trigger if not exist
   // TODO: Script de Fabien pour setup les status des perimetres
 
