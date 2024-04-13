@@ -1,6 +1,9 @@
 import CONFIG from './pg_secret_config.mjs'
 import { clearDev, loadDump, createSudocuProcessedTables, setAllStatus, createOriginalSchema } from './steps/sqlRunner.mjs'
 import { sudocuhPlanToDocurba } from './steps/4-interTablesToDocurbaPlan.mjs'
+// import { sudocuhScotToDocurba } from './steps/5-interTablesToDocurbaScot.mjs'
+// import { updateComDPerimeter } from './steps/7-setPerimeterStatus.mjs'
+// import { updatePerimeterStatus } from './steps/8-updateComdPerimTable.mjs'
 import { handleTrigger } from './steps/onOffTriggers.mjs'
 
 /// /////////////////////
@@ -35,8 +38,10 @@ try {
   // await sudocuhScotToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_DEV_CONFIG)
   // await setAllStatus(CONFIG.PG_DEV_CONFIG)
   // TODO: Create trigger if not exist
+  // TODO: Script de Fabien pour les communes fusionnées
+  // updateComDPerimeter(CONFIG.PG_DEV_CONFIG)
   // TODO: Script de Fabien pour setup les status des perimetres
-
+  // updatePerimeterStatus(CONFIG.PG_DEV_CONFIG)
   // await handleTrigger(CONFIG.PG_DEV_CONFIG, 'enable')
 } catch (error) {
   console.log(error)
