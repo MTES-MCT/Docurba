@@ -22,18 +22,29 @@ export default ({ $supabase, $dayjs }, inject) => {
       return collectiviteId.length > 5
     },
     async getProceduresPerimetre (procedures, collectiviteId) {
-      const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*')
-        .in('procedure_id', procedures.map(p => p.id))
+      const collectivitesCodes = []
+      procedures.forEach((p) => {
+        collectivitesCodes.push(...p.procedures_perimetres.map(c => c.collectivite_code))
+      })
 
       const { data: collectivites } = await axios({
         url: '/api/geo/collectivites',
-        params: { codes: uniq(perimetre.map(p => p.collectivite_code)) }
+        params: { codes: uniq(collectivitesCodes) }
       })
 
       procedures.forEach((procedure) => {
-        procedure.procedures_perimetres = perimetre.filter(p => p.procedure_id === procedure.id).map((p) => {
+        procedure.procedures_perimetres = procedure.procedures_perimetres.map((p) => {
           const collectivite = collectivites.find(c => c.code === p.collectivite_code)
           return Object.assign({}, collectivite, p)
+        })
+
+        procedure.current_perimetre = procedure.procedures_perimetres.map((p) => {
+          const commune = collectivites.find(com => com.code === p.collectivite_code)
+
+          return Object.assign({
+            inseeCode: p.collectivite_code,
+            name: commune.intitule
+          }, p, commune)
         })
 
         // COMD specifique
@@ -77,16 +88,12 @@ export default ({ $supabase, $dayjs }, inject) => {
       const collectivites = [collectivite]
       if (collectivite.membres) { collectivites.push(...collectivite.membres) }
 
-      const { data: perimetres } = await $supabase.from('procedures_perimetres')
-        .select('*').in('collectivite_code', collectivites.filter(c => c.type === 'COM').map(c => c.code))
+      const { data: procedures } = await $supabase
+        .rpc('procedures_by_collectivites', {
+          codes: collectivites.filter(c => c.type === 'COM').map(c => c.code)
+        })
 
-      const proceduresIds = uniq(perimetres.map(p => p.procedure_id))
-
-      const { data: procedures } = await $supabase.from('procedures')
-        .select('*').eq('archived', false)
-        .in('id', proceduresIds)
-
-      return await this.getProceduresPerimetre(procedures, collectiviteId)
+      return await this.getProceduresPerimetre(procedures.filter(p => !p.archived), collectiviteId)
     },
     async getProjects (collectiviteId) {
       try {
