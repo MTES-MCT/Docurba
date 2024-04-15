@@ -5,7 +5,7 @@ import { AsyncParser } from '@json2csv/node'
 import { createClient } from '@supabase/supabase-js'
 import DOCUMENTS_TYPES from '../miscs/documentTypes.mjs'
 import PROCEDURES_TYPES from '../miscs/proceduresTypes.mjs'
-import communesReferentiel from '../miscs/referentiels/communes.json'
+import communesReferentiel from '../miscs/referentiels/communes.json' assert {type: 'json'}
 
 async function sudocuhPlanToDocurba (configSource, configTraget) {
   const supabaseSource = createClient(configSource.url, configSource.admin_key, {
@@ -15,9 +15,6 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   const supabase = createClient(configTraget.url, configTraget.admin_key, {
     auth: { persistSession: false }
   })
-
-  // const PROCEDURES_TYPES = require('./miscs/procedureTypes.json')
-  // const DOCUMENTS_TYPES = require('./miscs/documentTypes.json')
 
   /// ///////////////////////////////////
   /// /////////// HELPERS  //////////////
@@ -183,7 +180,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   /// /////////// PROCS SECONDAIRES //////////
   /// ////////////////////////////////////////
 
-  addedBufferProcedures = []
+  let addedBufferProceduresSec = []
   currentPage = 1
   hasMore = true
 
@@ -238,14 +235,14 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
       // Fait le bulk upsert de procédures secondaires
       const { data: insertedProcedures, error: errorInsertedProcedure } = await supabase.from('procedures').upsert(formattedProcedures, { onConflict: 'from_sudocuh', ignoreDuplicates: true }).select()
       if (errorInsertedProcedure) { console.log(errorInsertedProcedure) }
-      addedBufferProcedures = [...addedBufferProcedures, ...insertedProcedures]
+      addedBufferProceduresSec = [...addedBufferProceduresSec, ...insertedProcedures]
       console.log('Upserted ', insertedProcedures.length, ' procedures secondaires.')
       currentPage++
     } else { hasMore = false }
   }
 
-  if (addedBufferProcedures.length > 0) {
-    const csvNewProcedures = await parser.parse(addedBufferProcedures).promise()
+  if (addedBufferProceduresSec.length > 0) {
+    const csvNewProcedures = await parser.parse(addedBufferProceduresSec).promise()
     try {
       fs.writeFileSync('./daily_dump/output/last_procedures_secondaires_added.csv', csvNewProcedures, { flag: 'w' })
       console.log('Procedures successfully written to file.')
@@ -260,10 +257,10 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   /// ////////////////////////////////////
   /// ///////////PERIMETRE  //////////////
   /// ////////////////////////////////////
+  let allAddedBufferProcedures = [...addedBufferProcedures, ...addedBufferProceduresSec]
 
-  // TODO: addedBufferProcedures + addBifferProceduresSec
   console.log('Starting processing perimeters.')
-  const formattedPerimetre = addedBufferProcedures
+  const formattedPerimetre = allAddedBufferProcedures
     .filter(e => e.current_perimetre)
     .map((procedure) => {
       return procedure.current_perimetre.map((commune) => {
@@ -283,8 +280,21 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
     })
     .flat()
 
-  const { error } = await supabase.from('procedures_perimetres').insert(formattedPerimetre)
+  // TODO: Voir le cas ou on part de 0, il y a surement de la pagination
+  const { data: perimetersInserted, error } = await supabase.from('procedures_perimetres').insert(formattedPerimetre).select()
   if (error) { console.log(error) }
+  console.log("Added nb perimeter: ", perimetersInserted?.length )
+  if (perimetersInserted?.length > 0) {
+    const csvNewPerimeters = await parser.parse(perimetersInserted).promise()
+    try {
+      fs.writeFileSync('./daily_dump/output/last_perimeter_added.csv', csvNewPerimeters, { flag: 'w' })
+      console.log('Perimeters successfully written to file.')
+    } catch (error) {
+      console.error('Error writing array to file:', error)
+    }
+  } else {
+    console.log('No new perimeters. File wont be written in output')
+  }
   console.log('End processing for procedures perimetres.')
 
   /// //////////////////////////////////////////////////////////////////
@@ -358,12 +368,12 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
           visibility: 'private',
           from_sudocuh: event.noserieevenement
         }
-        // console.log('code: ', formattedEvent.code)
         return formattedEvent
       })
-      console.log('Mapped ', currentPage, formattedEvents?.length)
-      // TODO: On bulk upsert les nouveaux events
-      const { data: insertedEvents, error: errorInsertedEvents } = await supabase.from('doc_frise_events').upsert(formattedEvents, { onConflict: 'from_sudocuh', ignoreDuplicates: false }).select()
+      // console.log('Mapped ', currentPage, formattedEvents?.length)
+      const { data: insertedEvents, error: errorInsertedEvents } = await supabase.from('doc_frise_events').upsert(formattedEvents, { onConflict: 'from_sudocuh', ignoreDuplicates: true }).select()
+      console.log('Page ',currentPage, ' inserted Events ', insertedEvents?.length)
+
       addedBufferEvents = [...addedBufferEvents, ...insertedEvents]
       if (errorInsertedEvents) { console.log(errorInsertedEvents) }
       currentPage++

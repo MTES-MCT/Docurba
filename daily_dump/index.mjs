@@ -25,9 +25,6 @@ try {
 
   // // Useful only on DEV for test purpose.
   // await createOriginalSchema(CONFIG.PG_DEV_CONFIG)
-
-  // TODO: Cibler le bon trigger sur la prod en tant voulu dans les sql scripts
-  // TODO: Faire un if exist dans le cas ou il n'existe pas encore (cas du full process)
   // await handleTrigger(CONFIG.PG_DEV_CONFIG, 'disable')
 
   /// /////////////////////
@@ -35,9 +32,9 @@ try {
   /// /////////////////////
 
   await sudocuhPlanToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_DEV_CONFIG)
+
   // await sudocuhScotToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_DEV_CONFIG)
   // await setAllStatus(CONFIG.PG_DEV_CONFIG)
-  // TODO: Create trigger if not exist
   // TODO: Script de Fabien pour les communes fusionnées
   // updateComDPerimeter(CONFIG.PG_DEV_CONFIG)
   // TODO: Script de Fabien pour setup les status des perimetres

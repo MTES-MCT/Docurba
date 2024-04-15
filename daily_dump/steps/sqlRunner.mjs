@@ -67,7 +67,8 @@ async function setAllStatus (config) {
     '2-set_procedure_status.sql',
     '3-set_all_procedures_status.sql',
     '4-trigger_event_procedure_status_handler.sql',
-    '5-run_status.sql'
+    '5-run_status.sql',
+    '6-trigger_definition.sql'
   ]
   try {
     const client = new Client(config)
