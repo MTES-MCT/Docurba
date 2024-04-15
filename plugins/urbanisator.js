@@ -22,7 +22,7 @@ export default ({ $supabase, $dayjs }, inject) => {
       return collectiviteId.length > 5
     },
     async getProceduresPerimetre (procedures, collectiviteId) {
-      const collectivitesCodes = []
+      const collectivitesCodes = [collectiviteId]
       procedures.forEach((p) => {
         collectivitesCodes.push(...p.procedures_perimetres.map(c => c.collectivite_code))
       })
