@@ -69,16 +69,6 @@ export default ({ $supabase, $dayjs }, inject) => {
             procedure.status = 'precedent'
           }
         }
-
-        // This is to manage legacy structure
-        procedure.current_perimetre = perimetre.filter(p => p.procedure_id === procedure.id && p.collectivite_type !== 'COMD')
-
-        procedure.current_perimetre.forEach((c) => {
-          const commune = collectivites.find(com => com.code === c.collectivite_code)
-
-          c.inseeCode = c.collectivite_code
-          c.name = commune.intitule
-        })
       })
 
       return procedures
@@ -114,7 +104,7 @@ export default ({ $supabase, $dayjs }, inject) => {
         const plans = proceduresPrincipales.filter(e => e.doc_type !== 'SCOT')
 
         // eslint-disable-next-line no-console
-        console.log('urbanisator get projects', { schemas, plans })
+        // console.log('urbanisator get projects', { schemas, plans })
         return { schemas, plans }
       } catch (error) {
         // eslint-disable-next-line no-console
