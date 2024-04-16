@@ -66,7 +66,7 @@ export default {
   },
   computed: {
     sortedCollectivites () {
-      return [...this.perimetres].sort((a, b) => a.intitule.localeCompare(b.intitule))
+      return [...this.perimetres].sort((a, b) => a.intitule?.localeCompare(b.intitule))
     }
   }
 }

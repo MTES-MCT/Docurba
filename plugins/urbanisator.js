@@ -43,12 +43,14 @@ export default ({ $supabase, $dayjs }, inject) => {
 
           return Object.assign({
             inseeCode: p.collectivite_code,
-            name: commune.intitule
+            name: commune?.intitule || ''
           }, p, commune)
         })
 
+        const comd = procedure.procedures_perimetres.find(p => p.type === 'COMD')
+
         // COMD specifique
-        if (procedure.procedures_perimetres.length === 2) {
+        if (procedure.procedures_perimetres.length === 2 && comd) {
           procedure.procedures_perimetres = procedure.procedures_perimetres.filter((p) => {
             return p.collectivite_type === 'COMD'
           })
