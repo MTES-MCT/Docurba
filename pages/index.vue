@@ -6,12 +6,12 @@
           Docurba vous accompagne dans l'élaboration de vos <LandingWordSlider />
         </h1>
         <v-alert type="info">
-          Découvrez les nouveautés de Docurba, rejoignez-nous pour le Flash Info.
+          Regardez le replay du Flash info du 18 avril : zoom sur les nouveautés et amélioration à venir.
           <a
             class="white--text"
-            href="https://app.livestorm.co/mte/flash-info-de-docurba?type=detailed"
+            href="https://pad.incubateur.net/s/A_BpJ3_NH"
             target="_blank"
-          >Détails et inscriptions ici.</a>
+          >zoom sur les nouveautés et amélioration à venir.</a>
         </v-alert>
         <div class="search">
           <p>Pour commencer, accédez aux ressources de votre territoire :</p>
