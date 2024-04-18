@@ -4,7 +4,7 @@
       <!-- <v-col v-if="!clickedOnDocLink" cols="12"> -->
       <v-col cols="12">
         <v-alert type="info">
-          Regardez le replay du Flash info du 18 avril : zoom sur les nouveautés et amélioration à venir.
+          Regardez le replay du Flash info du 18 avril :
           <a
             class="white--text"
             href="https://pad.incubateur.net/s/A_BpJ3_NH"
