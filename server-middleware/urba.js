@@ -16,6 +16,7 @@ const csvParser = new AsyncParser()
 const app = express()
 app.use(express.json())
 
+// TOTO: Pour le dump journalier - connecter a la base de dev
 app.get('/departements/:code', async (req, res) => {
   const communesCodes = departements.find(d => d.code === req.params.code).communes.map(c => c.code)
   const communes = await procedures.getCommunes(communesCodes)

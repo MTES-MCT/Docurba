@@ -9,7 +9,7 @@ CREATE OR REPLACE VIEW eventsDetails AS
   FROM(
     SELECT p.noserieprocedure, p.noserieprocedureratt,  td.codetypedocument, td.libtypedocument, tp.libtypeprocedure, p.commentairedgd, p.commentaireproc, p.datelancement, p.dateapprobation, p.dateabandon, p.dateexecutoire, ev.noserieevenement, ev.dateevenement, ev.libtypeevenement, ev.codetypeevenement,  ev.commentaire, ev.nomdocument, ev.libstatutevenement, ev.codestatutevenement, tp.siprocedureprincipale
     FROM sudocu.procedure p
-    LEFT JOIN (
+    INNER JOIN (
       SELECT e.noserieprocedure, e.noserieevenement, e.dateevenement, e.commentaire, e.nomdocument, te.libtypeevenement, te.codetypeevenement, se.libstatutevenement, se.codestatutevenement
       FROM sudocu.evenement e
       LEFT JOIN sudocu.typeevenement te ON te.noserietypeevenement = e.noserietypeevenement

@@ -1,11 +1,26 @@
 
 import fs from 'fs'
 import { AsyncParser } from '@json2csv/node'
-// const { createClient } = require('@supabase/supabase-js')
 import { createClient } from '@supabase/supabase-js'
 import DOCUMENTS_TYPES from '../miscs/documentTypes.mjs'
 import PROCEDURES_TYPES from '../miscs/proceduresTypes.mjs'
 import communesReferentiel from '../miscs/referentiels/communes.json' assert {type: 'json'}
+
+
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}_${month}_${day}`;
+}
+
+const currentDate = new Date();
+
+var outputDir = `./daily_dump/output/${formatDate(currentDate)}`;
+
+if (!fs.existsSync(outputDir)){
+    fs.mkdirSync(outputDir, { recursive: true });
+}
 
 async function sudocuhPlanToDocurba (configSource, configTraget) {
   const supabaseSource = createClient(configSource.url, configSource.admin_key, {
@@ -89,7 +104,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
           is_principale: true,
           status: null, // DONE BY TRIGGER
           doc_type_code: currDocType.codetypedocument,
-          doc_type: currDocType.libtypedocument,
+          doc_type: currDocType.codetypedocument,
           is_sectoriel: procedure.sisectoriel,
           is_scot: !!(procedure.sipluiscot), // || schemaOnly// TODO: Mettre a true si le doctype est scot
           is_pluih: procedure.siplhpluih,
@@ -116,7 +131,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
         return {
           name: null, // `${docType} de ${procedure.perimetre > 1 ? procedure.collectivite_porteuse.code_collectivite_porteuse : procedure.perimetre[0].name}`,
           doc_type_code: currDocType.codetypedocument,
-          doc_type: currDocType.libtypedocument,
+          doc_type: currDocType.codetypedocument,
           current_perimetre: procedure.perimetre,
           initial_perimetre: procedure.perimetre,
           collectivite_porteuse_id: procedure.codecollectivite,
@@ -151,7 +166,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   if (addedBufferProjects.length > 0) {
     const csvNewProjects = await parser.parse(addedBufferProjects).promise()
     try {
-      fs.writeFileSync('./daily_dump/output/last_projects_added.csv', csvNewProjects, { flag: 'w' })
+      fs.writeFileSync(`${outputDir}/last_projects_added.csv`, csvNewProjects, { flag: 'w' })
       console.log('Projects successfully written to file.')
     } catch (error) {
       console.error('Error writing array to file:', error)
@@ -163,7 +178,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   if (addedBufferProcedures.length > 0) {
     const csvNewProcedures = await parser.parse(addedBufferProcedures).promise()
     try {
-      fs.writeFileSync('./daily_dump/output/last_procedures_principales_added.csv', csvNewProcedures, { flag: 'w' })
+      fs.writeFileSync(`${outputDir}/last_procedures_principales_added.csv`, csvNewProcedures, { flag: 'w' })
       console.log('Procedures successfully written to file.')
     } catch (error) {
       console.error('Error writing array to file:', error)
@@ -220,7 +235,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
           secondary_procedure_of: null,
           sudocu_secondary_procedure_of: null,
           doc_type_code: currDocType.codetypedocument,
-          doc_type: currDocType.libtypedocument,
+          doc_type: currDocType.codetypedocument,
           is_sectoriel: procedure.sisectoriel,
           is_scot: !!(procedure.sipluiscot), // || schemaOnly// TODO: Mettre a true si le doctype est scot
           is_pluih: procedure.siplhpluih,
@@ -244,7 +259,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   if (addedBufferProceduresSec.length > 0) {
     const csvNewProcedures = await parser.parse(addedBufferProceduresSec).promise()
     try {
-      fs.writeFileSync('./daily_dump/output/last_procedures_secondaires_added.csv', csvNewProcedures, { flag: 'w' })
+      fs.writeFileSync(`${outputDir}/last_procedures_secondaires_added.csv`, csvNewProcedures, { flag: 'w' })
       console.log('Procedures successfully written to file.')
     } catch (error) {
       console.error('Error writing array to file:', error)
@@ -287,7 +302,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   if (perimetersInserted?.length > 0) {
     const csvNewPerimeters = await parser.parse(perimetersInserted).promise()
     try {
-      fs.writeFileSync('./daily_dump/output/last_perimeter_added.csv', csvNewPerimeters, { flag: 'w' })
+      fs.writeFileSync(`${outputDir}/last_perimeter_added.csv`, csvNewPerimeters, { flag: 'w' })
       console.log('Perimeters successfully written to file.')
     } catch (error) {
       console.error('Error writing array to file:', error)
@@ -320,7 +335,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   // console.log('proceduresMapping: ', proceduresMapping.slice(0, 30))
 
   try {
-    fs.writeFileSync('./daily_dump/output/mapping_procedures_docurba_sudocuh.json', JSON.stringify(proceduresMapping), { flag: 'w' })
+    fs.writeFileSync(`${outputDir}/mapping_procedures_docurba_sudocuh.json`, JSON.stringify(proceduresMapping), { flag: 'w' })
     console.log('Array successfully written to file.')
   } catch (error) {
     console.error('Error writing array to file:', error)
@@ -346,7 +361,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
       .limit(pageSize)
     if (errorEvents) { console.log(errorEvents) }
     if (dataEvents && dataEvents.length > 0) {
-      console.log('[EVENTS] Processing page: ', currentPage)
+      // console.log('[EVENTS] Processing page: ', currentPage)
       const formattedEvents = dataEvents?.map((event) => {
         const mapped = proceduresMapping.find(e => e.from_sudocuh === event.noserieprocedure)
         if (!mapped) {
@@ -372,7 +387,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
       })
       // console.log('Mapped ', currentPage, formattedEvents?.length)
       const { data: insertedEvents, error: errorInsertedEvents } = await supabase.from('doc_frise_events').upsert(formattedEvents, { onConflict: 'from_sudocuh', ignoreDuplicates: true }).select()
-      console.log('Page ',currentPage, ' inserted Events ', insertedEvents?.length)
+      console.log('[EVENTS] Page ',currentPage, ' inserted Events ', insertedEvents?.length)
 
       addedBufferEvents = [...addedBufferEvents, ...insertedEvents]
       if (errorInsertedEvents) { console.log(errorInsertedEvents) }
@@ -383,7 +398,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   if (addedBufferEvents.length > 0) {
     const csvNewProcedures = await parser.parse(addedBufferEvents).promise()
     try {
-      fs.writeFileSync('./daily_dump/output/last_events_added.csv', csvNewProcedures, { flag: 'w' })
+      fs.writeFileSync(`${outputDir}/last_events_added.csv`, csvNewProcedures, { flag: 'w' })
       console.log('Procedures successfully written to file.')
     } catch (error) {
       console.error('Error writing array to file:', error)

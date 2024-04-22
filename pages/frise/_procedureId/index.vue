@@ -211,7 +211,7 @@ export default
       })
     },
     attachments () {
-      return this.enrichedEvents.map(e => e.attachements).flat()
+      return this.enrichedEvents.map(e => e.attachements).flat().filter(e => e)
     },
     backToCollectivite () {
       if (this.$user.id && this.$user.profile && this.$user.profile.side === 'etat') {

@@ -1,6 +1,0 @@
-"id","project_id","type","date_iso","description","created_at","actors","updated_at","attachements","visibility","from_sudocuh","is_valid","procedure_id","is_sudocuh_scot","profile_id","test","code","from_sudocuh_procedure_id"
-"b23ae968-3a2f-4e90-b42f-d7bd51d0cab6","7f05ce44-2eb5-439d-871b-eb2dc53ceadd","Arrêté d'enquête publique","1980-09-08",,,,,"[]","private",181768,true,"0fbe0ea6-43bd-490c-be0c-e90d17eb2a79",,,,"ARRENQ",71772
-"94e2f1f4-46aa-4f40-a40c-2e8cebdd85a4","7f05ce44-2eb5-439d-871b-eb2dc53ceadd","Délibération d'approbation","1981-03-16",,,,,"[]","private",175823,true,"0fbe0ea6-43bd-490c-be0c-e90d17eb2a79",,,,"DELAPP",71772
-"e90a0141-5cce-40f9-bb6f-658d783bdd92","7f05ce44-2eb5-439d-871b-eb2dc53ceadd","Début d'enquête publique","1980-09-22",,,,,"[]","private",181769,true,"0fbe0ea6-43bd-490c-be0c-e90d17eb2a79",,,,"DEBENQ",71772
-"9c28f773-b65c-4793-96f8-12fb0a1bbb30",,"Notification du projet ou demande de DUP","2021-05-03",,,,,"[]","private",660961,true,"4463a4c1-fcdf-4c70-89e8-c4cee5b6bcf4",,,,"NOTPROJ",179686
-"371599d6-dbcf-43f1-b30f-a441dc8189ab",,"Délibération décidant de la mise en compatibilité","2021-10-21",,,,,"[]","private",667258,true,"4463a4c1-fcdf-4c70-89e8-c4cee5b6bcf4",,,,"DELMEC",179686

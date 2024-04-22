@@ -23,7 +23,7 @@ async function loadDump (config, dumpName) {
     console.log('[TODO] - Download the dump.')
     // TODO: Download the latest dump auto 2024_03_03_dump
     console.log('Restoring latest Sudocuh dump...')
-    await execute(`pg_restore -h ${config.host} -d ${config.database} -U ${config.user} ./database/dump/${dumpName}`)
+    await execute(`pg_restore -h ${config.host} -d ${config.database} -U ${config.user} ./daily_dump/sudocuh_dumps/${dumpName}`)
     console.log('Sudocuh dump Restored.')
   } catch (error) {
     console.log(error)
@@ -63,12 +63,14 @@ async function createSudocuProcessedTables (config) {
 
 async function setAllStatus (config) {
   const SQLS = [
-    '1-get_event_impact.sql',
-    '2-set_procedure_status.sql',
-    '3-set_all_procedures_status.sql',
-    '4-trigger_event_procedure_status_handler.sql',
-    '5-run_status.sql',
-    '6-trigger_definition.sql'
+    // '1-get_event_impact.sql',
+    // '2-set_procedure_status.sql',
+    // '3-set_all_procedures_status.sql',
+    // '4-trigger_event_procedure_status_handler.sql',
+    // '5-run_status.sql',
+    // '6-trigger_definition.sql',
+    'rpc_events_by_procedures_ids.sql',
+    'rpc_procedures_by_insee_codes.sql'
   ]
   try {
     const client = new Client(config)

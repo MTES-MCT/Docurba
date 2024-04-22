@@ -19,7 +19,7 @@ async function updatePerimeterStatus(config){
     console.log(`${curentRequest}/${departements.length}`)
 
     try {
-      const {data: communes} = await axios(`https://docurba.beta.gouv.fr/api/urba/departements/${deptCode}`)
+      const {data: communes} = await axios(`http://localhost:3000/api/urba/departements/${deptCode}`)
 
       const {data: perimetre} = await supabase.from('procedures_perimetres')
         .select('*').match({

@@ -24,13 +24,13 @@ declare
       },
       "PLU": {
         "en cours": ["Délibération de prescription du conseil municipal ou communautaire"],
-        "opposable": ["Caractère exécutoire", "Délibération d''approbation du municipal ou communautaire", "Délibération d''approbation"],
+        "opposable": ["Caractère exécutoire", "Délibération d''approbation du municipal ou communautaire", "Délibération d''approbation du conseil municipal ou communautaire", "Délibération d''approbation"],
         "abandon": ["Abandon"],
         "annule": ["Annulation TA totale", "Annulation TA"]
       },
       "POS": {
         "en cours": ["Délibération de prescription du conseil municipal ou communautaire"],
-        "opposable": ["Caractère exécutoire", "Délibération d''approbation du municipal ou communautaire", "Délibération d''approbation"],
+        "opposable": ["Caractère exécutoire", "Délibération d''approbation du municipal ou communautaire", "Délibération d''approbation du conseil municipal ou communautaire", "Délibération d''approbation"],
         "abandon": ["Abandon"],
         "annule": ["Annulation TA", "Annulation TA totale", "Caducité"]
       }
