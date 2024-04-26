@@ -28,24 +28,24 @@ try {
   // // Replique un schema de test (Optionnal)
   // await createOriginalSchema(CONFIG.PG_DEV_CONFIG)
   // // // Step 3 - Désactive du trigger de changement de status sur nouveaux events
-  // await handleTrigger(CONFIG.PG_DEV_CONFIG, 'disable')
+  // await handleTrigger(CONFIG.PG_PROD_CONFIG, 'disable')
 
   // /// /////////////////////////////////////////////////////////////
   // /// ///// PART 2 - Sudocuh to Docurba daily differential ////////
   // /// /////////////////////////////////////////////////////////////
 
   // // Step 4 - Migre les nouvelles données plan entrées dans Sudocuh dans Docurba
-  // await sudocuhPlanToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_DEV_CONFIG)
+  // await sudocuhPlanToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_PROD_CONFIG)
   // // Step 5 - Migre les nouvelles données SCoT entrées dans Sudocuh dans Docurba
-  // await sudocuhScotToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_DEV_CONFIG)
+  // await sudocuhScotToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_PROD_CONFIG)
   // // Step 6 - Définition des status de procédures au niveau event
-  // await setAllStatus(CONFIG.PG_DEV_CONFIG)
+  // await setAllStatus(CONFIG.PG_PROD_CONFIG)
   // // Step 6(Bis) - Définition des status de procédures en fonction des périmètres
-  // await updatePerimeterStatus(CONFIG.PG_DEV_CONFIG)
+  // await updatePerimeterStatus(CONFIG.PG_PROD_CONFIG)
   // // Step 7 - Ralliement des communes fusionnées
-  await updateComDPerimeter(CONFIG.PG_DEV_CONFIG)
+  await updateComDPerimeter(CONFIG.PG_PROD_CONFIG)
   // // Step 8 - Réactivation du trigger de changement de status sur nouveaux events
-  // await handleTrigger(CONFIG.PG_DEV_CONFIG, 'enable')
+  // await handleTrigger(CONFIG.PG_PROD_CONFIG, 'enable')
 } catch (error) {
   console.log(error)
 }

@@ -225,10 +225,21 @@ export default
     },
     recommendedEvent () {
       const filteredDocumentEvents = this.documentEvents?.filter(e => e.scope_sugg.includes(this.internalProcedureType))
-
+      console.log('filteredDocumentEvents: ', filteredDocumentEvents)
       if (!filteredDocumentEvents) { return null }
+
+      console.log('this.events: ', this.events)
       if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
-      const lastEventType = filteredDocumentEvents.find(event => this.events[0].type === event.name)
+      // Si on ne trouve pas le lastEventType, on cherche sur les precedents
+
+      let lastEventType
+      for (const event of this.events) {
+        const matchingEventSugg = filteredDocumentEvents.find(eventSugg => event.type === eventSugg.name)
+        if (matchingEventSugg) {
+          lastEventType = matchingEventSugg
+          break
+        }
+      }
       if (!lastEventType) { return filteredDocumentEvents[0] }
 
       return filteredDocumentEvents.find(e => _.gt(e.order, lastEventType.order))

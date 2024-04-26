@@ -3,7 +3,7 @@ const { createClient } = require('@supabase/supabase-js')
 // 'https://drncrjteathtblggsgxi.supabase.co'
 // PROD
 // 'https://ixxbyuandbmplfnqtxyw.supabase.co'
-const supabase = createClient('https://drncrjteathtblggsgxi.supabase.co', process.env.SUPABASE_ADMIN_KEY, {
+const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY, {
   auth: { persistSession: false }
 })
 

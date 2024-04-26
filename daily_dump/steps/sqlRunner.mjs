@@ -63,14 +63,14 @@ async function createSudocuProcessedTables (config) {
 
 async function setAllStatus (config) {
   const SQLS = [
-    // '1-get_event_impact.sql',
-    // '2-set_procedure_status.sql',
-    // '3-set_all_procedures_status.sql',
-    // '4-trigger_event_procedure_status_handler.sql',
-    // '5-run_status.sql',
-    // '6-trigger_definition.sql',
-    'rpc_events_by_procedures_ids.sql',
-    'rpc_procedures_by_insee_codes.sql'
+    '1-get_event_impact.sql',
+    '2-set_procedure_status.sql',
+    '3-set_all_procedures_status.sql',
+    '4-trigger_event_procedure_status_handler.sql',
+    '5-run_status.sql',
+    '6-trigger_definition.sql'
+    // 'rpc_events_by_procedures_ids.sql',
+    // 'rpc_procedures_by_insee_codes.sql'
   ]
   try {
     const client = new Client(config)

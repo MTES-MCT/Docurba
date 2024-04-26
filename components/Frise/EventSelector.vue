@@ -25,7 +25,7 @@
 import FormInput from '@/mixins/FormInput.js'
 
 import PluEvents from '@/assets/data/events/PLU_events.json'
-import ScotEvents from '@/assets/data/events/SCOT_events.json'
+// import ScotEvents from '@/assets/data/events/SCOT_events.json'
 import ccEvents from '@/assets/data/events/CC_events.json'
 
 export default {
@@ -56,7 +56,8 @@ export default {
         PLU: PluEvents,
         PLUi: PluEvents,
         POS: PluEvents,
-        SCOT: ScotEvents,
+        // TODO: On utilise la meme liste d'event que les PLU en attendant d'être a jour sur les SCOT
+        SCOT: PluEvents,
         CC: ccEvents
       }
       console.log('internalDocType:', this.internalDocType)
