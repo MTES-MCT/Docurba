@@ -231,7 +231,6 @@ export default
       console.log('this.events: ', this.events)
       if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
       // Si on ne trouve pas le lastEventType, on cherche sur les precedents
-
       let lastEventType
       for (const event of this.events) {
         const matchingEventSugg = filteredDocumentEvents.find(eventSugg => event.type === eventSugg.name)

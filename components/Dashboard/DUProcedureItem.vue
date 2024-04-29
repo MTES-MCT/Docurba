@@ -3,13 +3,12 @@
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
         <span v-if="procedure.name">
-          <!-- (porté par {{}}) -->
           {{ procedure.name }}
         </span>
         <div v-else>
           <span>{{ procedure | docType }} - </span>
           <span v-if="procedure.current_perimetre.length === 1"> {{ procedure.current_perimetre[0].name + ' (' + procedure.current_perimetre[0].inseeCode + ')' }}</span>
-          <span v-else>{{ collectivite.intitule }}</span>
+          <span v-else>{{ collectivite.intercommunalite.intitule }}</span>
           <span v-if="procedure.numero">numéro {{ procedure.numero }}</span>
         </div>
 

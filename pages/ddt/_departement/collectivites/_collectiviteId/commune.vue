@@ -24,7 +24,7 @@
       <v-row>
         <v-col cols="12">
           <v-alert type="info">
-            Date du dernier extract de données Sudocuh vers Docurba: <b>11 Janvier 2024</b>
+            L'extract de données Sudocuh vers Docurba est désormais journalier, les données sur Docurba sont donc à jour.
           </v-alert>
         </v-col>
         <v-col cols="12">
