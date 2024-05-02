@@ -149,7 +149,13 @@ export default {
       this.beforeLeaveDialog.visible = true
     } else { next() }
   },
-  layout: 'ddt',
+  layout ({ $user }) {
+    if ($user?.profile?.poste === 'ddt' || $user?.profile?.poste === 'dreal') {
+      return 'ddt'
+    } else {
+      return 'default'
+    }
+  },
   data () {
     return {
       icons: {
