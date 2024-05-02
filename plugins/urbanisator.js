@@ -34,7 +34,7 @@ export default ({ $supabase, $dayjs }, inject) => {
 
       procedures.forEach((procedure) => {
         procedure.procedures_perimetres = procedure.procedures_perimetres.map((p) => {
-          const collectivite = collectivites.find(c => c.code === p.collectivite_code)
+          const collectivite = collectivites.find(c => c.code === p.collectivite_code && c.type === p.collectivite_type)
           return Object.assign({}, collectivite, p)
         })
 

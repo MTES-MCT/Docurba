@@ -5,12 +5,11 @@
         v-model="tab"
         color="primary"
       >
-        <v-tab v-if="isEpci">
+        <v-tab>
           DU intercommunaux
         </v-tab>
         <v-tab>
-          <span v-if="isEpci">DU communaux</span>
-          <span v-else>PLU/PLUi</span>
+          <span>DU communaux</span>
         </v-tab>
         <v-tab>
           SCoT
@@ -22,7 +21,7 @@
       </v-tabs>
 
       <v-tabs-items v-model="tab" :class="{beige: !isPublic}">
-        <v-tab-item v-if="isEpci">
+        <v-tab-item>
           <template v-if="DUInter.length > 0">
             <DashboardDUItem
               v-for="(procedure,i) in DUInter"
@@ -124,16 +123,11 @@ export default {
     isLoaded () {
       return !!this.procedures && !!this.collectivite
     },
-    isEpci () {
-      return this.collectivite.type !== 'Commune'
-    },
     DUCommunaux () {
-      if (this.isEpci) {
-        return this.procedures?.filter(p => p.current_perimetre.length === 1)
-      } else { return this.procedures }
+      return this.procedures?.filter(p => p.procedures_perimetres.length === 1)
     },
     DUInter () {
-      return this.procedures?.filter(p => p.current_perimetre.length > 1)
+      return this.procedures?.filter(p => p.procedures_perimetres.length > 1)
     }
   }
 }
