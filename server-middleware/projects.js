@@ -41,7 +41,7 @@ app.post('/notify/shared', (req, res) => {
             project: sharing.project_id,
             firstname: admin.firstname || '',
             lastname: admin.lastname || '',
-            dept: admin.dept,
+            dept: admin.departement,
             collectivite: collectivite.intitule
           }
         }).then(async () => {
