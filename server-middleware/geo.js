@@ -44,8 +44,6 @@ app.get('/collectivites', (req, res) => {
 })
 
 app.get('/collectivites/:code', (req, res) => {
-  console.log('get /collectivites', req.params.code)
-
   if (req.params.code.length > 5) {
     const intercommunalite = geo.getIntercommunalite(req.params.code)
     if (intercommunalite) {
