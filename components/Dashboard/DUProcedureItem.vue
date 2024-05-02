@@ -7,8 +7,8 @@
           {{ procedure.name }}
         </span>
         <div v-else>
-          <span>{{ procedure | docType }} - </span>
-          <span>{{ displayedIntitule }}</span>
+          <span>{{ procedure | docType }}</span>
+          <span v-if="displayedIntitule"> - {{ displayedIntitule }}</span>
           <span v-if="procedure.numero">numéro {{ procedure.numero }}</span>
         </div>
 
@@ -142,6 +142,8 @@
   </v-container>
 </template>
 <script>
+import axios from 'axios'
+
 import { mdiArrowRight } from '@mdi/js'
 import BaseDUProcedureItem from '@/mixins/BaseDUProcedureItem.js'
 
@@ -166,19 +168,31 @@ export default {
       icons: {
         mdiArrowRight
       },
-      dialog: false
+      dialog: false,
+      displayedCollectivite: null
     }
   },
   computed: {
-    displayedCollectivite () {
-      return this.procedure.procedures_perimetres.length === 1 ? this.procedure.procedures_perimetres[0] : this.collectivite
-    },
     displayedIntitule () {
+      if (!this.displayedCollectivite) { return '' }
+
       if (this.displayedCollectivite.collectivite_type?.includes('COM')) {
         const type = this.displayedCollectivite.collectivite_type === 'COMD' ? ' COMD' : ''
         return `${this.displayedCollectivite.intitule} (${this.displayedCollectivite.code}${type})`
       } else {
         return this.displayedCollectivite.intitule
+      }
+    }
+  },
+  async mounted () {
+    if (this.procedure.procedures_perimetres.length === 1) {
+      this.displayedCollectivite = this.procedure.procedures_perimetres[0]
+    } else {
+      try {
+        const { data: collectiviteData } = await axios(`/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}`)
+        this.displayedCollectivite = collectiviteData
+      } catch (err) {
+        console.log('no coll', this.procedure, this.collectivite)
       }
     }
   },

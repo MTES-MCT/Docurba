@@ -18,7 +18,7 @@
           </v-btn>
         </v-col>
         <v-spacer />
-        <v-col>
+        <!-- <v-col>
           <v-autocomplete
             v-model="searchedSectionPath"
             :loading="opening"
@@ -39,7 +39,7 @@
               </v-list-item-content>
             </template>
           </v-autocomplete>
-        </v-col>
+        </v-col> -->
       </v-row>
       <v-row>
         <v-col v-for="section in sections" :key="section.url" cols="12">
