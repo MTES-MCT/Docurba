@@ -20,14 +20,13 @@ try {
 
   // Step 0 (Optionnal)
   // await clearDev(CONFIG.PG_DEV_CONFIG)
-  // Step 1 - Charge un dump particulier venant de l'export de Andy sur notre storage
-  // '2024_03_03_dump'
-  // await loadDump(CONFIG.PG_DEV_CONFIG, '2024_04_19_dump')
-  // // Step 2 - Créer les tables intermédiaires d'aggregation depuis la donnée Sudocuh
+  // // Step 1 - Charge un dump particulier venant de l'export de Andy sur notre storage
+  // await loadDump(CONFIG.PG_DEV_CONFIG, '2024_05_01_dump')
+  // // // Step 2 - Créer les tables intermédiaires d'aggregation depuis la donnée Sudocuh
   // await createSudocuProcessedTables(CONFIG.PG_DEV_CONFIG)
-  // // Replique un schema de test (Optionnal)
+  // // // Replique un schema de test (Optionnal)
   // await createOriginalSchema(CONFIG.PG_DEV_CONFIG)
-  // // // Step 3 - Désactive du trigger de changement de status sur nouveaux events
+  // // // // Step 3 - Désactive du trigger de changement de status sur nouveaux events
   // await handleTrigger(CONFIG.PG_PROD_CONFIG, 'disable')
 
   // /// /////////////////////////////////////////////////////////////
@@ -39,13 +38,13 @@ try {
   // // Step 5 - Migre les nouvelles données SCoT entrées dans Sudocuh dans Docurba
   // await sudocuhScotToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_PROD_CONFIG)
   // // Step 6 - Définition des status de procédures au niveau event
-  // await setAllStatus(CONFIG.PG_PROD_CONFIG)
+  await setAllStatus(CONFIG.PG_PROD_CONFIG)
   // // Step 6(Bis) - Définition des status de procédures en fonction des périmètres
-  // await updatePerimeterStatus(CONFIG.PG_PROD_CONFIG)
+  await updatePerimeterStatus(CONFIG.PG_PROD_CONFIG)
   // // Step 7 - Ralliement des communes fusionnées
   await updateComDPerimeter(CONFIG.PG_PROD_CONFIG)
   // // Step 8 - Réactivation du trigger de changement de status sur nouveaux events
-  // await handleTrigger(CONFIG.PG_PROD_CONFIG, 'enable')
+  await handleTrigger(CONFIG.PG_PROD_CONFIG, 'enable')
 } catch (error) {
   console.log(error)
 }

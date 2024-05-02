@@ -296,7 +296,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
     .flat()
 
   // TODO: Voir le cas ou on part de 0, il y a surement de la pagination
-  const { data: perimetersInserted, error } = await supabase.from('procedures_perimetres').insert(formattedPerimetre).select()
+  const { data: perimetersInserted, error } = await supabase.from('procedures_perimetres').upsert(formattedPerimetre, { onConflict: 'collectivite_code,procedure_id', ignoreDuplicates: true }).select()
   if (error) { console.log(error) }
   console.log("Added nb perimeter: ", perimetersInserted?.length )
   if (perimetersInserted?.length > 0) {

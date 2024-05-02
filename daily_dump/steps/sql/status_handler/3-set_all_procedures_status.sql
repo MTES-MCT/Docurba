@@ -15,6 +15,7 @@ DECLARE
   execution_time interval;
   i INT := 0;
 BEGIN
+RAISE LOG 'Processing One shot events';
   UPDATE procedures
     SET status = null;
 
