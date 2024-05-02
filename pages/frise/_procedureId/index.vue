@@ -230,18 +230,12 @@ export default
 
       console.log('this.events: ', this.events)
       if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
-      // Si on ne trouve pas le lastEventType, on cherche sur les precedents
-      let lastEventType
-      for (const event of this.events) {
-        const matchingEventSugg = filteredDocumentEvents.find(eventSugg => event.type === eventSugg.name)
-        if (matchingEventSugg) {
-          lastEventType = matchingEventSugg
-          break
-        }
-      }
-      if (!lastEventType) { return filteredDocumentEvents[0] }
+      const lastEventType = this.events[0]
+      const lastEventOrder = this.documentEvents.find(e => e.name === lastEventType.type)
+      console.log('lastEventType: ', lastEventType, ' lastEventOrder: ', lastEventOrder)
+      if (!lastEventOrder) { return filteredDocumentEvents[0] }
 
-      return filteredDocumentEvents.find(e => _.gt(e.order, lastEventType.order))
+      return filteredDocumentEvents.find(e => _.gt(e.order, lastEventOrder.order))
     },
     internalProcedureType () {
       const isIntercommunal = this.procedure.current_perimetre.length > 1
