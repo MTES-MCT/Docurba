@@ -4,12 +4,12 @@
       <!-- <v-col v-if="!clickedOnDocLink" cols="12"> -->
       <v-col cols="12">
         <v-alert type="info">
-          Découvrez les nouveautés de Docurba, rejoignez-nous pour le Flash Info.
+          Regardez le replay du Flash info du 18 avril :
           <a
             class="white--text"
-            href="https://app.livestorm.co/mte/flash-info-de-docurba?type=detailed"
+            href="https://pad.incubateur.net/s/A_BpJ3_NH"
             target="_blank"
-          >Détails et inscriptions ici.</a>
+          >zoom sur les nouveautés et amélioration à venir.</a>
         </v-alert>
       </v-col>
       <v-col cols="12">

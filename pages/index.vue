@@ -5,7 +5,14 @@
         <h1 class="text-center">
           Docurba vous accompagne dans l'élaboration de vos <LandingWordSlider />
         </h1>
-
+        <v-alert type="info">
+          Regardez le replay du Flash info du 18 avril :
+          <a
+            class="white--text"
+            href="https://pad.incubateur.net/s/A_BpJ3_NH"
+            target="_blank"
+          >zoom sur les nouveautés et amélioration à venir.</a>
+        </v-alert>
         <div class="search">
           <p>Pour commencer, accédez aux ressources de votre territoire :</p>
           <LandingSearchForm />

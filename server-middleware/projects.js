@@ -38,7 +38,7 @@ app.post('/notify/shared', (req, res) => {
           to: sharing.user_email,
           template_id: sharing.role === 'write' ? 'd-bdd5ef31891546bcb6401fb6cdf2d391' : 'd-daf95559ce09481ca8d42d6e026fb9f3',
           dynamic_template_data: {
-            project: 'projet-' + sharing.project_id,
+            project: sharing.project_id,
             firstname: admin.firstname || '',
             lastname: admin.lastname || '',
             dept: admin.dept,
