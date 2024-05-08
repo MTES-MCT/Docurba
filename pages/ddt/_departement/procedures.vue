@@ -115,7 +115,7 @@
                 OPPOSABLE
               </v-chip>
               <v-chip v-else-if="!item.opposable && item.procedures.status === 'opposable'" class="ml-2 font-weight-bold" small label>
-                ARCHIVE
+                ARCHIVÉ
               </v-chip>
               <v-chip v-else class="ml-2 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
                 EN COURS
@@ -125,7 +125,7 @@
 
           <!-- eslint-disable-next-line -->
             <template #item.perimetre="{ item }">
-            <DashboardPerimetreDialog :perimetre="item.perimetre" :doc-name="`${item.procedures.doc_type}${item.procedures.id}`" />
+            <DashboardPerimetreDialog :perimetre="item.perimetre" :doc-name="`${item.name}`" />
           </template>
 
           <!-- eslint-disable-next-line -->
@@ -201,7 +201,7 @@ export default {
       } else {
         porteuse = communes.find(com => com.code === e.perimetre[0].collectivite_code)
       }
-      const name = `${e.procedures.doc_type} ${porteuse?.intitule}`
+      const name = `${e.procedures.type} ${e.procedures.numero ? e.procedures.numero : ''} ${e.procedures.doc_type} ${porteuse?.intitule}`
       return { ...e, name }
     })
   },

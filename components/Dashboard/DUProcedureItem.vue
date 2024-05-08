@@ -8,7 +8,7 @@
         <div v-else>
           <span>{{ procedure | docType }} - </span>
           <span v-if="procedure.current_perimetre.length === 1"> {{ procedure.current_perimetre[0].name + ' (' + procedure.current_perimetre[0].inseeCode + ')' }}</span>
-          <span v-else>{{ collectivite.intercommunalite.intitule }}</span>
+          <span v-else>{{ collectivite.intercommunalite?.intitule }}</span>
           <span v-if="procedure.numero">numéro {{ procedure.numero }}</span>
         </div>
 

@@ -74,8 +74,19 @@
             </div>
           </template>
           <!-- eslint-disable-next-line -->
+                 <template #item.type="{ item }">
+            <div class="my-5">
+              {{ item.type }}
+            </div>
+          </template>
+          <!-- eslint-disable-next-line -->
             <template #item.procedures="{ item }">
-            <div class="my-6">
+            <div class="my-5">
+              <div v-if="!item.plans || item.plans.length === 0">
+                <v-chip class="ml-2 error--text font-weight-bold" small label color="error-light">
+                  RNU
+                </v-chip>
+              </div>
               <div v-for="(plan, index) in item.plans" :key="plan.id" class="mb-4">
                 <template v-if="index < 2">
                   <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${plan.id}`">
@@ -87,7 +98,7 @@
                     OPPOSABLE
                   </v-chip>
                   <v-chip v-else-if="!plan.opposable && plan.status === 'opposable'" class="ml-2 font-weight-bold" small label>
-                    ARCHIVE
+                    ARCHIVÉ
                   </v-chip>
                   <v-chip v-else class="ml-2 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
                     EN COURS
@@ -101,6 +112,9 @@
           </template>
           <!-- eslint-disable-next-line -->
           <template #item.scots="{ item }">
+            <div v-if="!item.scots || item.scots.length === 0" class="my-6">
+              -
+            </div>
             <div v-for="scot in item.scots" :key="scot.id">
               {{ scot.doc_type }} &nbsp;
               {{ scot.id }}
@@ -197,5 +211,9 @@ export default {
     font-size: 14px !important;
     color: #000 !important;
   }
+   tbody tr td{
+    vertical-align: top !important;
+   }
 }
+
 </style>
