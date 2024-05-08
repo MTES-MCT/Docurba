@@ -179,9 +179,8 @@ export default {
     this.clickedOnDocLink = (localStorage.getItem('docVersion') === docVersion)
 
     const { data: collectivites } = await axios.get(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
-    console.log('collec: ', collectivites)
     this.epcis = collectivites.groupements.map(e => ({ ...e, path: `/ddt/${e.departementCode}/collectivites/${e.code}/epci` }))
-    this.communes = collectivites.communes.map(e => ({ ...e, path: `/ddt/${e.departementCode}/collectivites/${e.code}/commune` }))
+    this.communes = collectivites.communes.map(e => ({ ...e, path: `/ddt/${e.departementCode}/collectivites/${e.codeParent || e.code}/commune` }))
   },
   methods: {
     customFilter (value, search, item) {
