@@ -2,7 +2,7 @@
   <v-container v-if="epcis && communes">
     <v-row>
       <!-- <v-col v-if="!clickedOnDocLink" cols="12"> -->
-      <v-col cols="12">
+      <!-- <v-col cols="12">
         <v-alert type="info">
           Regardez le replay du Flash info du 18 avril :
           <a
@@ -11,7 +11,7 @@
             target="_blank"
           >zoom sur les nouveautés et amélioration à venir.</a>
         </v-alert>
-      </v-col>
+      </v-col> -->
       <v-col cols="12">
         <h1>Mes collectivités - {{ $route.params.departement }}</h1>
       </v-col>
