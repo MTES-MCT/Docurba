@@ -211,7 +211,9 @@ export default
       })
     },
     attachments () {
-      return this.enrichedEvents.map(e => e.attachements).flat()
+      return this.enrichedEvents.map(e => e.attachements).filter((attachement) => {
+        return !!attachement
+      }).flat()
     },
     backToCollectivite () {
       if (this.$user.id && this.$user.profile && this.$user.profile.side === 'etat') {
@@ -247,10 +249,6 @@ export default
         if (isIntercommunal && this.internalDocType !== 'CC') { return 'ppi' } else { return 'pp' }
       }
       return 'aucun'
-    },
-    collectiviteId () {
-      const collecId = this.procedure.current_perimetre.length === 1 ? this.procedure.current_perimetre[0].inseeCode : this.procedure.collectivite_porteuse_id
-      return collecId
     }
   },
   async mounted () {
@@ -263,12 +261,27 @@ export default
         })
       }
 
-      const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('*').eq('id', this.$route.params.procedureId)
+      const {
+        data: procedure,
+        error: errorProcedure
+      } = await this.$supabase.from('procedures').select('*, procedures_perimetres(*)')
+        .eq('id', this.$route.params.procedureId)
+
+      if (errorProcedure) { throw errorProcedure }
+
       this.procedure = procedure[0]
 
-      this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.collectiviteId}` })).data
-      if (errorProcedure) { throw errorProcedure }
+      const perimetre = this.procedure.procedures_perimetres.filter(c => c.type === 'COM')
+      const collectiviteId = perimetre.length === 1 ? perimetre[0].code : this.procedure.collectivite_porteuse_id
+
+      const { data: collectivite } = await axios({
+        url: `/api/geo/collectivites/${collectiviteId}`
+      })
+
+      this.collectivite = collectivite
+
       this.events = await this.getEvents()
+
       this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -277,7 +290,7 @@ export default
   },
   methods: {
     addSubProcedure () {
-      this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectiviteId}/procedure/add?secondary_id=${this.$route.params.procedureId}`)
+      this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/procedure/add?secondary_id=${this.$route.params.procedureId}`)
     },
     scrollToStructurant (eventId) {
       if (eventId) {
@@ -295,6 +308,7 @@ export default
         this.$emit('delete', idProcedure)
         this.dialog = false
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error)
       }
     },
