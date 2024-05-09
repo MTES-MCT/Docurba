@@ -1,24 +1,23 @@
 <template>
-  <LayoutsCustomApp>
-    <v-container v-if="!loading">
-      <v-row>
-        <v-col cols="12">
-          <h1>
-            {{ title }}
-          </h1>
-          <h2 v-if="collectivite" class="text-subtitle">
-            {{ collectivite.intitule }} ({{ collectivite.code }})
-          </h2>
-        </v-col>
-      </v-row>
-      <v-row align="center">
-        <v-col cols="auto">
-          <v-btn :loading="loadingPdf" color="primary" outlined @click="downloadPdf">
-            Télécharger en PDF
-          </v-btn>
-        </v-col>
-        <v-spacer />
-        <!-- <v-col>
+  <v-container v-if="!loading">
+    <v-row>
+      <v-col cols="12">
+        <h1>
+          {{ title }}
+        </h1>
+        <h2 v-if="collectivite" class="text-subtitle">
+          {{ collectivite.intitule }} ({{ collectivite.code }})
+        </h2>
+      </v-col>
+    </v-row>
+    <v-row align="center">
+      <v-col cols="auto">
+        <v-btn :loading="loadingPdf" color="primary" outlined @click="downloadPdf">
+          Télécharger en PDF
+        </v-btn>
+      </v-col>
+      <v-spacer />
+      <!-- <v-col>
           <v-autocomplete
             v-model="searchedSectionPath"
             :loading="opening"
@@ -40,20 +39,19 @@
             </template>
           </v-autocomplete>
         </v-col> -->
-      </v-row>
-      <v-row>
-        <v-col v-for="section in sections" :key="section.url" cols="12">
-          <PACSectionCard
-            :section="section"
-            :git-ref="gitRef"
-            :project="project"
-            @opened="opening = false"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-    <VGlobalLoader v-else />
-  </LayoutsCustomApp>
+    </v-row>
+    <v-row>
+      <v-col v-for="section in sections" :key="section.url" cols="12">
+        <PACSectionCard
+          :section="section"
+          :git-ref="gitRef"
+          :project="project"
+          @opened="opening = false"
+        />
+      </v-col>
+    </v-row>
+  </v-container>
+  <VGlobalLoader v-else />
 </template>
 
 <script>
