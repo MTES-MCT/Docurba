@@ -87,7 +87,7 @@ async function magicLinkSignIn ({ email, redirectBasePath }) {
 async function getRedirectPath (emailProfile) {
   const { data: rawProfile, error: errorProfile } = await supabase.from('profiles').select().eq('email', emailProfile)
   if (errorProfile) { throw errorProfile }
-  if (rawProfile.length < 1) { throw new Error("Nous n'avons pas trouvé d'utilisateur enregistrer avec cet adresse email. Veuillez créer un compte.") }
+  if (rawProfile.length < 1) { throw new Error("Nous n'avons pas trouvé d'utilisateur enregistré avec cette adresse email. Veuillez créer un compte.") }
   const profile = rawProfile[0]
   return `/collectivites/${profile.collectivite_id}?isEpci=${profile.collectivite_id.length > 5}`
 }

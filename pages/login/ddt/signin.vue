@@ -33,9 +33,6 @@
                     <v-col cols="12">
                       <InputsPasswordTextField v-model="password" />
                     </v-col>
-                    <!-- <v-col v-if="error && error.status === 400" cols="12">
-                      <span class="error--text">Email ou mot de passe incorrecte.</span>
-                    </v-col> -->
                     <v-spacer />
                     <v-col cols="auto" class="pt-0">
                       <a href="#" class="primary--text" @click="forgotPassword = true">Mot de passe oublié ? Cliquez ici</a>
@@ -144,7 +141,7 @@ export default {
         if (error) { throw error }
       } catch (error) {
         console.log('error: ', error)
-        this.error = 'Email ou mot de passe incorrecte.'
+        this.error = 'Email ou mot de passe incorrect.'
       }
     },
     async sendResetPassword () {

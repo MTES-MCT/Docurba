@@ -112,12 +112,24 @@ module.exports = {
       return intercommunalites
     }
   },
+  getMembersOfMembers (intercommunalite) {
+    intercommunalite.membres.forEach((membre) => {
+      if (membre.code.length > 5) {
+        const interco = this.getIntercommunalite(membre.code)
+        if (interco) {
+          intercommunalite.membres.push(...interco.membres)
+        }
+      }
+    })
+  },
   getIntercommunalite (codeSiren) {
     const intercommunalite = intercommunalites.find((c) => {
       return c.code === codeSiren
     })
 
     if (intercommunalite) {
+      this.getMembersOfMembers(intercommunalite)
+
       const departement = Object.assign({}, departements.find(d => d.code === intercommunalite.departementCode))
       delete departement.communes
       delete departement.region
