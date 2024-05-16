@@ -7,7 +7,7 @@
           <v-btn outlined color="primary" class="mr-2">
             Exporter les procédures
           </v-btn>
-          <v-btn depressed color="primary">
+          <v-btn depressed color="primary" :to="`/ddt/${$route.params.departement}/procedures/add-choose-collectivite`">
             Nouvelle procédure
           </v-btn>
         </div>
@@ -130,7 +130,8 @@
 
           <!-- eslint-disable-next-line -->
           <template #item.prescription="{ item }">
-            <span class="mention-grey--text">{{ item.prescription?.date_iso }}</span>
+
+            <span class="mention-grey--text">{{ item.prescription?.date_iso ? item.prescription?.date_iso : '-' }}</span>
           </template>
 
           <!-- eslint-disable-next-line -->
@@ -175,7 +176,7 @@ export default {
     procedures () {
       return this.rawProcedures?.map((e) => {
         if (e.prescription?.date_iso) {
-          e.prescription.date_iso = e.date_iso ? dayjs(e.date_iso).format('DD/MM/YY') : null
+          e.prescription.date_iso = e.prescription.date_iso ? dayjs(e.prescription.date_iso).format('DD/MM/YY') : null
         }
         return e
       }).filter((e) => {
@@ -189,21 +190,25 @@ export default {
     }
   },
   async mounted () {
-    const promProcedures = await this.$urbanisator.getProceduresForDept(this.$route.params.departement)
-    const rawReferentiel = fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
+    try {
+      const promProcedures = await this.$urbanisator.getProceduresForDept(this.$route.params.departement)
+      const rawReferentiel = fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
 
-    const [rawProcedures, referentiel] = await Promise.all([promProcedures, rawReferentiel])
-    const { communes, groupements } = await referentiel.json()
-    this.rawProcedures = rawProcedures.map((e) => {
-      let porteuse = null
-      if (e.perimetre.length > 1) {
-        porteuse = groupements.find(grp => grp.code === e.procedures.collectivite_porteuse_id)
-      } else {
-        porteuse = communes.find(com => com.code === e.perimetre[0].collectivite_code)
-      }
-      const name = `${e.procedures.type} ${e.procedures.numero ? e.procedures.numero : ''} ${e.procedures.doc_type} ${porteuse?.intitule}`
-      return { ...e, name }
-    })
+      const [rawProcedures, referentiel] = await Promise.all([promProcedures, rawReferentiel])
+      const { communes, groupements } = await referentiel.json()
+      this.rawProcedures = rawProcedures.map((e) => {
+        let porteuse = null
+        if (e.perimetre.length > 1) {
+          porteuse = groupements.find(grp => grp.code === e.procedures.collectivite_porteuse_id)
+        } else {
+          porteuse = communes.find(com => com.code === e.perimetre[0].collectivite_code)
+        }
+        const name = `${e.procedures.type} ${e.procedures.numero ? e.procedures.numero : ''} ${e.procedures.doc_type} ${porteuse?.intitule}`
+        return { ...e, name }
+      })
+    } catch (error) {
+      console.log('ERROR: ', error)
+    }
   },
   methods: {
     customFilter (value, search, item) {

@@ -27,6 +27,7 @@
           :items-per-page="10"
           class="elevation-1 pa-8 collectivites-dt"
           :custom-filter="customFilter"
+          :custom-sort="customSort"
           :search="search"
           :loading="!collectivites"
           loading-text="Chargement des collectivités..."
@@ -154,8 +155,8 @@ export default {
       return [
         { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '30%' },
         { text: 'Type', align: 'start', value: 'type', filterable: true, width: '10%' },
-        { text: 'Procédures', value: 'procedures', filterable: false, width: '30%' },
-        { text: 'SCOTs', value: 'scots', filterable: false, width: '30%' }
+        { text: 'Procédures', value: 'procedures', filterable: false, sortable: false, width: '30%' },
+        { text: 'SCOTs', value: 'scots', filterable: false, sortable: false, width: '30%' }
       ]
     },
     collectivites () {
@@ -196,6 +197,19 @@ export default {
       const normalizedSearch = search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
 
       return normalizedValue.includes(normalizedSearch)
+    },
+    customSort (items, index, isDesc) {
+      items.sort((a, b) => {
+        if (index[0] === 'name' || index[0] === 'type') {
+          if (!isDesc[0]) {
+            return a.code.toLowerCase().localeCompare(b.code.toLowerCase())
+          } else {
+            return b.code.toLowerCase().localeCompare(a.code.toLowerCase())
+          }
+        }
+        return true
+      })
+      return items
     },
     showClose () {
       this.clickedOnDocLink = true

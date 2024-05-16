@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { groupBy, uniqBy, mapValues, uniq } from 'lodash'
+import { groupBy, uniqBy, mapValues, uniq, orderBy, maxBy } from 'lodash'
 import axios from 'axios'
 
 export default ({ $supabase, $dayjs }, inject) => {
@@ -47,14 +47,16 @@ export default ({ $supabase, $dayjs }, inject) => {
       const { data } = await $supabase.from('procedures_perimetres')
         .select(select)
         .eq('departement', departementCode)
-        // .order('date_iso', { referencedTable: 'procedures.doc_frise_events', ascending: false })
+      // .order('doc_frise_events(date_iso)', { ascending: false })
       const groupedProceduresPerim = groupBy(data, e => e.procedure_id)
       const procedures = data.map((e) => {
-        const lastEvent = e.procedures.doc_frise_events[0]
+        const lastEvent = maxBy(e.procedures.doc_frise_events, 'date_iso')
         const prescriptionDate = e.procedures.doc_frise_events.find(y => y.code === 'PRES')
         return { ...e, perimetre: groupedProceduresPerim[e.procedure_id], last_event: lastEvent, prescription: prescriptionDate }
       })
-      return uniqBy(procedures, e => e.procedure_id)
+      const uniqProcedures = uniqBy(procedures, e => e.procedure_id)
+      const orderedProcedures = orderBy(uniqProcedures, e => e.last_event?.date_iso, ['desc'])
+      return orderedProcedures
     },
     async getCommuneProcedures (inseeCode) {
       const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*').eq('collectivite_code', inseeCode)

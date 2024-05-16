@@ -294,10 +294,11 @@ export default
     },
     async archiveProcedure (idProcedure) {
       try {
-        const { error } = await this.$supabase.from('procedures').update({ archived: true }).eq('id', idProcedure)
+        const { error } = await this.$supabase.from('procedures').delete().eq('id', idProcedure)
         if (error) { throw error }
         this.$emit('delete', idProcedure)
         this.dialog = false
+        this.$router.push(-1)
       } catch (error) {
         console.log(error)
       }
