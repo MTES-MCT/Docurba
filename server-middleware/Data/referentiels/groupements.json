@@ -211077,5 +211077,375 @@
 			}
 		],
 		"groupements": []
-	}
+	},
+  {
+    "type": "EPT",
+    "intitule": "Vallée Sud-Grand Paris",
+    "siren": "200057966",
+    "code": "200057966",
+    "regionCode": "11",
+    "departementCode": "92",
+    "competencePLU": false,
+    "competenceSCOT": false,
+    "membres": [
+      {
+        "type": "COM",
+        "code": "92002",
+        "intitule": "Antony"
+      },
+      {
+        "type": "COM",
+        "code": "92007",
+        "intitule": "Bagneux"
+      },
+      {
+        "type": "COM",
+        "code": "92014",
+        "intitule": "Bourg-la-Reine"
+      },
+      {
+        "type": "COM",
+        "code": "92019",
+        "intitule": "Châtenay-Malabry"
+      },
+      {
+        "type": "COM",
+        "code": "92020",
+        "intitule": "Châtillon"
+      },
+      {
+        "type": "COM",
+        "code": "92023",
+        "intitule": "Clamart"
+      },
+      {
+        "type": "COM",
+        "code": "92032",
+        "intitule": "Fontenay-aux-Roses"
+      },
+      {
+        "type": "COM",
+        "code": "92046",
+        "intitule": "Malakoff"
+      },
+      {
+        "type": "COM",
+        "code": "92049",
+        "intitule": "Montrouge"
+      },
+      {
+        "type": "COM",
+        "code": "92060",
+        "intitule": "Le Plessis-Robinson"
+      },
+      {
+        "type": "COM",
+        "code": "92071",
+        "intitule": "Sceaux"
+      }
+    ],
+    "groupements": []
+  },
+  {
+    "type": "EPT",
+    "intitule": "Grand Paris Seine Ouest",
+    "siren": "200057974",
+    "code": "200057974",
+    "regionCode": "11",
+    "departementCode": "92",
+    "competencePLU": false,
+    "competenceSCOT": false,
+    "membres": [
+      {
+        "type": "COM",
+        "code": "92012",
+        "intitule": "Boulogne-Billancourt"
+      },
+      {
+        "type": "COM",
+        "code": "92022",
+        "intitule": "Chaville"
+      },
+      {
+        "type": "COM",
+        "code": "92040",
+        "intitule": "Issy-les-Moulineaux"
+      },
+      {
+        "type": "COM",
+        "code": "92047",
+        "intitule": "Marnes-la-Coquette"
+      },
+      {
+        "type": "COM",
+        "code": "92048",
+        "intitule": "Meudon"
+      },
+      {
+        "type": "COM",
+        "code": "92072",
+        "intitule": "Sèvres"
+      },
+      {
+        "type": "COM",
+        "code": "92075",
+        "intitule": "Vanves"
+      },
+      {
+        "type": "COM",
+        "code": "92077",
+        "intitule": "Ville-d'Avray"
+      }
+    ],
+    "groupements": []
+  },
+  {
+    "type": "EPT",
+    "intitule": "Paris Ouest La Défense",
+    "siren": "200057982",
+    "code": "200057982",
+    "regionCode": "11",
+    "departementCode": "92",
+    "competencePLU": false,
+    "competenceSCOT": false,
+    "membres": [
+      {
+        "type": "COM",
+        "code": "92026",
+        "intitule": "Courbevoie"
+      },
+      {
+        "type": "COM",
+        "code": "92033",
+        "intitule": "Garches"
+      },
+      {
+        "type": "COM",
+        "code": "92035",
+        "intitule": "La Garenne-Colombes"
+      },
+      {
+        "type": "COM",
+        "code": "92044",
+        "intitule": "Levallois-Perret"
+      },
+      {
+        "type": "COM",
+        "code": "92050",
+        "intitule": "Nanterre"
+      },
+      {
+        "type": "COM",
+        "code": "92051",
+        "intitule": "Neuilly-sur-Seine"
+      },
+      {
+        "type": "COM",
+        "code": "92062",
+        "intitule": "Puteaux"
+      },
+      {
+        "type": "COM",
+        "code": "92063",
+        "intitule": "Rueil-Malmaison"
+      },
+      {
+        "type": "COM",
+        "code": "92064",
+        "intitule": "Saint-Cloud"
+      },
+      {
+        "type": "COM",
+        "code": "92073",
+        "intitule": "Suresnes"
+      },
+      {
+        "type": "COM",
+        "code": "92076",
+        "intitule": "Vaucresson"
+      }
+    ],
+    "groupements": []
+  },
+  {
+    "type": "EPT",
+    "intitule": "Boucle Nord de Seine",
+    "siren": "200057990",
+    "code": "200057990",
+    "regionCode": "11",
+    "departementCode": "92",
+    "competencePLU": false,
+    "competenceSCOT": false,
+    "membres": [
+      {
+        "type": "COM",
+        "code": "92004",
+        "intitule": "Asnières-sur-Seine"
+      },
+      {
+        "type": "COM",
+        "code": "92009",
+        "intitule": "Bois-Colombes"
+      },
+      {
+        "type": "COM",
+        "code": "92024",
+        "intitule": "Clichy"
+      },
+      {
+        "type": "COM",
+        "code": "92025",
+        "intitule": "Colombes"
+      },
+      {
+        "type": "COM",
+        "code": "92036",
+        "intitule": "Gennevilliers"
+      },
+      {
+        "type": "COM",
+        "code": "92078",
+        "intitule": "Villeneuve-la-Garenne"
+      },
+      {
+        "type": "COM",
+        "code": "95018",
+        "intitule": "Argenteuil"
+      }
+    ],
+    "groupements": []
+  },
+  {
+    "type": "EPT",
+    "intitule": "Grand-Orly Seine Bièvre",
+    "siren": "200058014",
+    "code": "200058014",
+    "regionCode": "11",
+    "departementCode": "94",
+    "competencePLU": false,
+    "competenceSCOT": false,
+    "membres": [
+      {
+        "type": "COM",
+        "code": "91027",
+        "intitule": "Athis-Mons"
+      },
+      {
+        "type": "COM",
+        "code": "91326",
+        "intitule": "Juvisy-sur-Orge"
+      },
+      {
+        "type": "COM",
+        "code": "91432",
+        "intitule": "Morangis"
+      },
+      {
+        "type": "COM",
+        "code": "91479",
+        "intitule": "Paray-Vieille-Poste"
+      },
+      {
+        "type": "COM",
+        "code": "91589",
+        "intitule": "Savigny-sur-Orge"
+      },
+      {
+        "type": "COM",
+        "code": "91687",
+        "intitule": "Viry-Châtillon"
+      },
+      {
+        "type": "COM",
+        "code": "94001",
+        "intitule": "Ablon-sur-Seine"
+      },
+      {
+        "type": "COM",
+        "code": "94003",
+        "intitule": "Arcueil"
+      },
+      {
+        "type": "COM",
+        "code": "94016",
+        "intitule": "Cachan"
+      },
+      {
+        "type": "COM",
+        "code": "94021",
+        "intitule": "Chevilly-Larue"
+      },
+      {
+        "type": "COM",
+        "code": "94022",
+        "intitule": "Choisy-le-Roi"
+      },
+      {
+        "type": "COM",
+        "code": "94034",
+        "intitule": "Fresnes"
+      },
+      {
+        "type": "COM",
+        "code": "94037",
+        "intitule": "Gentilly"
+      },
+      {
+        "type": "COM",
+        "code": "94038",
+        "intitule": "L'Haÿ-les-Roses"
+      },
+      {
+        "type": "COM",
+        "code": "94041",
+        "intitule": "Ivry-sur-Seine"
+      },
+      {
+        "type": "COM",
+        "code": "94043",
+        "intitule": "Le Kremlin-Bicêtre"
+      },
+      {
+        "type": "COM",
+        "code": "94054",
+        "intitule": "Orly"
+      },
+      {
+        "type": "COM",
+        "code": "94065",
+        "intitule": "Rungis"
+      },
+      {
+        "type": "COM",
+        "code": "94073",
+        "intitule": "Thiais"
+      },
+      {
+        "type": "COM",
+        "code": "94074",
+        "intitule": "Valenton"
+      },
+      {
+        "type": "COM",
+        "code": "94076",
+        "intitule": "Villejuif"
+      },
+      {
+        "type": "COM",
+        "code": "94077",
+        "intitule": "Villeneuve-le-Roi"
+      },
+      {
+        "type": "COM",
+        "code": "94078",
+        "intitule": "Villeneuve-Saint-Georges"
+      },
+      {
+        "type": "COM",
+        "code": "94081",
+        "intitule": "Vitry-sur-Seine"
+      }
+    ],
+    "groupements": []
+  }
 ]

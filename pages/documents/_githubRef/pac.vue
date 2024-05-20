@@ -1,40 +1,101 @@
 <template>
-  <LayoutsCustomApp>
-    <template v-if="!loading" #headerPageTitle>
-      {{ (project && project.id ? project.name : $route.params.githubRef) | githubRef }}
-    </template>
-    <v-container v-if="!loading">
-      <v-row>
-        <v-col v-for="section in sections" :key="section.url" cols="12">
-          <PACSectionCard
-            :section="section"
-            :git-ref="gitRef"
-            :project="project"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-    <VGlobalLoader v-else />
-  </LayoutsCustomApp>
+  <v-container v-if="!loading">
+    <v-row>
+      <v-col cols="12">
+        <h1>
+          {{ title }}
+        </h1>
+        <h2 v-if="collectivite" class="text-subtitle">
+          {{ collectivite.intitule }} ({{ collectivite.code }})
+        </h2>
+      </v-col>
+    </v-row>
+    <v-row align="center">
+      <v-col cols="auto">
+        <v-btn :loading="loadingPdf" color="primary" outlined @click="downloadPdf">
+          Télécharger en PDF
+        </v-btn>
+      </v-col>
+      <v-spacer />
+      <!-- <v-col>
+          <v-autocomplete
+            v-model="searchedSectionPath"
+            :loading="opening"
+            :items="sections"
+            filled
+            label="Rechercher une section"
+            item-text="name"
+            item-value="path"
+            hide-details
+            @input="opening = true"
+          >
+            <template #item="data">
+              <v-list-item-content>
+                <v-list-item-subtitle :style="{ whiteSpace: 'normal' }">
+                  {{ data.item.parentPathSubtitle }}
+                </v-list-item-subtitle>
+                <v-list-item-title>{{ data.item.name }}</v-list-item-title>
+              </v-list-item-content>
+            </template>
+          </v-autocomplete>
+        </v-col> -->
+    </v-row>
+    <v-row>
+      <v-col v-for="section in sections" :key="section.url" cols="12">
+        <PACSectionCard
+          :section="section"
+          :git-ref="gitRef"
+          :project="project"
+          @opened="opening = false"
+        />
+      </v-col>
+    </v-row>
+  </v-container>
+  <VGlobalLoader v-else />
 </template>
 
 <script>
-import { mdiDownload } from '@mdi/js'
 import axios from 'axios'
 import orderSections from '@/mixins/orderSections.js'
 
 export default {
   mixins: [orderSections],
-  layout: 'app',
+  layout ({ $user }) {
+    if ($user?.profile?.poste === 'ddt' || $user?.profile?.poste === 'dreal') {
+      return 'ddt'
+    } else {
+      return 'default'
+    }
+  },
   data () {
     return {
-      icons: {
-        mdiDownload
-      },
       project: {},
+      collectivite: null,
       sections: [],
+      loadingPdf: false,
+      searchedSectionPath: '',
+      opening: false,
       gitRef: this.$route.params.githubRef,
       loading: true
+    }
+  },
+  computed: {
+    title () {
+      if (this.project) {
+        return this.project.name
+      }
+
+      if (this.gitRef.startsWith('dept')) {
+        return 'Trame départementale'
+      }
+      if (this.gitRef.startsWith('region')) {
+        return 'Trame régionale'
+      }
+      if (this.gitRef === 'main') {
+        return 'Trame nationale'
+      }
+
+      return null
     }
   },
   async mounted () {
@@ -43,6 +104,9 @@ export default {
 
       const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
       this.project = projects ? projects[0] : {}
+
+      const { data: collectivite } = await axios(`/api/geo/collectivites/${this.project.collectivite_id}`)
+      this.collectivite = collectivite
     }
 
     const { data: sections } = await axios({
@@ -69,6 +133,11 @@ export default {
     this.loading = false
   },
   methods: {
+    async downloadPdf () {
+      this.loadingPdf = true
+      await this.$pdf.pdfFromRef(this.gitRef, this.project)
+      this.loadingPdf = false
+    },
     filterSectionsForProject (sections) {
       const paths = this.project.PAC
 

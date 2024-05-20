@@ -4,7 +4,7 @@
       <v-col cols="12" class="d-flex align-center justify-space-between pb-0 pt-4">
         <h1>Mes Procédures</h1>
         <div>
-          <v-btn outlined color="primary" class="mr-2">
+          <v-btn outlined color="primary" class="mr-2" @click="download">
             Exporter les procédures
           </v-btn>
           <v-btn depressed color="primary" :to="`/ddt/${$route.params.departement}/procedures/add-choose-collectivite`">
@@ -146,6 +146,7 @@
 
 <script>
 import dayjs from 'dayjs'
+// import { AsyncParser } from '@json2csv/node'
 
 export default {
   name: 'ProceduresDepartement',
@@ -211,6 +212,15 @@ export default {
     }
   },
   methods: {
+    download () {
+      // const parser = new AsyncParser()
+      // const csvProcedures = await parser.parse(this.procedures).promise()
+      const a = document.createElement('a')
+      const blob = new Blob([this.procedures], { type: 'text/csv' })
+      a.href = window.URL.createObjectURL(blob)
+      a.download = 'procedures.json'
+      a.click()
+    },
     customFilter (value, search, item) {
       if (!search?.length) { return true }
 

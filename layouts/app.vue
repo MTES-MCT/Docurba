@@ -4,22 +4,16 @@
 
 <script>
 export default {
-  // watch: {
-  //   '$user.id' () {
-  //     console.log('TEST SETUP USER OK')
-  //     this.redirectUser()
-  //   }
-  // },
   async mounted () {
     const { data: roles } = await this.$supabase.from('github_ref_roles').select('*').match({
       role: 'admin',
       user_id: this.$user.id
     })
 
-    const recaptchaScript = document.createElement('script')
-    recaptchaScript.setAttribute('src', 'https://tally.so/widgets/embed.js')
-    recaptchaScript.setAttribute('async', true)
-    document.head.appendChild(recaptchaScript)
+    const tallyScript = document.createElement('script')
+    tallyScript.setAttribute('src', 'https://tally.so/widgets/embed.js')
+    tallyScript.setAttribute('async', true)
+    document.head.appendChild(tallyScript)
 
     window.TallyConfig = {
       formId: roles.length ? 'w2Bjpg' : 'wLzPGG',

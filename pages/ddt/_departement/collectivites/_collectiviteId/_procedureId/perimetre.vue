@@ -22,12 +22,12 @@
     <DashboardDdtInfosTabs />
     <v-row v-if="procedure" class="white">
       <v-col
-        v-for="town in procedure.current_perimetre"
-        :key="town.inseeCode"
+        v-for="town in procedure.procedures_perimetres"
+        :key="town.code + town.collectivite_type"
         cols="4"
       >
-        <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: $route.params.departement, collectiviteId: town.inseeCode }, query: { isEpci: false } }">
-          {{ town.name }} ({{ town.inseeCode }})
+        <nuxt-link :to="{ name: 'ddt-departement-collectivites-collectiviteId-commune', params: { departement: $route.params.departement, collectiviteId: town.code }, query: { isEpci: false } }">
+          {{ town.intitule }} ({{ town.code }} {{ town.collectivite_type }})
         </nuxt-link>
       </v-col>
     </v-row>
@@ -44,11 +44,15 @@ export default {
     }
   },
   async mounted () {
-    const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures')
+    const { data: procedures, error: errorProcedure } = await this.$supabase.from('procedures')
       .select('*')
       .eq('id', this.$route.params.procedureId)
     if (errorProcedure) { throw errorProcedure }
-    this.procedure = procedure[0]
+
+    const parsedProcedures = await this.$urbanisator.getProceduresPerimetre(procedures, this.$route.params.collectiviteId)
+    this.procedure = parsedProcedures[0]
+
+    console.log(this.procedure)
   }
 }
 </script>

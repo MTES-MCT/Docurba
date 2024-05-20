@@ -1,26 +1,84 @@
 ---
-apiPath: "/api/urba/communes/:code"
+apiPath: "/api/urba/exports/departements/:code"
 files: []
 order: 10
 visible: true
 ---
-Renvoit les données d'urbanisme d'une commune.
+Renvoit les données d'urbanisme des communes d'un departement.
 
-https://docurba.beta.gouv.fr/api/urba/communes/01001
+https://docurba.beta.gouv.fr/api/urba/exports/departements/01?csv=true
 ```json
 {
-  "region_name": "Auvergne-Rhône-Alpes",      // eq: EPCI_REGION2016
-  "interco_departement_code": "01",           // eq: EPCI_DEPT
-  "commune_departement_code": "01",           // eq: INSEE_DEPT
-  "commune_name": "L'Abergement-Clémenciat",  // eq: INSEE_COMMUNE
-  "interco_siren": "200069193",               // eq: EPCI_SIREN
-  "interco_name": "La Dombes",                // eq: EPCI_NOM
-  "interco_competence_scot": true,            // ADDED
-  "interco_competence_secteur": true,         // ADDED
-  "interco_competence_plu": false,            // ADDED
-  "commune_du_opposable": "PLU",              // eq: DU_OPPOSABLE
-  "commune_du_in_progress": "",               // ADDED
-  "state_code": "39",                         // eq: DU_CODE_ETATS
-  "state_label": "PLU approuvé"               // eq: DU_LIBELLE_ETATS
+  "epci_reg": "Code de la région de l'intercommunalité",
+  "epci_region": "Nom de la région de l'intercommunalité",
+  "epci_dept": "Code du département de l'intercommunalité",
+  "epci_departement": "Nom du département de l'intercommunalité",
+  "epci_type": "Type d'intercommunalité",
+  "epci_nom": "Nom de l'intercommunalité",
+  "epci_siren": "SIREN de l'intercommunalité",
+  "code_insee": "Code INSEE de la commune",
+  "com_nom": "Nom de la commune",
+  "collectivite_porteuse": "Code INSEE ou SIREN de la commune ou de l'intercommunalité porteuse",
+  "plan_etat_code1": "Code état 1 sudocuh",
+  "plan_libelle_etat_code1": "Libellé du code état 1 sudocuh",
+  "plan_etat_code2": "Code état 2 sudocuh",
+  "plan_libelle_etat_code2": "Libellé du code état 2 sudocuh",
+  "plan_code_etat_bcsi": "Code état BCSI",
+  "plan_libelle_code_etat_bcsi": "Libellé du code état BCSI",
+  "types_pc": "Type des procédures principales en cours",
+  "pc_num_procedure": "Identifiant sudocuh de la procédure principale en cours",
+  "pc_nb_communes": "Nombre de communes dans le périmètre de la procédure en cours",
+  "pc_type_document": "Type de document du plan en cours",
+  "pc_type_procedure": "Type de procédure en cours",
+  "pc_date_prescription": "Date ISO de la prescription en cours",
+  "pc_date_arret_projet": "Date ISO de l'arrêt de projet en cours",
+  "pc_date_pac": "Date ISO du PAC en cours",
+  "pc_date_pac_comp": "Date ISO de la complétion du PAC en cours",
+  "pc_plui_valant_scot": "Le plan en cours vaut SCOT",
+  "pc_pluih": "Le plan en cours est un PLUIH",
+  "pc_sectoriel": "Le plan en cours est sectoriel",
+  "pc_pdu_tient_lieu": "Le plan en cours tient lieu de PDU",
+  "pc_pdu_obligatoire": "Le plan en cours rend le PDU obligatoire",
+  "pa_id": "Identifiant Docurba du document opposable",
+  "pa_num_procedure": "Identifiant sudocuh de la procédure opposable",
+  "pa_nb_communes": "Nombre de communes dans le périmètre du plan opposable",
+  "pa_type_document": "Type de document du plan opposable",
+  "pa_type_procedure": "Type de procédure opposable",
+  "pa_sectoriel": "Le plan opposable est sectoriel",
+  "pa_date_prescription": "Date ISO de la prescription opposable",
+  "pa_date_arret_projet": "Date ISO de l'arrêt de projet opposable",
+  "pa_date_pac": "Date ISO du PAC opposable",
+  "pa_date_pac_comp": "Date ISO de la complétion du PAC opposable",
+  "pa_date_approbation": "Date ISO de l'approbation du plan opposable",
+  "pa_annee_prescription": "Année de la prescription opposable",
+  "pa_annee_approbation": "Année de l'approbation du plan opposable",
+  "pa_date_executoire": "Date ISO de l'exécution du plan opposable",
+  "pa_delai_approbation": "Délai d'approbation du plan opposable",
+  "pa_plui_valant_scot": "Le plan opposable vaut SCOT",
+  "pa_pluih": "Le plan opposable est un PLUIH",
+  "pa_pdu_tient_lieu": "Le plan opposable tient lieu de PDU",
+  "pa_pdu_obligatoire": "Le plan opposable rend le PDU obligatoire",
+  "proc_nb_revisions": "Nombre de révisions",
+  "proc_nb_modifications": "Nombre de modifications",
+  "q_eval_environmnt": "Évaluation environnementale du volet qualitatif du plan opposable",
+  "q_integ_loi_ene": "Intégration de la loi ENE dans le volet qualitatif du plan opposable",
+  "q_environnement": "Environnement dans le volet qualitatif du plan opposable",
+  "q_paysage": "Paysage dans le volet qualitatif du plan opposable",
+  "q_entree_ville": "Entrée de ville dans le volet qualitatif du plan opposable",
+  "q_patrimoine": "Patrimoine dans le volet qualitatif du plan opposable",
+  "q_lutte_insalubrite": "Lutte contre l'insalubrité dans le volet qualitatif du plan opposable",
+  "q_renouvel_urbain": "Renouvellement urbain dans le volet qualitatif du plan opposable",
+  "q_developpement": "Développement dans le volet qualitatif du plan opposable",
+  "q_peri_plafond_statmnt": "Périmètre plafond dans le volet qualitatif du plan opposable",
+  "q_schema_amenagement": "Schéma d'aménagement dans le volet qualitatif du plan opposable",
+  "q_schema_amenagement_ss_reg": "Sous-réglementation du schéma d'aménagement dans le volet qualitatif du plan opposable",
+  "q_stecal": "STECAL dans le volet qualitatif du plan opposable",
+  "q_nb_stecal": "Nombre de STECAL dans le volet qualitatif du plan opposable",
+  "q_densite_mini": "Densité minimale dans le volet qualitatif du plan opposable",
+  "q_aire_stationment_max": "Aire de stationnement maximale dans le volet qualitatif du plan opposable",
+  "q_comm_electronique": "Communication électronique dans le volet qualitatif du plan opposable",
+  "q_renvoi_rnu": "Renvoi au RNU dans le volet qualitatif du plan opposable",
+  "q_obligation_aire_statmnt": "Obligation d'aire de stationnement dans le volet qualitatif du plan opposable"
 }
+
 ```

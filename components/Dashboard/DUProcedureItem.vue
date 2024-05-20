@@ -6,9 +6,8 @@
           {{ procedure.name }}
         </span>
         <div v-else>
-          <span>{{ procedure | docType }} - </span>
-          <span v-if="procedure.current_perimetre.length === 1"> {{ procedure.current_perimetre[0].name + ' (' + procedure.current_perimetre[0].inseeCode + ')' }}</span>
-          <span v-else>{{ collectivite.intercommunalite?.intitule }}</span>
+          <span>{{ procedure | docType }}</span>
+          <span v-if="displayedIntitule"> - {{ displayedIntitule }}</span>
           <span v-if="procedure.numero">numéro {{ procedure.numero }}</span>
         </div>
 
@@ -60,7 +59,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="pb-0 d-flex">
-        <DashboardDUModalPerimetre v-if="procedure.initial_perimetre" :towns="procedure.initial_perimetre" />
+        <DashboardDUModalPerimetre :perimetres="procedure.procedures_perimetres" />
         <nuxt-link :to="`/frise/${procedure.id}`">
           <span class="primary--text text-decoration-underline mr-4">
             Feuille de route
@@ -129,7 +128,7 @@
         <v-divider />
       </v-col>
       <v-col cols="12" class="d-flex align-center justify-end pb-0">
-        <DashboardDUModalPerimetre v-if="procedure.initial_perimetre" :towns="procedure.initial_perimetre" />
+        <DashboardDUModalPerimetre :perimetres="procedure.procedures_perimetres" />
         <v-spacer />
         <v-btn text color="primary" :to="{name: 'frise-procedureId', params: {procedureId: procedure.id}}">
           <v-icon small color="primary" class="mr-2">
@@ -142,6 +141,8 @@
   </v-container>
 </template>
 <script>
+import axios from 'axios'
+
 import { mdiArrowRight } from '@mdi/js'
 import BaseDUProcedureItem from '@/mixins/BaseDUProcedureItem.js'
 
@@ -166,7 +167,32 @@ export default {
       icons: {
         mdiArrowRight
       },
-      dialog: false
+      dialog: false,
+      displayedCollectivite: null
+    }
+  },
+  computed: {
+    displayedIntitule () {
+      if (!this.displayedCollectivite) { return '' }
+
+      if (this.displayedCollectivite.collectivite_type?.includes('COM')) {
+        const type = this.displayedCollectivite.collectivite_type === 'COMD' ? ' COMD' : ''
+        return `${this.displayedCollectivite.intitule} (${this.displayedCollectivite.code}${type})`
+      } else {
+        return this.displayedCollectivite.intitule
+      }
+    }
+  },
+  async mounted () {
+    if (this.procedure.procedures_perimetres.length === 1) {
+      this.displayedCollectivite = this.procedure.procedures_perimetres[0]
+    } else {
+      try {
+        const { data: collectiviteData } = await axios(`/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}`)
+        this.displayedCollectivite = collectiviteData
+      } catch (err) {
+        console.log('no coll', this.procedure, this.collectivite)
+      }
     }
   },
   methods: {

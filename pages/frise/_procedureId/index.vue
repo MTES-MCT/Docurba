@@ -227,14 +227,10 @@ export default
       const filteredDocumentEvents = this.documentEvents?.filter(e => e.scope_sugg.includes(this.internalProcedureType))
       console.log('filteredDocumentEvents: ', filteredDocumentEvents)
       if (!filteredDocumentEvents) { return null }
-
-      console.log('this.events: ', this.events)
       if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
       const lastEventType = this.events[0]
       const lastEventOrder = this.documentEvents.find(e => e.name === lastEventType.type)
-      console.log('lastEventType: ', lastEventType, ' lastEventOrder: ', lastEventOrder)
       if (!lastEventOrder) { return filteredDocumentEvents[0] }
-
       return filteredDocumentEvents.find(e => _.gt(e.order, lastEventOrder.order))
     },
     internalProcedureType () {
@@ -251,10 +247,6 @@ export default
         if (isIntercommunal && this.internalDocType !== 'CC') { return 'ppi' } else { return 'pp' }
       }
       return 'aucun'
-    },
-    collectiviteId () {
-      const collecId = this.procedure.current_perimetre.length === 1 ? this.procedure.current_perimetre[0].inseeCode : this.procedure.collectivite_porteuse_id
-      return collecId
     }
   },
   async mounted () {
@@ -267,12 +259,27 @@ export default
         })
       }
 
-      const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('*').eq('id', this.$route.params.procedureId)
+      const {
+        data: procedure,
+        error: errorProcedure
+      } = await this.$supabase.from('procedures').select('*, procedures_perimetres(*)')
+        .eq('id', this.$route.params.procedureId)
+
+      if (errorProcedure) { throw errorProcedure }
+
       this.procedure = procedure[0]
 
-      this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.collectiviteId}` })).data
-      if (errorProcedure) { throw errorProcedure }
+      const perimetre = this.procedure.procedures_perimetres.filter(c => c.type === 'COM')
+      const collectiviteId = perimetre.length === 1 ? perimetre[0].code : this.procedure.collectivite_porteuse_id
+
+      const { data: collectivite } = await axios({
+        url: `/api/geo/collectivites/${collectiviteId}`
+      })
+
+      this.collectivite = collectivite
+
       this.events = await this.getEvents()
+
       this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -281,7 +288,7 @@ export default
   },
   methods: {
     addSubProcedure () {
-      this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectiviteId}/procedure/add?secondary_id=${this.$route.params.procedureId}`)
+      this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/procedure/add?secondary_id=${this.$route.params.procedureId}`)
     },
     scrollToStructurant (eventId) {
       if (eventId) {
@@ -300,6 +307,7 @@ export default
         this.dialog = false
         this.$router.push(-1)
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error)
       }
     },
