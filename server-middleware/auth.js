@@ -89,7 +89,7 @@ async function getRedirectPath (emailProfile) {
   if (errorProfile) { throw errorProfile }
   if (rawProfile.length < 1) { throw new Error("Nous n'avons pas trouvé d'utilisateur enregistré avec cette adresse email. Veuillez créer un compte.") }
   const profile = rawProfile[0]
-  return `/collectivites/${profile.collectivite_id}?isEpci=${profile.collectivite_id.length > 5}`
+  return `/collectivites/${profile.collectivite_id}`
 }
 
 app.post('/signinCollectivite', async (req, res) => {
@@ -145,7 +145,7 @@ app.post('/signupCollectivite', async (req, res) => {
     // Send email to connect
     await magicLinkSignIn({
       email: req.body.userData.email,
-      redirectBasePath: req.body.redirectTo + `/collectivites/${profile.collectivite_id}?isEpci=${profile.collectivite_id.length > 5}`
+      redirectBasePath: req.body.redirectTo + `/collectivites/${profile.collectivite_id}`
     })
 
     slack.requestCollectiviteAccess(insertedProfile[0])

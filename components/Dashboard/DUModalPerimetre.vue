@@ -27,7 +27,7 @@
               cols="4"
               class="pl-0"
             >
-              <nuxt-link :to="`/ddt/${$route.params.departement}/collectivites/${collectivite.code}/commune`">
+              <nuxt-link :to="collectiviteLink(collectivite)">
                 {{ collectivite.intitule }} ({{ collectivite.code }} {{ collectivite.collectivite_type }})
               </nuxt-link>
             </v-col>
@@ -67,6 +67,15 @@ export default {
   computed: {
     sortedCollectivites () {
       return [...this.perimetres].sort((a, b) => a.intitule?.localeCompare(b.intitule))
+    }
+  },
+  methods: {
+    collectiviteLink (collectivite) {
+      if (this.$user.profile.side === 'etat') {
+        return `/ddt/${this.$route.params.departement}/collectivites/${collectivite.code}/commune`
+      } else {
+        return `/collectivites/${collectivite.code}`
+      }
     }
   }
 }

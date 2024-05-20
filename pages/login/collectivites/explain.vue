@@ -54,7 +54,7 @@
     </v-row>
     <v-row class="mb-12">
       <v-col cols="12" class="d-flex justify-center">
-        <v-btn depressed color="primary" tile x-large :to="`/collectivites/${$route.query.collectivite_id}?isEpci=${$route.query.collectivite_id.length > 5}`">
+        <v-btn depressed color="primary" tile x-large :to="`/collectivites/${$route.query.collectivite_id}`">
           Voir ma collectivité en mode public
         </v-btn>
       </v-col>

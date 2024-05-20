@@ -112,7 +112,7 @@
             v-else-if="$user.profile.side === 'collectivite'"
             depressed
             color="primary"
-            :to="`/collectivites/${$user.profile.collectivite_id}/?isEpci=${$user.profile.collectivite_id.length > 5}`"
+            :to="`/collectivites/${$user.profile.collectivite_id}`"
           >
             Ma collectivité
           </v-btn>
