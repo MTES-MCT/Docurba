@@ -40,11 +40,11 @@ try {
   // // // Step 6 - Définition des status de procédures au niveau event
   // await setAllStatus(CONFIG.PG_PROD_CONFIG)
   // // Step 6(Bis) - Définition des status de procédures en fonction des périmètres
-  await updatePerimeterStatus(CONFIG.PG_PROD_CONFIG)
+  // await updatePerimeterStatus(CONFIG.PG_PROD_CONFIG)
   // // Step 7 - Ralliement des communes fusionnées
   await updateComDPerimeter(CONFIG.PG_PROD_CONFIG)
   // // Step 8 - Réactivation du trigger de changement de status sur nouveaux events
-  await handleTrigger(CONFIG.PG_PROD_CONFIG, 'enable')
+  // await handleTrigger(CONFIG.PG_PROD_CONFIG, 'enable')
 } catch (error) {
   console.log(error)
 }
