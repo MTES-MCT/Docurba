@@ -2,7 +2,7 @@
   <div>
     <slot>
       <div class="primary--text" style="font-weight: 500; cursor:pointer;" @click.stop="dialog = true">
-        {{ perimetre?.length }} communes
+        {{ perimetre?.length }} commune<span v-if="perimetre?.length > 1">s</span>
       </div>
     </slot>
     <v-dialog

@@ -84,25 +84,30 @@
             <template #item.procedures="{ item }">
             <div class="my-5">
               <div v-if="!item.plans || item.plans.length === 0">
-                <v-chip class="ml-2 error--text font-weight-bold" small label color="error-light">
+                <v-chip v-if="item.type === 'COM'" class="ml-2 error--text font-weight-bold" small label color="error-light">
                   RNU
                 </v-chip>
+                <span v-else>-</span>
               </div>
               <div v-for="(plan, index) in item.plans" :key="plan.id" class="mb-4">
                 <template v-if="index < 2">
                   <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${plan.id}`">
                     {{ plan.doc_type }}
-                    <!-- {{ plan.id }} -->
                   </nuxt-link>
+                  <v-chip
+                    :class="{
+                      'success-light': plan.inContextStatus === 'OPPOSABLE',
+                      'success--text': plan.inContextStatus === 'OPPOSABLE',
+                      'bf200': plan.inContextStatus === 'EN COURS',
+                      'primary--text': plan.inContextStatus === 'EN COURS',
+                      'text--lighten-2': plan.inContextStatus === 'EN COURS',
 
-                  <v-chip v-if="plan.opposable" class="ml-2 success--text font-weight-bold" small label color="success-light">
-                    OPPOSABLE
-                  </v-chip>
-                  <v-chip v-else-if="!plan.opposable && plan.status === 'opposable'" class="ml-2 font-weight-bold" small label>
-                    ARCHIVÉ
-                  </v-chip>
-                  <v-chip v-else class="ml-2 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
-                    EN COURS
+                    }"
+                    class="ml-2 font-weight-bold "
+                    small
+                    label
+                  >
+                    {{ plan.inContextStatus }}
                   </v-chip>
                 </template>
                 <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
@@ -164,26 +169,45 @@ export default {
     }
   },
   async mounted () {
-    const rawProcedures = this.$urbanisator.getProceduresByCommunes(this.$route.params.departement)
+    const rawProcedures = this.$urbanisator.getProceduresByCommunes(this.$route.params.departement, { onlyPrincipales: true })
     const rawReferentiel = fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
-
+    // TODO: on veux uniquement les principales
     const [procedures, referentiel] = await Promise.all([rawProcedures, rawReferentiel])
     const { communes, groupements } = await referentiel.json()
     // TODO: Faire la meme chose sur les SCoTs
     const enrichedGroups = groupements.map((groupement) => {
       const proceduresGroupement = groupement.membres.map(membre => procedures[membre.code]?.plans).flat().filter(e => e)
       const perimetre = groupBy(proceduresGroupement, e => e.procedure_id)
-      const proceduresPerimInter = filter(perimetre, e => e.length > 1)
-      const proceduresInter = proceduresPerimInter.map(e => e?.[0].procedures)
+      const proceduresPerimInter = filter(perimetre, e => e.length > 1 && !e.some(perim => perim.collectivite_type === 'COMD'))
+      const proceduresInter = proceduresPerimInter.map(e => e?.[0].procedures).map((y) => {
+        let inContextStatus = 'EN COURS'
+        if (y.status === 'opposable') {
+          inContextStatus = 'OPPOSABLE'
+        }
+        return { ...y, opposable: y.opposable, inContextStatus }
+      }).sort((a, b) => {
+        if (a.inContextStatus < b.inContextStatus) { return -1 }
+        if (a.inContextStatus > b.inContextStatus) { return 1 }
+        return 0
+      }).reverse()
       return { ...groupement, plans: proceduresInter }
     })
-
     const enrichedCommunes = communes.map(e => ({
       ...e,
       plans: procedures[e.code]?.plans.map((y) => {
+        let inContextStatus = 'EN COURS'
+        if (y.opposable) {
+          inContextStatus = 'OPPOSABLE'
+        } else if (!y.opposable && y.status === 'opposable') {
+          inContextStatus = 'ARCHIVÉ'
+        }
         const proc = y.procedures
-        return { ...proc, opposable: y.opposable }
-      }),
+        return { ...proc, opposable: y.opposable, inContextStatus }
+      }).sort((a, b) => {
+        if (a.inContextStatus < b.inContextStatus) { return -1 }
+        if (a.inContextStatus > b.inContextStatus) { return 1 }
+        return 0
+      }).reverse(),
       scots: procedures[e.code]?.scots.map(y => y.procedures)
     }))
     const flattenReferentiel = [...enrichedGroups, ...enrichedCommunes]

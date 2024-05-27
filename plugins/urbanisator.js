@@ -21,13 +21,20 @@ export default ({ $supabase, $dayjs }, inject) => {
     isEpci (collectiviteId) {
       return collectiviteId.length > 5
     },
-    async getProceduresByCommunes (departementCode) {
+    async getProceduresByCommunes (departementCode, { onlyPrincipales = false }) {
       // TODO: Update postgres to make order works
       // TODO: Optimise with index, selected fields, order and limit
-      const { data } = await $supabase.from('procedures_perimetres')
+      const query = $supabase.from('procedures_perimetres')
         .select('*, procedures(*, doc_frise_events(*))')
         .eq('departement', departementCode)
-        // .order('date_iso', { referencedTable: 'procedures.doc_frise_events', ascending: false })
+
+      if (onlyPrincipales) {
+        query.eq('procedures.is_principale', true)
+      }
+      let { data } = await query
+      data = data.filter(e => e.procedures)
+      console.log('TEST ICI: ', data.filter(e => e.procedures))
+      // .order('date_iso', { referencedTable: 'procedures.doc_frise_events', ascending: false })
       const groupedProceduresPerim = groupBy(data, e => e.collectivite_code)
       const planScotsSeparated = mapValues(groupedProceduresPerim, (e) => {
         const plans = e.filter(e => !e.procedures.is_scot)
