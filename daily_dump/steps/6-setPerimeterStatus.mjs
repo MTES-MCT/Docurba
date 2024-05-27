@@ -8,7 +8,7 @@ async function updatePerimeterStatus(config){
 
   await supabase.from('procedures_perimetres').update({
     opposable: false
-  }).eq('opposable', true)
+  }).eq('opposable', true).eq('collectivite_type', 'COM')
 
   let curentRequest = 0
 
