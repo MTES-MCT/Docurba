@@ -269,6 +269,7 @@ export default
     try {
       if (this.$user && this.$user.isReady) {
         this.$user.isReady.then(() => {
+          this.$tally('woy4KO')
           if (this.isVerified) {
             this.$nuxt.setLayout('ddt')
           }

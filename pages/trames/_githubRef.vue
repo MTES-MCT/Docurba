@@ -228,6 +228,8 @@ export default {
   },
   async mounted () {
     if (this.gitRef.includes('projet-')) {
+      this.$tally('nP6avB')
+
       const projectId = this.gitRef.replace('projet-', '')
 
       const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
