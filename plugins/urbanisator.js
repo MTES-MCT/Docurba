@@ -33,7 +33,6 @@ export default ({ $supabase, $dayjs }, inject) => {
       }
       let { data } = await query
       data = data.filter(e => e.procedures)
-      console.log('TEST ICI: ', data.filter(e => e.procedures))
       // .order('date_iso', { referencedTable: 'procedures.doc_frise_events', ascending: false })
       const groupedProceduresPerim = groupBy(data, e => e.collectivite_code)
       const planScotsSeparated = mapValues(groupedProceduresPerim, (e) => {
@@ -41,6 +40,7 @@ export default ({ $supabase, $dayjs }, inject) => {
         const scots = e.filter(e => e.procedures.is_scot)
         return { scots, plans }
       })
+      console.log('PLAN SCOT SEP= ', planScotsSeparated)
       return planScotsSeparated
     },
     async getProceduresForDept (departementCode, { minimal = false } = {}) {

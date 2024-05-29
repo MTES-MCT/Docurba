@@ -121,9 +121,43 @@
             <div v-if="!item.scots || item.scots.length === 0" class="my-6">
               -
             </div>
-            <div v-for="scot in item.scots" :key="scot.id">
-              {{ scot.doc_type }} &nbsp;
+            <!-- <div v-for="scot in item.scots" :key="scot.id">
+              <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.id}`">
+                {{ scot.doc_type }}
+              </nuxt-link>
+               &nbsp;
               {{ scot.id }}
+            </div> -->
+
+            <div class="my-5">
+              <div v-if="!item.scots || item.scots.length === 0">
+                -
+              </div>
+              <div v-for="(scot, index) in item.scots" v-else :key="scot.id" class="mb-4">
+                <template v-if="index < 2">
+                  <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.id}`">
+                    {{ scot.doc_type }}
+                  </nuxt-link>
+                  <v-chip
+                    :class="{
+                      'success-light': scot.inContextStatus === 'OPPOSABLE',
+                      'success--text': scot.inContextStatus === 'OPPOSABLE',
+                      'bf200': scot.inContextStatus === 'EN COURS',
+                      'primary--text': scot.inContextStatus === 'EN COURS',
+                      'text--lighten-2': scot.inContextStatus === 'EN COURS',
+
+                    }"
+                    class="ml-2 font-weight-bold "
+                    small
+                    label
+                  >
+                    {{ scot.inContextStatus }}
+                  </v-chip>
+                </template>
+                <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
+                  + {{ item.scots.length - 2 }} procédures
+                </nuxt-link>
+              </div>
             </div>
           </template>
         </v-data-table>
@@ -176,22 +210,30 @@ export default {
     const { communes, groupements } = await referentiel.json()
     // TODO: Faire la meme chose sur les SCoTs
     const enrichedGroups = groupements.map((groupement) => {
-      const proceduresGroupement = groupement.membres.map(membre => procedures[membre.code]?.plans).flat().filter(e => e)
-      const perimetre = groupBy(proceduresGroupement, e => e.procedure_id)
-      const proceduresPerimInter = filter(perimetre, e => e.length > 1 && !e.some(perim => perim.collectivite_type === 'COMD'))
-      const proceduresInter = proceduresPerimInter.map(e => e?.[0].procedures).map((y) => {
-        let inContextStatus = 'EN COURS'
-        if (y.status === 'opposable') {
-          inContextStatus = 'OPPOSABLE'
-        }
-        return { ...y, opposable: y.opposable, inContextStatus }
-      }).sort((a, b) => {
-        if (a.inContextStatus < b.inContextStatus) { return -1 }
-        if (a.inContextStatus > b.inContextStatus) { return 1 }
-        return 0
-      }).reverse()
-      return { ...groupement, plans: proceduresInter }
+      const plans = this.enrichGroupement(groupement, procedures, 'plans')
+      const scots = this.enrichGroupement(groupement, procedures, 'scots')
+      console.log('scots: ', scots)
+      return { ...groupement, plans, scots }
     })
+    // getProceduresPerimetre (procedures, collectiviteId)
+    // const enrichedGroups = groupements.map((groupement) => {
+    //   const proceduresGroupement = groupement.membres.map(membre => procedures[membre.code]?.plans).flat().filter(e => e)
+    //   const perimetre = groupBy(proceduresGroupement, e => e.procedure_id)
+    //   const proceduresPerimInter = filter(perimetre, e => e.length > 1 && !e.some(perim => perim.collectivite_type === 'COMD'))
+    //   const proceduresInter = proceduresPerimInter.map(e => e?.[0].procedures).map((y) => {
+    //     let inContextStatus = 'EN COURS'
+    //     if (y.status === 'opposable') {
+    //       inContextStatus = 'OPPOSABLE'
+    //     }
+    //     return { ...y, opposable: y.opposable, inContextStatus }
+    //   }).sort((a, b) => {
+    //     if (a.inContextStatus < b.inContextStatus) { return -1 }
+    //     if (a.inContextStatus > b.inContextStatus) { return 1 }
+    //     return 0
+    //   }).reverse()
+    //   return { ...groupement, plans: proceduresInter }
+    // })
+
     const enrichedCommunes = communes.map(e => ({
       ...e,
       plans: procedures[e.code]?.plans.map((y) => {
@@ -214,6 +256,31 @@ export default {
     this.referentiel = flattenReferentiel
   },
   methods: {
+    enrichGroupement (groupement, procedures, scope) {
+      const proceduresGroupement = groupement.membres.map(membre => procedures[membre.code]?.[scope]).flat().filter(e => e)
+      const perimetre = groupBy(proceduresGroupement, e => e.procedure_id)
+      const proceduresPerimInter = filter(perimetre, e => e.length > 1 && !e.some(perim => perim.collectivite_type === 'COMD'))
+      const proceduresInter = proceduresPerimInter.map(e => e?.[0].procedures).map((y) => {
+        if (scope === 'scots') {
+          console.log('TEST status: ', y.status, ' --- ', y.opposables)
+        }
+
+        let inContextStatus = 'EN COURS'
+        if (y.status === 'opposable') {
+          inContextStatus = 'OPPOSABLE'
+        } else if (!y.opposable && y.status === 'opposable') {
+          inContextStatus = 'ARCHIVÉ'
+        }
+
+        return { ...y, opposable: y.opposable, inContextStatus }
+      }).sort((a, b) => {
+        if (a.inContextStatus < b.inContextStatus) { return -1 }
+        if (a.inContextStatus > b.inContextStatus) { return 1 }
+        return 0
+      }).reverse()
+
+      return proceduresInter
+    },
     customFilter (value, search, item) {
       if (!search?.length) { return true }
       const itemValue = item.intitule + item.code
