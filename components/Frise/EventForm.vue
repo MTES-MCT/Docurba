@@ -125,6 +125,7 @@ export default {
 
     return {
       defaultEvent,
+      collectivite: null,
       event: Object.assign({}, defaultEvent, {
         description: this.$isDev ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' : '',
         project_id: this.procedure.project_id,
@@ -138,8 +139,20 @@ export default {
       deleteModal: false
     }
   },
-  mounted () {
+  computed: {
+    eventLancementOrApprobation () {
+      return ['Délibération ou arrêté définissant les objectifs et modalités concertation',
+        'Délibération de prescription du conseil municipal', 'Délibération de l\'établissement public qui prescrit',
+        'Délibération de prescription du conseil municipal ou communautaire', 'Arrêté de lancement de la procédure'].includes(this.event.type)
+    }
+  },
+  async mounted () {
     this.loading = false
+    const collecCode = this.procedure.current_perimetre.length > 1 ? this.procedure.collectivite_porteuse_id : this.procedure.current_perimetre[0].inseeCode
+    const { data: collectivite } = await axios({
+      url: `/api/geo/collectivites/${collecCode}`
+    })
+    this.collectivite = collectivite
   },
   methods: {
     async saveAttachements (eventId) {
@@ -159,8 +172,12 @@ export default {
       try {
         this.saving = true
 
+        // const { data: dataUrl, error: errorUrl } = this.$supabase.storage.from('prescriptions').getPublicUrl(dataUpload.path)
         this.event.attachements = this.attachements.filter(attachement => attachement.state !== 'removed')
-          .map(attachement => ({ id: attachement.id, name: attachement.name }))
+          .map(attachement => ({
+            id: attachement.id,
+            name: attachement.name
+          }))
 
         const upsertEvent = { ...this.event, profile_id: this.$user.id }
         if (this.eventId) {
@@ -169,6 +186,14 @@ export default {
         } else {
           const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(upsertEvent).select()
           await this.saveAttachements(savedEvents[0].id)
+          this.event.attachements = this.event.attachements.map((e) => {
+            const path = `${this.procedure.project_id}/${savedEvents[0].id}/${e.id}`
+            const { data: dataUrl, error: errorUrl } = this.$supabase.storage.from('doc-events-attachements').getPublicUrl(path)
+            if (errorUrl) { console.log('errorUrl: ', errorUrl) }
+            return { ...e, url: dataUrl.publicUrl, path }
+          })
+          console.log('this.event.attachements: ', this.event.attachements)
+          this.$supabase.from('doc_frise_events').update({ attachements: this.event.attachements }).eq('id', savedEvents[0].id)
         }
 
         this.$analytics({
@@ -186,6 +211,26 @@ export default {
             procedureData: this.procedure
           }
         })
+
+        // TODO: envoyer email, ajouter path et url aux attachements
+        if (this.eventLancementOrApprobation) {
+          const userData = {
+            email: this.$user?.email,
+            collectivite: this.collectivite,
+            attachements: this.event.attachements
+          }
+          await axios({
+            url: '/api/slack/notify/admin/acte',
+            method: 'post',
+            data: { userData }
+          })
+
+          axios({
+            url: '/api/pipedrive/depot_acte',
+            method: 'post',
+            data: { userData }
+          })
+        }
 
         this.saving = false
         this.$router.push(`/frise/${this.procedure.id}`)

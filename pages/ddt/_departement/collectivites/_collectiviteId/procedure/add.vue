@@ -3,7 +3,7 @@
     <v-container class="px-0 mt-8">
       <v-row align="end" class="mb-1">
         <v-col cols="auto">
-          <nuxt-link class="text-decoration-none d-flex align-center" :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${$route.params.collectiviteId.length > 5 ? 'epci' : 'commune'}`">
+          <nuxt-link class="text-decoration-none d-flex align-center" :to="backRoute">
             <v-icon color="primary" small class="mr-2">
               {{ icons.mdiChevronLeft }}
             </v-icon>
@@ -46,7 +46,19 @@ export default {
       icons: { mdiChevronLeft }
     }
   },
+  computed: {
+    backRoute () {
+      if (this.$user.profile.side === 'etat') {
+        return `/ddt/${this.$route.params.departement}/collectivites/${this.$route.params.collectiviteId}/${this.$route.params.collectiviteId.length > 5 ? 'epci' : 'commune'}`
+      } else {
+        return `/collectivites/35207/?isEpci=${this.$route.params.collectiviteId.length > 5}`
+      }
+    }
+  },
   async mounted () {
+    if (!this.$user.email) {
+      this.$router.push('/login')
+    }
     this.collectivite = (await axios({
       url: `/api/geo/${this.$route.params.collectiviteId.length > 5 ? 'intercommunalites' : 'communes'}/${this.$route.params.collectiviteId}`,
       method: 'get'

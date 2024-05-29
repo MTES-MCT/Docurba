@@ -35,8 +35,8 @@ app.post('/notify/admin/acte', (req, res) => {
       to: userData.email,
       template_id: 'd-ff4df2141eda4723800cae1f0a63982c',
       dynamic_template_data: {
-        collectiviteName: userData.collectivite.label ?? userData.collectivite.nom_commune,
-        collectiviteId: userData.collectivite.EPCI ?? userData.collectivite.code_commune_INSEE,
+        collectiviteName: userData.collectivite.intitule,
+        collectiviteId: userData.collectivite.code,
         docs: userData.attachements
       }
     })

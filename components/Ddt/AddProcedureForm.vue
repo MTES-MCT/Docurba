@@ -16,6 +16,32 @@
                 :items="typesProcedure[procedureCategory]"
               />
             </validation-provider>
+            <div class="mb-8">
+              <v-icon
+                small
+                color="typo"
+              >
+                {{ icons.mdiInformationOutline }}
+              </v-icon>
+              <nuxt-link :to="`/trames/dept-${$route.params.departement}`" class="typo--text text-caption">
+                Comment choisir le type de procédure
+              </nuxt-link>
+            </div>
+          </v-col>
+          <v-col v-if="procedureCategory === 'principale'" cols="12">
+            <validation-provider v-slot="{ errors }" name="Type de document d'urbanisme" rules="required">
+              <v-select
+                v-model="typeDu"
+                style="max-width:50%;"
+                :error-messages="errors"
+                filled
+
+                placeholder="Selectionner une option"
+                label="Type de document d'urbanisme"
+                :items="typesDu"
+              />
+            </validation-provider>
+            <v-checkbox v-if="typeDu ==='PLUi'" v-model="isPluiScot" class="mt-0 " label="Cette procédure tient lieu de SCoT" />
           </v-col>
           <v-col cols="12" class="pt-0 pb-2">
             <v-select
@@ -25,7 +51,7 @@
               filled
               multiple
               label="Objet de la procédure"
-              :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']"
+              :items="ObjectsProcedure"
             />
           </v-col>
           <v-col v-if="objetProcedure.includes('Autre')" cols="12" class="pt-0 pb-2">
@@ -33,19 +59,7 @@
               <v-text-field v-model="otherObjetProcedure" style="max-width:50%;" :error-messages="errors" filled label="Description de l’objet de la procédure" />
             </validation-provider>
           </v-col>
-          <v-col v-if="procedureCategory === 'principale'" cols="12">
-            <validation-provider v-slot="{ errors }" name="Type de document d'urbanisme" rules="required">
-              <v-select
-                v-model="typeDu"
-                style="max-width:50%;"
-                :error-messages="errors"
-                filled
-                placeholder="Selectionner une option"
-                label="Type de document d'urbanisme"
-                :items="typesDu"
-              />
-            </validation-provider>
-          </v-col>
+
           <template v-if="procedureCategory === 'secondaire'">
             <v-col cols="12">
               <validation-provider v-slot="{ errors }" name="Procédure parente" rules="required">
@@ -182,12 +196,30 @@ export default {
       otherObjetProcedure: '',
       typeDu: '',
       nameComplement: '',
-      typesDu: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM'],
+      typesDu: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM', 'SCOT'],
+      isPluiScot: false,
       perimetre: null,
       icons: { mdiInformationOutline }
     }
   },
   computed: {
+    ObjectsProcedure () {
+      const base = ['S\'adapter à la trajectoire ZAN', 'Programmer un ou plusieurs nouveaux équipements',
+        'Accélérer les ENR', 'Définir les zones concernées par le recul du trait de côte', 'Lutter contre les feux de forêt',
+        'Renforcer des protections', 'Alléger/modifier certaines règles jugées trop contraignantes ou mal adaptées',
+        'Permettre la réalisation d\'un ou plusieurs projets d’envergure', 'Soutenir la faisabilité d’un projet privé']
+      const onlyPrincipales = ['Revoir la stratégie de développement communale ou intercommunale', 'Définir ou revoir l’armature territoriale']
+      const onlyPLUiPrincipales = ['Passer en PLUi']
+      let items = [...base]
+      if (this.typeProcedure === 'Elaboration' || this.typeProcedure === 'Révision') {
+        items = [...items, ...onlyPrincipales]
+        if (this.typeDu === 'PLUi') {
+          items = [...items, ...onlyPrincipales, onlyPLUiPrincipales]
+        }
+      }
+
+      return [...items, 'Autre']
+    },
     procedureParentDocType () {
       return this.proceduresParents?.find(e => e.id === this.procedureParent)?.doc_type
     },
@@ -270,7 +302,7 @@ export default {
           is_principale: this.procedureCategory === 'principale',
           status: 'en cours',
           is_sectoriel: null,
-          is_scot: null,
+          is_scot: this.typeDu === 'SCOT' || (this.typeDu === 'PLUi' && this.isPluiScot),
           is_pluih: this.typeDu === 'PLUiH',
           is_pdu: null,
           current_perimetre: oldFomattedPerimetre,

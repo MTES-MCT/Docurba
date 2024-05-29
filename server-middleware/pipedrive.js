@@ -22,7 +22,7 @@ app.post('/depot_acte', async (req, res) => {
 
   if (!person) {
     const deal = {
-      title: `Nouvel utilisateur inconnu: ${userData.email} - ${userData.collectivite.label} (${userData.collectivite.region.iso})`
+      title: `Nouvel utilisateur inconnu: ${userData.email} - ${userData.collectivite.intitule} (${userData.collectivite.region.iso})`
     }
     const { data } = await pipedrive.addDeal({ ...deal, stageId: pipedrive.COLLECTIVITE_DEAL.DEPOT_ACTE })
   } else {
