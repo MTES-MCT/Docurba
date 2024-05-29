@@ -167,8 +167,13 @@
 </template>
 
 <script>
-import { groupBy, filter } from 'lodash'
 const docVersion = '1.0'
+
+const statusMap = {
+  opposable: 'OPPOSABLE',
+  'en cours': 'EN COURS'
+}
+
 export default {
   name: 'CollectiviteDU',
   layout: 'ddt',
@@ -203,83 +208,77 @@ export default {
     }
   },
   async mounted () {
-    const rawProcedures = this.$urbanisator.getProceduresByCommunes(this.$route.params.departement, { onlyPrincipales: true })
-    const rawReferentiel = fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
-    // TODO: on veux uniquement les principales
-    const [procedures, referentiel] = await Promise.all([rawProcedures, rawReferentiel])
+    const referentiel = await fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
     const { communes, groupements } = await referentiel.json()
-    // TODO: Faire la meme chose sur les SCoTs
-    const enrichedGroups = groupements.map((groupement) => {
-      const plans = this.enrichGroupement(groupement, procedures, 'plans')
-      const scots = this.enrichGroupement(groupement, procedures, 'scots')
-      console.log('scots: ', scots)
-      return { ...groupement, plans, scots }
-    })
-    // getProceduresPerimetre (procedures, collectiviteId)
-    // const enrichedGroups = groupements.map((groupement) => {
-    //   const proceduresGroupement = groupement.membres.map(membre => procedures[membre.code]?.plans).flat().filter(e => e)
-    //   const perimetre = groupBy(proceduresGroupement, e => e.procedure_id)
-    //   const proceduresPerimInter = filter(perimetre, e => e.length > 1 && !e.some(perim => perim.collectivite_type === 'COMD'))
-    //   const proceduresInter = proceduresPerimInter.map(e => e?.[0].procedures).map((y) => {
-    //     let inContextStatus = 'EN COURS'
-    //     if (y.status === 'opposable') {
-    //       inContextStatus = 'OPPOSABLE'
-    //     }
-    //     return { ...y, opposable: y.opposable, inContextStatus }
-    //   }).sort((a, b) => {
-    //     if (a.inContextStatus < b.inContextStatus) { return -1 }
-    //     if (a.inContextStatus > b.inContextStatus) { return 1 }
-    //     return 0
-    //   }).reverse()
-    //   return { ...groupement, plans: proceduresInter }
-    // })
+    const procedures = await this.$urbanisator.getCollectivitesProcedures(communes.map(c => c.code))
 
-    const enrichedCommunes = communes.map(e => ({
-      ...e,
-      plans: procedures[e.code]?.plans.map((y) => {
-        let inContextStatus = 'EN COURS'
-        if (y.opposable) {
-          inContextStatus = 'OPPOSABLE'
-        } else if (!y.opposable && y.status === 'opposable') {
-          inContextStatus = 'ARCHIVÉ'
-        }
-        const proc = y.procedures
-        return { ...proc, opposable: y.opposable, inContextStatus }
-      }).sort((a, b) => {
-        if (a.inContextStatus < b.inContextStatus) { return -1 }
-        if (a.inContextStatus > b.inContextStatus) { return 1 }
-        return 0
-      }).reverse(),
-      scots: procedures[e.code]?.scots.map(y => y.procedures)
-    }))
-    const flattenReferentiel = [...enrichedGroups, ...enrichedCommunes]
-    this.referentiel = flattenReferentiel
+    const enrichedCommunes = this.parseCommunes(communes, procedures)
+    const enrichedGroups = this.parseGroupements(groupements, procedures)
+
+    this.referentiel = [...enrichedGroups, ...enrichedCommunes]
   },
   methods: {
-    enrichGroupement (groupement, procedures, scope) {
-      const proceduresGroupement = groupement.membres.map(membre => procedures[membre.code]?.[scope]).flat().filter(e => e)
-      const perimetre = groupBy(proceduresGroupement, e => e.procedure_id)
-      const proceduresPerimInter = filter(perimetre, e => e.length > 1 && !e.some(perim => perim.collectivite_type === 'COMD'))
-      const proceduresInter = proceduresPerimInter.map(e => e?.[0].procedures).map((y) => {
-        if (scope === 'scots') {
-          console.log('TEST status: ', y.status, ' --- ', y.opposables)
+    parseCommunes (communes, procedures) {
+      return communes.map((commune) => {
+        const communeProcedures = procedures.filter((procedure) => {
+          return !!procedure.procedures_perimetres.find((p) => {
+            return p.collectivite_code === commune.code
+          })
+        })
+
+        const inContextProcedures = communeProcedures.map((procedure) => {
+          const isOpposableInContext = procedure.procedures_perimetres.find((p) => {
+            return p.collectivite_code === commune.code && p.opposable
+          })
+
+          let status = procedure.status
+
+          if (status === 'opposable' && !isOpposableInContext) {
+            status = 'precedent'
+          }
+
+          return Object.assign({}, procedure, {
+            status,
+            inContextStatus: statusMap[status] || 'ARCHIVÉ'
+          })
+        }).sort((a, b) => {
+          if (a.inContextStatus < b.inContextStatus) { return -1 }
+          if (a.inContextStatus > b.inContextStatus) { return 1 }
+          return 0
+        }).reverse()
+
+        return {
+          ...commune,
+          plans: inContextProcedures.filter(p => p.doc_type !== 'SCOT'),
+          scots: inContextProcedures.filter(p => p.doc_type === 'SCOT')
         }
+      })
+    },
+    parseGroupements (groupements, procedures) {
+      return groupements.map((groupement) => {
+        const collectivitesSet = new Set(groupement.membres.map(m => m.code))
+        const groupementProcedures = procedures.filter((procedure) => {
+          return procedure.procedures_perimetres.map(p => p.collectivite_code).some((code) => {
+            return collectivitesSet.has(code)
+          })
+        })
 
-        let inContextStatus = 'EN COURS'
-        if (y.status === 'opposable') {
-          inContextStatus = 'OPPOSABLE'
-        } else if (!y.opposable && y.status === 'opposable') {
-          inContextStatus = 'ARCHIVÉ'
+        const inContextProcedures = groupementProcedures.map((procedure) => {
+          return Object.assign({}, procedure, {
+            inContextStatus: statusMap[procedure.status] || 'ARCHIVÉ'
+          })
+        }).sort((a, b) => {
+          if (a.inContextStatus < b.inContextStatus) { return -1 }
+          if (a.inContextStatus > b.inContextStatus) { return 1 }
+          return 0
+        }).reverse()
+
+        return {
+          ...groupement,
+          plans: inContextProcedures.filter(p => p.doc_type !== 'SCOT' && p.procedures_perimetres.length > 1),
+          scots: inContextProcedures.filter(p => p.doc_type === 'SCOT')
         }
-
-        return { ...y, opposable: y.opposable, inContextStatus }
-      }).sort((a, b) => {
-        if (a.inContextStatus < b.inContextStatus) { return -1 }
-        if (a.inContextStatus > b.inContextStatus) { return 1 }
-        return 0
-      }).reverse()
-
-      return proceduresInter
+      })
     },
     customFilter (value, search, item) {
       if (!search?.length) { return true }

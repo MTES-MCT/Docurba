@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { groupBy, uniqBy, mapValues, uniq, orderBy, maxBy } from 'lodash'
+import { groupBy, uniqBy, uniq, orderBy, maxBy } from 'lodash'
 import axios from 'axios'
 
 export default ({ $supabase, $dayjs }, inject) => {
@@ -20,28 +20,6 @@ export default ({ $supabase, $dayjs }, inject) => {
   inject('urbanisator', {
     isEpci (collectiviteId) {
       return collectiviteId.length > 5
-    },
-    async getProceduresByCommunes (departementCode, { onlyPrincipales = false }) {
-      // TODO: Update postgres to make order works
-      // TODO: Optimise with index, selected fields, order and limit
-      const query = $supabase.from('procedures_perimetres')
-        .select('*, procedures(*, doc_frise_events(*))')
-        .eq('departement', departementCode)
-
-      if (onlyPrincipales) {
-        query.eq('procedures.is_principale', true)
-      }
-      let { data } = await query
-      data = data.filter(e => e.procedures)
-      // .order('date_iso', { referencedTable: 'procedures.doc_frise_events', ascending: false })
-      const groupedProceduresPerim = groupBy(data, e => e.collectivite_code)
-      const planScotsSeparated = mapValues(groupedProceduresPerim, (e) => {
-        const plans = e.filter(e => !e.procedures.is_scot)
-        const scots = e.filter(e => e.procedures.is_scot)
-        return { scots, plans }
-      })
-      console.log('PLAN SCOT SEP= ', planScotsSeparated)
-      return planScotsSeparated
     },
     async getProceduresForDept (departementCode, { minimal = false } = {}) {
       // TODO: Update postgres to make order works
@@ -146,12 +124,40 @@ export default ({ $supabase, $dayjs }, inject) => {
       const collectivites = [collectivite]
       if (collectivite.membres) { collectivites.push(...collectivite.membres) }
 
-      const { data: procedures } = await $supabase
-        .rpc('procedures_by_collectivites', {
-          codes: collectivites.filter(c => c.type === 'COM').map(c => c.code)
-        })
+      const { data: procedures } = await $supabase.rpc('procedures_by_collectivites', {
+        codes: collectivites.filter(c => c.type === 'COM').map(c => c.code)
+      })
 
       return await this.getProceduresPerimetre(procedures.filter(p => !p.archived), collectiviteId)
+    },
+    parseProceduresStatus (procedures) {
+      procedures.forEach((procedure) => {
+        const comd = procedure.procedures_perimetres.find(p => p.collectivite_type === 'COMD')
+
+        // COMD specifique
+        if (procedure.procedures_perimetres.length === 2 && comd) {
+          procedure.procedures_perimetres = procedure.procedures_perimetres.filter((p) => {
+            return p.collectivite_type === 'COMD'
+          })
+        }
+
+        if (procedure.status === 'opposable') {
+          const isOpposable = !!procedure.procedures_perimetres.find(p => p.opposable)
+
+          if (!isOpposable) {
+            procedure.status = 'precedent'
+          }
+        }
+      })
+
+      return procedures
+    },
+    async getCollectivitesProcedures (codes) {
+      const { data: procedures } = await $supabase.rpc('procedures_by_collectivites', {
+        codes
+      })
+
+      return this.parseProceduresStatus(procedures.filter(p => !p.secondary_procedure_of && !p.archived))
     },
     async getProjects (collectiviteId) {
       try {
