@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="epcis && communes">
+  <v-container>
     <v-row>
       <!-- <v-col v-if="!clickedOnDocLink" cols="12"> -->
       <!-- <v-col cols="12">
@@ -15,131 +15,163 @@
       <v-col cols="12">
         <h1>Mes collectivités - {{ $route.params.departement }}</h1>
       </v-col>
-      <v-col cols="12">
-        <div style="background-color: #F6F6F6;border: 1px solid #DDDDDD;border-radius:4px;" class="pa-6">
-          <v-text-field
-            v-model="search"
-            filled
-            hide-details=""
-            dense
-            style="max-width:500px"
-            label="Rechercher"
-          />
-        </div>
+      <v-col v-if="!collectivites" cols="12">
+        <v-skeleton-loader
+          type="table"
+        />
       </v-col>
-      <v-col cols="12">
-        <v-tabs v-model="scope">
-          <v-tab>EPCI</v-tab>
-          <v-tab>Communes</v-tab>
-          <v-tab>SCOTs</v-tab>
-        </v-tabs>
-
-        <v-tabs-items v-model="scope">
-          <v-tab-item>
-            <v-data-table
-              :headers="headersEpci"
-              :items="epcis"
-              :items-per-page="50"
-              class="elevation-1"
-              :custom-filter="customFilter"
-              :search="search"
-              :loading="!epcis"
-              loading-text="Chargement des collectivités..."
-            >
-              <template #top />
-
-              <!-- eslint-disable-next-line -->
-            <template #item.competence="{ item }">
-                <div v-if="item.competenceSudocu || item.competencePLU" class="d-flex">
-                  <!-- <div class="competence-tag-sudocu mr-2" :style="{visibility: item.competenceSudocu ? 'visible' : 'hidden'}">
-                    C <span class="caption text-lowercase">Sudocu</span>
-                  </div> -->
-                  <div class="competence-tag-banatic mr-2" :style="{visibility: item.competencePLU ? 'visible' : 'hidden'}">
-                    C <span class="caption text-lowercase">BANATIC</span>
+      <v-col v-else cols="12">
+        <v-data-table
+          :headers="headers"
+          :items="collectivites"
+          :items-per-page="10"
+          class="elevation-1 pa-8 collectivites-dt"
+          :custom-filter="customFilter"
+          :custom-sort="customSort"
+          :search="search"
+          :loading="!collectivites"
+          loading-text="Chargement des collectivités..."
+        >
+          <template #top>
+            <div class="d-flex align-center justify-space-between mb-6">
+              <v-select
+                v-model="selectedCollectiviteTypesFilter"
+                flat
+                background-color="alt-beige"
+                hide-details
+                solo
+                multiple
+                dense
+                :items="collectiviteTypeFilterItems"
+                style="max-width:350px"
+              >
+                <template #selection="{item, index}">
+                  <div v-if="collectiviteTypeFilterItems.length === selectedCollectiviteTypesFilter.length && index === 0">
+                    Tous types de collectivité
                   </div>
-                </div>
-                <div v-else>
-                  -
-                </div>
-              </template>
-              <!-- eslint-disable-next-line -->
-            <template #item.actions="{ item }">
-                <div>
-                  <v-btn depressed color="primary" :to="item.path">
-                    Consulter
-                  </v-btn>
-                </div>
-              </template>
-            </v-data-table>
-          </v-tab-item>
-          <v-tab-item>
-            <v-data-table
-              v-if="communes"
-              :headers="headers"
-              :items="communes"
-              :items-per-page="50"
-              class="elevation-1"
-              :loading="!communes"
-              loading-text="Chargement des collectivités..."
-              :custom-filter="customFilter"
-              :search="search"
-            >
-              <!-- eslint-disable-next-line -->
-            <template #item.intercommunalite="{ item }">
+                  <span v-else-if="collectiviteTypeFilterItems.length !== selectedCollectiviteTypesFilter.length">
+                    {{ item.text }}<span v-if="index !== selectedCollectiviteTypesFilter.length - 1">,&nbsp;</span>
+                  </span>
+                </template>
+              </v-select>
+              <v-spacer />
+              <v-text-field
+                v-model="search"
+                outlined
+                hide-details
+                dense
+                style="max-width:400px"
+                label="Rechercher une collectivité..."
+              />
+            </div>
+          </template>
 
-                <div v-if="item.code">
-                  <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.code}/epci`">
-                    {{ item.intitule }}
+          <!-- eslint-disable-next-line -->
+          <template #item.name="{ item }">
+            <div class="my-5">
+              <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`" class="text-decoration-none font-weight-bold">
+                {{ item.code }} {{ item.intitule }}
+              </nuxt-link>
+            </div>
+          </template>
+          <!-- eslint-disable-next-line -->
+                 <template #item.type="{ item }">
+            <div class="my-5">
+              {{ item.type }}
+            </div>
+          </template>
+          <!-- eslint-disable-next-line -->
+            <template #item.procedures="{ item }">
+            <div class="my-5">
+              <div v-if="!item.plans || item.plans.length === 0">
+                <v-chip v-if="item.type === 'COM'" class="ml-2 error--text font-weight-bold" small label color="error-light">
+                  RNU
+                </v-chip>
+                <span v-else>-</span>
+              </div>
+              <div v-for="(plan, index) in item.plans" :key="plan.id" class="mb-4">
+                <template v-if="index < 2">
+                  <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${plan.id}`">
+                    {{ plan.doc_type }}
                   </nuxt-link>
-                </div>
-                <div v-else>
-                  -
-                </div>
-              </template>
+                  <v-chip
+                    :class="{
+                      'success-light': plan.inContextStatus === 'OPPOSABLE',
+                      'success--text': plan.inContextStatus === 'OPPOSABLE',
+                      'bf200': plan.inContextStatus === 'EN COURS',
+                      'primary--text': plan.inContextStatus === 'EN COURS',
+                      'text--lighten-2': plan.inContextStatus === 'EN COURS',
 
-              <!-- eslint-disable-next-line -->
-            <template #item.competence="{ item }">
-                <div v-if="item.competenceSudocu || item.competencePLU" class="d-flex">
-                  <div class="competence-tag-sudocu mr-2" :style="{visibility: item.competenceSudocu ? 'visible' : 'hidden'}">
-                    C <span class="caption text-lowercase">Sudocu</span>
-                  </div>
-                  <div class="competence-tag-banatic mr-2" :style="{visibility: item.competencePLU ? 'visible' : 'hidden'}">
-                    C <span class="caption text-lowercase">BANATIC</span>
-                  </div>
-                </div>
-                <div v-else>
-                  -
-                </div>
-              </template>
+                    }"
+                    class="ml-2 font-weight-bold "
+                    small
+                    label
+                  >
+                    {{ plan.inContextStatus }}
+                  </v-chip>
+                </template>
+                <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
+                  + {{ item.plans.length - 2 }} procédures
+                </nuxt-link>
+              </div>
+            </div>
+          </template>
+          <!-- eslint-disable-next-line -->
+          <template #item.scots="{ item }">
+            <div v-if="!item.scots || item.scots.length === 0" class="my-6">
+              -
+            </div>
+            <!-- <div v-for="scot in item.scots" :key="scot.id">
+              <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.id}`">
+                {{ scot.doc_type }}
+              </nuxt-link>
+               &nbsp;
+              {{ scot.id }}
+            </div> -->
 
-              <!-- eslint-disable-next-line -->
-            <template #item.actions="{ item }">
-                <div>
-                  <v-btn depressed color="primary" :to="item.path">
-                    Consulter
-                  </v-btn>
-                </div>
-              </template>
-            </v-data-table>
-          </v-tab-item>
-          <v-tab-item>
-            <DashboardSCOTsDepList :search="search" />
-          </v-tab-item>
-        </v-tabs-items>
+            <div class="my-5">
+              <div v-if="!item.scots || item.scots.length === 0">
+                -
+              </div>
+              <div v-for="(scot, index) in item.scots" v-else :key="scot.id" class="mb-4">
+                <template v-if="index < 2">
+                  <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.id}`">
+                    {{ scot.doc_type }}
+                  </nuxt-link>
+                  <v-chip
+                    :class="{
+                      'success-light': scot.inContextStatus === 'OPPOSABLE',
+                      'success--text': scot.inContextStatus === 'OPPOSABLE',
+                      'bf200': scot.inContextStatus === 'EN COURS',
+                      'primary--text': scot.inContextStatus === 'EN COURS',
+                      'text--lighten-2': scot.inContextStatus === 'EN COURS',
+
+                    }"
+                    class="ml-2 font-weight-bold "
+                    small
+                    label
+                  >
+                    {{ scot.inContextStatus }}
+                  </v-chip>
+                </template>
+                <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
+                  + {{ item.scots.length - 2 }} procédures
+                </nuxt-link>
+              </div>
+            </div>
+          </template>
+        </v-data-table>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-import axios from 'axios'
-
 const docVersion = '1.0'
 
-const tabs = {
-  epci: 0,
-  communes: 1,
-  scot: 2
+const statusMap = {
+  opposable: 'OPPOSABLE',
+  'en cours': 'EN COURS'
 }
 
 export default {
@@ -147,49 +179,127 @@ export default {
   layout: 'ddt',
   data () {
     return {
+      selectedCollectiviteTypesFilter: ['COM', 'CA', 'CC', 'EPT', 'SM', 'SIVU', 'PETR'],
+      collectiviteTypeFilterItems: [
+        { text: 'Communes', value: 'COM' },
+        { text: 'CA', value: 'CA' },
+        { text: 'CC', value: 'CC' },
+        { text: 'EPT', value: 'EPT' },
+        { text: 'SM', value: 'SM' },
+        { text: 'SIVU', value: 'SIVU' },
+        { text: 'PETR', value: 'PETR' }
+      ],
       search: this.$route.query.search || '',
-      lastProcedures: null,
-      epcis: null,
-      communes: null,
-      scope: tabs[this.$route.query.tab] || 0,
+      referentiel: null,
       clickedOnDocLink: true
     }
   },
   computed: {
     headers () {
       return [
-        { text: 'Nom', align: 'start', value: 'intitule', filterable: true },
-        { text: 'Code INSEE', align: 'start', value: 'code', filterable: true },
-        { text: 'Compétence', value: 'competence', filterable: false },
-        { text: 'Intercommunalité', value: 'type', filterable: false },
-        { text: 'Actions', value: 'actions', filterable: false }
+        { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '30%' },
+        { text: 'Type', align: 'start', value: 'type', filterable: true, width: '10%' },
+        { text: 'Procédures', value: 'procedures', filterable: false, sortable: false, width: '30%' },
+        { text: 'SCOTs', value: 'scots', filterable: false, sortable: false, width: '30%' }
       ]
     },
-    headersEpci () {
-      return [
-        { text: 'Nom', align: 'start', value: 'intitule', filterable: true },
-        { text: 'SIREN', align: 'start', value: 'code', filterable: true },
-        { text: 'Type', value: 'type', filterable: false },
-        { text: 'Compétence', value: 'competence', filterable: false },
-        { text: 'Actions', value: 'actions', filterable: false }
-      ]
+    collectivites () {
+      return this.referentiel?.filter(e => this.selectedCollectiviteTypesFilter.includes(e.type))
     }
   },
   async mounted () {
-    this.clickedOnDocLink = (localStorage.getItem('docVersion') === docVersion)
+    const referentiel = await fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
+    const { communes, groupements } = await referentiel.json()
+    const procedures = await this.$urbanisator.getCollectivitesProcedures(communes.map(c => c.code))
 
-    const { data: collectivites } = await axios.get(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
-    this.epcis = collectivites.groupements.map(e => ({ ...e, path: `/ddt/${e.departementCode}/collectivites/${e.code}/epci` }))
-    this.communes = collectivites.communes.map(e => ({ ...e, path: `/ddt/${e.departementCode}/collectivites/${e.codeParent || e.code}/commune` }))
+    const enrichedCommunes = this.parseCommunes(communes, procedures)
+    const enrichedGroups = this.parseGroupements(groupements, procedures)
+
+    this.referentiel = [...enrichedGroups, ...enrichedCommunes]
   },
   methods: {
-    customFilter (value, search, item) {
-      if (!search?.length || !value?.length) { return true }
+    parseCommunes (communes, procedures) {
+      return communes.map((commune) => {
+        const communeProcedures = procedures.filter((procedure) => {
+          return !!procedure.procedures_perimetres.find((p) => {
+            return p.collectivite_code === commune.code
+          })
+        })
 
-      const normalizedValue = value.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+        const inContextProcedures = communeProcedures.map((procedure) => {
+          const isOpposableInContext = procedure.procedures_perimetres.find((p) => {
+            return p.collectivite_code === commune.code && p.opposable
+          })
+
+          let status = procedure.status
+
+          if (status === 'opposable' && !isOpposableInContext) {
+            status = 'precedent'
+          }
+
+          return Object.assign({}, procedure, {
+            status,
+            inContextStatus: statusMap[status] || 'ARCHIVÉ'
+          })
+        }).sort((a, b) => {
+          if (a.inContextStatus < b.inContextStatus) { return -1 }
+          if (a.inContextStatus > b.inContextStatus) { return 1 }
+          return 0
+        }).reverse()
+
+        return {
+          ...commune,
+          plans: inContextProcedures.filter(p => p.doc_type !== 'SCOT'),
+          scots: inContextProcedures.filter(p => p.doc_type === 'SCOT')
+        }
+      })
+    },
+    parseGroupements (groupements, procedures) {
+      return groupements.map((groupement) => {
+        const collectivitesSet = new Set(groupement.membres.map(m => m.code))
+        const groupementProcedures = procedures.filter((procedure) => {
+          return procedure.procedures_perimetres.map(p => p.collectivite_code).some((code) => {
+            return collectivitesSet.has(code)
+          })
+        })
+
+        const inContextProcedures = groupementProcedures.map((procedure) => {
+          return Object.assign({}, procedure, {
+            inContextStatus: statusMap[procedure.status] || 'ARCHIVÉ'
+          })
+        }).sort((a, b) => {
+          if (a.inContextStatus < b.inContextStatus) { return -1 }
+          if (a.inContextStatus > b.inContextStatus) { return 1 }
+          return 0
+        }).reverse()
+
+        return {
+          ...groupement,
+          plans: inContextProcedures.filter(p => p.doc_type !== 'SCOT' && p.procedures_perimetres.length > 1),
+          scots: inContextProcedures.filter(p => p.doc_type === 'SCOT')
+        }
+      })
+    },
+    customFilter (value, search, item) {
+      if (!search?.length) { return true }
+      const itemValue = item.intitule + item.code
+      const normalizedValue = itemValue.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
       const normalizedSearch = search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
 
       return normalizedValue.includes(normalizedSearch)
+    },
+    customSort (items, index, isDesc) {
+      items.sort((a, b) => {
+        if (index[0] === 'name' || index[0] === 'type') {
+          if (!isDesc[0]) {
+            return a.code.toLowerCase().localeCompare(b.code.toLowerCase())
+          } else {
+            return b.code.toLowerCase().localeCompare(a.code.toLowerCase())
+          }
+        }
+        return true
+      })
+      return items
     },
     showClose () {
       this.clickedOnDocLink = true
@@ -198,31 +308,16 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.competence-tag-sudocu{
-  background: #FEECC2;
-  border-radius: 4px;
-  text-transform: uppercase;
-  color: #716043;
-  font-family: 'Marianne';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 24px;
-  padding: 0px 8px;
-}
 
-.competence-tag-banatic{
-  background: var(--v-primary-base);
-  border-radius: 4px;
-  text-transform: uppercase;
-  color: var(--v-primary-lighten1);
-  font-family: 'Marianne';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 24px;
-  padding: 0px 8px;
+<style lang="scss">
+.collectivites-dt {
+  tr th{
+    font-size: 14px !important;
+    color: #000 !important;
+  }
+   tbody tr td{
+    vertical-align: top !important;
+   }
 }
 
 </style>

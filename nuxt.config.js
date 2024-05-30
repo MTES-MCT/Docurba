@@ -181,6 +181,7 @@ export default {
             base: '#DDDDDD'
           },
           secondary: '#e1000f',
+          'mention-grey': '#666666',
           bf500: '#000091',
           'bf500-plain': '#000091',
           'w-bf500': '#fff',

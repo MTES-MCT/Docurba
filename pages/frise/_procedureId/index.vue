@@ -75,14 +75,25 @@
             <v-row>
               <v-col cols="9">
                 <FriseEventCard v-if="$user?.id && recommendedEvent && isAdmin" :event="recommendedEvent" suggestion @addSuggestedEvent="addSuggestedEvent" />
-                <template v-for="event in enrichedEvents">
-                  <FriseEventCard
-                    :id="`event-${event.id}`"
-                    :key="event.id"
-                    :event="event"
-                    :type-du="procedure.doc_type"
-                  />
-                </template>
+                <div v-if="isEmptyFrise" class="d-flex align-center justify-center flex-column py-16">
+                  <p class="text-h6 font-weight-bold">
+                    Aucun événement
+                  </p>
+                  <p>Cette procédure n’a pas encore reçu d’événement.</p>
+                  <v-btn v-if="$user?.id && isAdmin" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+                    Ajouter un événement
+                  </v-btn>
+                </div>
+                <div v-else>
+                  <template v-for="event in enrichedEvents">
+                    <FriseEventCard
+                      :id="`event-${event.id}`"
+                      :key="event.id"
+                      :event="event"
+                      :type-du="procedure.doc_type"
+                    />
+                  </template>
+                </div>
               </v-col>
               <v-col cols="3" class="my-6">
                 <p class="font-weight-bold">
@@ -174,6 +185,9 @@ export default
     }
   },
   computed: {
+    isEmptyFrise () {
+      return this.events.length === 0 || this.events.every(e => !e.type || !e.date_iso)
+    },
     isAdmin () {
       if (!this.$user.id) { return false }
 
@@ -211,9 +225,7 @@ export default
       })
     },
     attachments () {
-      return this.enrichedEvents.map(e => e.attachements).filter((attachement) => {
-        return !!attachement
-      }).flat()
+      return this.enrichedEvents.map(e => e.attachements).flat().filter(e => e)
     },
     backToCollectivite () {
       if (this.$user.id && this.$user.profile && this.$user.profile.side === 'etat') {
@@ -227,7 +239,7 @@ export default
     },
     recommendedEvent () {
       const filteredDocumentEvents = this.documentEvents?.filter(e => e.scope_sugg.includes(this.internalProcedureType))
-
+      console.log('filteredDocumentEvents: ', filteredDocumentEvents)
       if (!filteredDocumentEvents) { return null }
       if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
       const lastEventType = this.events[0]
@@ -303,10 +315,11 @@ export default
     },
     async archiveProcedure (idProcedure) {
       try {
-        const { error } = await this.$supabase.from('procedures').update({ archived: true }).eq('id', idProcedure)
+        const { error } = await this.$supabase.from('procedures').delete().eq('id', idProcedure)
         if (error) { throw error }
         this.$emit('delete', idProcedure)
         this.dialog = false
+        this.$router.push(-1)
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log(error)

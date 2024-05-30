@@ -1,0 +1,20 @@
+CREATE OR REPLACE FUNCTION event_procedure_status_handler()
+RETURNS trigger AS $$
+declare
+procedure procedures;
+event_processed doc_frise_events;
+BEGIN
+  IF TG_OP = 'UPDATE' OR TG_OP = 'INSERT' then
+    event_processed := new;
+  else
+    event_processed := old;
+  END IF;
+
+  SELECT * into procedure
+  FROM procedures
+  WHERE id = event_processed.procedure_id;
+
+  PERFORM set_procedure_status(procedure);
+  return event_processed;
+END;
+$$ LANGUAGE plpgsql;
