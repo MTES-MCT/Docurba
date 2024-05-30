@@ -15,8 +15,6 @@ export default (_, inject) => {
     const delay = Date.now() - formTimestamp
 
     if (formNb < 3 && delay > weeks) {
-      console.log('display tally', formId)
-
       window.TallyConfig = {
         formId,
         popup: Object.assign({
@@ -31,7 +29,7 @@ export default (_, inject) => {
       }
 
       setTimeout(() => {
-        window.Tally.openPopup('woy4KO')
+        window.Tally.openPopup(formId)
       }, 3000)
 
       localStorage.setItem(displayedKey, +formNb + 1)
