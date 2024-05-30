@@ -75,14 +75,25 @@
             <v-row>
               <v-col cols="9">
                 <FriseEventCard v-if="$user?.id && recommendedEvent && isAdmin" :event="recommendedEvent" suggestion @addSuggestedEvent="addSuggestedEvent" />
-                <template v-for="event in enrichedEvents">
-                  <FriseEventCard
-                    :id="`event-${event.id}`"
-                    :key="event.id"
-                    :event="event"
-                    :type-du="procedure.doc_type"
-                  />
-                </template>
+                <div v-if="isEmptyFrise" class="d-flex align-center justify-center flex-column py-16">
+                  <p class="text-h6 font-weight-bold">
+                    Aucun événement
+                  </p>
+                  <p>Cette procédure n’a pas encore reçu d’événement.</p>
+                  <v-btn v-if="$user?.id && isAdmin" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+                    Ajouter un événement
+                  </v-btn>
+                </div>
+                <div v-else>
+                  <template v-for="event in enrichedEvents">
+                    <FriseEventCard
+                      :id="`event-${event.id}`"
+                      :key="event.id"
+                      :event="event"
+                      :type-du="procedure.doc_type"
+                    />
+                  </template>
+                </div>
               </v-col>
               <v-col cols="3" class="my-6">
                 <p class="font-weight-bold">
@@ -174,6 +185,9 @@ export default
     }
   },
   computed: {
+    isEmptyFrise () {
+      return this.events.length === 0 || this.events.every(e => !e.type || !e.date_iso)
+    },
     isAdmin () {
       if (!this.$user.id) { return false }
 

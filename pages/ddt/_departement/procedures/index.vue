@@ -4,9 +4,9 @@
       <v-col cols="12" class="d-flex align-center justify-space-between pb-0 pt-4">
         <h1>Mes Procédures</h1>
         <div>
-          <v-btn outlined color="primary" class="mr-2" @click="download">
+          <!-- <v-btn outlined color="primary" class="mr-2" @click="download">
             Exporter les procédures
-          </v-btn>
+          </v-btn> -->
           <v-btn depressed color="primary" :to="`/ddt/${$route.params.departement}/procedures/add-choose-collectivite`">
             Nouvelle procédure
           </v-btn>
@@ -111,7 +111,9 @@
               <nuxt-link class="d-inline-block font-weight-bold text-truncate text-decoration-none" style="max-width: 300px;" :to="`/frise/${item.procedure_id}`">
                 {{ item.name }}
               </nuxt-link>
-              <v-chip v-if="item.opposable" class="ml-2 success--text font-weight-bold" small label color="success-light">
+
+              <div v-if="item.procedures.status === null" />
+              <v-chip v-else-if="item.opposable" class="ml-2 success--text font-weight-bold" small label color="success-light">
                 OPPOSABLE
               </v-chip>
               <v-chip v-else-if="!item.opposable && item.procedures.status === 'opposable'" class="ml-2 font-weight-bold" small label>
@@ -175,19 +177,23 @@ export default {
       ]
     },
     procedures () {
-      return this.rawProcedures?.map((e) => {
+      const proceduresAndFilters = this.rawProcedures?.map((e) => {
         if (e.prescription?.date_iso) {
           e.prescription.date_iso = e.prescription.date_iso ? dayjs(e.prescription.date_iso).format('DD/MM/YY') : null
         }
+
         return e
       }).filter((e) => {
-        return this.selectedDocumentsFilter.includes(e.procedures.doc_type) &&
+        return e.procedures.created_at &&
+        this.selectedDocumentsFilter.includes(e.procedures.doc_type) &&
           ((this.selectedTypesFilter.includes('pp') && e.procedures.is_principale) ||
           (this.selectedTypesFilter.includes('ps') && !e.procedures.is_principale)) &&
           (((this.selectedStatusFilter.includes('opposable') && e.opposable) ||
           (this.selectedStatusFilter.includes('en_cours') && (!e.opposable && !(e.procedures.status === 'opposable'))) ||
           (this.selectedStatusFilter.includes('archived') && (!e.opposable && e.procedures.status === 'opposable'))))
       })
+      console.log('proceduresAndFilters: ', proceduresAndFilters)
+      return proceduresAndFilters
     }
   },
   async mounted () {
