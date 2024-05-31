@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+const _ = require('lodash')
 const pipedrive = require('pipedrive')
 
 const defaultClient = pipedrive.ApiClient.instance
@@ -19,9 +20,48 @@ const dealsApi = new pipedrive.DealsApi()
 
 // const personFieldsApi = new pipedrive.PersonFieldsApi()
 // personFieldsApi.getPersonFields().then((personFields) => {
-//   console.log(personFields.data.filter(e => e.id === 9069)[0].options)
+//   const json = personFields.data.map((field) => {
+//     const { id, name, field_type, key, options } = field
+
+//     return { id, name, field_type, key, options }
+//   })
+
+//   fs.writeFileSync('./server-middleware/modules/Data/pipedriveFields.json', JSON.stringify(json, null, 2))
 // }).catch(err => console.log(err))
 // end infos
+
+const fieldsMap = {
+  // 'email': 'email',
+  // departement: 'a92ba23ce78c8995ab7957ab70828023de6ebc1e' // Don't think I can just send a value when it's type enum.
+  verified: { key: '8c176dd0608d98671ca116948a8091d6b30ac045', options: { true: 'Oui', false: 'Non' } },
+  other_poste: {
+    key: '945716c2fc1edf91e5e8c8aac47c73cbf7508e7e',
+    set: {
+      chef_unite: "Chef d'unité/de bureau/de service et adjoint",
+      redacteur_pac: 'Rédacteur(ice) de PAC',
+      suivi_procedures: "Chargé(e) de l'accompagnement des collectivités",
+      referent_sudocuh: 'Référent Sudocuh'
+    }
+  },
+  poste: {
+    key: 'f6cac51c5bc627e57a84ce202f5fbeb59b821a87',
+    options: {
+      ddt: 'DDT/DEAL',
+      dreal: 'DREAL',
+      employe_mairie: 'Technicien(ne) ou employé(e)',
+      agence_urba: "Agence d'urbanisme",
+      elu: 'Elu(e)',
+      be: "Bureau d'étude"
+    }
+  },
+  successfully_logged_once: {
+    key: 'cf98dee8315494cec95609be9dfaef18343e6272',
+    options: {
+      true: 'Connecté.e',
+      false: 'Non connecté.e'
+    }
+  }
+}
 
 // Custom Field CHARGE_DE -> Chargé de
 // Chef d'unité/de bureau/de service (...) et adjoint -> Chef d'unité     -> id: 188
@@ -161,7 +201,32 @@ module.exports = {
     } else { console.log('error', error) }
   },
   updatePerson (personId, data) {
-    const newPersonData = pipedrive.UpdatePerson.constructFromObject(data)
+    const personData = { '2a0f1211cad87a393283f3167a72832c53ed7966': '' }
+    _.forEach(data, (val, key) => {
+      const pipedriveFiel = fieldsMap[key]
+      let pipedriveValue = val
+
+      if (pipedriveFiel) {
+        if (pipedriveFiel.options) {
+          pipedriveValue = pipedriveFiel.options[val]
+        }
+
+        if (pipedriveFiel.set) {
+          pipedriveValue = val.map((v) => {
+            if (pipedriveFiel.set[v]) {
+              return pipedriveFiel.set[v]
+            } else {
+              personData['2a0f1211cad87a393283f3167a72832c53ed7966'] += ' ' + v
+              return null
+            }
+          }).filter(v => !!v)
+        }
+
+        personData[pipedriveFiel.key] = pipedriveValue
+      }
+    })
+
+    const newPersonData = pipedrive.UpdatePerson.constructFromObject(personData)
     return personsApi.updatePerson(personId, newPersonData)
   },
   async searchDeal (term) {

@@ -127,4 +127,33 @@ app.post('/deals', async (req, res) => {
   }
 })
 
+// async function testPipedrive () {
+//   const { person } = await pipedrive.findPerson('fabien@quantedsquare.com')
+//   console.log(person)
+
+//   const test = await pipedrive.updatePerson(person.id, {
+//     verified: false,
+//     other_poste: ['suivi_procedures', 'redacteur_pac', 'test'],
+//     poste: 'ddt',
+//     successfully_logged_once: false
+//   })
+
+//   console.log('testPipedrive ', test)
+// }
+
+// testPipedrive()
+
+app.post('/profiles', async (req, res) => {
+  const { record: profile } = req.body
+
+  const { person } = await pipedrive.findPerson(profile.email)
+  const update = await pipedrive.updatePerson(person.id, profile)
+
+  if (update.success) {
+    console.log('Person updated in pipedrive', profile.emai)
+  } else {
+    console.log('Error updating person', update)
+  }
+})
+
 module.exports = app
