@@ -1,15 +1,23 @@
 /* eslint-disable no-console */
 import { AsyncParser } from '@json2csv/node'
 
+// GEO DATA
 import express from 'express'
 import { mapValues, get, uniq } from 'lodash'
-import procedures from './modules/procedures.js'
+import allCommunes from './Data/referentiels/communes.json'
+import groupements from './Data/referentiels/groupements.json'
 import departements from './Data/INSEE/departements.json'
+
+import procedures from './modules/procedures.js'
 import supabase from './modules/supabase.js'
 
 // exports maps
 import prescriptionsMap from './modules/exportMaps/prescriptions.js'
 import sudocuhCommunes from './modules/exportMaps/sudocuhCommunes.js'
+
+// exports maps GPU
+import gpuMaillages from './modules/exportMaps/gpuMaillages.js'
+import gpuParente from './modules/exportMaps/gpuParente.js'
 
 const csvParser = new AsyncParser()
 
@@ -48,7 +56,6 @@ app.get('/exports/departements/:code', async (req, res) => {
 
 app.get('/exports/communes', async (req, res) => {
   const inseeCodes = req.body.inseeCodes
-  console.log(inseeCodes)
   const communes = await procedures.getCommunes(inseeCodes)
 
   const mapedCommunes = communes.map((c) => {
@@ -87,6 +94,42 @@ app.get('/exports/prescriptions', async (req, res) => {
     res.status(200).attachment('prescriptions.csv').send(csv)
   } else {
     res.status(200).send(prescriptions)
+  }
+})
+
+app.get('/exports/gpu/maillages', async (req, res) => {
+  const allCollectivites = [...allCommunes, ...groupements]
+
+  const mapedCommunes = allCollectivites.map((c) => {
+    return Object.assign(mapValues(gpuMaillages, key => get(c, key, '')), {
+      parents: `${c.departementCode} ${c.intercommunaliteCode || ''}`.trim(),
+      administered_by: c.code.length > 5 ? c.departementCode : ''
+    })
+  })
+
+  if (req.query.csv) {
+    const csv = await csvParser.parse(mapedCommunes).promise()
+    res.status(200).attachment('gpu_maillages.csv').send(csv)
+  } else {
+    res.status(200).send(mapedCommunes)
+  }
+})
+
+app.get('/exports/gpu/parente', async (req, res) => {
+  const allCollectivites = [...allCommunes, ...groupements]
+
+  const mapedCommunes = allCollectivites.map((c) => {
+    return Object.assign(mapValues(gpuParente, key => get(c, key, '')), {
+      // parents: `${c.departementCode} ${c.intercommunaliteCode}`.trim(),
+      // administered_by: c.code.length > 5 ? c.departementCode : ''
+    })
+  })
+
+  if (req.query.csv) {
+    const csv = await csvParser.parse(mapedCommunes).promise()
+    res.status(200).attachment('gpu_parente.csv').send(csv)
+  } else {
+    res.status(200).send(mapedCommunes)
   }
 })
 

@@ -133,7 +133,7 @@ app.post('/deals', async (req, res) => {
 
 //   const test = await pipedrive.updatePerson(person.id, {
 //     verified: false,
-//     other_poste: ['suivi_procedures', 'redacteur_pac', 'test'],
+//     other_poste: ["suivi_procedures", "redacteur_pac", "test"],
 //     poste: 'ddt',
 //     successfully_logged_once: false
 //   })
@@ -150,9 +150,11 @@ app.post('/profiles', async (req, res) => {
   const update = await pipedrive.updatePerson(person.id, profile)
 
   if (update.success) {
-    console.log('Person updated in pipedrive', profile.emai)
+    console.log('Person updated in pipedrive', profile.email)
+    res.status(200).send('OK')
   } else {
     console.log('Error updating person', update)
+    res.status(500).send(update)
   }
 })
 
