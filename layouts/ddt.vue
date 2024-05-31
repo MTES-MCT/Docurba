@@ -9,7 +9,13 @@
             params: {departement: $user.profile.departement}
           }"
         >
-          Mes collectivites
+          Mes collectivités
+        </v-tab>
+        <v-tab
+          v-if="$user.profile.poste === 'ddt'"
+          :to="`/ddt/${$user.profile.departement}/procedures`"
+        >
+          Mes procédures
         </v-tab>
         <v-tab
           :to="{

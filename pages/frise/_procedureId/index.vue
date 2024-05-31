@@ -225,9 +225,7 @@ export default
       })
     },
     attachments () {
-      return this.enrichedEvents.map(e => e.attachements).filter((attachement) => {
-        return !!attachement
-      }).flat()
+      return this.enrichedEvents.map(e => e.attachements).flat().filter(e => e)
     },
     backToCollectivite () {
       if (this.$user.id && this.$user.profile && this.$user.profile.side === 'etat') {
@@ -241,7 +239,7 @@ export default
     },
     recommendedEvent () {
       const filteredDocumentEvents = this.documentEvents?.filter(e => e.scope_sugg.includes(this.internalProcedureType))
-
+      console.log('filteredDocumentEvents: ', filteredDocumentEvents)
       if (!filteredDocumentEvents) { return null }
       if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
       const lastEventType = this.events[0]
@@ -318,10 +316,11 @@ export default
     },
     async archiveProcedure (idProcedure) {
       try {
-        const { error } = await this.$supabase.from('procedures').update({ archived: true }).eq('id', idProcedure)
+        const { error } = await this.$supabase.from('procedures').delete().eq('id', idProcedure)
         if (error) { throw error }
         this.$emit('delete', idProcedure)
         this.dialog = false
+        this.$router.push(-1)
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log(error)

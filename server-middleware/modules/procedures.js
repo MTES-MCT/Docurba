@@ -100,6 +100,7 @@ export default {
       .rpc('procedures_by_insee_codes', {
         codes: inseeCodes
       })
+
     if (error) {
       console.log('fetchProcedures error', inseeCodes[0], error)
     }
@@ -111,7 +112,6 @@ export default {
       .rpc('events_by_procedures_ids', {
         procedures_ids: procedures.map(p => p.id)
       })
-
     return events.map((e) => {
       return Object.assign(e, {
         year: dayjs(e.date_iso).format('YYYY')
