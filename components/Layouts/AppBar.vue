@@ -70,22 +70,22 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item link href="https://pad.numerique.gouv.fr/s/lzpwuS7N0#%F0%9F%93%96-Nos-Guides-d%E2%80%99utilisation" target="_blank">
+            <v-list-item link href="https://docurba.crisp.help/fr/category/ressources-1jtg3x2/" target="_blank">
               <v-list-item-title>
                 Guide d'utilisation
               </v-list-item-title>
             </v-list-item>
-            <v-list-item link :to="{name: 'faq'}">
+            <v-list-item link href="https://docurba.crisp.help/fr/" target="_blank">
               <v-list-item-title>
                 FAQ
               </v-list-item-title>
             </v-list-item>
-            <v-list-item link href="https://pad.numerique.gouv.fr/s/lzpwuS7N0#%F0%9F%93%BA-Nos-webinaires-et-formations-en-ligne" target="_blank">
+            <v-list-item link href="https://docurba.crisp.help/fr/category/ressources-1jtg3x2/" target="_blank">
               <v-list-item-title>
                 Webinaires
               </v-list-item-title>
             </v-list-item>
-            <v-list-item link :to="{name: 'faq', query: { action: 'Nous contacter', scope: 1 } }">
+            <v-list-item link href="https://docurba.crisp.help/fr/category/nous-contacter-cf4bsp/" target="_blank">
               <v-list-item-title>
                 Contact
               </v-list-item-title>
