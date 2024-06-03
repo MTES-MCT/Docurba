@@ -42,7 +42,7 @@ export default {
     { src: '~/plugins/pdfMake.js', mode: 'client' },
     { src: '~/plugins/analytics.js' },
     { src: '~/plugins/gtag.js', mode: 'client' },
-    { src: '~/plugins/stonly.js', mode: 'client' },
+    // { src: '~/plugins/stonly.js', mode: 'client' },
     { src: '~/plugins/tally.js', mode: 'client' }
   ],
 
