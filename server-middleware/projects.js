@@ -72,15 +72,24 @@ app.post('/notify/update', async (req, res) => {
     // This is to prevent sending 2 emails for the same update.
     const uniqSharings = _.uniqBy(sharings, s => s.user_email)
 
-    uniqSharings.forEach((sharing) => {
+    uniqSharings.forEach(async (sharing) => {
       const lastNotif = +new Date(sharing.last_update_notification)
+
+      const { data: profile } = await supabase.from('profiles')
+        .select('*').eq('email', sharing.user_email)
+
+      const readingUrl = `https://docurba.beta.gouv.fr/documents/projet-${projectId}/pac`
+      const writingUrl = `https://docurba.beta.gouv.fr/trames/projet-${projectId}`
 
       if (lastNotif < minDate) {
         sendgrid.sendEmail({
           to: sharing.user_email,
           template_id: 'd-2b1d871bc04141e69c56e5a89dc20a74',
           dynamic_template_data: {
-            project_id: 'projet-' + projectId
+            project_id: 'projet-' + projectId,
+            firstname: profile.firstname,
+            lastname: profile.lastname,
+            url: sharing.role === 'write' ? writingUrl : readingUrl
           }
         }).then(async () => {
           await supabase.from('projects_sharing').update({
