@@ -47,7 +47,7 @@
               >
                 <template #selection="{item, index}">
                   <div v-if="collectiviteTypeFilterItems.length === selectedCollectiviteTypesFilter.length && index === 0">
-                    Tous types de collectivité
+                    Tout types de collectivité
                   </div>
                   <span v-else-if="collectiviteTypeFilterItems.length !== selectedCollectiviteTypesFilter.length">
                     {{ item.text }}<span v-if="index !== selectedCollectiviteTypesFilter.length - 1">,&nbsp;</span>
@@ -111,7 +111,7 @@
                   </v-chip>
                 </template>
                 <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
-                  + {{ item.plans.length - 2 }} procédures
+                  + {{ item.plans.length - 2 }} procédure{{ item.plans.length - 2 > 1 ? 's' : '' }}
                 </nuxt-link>
               </div>
             </div>
@@ -155,7 +155,7 @@
                   </v-chip>
                 </template>
                 <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
-                  + {{ item.scots.length - 2 }} procédures
+                  + {{ item.scots.length - 2 }} procédure{{ item.scots.length - 2 > 1 ? 's' : '' }}
                 </nuxt-link>
               </div>
             </div>

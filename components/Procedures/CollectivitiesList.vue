@@ -112,7 +112,7 @@ export default {
         interco: '',
         status: 'all',
         statusList: [{
-          text: 'Tous les status',
+          text: 'Tous les statuts',
           value: 'all'
         }, {
           text: 'Opposable',

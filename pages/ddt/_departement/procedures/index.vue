@@ -43,7 +43,7 @@
               >
                 <template #selection="{item, index}">
                   <div v-if="selectedTypesFilter.length === typeFilterItems.length && index === 0">
-                    Tous type de procédures
+                    Tout type de procédures
                   </div>
                   <span v-else-if="selectedTypesFilter.length !== typeFilterItems.length">{{ item.text }}</span>
                 </template>
@@ -63,7 +63,7 @@
               >
                 <template #selection="{item, index}">
                   <div v-if="documentFilterItems.length === selectedDocumentsFilter.length && index === 0">
-                    Tous types de documents
+                    Tout types de documents
                   </div>
                   <span v-else-if="documentFilterItems.length !== selectedDocumentsFilter.length">
                     {{ item.text }}<span v-if="index !== selectedDocumentsFilter.length - 1">,&nbsp;</span>
@@ -85,7 +85,7 @@
               >
                 <template #selection="{item, index}">
                   <div v-if="statusFilterItems.length === selectedStatusFilter.length && index === 0">
-                    Tous les status
+                    Tous les statuts
                   </div>
                   <span v-else-if="statusFilterItems.length !== selectedStatusFilter.length">
                     {{ item.text }}<span v-if="index !== selectedStatusFilter.length - 1">,&nbsp;</span>
@@ -171,7 +171,7 @@ export default {
     headers () {
       return [
         { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '45%' },
-        { text: 'Périmetre', align: 'start', value: 'perimetre', filterable: false, width: '150px' },
+        { text: 'Périmètre', align: 'start', value: 'perimetre', filterable: false, width: '150px' },
         { text: 'Prescription', value: 'prescription', filterable: false, width: '135px' },
         { text: 'Dernier évènement', value: 'last_event', filterable: false }
       ]
