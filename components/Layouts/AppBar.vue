@@ -63,7 +63,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              Ressources
+              Documentation
               <v-icon right>
                 {{ icons.mdiChevronDown }}
               </v-icon>

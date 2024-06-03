@@ -3,16 +3,16 @@
     <v-container fluid :style="{ maxWidth: '1160px' }" class="pa-0">
       <v-row>
         <v-col cols="12" md="6">
-          <h5>Ressources</h5>
+          <h5>Documentation</h5>
           <ul :style="{ listStyle: 'none' }" class="pa-0 mt-4">
             <li>
-              <a href="https://pad.incubateur.net/s/MVwW7cGNh#Nos-Guides-d%E2%80%99utilisation" _target="blank">Guides d'utilisation</a>
+              <a href="https://docurba.crisp.help/fr/category/ressources-1jtg3x2/" _target="blank">Guides d'utilisation</a>
             </li>
             <li>
-              <a href="https://docurba.beta.gouv.fr/faq">FAQ</a>
+              <a href="https://docurba.crisp.help/fr/" target="_blank">FAQ</a>
             </li>
             <li>
-              <a href="https://pad.incubateur.net/s/MVwW7cGNh#Nos-webinaires">Webinaires</a>
+              <a href="https://docurba.crisp.help/fr/category/ressources-1jtg3x2/" target="_blank">Webinaires</a>
             </li>
             <li>
               <nuxt-link to="/accessibilite">
