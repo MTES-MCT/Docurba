@@ -4,7 +4,7 @@ export default (_, inject) => {
   tallyScript.setAttribute('async', true)
   document.head.appendChild(tallyScript)
 
-  inject('tally', (formId, config) => {
+  inject('tally', (formId, config = { max: 3 }) => {
     const displayedKey = `tally-displayed-${formId}`
     const timestampKey = `tally-timestamp-${formId}`
 
@@ -14,7 +14,7 @@ export default (_, inject) => {
     const weeks = 1000 * 60 * 60 * 24 * 7 * 3
     const delay = Date.now() - formTimestamp
 
-    if (formNb < 3 && delay > weeks) {
+    if (formNb < config.max && delay > weeks) {
       window.TallyConfig = {
         formId,
         popup: Object.assign({
@@ -29,11 +29,10 @@ export default (_, inject) => {
       }
 
       setTimeout(() => {
+        localStorage.setItem(displayedKey, +formNb + 1)
+        localStorage.setItem(timestampKey, Date.now())
         window.Tally.openPopup(formId)
       }, 3000)
-
-      localStorage.setItem(displayedKey, +formNb + 1)
-      localStorage.setItem(timestampKey, Date.now())
     }
   })
 }

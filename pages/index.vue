@@ -117,6 +117,13 @@ export default {
         { label: 'Documentez les avancées', value: 'frp' }
       ]
     }
+  },
+  mounted () {
+    if (!this.$user.id) {
+      this.$tally('n9d42K', {
+        max: 2
+      })
+    }
   }
 }
 </script>
