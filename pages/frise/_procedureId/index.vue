@@ -1,96 +1,153 @@
 <template>
-  <v-container>
-    <v-row v-if="collectivite">
-      <v-col cols="12" class="pb-0 mt-6">
-        <nuxt-link :to="backToCollectivite" class="text-decoration-none d-flex align-center">
-          <v-icon color="primary" small class="mr-2">
-            {{ icons.mdiChevronLeft }}
-          </v-icon>
-          {{ collectivite.intitule }}
-        </nuxt-link>
-      </v-col>
-    </v-row>
-    <v-row v-if="collectivite && procedure">
-      <v-col cols="12">
-        <div class="d-flex align-center">
-          <h1 class="text-h1">
-            {{ procedure.doc_type }} de {{ collectivite.intitule }}
-          </h1>
-        </div>
-      </v-col>
-      <v-col cols="12" class="mb-2">
-        <v-btn v-if="$user?.profile?.side === 'etat' && !procedure.secondary_procedure_of" color="primary" class="mr-2" outlined @click="addSubProcedure">
-          Ajouter une procédure secondaire
-        </v-btn>
-        <v-btn v-if="$user?.id && isAdmin" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
-          Ajouter un événement
-        </v-btn>
-        <v-menu v-if="$user?.profile?.side === 'etat'">
-          <template #activator="{ on, attrs }">
-            <v-btn icon color="primary" v-bind="attrs" v-on="on">
-              <v-icon> {{ icons.mdiDotsVertical }}</v-icon>
-            </v-btn>
-          </template>
+  <v-container class="beige" fluid>
+    <v-container>
+      <v-row v-if="collectivite">
+        <v-col cols="12" class="pb-0 mt-6">
+          <nuxt-link :to="backToCollectivite" class="text-decoration-none d-flex align-center">
+            <v-icon color="primary" small class="mr-2">
+              {{ icons.mdiChevronLeft }}
+            </v-icon>
+            {{ collectivite.intitule }}
+          </nuxt-link>
+        </v-col>
+      </v-row>
+      <v-row v-if="collectivite && procedure">
+        <v-col cols="12">
+          <div class="d-flex align-center">
+            <h1 class="text-h1">
+              {{ procedure.doc_type }} de {{ collectivite.intitule }}
+            </h1>
+          </div>
+        </v-col>
+        <v-col cols="12" class="mb-2">
+          <v-btn v-if="$user?.profile?.side === 'etat' && !procedure.secondary_procedure_of" color="primary" class="mr-2" outlined @click="addSubProcedure">
+            Ajouter une procédure secondaire
+          </v-btn>
+          <v-btn v-if="$user?.id && isAdmin" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+            Ajouter un événement
+          </v-btn>
+          <v-menu v-if="$user?.profile?.side === 'etat'">
+            <template #activator="{ on, attrs }">
+              <v-btn icon color="primary" v-bind="attrs" v-on="on">
+                <v-icon> {{ icons.mdiDotsVertical }}</v-icon>
+              </v-btn>
+            </template>
 
-          <v-list>
-            <v-dialog v-model="dialog" width="500">
-              <template #activator="{ on, attrs }">
-                <v-list-item link v-bind="attrs" v-on="on">
-                  <v-list-item-title>
-                    Supprimer
-                  </v-list-item-title>
-                </v-list-item>
-              </template>
-
-              <v-card>
-                <v-card-title class="text-h5 error white--text">
-                  Cette action est irréversible.
-                </v-card-title>
-
-                <v-card-text class="pt-4">
-                  Êtes-vous sur de vouloir supprimer cette procédure ? Il ne sera pas possible de revenir en arrière.
-                </v-card-text>
-
-                <v-divider />
-
-                <v-card-actions>
-                  <v-spacer />
-                  <v-btn color="primary" text @click="dialog = false">
-                    Annuler
-                  </v-btn>
-                  <v-btn color="error" depressed @click="archiveProcedure(procedure.id)">
-                    Supprimer
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-          </v-list>
-        </v-menu>
-      </v-col>
-    </v-row>
-    <v-row v-if="loaded">
-      <v-col cols="12">
-        <v-card outlined class="mb-16">
-          <v-container>
-            <v-row>
-              <v-col cols="9">
-                <FriseEventCard v-if="$user?.id && recommendedEvent && isAdmin" :event="recommendedEvent" suggestion @addSuggestedEvent="addSuggestedEvent" />
-                <template v-for="event in enrichedEvents">
-                  <FriseEventCard
-                    :id="`event-${event.id}`"
-                    :key="event.id"
-                    :event="event"
-                    :type-du="procedure.doc_type"
-                  />
+            <v-list>
+              <v-dialog v-model="dialog" width="500">
+                <template #activator="{ on, attrs }">
+                  <v-list-item link v-bind="attrs" v-on="on">
+                    <v-list-item-title>
+                      Supprimer
+                    </v-list-item-title>
+                  </v-list-item>
                 </template>
-              </v-col>
-              <v-col cols="3" class="my-6">
-                <p class="font-weight-bold">
-                  Événements clés
-                </p>
-                <div class="mb-4">
-                  <div v-for="(eventStructurant, i) in eventsStructurants" :key="i" class="mb-2">
-                    <v-tooltip bottom>
+
+                <v-card>
+                  <v-card-title class="text-h5 error white--text">
+                    Cette action est irréversible.
+                  </v-card-title>
+
+                  <v-card-text class="pt-4">
+                    Êtes-vous sur de vouloir supprimer cette procédure ? Il ne sera pas possible de revenir en arrière.
+                  </v-card-text>
+
+                  <v-divider />
+
+                  <v-card-actions>
+                    <v-spacer />
+                    <v-btn color="primary" text @click="dialog = false">
+                      Annuler
+                    </v-btn>
+                    <v-btn color="error" depressed @click="archiveProcedure(procedure.id)">
+                      Supprimer
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-list>
+          </v-menu>
+        </v-col>
+      </v-row>
+      <v-row v-if="loaded">
+        <v-col cols="12">
+          <v-card outlined class="mb-16">
+            <v-container>
+              <v-row>
+                <v-col cols="9">
+                  <FriseEventCard v-if="$user?.id && recommendedEvent && isAdmin" :event="recommendedEvent" suggestion @addSuggestedEvent="addSuggestedEvent" />
+                  <template v-for="event in enrichedEvents">
+                    <FriseEventCard
+                      :id="`event-${event.id}`"
+                      :key="event.id"
+                      :event="event"
+                      :type-du="procedure.doc_type"
+                    />
+                  </template>
+                </v-col>
+                <v-col cols="3" class="my-6">
+                  <div class="font-weight-bold">
+                    Collaborateurs
+                  </div>
+                  <div class="mb-4">
+                    <v-list two-line dense class="py-0">
+                      <template v-for="(collaborator) in collaborators">
+                        <v-list-item :key="collaborator.id" class="pl-0">
+                          <v-list-item-avatar color="accent" class="text-capitalize white--text font-weight-bold">
+                            <template v-if=" collaborator.firstname">
+                              {{ collaborator.firstname[0] }}
+                            </template>
+                            <span v-else>
+                              {{ collaborator.email[0] }}
+                            </span>
+                          </v-list-item-avatar>
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              <template v-if=" collaborator.firstname && collaborator.lastname">
+                                {{ collaborator.firstname }} {{ collaborator.lastname }}
+                              </template>
+                              <span v-else>
+                                {{ collaborator.email }}
+                              </span>
+                            </v-list-item-title>
+                            <v-list-item-subtitle>{{ collaborator.poste }}</v-list-item-subtitle>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </template>
+                    </v-list>
+                  </div>
+                  <p class="font-weight-bold">
+                    Événements clés
+                  </p>
+                  <div class="mb-4">
+                    <div v-for="(eventStructurant, i) in eventsStructurants" :key="i" class="mb-2">
+                      <v-tooltip bottom>
+                        <template #activator="{ on, attrs }">
+                          <v-chip
+                            label
+                            class="mb-2"
+                            color="grey darken-1"
+                            v-bind="attrs"
+                            v-on="on"
+                            @click="scrollToStructurant(eventStructurant.id)"
+                          >
+                            <v-icon color="grey darken-2" class="mr-2">
+                              {{ icons.mdiBookmark }}
+                            </v-icon>
+                            <span class="text-truncate">
+                              {{ eventStructurant.type }}
+                            </span>
+                          </v-chip>
+                        </template>
+                        {{ eventStructurant.type }}
+                      </v-tooltip>
+                    </div>
+                  </div>
+                  <p class="font-weight-bold">
+                    Ressources
+                  </p>
+                  <p>
+                    <v-tooltip v-for="attachment in attachments" :key="attachment.id" bottom>
                       <template #activator="{ on, attrs }">
                         <v-chip
                           label
@@ -98,51 +155,26 @@
                           color="grey darken-1"
                           v-bind="attrs"
                           v-on="on"
-                          @click="scrollToStructurant(eventStructurant.id)"
                         >
                           <v-icon color="grey darken-2" class="mr-2">
-                            {{ icons.mdiBookmark }}
+                            {{ icons.mdiPaperclip }}
                           </v-icon>
                           <span class="text-truncate">
-                            {{ eventStructurant.type }}
+                            {{ attachment.name }}
                           </span>
                         </v-chip>
                       </template>
-                      {{ eventStructurant.type }}
+                      {{ attachment.name }}
                     </v-tooltip>
-                  </div>
-                </div>
-                <p class="font-weight-bold">
-                  Ressources
-                </p>
-                <p>
-                  <v-tooltip v-for="attachment in attachments" :key="attachment.id" bottom>
-                    <template #activator="{ on, attrs }">
-                      <v-chip
-                        label
-                        class="mb-2"
-                        color="grey darken-1"
-                        v-bind="attrs"
-                        v-on="on"
-                      >
-                        <v-icon color="grey darken-2" class="mr-2">
-                          {{ icons.mdiPaperclip }}
-                        </v-icon>
-                        <span class="text-truncate">
-                          {{ attachment.name }}
-                        </span>
-                      </v-chip>
-                    </template>
-                    {{ attachment.name }}
-                  </v-tooltip>
-                </p>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-col>
-    </v-row>
-    <VGlobalLoader v-else />
+                  </p>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card>
+        </v-col>
+      </v-row>
+      <VGlobalLoader v-else />
+    </v-container>
   </v-container>
 </template>
 
@@ -174,6 +206,9 @@ export default
     }
   },
   computed: {
+    collaborators () {
+      return [{ id: '1', firstname: 'julien', lastname: 'leray', poste: 'elu' }]
+    },
     isAdmin () {
       if (!this.$user.id) { return false }
 

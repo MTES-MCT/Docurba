@@ -40,20 +40,6 @@
               </template>
               Cet événement n’est visible que pour la collectivité et les services de l’État.
             </v-tooltip>
-            <v-tooltip bottom>
-              <template #activator="{ on, attrs }">
-                <v-chip
-                  class="text-uppercase"
-                  :color="creator.background"
-                  label
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  {{ event.profiles?.poste || event.profiles?.side || creator.values[0] }}
-                </v-chip>
-              </template>
-              Cet événement a été ajouté par  {{ event.profiles?.poste || event.profiles?.side || creator.values[0] }}.
-            </v-tooltip>
             <v-btn v-if="creator.values[0] != 'sudocu' && ($user.profile?.side === 'etat' || event.profile_id === $user.id )" class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
               <v-icon color="grey darken-2">
                 {{ icons.mdiPencil }}
@@ -72,29 +58,39 @@
         </v-card-title>
         <v-card-text v-if="$user.id && (event.commentaire || event.description)">
           {{ event.commentaire || event.description }}
-        </v-card-text>
-        <v-card-actions v-if="event.attachements?.length" class="d-flex">
-          <v-chip
-            v-for="attachement in event.attachements"
-            :key="attachement.id"
-            label
-            class="mr-2"
+          <div v-if="event.attachements?.length" class="mt-4">
+            <v-chip
+              v-for="attachement in event.attachements"
+              :key="attachement.id"
+              label
+              class="mr-2"
 
-            @click="downloadFile(attachement)"
-          >
-            <v-icon class="pr-2" color="grey darken-2">
-              {{ icons.mdiPaperclip }}
-            </v-icon>
-            <span class="text-truncate">{{ attachement.name }}</span>
-          </v-chip>
-          <a
-            v-for="attachement in event.attachements"
-            :key="`file-link-${attachement.id}`"
-            :ref="`file-${attachement.id}`"
-            class="d-none"
-            :download="attachement.name"
-          />
-        </v-card-actions>
+              @click="downloadFile(attachement)"
+            >
+              <v-icon class="pr-2" color="grey darken-2">
+                {{ icons.mdiPaperclip }}
+              </v-icon>
+              <span class="text-truncate">{{ attachement.name }}</span>
+            </v-chip>
+            <a
+              v-for="attachement in event.attachements"
+              :key="`file-link-${attachement.id}`"
+              :ref="`file-${attachement.id}`"
+              class="d-none"
+              :download="attachement.name"
+            />
+          </div>
+          <div class="d-flex mt-4 align-center">
+            <v-avatar size="18" color="accent" class=" text-capitalize text-caption white--text font-weight-bold">
+              <div class="text-center" style="margin-top:-1px;margin-left:1px">
+                J
+              </div>
+            </v-avatar>
+            <div class="typo--text ml-1 ">
+              Julien Leray
+            </div>
+          </div>
+        </v-card-text>
       </v-card>
     </v-col>
   </v-row>
