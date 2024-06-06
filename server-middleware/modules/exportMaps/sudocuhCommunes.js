@@ -1,4 +1,12 @@
 export default {
+  annee_cog: 'cog',
+  code_insee: 'code',
+  com_nom: 'intitule',
+  com_code_departement: 'departementCode',
+  com_nom_departement: 'departement.intitule',
+  com_code_region: 'regionCode',
+  com_nom_region: 'region.intitule',
+  com_nouvelle: 'nouvelle',
   epci_reg: 'intercommunalite.regionCode',
   epci_region: 'intercommunalite.region.intitule',
   epci_dept: 'intercommunalite.departementCode',
@@ -6,8 +14,6 @@ export default {
   epci_type: 'intercommunalite.type',
   epci_nom: 'intercommunalite.intitule',
   epci_siren: 'intercommunalite.code',
-  code_insee: 'code',
-  com_nom: 'intitule',
   collectivite_porteuse: 'collectivitePorteuse',
   // collectivite_porteuse_banatic: ''
   plan_etat_code1: 'sudocuhCodes.etat.code', //
@@ -18,9 +24,10 @@ export default {
   plan_libelle_code_etat_bcsi: 'sudocuhCodes.bcsi.label',
   types_pc: 'currentsDocTypes',
   // type_pc_color: getStateColor(typesCurrentProc),
-  pc_num_procedure: 'planCurrent.from_sudocuh', //
+  pc_docurba_id: 'planCurrent.id',
+  pc_num_procedure_sudocuh: 'planCurrent.from_sudocuh', //
   pc_nb_communes: 'planCurrent.current_perimetre.length',
-  pc_type_document: 'planCurrent.doc_type',
+  pc_type_document: 'planCurrent.docType',
   pc_type_procedure: 'planCurrent.type',
   pc_date_prescription: 'planCurrent.prescription.date_iso',
   pc_date_arret_projet: 'planCurrent.arret.date_iso',
@@ -29,20 +36,30 @@ export default {
   pc_plui_valant_scot: 'planCurrent.is_scot',
   pc_pluih: 'planCurrent.is_pluih',
   // pc_pluih_num_procedure: '', // Pas de ref dans Docurba
-  pc_sectoriel: 'planCurrent.is_sectoriel',
+  pc_sectoriel: 'planCurrent.isSectoriel',
   pc_pdu_tient_lieu: 'planCurrent.is_pdu',
   pc_pdu_obligatoire: 'planCurrent.mandatory_pdu',
+  // {
+  //   "coutplanht": null,
+  //   "coutplanttc": null,
+  //   "nomprestaexterne": ""
+  // }
   // pc_psmv: '', //  A priori on l'a
   // pc_type_moe: '', // A priori on l'a
-  // pc_nom_sst: '', // A priori on l'a
-  // pc_cout_sst_ht: '', // A priori on l'a
-  // pc_cout_sst_ttc: '', // A priori on l'a
-  pa_id: 'planOpposable.id',
-  pa_num_procedure: 'planOpposable.from_sudocuh',
+  pc_nom_sst: 'planCurrent.moe.nomprestaexterne',
+  pc_cout_sst_ht: 'planCurrent.moe.coutplanht',
+  pc_cout_sst_ttc: 'planCurrent.moe.coutplanttc',
+  pc_trajectoire_ZAN: '',
+  pc_zone_acceleration_ENR: '',
+  pc_trait_de_cote: '',
+  pc_feu_de_foret: '',
+  pc_autre: '',
+  pa_docurba_id: 'planOpposable.id',
+  pa_num_procedure_sudocuh: 'planOpposable.from_sudocuh',
   pa_nb_communes: 'planOpposable.current_perimetre.length',
-  pa_type_document: 'planOpposable.doc_type', //
+  pa_type_document: 'planOpposable.docType', //
   pa_type_procedure: 'planOpposable.type',
-  pa_sectoriel: 'planOpposable.is_sectoriel',
+  pa_sectoriel: 'planOpposable.isSectoriel',
   pa_date_prescription: 'planOpposable.prescription.date_iso', //
   pa_date_arret_projet: 'planOpposable.arret.date_iso', //
   pa_date_pac: 'planOpposable.date_iso', //
@@ -54,14 +71,19 @@ export default {
   pa_delai_approbation: 'planOpposable.approbationDelay', //
   pa_plui_valant_scot: 'planOpposable.is_scot', //
   pa_pluih: 'planOpposable.is_pluih', //
-  // pa_pluih_num_procedure: '', // // Pas de ref dans Docurba
+  // pa_pluih_num_procedure_sudocuh: '', // // Pas de ref dans Docurba
   pa_pdu_tient_lieu: 'planOpposable.is_pdu', //
   pa_pdu_obligatoire: 'planOpposable.mandatory_pdu', //
   // pa_psmv: '', //  A priori on l'a
   // pa_type_moe: '', // A priori on l'a
-  // pa_nom_sst: '', // A priori on l'a
-  // pa_cout_sst_ht: '', // A priori on l'a
-  // pa_cout_sst_ttc: '', // A priori on l'a
+  pa_nom_sst: 'planOpposable.moe.nomprestaexterne',
+  pa_cout_sst_ht: 'planOpposable.moe.coutplanht',
+  pa_cout_sst_ttc: 'planOpposable.moe.coutplanttc',
+  pa_trajectoire_ZAN: '',
+  pa_zone_acceleration_ENR: '',
+  pa_trait_de_cote: '',
+  pa_feu_de_foret: '',
+  pa_autre: '',
   proc_nb_revisions: 'revisions.length', //
   proc_nb_modifications: 'modifications.length', //
   // proc_nb_proc_secondaires: opposableSecondaryProcedures.length,

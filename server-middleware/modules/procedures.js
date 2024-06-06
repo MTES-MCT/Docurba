@@ -4,6 +4,7 @@ import communes from '../Data/referentiels/communes.json'
 import groupements from '../Data/referentiels/groupements.json'
 import regions from '../Data/INSEE/regions.json'
 import departements from '../Data/INSEE/departements.json'
+import communeNouvelles from '../Data/referentiels/communesNouvelles.json'
 import supabase from './supabase.js'
 
 import sudocuhCodes from './sudocuhCodes.js'
@@ -33,6 +34,20 @@ const proceduresCategs = {
 function logProcedures (procedures, logName = 'logProcedures') {
   // eslint-disable-next-line no-console
   return console.log(logName, procedures.map(p => `${p.id} ${p.doc_type} ${p.type} ${p.prescription?.date_iso} ${p.current_perimetre.length}`))
+}
+
+function getFullDocType (procedure) {
+  if (procedure.doc_type === 'PLU') {
+    let docType = procedure.doc_type
+    if (procedure.current_perimetre.length > 1) { docType += 'i' }
+    if (procedure.isSectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')) {
+      docType += 'S'
+    }
+    if (procedure.is_pluih) { docType += 'H' }
+    if (procedure.is_pdu) { docType += 'D' }
+
+    return docType
+  } else { return procedure.doc_type }
 }
 
 function sortEvents (events) {
@@ -90,6 +105,8 @@ export default {
     }
 
     return Object.assign({
+      cog: '2024',
+      nouvelle: communeNouvelles.includes(+commune.code),
       intercommunalite,
       departement: communeDepartement,
       region: communeRegion
@@ -142,10 +159,17 @@ export default {
         eventsByType.approbationDelay = dayjs(eventsByType.approbation.date_iso).diff(eventsByType.prescription.date_iso, 'day')
       }
 
-      return Object.assign({
+      const group = groupements.find(g => g.code === procedure.collectivite_porteuse_id)
+
+      const enrichedProcedure = Object.assign({
         events: sortEvents(procedureEvents),
-        isSelfPorteuse: procedure.collectivite_porteuse_id === inseeCode
+        isSelfPorteuse: procedure.collectivite_porteuse_id === inseeCode,
+        isSectoriel: group ? group.membres.filter(m => m.type === 'COM').length > procedure.current_perimetre.length : procedure.is_sectoriel
       }, eventsByType, procedure)
+
+      enrichedProcedure.docType = getFullDocType(enrichedProcedure)
+
+      return enrichedProcedure
     })
   },
   async getCommune (inseeCode, rawProcedures, events) {
