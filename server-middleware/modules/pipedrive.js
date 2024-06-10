@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+const fs = require('fs')
+
 const _ = require('lodash')
 const pipedrive = require('pipedrive')
 
@@ -17,7 +19,6 @@ const dealsApi = new pipedrive.DealsApi()
 // stageApi.getStages().then((stages) => {
 //   console.log(stages)
 // }).catch(err => console.log(err))
-
 // const personFieldsApi = new pipedrive.PersonFieldsApi()
 // personFieldsApi.getPersonFields().then((personFields) => {
 //   const json = personFields.data.map((field) => {
@@ -33,7 +34,10 @@ const dealsApi = new pipedrive.DealsApi()
 const fieldsMap = {
   // 'email': 'email',
   // departement: 'a92ba23ce78c8995ab7957ab70828023de6ebc1e' // Don't think I can just send a value when it's type enum.
-  verified: { key: '8c176dd0608d98671ca116948a8091d6b30ac045', options: { true: 'Oui', false: 'Non' } },
+  verified: {
+    key: '8c176dd0608d98671ca116948a8091d6b30ac045',
+    options: { true: 'Oui', false: 'Non' }
+  },
   other_poste: {
     key: '945716c2fc1edf91e5e8c8aac47c73cbf7508e7e',
     set: {
@@ -212,7 +216,7 @@ module.exports = {
         }
 
         if (pipedriveFiel.set) {
-          pipedriveValue = val.map((v) => {
+          pipedriveValue = val?.map((v) => {
             if (pipedriveFiel.set[v]) {
               return pipedriveFiel.set[v]
             } else {

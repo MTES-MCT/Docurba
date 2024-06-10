@@ -27,12 +27,17 @@ async function handleRedirect ($supabase, event, user, router) {
       router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
     }
 
+    await $supabase.from('profiles')
+      .update({
+        successfully_logged_once: true
+      }).eq('user_id', user.id)
+
     if (user.profile.side === 'collectivite') {
-      // console.log('SIGNED_IN COLLECTIVITEEEEE')
-      // if (!user.profile.successfully_logged_once) {
-      axios({ url: '/api/pipedrive/collectivite_inscrite', method: 'post', data: { userData: { email: user.email } } })
-      await $supabase.from('profiles').update({ successfully_logged_once: true }).eq('user_id', user.id)
-      // }
+      axios({
+        url: '/api/pipedrive/collectivite_inscrite',
+        method: 'post',
+        data: { userData: { email: user.email } }
+      })
     }
   }
 }

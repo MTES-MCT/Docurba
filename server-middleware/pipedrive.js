@@ -127,6 +127,16 @@ app.post('/deals', async (req, res) => {
   }
 })
 
+// Test
+// async function testProfileUpdate () {
+//   await supabase.from('profiles').update({
+//     verified: true,
+//     poste: 'ddt'
+//   }).eq('email', 'fabien@quantedsquare.com')
+// }
+
+// testProfileUpdate()
+
 // async function testPipedrive () {
 //   const { person } = await pipedrive.findPerson('fabien@quantedsquare.com')
 //   console.log(person)
