@@ -63,7 +63,7 @@
               >
                 <template #selection="{item, index}">
                   <div v-if="documentFilterItems.length === selectedDocumentsFilter.length && index === 0">
-                    Tout types de documents
+                    Tout type de document
                   </div>
                   <span v-else-if="documentFilterItems.length !== selectedDocumentsFilter.length">
                     {{ item.text }}<span v-if="index !== selectedDocumentsFilter.length - 1">,&nbsp;</span>

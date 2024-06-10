@@ -47,7 +47,7 @@
               >
                 <template #selection="{item, index}">
                   <div v-if="collectiviteTypeFilterItems.length === selectedCollectiviteTypesFilter.length && index === 0">
-                    Tout types de collectivité
+                    Tout type de collectivité
                   </div>
                   <span v-else-if="collectiviteTypeFilterItems.length !== selectedCollectiviteTypesFilter.length">
                     {{ item.text }}<span v-if="index !== selectedCollectiviteTypesFilter.length - 1">,&nbsp;</span>
