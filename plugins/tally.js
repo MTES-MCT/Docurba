@@ -8,13 +8,13 @@ export default (_, inject) => {
     const displayedKey = `tally-displayed-${formId}`
     const timestampKey = `tally-timestamp-${formId}`
 
-    const formTimestamp = window.localStorage.getItem(timestampKey) || 0
+    // const formTimestamp = window.localStorage.getItem(timestampKey) || 0
     const formNb = window.localStorage.getItem(displayedKey) || 0
 
-    const weeks = 1000 * 60 * 60 * 24 * 7 * 3
-    const delay = Date.now() - formTimestamp
+    // const weeks = 1000 * 60 * 60 * 24 * 7 * 3
+    // const delay = Date.now() - formTimestamp
 
-    if (formNb < config.max && delay > weeks) {
+    if (formNb < config.max) {
       window.TallyConfig = {
         formId,
         popup: Object.assign({

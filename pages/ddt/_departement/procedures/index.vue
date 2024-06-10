@@ -192,7 +192,7 @@ export default {
           (this.selectedStatusFilter.includes('en_cours') && (!e.opposable && !(e.procedures.status === 'opposable'))) ||
           (this.selectedStatusFilter.includes('archived') && (!e.opposable && e.procedures.status === 'opposable'))))
       })
-      console.log('proceduresAndFilters: ', proceduresAndFilters)
+
       return proceduresAndFilters
     }
   },
@@ -205,12 +205,15 @@ export default {
       const { communes, groupements } = await referentiel.json()
       this.rawProcedures = rawProcedures.map((e) => {
         let porteuse = null
+
         if (e.perimetre.length > 1) {
           porteuse = groupements.find(grp => grp.code === e.procedures.collectivite_porteuse_id)
         } else {
           porteuse = communes.find(com => com.code === e.perimetre[0].collectivite_code)
         }
+
         const name = `${e.procedures.type} ${e.procedures.numero ? e.procedures.numero : ''} ${e.procedures.doc_type} ${porteuse?.intitule}`
+
         return { ...e, name }
       })
     } catch (error) {

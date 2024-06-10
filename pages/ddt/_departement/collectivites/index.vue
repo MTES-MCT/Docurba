@@ -198,7 +198,7 @@ export default {
     headers () {
       return [
         { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '30%' },
-        { text: 'Type', align: 'start', value: 'type', filterable: true, width: '10%' },
+        { text: 'Type', align: 'start', value: 'type', filterable: false, width: '10%' },
         { text: 'Procédures', value: 'procedures', filterable: false, sortable: false, width: '30%' },
         { text: 'SCOTs', value: 'scots', filterable: false, sortable: false, width: '30%' }
       ]

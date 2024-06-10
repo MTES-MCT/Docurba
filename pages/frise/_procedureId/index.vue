@@ -14,7 +14,8 @@
       <v-col cols="12">
         <div class="d-flex align-center">
           <h1 class="text-h1">
-            {{ procedure.doc_type }} de {{ collectivite.intitule }}
+            <!-- {{ procedure.doc_type }} de {{ collectivite.intitule }} -->
+            {{ procedure.fullName }}
           </h1>
         </div>
       </v-col>
@@ -239,7 +240,6 @@ export default
     },
     recommendedEvent () {
       const filteredDocumentEvents = this.documentEvents?.filter(e => e.scope_sugg.includes(this.internalProcedureType))
-      console.log('filteredDocumentEvents: ', filteredDocumentEvents)
       if (!filteredDocumentEvents) { return null }
       if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
       const lastEventType = this.events[0]
@@ -293,8 +293,9 @@ export default
 
       this.collectivite = collectivite
 
+      this.procedure.fullName = `${this.procedure.type} ${this.procedure.numero ? this.procedure.numero : ''} ${this.procedure.doc_type} ${this.collectivite?.intitule}`
+
       this.events = await this.getEvents()
-      console.log('this.events: ', this.events)
       this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
