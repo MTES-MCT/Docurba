@@ -156,6 +156,32 @@ export default {
       return 'default'
     }
   },
+  async middleware ({ route, redirect, $user, $supabase }) {
+    await $user.isReady
+
+    const gitRef = route.params.githubRef
+    const publicUrl = `/documents/${gitRef}/pac`
+
+    if (!['ddt', 'dreal'].includes($user.profile.poste)) {
+      redirect(publicUrl)
+    } else if (gitRef.includes('projet-')) {
+      const { data: projects } = await $supabase.from('projects')
+        .select('owner').eq('id', gitRef.replace('projet-', ''))
+
+      const { data: sharings } = await $supabase
+        .from('projects_sharing')
+        .select('id, role')
+        .match({
+          user_email: $user.email,
+          role: 'write',
+          project_id: gitRef.replace('projet-', '')
+        })
+
+      if (projects[0].owner !== $user.id && !sharings.length) {
+        redirect(publicUrl)
+      }
+    }
+  },
   data () {
     return {
       icons: {
