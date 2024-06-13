@@ -15,23 +15,15 @@ export default (_, inject) => {
     // const delay = Date.now() - formTimestamp
 
     if (formNb < config.max) {
-      window.TallyConfig = {
-        formId,
-        popup: Object.assign({
-          open: {
-            trigger: 'time',
-            ms: 3000
-          },
-          hideTitle: true,
-          autoClose: 2000,
-          doNotShowAfterSubmit: true
-        }, config)
-      }
+      const options = Object.assign({
+        hideTitle: true,
+        doNotShowAfterSubmit: true
+      }, config)
 
       setTimeout(() => {
         localStorage.setItem(displayedKey, +formNb + 1)
         localStorage.setItem(timestampKey, Date.now())
-        window.Tally.openPopup(formId)
+        window.Tally.openPopup(formId, options)
       }, 3000)
     }
   })
