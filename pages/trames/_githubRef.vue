@@ -344,11 +344,13 @@ export default {
       if (diffFile) {
         const level = diffRef.includes('dept-') ? 'départemental' : (diffRef.includes('region-') ? 'régional' : 'national')
 
+        const changeMsg = diffFile.status === 'removed' ? 'Renommée ou supprimée' : 'Modifications'
+
         section.diff = {
           path: diffFile.filename,
           ref: diffRef,
           sha: diffFile.sha,
-          label: `Modifications au niveau ${level}`
+          label: `${changeMsg} au niveau ${level}`
         }
       }
 
