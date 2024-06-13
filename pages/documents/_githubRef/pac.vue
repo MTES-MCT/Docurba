@@ -100,6 +100,9 @@ export default {
   },
   async mounted () {
     if (this.gitRef.includes('projet-')) {
+      // Role verification
+      await this.$refRole(this.gitRef, ['read', 'write'], '/')
+
       const projectId = this.gitRef.replace('projet-', '')
 
       const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
