@@ -23,7 +23,7 @@
         <v-btn v-if="$user?.profile?.side === 'etat' && !procedure.secondary_procedure_of" color="primary" class="mr-2" outlined @click="addSubProcedure">
           Ajouter une procédure secondaire
         </v-btn>
-        <v-btn v-if="$user?.id && isAdmin" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+        <v-btn v-if="($user?.id && isAdmin) || ($user.profile.side === 'collectivite') " depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
           Ajouter un événement
         </v-btn>
         <v-menu v-if="$user?.profile?.side === 'etat'">
@@ -241,8 +241,10 @@ export default
     recommendedEvent () {
       const filteredDocumentEvents = this.documentEvents?.filter(e => e.scope_sugg.includes(this.internalProcedureType))
       if (!filteredDocumentEvents) { return null }
+
       if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
       const lastEventType = this.events[0]
+
       const lastEventOrder = this.documentEvents.find(e => e.name === lastEventType.type)
       if (!lastEventOrder) { return filteredDocumentEvents[0] }
       return filteredDocumentEvents.find(e => _.gt(e.order, lastEventOrder.order))
