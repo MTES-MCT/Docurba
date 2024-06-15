@@ -93,22 +93,12 @@
                     <v-list two-line dense class="py-0">
                       <template v-for="(collaborator) in collaborators">
                         <v-list-item :key="collaborator.id" class="pl-0">
-                          <v-list-item-avatar color="accent" class="text-capitalize white--text font-weight-bold">
-                            <template v-if=" collaborator.firstname">
-                              {{ collaborator.firstname[0] }}
-                            </template>
-                            <span v-else>
-                              {{ collaborator.email[0] }}
-                            </span>
+                          <v-list-item-avatar :color="collaborator.color" class="text-capitalize white--text font-weight-bold">
+                            {{ collaborator.avatar }}
                           </v-list-item-avatar>
                           <v-list-item-content>
                             <v-list-item-title>
-                              <template v-if=" collaborator.firstname && collaborator.lastname">
-                                {{ collaborator.firstname }} {{ collaborator.lastname }}
-                              </template>
-                              <span v-else>
-                                {{ collaborator.email }}
-                              </span>
+                              {{ collaborator.label }}
                             </v-list-item-title>
                             <v-list-item-subtitle>{{ collaborator.poste }}</v-list-item-subtitle>
                           </v-list-item-content>
@@ -207,7 +197,8 @@ export default
   },
   computed: {
     collaborators () {
-      return [{ id: '1', firstname: 'julien', lastname: 'leray', poste: 'elu' }]
+      // return [{ id: '1', firstname: 'julien', lastname: 'leray', poste: 'elu' }]
+      return _.uniqBy(this.events.map(e => this.$utils.formatEventProfileToCreator(e)), e => e.label)
     },
     isAdmin () {
       if (!this.$user.id) { return false }

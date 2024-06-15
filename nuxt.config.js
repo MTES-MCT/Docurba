@@ -28,6 +28,7 @@ export default {
     { src: '~/plugins/composition.js' },
     { src: '~/plugins/supabase.js' },
     { src: '~/plugins/supabaseAdmin.js', mode: 'server' },
+    { src: '~/plugins/utils.js' },
     { src: '~/plugins/user.js' }, // Need to be after supabase plugin
     { src: '~/plugins/auth.js' }, // Need to be after user plugin
     { src: '~/plugins/pac.js' },
@@ -43,6 +44,7 @@ export default {
     { src: '~/plugins/analytics.js' },
     { src: '~/plugins/gtag.js', mode: 'client' },
     { src: '~/plugins/stonly.js', mode: 'client' }
+
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

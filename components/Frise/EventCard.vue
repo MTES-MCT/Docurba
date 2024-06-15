@@ -40,7 +40,7 @@
               </template>
               Cet événement n’est visible que pour la collectivité et les services de l’État.
             </v-tooltip>
-            <v-btn v-if="creator.values[0] != 'sudocu' && ($user.profile?.side === 'etat' || event.profile_id === $user.id )" class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
+            <v-btn v-if="creator.label != 'Sudocuh' && ($user.profile?.side === 'etat' || event.profile_id === $user.id )" class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
               <v-icon color="grey darken-2">
                 {{ icons.mdiPencil }}
               </v-icon>
@@ -56,8 +56,11 @@
             </v-btn>
           </div>
         </v-card-title>
-        <v-card-text v-if="$user.id && (event.commentaire || event.description)">
-          {{ event.commentaire || event.description }}
+        <v-card-text>
+          <div v-if="$user.id && (event.commentaire || event.description)">
+            {{ event.commentaire || event.description }}
+          </div>
+
           <div v-if="event.attachements?.length" class="mt-4">
             <v-chip
               v-for="attachement in event.attachements"
@@ -81,13 +84,13 @@
             />
           </div>
           <div class="d-flex mt-4 align-center">
-            <v-avatar size="18" color="accent" class=" text-capitalize text-caption white--text font-weight-bold">
+            <v-avatar size="18" :color="creator.color" class=" text-capitalize text-caption white--text font-weight-bold">
               <div class="text-center" style="margin-top:-1px;margin-left:1px">
-                J
+                {{ creator.avatar }}
               </div>
             </v-avatar>
             <div class="typo--text ml-1 ">
-              Julien Leray
+              {{ creator.label }}
             </div>
           </div>
         </v-card-text>
@@ -98,7 +101,7 @@
 
 <script>
 import { mdiPencil, mdiPaperclip, mdiBookmark } from '@mdi/js'
-import actors from '@/assets/friseActors.json'
+// import actors from '@/assets/friseActors.json'
 
 export default {
   props: {
@@ -127,11 +130,7 @@ export default {
   },
   computed: {
     creator () {
-      let actor = this.event.profiles?.side || 'docurba'
-      if (this.event.from_sudocuh) { actor = 'sudocu' }
-      return actors.find((e) => {
-        return e.values.includes(actor)
-      })
+      return this.$utils.formatEventProfileToCreator(this.event)
     },
     formatDate () {
       return this.$dayjs(this.event.date_iso).format('DD/MM/YY')
