@@ -1,5 +1,19 @@
 <template>
   <v-app>
+    <v-dialog v-model="showTally" eager max-width="500px">
+      <v-sheet color="white">
+        <iframe
+          data-tally-src="https://tally.so/embed/m6kNJP?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+          loading="lazy"
+          width="100%"
+          height="650"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0"
+          title="🎨 Nouveau Tableau de Bord !"
+        />
+      </v-sheet>
+    </v-dialog>
     <LayoutsAppBar flat extended>
       <v-tabs v-if="$user.profile.verified" align-with-title class="header-tabs">
         <v-tab
@@ -84,7 +98,10 @@ const validationBetaDDT = [
 export default {
   name: 'DdtLayout',
   data () {
-    return { isLoading: true }
+    return {
+      isLoading: true,
+      showTally: false
+    }
   },
   computed: {
     isAllowed () {
@@ -108,7 +125,14 @@ export default {
 
     if (this.$user.profile.side !== 'etat' && !this.$isDev) { this.$router.push('/') }
 
-    this.$tally('m6kNJP', { max: 1 })
+    // this.$tally('m6kNJP', { max: 1 })
+    const displayedKey = 'tally-displayed-m6kNJP'
+    const formNb = window.localStorage.getItem(displayedKey) || 0
+    if (formNb < 1) {
+      this.showTally = true
+      window.Tally.loadEmbeds()
+      localStorage.setItem(displayedKey, +formNb + 1)
+    }
 
     if (this.$route.query.contact) {
       axios({

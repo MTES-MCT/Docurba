@@ -60,10 +60,10 @@
                   :items="proceduresParents"
                 >
                   <template #selection="{item}">
-                    {{ item.type }} du {{ item | docType }} {{ item.status }} (collec. porteuse {{ item.collectivite.intitule }})
+                    {{ item.type }} du {{ item | docType }} {{ item.status }} {{ item.collectivite.intitule }} (collec. porteuse {{ item.porteuse.intitule }})
                   </template>
                   <template #item="{item}">
-                    {{ item.type }} du {{ item | docType }} {{ item.status }} (collec. porteuse {{ item.collectivite.intitule }})
+                    {{ item.type }} du {{ item | docType }} {{ item.status }} {{ item.collectivite.intitule }} (collec. porteuse {{ item.porteuse.intitule }})
                   </template>
                 </v-select>
               </validation-provider>
@@ -208,7 +208,6 @@ export default {
   async mounted () {
     try {
       if (this.procedureCategory === 'secondaire') {
-        console.log('getProcedures')
         const proceduresParents = await this.getProcedures()
         this.proceduresParents = proceduresParents
         if (this.$route.query.secondary_id) {
@@ -225,9 +224,7 @@ export default {
   },
   methods: {
     async getProcedures () {
-      console.log('getProcedures')
-
-      let query = this.$supabase.from('procedures').select('*').eq('is_principale', true).eq('status', 'opposable')
+      let query = this.$supabase.from('procedures').select('*, procedures_perimetres(*)').eq('is_principale', true).eq('status', 'opposable')
 
       if (this.collectivite.type !== 'COM') {
         query = query.eq('collectivite_porteuse_id', this.collectivite.code)
@@ -241,16 +238,37 @@ export default {
         console.log('error getProcedures', error)
       }
 
+      const collectiviteCodes = procedures.map(p => p.collectivite_porteuse_id)
+
+      procedures.forEach((p) => {
+        collectiviteCodes.push(...p.procedures_perimetres.map(c => c.collectivite_code))
+      })
+
       const { data: collectivites } = await axios({
         url: '/api/geo/collectivites',
         params: {
-          codes: procedures.map(p => p.collectivite_porteuse_id)
+          codes: collectiviteCodes
         }
       })
 
       const enrichedProcedures = procedures.map((p) => {
+        const comd = p.procedures_perimetres.find(c => c.type === 'COMD')
+
+        const collectivite = collectivites.find((c) => {
+          if (comd) {
+            return c.code === comd.collectivite_code
+          } else if (p.procedures_perimetres.length === 1) {
+            return c.code === p.procedures_perimetres[0].collectivite_code
+          } else { return c.code === p.collectivite_porteuse_id }
+        })
+
+        if (comd) {
+          collectivite.intitule += ' COMD'
+        }
+
         return {
-          collectivite: collectivites.find(c => c.code === p.collectivite_porteuse_id),
+          porteuse: collectivites.find(c => c.code === p.collectivite_porteuse_id),
+          collectivite,
           ...p
         }
       })
