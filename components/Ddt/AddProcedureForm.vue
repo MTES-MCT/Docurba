@@ -60,10 +60,10 @@
                   :items="proceduresParents"
                 >
                   <template #selection="{item}">
-                    {{ item.type }} du {{ item | docType }} {{ item.status }} (collec. porteuse {{ item.collectivite_porteuse_id }})
+                    {{ item.type }} du {{ item | docType }} {{ item.status }} (collec. porteuse {{ item.collectivite.intitule }})
                   </template>
                   <template #item="{item}">
-                    {{ item.type }} du {{ item | docType }} {{ item.status }} (collec. porteuse {{ item.collectivite_porteuse_id }})
+                    {{ item.type }} du {{ item | docType }} {{ item.status }} (collec. porteuse {{ item.collectivite.intitule }})
                   </template>
                 </v-select>
               </validation-provider>
@@ -208,12 +208,14 @@ export default {
   async mounted () {
     try {
       if (this.procedureCategory === 'secondaire') {
+        console.log('getProcedures')
         const proceduresParents = await this.getProcedures()
         this.proceduresParents = proceduresParents
         if (this.$route.query.secondary_id) {
           this.procedureParent = this.$route.query.secondary_id
         }
       }
+
       this.perimetre = this.collectivite.type === 'COM' ? [this.collectivite.code] : this.communes.map(e => e.code)
       this.loaded = true
     } catch (error) {
@@ -223,6 +225,8 @@ export default {
   },
   methods: {
     async getProcedures () {
+      console.log('getProcedures')
+
       let query = this.$supabase.from('procedures').select('*').eq('is_principale', true).eq('status', 'opposable')
 
       if (this.collectivite.type !== 'COM') {
@@ -232,13 +236,30 @@ export default {
       }
 
       const { data: procedures, error } = await query
-      if (error) { throw error }
 
-      if (this.collectivite.type !== 'COM') {
-        return procedures.filter(e => e.current_perimetre.length > 1)
+      if (error) {
+        console.log('error getProcedures', error)
       }
 
-      return procedures
+      const { data: collectivites } = await axios({
+        url: '/api/geo/collectivites',
+        params: {
+          codes: procedures.map(p => p.collectivite_porteuse_id)
+        }
+      })
+
+      const enrichedProcedures = procedures.map((p) => {
+        return {
+          collectivite: collectivites.find(c => c.code === p.collectivite_porteuse_id),
+          ...p
+        }
+      })
+
+      if (this.collectivite.type !== 'COM') {
+        return enrichedProcedures.filter(e => e.current_perimetre.length > 1)
+      } else {
+        return enrichedProcedures
+      }
     },
     async createProcedure () {
       this.loadingSave = true

@@ -54,7 +54,6 @@ export default {
     if (this.$route.query.secondary_id) {
       this.tab = 1
     }
-    console.log('collectivite: ', this.collectivite)
   }
 }
 </script>

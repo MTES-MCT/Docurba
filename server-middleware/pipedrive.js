@@ -157,14 +157,20 @@ app.post('/profiles', async (req, res) => {
   const { record: profile } = req.body
 
   const { person } = await pipedrive.findPerson(profile.email)
-  const update = await pipedrive.updatePerson(person.id, profile)
 
-  if (update.success) {
-    console.log('Person updated in pipedrive', profile.email)
-    res.status(200).send('OK')
+  if (person) {
+    const update = await pipedrive.updatePerson(person.id, profile)
+
+    if (update.success) {
+      console.log('Person updated in pipedrive', profile.email, update.success)
+      res.status(200).send('OK')
+    } else {
+      console.log('Error updating person', update)
+      res.status(500).send(update)
+    }
   } else {
-    console.log('Error updating person', update)
-    res.status(500).send(update)
+    console.log('Person not found')
+    res.status(404).send('Person not found')
   }
 })
 

@@ -108,6 +108,8 @@ export default {
 
     if (this.$user.profile.side !== 'etat' && !this.$isDev) { this.$router.push('/') }
 
+    this.$tally('m6kNJP', { max: 1 })
+
     if (this.$route.query.contact) {
       axios({
         url: '/api/pipedrive/contacted',
