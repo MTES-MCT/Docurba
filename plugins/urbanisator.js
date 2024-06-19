@@ -157,7 +157,8 @@ export default ({ $supabase, $dayjs }, inject) => {
         codes
       })
 
-      return this.parseProceduresStatus(procedures.filter(p => !p.secondary_procedure_of && !p.archived))
+      // The specific ID here is to prevent a duplicated created by sudocuh. This is suposed to be temporary for a demo.
+      return this.parseProceduresStatus(procedures.filter(p => !p.secondary_procedure_of && !p.archived && p.id !== '760d88f0-008d-4505-98f6-a7a9a2ebaf61'))
     },
     async getProjects (collectiviteId) {
       try {
@@ -175,7 +176,8 @@ export default ({ $supabase, $dayjs }, inject) => {
         })
 
         const schemas = proceduresPrincipales.filter(e => e.doc_type === 'SCOT')
-        const plans = proceduresPrincipales.filter(e => e.doc_type !== 'SCOT')
+        // The specific ID here is to prevent a duplicated created by sudocuh. This is suposed to be temporary for a demo.
+        const plans = proceduresPrincipales.filter(e => e.doc_type !== 'SCOT' && e.id !== '760d88f0-008d-4505-98f6-a7a9a2ebaf61')
 
         // eslint-disable-next-line no-console
         // console.log('urbanisator get projects', { schemas, plans })
