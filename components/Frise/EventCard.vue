@@ -63,10 +63,11 @@
 
           <div v-if="event.attachements?.length" class="mt-4">
             <v-chip
+
               v-for="attachement in event.attachements"
               :key="attachement.id"
               label
-              class="mr-2"
+              class="mr-2 mb-2"
 
               @click="downloadFile(attachement)"
             >

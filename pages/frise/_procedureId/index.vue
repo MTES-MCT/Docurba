@@ -23,9 +23,17 @@
           <v-btn v-if="$user?.profile?.side === 'etat' && !procedure.secondary_procedure_of" color="primary" class="mr-2" outlined @click="addSubProcedure">
             Ajouter une procédure secondaire
           </v-btn>
-          <v-btn v-if="$user?.id && isAdmin" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+          <v-btn
+            v-if="$user?.id && isAdmin"
+            class="mr-2"
+            depressed
+            nuxt
+            color="primary"
+            :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}"
+          >
             Ajouter un événement
           </v-btn>
+          <FriseShareDialog />
           <v-menu v-if="$user?.profile?.side === 'etat'">
             <template #activator="{ on, attrs }">
               <v-btn icon color="primary" v-bind="attrs" v-on="on">
@@ -91,8 +99,8 @@
                   </div>
                   <div class="mb-4">
                     <v-list two-line dense class="py-0">
-                      <template v-for="(collaborator) in collaborators">
-                        <v-list-item :key="collaborator.id" class="pl-0">
+                      <template v-for="(collaborator, icollab) in collaborators">
+                        <v-list-item v-if="icollab < 3 || showAllCollabs" :key="collaborator.id" class="pl-0">
                           <v-list-item-avatar :color="collaborator.color" class="text-capitalize white--text font-weight-bold">
                             {{ collaborator.avatar }}
                           </v-list-item-avatar>
@@ -100,11 +108,21 @@
                             <v-list-item-title>
                               {{ collaborator.label }}
                             </v-list-item-title>
-                            <v-list-item-subtitle>{{ collaborator.poste }}</v-list-item-subtitle>
+                            <v-list-item-subtitle>
+                              <span> {{ $utils.posteDetails(collaborator.poste) }}</span>
+
+                              <template v-if="collaborator.detailsPoste">
+                                <span v-for="detail in collaborator.detailsPoste" :key="`colab-${collaborator.email}-${detail}`">{{ ', ' + $utils.posteDetails(detail) }}</span>
+                              </template>
+                            </v-list-item-subtitle>
                           </v-list-item-content>
                         </v-list-item>
                       </template>
                     </v-list>
+                    <v-btn v-if="collaborators.length > 3" class="mt-2" depressed @click="showAllCollabs = !showAllCollabs">
+                      <span v-if="showAllCollabs">Cacher</span>
+                      <span v-else>Voir plus</span>
+                    </v-btn>
                   </div>
                   <p class="font-weight-bold">
                     Événements clés
@@ -137,10 +155,12 @@
                     Ressources
                   </p>
                   <p>
+                    <!-- @click="downloadFile(attachement)" -->
                     <v-tooltip v-for="attachment in attachments" :key="attachment.id" bottom>
                       <template #activator="{ on, attrs }">
                         <v-chip
                           label
+
                           class="mb-2"
                           color="grey darken-1"
                           v-bind="attrs"
@@ -187,6 +207,7 @@ export default
       events: null,
       dialog: false,
       loaded: false,
+      showAllCollabs: false,
       icons: {
         mdiBookmark,
         mdiPaperclip,
@@ -313,6 +334,15 @@ export default
     }
   },
   methods: {
+    async downloadFile (attachement) {
+      // TODO: Handle link type
+      const path = this.event.from_sudocuh ? attachement.id : `${this.event.project_id}/${this.event.id}/${attachement.id}`
+      const { data } = await this.$supabase.storage.from('doc-events-attachements').download(path)
+
+      const link = this.$refs[`file-${attachement.id}`][0]
+      link.href = URL.createObjectURL(data)
+      link.click()
+    },
     addSubProcedure () {
       this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/procedure/add?secondary_id=${this.$route.params.procedureId}`)
     },
