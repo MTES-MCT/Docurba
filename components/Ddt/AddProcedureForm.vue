@@ -252,11 +252,11 @@ export default {
       })
 
       const enrichedProcedures = procedures.map((p) => {
-        const comd = p.procedures_perimetres.find(c => c.type === 'COMD')
+        const comd = p.procedures_perimetres.find(c => c.collectivite_type === 'COMD')
 
         const collectivite = collectivites.find((c) => {
           if (comd) {
-            return c.code === comd.collectivite_code
+            return c.code === comd.collectivite_code && c.type === 'COMD'
           } else if (p.procedures_perimetres.length === 1) {
             return c.code === p.procedures_perimetres[0].collectivite_code
           } else { return c.code === p.collectivite_porteuse_id }

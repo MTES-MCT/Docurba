@@ -3,7 +3,7 @@
     <v-dialog v-model="showTally" eager max-width="500px">
       <v-sheet color="white">
         <iframe
-          data-tally-src="https://tally.so/embed/m6kNJP?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+          data-tally-src="https://tally.so/embed/m6kNJP?alignLeft=1&transparentBackground=1&dynamicHeight=1"
           loading="lazy"
           width="100%"
           height="650"
