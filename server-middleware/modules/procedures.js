@@ -41,10 +41,10 @@ function getFullDocType (procedure) {
     let docType = procedure.doc_type
     if (procedure.current_perimetre.length > 1) { docType += 'i' }
     if (procedure.isSectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')) {
-      docType += 'S'
+      docType += 's'
     }
-    if (procedure.is_pluih) { docType += 'H' }
-    if (procedure.is_pdu) { docType += 'D' }
+    // if (procedure.is_pluih) { docType += 'H' }
+    // if (procedure.is_pdu) { docType += 'D' }
 
     return docType
   } else { return procedure.doc_type }
@@ -210,9 +210,23 @@ export default {
 
     const collectivitePorteuse = (planCurrent || planOpposable)?.collectivite_porteuse_id || inseeCode
 
+    let porteuse = {}
+
+    if (collectivitePorteuse.length > 5) {
+      porteuse = groupements.find(c => c.code === collectivitePorteuse)
+      porteuse.siren = collectivitePorteuse
+      porteuse.insee = ''
+    } else {
+      porteuse = communes.find(c => c.code === collectivitePorteuse)
+      porteuse.siren = ''
+      porteuse.insee = collectivitePorteuse
+    }
+
+    porteuse.departement = departements.find(d => d.code === porteuse.departementCode)
+
     const sCodes = sudocuhCodes.getAllCodes(planOpposable, planCurrent, collectivitePorteuse)
 
-    const currentsDocTypes = uniq(planCurrents.map(p => p.doc_type)).join(', ')
+    const currentsDocTypes = JSON.stringify(uniq(planCurrents.map(p => p.doc_type)))
 
     return Object.assign({
       scots,
@@ -228,6 +242,7 @@ export default {
       revisions,
       modifications,
       collectivitePorteuse,
+      porteuse,
       sudocuhCodes: sCodes,
       currentsDocTypes
     }, commune)

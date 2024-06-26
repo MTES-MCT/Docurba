@@ -15,13 +15,21 @@ export default {
   epci_nom: 'intercommunalite.intitule',
   epci_siren: 'intercommunalite.code',
   collectivite_porteuse: 'collectivitePorteuse',
+  cp_type: 'porteuse.type',
+  cp_code_region: 'porteuse.regionCode',
+  cp_lib_region: 'porteuse.departement.region.intitule',
+  cp_code_departement: 'porteuse.departementCode',
+  cp_nom_departement: 'porteuse.departement.intitule',
+  cp_nom: 'porteuse.intitule',
+  cp_siren: 'porteuse.siren',
+  cp_code_insee: 'porteuse.insee',
   // collectivite_porteuse_banatic: ''
-  plan_etat_code1: 'sudocuhCodes.etat.code', //
-  plan_libelle_etat_code1: 'sudocuhCodes.etat.label', //
-  plan_etat_code2: 'sudocuhCodes.etat2.code', //
-  plan_libelle_etat_code2: 'sudocuhCodes.etat2.label', //
-  plan_code_etat_bcsi: 'sudocuhCodes.bcsi.code',
-  plan_libelle_code_etat_bcsi: 'sudocuhCodes.bcsi.label',
+  plan_code_etat_simplifie: 'sudocuhCodes.etat.code', //
+  plan_libelle_code_etat_simplifie: 'sudocuhCodes.etat.label', //
+  // plan_etat_code2: 'sudocuhCodes.etat2.code', //
+  // plan_libelle_etat_code2: 'sudocuhCodes.etat2.label', //
+  plan_code_etat_complet: 'sudocuhCodes.bcsi.code',
+  plan_libelle_code_etat_complet: 'sudocuhCodes.bcsi.label',
   types_pc: 'currentsDocTypes',
   // type_pc_color: getStateColor(typesCurrentProc),
   pc_docurba_id: 'planCurrent.id',
@@ -62,7 +70,7 @@ export default {
   pa_sectoriel: 'planOpposable.isSectoriel',
   pa_date_prescription: 'planOpposable.prescription.date_iso', //
   pa_date_arret_projet: 'planOpposable.arret.date_iso', //
-  pa_date_pac: 'planOpposable.date_iso', //
+  pa_date_pac: 'planOpposable.pac.date_iso', //
   pa_date_pac_comp: 'planOpposable.pacComp.date_iso', //
   pa_date_approbation: 'planOpposable.approbation.date_iso', //
   pa_annee_prescription: 'planOpposable.prescription.year', //
@@ -87,27 +95,27 @@ export default {
   proc_nb_revisions: 'revisions.length', //
   proc_nb_modifications: 'modifications.length', //
   // proc_nb_proc_secondaires: opposableSecondaryProcedures.length,
-  q_eval_environmnt: 'planOpposable.volet_qualitatif.eval_environmental', //
-  q_integ_loi_ene: 'planOpposable.volet_qualitatif.is_integ_loi_ene', //
-  q_environnement: 'planOpposable.volet_qualitatif.is_environnement', //
-  q_paysage: 'planOpposable.volet_qualitatif.is_paysage', //
-  q_entree_ville: 'planOpposable.volet_qualitatif.is_entree_ville', //
-  q_patrimoine: 'planOpposable.volet_qualitatif.is_patrimoine', //
-  q_lutte_insalubrite: 'planOpposable.volet_qualitatif.is_lutte_insalubrite', //
-  q_renouvel_urbain: 'planOpposable.volet_qualitatif.is_renouvel_urbain', //
-  q_developpement: 'planOpposable.volet_qualitatif.is_developpement', //
-  // q_mixite_fonctionnelle: '', // Ne pas prendre en compte
-  // q_ouverture_urbain: '', // A priori on l'a
-  q_peri_plafond_statmnt: 'planOpposable.volet_qualitatif.is_peri_plafond_statmnt', //
-  q_schema_amenagement: 'planOpposable.volet_qualitatif.is_schema_amenagement', //
-  q_schema_amenagement_ss_reg: 'planOpposable.volet_qualitatif.is_schema_amenagement_ss_reg', //
-  q_stecal: 'planOpposable.volet_qualitatif.is_stecal', //
-  q_nb_stecal: 'planOpposable.volet_qualitatif.nb_stecal', //
-  q_densite_mini: 'planOpposable.volet_qualitatif.is_densite_mini', //
-  q_aire_stationment_max: 'planOpposable.volet_qualitatif.is_aire_stationment_max', //
-  q_comm_electronique: 'planOpposable.volet_qualitatif.is_comm_electronique', //
-  q_renvoi_rnu: 'planOpposable.volet_qualitatif.is_renvoi_rnu', //
-  q_obligation_aire_statmnt: 'planOpposable.volet_qualitatif.is_obligation_aire_statmnt' //
+  q_eval_environmnt: 'planOpposable.volet_qualitatif.eval_environmental' //
+  // q_integ_loi_ene: 'planOpposable.volet_qualitatif.is_integ_loi_ene', //
+  // q_environnement: 'planOpposable.volet_qualitatif.is_environnement', //
+  // q_paysage: 'planOpposable.volet_qualitatif.is_paysage', //
+  // q_entree_ville: 'planOpposable.volet_qualitatif.is_entree_ville', //
+  // q_patrimoine: 'planOpposable.volet_qualitatif.is_patrimoine', //
+  // q_lutte_insalubrite: 'planOpposable.volet_qualitatif.is_lutte_insalubrite', //
+  // q_renouvel_urbain: 'planOpposable.volet_qualitatif.is_renouvel_urbain', //
+  // q_developpement: 'planOpposable.volet_qualitatif.is_developpement', //
+  // // q_mixite_fonctionnelle: '', // Ne pas prendre en compte
+  // // q_ouverture_urbain: '', // A priori on l'a
+  // q_peri_plafond_statmnt: 'planOpposable.volet_qualitatif.is_peri_plafond_statmnt', //
+  // q_schema_amenagement: 'planOpposable.volet_qualitatif.is_schema_amenagement', //
+  // q_schema_amenagement_ss_reg: 'planOpposable.volet_qualitatif.is_schema_amenagement_ss_reg', //
+  // q_stecal: 'planOpposable.volet_qualitatif.is_stecal', //
+  // q_nb_stecal: 'planOpposable.volet_qualitatif.nb_stecal', //
+  // q_densite_mini: 'planOpposable.volet_qualitatif.is_densite_mini', //
+  // q_aire_stationment_max: 'planOpposable.volet_qualitatif.is_aire_stationment_max', //
+  // q_comm_electronique: 'planOpposable.volet_qualitatif.is_comm_electronique', //
+  // q_renvoi_rnu: 'planOpposable.volet_qualitatif.is_renvoi_rnu', //
+  // q_obligation_aire_statmnt: 'planOpposable.volet_qualitatif.is_obligation_aire_statmnt' //
 }
 
 /*
