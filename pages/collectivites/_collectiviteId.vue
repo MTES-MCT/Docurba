@@ -2,16 +2,9 @@
   <div v-if="collectivite">
     <v-container>
       <v-row>
-        <!-- <v-col cols="12">
-          <v-alert type="info">
-            Regardez le replay du Flash info du 18 avril :
-            <a
-              class="white--text"
-              href="https://pad.incubateur.net/s/A_BpJ3_NH"
-              target="_blank"
-            >zoom sur les nouveautés et amélioration à venir.</a>
-          </v-alert>
-        </v-col> -->
+        <v-col cols="12">
+          <LayoutsBannerAlert />
+        </v-col>
         <v-col cols="12">
           <h1>{{ collectivite.intitule }} ({{ collectivite.code }})</h1>
         </v-col>

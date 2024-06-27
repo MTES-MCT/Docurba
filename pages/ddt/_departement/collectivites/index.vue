@@ -1,17 +1,9 @@
 <template>
   <v-container>
     <v-row>
-      <!-- <v-col v-if="!clickedOnDocLink" cols="12"> -->
-      <!-- <v-col cols="12">
-        <v-alert type="info">
-          Regardez le replay du Flash info du 18 avril :
-          <a
-            class="white--text"
-            href="https://pad.incubateur.net/s/A_BpJ3_NH"
-            target="_blank"
-          >zoom sur les nouveautés et amélioration à venir.</a>
-        </v-alert>
-      </v-col> -->
+      <v-col cols="12">
+        <LayoutsBannerAlert />
+      </v-col>
       <v-col cols="12">
         <h1>Mes collectivités - {{ $route.params.departement }}</h1>
       </v-col>
