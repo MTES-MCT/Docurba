@@ -153,7 +153,7 @@ export default
   },
   data () {
     return {
-      dialog: true,
+      dialog: false,
       collaboratorsItems: null,
       selectedCombobox: [],
       search: null,

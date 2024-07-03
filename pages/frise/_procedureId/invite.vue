@@ -220,6 +220,7 @@ export default
       }))
       console.log('toInsert: ', toInsert)
       await this.$supabase.from('projects_sharing').insert(toInsert)
+      this.$router.push(`/frise/${this.$route.params.procedureId}`)
     }
   }
 }
