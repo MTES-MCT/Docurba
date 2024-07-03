@@ -14,7 +14,7 @@ export default ({ app }, inject) => {
       if (profile.firstname && profile.lastname) {
         creator = { avatar: profile.firstname[0], label: `${profile.firstname} ${profile.lastname.toUpperCase()}`, poste: profile.poste, detailsPoste: profile.other_poste }
       } else if (profile.email) {
-        creator = { avatar: profile?.email[0], label: `${profile.email}`, poste: profile.poste, detailsPoste: profile.other_poste }
+        creator = { avatar: profile?.email[0], label: `${profile.email}`, poste: profile?.poste, detailsPoste: profile?.other_poste }
       }
       creator.color = profile.side === 'etat' ? '#69DF97' : '#FA7659'
       creator.email = profile.email

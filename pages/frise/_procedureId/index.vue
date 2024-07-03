@@ -33,7 +33,7 @@
           >
             Ajouter un événement
           </v-btn>
-          <FriseShareDialog />
+          <FriseShareDialog :document-name="`${procedure.doc_type} de ${collectivite.intitule }`" :collaborators="collaborators" :departement="collectivite.departementCode" @share_to="addToCollabs" @remove_shared="removeCollabShared" />
           <v-menu v-if="$user?.profile?.side === 'etat'">
             <template #activator="{ on, attrs }">
               <v-btn icon color="primary" v-bind="attrs" v-on="on">
@@ -119,7 +119,7 @@
                         </v-list-item>
                       </template>
                     </v-list>
-                    <v-btn v-if="collaborators.length > 3" class="mt-2" depressed @click="showAllCollabs = !showAllCollabs">
+                    <v-btn v-if="collaborators?.length > 3" class="mt-2" depressed @click="showAllCollabs = !showAllCollabs">
                       <span v-if="showAllCollabs">Cacher</span>
                       <span v-else>Voir plus</span>
                     </v-btn>
@@ -208,6 +208,7 @@ export default
       dialog: false,
       loaded: false,
       showAllCollabs: false,
+      collaborators: [],
       icons: {
         mdiBookmark,
         mdiPaperclip,
@@ -217,10 +218,6 @@ export default
     }
   },
   computed: {
-    collaborators () {
-      // return [{ id: '1', firstname: 'julien', lastname: 'leray', poste: 'elu' }]
-      return _.uniqBy(this.events.map(e => this.$utils.formatEventProfileToCreator(e)), e => e.label)
-    },
     isAdmin () {
       if (!this.$user.id) { return false }
 
@@ -326,7 +323,8 @@ export default
       this.collectivite = collectivite
 
       this.events = await this.getEvents()
-
+      this.collaborators = await this.getCollaborators(this.procedure)
+      console.log('this.collaborators :; ', this.collaborators)
       this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -334,6 +332,43 @@ export default
     }
   },
   methods: {
+    async  addToCollabs (collabs) {
+      // TODO: Add to
+      console.log('collabs: ', collabs)
+      const toInsert = collabs.map(e => ({
+        user_email: e.email,
+        project_id: this.procedure.project_id,
+        shared_by: this.$user.id,
+        notified: false,
+        role: 'write_frise',
+        archived: false,
+        dev_test: true
+      }))
+      console.log('toInsert: ', toInsert)
+      await this.$supabase.from('projects_sharing').insert(toInsert)
+      this.collaborators = await this.getCollaborators(this.procedure)
+    },
+    async removeCollabShared (toRemoveCollaborator) {
+      console.log('toRemoveCollaborator; ', toRemoveCollaborator)
+      // TODO: Delete
+      await this.$supabase.from('projects_sharing').delete().eq('user_email', toRemoveCollaborator.email).eq('role', 'write_frise').eq('project_id', this.procedure.project_id)
+      this.collaborators = await this.getCollaborators(this.procedure)
+    },
+    async getCollaborators (procedure) {
+      const { data: collabsData, error: errorCollabs } = await this.$supabase.from('projects_sharing')
+        .select('*')
+        .eq('project_id', procedure.project_id)
+        .eq('role', 'write_frise')
+      if (errorCollabs) { console.log('errorCollabs: ', errorCollabs) }
+      const emails = _.uniqBy(collabsData, e => e.user_email).map(e => e.user_email)
+      const { data: profilesData, error: errorProfiles } = await this.$supabase.from('profiles').select('*').in('email', emails)
+      if (errorCollabs) { console.log('errorProfiles: ', errorProfiles) }
+      const formattedProfiles = profilesData.map(e => this.$utils.formatProfileToCreator(e))
+
+      const noProfilesCollabs = emails.filter(e => !profilesData.find(prof => prof.email === e)).map(e => (this.$utils.formatProfileToCreator({ email: e })))
+      console.log('noProfilesCollabs: ', noProfilesCollabs)
+      return formattedProfiles.concat(noProfilesCollabs)
+    },
     async downloadFile (attachement) {
       // TODO: Handle link type
       const path = this.event.from_sudocuh ? attachement.id : `${this.event.project_id}/${this.event.id}/${attachement.id}`

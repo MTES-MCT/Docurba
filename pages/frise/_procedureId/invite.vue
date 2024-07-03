@@ -59,10 +59,10 @@
                             </v-list-item-content>
                             <v-list-item-action>
                               <v-btn v-if="active" depressed color="primary">
-                                Inviter
+                                Retirer
                               </v-btn>
                               <v-btn v-else outlined color="primary">
-                                Retirer
+                                Inviter
                               </v-btn>
                             </v-list-item-action>
                           </template>
@@ -107,6 +107,7 @@
 
 <script>
 import axios from 'axios'
+// import _ from 'lodash'
 import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical } from '@mdi/js'
 
 export default
@@ -187,8 +188,14 @@ export default
         data: collaborators,
         error: errorCollaborators
       } = await this.$supabase.from('profiles').select('*').eq('departement', collectivite.departementCode)
+
       this.collaborators = collaborators.map(e => this.$utils.formatProfileToCreator(e))
       if (errorCollaborators) { throw errorCollaborators }
+
+      // this.existingCollaboratorstoInvite = this.collaborators.filter((collab) => {
+      //   return _.intersection(['suivi_procedures', 'referent_sudocuh'], collab.detailsPoste).length > 0
+      // })
+
       this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -198,9 +205,8 @@ export default
   methods: {
     addToShare () {
       const newCollabs = this.emailsToShare.map(e => ({ avatar: e[0], label: e, color: 'error' }))
-      console.log('newCollabs: ', newCollabs)
       this.collaborators = this.collaborators.concat(newCollabs)
-      console.log('this.collaborators: ', this.collaborators)
+      this.existingCollaboratorstoInvite = this.existingCollaboratorstoInvite.concat(newCollabs)
     },
     async confirmShare () {
       const toInsert = this.existingCollaboratorstoInvite.map(e => ({
