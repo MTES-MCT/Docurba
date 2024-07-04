@@ -183,13 +183,12 @@ export default
       error: errorCollaborators
     } = await this.$supabase.from('profiles').select('*').eq('departement', this.departement)
 
-    this.collaboratorsItems = collaborators.map(e => this.$utils.formatProfileToCreator(e))
+    this.collaboratorsItems = collaborators.map(e => this.$utils.formatProfileToCreator(e)).filter(e => this.collaborators.find(collab => collab.email === e.email))
     if (errorCollaborators) { throw errorCollaborators }
   },
   methods: {
     filter (item, queryText, itemText) {
       if (item.header) { return false }
-      console.log('itemText: ', item)
       const hasValue = val => val != null ? val : ''
 
       const text = hasValue(item.label)

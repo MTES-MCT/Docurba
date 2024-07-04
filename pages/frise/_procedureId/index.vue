@@ -351,7 +351,9 @@ export default
     async removeCollabShared (toRemoveCollaborator) {
       console.log('toRemoveCollaborator; ', toRemoveCollaborator)
       // TODO: Delete
-      await this.$supabase.from('projects_sharing').delete().eq('user_email', toRemoveCollaborator.email).eq('role', 'write_frise').eq('project_id', this.procedure.project_id)
+      const { data: removedCollab, error: errorDeleteCollab } = await this.$supabase.from('projects_sharing').delete().eq('user_email', toRemoveCollaborator.email).eq('role', 'write_frise').eq('project_id', this.procedure.project_id).select()
+      if (errorDeleteCollab) { console.log('errorDeleteCollab: ', errorDeleteCollab) }
+      console.log('Removed: ', removedCollab)
       this.collaborators = await this.getCollaborators(this.procedure)
     },
     async getCollaborators (procedure) {
@@ -366,7 +368,6 @@ export default
       const formattedProfiles = profilesData.map(e => this.$utils.formatProfileToCreator(e))
 
       const noProfilesCollabs = emails.filter(e => !profilesData.find(prof => prof.email === e)).map(e => (this.$utils.formatProfileToCreator({ email: e })))
-      console.log('noProfilesCollabs: ', noProfilesCollabs)
       return formattedProfiles.concat(noProfilesCollabs)
     },
     async downloadFile (attachement) {
