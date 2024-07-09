@@ -173,7 +173,7 @@ export default
       if (errorProcedure) { throw errorProcedure }
 
       this.procedure = procedure[0]
-
+      console.log('Procedure, : ', this.procedure, ' -- ', this.$user, ' this.$route. ', this.$route.params.procedureId)
       const perimetre = this.procedure.procedures_perimetres.filter(c => c.type === 'COM')
       const collectiviteId = perimetre.length === 1 ? perimetre[0].code : this.procedure.collectivite_porteuse_id
 
@@ -204,9 +204,10 @@ export default
   },
   methods: {
     addToShare () {
-      const newCollabs = this.emailsToShare.map(e => ({ avatar: e[0], label: e, color: 'error' }))
+      const newCollabs = this.emailsToShare.map(e => ({ avatar: e[0], label: e, color: 'error', email: e }))
       this.collaborators = this.collaborators.concat(newCollabs)
       this.existingCollaboratorstoInvite = this.existingCollaboratorstoInvite.concat(newCollabs)
+      this.emailsToShareTxt = null
     },
     async confirmShare () {
       const toInsert = this.existingCollaboratorstoInvite.map(e => ({
@@ -219,7 +220,20 @@ export default
         dev_test: true
       }))
       console.log('toInsert: ', toInsert)
-      await this.$supabase.from('projects_sharing').insert(toInsert)
+      const { data: insertedCollabs } = await this.$supabase.from('projects_sharing').insert(toInsert).select()
+      console.log('insertedCollabs: ', insertedCollabs)
+
+      insertedCollabs.forEach((ins) => {
+        axios.post('/api/projects/notify/shared/frp', {
+          sharings: {
+            to: ins.user_email,
+            sender_firstname: this.$user.profile.firstname,
+            sender_lastname: this.$user.profile.lastname,
+            procedure_name: `${this.procedure.doc_type} de ${this.collectivite.intitule}`,
+            procedure_id: this.$route.params.procedureId
+          }
+        })
+      })
       this.$router.push(`/frise/${this.$route.params.procedureId}`)
     }
   }

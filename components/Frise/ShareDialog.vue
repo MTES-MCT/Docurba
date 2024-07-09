@@ -183,7 +183,7 @@ export default
       error: errorCollaborators
     } = await this.$supabase.from('profiles').select('*').eq('departement', this.departement)
 
-    this.collaboratorsItems = collaborators.map(e => this.$utils.formatProfileToCreator(e)).filter(e => this.collaborators.find(collab => collab.email === e.email))
+    this.collaboratorsItems = collaborators.map(e => this.$utils.formatProfileToCreator(e)).filter(e => !this.collaborators.find(collab => collab.email === e.email))
     if (errorCollaborators) { throw errorCollaborators }
   },
   methods: {
