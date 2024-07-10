@@ -34,11 +34,21 @@
           </template>
 
           <v-list>
+            <FriseInfosDialog />
+            <FriseVoletQualiDialog />
+
+            <FriseDgdDialog />
+            <v-list-item link>
+              <v-list-item-title>
+                Éditer la procédure
+              </v-list-item-title>
+            </v-list-item>
+
             <v-dialog v-model="dialog" width="500">
               <template #activator="{ on, attrs }">
                 <v-list-item link v-bind="attrs" v-on="on">
-                  <v-list-item-title>
-                    Supprimer
+                  <v-list-item-title class="text--error">
+                    Supprimer la procédure
                   </v-list-item-title>
                 </v-list-item>
               </template>
