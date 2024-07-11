@@ -10,8 +10,8 @@ module.exports = {
         name: 'L‘équipe docurba'
       },
       replyTo: {
-        email: 'celia.vermicelli@beta.gouv.fr',
-        name: 'Celia Vermicelli'
+        email: 'contact@docurba.beta.gouv.fr',
+        name: 'Equipe Docurba'
       }
     }, message))
   }
