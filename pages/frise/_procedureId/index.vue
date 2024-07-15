@@ -33,7 +33,14 @@
           >
             Ajouter un événement
           </v-btn>
-          <FriseShareDialog v-if="canShare" :document-name="`${procedure.doc_type} de ${collectivite.intitule }`" :collaborators="collaborators" :departement="collectivite.departementCode" @share_to="addToCollabs" @remove_shared="removeCollabShared" />
+          <FriseShareDialog
+            v-if="canShare"
+            :document-name="`${procedure.doc_type} de ${collectivite.intitule }`"
+            :collaborators="collaborators"
+            :departement="collectivite.departementCode"
+            @share_to="addToCollabs"
+            @remove_shared="removeCollabShared"
+          />
           <v-menu v-if="$user?.profile?.side === 'etat'">
             <template #activator="{ on, attrs }">
               <v-btn icon color="primary" v-bind="attrs" v-on="on">
@@ -326,9 +333,10 @@ export default
       this.events = await this.getEvents()
       this.collaborators = await this.getCollaborators(this.procedure)
       console.log('this.collaborators :; ', this.collaborators)
-      let canShare = await this.$supabase.from('projects_sharing').select('id').eq('project_id',this.procedure.project_id).eq('user_email',this.$user.profile.email).eq('role', 'write_frise')
-      console.log("canShare: ", canShare)
-      this.canShare = canShare.data.length > 0 || this.$user.profile.departement === this.collectivite.departementCode
+      const canShare = await this.$supabase.from('projects_sharing').select('id').eq('project_id', this.procedure.project_id).eq('user_email', this.$user.profile.email).eq('role', 'write_frise')
+      console.log('canShare: ', canShare)
+      console.log('this.collectivite.: ', this.collectivite.code)
+      this.canShare = canShare.data.length > 0 || (this.$user.profile.side === 'etat' && this.$user.profile.departement === this.collectivite.departementCode)
       this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -350,14 +358,14 @@ export default
       }))
       console.log('toInsert: ', toInsert)
       const { data: insertedCollabs } = await this.$supabase.from('projects_sharing').insert(toInsert).select()
-      console.log("insertedCollabs: ", insertedCollabs)
+      console.log('insertedCollabs: ', insertedCollabs)
       insertedCollabs?.forEach((ins) => {
         axios.post('/api/projects/notify/shared/frp', {
           sharings: {
             to: ins.user_email,
             sender_firstname: this.$user.profile.firstname,
             sender_lastname: this.$user.profile.lastname,
-            procedure_name: `${this.procedure?.doc_type} de ${this.collectivite?.intitule}`,
+            procedure_name: this.procedure.doc_type + ' de ' + this.collectivite?.intitule,
             procedure_id: this.$route.params.procedureId
           }
         })

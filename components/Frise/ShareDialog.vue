@@ -172,7 +172,6 @@ export default
             email: v
           }
         }
-
         return v
       })
     }
@@ -183,7 +182,7 @@ export default
       error: errorCollaborators
     } = await this.$supabase.from('profiles').select('*').eq('departement', this.departement)
 
-    this.collaboratorsItems = collaborators.map(e => this.$utils.formatProfileToCreator(e)).filter(e => !this.collaborators.find(collab => collab.email === e.email))
+    this.collaboratorsItems = collaborators.map(e => ({ text: e.email, ...this.$utils.formatProfileToCreator(e) })).filter(e => !this.collaborators.find(collab => collab.email === e.email))
     if (errorCollaborators) { throw errorCollaborators }
   },
   methods: {
@@ -193,9 +192,8 @@ export default
 
       const text = hasValue(item.label)
       const query = hasValue(queryText)
-
-      return text.toString()
-        .toLowerCase()
+      return text?.toString()
+        ?.toLowerCase()
         .includes(query.toString().toLowerCase())
     }
   }
