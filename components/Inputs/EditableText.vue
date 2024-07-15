@@ -22,7 +22,34 @@
         <v-icon>{{ icons.mdiPencil }}</v-icon>
       </v-btn>
     </div>
-
+    <v-switch
+      v-else-if="isSwitch"
+      v-model="valTxt"
+      inset
+    >
+      <template #append-outer>
+        <div class="d-flex">
+          <v-btn
+            depressed
+            color="primary"
+            height="40"
+            class="mr-2"
+            @click="editMode = false"
+          >
+            <v-icon>{{ icons.mdiCheck }}</v-icon>
+          </v-btn>
+          <v-btn
+            color="primary"
+            outlined
+            depressed
+            height="40"
+            @click="editMode = false"
+          >
+            <v-icon>{{ icons.mdiClose }}</v-icon>
+          </v-btn>
+        </div>
+      </template>
+    </v-switch>
     <v-text-field
       v-else
       ref="editableTextRef"
@@ -82,6 +109,10 @@ export default
     label: {
       type: String,
       default: () => ''
+    },
+    isSwitch: {
+      type: Boolean,
+      default: () => false
     }
   },
   data () {
