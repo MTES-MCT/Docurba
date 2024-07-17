@@ -3,11 +3,15 @@
     <main class="landing">
       <header class="hero-section">
         <h1 class="text-center">
-          Docurba vous accompagne dans l'élaboration de vos <LandingWordSlider />
+          Docurba vous accompagne dans l'élaboration de vos
+          <LandingWordSlider />
         </h1>
         <LayoutsBannerAlert />
         <div class="search">
-          <p>Pour commencer, accédez aux ressources de votre territoire :</p>
+          <p>
+            Pour commencer, accédez aux ressources de votre
+            territoire :
+          </p>
           <LandingSearchForm />
         </div>
       </header>
@@ -15,12 +19,12 @@
       <div class="sections-container">
         <section class="slideshow">
           <article class="article--centered">
-            <h2>
-              Un accompagnement à chaque étape
-            </h2>
+            <h2>Un accompagnement à chaque étape</h2>
             <p>
-              Docurba centralise les ressources nécessaires à chaque étape de vos procédures d'urbanisme
-              pour plus de rapidité, une meilleure conformité, et une visibilité en temps réel.
+              Docurba centralise les ressources nécessaires à
+              chaque étape de vos procédures d'urbanisme pour plus
+              de rapidité, une meilleure conformité, et une
+              visibilité en temps réel.
             </p>
           </article>
 
@@ -34,11 +38,16 @@
 
         <section class="collectivites">
           <article>
-            <h2>
-              Collectivités
-            </h2>
-            <p>Soyez certain de ne plus rater d'étape et retrouvez facilement toutes les informations utiles à l'élaboration de vos documents d'urbanisme.</p>
-            <nuxt-link class="primary--text landing-card-btn text-decoration-none pb-1" :to="'/collectivites-territoriales'">
+            <h2>Collectivités</h2>
+            <p>
+              Soyez certain de ne plus rater d'étape et retrouvez
+              facilement toutes les informations utiles à
+              l'élaboration de vos documents d'urbanisme.
+            </p>
+            <nuxt-link
+              class="primary--text landing-card-btn text-decoration-none pb-1"
+              :to="'/collectivites-territoriales'"
+            >
               En apprendre plus
             </nuxt-link>
           </article>
@@ -48,10 +57,14 @@
         <section class="etat">
           <img class="etat__image" src="/images/landing/pac.png">
           <article>
-            <h2>
-              Services de l'État
-            </h2>
-            <p>Partagez le socle de PAC national public mis à jour aux collectivités, créez vos PAC en ligne et profitez d'une visibilité en temps réel sur l'avancement des procédures d'urbanisme de vos collectivités.</p>
+            <h2>Services de l'État</h2>
+            <p>
+              Partagez le socle de PAC national public mis à jour
+              aux collectivités, créez vos PAC en ligne et
+              profitez d'une visibilité en temps réel sur
+              l'avancement des procédures d'urbanisme de vos
+              collectivités.
+            </p>
             <nuxt-link class="primary--text landing-card-btn text-decoration-none pb-1" :to="'/ddt-ddtm-dreal'">
               En apprendre plus
             </nuxt-link>
@@ -61,32 +74,40 @@
         <div class="sections-duo">
           <section class="neutral">
             <article>
-              <h2>
-                Bureaux d'études
-              </h2>
-              <p>Accédez à toutes les données de vos territoires en quelques clics et offrez des procédures structurées pour guider vos collectivités. </p>
-              <nuxt-link class="primary--text landing-card-btn landing-yellow text-decoration-none pb-1" :to="'/bureau-etude-urbanisme'">
+              <h2>Bureaux d'études</h2>
+              <p>
+                Accédez à toutes les données de vos territoires
+                en quelques clics et offrez des procédures
+                structurées pour guider vos collectivités.
+              </p>
+              <nuxt-link
+                class="primary--text landing-card-btn landing-yellow text-decoration-none pb-1"
+                :to="'/bureau-etude-urbanisme'"
+              >
                 En apprendre plus
               </nuxt-link>
             </article>
           </section>
           <section class="neutral">
             <article>
-              <h2>
-                Citoyens
-              </h2>
-              <p>Suivez l'avancement des projets d'urbanisme de votre collectivité et accédez à toutes les ressources utiles pour mieux comprendre les décisions de vos élus.</p>
+              <h2>Citoyens</h2>
+              <p>
+                Suivez l'avancement des projets d'urbanisme de
+                votre collectivité et accédez à toutes les
+                ressources utiles pour mieux comprendre les
+                décisions de vos élus.
+              </p>
             </article>
           </section>
         </div>
 
         <section class="signup neutral">
           <article class="article--centered">
-            <h2>
-              Inscrivez-vous pour débuter
-            </h2>
+            <h2>Inscrivez-vous pour débuter</h2>
             <p>
-              Créez votre compte sur Docurba pour éditer vos procédures ou Porter à Connaissance et accélérer vos projets d'urbanisme dès maintenant.
+              Créez votre compte sur Docurba pour éditer vos
+              procédures ou Porter à Connaissance et accélérer vos
+              projets d'urbanisme dès maintenant.
             </p>
           </article>
           <v-btn color="primary" :to="'/login'" depressed>
@@ -133,7 +154,7 @@ h2 {
   font-weight: 700;
 }
 
-section > article {
+section>article {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -144,7 +165,7 @@ section > article {
   text-align: center;
 }
 
-.article--centered > p {
+.article--centered>p {
   max-width: 760px;
 }
 
@@ -174,12 +195,12 @@ section > article {
   width: 100%;
   max-width: 960px;
   padding: 2.5rem 3rem;
-  border: 1px solid #DDDDDD;
+  border: 1px solid #dddddd;
   border-radius: 0.5rem;
-  background-color: #F9F8F6;
+  background-color: #f9f8f6;
 }
 
-.search > p {
+.search>p {
   font-size: 18px;
   font-weight: 700;
 }
@@ -207,13 +228,13 @@ section.slideshow {
   padding-top: 5rem;
   padding-bottom: 2rem;
   margin-top: -2.5rem;
-  border: 1px solid #DDDDDD;
+  border: 1px solid #dddddd;
   border-radius: 0.5rem;
-  background-color: #F9F8F6;
+  background-color: #f9f8f6;
   overflow: hidden;
 }
 
-.slideshow__slides-container__slide > img {
+.slideshow__slides-container__slide>img {
   width: 100%;
 }
 
@@ -223,8 +244,8 @@ section.collectivites {
   gap: 3.5rem;
   padding: 4rem 3rem;
   border-radius: 0.5rem;
-  border: 1px solid #E3CF50;
-  background-color: #FCE552;
+  border: 1px solid #e3cf50;
+  background-color: #fce552;
 }
 
 .collectivites__image {
@@ -233,17 +254,17 @@ section.collectivites {
   flex-shrink: 0;
   margin-right: -5.5rem;
   border-radius: 0.5rem;
-  border: 1px solid #DDDDDD;
-  filter: drop-shadow(6px 0px 8px rgba(0, 0, 0, 0.10)) drop-shadow(0px 4px 24px rgba(0, 0, 0, 0.12));
+  border: 1px solid #dddddd;
+  filter: drop-shadow(6px 0px 8px rgba(0, 0, 0, 0.1)) drop-shadow(0px 4px 24px rgba(0, 0, 0, 0.12));
 }
 
 section.etat {
   display: flex;
   align-items: center;
   gap: 3.5rem;
-  border: 1px solid #B6CFFB;
+  border: 1px solid #b6cffb;
   border-radius: 0.5rem;
-  background-color: #E6EEFE;
+  background-color: #e6eefe;
   padding: 0 3rem;
 }
 
@@ -257,8 +278,8 @@ section.etat {
   border-top-width: 1px;
   border-left-width: 1px;
   border-right-width: 1px;
-  border-color: #DDDDDD;
-  filter: drop-shadow(6px 0px 8px rgba(0, 0, 0, 0.10)) drop-shadow(0px 4px 24px rgba(0, 0, 0, 0.12));
+  border-color: #dddddd;
+  filter: drop-shadow(6px 0px 8px rgba(0, 0, 0, 0.1)) drop-shadow(0px 4px 24px rgba(0, 0, 0, 0.12));
 }
 
 .sections-duo {
@@ -271,9 +292,9 @@ section.etat {
 }
 
 section.neutral {
-  border: 1px solid #DDDDDD;
+  border: 1px solid #dddddd;
   border-radius: 0.5rem;
-  background-color: #F9F8F6;
+  background-color: #f9f8f6;
   padding: 3rem 4rem;
 }
 
@@ -295,7 +316,7 @@ section.signup {
   }
 
   .landing {
-    gap: 2.5rem
+    gap: 2.5rem;
   }
 
   .landing-container {
@@ -350,11 +371,11 @@ section.signup {
 }
 
 .landing-card-btn {
-    border-bottom: 4px solid #000091;
-    width: fit-content;
-  }
+  border-bottom: 4px solid #000091;
+  width: fit-content;
+}
 
 .landing-card-btn.landing-yellow {
-  border-bottom: 4px solid #FCE552;
+  border-bottom: 4px solid #fce552;
 }
 </style>
