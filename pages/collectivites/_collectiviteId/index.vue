@@ -1,21 +1,6 @@
 <template>
   <v-container>
     <v-row>
-      <!-- <v-col cols="auto">
-        <div class="divider-vertical ml-6" />
-      </v-col> -->
-      <v-col cols="8">
-        <v-alert border="left" colored-border color="focus" elevation="1">
-          <div class="ml-2">
-            <p>Vous êtes l’un des élus, technicien de collectivité, ou bureau d’étude qui gérez cette collectivité.</p>
-            <v-btn :to="actionsCards[0].to" nuxt color="primary">
-              Démarrer une procédure
-            </v-btn>
-          </div>
-        </v-alert>
-      </v-col>
-    </v-row>
-    <v-row>
       <v-col>
         <h2>Actions rapides</h2>
       </v-col>
@@ -100,9 +85,9 @@ export default {
     return {
       actionsCards: [
         {
-          title: 'Déposer un acte',
-          text: 'Déposez une délibération de prescription ou un arrêté.',
-          to: { name: 'collectivites-collectiviteId-prescriptions', params: { collectiviteId: this.collectivite.code }, query: this.$route.query }
+          title: 'Nouvelle Procédure',
+          text: 'Démarrez une nouvelle procédure de document d’urbanisme.',
+          to: `/collectivites/${this.collectivite.code}/procedures/add`
         },
         {
           title: 'Socle de Porter à connaissance',
