@@ -286,8 +286,8 @@ export default
 
       this.procedure = procedure[0]
 
-      const perimetre = this.procedure.procedures_perimetres.filter(c => c.type === 'COM')
-      const collectiviteId = perimetre.length === 1 ? perimetre[0].code : this.procedure.collectivite_porteuse_id
+      const perimetre = this.procedure.procedures_perimetres.filter(c => c.collectivite_type === 'COM')
+      const collectiviteId = perimetre.length === 1 ? perimetre[0].collectivite_code : this.procedure.collectivite_porteuse_id
 
       const { data: collectivite } = await axios({
         url: `/api/geo/collectivites/${collectiviteId}`
