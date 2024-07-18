@@ -38,18 +38,18 @@ app.get('/communes/:inseeCode', async (req, res) => {
 })
 
 app.get('/exports/departements/:code', async (req, res) => {
-  const departement = departements.find(d => d.code === req.params.code)
-  const communesCodes = departement.communes.map(c => c.code)
-  const communes = await procedures.getCommunes(communesCodes)
-
-  const mapedCommunes = communes.map((c) => {
-    return mapValues(sudocuhCommunes, key => get(c, key, ''))
-  })
-
   if (req.query.csv) {
-    const csv = await csvParser.parse(mapedCommunes).promise()
-    res.status(200).attachment(`${req.params.code}_${departement.intitule}.csv`).send(csv)
+    res.redirect(`https://docurba-nuxt3.vercel.app/api/urba/exports/communes?departementCode=${req.params.code}`)
+    // const csv = await csvParser.parse(mapedCommunes).promise()
+    // res.status(200).attachment(`${req.params.code}_${departement.intitule}.csv`).send(csv)
   } else {
+    const departement = departements.find(d => d.code === req.params.code)
+    const communesCodes = departement.communes.map(c => c.code)
+    const communes = await procedures.getCommunes(communesCodes)
+
+    const mapedCommunes = communes.map((c) => {
+      return mapValues(sudocuhCommunes, key => get(c, key, ''))
+    })
     res.status(200).send(mapedCommunes)
   }
 })

@@ -235,6 +235,7 @@ export default {
       const { data: procedures, error } = await query
 
       if (error) {
+        // eslint-disable-next-line no-console
         console.log('error getProcedures', error)
       }
 
@@ -322,7 +323,9 @@ export default {
           owner_id: this.$user.id,
           testing: true
         }).select()
+
         if (errorInsertedProcedure) {
+          // eslint-disable-next-line no-console
           console.log('errorInsertedProcedure: ', errorInsertedProcedure)
         }
 

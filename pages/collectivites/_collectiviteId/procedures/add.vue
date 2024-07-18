@@ -5,7 +5,7 @@
         <v-col cols="auto">
           <nuxt-link
             class="text-decoration-none d-flex align-center"
-            :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${$route.params.collectiviteId.length > 5 ? 'epci' : 'commune'}`"
+            :to="`/collectivites/${$route.params.collectiviteId}`"
           >
             <v-icon color="primary" small class="mr-2">
               {{ icons.mdiChevronLeft }}
@@ -24,7 +24,6 @@ import axios from 'axios'
 import { mdiChevronLeft } from '@mdi/js'
 export default {
   name: 'ProcedureAdd',
-  layout: 'ddt',
   data () {
     return {
       collectivite: null,
