@@ -231,7 +231,10 @@ export default {
     await this.$refRole(this.gitRef, ['write'], `/documents/${this.gitRef}/pac`)
 
     if (this.gitRef.includes('projet-')) {
-      this.$tally('nP6avB')
+      this.$tally('nP6avB', {
+        max: 3,
+        signupDelay: 30
+      })
 
       const projectId = this.gitRef.replace('projet-', '')
 

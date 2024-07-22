@@ -159,12 +159,29 @@ module.exports = {
       }
     })
   },
-  notifyFrpEvent ({
+  async notifyFrpEvent ({
     eventData,
     userData,
     procedureData
   }) {
-    const collectivite = geo.getCollectivite(procedureData.collectivite_porteuse_id)
+    const collectivitePorteuse = geo.getCollectivite(procedureData.collectivite_porteuse_id)
+
+    const { data: procedures } = await supabase.from('procedures').select('*')
+      .eq('id', eventData.procedure_id)
+
+    const procedure = procedures[0]
+
+    const { data: perim } = await supabase.from('procedures_perimetres').select('*')
+      .eq('procedure_id', eventData.procedure_id)
+
+    let perimText = ''
+
+    if (perim.length > 1) {
+      perimText = `- Collectivites concernées: ${perim.map(p => collectivitePorteuse.collectivite_code).join(', ')}`
+    } else {
+      const commune = geo.getCommune(perim[0].collectivite_code)
+      perimText = `- Commune concernée: ${commune.code} ${commune.intitule}`
+    }
 
     const data = {
       text: `Nouvel event ${eventData.type}`,
@@ -174,6 +191,13 @@ module.exports = {
           text: {
             type: 'plain_text',
             text: `Nouvel event ${eventData.type}`
+          }
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `- Procedure: ${procedure.type} ${procedure.doc_type}`
           }
         },
         {
@@ -194,7 +218,14 @@ module.exports = {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: `- Collectivite: ${collectivite.intitule}(${collectivite.code}), departement ${collectivite.departementCode}`
+            text: perimText
+          }
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `- Collectivite porteuse: ${collectivitePorteuse.intitule}(${collectivitePorteuse.code}), departement ${collectivitePorteuse.departementCode}`
           }
         },
         {

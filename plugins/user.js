@@ -63,7 +63,7 @@ export default async ({ $supabase, app }, inject) => {
       user.isReady = new Promise((resolve, reject) => {
         // console.log('session.user.id', session.user.id)
 
-        $supabase.from('profiles').select().eq('user_id', session.user.id).then(({ data, error }) => {
+        $supabase.from('profiles').select('*').eq('user_id', session.user.id).then(({ data, error }) => {
           // console.log('profiles', data)
           if (data[0]) {
             user.profile = data[0]

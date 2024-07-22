@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const axios = require('axios')
 const express = require('express')
 const app = express()
@@ -11,6 +12,7 @@ const supabase = require('./modules/supabase.js')
 // modules
 const admin = require('./modules/admin.js')
 const slack = require('./modules/slack.js')
+const geo = require('./modules/geo.js')
 
 app.post('/notify/admin/acte', (req, res) => {
   // eslint-disable-next-line no-console
@@ -77,8 +79,10 @@ app.post('/notify/frp', (req, res) => {
 async function collectiviteValidation (data, responseUrl) {
   try {
     console.log('collectiviteValidation data: ', data)
-    const { error: errorUpdateProfile } = await supabase.from('profiles').update({ verified: true }).eq('user_id', data.user_id)
+    const { error: errorUpdateProfile } = await supabase.from('profiles')
+      .update({ verified: true }).eq('user_id', data.user_id)
     if (errorUpdateProfile) { throw errorUpdateProfile }
+
     axios({
       url: responseUrl,
       method: 'post',
@@ -86,6 +90,20 @@ async function collectiviteValidation (data, responseUrl) {
         text: `${data.firstname} ${data.lastname} (${data.email})
         pour la collectivité de code INSEE ${data.collectivite_id} est vérifier et validé.`
       }
+    })
+
+    const { data: profiles } = await supabase.from('profiles').select('*')
+      .eq('user_id', data.user_id)
+
+    const profile = profiles[0]
+    const collectivite = geo.getCollectivite(profile.collectivite_id)
+
+    sendgrid.sendEmail({
+      to: profile.email,
+      template_id: 'd-0143010573f6497b86abbd4e4c96f46e',
+      dynamic_template_data: Object.assign({
+        collectivite_name: collectivite.intitule
+      }, profile)
     })
   } catch (error) {
     console.log(error)
