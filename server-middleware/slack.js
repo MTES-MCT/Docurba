@@ -103,7 +103,8 @@ async function collectiviteValidation (data, responseUrl) {
       template_id: 'd-0143010573f6497b86abbd4e4c96f46e',
       dynamic_template_data: Object.assign({
         collectivite_name: collectivite.intitule
-      }, profile)
+      }, profile),
+      send_at: (Date.now() / 1000) + (60 * 5)
     })
   } catch (error) {
     console.log(error)

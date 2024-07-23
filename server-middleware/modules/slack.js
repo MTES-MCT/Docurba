@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const axios = require('axios')
 const geo = require('./geo.js')
 const supabase = require('./supabase.js')
@@ -73,6 +74,7 @@ module.exports = {
   },
   requestStateAgentAccess (userData) {
     console.log('requestStateAgentAccess userData: ', userData)
+
     let textContent = ''
     if (userData.poste === 'ddt') {
       textContent = `- departement: ${userData.departement.nom_departement} - ${userData.departement.code_departement} \n - email: ${userData.email}`
@@ -177,7 +179,7 @@ module.exports = {
     let perimText = ''
 
     if (perim.length > 1) {
-      perimText = `- Collectivites concernées: ${perim.map(p => collectivitePorteuse.collectivite_code).join(', ')}`
+      perimText = `- Collectivites concernées: ${perim.map(p => p.collectivite_code).join(', ')}`
     } else {
       const commune = geo.getCommune(perim[0].collectivite_code)
       perimText = `- Commune concernée: ${commune.code} ${commune.intitule}`
