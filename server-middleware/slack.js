@@ -104,10 +104,10 @@ async function collectiviteValidation (data, responseUrl) {
       dynamic_template_data: Object.assign({
         collectivite_name: collectivite.intitule
       }, profile),
-      send_at: (Date.now() / 1000) + (60 * 5)
+      send_at: Math.round((Date.now() / 1000)) + (60 * 5)
     })
   } catch (error) {
-    console.log(error)
+    console.log('collectiviteValidation', error)
   }
 }
 
