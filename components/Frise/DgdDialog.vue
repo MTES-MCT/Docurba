@@ -35,84 +35,137 @@
               </v-btn>
             </v-col>
           </v-row>
-          <v-expansion-panels v-else flat>
-            <v-expansion-panel v-for="(versement, i) in versements" :key="`versement-${i}`">
-              <v-expansion-panel-header class="">
-                <v-row>
-                  <v-col cols="12" class="d-flex py-6">
-                    <div>
-                      <div class="mention-grey--text mb-2">
-                        Versement terminé
-                      </div>
+          <div v-else>
+            <v-expansion-panels>
+              <v-expansion-panel v-for="(versement, i) in versements" :key="`versement-${i}`">
+                <v-expansion-panel-header class="">
+                  <v-row>
+                    <v-col cols="12" class="d-flex py-6">
                       <div>
-                        <v-chip small label color="success">
-                          <v-icon small color="grey">
-                            {{ icons.mdiMinusCircle }}
-                          </v-icon> OUI
-                        </v-chip>
+                        <div class="mention-grey--text mb-2">
+                          Versement terminé
+                        </div>
+                        <div>
+                          <v-chip small label color="success">
+                            <v-icon small color="grey">
+                              {{ icons.mdiMinusCircle }}
+                            </v-icon> NON
+                          </v-chip>
+                        </div>
                       </div>
-                    </div>
-                    <div class="ml-7">
-                      <div class="mention-grey--text mb-4">
-                        Année
+                      <div class="ml-7">
+                        <div class="mention-grey--text mb-4">
+                          Année
+                        </div>
+                        <div>
+                          {{ versement.year }}
+                        </div>
                       </div>
-                      <div>
-                        2019
+                      <div class="ml-7">
+                        <div class="mention-grey--text mb-4">
+                          Catégorie
+                        </div>
+                        <div>
+                          {{ versement.category }}
+                        </div>
                       </div>
-                    </div>
-                    <div class="ml-7">
-                      <div class="mention-grey--text mb-4">
-                        Catégorie
+                      <div class="ml-7">
+                        <div class="mention-grey--text mb-4">
+                          Montant total
+                        </div>
+                        <div>
+                          {{ versement.amount }} €
+                        </div>
                       </div>
-                      <div>
-                        2
+                      <div class="ml-7">
+                        <div class="mention-grey--text mb-4">
+                          Montant versé
+                        </div>
+                        <div>
+                          - €
+                        </div>
                       </div>
-                    </div>
-                    <div class="ml-7">
-                      <div class="mention-grey--text mb-4">
-                        Montant total
-                      </div>
-                      <div>
-                        1000€
-                      </div>
-                    </div>
-                    <div class="ml-7">
-                      <div class="mention-grey--text mb-4">
-                        Montant versé
-                      </div>
-                      <div>
-                        1000€
-                      </div>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <FriseDgdVersStepPanel />
-                <v-btn outlined color="error" @click="deleteVersement(versement)">
-                  Supprimer ce versement
-                </v-btn>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-          <div v-if="showVersementForm">
-            <div class="font-weight-bold typo--text mb-1">
-              Ajouter un versement
-            </div>
-            <FriseDgdVersementForm @add="addNewVersement" @save="addNewVersement(arguments[0])" @cancel="showVersementForm = false" />
-          </div>
-          <v-row>
-            <v-col cols="12">
-              <div>
-                <div>
-                  Commentaire général
-                </div>
-                <v-btn color="primary" text>
-                  Ajouter un commentaire
-                </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                  <FriseDgdVersStepPanel />
+                  <div class="mt-10">
+                    <v-dialog
+                      v-model="dialogDeleteVersement"
+                      width="500"
+                    >
+                      <template #activator="{ on, attrs }">
+                        <v-btn
+                          outlined
+                          color="error"
+                          v-bind="attrs"
+                          v-on="on"
+                        >
+                          Supprimer le versement
+                        </v-btn>
+                      </template>
+
+                      <v-card>
+                        <v-card-title class="text-h5">
+                          Confirmer la suppression
+                        </v-card-title>
+
+                        <v-card-text>
+                          Vous êtes sur le point de supprimer une étape de versement. Cette action est irréversible.
+                        </v-card-text>
+
+                        <v-divider />
+
+                        <v-card-actions>
+                          <v-btn
+                            color="error"
+                            depressed
+                            @click="deleteVersement(versementIdx)"
+                          >
+                            Supprimer le versement
+                          </v-btn>
+                          <v-btn
+                            color="primary"
+                            outlined
+                            @click="dialogDeleteVersement = false"
+                          >
+                            Annuler
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                  </div>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
+            <div v-if="showVersementForm">
+              <div class="font-weight-bold typo--text mb-1">
+                Ajouter un versement
               </div>
-            </v-col>
-          </v-row>
+              <FriseDgdVersementForm @add="addNewVersement" @save="addNewVersement(arguments[0])" @cancel="showVersementForm = false" />
+            </div>
+            <v-row>
+              <v-col cols="12">
+                <div>
+                  <div v-if="!showVersementForm" class="mt-6">
+                    <v-btn depressed color="primary" @click="showVersementForm = true">
+                      Ajouter un versement
+                    </v-btn>
+                  </div>
+                  <div>
+                    Commentaire général
+                  </div>
+                  <v-btn v-if="!showCommentForm" color="primary" text @click="showCommentForm =true">
+                    Ajouter un commentaire
+                  </v-btn>
+                  <div v-else>
+                    <InputsEditableText label="Commentaire:" compact />
+                  </div>
+                </div>
+              </v-col>
+            </v-row>
+          </div>
         </v-container>
       </v-card-text>
     </v-card>
@@ -127,6 +180,8 @@ export default
   props: {},
   data () {
     return {
+      dialogDeleteVersement: false,
+      showCommentForm: false,
       showVersementForm: false,
       versements: [],
       date: null,
@@ -136,22 +191,7 @@ export default
         start: null,
         end: null
       },
-      locations: ['Australia', 'Barbados', 'Chile', 'Denmark', 'Ecuador', 'France'],
-      headers: [
-        {
-          text: 'Étape des versements',
-          align: 'start',
-          sortable: false,
-          value: 'name'
-        },
-        { text: 'Montant', value: 'calories' },
-        { text: 'Versement effectué', value: 'fat' },
-        { text: 'Date', value: 'carbs' },
-        { text: 'Catégorie', value: 'protein' }
-
-      ],
-      desserts: [],
-      dialog: true,
+      dialog: false,
       voletQualitatifRaw: null,
       icons: {
         mdiCheck,
@@ -169,12 +209,15 @@ export default
 
   },
   methods: {
-    deleteVersement (versement) {
+    deleteVersement (versementIdx) {
       console.log('Delete versement')
+      this.versements.splice(versementIdx, 1)
+      this.dialogDeleteVersement = false
     },
     addNewVersement (versement) {
       this.versements = [...this.versements, versement]
       console.log('versements: ', this.versements)
+      this.showVersementForm = false
     }
   }
 }

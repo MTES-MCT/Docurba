@@ -92,7 +92,7 @@ export default
   data () {
     return {
       infos: {
-        typePlan: 'toto'
+        typePlan: ''
       },
       dialog: false,
       voletQualitatifRaw: null,

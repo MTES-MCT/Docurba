@@ -338,7 +338,8 @@ export default {
           value: (this.baseName + ' ' + this.nameComplement).trim()
         })
 
-        this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`)
+        this.$router.push(`/frise/${insertedProcedure[0].id}/invite`)
+        // this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`)
       } catch (error) {
         this.error = error
         console.log(error)
