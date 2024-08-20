@@ -2,7 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 // import { PG_DEV_CONFIG, PG_PROD_CONFIG } from '@/database/pg_secret_config.json'
 
 export default (_, inject) => {
-  const supabaseUrl = 'https://ixxbyuandbmplfnqtxyw.supabase.co'
+  // const supabaseUrl = 'https://ixxbyuandbmplfnqtxyw.supabase.co'
+  const supabaseUrl = 'https://supabase.docurba.beta.gouv.fr'
   const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNDk3NTU3NiwiZXhwIjoxOTUwNTUxNTc2fQ.zvgWeMG3sKSwBKv8uGm5uy82cEyMyEMivQvNIDFhBkA'
 
   inject('supabase', createClient(supabaseUrl, supabaseAnonKey))

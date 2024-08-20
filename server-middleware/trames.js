@@ -1,8 +1,6 @@
 const express = require('express')
-const { createClient } = require('@supabase/supabase-js')
 const github = require('./modules/github/github.js')
 const tree = require('./modules/github/tree.js')
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
 const { getFileContent, getFiles, addGhostSections } = require('./modules/github/files.js')
 
 const app = express()
