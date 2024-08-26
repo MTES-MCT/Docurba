@@ -16,7 +16,7 @@
         </v-btn>
       </div>
 
-      <v-card-title class="text-h5 d-flex flex-column font-weight-bold ">
+      <v-card-title class="text-h5 d-flex flex-column font-weight-bold">
         DGD
       </v-card-title>
 
@@ -36,7 +36,7 @@
             </v-col>
           </v-row>
           <div v-else>
-            <v-expansion-panels>
+            <v-expansion-panels flat class="dgd-exp-pan">
               <v-expansion-panel v-for="(versement, i) in versements" :key="`versement-${i}`">
                 <v-expansion-panel-header class="">
                   <v-row>
@@ -89,7 +89,7 @@
                   </v-row>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <FriseDgdVersStepPanel />
+                  <FriseDgdVersStepPanel :versement-id="versement.id" />
                   <div class="mt-10">
                     <v-dialog
                       v-model="dialogDeleteVersement"
@@ -112,7 +112,7 @@
                         </v-card-title>
 
                         <v-card-text>
-                          Vous êtes sur le point de supprimer une étape de versement. Cette action est irréversible.
+                          Vous êtes sur le point de supprimer un versement. Cette action est irréversible.
                         </v-card-text>
 
                         <v-divider />
@@ -206,18 +206,22 @@ export default
 
   },
   async mounted () {
-
+    const { data: versementsData } = await this.$supabase.from('versements').select().eq('procedure_id', this.$route.params.procedureId)
+    this.versements = versementsData
+    console.log('versements: ', versementsData)
   },
   methods: {
     deleteVersement (versementIdx) {
       console.log('Delete versement')
       this.versements.splice(versementIdx, 1)
       this.dialogDeleteVersement = false
+      // this.$supabase.delete().eq('id', )
     },
-    addNewVersement (versement) {
+    async addNewVersement (versement) {
       this.versements = [...this.versements, versement]
       console.log('versements: ', this.versements)
       this.showVersementForm = false
+      await this.$supabase.from('versements').insert({ amount: versement.amount, year: versement.year, category: versement.category, comment: versement.comment, procedure_id: this.$route.params.procedureId }).select()
     }
   }
 }
@@ -226,5 +230,14 @@ export default
 <style>
 #dgd-dialog .v-expansion-panel-content > .v-expansion-panel-content__wrap{
   padding: 0px!important;
+}
+
+.dgd-exp-pan .v-expansion-panel-header{
+  border: 1px solid var(--v-grey-base) ;
+}
+
+.dgd-exp-pan .v-expansion-panel-content{
+  border: 1px solid var(--v-grey-base) ;
+  border-top: none;
 }
 </style>
