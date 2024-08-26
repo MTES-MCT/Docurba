@@ -190,11 +190,16 @@ export default
       return this.events.length === 0 || this.events.every(e => !e.type || !e.date_iso)
     },
     isAdmin () {
-      if (!this.$user.id) { return false }
+      if (!this.$user.id || !this.$user.profile?.verified) { return false }
 
-      return this.$user.profile?.side === 'etat' ||
-        (this.$user.profile?.collectivite_id === this.collectivite.code ||
-        this.$user.profile?.collectivite_id === this.collectivite.intercommunaliteCode)
+      const adminDept = _.uniq(this.procedure.procedures_perimetres.map(p => p.departement))
+
+      if (this.$user.profile?.side === 'etat') {
+        return adminDept.includes(this.$user.profile.departement)
+      } else {
+        return this.$user.profile?.collectivite_id === this.collectivite.code ||
+          this.$user.profile?.collectivite_id === this.collectivite.intercommunaliteCode
+      }
     },
     internalDocType () {
       let currDocType = this.procedure.doc_type
