@@ -23,7 +23,7 @@
         <v-btn v-if="$user?.profile?.side === 'etat' && !procedure.secondary_procedure_of" color="primary" class="mr-2" outlined @click="addSubProcedure">
           Ajouter une procédure secondaire
         </v-btn>
-        <v-btn v-if="($user?.id && isAdmin) || ($user.profile.side === 'collectivite') " depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+        <v-btn v-if="($user?.id && isAdmin)" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
           Ajouter un événement
         </v-btn>
         <v-menu v-if="$user?.profile?.side === 'etat'">
@@ -214,7 +214,8 @@ export default
         PLUi: PluEvents,
         POS: PluEvents,
         SCOT: ScotEvents,
-        CC: ccEvents
+        CC: ccEvents,
+        SD: ScotEvents
       }
       return documentsEvents[this.internalDocType]
     },
@@ -226,8 +227,7 @@ export default
         const ev = this.documentEvents.find(x => x.name === event.type)
         return { ...event, structurant: !!ev?.structurant }
       }).filter((event) => {
-        return event.visibility === 'public' || this.isAdmin || this.$user.profile.departement === this.collectivite.departementCode ||
-        (event.from_sudocuh && event.structurant)
+        return event.visibility === 'public' || this.isAdmin || (event.from_sudocuh && event.structurant)
       })
     },
     attachments () {
