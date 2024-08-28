@@ -35,6 +35,15 @@ export default {
       url: `/api/geo/${this.$route.params.collectiviteId.length > 5 ? 'intercommunalites' : 'communes'}/${this.$route.params.collectiviteId}`,
       method: 'get'
     })).data
+
+    if (this.$user.profile?.side === 'etat') {
+      if (this.$user.profile?.departement !== this.collectivite.departementCode) {
+        this.$router.push(`/collectivites/${this.$route.params.collectiviteId}`)
+      }
+    } else if (this.$user.profile?.collectivite_id !== this.collectivite.code &&
+          this.$user.profile?.collectivite_id !== this.collectivite.intercommunaliteCode) {
+      this.$router.push(`/collectivites/${this.$route.params.collectiviteId}`)
+    }
   }
 }
 </script>

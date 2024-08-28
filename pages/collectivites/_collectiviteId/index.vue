@@ -7,20 +7,20 @@
     </v-row>
     <v-row>
       <v-col
-        v-for="(actionsCard, i) in actionsCards"
+        v-for="(actionsCard, i) in availableCards"
         :key="i"
         cols="12"
         sm="6"
-        md="3"
+        :md="12/availableCards.length"
         class="d-flex justify-center"
       >
-        <div style="position: relative; display:inline-block;">
+        <div class="action-card-container">
           <v-card
             outlined
             tile
             color="white"
             class="py-2 fill-height"
-            :to="actionsCard.disabled ? null: actionsCard.to"
+            :to="actionsCard.to"
             nuxt
           >
             <v-card-title class="text-body-1 font-weight-bold break-word d-flex align-end justify-space-between" style="line-height:24px">
@@ -85,11 +85,6 @@ export default {
     return {
       actionsCards: [
         {
-          title: 'Nouvelle Procédure',
-          text: 'Démarrez une nouvelle procédure de document d’urbanisme.',
-          to: `/collectivites/${this.collectivite.code}/procedures/add`
-        },
-        {
           title: 'Socle de Porter à connaissance',
           text: 'Consultez ou modifiez votre socle de Porter à Connaissance.',
           to: {
@@ -110,12 +105,53 @@ export default {
         }
       ]
     }
+  },
+  computed: {
+    isAdmin () {
+      if (this.$user.profile?.side === 'etat') {
+        return this.$user.profile?.departement === this.collectivite.departementCode
+      } else {
+        return this.$user.profile?.collectivite_id === this.collectivite.code ||
+          this.$user.profile?.collectivite_id === this.collectivite.intercommunaliteCode
+      }
+    },
+    newProcedureCard () {
+      const cardData = {
+        title: 'Nouvelle Procédure',
+        text: 'Démarrez une nouvelle procédure de document d’urbanisme.'
+      }
+
+      if (this.isAdmin && this.$user.profile.verified) {
+        cardData.to = `/collectivites/${this.collectivite.code}/procedures/add`
+      } else if (this.isAdmin && !this.$user.profile.verified) {
+        if (this.$user.profile.side === 'etat') {
+          cardData.to = '/login/ddt/explain'
+        } else {
+          cardData.to = '/login/collectivites/explain'
+        }
+      }
+
+      return cardData
+    },
+    availableCards () {
+      if (this.isAdmin) {
+        return [this.newProcedureCard, ...this.actionsCards]
+      } else {
+        return this.actionsCards
+      }
+    }
   }
 
 }
 </script>
 
 <style scoped>
+.action-card-container {
+  position: relative;
+  display:inline-block;
+  width: 100%;
+}
+
 .divider-vertical {
   width: 4px;
   height: 100%;
