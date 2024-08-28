@@ -219,6 +219,7 @@ export default {
         return { ...e, name }
       })
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log('ERROR: ', error)
     }
   },

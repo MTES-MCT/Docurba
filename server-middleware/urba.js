@@ -39,7 +39,7 @@ app.get('/communes/:inseeCode', async (req, res) => {
 
 app.get('/exports/departements/:code', async (req, res) => {
   if (req.query.csv) {
-    res.redirect(`https://docurba-nuxt3.vercel.app/api/urba/exports/communes?departementCode=${req.params.code}`)
+    res.redirect(`https://nuxt3.docurba.incubateur.net/api/urba/exports/communes?departementCode=${req.params.code}`)
     // const csv = await csvParser.parse(mapedCommunes).promise()
     // res.status(200).attachment(`${req.params.code}_${departement.intitule}.csv`).send(csv)
   } else {

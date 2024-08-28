@@ -3,7 +3,8 @@ import _ from 'lodash'
 import EnrichedCommunes from '../Data/EnrichedCommunes.json'
 import geo from './geo.js'
 const { createClient } = require('@supabase/supabase-js')
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+// const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.SUPABASE_ADMIN_KEY)
+const supabase = createClient('https://supabase.docurba.beta.gouv.fr', process.env.SUPABASE_ADMIN_KEY)
 
 module.exports = {
   parseAttachment (path) {

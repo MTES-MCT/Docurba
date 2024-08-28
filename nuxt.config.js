@@ -101,6 +101,9 @@ export default {
           // 'https://stonly.com/js/widget/v2/',
           'http://docurba-metabase.osc-fr1.scalingo.io/'
         ]
+        // 'connect-src': [
+        //   'nuxt3.docurba.incubateur.net'
+        // ]
       }
       // addMeta: true
     }

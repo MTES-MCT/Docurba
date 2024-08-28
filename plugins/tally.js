@@ -1,10 +1,10 @@
-export default (_, inject) => {
+export default ({ $user, $dayjs }, inject) => {
   const tallyScript = document.createElement('script')
   tallyScript.setAttribute('src', 'https://tally.so/widgets/embed.js')
   tallyScript.setAttribute('async', true)
   document.head.appendChild(tallyScript)
 
-  inject('tally', (formId, config = { max: 3 }) => {
+  inject('tally', async (formId, config = { max: 3 }) => {
     const displayedKey = `tally-displayed-${formId}`
     const timestampKey = `tally-timestamp-${formId}`
 
@@ -20,11 +20,18 @@ export default (_, inject) => {
         doNotShowAfterSubmit: true
       }, config)
 
-      setTimeout(() => {
-        localStorage.setItem(displayedKey, +formNb + 1)
-        localStorage.setItem(timestampKey, Date.now())
-        window.Tally.openPopup(formId, options)
-      }, 3000)
+      await $user.isReady
+
+      const signupDate = $dayjs($user.profile.created_at)
+      const signupDelay = config.signupDelay
+
+      if (signupDelay && $dayjs().isAfter(signupDate.add(signupDelay, 'd'))) {
+        setTimeout(() => {
+          localStorage.setItem(displayedKey, +formNb + 1)
+          localStorage.setItem(timestampKey, Date.now())
+          window.Tally.openPopup(formId, options)
+        }, 3000)
+      }
     }
   })
 }
