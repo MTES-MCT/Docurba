@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex align-center">
-    <div class="mr-3">
+    <div v-if="!hideLabel" class="mr-3">
       {{ label }}
     </div>
     <div
@@ -43,7 +43,7 @@
             outlined
             depressed
             height="40"
-            @click="editMode = false"
+            @click="editMode = false;$emit('cancel')"
           >
             <v-icon>{{ icons.mdiClose }}</v-icon>
           </v-btn>
@@ -113,11 +113,19 @@ export default
     isSwitch: {
       type: Boolean,
       default: () => false
+    },
+    edit: {
+      type: Boolean,
+      default: () => false
+    },
+    hideLabel: {
+      type: Boolean,
+      default: () => false
     }
   },
   data () {
     return {
-      editMode: false,
+      editMode: this.edit,
       valTxt: '',
       icons: {
         mdiCheck,

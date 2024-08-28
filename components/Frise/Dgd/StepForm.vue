@@ -2,6 +2,7 @@
   <div class="d-flex">
     <v-text-field
       v-model="step.name"
+      required
       style="min-width: 275px;"
       dense
       filled
@@ -9,7 +10,14 @@
       class="mr-2"
     />
     <v-text-field v-model="step.amount" dense filled placeholder="Montant" class="mr-2" />
-    <v-text-field v-model="step.date" dense filled placeholder="Date" class="mr-2" />
+    <v-text-field
+      v-model="step.date"
+      type="date"
+      dense
+      filled
+      placeholder="Date"
+      class="mr-2"
+    />
     <v-select
       v-model="step.category"
       :items="['1', '2', '3']"
@@ -22,7 +30,7 @@
     <v-select
       v-model="step.isDone"
       style="max-width: 90px;"
-      :items="['oui','non']"
+      :items="[{text:'oui', value: true},{text:'non', value: false}]"
       dense
       filled
       placeholder="Effectué"
@@ -57,6 +65,12 @@ import { mdiCheck, mdiClose } from '@mdi/js'
 export default
 {
   name: 'StepForm',
+  props: {
+    value: {
+      type: Object,
+      default: () => null
+    }
+  },
   data () {
     return {
       icons: {
@@ -65,11 +79,11 @@ export default
         mdiClose
       },
       step: {
-        name: '',
-        isDone: false,
-        category: '1',
-        amount: 0,
-        date: ''
+        name: this.value.name || '',
+        isDone: this.value.is_done || false,
+        category: this.value.category || '1',
+        amount: this.value.amount || '',
+        date: this.value.date || ''
       }
     }
   }

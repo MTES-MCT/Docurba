@@ -1,25 +1,33 @@
 <template>
   <div class="pt-7">
     <v-data-table
-      v-if="steps.length > 0"
+      v-if="versement.etapes_versement.length > 0"
       :headers="headers"
-      :items="steps"
+      :items="versement.etapes_versement"
       hide-default-footer
       :items-per-page="-1"
       class="elevation-0 mb-7"
     >
       <template #item="{item, index}">
-        <tr v-if="item.edit">
+        <tr v-if="editedStepIndex === index && editIsEdit">
           <td colspan="100%">
-            <FriseDgdStepForm />
+            <FriseDgdStepForm v-model="editedStepItem" class="mt-4" @save="saveStep(editedStepItem)" @cancel="editedStepIndex = -1; editIsEdit = false" />
           </td>
         </tr>
         <tr v-else>
           <td>{{ item.name }}</td>
-          <td>{{ item.amount }}</td>
-          <td>{{ item.isDone }}</td>
+          <td>{{ item.amount }}€</td>
           <td>{{ item.date }}</td>
           <td>{{ item.category }}</td>
+          <td>
+            <v-chip v-if="item.is_done" small label color="success-light" class="success--text font-weight-bold">
+              <v-icon small color="success" class="mr-2">
+                {{ icons.mdiMinusCircle }}
+              </v-icon> OUI
+            </v-chip>
+            <span v-else> Non</span>
+          </td>
+
           <td class="d-flex align-center justify-end">
             <v-menu
               bottom
@@ -56,7 +64,7 @@
     </v-data-table>
     <v-row v-if="showStepForm">
       <v-col cols="12" class="d-flex">
-        <FriseDgdStepForm @cancel="showStepForm = false" @save="saveStep(arguments[0])" />
+        <FriseDgdStepForm @cancel="showStepForm = false" @save="saveStep" />
       </v-col>
     </v-row>
     <div v-else>
@@ -101,20 +109,21 @@
   </div>
 </template>
 <script>
-import { mdiMinusCircle, mdiCheckCircle, mdiCheck, mdiClose, mdiDotsVertical } from '@mdi/js'
+import { mdiMinusCircle, mdiCheckCircle, mdiDotsVertical } from '@mdi/js'
 
 export default
 {
   name: 'VersStepPanel',
   props: {
-    versementId: {
-      type: String,
+    versement: {
+      type: Object,
       required: true
     }
   },
   data () {
     return {
       editedStepIndex: -1,
+      editIsEdit: null,
       editedStepItem: {
         id: '',
         name: '',
@@ -138,11 +147,8 @@ export default
       icons: {
         mdiMinusCircle,
         mdiCheckCircle,
-        mdiCheck,
-        mdiClose,
         mdiDotsVertical
       },
-      steps: [],
       headers: [
         {
           text: 'Étape des versements',
@@ -151,48 +157,40 @@ export default
           value: 'name'
         },
         { text: 'Montant', value: 'amount' },
-        { text: 'Versement effectué', value: 'isDone' },
         { text: 'Date', value: 'date' },
         { text: 'Catégorie', value: 'category' },
+        { text: 'Versement effectué', value: 'isDone' },
         { value: 'actions', align: 'end' }
       ]
     }
   },
-  async mounted () {
-    const { data: stepsData } = await this.$supabase.from('etapes_versement').select().eq('id', this.versementId)
-    this.steps = stepsData
-    console.log(' this.versementId: ', this.versementId)
-    console.log('stepsData: ', stepsData)
-  },
   methods: {
+    saveStep (step) {
+      this.$emit('save', { step, versement: this.versement })
+      this.showStepForm = false
+    },
     deleteItem (item, index) {
       this.editedStepIndex = index
       this.editedStepItem = Object.assign({}, item)
       this.dialogDeleteStepVersement = true
     },
-    async deleteStepConfirm () {
+    deleteStepConfirm () {
+      this.$emit('delete', { ...this.editedStepItem })
       console.log('Delete step versement')
-      this.steps.splice(this.editedStepIndex, 1)
       this.dialogDeleteStepVersement = false
-      console.log('this.editedStepItem: ', this.editedStepItem)
-      await this.$supabase.from('etapes_versement').delete().eq('id', this.editedStepItem.id)
     },
     editLine (item, index) {
-      const toEdit = this.steps.findIndex(index)
-      toEdit.edit = true
-    },
-    async saveStep (step) {
-      this.steps = [...this.steps, { ...step, edit: false }]
-      this.showStepForm = false
-      await this.$supabase.from('etapes_versement').insert({
-        name: step.name,
-        versement_id: this.versementId,
-        isDone: step.is_done,
-        category: step.category,
-        amount: step.amount,
-        date: '01/07/1992'// step.date
-      }).select()
+      this.editedStepIndex = index
+      this.editIsEdit = true
+      this.editedStepItem = { ...item }
     }
   }
 }
 </script>
+
+<style scoped>
+/* var(--v-primary-base) */
+.v-data-table-header tr th span{
+  color:red !important;
+}
+</style>

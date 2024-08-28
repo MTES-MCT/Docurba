@@ -36,108 +36,10 @@
             </v-col>
           </v-row>
           <div v-else>
-            <v-expansion-panels flat class="dgd-exp-pan">
-              <v-expansion-panel v-for="(versement, i) in versements" :key="`versement-${i}`">
-                <v-expansion-panel-header class="">
-                  <v-row>
-                    <v-col cols="12" class="d-flex py-6">
-                      <div>
-                        <div class="mention-grey--text mb-2">
-                          Versement terminé
-                        </div>
-                        <div>
-                          <v-chip small label color="success">
-                            <v-icon small color="grey">
-                              {{ icons.mdiMinusCircle }}
-                            </v-icon> NON
-                          </v-chip>
-                        </div>
-                      </div>
-                      <div class="ml-7">
-                        <div class="mention-grey--text mb-4">
-                          Année
-                        </div>
-                        <div>
-                          {{ versement.year }}
-                        </div>
-                      </div>
-                      <div class="ml-7">
-                        <div class="mention-grey--text mb-4">
-                          Catégorie
-                        </div>
-                        <div>
-                          {{ versement.category }}
-                        </div>
-                      </div>
-                      <div class="ml-7">
-                        <div class="mention-grey--text mb-4">
-                          Montant total
-                        </div>
-                        <div>
-                          {{ versement.amount }} €
-                        </div>
-                      </div>
-                      <div class="ml-7">
-                        <div class="mention-grey--text mb-4">
-                          Montant versé
-                        </div>
-                        <div>
-                          - €
-                        </div>
-                      </div>
-                    </v-col>
-                  </v-row>
-                </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <FriseDgdVersStepPanel :versement-id="versement.id" />
-                  <div class="mt-10">
-                    <v-dialog
-                      v-model="dialogDeleteVersement"
-                      width="500"
-                    >
-                      <template #activator="{ on, attrs }">
-                        <v-btn
-                          outlined
-                          color="error"
-                          v-bind="attrs"
-                          v-on="on"
-                        >
-                          Supprimer le versement
-                        </v-btn>
-                      </template>
-
-                      <v-card>
-                        <v-card-title class="text-h5">
-                          Confirmer la suppression
-                        </v-card-title>
-
-                        <v-card-text>
-                          Vous êtes sur le point de supprimer un versement. Cette action est irréversible.
-                        </v-card-text>
-
-                        <v-divider />
-
-                        <v-card-actions>
-                          <v-btn
-                            color="error"
-                            depressed
-                            @click="deleteVersement(versementIdx)"
-                          >
-                            Supprimer le versement
-                          </v-btn>
-                          <v-btn
-                            color="primary"
-                            outlined
-                            @click="dialogDeleteVersement = false"
-                          >
-                            Annuler
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-dialog>
-                  </div>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
+            <v-expansion-panels accordion flat class="dgd-exp-pan">
+              <template v-for="(versement, i) in versements">
+                <FriseDgdVersExpPanel :key="`versement-${i}`" :versement="versement" @delete="deleteVersement" @save-step="saveStep" @delete-step="deleteStep" />
+              </template>
             </v-expansion-panels>
             <div v-if="showVersementForm">
               <div class="font-weight-bold typo--text mb-1">
@@ -148,19 +50,19 @@
             <v-row>
               <v-col cols="12">
                 <div>
-                  <div v-if="!showVersementForm" class="mt-6">
+                  <div v-if="!showVersementForm" class="my-6">
                     <v-btn depressed color="primary" @click="showVersementForm = true">
                       Ajouter un versement
                     </v-btn>
                   </div>
-                  <div>
+                  <div class="mb-4">
                     Commentaire général
                   </div>
-                  <v-btn v-if="!showCommentForm" color="primary" text @click="showCommentForm =true">
+                  <span v-if="!showCommentForm" style="cursor: pointer;" class="primary--text font-weight-bold" text @click="showCommentForm =true">
                     Ajouter un commentaire
-                  </v-btn>
+                  </span>
                   <div v-else>
-                    <InputsEditableText label="Commentaire:" compact />
+                    <InputsEditableText hide-label edit label="Commentaire:" compact @cancel="showCommentForm=false" />
                   </div>
                 </div>
               </v-col>
@@ -169,10 +71,23 @@
         </v-container>
       </v-card-text>
     </v-card>
+    <v-snackbar
+      v-model="snackbar"
+      top
+      color="success"
+      outlined
+      :timeout="3000"
+    >
+      <v-icon small color="success" class="mr-2">
+        {{ icons.mdiCheckCircle }}
+      </v-icon>
+
+      {{ snackbarText }}
+    </v-snackbar>
   </v-dialog>
 </template>
 <script>
-import { mdiCheck, mdiClose, mdiDotsVertical, mdiMinusCircle, mdiCheckCircle } from '@mdi/js'
+import { mdiCheck, mdiClose, mdiDotsVertical, mdiCheckCircle } from '@mdi/js'
 
 export default
 {
@@ -180,24 +95,16 @@ export default
   props: {},
   data () {
     return {
-      dialogDeleteVersement: false,
       showCommentForm: false,
       showVersementForm: false,
       versements: [],
-      date: null,
-      trip: {
-        name: '',
-        location: null,
-        start: null,
-        end: null
-      },
+      snackbar: false,
+      snackbarText: null,
       dialog: false,
-      voletQualitatifRaw: null,
       icons: {
         mdiCheck,
         mdiClose,
         mdiDotsVertical,
-        mdiMinusCircle,
         mdiCheckCircle
       }
     }
@@ -206,22 +113,41 @@ export default
 
   },
   async mounted () {
-    const { data: versementsData } = await this.$supabase.from('versements').select().eq('procedure_id', this.$route.params.procedureId)
-    this.versements = versementsData
-    console.log('versements: ', versementsData)
+    await this.refreshVersements()
   },
   methods: {
-    deleteVersement (versementIdx) {
-      console.log('Delete versement')
-      this.versements.splice(versementIdx, 1)
-      this.dialogDeleteVersement = false
-      // this.$supabase.delete().eq('id', )
+    async refreshVersements () {
+      const { data: versementsData } = await this.$supabase.from('versements').select('*, etapes_versement(*)').eq('procedure_id', this.$route.params.procedureId)
+      this.versements = versementsData
+      console.log('refreshVersements: ', this.versements)
+    },
+    async deleteVersement (versement) {
+      this.versements = this.versements.filter(e => e.id !== versement.id)
+      await this.$supabase.from('versements').delete().eq('id', versement.id)
+      this.snackbarText = 'Versement supprimée.'
     },
     async addNewVersement (versement) {
       this.versements = [...this.versements, versement]
-      console.log('versements: ', this.versements)
       this.showVersementForm = false
       await this.$supabase.from('versements').insert({ amount: versement.amount, year: versement.year, category: versement.category, comment: versement.comment, procedure_id: this.$route.params.procedureId }).select()
+    },
+    async deleteStep (toDeleteStep) {
+      console.log('deleteStep: ', toDeleteStep)
+      await this.$supabase.from('etapes_versement').delete().eq('id', toDeleteStep.id)
+      await this.refreshVersements()
+      this.snackbarText = 'Étape de versement supprimée.'
+    },
+    async saveStep ({ step, versement }) {
+      // TODO: Faire un upsert
+      await this.$supabase.from('etapes_versement').insert({
+        name: step.name,
+        versement_id: versement.id,
+        is_done: step.isDone,
+        category: step.category,
+        amount: step.amount,
+        date: '01/07/1992'// step.date
+      }).select()
+      await this.refreshVersements()
     }
   }
 }

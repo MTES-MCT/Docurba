@@ -17,7 +17,7 @@
         depressed
         color="primary"
         height="40"
-        class="mr-2"
+        class="mr-2 pa-0"
         @click="save"
       >
         <v-icon>{{ icons.mdiCheck }}</v-icon>
