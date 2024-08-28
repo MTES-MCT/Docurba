@@ -124,21 +124,15 @@ export default {
       if (this.isAdmin && this.$user.profile.verified) {
         cardData.to = `/collectivites/${this.collectivite.code}/procedures/add`
       } else if (this.isAdmin && !this.$user.profile.verified) {
-        if (this.$user.profile.side === 'etat') {
-          cardData.to = '/login/ddt/explain'
-        } else {
-          cardData.to = '/login/collectivites/explain'
-        }
+        cardData.to = '/validation'
+      } else {
+        cardData.to = '/login'
       }
 
       return cardData
     },
     availableCards () {
-      if (this.isAdmin) {
-        return [this.newProcedureCard, ...this.actionsCards]
-      } else {
-        return this.actionsCards
-      }
+      return [this.newProcedureCard, ...this.actionsCards]
     }
   }
 
