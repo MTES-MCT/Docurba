@@ -151,11 +151,12 @@ module.exports = {
     try {
       const { data: personsData, error: personsError } = await personsApi.searchPersons(email, {
         fields: 'email',
-        limit: 1
+        limit: 10
       })
 
       if (personsData && !personsError) {
         if (personsData.items[0]) {
+          // Todo, remplacer le items[0] par un find avec l'email parce que le search ne renvoit pas forcément l'email exacte en premier.
           const person = personsData.items[0].item
 
           const { data: personsDeals, success, additionalData } = await personsApi.getPersonDeals(person.id)

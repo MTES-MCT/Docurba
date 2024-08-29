@@ -112,7 +112,7 @@ export default {
         return this.$user.profile?.departement === this.collectivite.departementCode
       } else {
         return this.$user.profile?.collectivite_id === this.collectivite.code ||
-          this.$user.profile?.collectivite_id === this.collectivite.intercommunaliteCode
+          this.$user.profile?.collectivite_id === this.collectivite.intercommunaliteCode // Ca ne marche pas sur les CC puisque les CC n'ont pas de CC
       }
     },
     newProcedureCard () {
