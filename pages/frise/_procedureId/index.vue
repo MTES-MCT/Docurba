@@ -251,6 +251,7 @@ export default
       const lastEventType = this.events[0]
 
       const lastEventOrder = this.documentEvents.find(e => e.name === lastEventType.type)
+
       if (!lastEventOrder) { return filteredDocumentEvents[0] }
       return filteredDocumentEvents.find(e => _.gt(e.order, lastEventOrder.order))
     },
