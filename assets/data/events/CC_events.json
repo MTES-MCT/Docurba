@@ -23,9 +23,7 @@
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": [
-      "pp"
-    ],
+    "scope_sugg": "",
     "structurant": false,
     "impact": ""
   },
@@ -86,7 +84,7 @@
   },
   {
     "name": "Transmission du porter-à-connaissance",
-    "order": "",
+    "order": 7,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -110,7 +108,7 @@
   },
   {
     "name": "Transmission de la note d'enjeux",
-    "order": "",
+    "order": 9,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -122,7 +120,7 @@
   },
   {
     "name": "Prise en compte de la note d'enjeux",
-    "order": 9,
+    "order": 10,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -443,10 +441,10 @@
     ],
     "scope_sugg": "",
     "structurant": true,
-    "impact": "abandon"
+    "impact": "abandonné"
   },
   {
-    "name": "Délibération d'approbation du conseil municipal",
+    "name": "Délibération d'approbation du conseil municipal ou communautaire",
     "order": 35,
     "law": "",
     "phases": "Approbation",
@@ -566,8 +564,21 @@
     "impact": ""
   },
   {
-    "name": "Recours gracieux de l'État",
+    "name": "Caractère éxécutoire",
     "order": 43,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": "opposable"
+  },
+  {
+    "name": "Recours gracieux de l'État",
+    "order": 44,
     "law": "",
     "phases": "?",
     "scope_liste": [
@@ -580,19 +591,6 @@
   },
   {
     "name": "Retrait de la délibération de prescription",
-    "order": "",
-    "law": "",
-    "phases": "",
-    "scope_liste": [
-      "pp",
-      "ms"
-    ],
-    "scope_sugg": "",
-    "structurant": "",
-    "impact": ""
-  },
-  {
-    "name": "Retrait de la délibération d'approbation",
     "order": 45,
     "law": "",
     "phases": "",
@@ -601,12 +599,25 @@
       "ms"
     ],
     "scope_sugg": "",
-    "structurant": false,
-    "impact": ""
+    "structurant": true,
+    "impact": "abandonné"
+  },
+  {
+    "name": "Retrait de la délibération d'approbation",
+    "order": 46,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": "en cours"
   },
   {
     "name": "Désistement recours gracieux de l’État",
-    "order": 46,
+    "order": 47,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -619,7 +630,7 @@
   },
   {
     "name": "Annulation TA partielle",
-    "order": 47,
+    "order": 48,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -632,7 +643,7 @@
   },
   {
     "name": "Annulation TA totale",
-    "order": 48,
+    "order": 49,
     "law": "",
     "phases": "?",
     "scope_liste": [
@@ -641,6 +652,58 @@
     ],
     "scope_sugg": "",
     "structurant": true,
-    "impact": "annule"
+    "impact": "annulé"
+  },
+  {
+    "name": "Retrait de l'annulation totale",
+    "order": 50,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": "opposable"
+  },
+  {
+    "name": "Arrêté préfectoral d'abrogation de la carte communale",
+    "order": 51,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Délibération communal ou communautaire d’abrogation de la carte communale",
+    "order": 52,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": false,
+    "impact": ""
+  },
+  {
+    "name": "Abrogation effective",
+    "order": 53,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ms"
+    ],
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": "abrogé"
   }
 ]

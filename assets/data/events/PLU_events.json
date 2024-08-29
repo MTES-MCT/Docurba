@@ -71,12 +71,20 @@
     "law": "",
     "phases": "",
     "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
       "m",
-      "ms"
+      "ms",
+      "mc"
     ],
     "scope_sugg": [
+      "pp",
+      "ppi",
+      "rms",
       "m",
-      "ms"
+      "ms",
+      "mc"
     ],
     "structurant": true,
     "impact": ""
@@ -103,13 +111,10 @@
       "ppi",
       "rms",
       "m",
-      "ms"
+      "ms",
+      "mc"
     ],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
+    "scope_sugg": "",
     "structurant": false,
     "impact": ""
   },
@@ -216,7 +221,7 @@
   },
   {
     "name": "Transmission du porter-à-connaissance",
-    "order": "",
+    "order": 14,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -259,7 +264,7 @@
   },
   {
     "name": "Transmission de la note d'enjeux",
-    "order": "",
+    "order": 17,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -677,7 +682,7 @@
   },
   {
     "name": "Délibération du conseil communautaire qui arrête le projet de PLU",
-    "order": "",
+    "order": 43,
     "law": "",
     "phases": "",
     "scope_liste": [
@@ -699,7 +704,8 @@
       "ppi",
       "rms",
       "m",
-      "ms"
+      "ms",
+      "mc"
     ],
     "scope_sugg": [
       "pp",
@@ -807,7 +813,8 @@
       "ppi",
       "rms",
       "m",
-      "ms"
+      "ms",
+      "mc"
     ],
     "scope_sugg": [
       "pp",
@@ -1187,6 +1194,7 @@
       "rms",
       "m",
       "ms",
+      "mc",
       "mj"
     ],
     "scope_sugg": [
@@ -1345,8 +1353,8 @@
       "ms"
     ],
     "scope_sugg": "",
-    "structurant": false,
-    "impact": ""
+    "structurant": true,
+    "impact": "abandonné"
   },
   {
     "name": "Retrait de la délibération d'approbation",
@@ -1361,8 +1369,8 @@
       "ms"
     ],
     "scope_sugg": "",
-    "structurant": false,
-    "impact": ""
+    "structurant": true,
+    "impact": "en cours"
   },
   {
     "name": "Désistement recours gracieux de l’État",
@@ -1414,11 +1422,42 @@
     ],
     "scope_sugg": "",
     "structurant": true,
-    "impact": "annule"
+    "impact": "annulé"
+  },
+  {
+    "name": "Retrait de l'annulation totale",
+    "order": 86,
+    "law": "",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ppi",
+      "rms",
+      "m",
+      "ms",
+      "mc",
+      "mj"
+    ],
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": "opposable"
+  },
+  {
+    "name": "Abrogation",
+    "order": 87,
+    "law": "R153-19",
+    "phases": "",
+    "scope_liste": [
+      "pp",
+      "ppi"
+    ],
+    "scope_sugg": "",
+    "structurant": true,
+    "impact": "abrogé"
   },
   {
     "name": "Bilan à 3 ans sur le volet habitat",
-    "order": 86,
+    "order": 88,
     "law": "L. 153-28 et L. 153-29",
     "phases": "Bilan/évaluation",
     "scope_liste": [
@@ -1432,7 +1471,7 @@
   },
   {
     "name": "Rapport d'artificialisation des sols",
-    "order": 87,
+    "order": 89,
     "law": "L. 153-27 dernier alinéa du CU\n\n\nArticle L 22-31-1 (code général collectivités territoriales)",
     "phases": "Bilan/évaluation",
     "scope_liste": [
@@ -1445,7 +1484,7 @@
   },
   {
     "name": "Evaluation du PLU au bout de 6 ans ou révision substantielle si besoin",
-    "order": 88,
+    "order": 90,
     "law": "L. 153-27 du CU",
     "phases": "Bilan/évaluation",
     "scope_liste": [
@@ -1461,7 +1500,7 @@
   },
   {
     "name": "Caducité",
-    "order": 89,
+    "order": 91,
     "law": "",
     "phases": "?",
     "scope_liste": [
@@ -1469,7 +1508,7 @@
       "ppi"
     ],
     "scope_sugg": "",
-    "structurant": "",
-    "impact": ""
+    "structurant": true,
+    "impact": "caduc"
   }
 ]
