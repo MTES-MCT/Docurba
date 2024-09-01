@@ -131,6 +131,10 @@ export default
   },
   computed: {
     amoutTransfered () {
+      if (!this.versement.etapes_versement) {
+        return '-'
+      }
+
       return this.versement.etapes_versement.reduce((acc, curr) => {
         if (curr.is_done) {
           return acc + curr.amount
