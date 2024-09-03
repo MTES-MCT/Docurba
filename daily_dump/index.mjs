@@ -19,13 +19,13 @@ try {
   /// ////////////////////////////////////////
 
   // Step 0 (Optionnal)
-  // await clearDev(CONFIG.PG_DEV_CONFIG)
+  await clearDev(CONFIG.PG_DEV_CONFIG)
   // // // // Step 1 - Charge un dump particulier venant de l'export de Andy sur notre storage
-  // await loadDump(CONFIG.PG_DEV_CONFIG, '2024_05_21_dump')
+  await loadDump(CONFIG.PG_DEV_CONFIG, '2024_08_31_dump')
   // // // // // Step 2 - Créer les tables intermédiaires d'aggregation depuis la donnée Sudocuh
-  // await createSudocuProcessedTables(CONFIG.PG_DEV_CONFIG)
+  await createSudocuProcessedTables(CONFIG.PG_DEV_CONFIG)
   // // // // // Replique un schema de test (Optionnal)
-  // await createOriginalSchema(CONFIG.PG_DEV_CONFIG)
+  await createOriginalSchema(CONFIG.PG_DEV_CONFIG)
   // // // // // Step 3 - Désactive du trigger de changement de status sur nouveaux events
   await handleTrigger(CONFIG.PG_PROD_CONFIG, 'disable')
 
@@ -42,7 +42,7 @@ try {
   // // Step 6(Bis) - Définition des status de procédures en fonction des périmètres
   await updatePerimeterStatus(CONFIG.PG_PROD_CONFIG)
   // // Step 7 - Ralliement des communes fusionnées
-  await updateComDPerimeter(CONFIG.PG_PROD_CONFIG)
+  // await updateComDPerimeter(CONFIG.PG_PROD_CONFIG)
   // // Step 8 - Réactivation du trigger de changement de status sur nouveaux events
   await handleTrigger(CONFIG.PG_PROD_CONFIG, 'enable')
 } catch (error) {
