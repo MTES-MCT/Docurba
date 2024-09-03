@@ -10,6 +10,8 @@
     "start": "nuxt start",
     "enrich": "node scripts/enrich_procedures_status.js",
     "cleanSM": "node scripts/cleanSM.js",
+    "fillTrame": "node scripts/fillTrame.js",
+    "addExistColab": "node scripts/AddExistingCollabs.js",
     "sido": "node scripts/sidoData.js",
     "generate": "nuxt generate",
     "migrate": "node database/index.js",

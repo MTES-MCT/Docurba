@@ -21,7 +21,9 @@ try {
   // Step 0 (Optionnal)
   await clearDev(CONFIG.PG_DEV_CONFIG)
   // // // // Step 1 - Charge un dump particulier venant de l'export de Andy sur notre storage
-  await loadDump(CONFIG.PG_DEV_CONFIG, '2024_08_31_dump')
+
+  await loadDump(CONFIG.PG_DEV_CONFIG, '2024_07_23_dump')
+
   // // // // // Step 2 - Créer les tables intermédiaires d'aggregation depuis la donnée Sudocuh
   await createSudocuProcessedTables(CONFIG.PG_DEV_CONFIG)
   // // // // // Replique un schema de test (Optionnal)
