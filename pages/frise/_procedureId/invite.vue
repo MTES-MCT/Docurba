@@ -14,7 +14,7 @@
       <v-col cols="12">
         <div class="d-flex align-center">
           <h1 class="text-h1">
-            {{ procedure.doc_type }} de {{ collectivite.intitule }}
+            Nouvelle procédure
           </h1>
         </div>
       </v-col>
@@ -75,10 +75,10 @@
             </v-row>
             <v-row>
               <v-col cols="12">
-                <div>Ou invitez des collaborateurs manuellement par email:</div>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field v-model="emailsToShareTxt" filled placeholder="Email, séparés par une virgule">
+                <div class="mb-2">
+                  Ou invitez des collaborateurs manuellement par email:
+                </div>
+                <v-text-field v-model="emailsToShareTxt" filled placeholder="Email, séparés par une virgule" center-affix>
                   <template #append>
                     <v-btn color="primary" depressed @click="addToShare">
                       Partager
@@ -89,7 +89,7 @@
             </v-row>
             <v-row>
               <v-col cols="12">
-                <v-btn color="primary" depressed @click="confirmShare">
+                <v-btn color="primary" depressed class="mr-2" @click="confirmShare">
                   Confirmer
                 </v-btn>
                 <v-btn exact color="primary" :to="`/frise/${$route.params.procedureId}`" outlined>
