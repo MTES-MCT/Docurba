@@ -104,3 +104,25 @@ You can find exemples in this videos:
 - **Data Management**: When managing this data, ensure that each perimeter within a procedure is accurately tagged with its opposability status based on the events recorded. This selective tagging helps in maintaining precise control over where and how the legal implications of the procedures apply. (See the daily dump section to maintain opposability up to date with events from Sudocuh)
 
 This structured approach allows us to maintain a high level of detail and accuracy in managing the legal statuses of urban planning documents with very few complexity in our data model.
+
+## Documents Versioning with Git
+
+### Overview
+
+For managing the versioning of documents related to Porté à connaissance (PAC), `docurba` utilizes a dedicated Git repository. This setup allows us to track changes and maintain updates efficiently across different administrative levels.
+
+### Repository Structure
+
+- **Branch Hierarchy**: Each French département has its own branch in the repository, which is automaticaly updated to reflect the latest changes from its region or the national version. This hierarchical branching ensures that each département can access the most current and relevant information.
+- **Project Branches**: When a DDT (Direction Départementale des Territoires) creates a project, a new branch is created for that specific project. This branch is generated from a checkout of the départemental branch, using the project ID to name the branch, ensuring a direct and traceable link to the originating information.
+
+### Implementation Details
+
+- **Service and Code Location**:
+  - The main functionalities of this Git-based versioning system are handled by the `trame.js` service, located within the `server-middleware` directory of the project.
+  - Additionally, it utilizes GitHub-specific functionality managed through modules located in the `modules/github` directory. These modules are designed to facilitate operations such as branch management, file handling, and other Git operations.
+
+### Goals for Repository Independence
+
+- **Reusable System**: One of the primary goals for using a Git repository is to keep the document versioning system as independent as possible from the rest of the `docurba` application. This independence ensures that the system can be reused or integrated into other projects or frameworks without requiring the entire `docurba` platform.
+- **Identification by Filename**: Within this repository, PAC sections are uniquely identified by their filenames, rather than database IDs. This method avoids the complexities of database management and enhances the portability of the repository for use in different contexts.
