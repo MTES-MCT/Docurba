@@ -27,7 +27,7 @@
           Ajouter un événement
         </v-btn>
         <FriseShareDialog
-          v-if="canShare"
+          v-if="isAdmin"
           :document-name="`${procedure.doc_type} de ${collectivite.intitule }`"
           :collaborators="collaborators"
           :departement="collectivite.departementCode"
@@ -251,7 +251,7 @@ export default
       if (this.$user.profile?.side === 'etat') {
         return adminDept.includes(this.$user.profile.departement)
       } else {
-        return this.$user.profile?.collectivite_id === this.collectivite.code ||
+        return this.canShare || this.$user.profile?.collectivite_id === this.collectivite.code ||
           this.$user.profile?.collectivite_id === this.collectivite.intercommunaliteCode
       }
     },
@@ -362,11 +362,12 @@ export default
 
       this.events = await this.getEvents()
       this.collaborators = await this.getCollaborators(this.procedure)
-      console.log('this.collaborators :; ', this.collaborators)
+      // console.log('this.collaborators :; ', this.collaborators)
       const canShare = await this.$supabase.from('projects_sharing').select('id').eq('project_id', this.procedure.project_id).eq('user_email', this.$user.profile.email).eq('role', 'write_frise')
-      console.log('canShare: ', canShare)
-      console.log('this.collectivite.: ', this.collectivite.code)
-      this.canShare = canShare.data.length > 0 || (this.$user.profile.side === 'etat' && this.$user.profile.departement === this.collectivite.departementCode)
+      // console.log('canShare: ', canShare)
+      // console.log('this.collectivite.: ', this.collectivite.code)
+
+      this.canShare = canShare.data.length > 0
       this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
