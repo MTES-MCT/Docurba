@@ -45,3 +45,27 @@ $ npm run build
 
 # Launch the production server
 $ npm run start
+```
+
+## Daily Script Execution
+
+### Running the Daily Dump Script
+
+To ensure the procedures daily updates from Sudocuh, follow these steps to run the `index.mjs` script located in the `daily_dump` folder:
+
+1. **Download the Daily Dump:**
+   - Before running the script, download the latest data dump for the day from Supabase. Ensure you are using the correct credentials to access this data.
+
+2. **Verify the Environment:**
+   - Confirm that the `.env` file contains the correct `SUPABASE_ADMIN_KEY` needed to authenticate and interact with the Supabase database.
+
+3. **Running the Script:**
+   - Navigate to the `daily_dump` folder and run the script by executing:
+     ```bash
+     $ node index.mjs
+     ```
+   - Ensure that the script is pointing to the newly downloaded dump file. This may involve adjusting the script or settings to target the correct file path.
+
+### Important Notes:
+- It's crucial to maintain the confidentiality of the `SUPABASE_ADMIN_KEY` and ensure it's not exposed in public repositories or shared environments.
+- Regularly check and update the script if there are changes in the data structure or API from Supabase to avoid disruptions in daily updates.
