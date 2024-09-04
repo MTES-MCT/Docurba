@@ -69,3 +69,38 @@ To ensure the procedures daily updates from Sudocuh, follow these steps to run t
 ### Important Notes:
 - It's crucial to maintain the confidentiality of the `SUPABASE_ADMIN_KEY` and ensure it's not exposed in public repositories or shared environments.
 - Regularly check and update the script if there are changes in the data structure or API from Supabase to avoid disruptions in daily updates.
+
+## PostgreSQL Database Structure
+
+### Procedures Hierarchy and opposability
+
+The data within our PostgreSQL database is structured with a clear hierarchy to organize the urban planning documents efficiently:
+
+- **Projects**: This is the top-level entity representing overarching urban planning initiatives. It serves as a center point for all ressources, PAC, procedures and more in the future.
+- **Procedures**: Nested within Projects, these are the specific sets of metadata regarding a procedure.
+- **Procedures Events and Perimeters (`procedures_events` = `procedures_perimetres`)**: These are further nested within Procedures, detailing the events and geographical perimeters that are pertinent to each procedure.
+
+### Opposability in Procedures
+
+Opposability is a key concept in our data model, reflecting the legal enforceability of a procedure within specific perimeters. Here’s how opposability works:
+
+- **Event-Driven Opposability**:
+  - A procedure becomes opposable when it includes an event that legally enforces it. However, the opposability of a procedure is not uniformly applicable across all geographical perimeters.
+  - This means that a procedure might be opposable in one part of its perimeter but not in another, depending on the specific legal events associated with each section.
+
+### Determining Opposability in Communes
+
+- **Most Recent Opposable Event**: For a commune, the opposable procedure is generally the one associated with the most recent opposable event. This recent event takes precedence in determining the legal enforceability of the procedure within the commune.
+- **Implementation Details**: The full system, including any exceptions to how opposability is determined, can be retro-engineered by examining the `procedure.js` module located in the `server-middleware` folder. This module contains the logic that manages the relationships and status determinations based on procedures events.
+
+You can find exemples in this videos:
+- [Opposability for a commune](https://www.loom.com/share/a04e1829ac364663835406d714bd94cb?sid=89cab719-7a42-4963-839b-e5815154a977)
+- [Oposability for a commune D](https://www.loom.com/share/a9cb048098934a439891910a10fb95f8?sid=0e764640-b885-4cd0-98da-58122f4741a2)
+- [Groups of groups](https://www.loom.com/share/71eaa777ef6d488b8ade65a24625514d?sid=68ae4ee1-99da-484b-bb92-a37d746e87bb)
+
+### Practical Implications
+
+- **Selective Enforcement**: It’s crucial to note that the status of a procedure being opposable due to an event does not automatically apply to all perimeters within that procedure. Each perimeter must be evaluated based on the events that pertain to it.
+- **Data Management**: When managing this data, ensure that each perimeter within a procedure is accurately tagged with its opposability status based on the events recorded. This selective tagging helps in maintaining precise control over where and how the legal implications of the procedures apply. (See the daily dump section to maintain opposability up to date with events from Sudocuh)
+
+This structured approach allows us to maintain a high level of detail and accuracy in managing the legal statuses of urban planning documents with very few complexity in our data model.
