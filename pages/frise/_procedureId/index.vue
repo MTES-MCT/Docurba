@@ -389,6 +389,24 @@ export default
       }))
       console.log('toInsert: ', toInsert)
       const { data: insertedCollabs } = await this.$supabase.from('projects_sharing').insert(toInsert).select()
+      await axios({
+        url: '/api/slack/notify/frp_shared',
+        method: 'post',
+        data: {
+          from: {
+            email: this.$user.email,
+            firstname: this.$user.profile.firstname,
+            lastname: this.$user.profile.lastname,
+            poste: this.$user.profile.poste + ' ' + this.$user.profile.other_poste
+          },
+          to: {
+            emailsFormatted: toInsert.map(e => e.user_email).reduce((acc, curr) => acc + ', ' + curr, '').slice(2),
+            emails: toInsert.map(e => e.user_email)
+          },
+          type: 'frp',
+          procedure: { url: window.location.href, name: this.procedure.fullName }
+        }
+      })
       console.log('insertedCollabs: ', insertedCollabs)
       insertedCollabs?.forEach((ins) => {
         axios.post('/api/projects/notify/shared/frp', {

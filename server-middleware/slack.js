@@ -66,6 +66,34 @@ app.post('/notify/admin', (req, res) => {
   res.status(200).send('OK')
 })
 
+app.post('/notify/frp_shared', (req, res) => {
+  slack.shareProcedure(req.body).then((res) => {
+    // eslint-disable-next-line no-console
+    console.log('Slack then: ', res.data)
+    for (const email of req.body.to.emails) {
+      sendgrid.sendEmail(
+        {
+          to: email,
+          template_id: 'd-3d7eb5e8a8c441d48246cce0c751f812',
+          dynamic_template_data: {
+            name: `${!req.body.from.firstname || !req.body.from.lastname ? req.body.from.email : 'M(me) ' + req.body.from.firstname + ' ' + req.body.from.lastname}`,
+            procedure_name: req.body.procedure.name,
+            procedure_url: req.body.procedure.url
+          }
+        }).then((response) => {
+        console.log(response[0].statusCode)
+        console.log(response[0].headers)
+      })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
+  }).catch((err) => {
+    // eslint-disable-next-line no-console
+    console.log('Slack catch', err)
+  })
+})
+
 app.post('/notify/frp', (req, res) => {
   slack.notifyFrpEvent(req.body).then((res) => {
     // eslint-disable-next-line no-console
@@ -88,7 +116,7 @@ async function collectiviteValidation (data, responseUrl) {
       method: 'post',
       data: {
         text: `${data.firstname} ${data.lastname} (${data.email})
-        pour la collectivité de code INSEE ${data.collectivite_id} est vérifier et validé.`
+        pour la collectivité de code INSEE ${data.collectivite_id} est vérifié et validé.`
       }
     })
 

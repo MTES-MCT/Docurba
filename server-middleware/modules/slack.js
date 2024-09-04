@@ -4,6 +4,37 @@ const geo = require('./geo.js')
 const supabase = require('./supabase.js')
 
 module.exports = {
+  shareProcedure ({ from, to, type, procedure, pac }) {
+    return axios({
+      url: process.env.SLACK_WEBHOOK,
+      method: 'post',
+      data: {
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: `Partage d'${type === 'frp' ? 'une FRP' : 'un PaC'}: ${procedure.name}`
+            }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'plain_text',
+              text: `${!from.firstname || !from.lastname ? from.email : from.firstname + ' ' + from.lastname}, ${from.role ? from.role : 'role inconnu'}, a partagé ${type === 'frp' ? 'une FRP' : 'un PaC'} à ${to.emailsFormatted}`
+            }
+          },
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `Lien: ${procedure.url}`
+            }
+          }
+        ]
+      }
+    })
+  },
   requestDepotActe (userData) {
     return axios({
       url: process.env.SLACK_WEBHOOK,
