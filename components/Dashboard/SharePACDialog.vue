@@ -1,8 +1,8 @@
 <template>
   <v-dialog max-width="800px" :value="value" @input="$emit('input', $event)">
     <v-card>
-      <v-card-title>
-        <h3>Partager {{ project.name }}</h3>
+      <v-card-title class="align-end">
+        Partager {{ project.name }}
       </v-card-title>
       <v-card-text class="mt-8">
         <v-combobox

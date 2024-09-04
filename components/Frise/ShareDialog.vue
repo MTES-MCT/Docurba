@@ -1,17 +1,22 @@
 <template>
   <v-dialog v-model="dialog" width="800">
     <template #activator="{ on, attrs }">
-      <v-btn v-bind="attrs" outlined color="primary" v-on="on">
+      <v-btn v-bind="attrs" outlined color="primary" class="ml-2" v-on="on">
         Partager
       </v-btn>
     </template>
 
     <v-card>
-      <v-card-title class="text-h5 d-flex flex-column">
+      <div class="text-right pr-2 pt-2">
+        <v-btn color="primary" text @click="dialog = false">
+          Fermer x
+        </v-btn>
+      </div>
+      <v-card-title class="text-h5 align-start pl-8">
         <div>Partager {{ documentName }}</div>
       </v-card-title>
 
-      <v-card-text class="pt-4">
+      <v-card-text class="pt-4 px-5">
         <v-container>
           <v-row>
             <v-col cols="12">
