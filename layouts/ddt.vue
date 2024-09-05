@@ -1,6 +1,7 @@
 <template>
   <v-app>
-    <v-dialog v-model="showTally" eager max-width="500px">
+    <!-- Keeping this in case we want to make annoncements. -->
+    <!-- <v-dialog v-model="showTally" eager max-width="500px">
       <v-sheet color="white">
         <iframe
           data-tally-src="https://tally.so/embed/m6kNJP?alignLeft=1&transparentBackground=1&dynamicHeight=1"
@@ -13,7 +14,7 @@
           title="🎨 Nouveau Tableau de Bord !"
         />
       </v-sheet>
-    </v-dialog>
+    </v-dialog> -->
     <LayoutsAppBar flat extended>
       <v-tabs v-if="$user.profile.verified" align-with-title class="header-tabs">
         <v-tab
@@ -99,8 +100,8 @@ export default {
   name: 'DdtLayout',
   data () {
     return {
-      isLoading: true,
-      showTally: false
+      isLoading: true
+      // showTally: false
     }
   },
   computed: {
@@ -125,14 +126,13 @@ export default {
 
     if (this.$user.profile.side !== 'etat' && !this.$isDev) { this.$router.push('/') }
 
-    // this.$tally('m6kNJP', { max: 1 })
-    const displayedKey = 'tally-displayed-m6kNJP'
-    const formNb = window.localStorage.getItem(displayedKey) || 0
-    if (formNb < 1) {
-      this.showTally = true
-      window.Tally.loadEmbeds()
-      localStorage.setItem(displayedKey, +formNb + 1)
-    }
+    // const displayedKey = 'tally-displayed-m6kNJP'
+    // const formNb = window.localStorage.getItem(displayedKey) || 0
+    // if (formNb < 1) {
+    //   this.showTally = true
+    //   window.Tally.loadEmbeds()
+    //   localStorage.setItem(displayedKey, +formNb + 1)
+    // }
 
     if (this.$route.query.contact) {
       axios({

@@ -25,6 +25,8 @@ export default ({ $user, $dayjs }, inject) => {
       const signupDate = $dayjs($user.profile.created_at)
       const signupDelay = config.signupDelay
 
+      console.log('Tally', signupDate, signupDelay, $dayjs().isAfter(signupDate.add(signupDelay, 'd')))
+
       if (signupDelay && $dayjs().isAfter(signupDate.add(signupDelay, 'd'))) {
         setTimeout(() => {
           localStorage.setItem(displayedKey, +formNb + 1)
