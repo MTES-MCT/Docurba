@@ -126,3 +126,30 @@ For managing the versioning of documents related to Porté à connaissance (PAC)
 
 - **Reusable System**: One of the primary goals for using a Git repository is to keep the document versioning system as independent as possible from the rest of the `docurba` application. This independence ensures that the system can be reused or integrated into other projects or frameworks without requiring the entire `docurba` platform.
 - **Identification by Filename**: Within this repository, PAC sections are uniquely identified by their filenames, rather than database IDs. This method avoids the complexities of database management and enhances the portability of the repository for use in different contexts.
+
+## Data Integration in Docurba
+
+### Overview
+
+Initially, Docurba was created as a platform to provide easy access to essential data needed to produce urban planning documents. While the data requirements are nearly always consistent, the sources of this data vary by region and département.
+
+### Mission and Methodology
+
+- **Indexing over Hosting**: The mission of Docurba is not to centralize the hosting of data but rather to index and make it more easily accessible. This approach ensures that Docurba can serve as a dynamic hub for urban planning data, linking users to the most relevant and current data sources.
+
+### Integrated Data Sources
+
+1. **Base Territorial**:
+   - Handled specifically by each region. Implementation examples can be found in the `daturba.js` plugin, which indexes and retrieves data as required by regional specifications.
+
+2. **Geo-IDE**:
+   - Integrated within the `daturba.js` plugin. This source is managed with the `geoide api` located in the service middleware, facilitating the access to geographical data interfaces provided by Geo-IDE.
+
+3. **Geo Risque**:
+   - Also managed through the `daturba.js` plugin in conjunction with the `geoide api` service middleware.
+
+4. **INPN**:
+   - Directly implemented in the `INPNTable` component. This national API provides access to detailed environmental and ecological data across France.
+
+5. **GPU**:
+   - Implemented in the `gpu.vue` page. This source uses a national API.
