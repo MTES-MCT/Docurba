@@ -47,6 +47,16 @@ $ npm run build
 $ npm run start
 ```
 
+### deploy
+
+app.yaml is here as an example.
+
+```bash
+$ gcloud app deploy app.yaml --project docurba
+
+$ gcloud app deploy app_dev.yaml --project docurba
+```
+
 ## Daily Script Execution
 
 ### Running the Daily Dump Script

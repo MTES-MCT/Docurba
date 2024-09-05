@@ -1,9 +1,9 @@
 <template>
   <div v-if="collectivite">
-    <v-dialog v-model="showTally" eager max-width="500px">
+    <v-dialog v-model="showTally" eager max-width="1000px">
       <v-sheet color="white">
         <iframe
-          data-tally-src="https://tally.so/embed/wQdZvX?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+          data-tally-src="https://tally.so/embed/wQdZvX?alignLeft=1&transparentBackground=1&dynamicHeight=1"
           loading="lazy"
           width="100%"
           height="650"
@@ -11,6 +11,7 @@
           marginheight="0"
           marginwidth="0"
           title="🌟 Nouveauté de la rentrée !"
+          class="pa-2"
         />
       </v-sheet>
     </v-dialog>
