@@ -21,7 +21,7 @@
     </v-row>
     <v-row v-if="loaded">
       <v-col cols="12">
-        <v-card outlined class="mb-16">
+        <v-card outlined class="mb-16 pa-8">
           <v-container>
             <v-row>
               <v-col cols="12">
@@ -34,14 +34,14 @@
                   Choisissez les collaborateurs qui auront accès à cette procédure:
                 </p>
                 <div>
-                  <v-list two-line>
+                  <v-list two-line max-width="750">
                     <v-list-item-group
                       v-model="existingCollaboratorstoInvite"
-                      active-class="primary--text"
+
                       multiple
                     >
                       <template v-for="(collaborator) in collaborators">
-                        <v-list-item :key="collaborator.id" :value="collaborator">
+                        <v-list-item :key="collaborator.id" class="px-0" :value="collaborator">
                           <template #default="{ active }">
                             <v-list-item-avatar :color="collaborator.color" class="text-capitalize white--text font-weight-bold">
                               {{ collaborator.avatar }}
@@ -78,7 +78,7 @@
                 <div class="mb-2">
                   Ou invitez des collaborateurs manuellement par email:
                 </div>
-                <v-text-field v-model="emailsToShareTxt" filled placeholder="Email, séparés par une virgule" center-affix>
+                <v-text-field v-model="emailsToShareTxt" filled placeholder="Email, séparés par une virgule" center-affix style="max-width:750px">
                   <template #append>
                     <v-btn color="primary" depressed @click="addToShare">
                       Partager
@@ -239,3 +239,11 @@ export default
   }
 }
 </script>
+<style lang="scss" scoped>
+
+.v-list-item--link:before{
+background-color: white;
+opacity: 0;
+}
+</style>>
+</style>
