@@ -1,5 +1,17 @@
 <template>
   <v-container>
+    <v-btn
+      v-if="$user.profile?.is_admin"
+      fab
+      fixed
+      bottom
+      left
+      color="primary"
+      :loading="syncLoading"
+      @click="syncProcedure"
+    >
+      <v-icon>{{ icons.mdiSync }}</v-icon>
+    </v-btn>
     <v-row v-if="collectivite">
       <v-col cols="12" class="pb-0 mt-6">
         <nuxt-link :to="backToCollectivite" class="text-decoration-none d-flex align-center">
@@ -212,7 +224,7 @@
 <script>
 import axios from 'axios'
 import _ from 'lodash'
-import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical } from '@mdi/js'
+import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical, mdiSync } from '@mdi/js'
 
 import PluEvents from '@/assets/data/events/PLU_events.json'
 import ScotEvents from '@/assets/data/events/SCOT_events.json'
@@ -229,13 +241,15 @@ export default
       events: null,
       dialog: false,
       loaded: false,
+      syncLoading: false,
       showAllCollabs: false,
       collaborators: [],
       icons: {
         mdiBookmark,
         mdiPaperclip,
         mdiChevronLeft,
-        mdiDotsVertical
+        mdiDotsVertical,
+        mdiSync
       }
     }
   },
@@ -247,6 +261,8 @@ export default
       if (!this.$user.id || !this.$user.profile?.verified) { return false }
 
       const adminDept = _.uniq(this.procedure.procedures_perimetres.map(p => p.departement))
+
+      if (this.$user.profile?.is_admin) { return true }
 
       if (this.$user.profile?.side === 'etat') {
         return adminDept.includes(this.$user.profile.departement)
@@ -468,6 +484,11 @@ export default
 
       if (errorEvents) { throw errorEvents }
       return events
+    },
+    async syncProcedure () {
+      this.syncLoading = true
+      await axios(`https://nuxt3.docurba.incubateur.net/api/urba/procedures/${this.$route.params.procedureId}/update`)
+      this.syncLoading = false
     }
   }
 }

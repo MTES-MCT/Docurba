@@ -15,7 +15,7 @@ declare
         "en cours": ["Délibération de prescription du conseil municipal"],
         "opposable": ["Approbation du préfet", "Caractère exécutoire"],
         "abandon": ["Abandon"],
-        "annule": ["Annulation TA totale"],
+        "annule": ["Annulation TA totale", "Annulation TA"],
         "caduc": []
       },
       "SCOT": {

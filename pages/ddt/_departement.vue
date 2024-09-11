@@ -11,7 +11,7 @@ export default {
     const routerDept = this.$route.params.departement
     const userDept = this.$user.profile.departement
 
-    if (routerDept !== userDept) {
+    if (routerDept !== userDept && !this.$user.profile?.is_admin) {
       this.$router.push({ params: { departement: userDept } })
     }
   }
