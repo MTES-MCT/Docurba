@@ -69,6 +69,7 @@ select
   c.codetypecollectivite,
   vq.volet_qualitatif,
   jsonb_build_object('nomprestaexterne', pp.nomprestaexterne, 'coutplanht', pp.coutplanht,'coutplanttc', pp.coutplanttc) as moe,
+  p.noserieprocedureatt,
   p.noprocedure,
   p.noserietypeprocedure,
   p.noserietypedocument,

@@ -233,7 +233,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
           is_principale: false,
           status: null,
           secondary_procedure_of: null,
-          sudocu_secondary_procedure_of: null,
+          sudocu_secondary_procedure_of: procedure.noserieprocedureatt,
           doc_type_code: currDocType.codetypedocument,
           doc_type: currDocType.codetypedocument,
           is_sectoriel: procedure.sisectoriel,
@@ -322,7 +322,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   let proceduresMapping = []
   while (hasMore) {
     const ret = await supabase.from('procedures')
-      .select('id, project_id, from_sudocuh')
+      .select('id, project_id, from_sudocuh, sudocu_secondary_procedure_of, is_principale')
       .order('id', { ascending: true })
       .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
       .limit(pageSize)
@@ -332,7 +332,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
       currentPage++
     } else { hasMore = false }
   }
-  // console.log('proceduresMapping: ', proceduresMapping.slice(0, 30))
+
 
   try {
     fs.writeFileSync(`${outputDir}/mapping_procedures_docurba_sudocuh.json`, JSON.stringify(proceduresMapping), { flag: 'w' })
@@ -342,6 +342,25 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   }
 
   console.log('End mapping ' + proceduresMapping.length + ' id procedures sudocu / docurba')
+
+  /// ///////////////////////////////////////////////////////////////////////////
+  /// /////////// MAPPING ID PROCEDURES PRINCIPALES / SECONDAIRES  //////////////
+  /// ///////////////////////////////////////////////////////////////////////////
+let allPp = proceduresMapping.filter(p => p.is_principale)
+let allPsUnbinded = proceduresMapping.filter(p => !p.is_principale && p.secondary_procedure_of)
+let bindedSecondary = allPsUnbinded.map(ps => {
+    let secOf = allPp.find(pp => pp.from_sudocu === ps.sudocu_secondary_procedure_of)
+    if(!secOf){
+      console.log(`No match found to link PS: ${ps.id}`)
+      return null
+    }
+    return {id: ps.id, secondary_procedure_of: secOf}
+  }).filter(e => e)
+console.log(`There is ${allPsUnbinded.length} unlinked secondary.`)
+  for (const psUnbinded of allPsUnbinded) {
+    const { data, error } = await supabase.from('procedures').update({secondary_procedure_of: psUnbinded.secondary_procedure_of}).eq('id', psUnbinded.id)
+  }
+
 
   /// ////////////////////////////////////////
   /// /////////// UPSERT EVENTS //////////////
