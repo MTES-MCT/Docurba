@@ -108,6 +108,8 @@ export default {
   },
   computed: {
     isAdmin () {
+      if (this.$user.profile?.is_admin) { return true }
+
       if (this.$user.profile?.side === 'etat') {
         return this.$user.profile?.departement === this.collectivite.departementCode
       } else {

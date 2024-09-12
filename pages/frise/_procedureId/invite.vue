@@ -139,7 +139,7 @@ export default
     isAdmin () {
       if (!this.$user.id) { return false }
 
-      return this.$user.profile?.side === 'etat' ||
+      return this.$user.profile?.side === 'etat' || this.$user.profile?.is_admin ||
         (this.$user.profile?.collectivite_id === this.collectivite.code ||
         this.$user.profile?.collectivite_id === this.collectivite.intercommunaliteCode)
     },

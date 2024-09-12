@@ -13,15 +13,15 @@ declare
   impactful_events jsonb := '{
       "CC": {
         "en cours": ["Délibération de prescription du conseil municipal"],
-        "opposable": ["Approbation du préfet", "Caractère exécutoire"],
-        "abandon": ["Abandon"],
-        "annule": ["Annulation TA totale"],
+        "opposable": ["Approbation du préfet", "Caractère exécutoire", "Retrait de l''annulation totale"],
+        "abandon": ["Abandon", "Retrait de la délibération de prescription"],
+        "annule": ["Annulation TA totale", "Annulation TA", "Abrogation effective"],
         "caduc": []
       },
       "SCOT": {
         "en cours": ["Délibération de l''établissement public qui prescrit"],
-        "opposable": ["Délibération d''approbation", "Caractère exécutoire"],
-        "abandon": ["Abandon"],
+        "opposable": ["Délibération d''approbation", "Caractère exécutoire", "Retrait de l''annulation totale"],
+        "abandon": ["Abandon", "Retrait de la délibération de prescription"],
         "annule": ["Annulation TA totale"],
         "caduc": ["Caducité"]
       },
@@ -34,10 +34,10 @@ declare
       },
       "PLU": {
         "en cours": ["Délibération de prescription du conseil municipal ou communautaire"],
-        "opposable": ["Caractère exécutoire", "Délibération d''approbation du municipal ou communautaire", "Délibération d''approbation du conseil municipal ou communautaire", "Délibération d''approbation"],
-        "abandon": ["Abandon"],
-        "annule": ["Annulation TA totale", "Annulation TA"],
-        "caduc": []
+        "opposable": ["Caractère exécutoire", "Retrait de l''annulation totale", "Délibération d''approbation du municipal ou communautaire", "Délibération d''approbation du conseil municipal ou communautaire", "Délibération d''approbation"],
+        "abandon": ["Abandon", "Retrait de la délibération de prescription"],
+        "annule": ["Annulation TA totale", "Annulation TA", "Abrogation", "Arrêté d''abrogation"],
+        "caduc": ["Caducité"]
       },
       "POS": {
         "en cours": ["Délibération de prescription du conseil municipal ou communautaire"],
