@@ -4,6 +4,8 @@ export default ({ redirect, $user, $supabase }, inject) => {
 
     if (!['ddt', 'dreal'].includes($user.profile.poste)) {
       redirect(publicUrl)
+    } if ($user.profile.is_admin) {
+      return true
     } else if (gitRef.includes('projet-')) {
       const { data: projects } = await $supabase.from('projects')
         .select('owner').eq('id', gitRef.replace('projet-', ''))
