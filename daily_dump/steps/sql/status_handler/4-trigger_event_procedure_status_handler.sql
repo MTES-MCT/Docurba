@@ -17,7 +17,7 @@ BEGIN
   PERFORM set_procedure_status(procedure);
 
   -- Perform the HTTP GET request
-  http_get('https://nuxt3.docurba.incubateur.net/api/urba/procedures/' || event_processed.procedure_id || '/update');
+  PERFORM net.http_get('https://nuxt3.docurba.incubateur.net/api/urba/procedures/' || event_processed.procedure_id || '/update');
   return event_processed;
 END;
 $$ LANGUAGE plpgsql;

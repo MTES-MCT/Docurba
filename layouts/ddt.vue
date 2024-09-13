@@ -106,7 +106,7 @@ export default {
   computed: {
     isAllowed () {
       // console.log('this.$user?.profile: ', this.$user.profile)
-      return (this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified) || this.$isDev
+      return (this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified) || this.$user.profile.is_admin || this.$isDev
     },
     trameRef () {
       const scopes = { ddt: 'dept', dreal: 'region' }

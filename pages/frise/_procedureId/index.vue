@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-btn
-      v-if="$user.profile?.is_admin"
+      v-show="$user?.profile?.is_admin"
       fab
       fixed
       bottom
@@ -217,7 +217,6 @@
       </v-col>
     </v-row>
     <VGlobalLoader v-else />
-  </v-container>
   </v-container>
 </template>
 

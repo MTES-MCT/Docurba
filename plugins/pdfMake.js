@@ -264,7 +264,9 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           }
         }
 
-        if (element.tag === 'img' && element.props.src) {
+        if (element.tag === 'img' && element.props.src && !element.props.src.includes('gif')) {
+          console.log(element.props.src)
+
           if (IMAGES_TO_REPLACE[element.props.src]) {
             // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
             element.props.src = IMAGES_TO_REPLACE[element.props.src]

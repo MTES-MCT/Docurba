@@ -197,6 +197,7 @@ export default
 
       const text = hasValue(item.label)
       const query = hasValue(queryText)
+
       return text?.toString()
         ?.toLowerCase()
         .includes(query.toString().toLowerCase())
