@@ -1,5 +1,20 @@
 <template>
   <div v-if="collectivite">
+    <v-dialog v-model="showTally" eager max-width="1000px">
+      <v-sheet color="white">
+        <iframe
+          data-tally-src="https://tally.so/embed/wQdZvX?alignLeft=1&transparentBackground=1&dynamicHeight=1"
+          loading="lazy"
+          width="100%"
+          height="650"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0"
+          title="🌟 Nouveauté de la rentrée !"
+          class="pa-2"
+        />
+      </v-sheet>
+    </v-dialog>
     <v-container>
       <v-row>
         <v-col cols="12">
@@ -41,7 +56,8 @@ export default {
       communes: [],
       plans: [],
       schemas: [],
-      loaded: false
+      loaded: false,
+      showTally: false
     }
   },
   computed: {
@@ -51,6 +67,17 @@ export default {
   },
   async mounted () {
     await this.getProcedures()
+
+    const displayedKey = 'tally-displayed-wQdZvX'
+    const formNb = window.localStorage.getItem(displayedKey) || 0
+    if (formNb < 1 && this.$user.id) {
+      setTimeout(() => {
+        this.showTally = true
+        window.Tally.loadEmbeds()
+        localStorage.setItem(displayedKey, +formNb + 1)
+      }, 1000)
+    }
+
     this.loaded = true
   },
   methods: {

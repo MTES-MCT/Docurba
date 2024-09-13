@@ -264,9 +264,11 @@ export default ({ $md, $isDev, $supabase }, inject) => {
           }
         }
 
-        if (element.tag === 'img' && element.props.src && !element.props.src.includes('gif')) {
-          console.log(element.props.src)
+        if (element.tag === 'img' && element.props.src.includes('.gif')) {
+          console.log('unsuported image', element.props.src)
+        }
 
+        if (element.tag === 'img' && element.props.src && !element.props.src.includes('.gif')) {
           if (IMAGES_TO_REPLACE[element.props.src]) {
             // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
             element.props.src = IMAGES_TO_REPLACE[element.props.src]
@@ -276,7 +278,8 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             element.props.src = element.props.src.replace('https://docurba.beta.gouv.fr', baseUrl)
           }
 
-          pdfContent.images[`SRC:${element.props.src}`] = element.props.src.includes('http') ? element.props.src : `${baseUrl}${element.props.src}`
+          pdfContent.images[`SRC:${element.props.src}`] = (element.props.src.includes('http') || element.props.src.includes('base64')) ? element.props.src : `${baseUrl}${element.props.src}`
+
           return {
             image: `SRC:${element.props.src}`,
             width: element.props.width ? Math.min(element.props.width, MAX_WIDTH) : MAX_WIDTH,
