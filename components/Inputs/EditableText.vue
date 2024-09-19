@@ -34,7 +34,7 @@
             color="primary"
             height="40"
             class="mr-2"
-            @click="editMode = false"
+            @click="confirmed"
           >
             <v-icon>{{ icons.mdiCheck }}</v-icon>
           </v-btn>
@@ -43,13 +43,14 @@
             outlined
             depressed
             height="40"
-            @click="editMode = false;$emit('cancel')"
+            @click="cancel"
           >
             <v-icon>{{ icons.mdiClose }}</v-icon>
           </v-btn>
         </div>
       </template>
     </v-switch>
+    <!-- @blur="setValue" -->
     <v-text-field
       v-else
       ref="editableTextRef"
@@ -58,8 +59,7 @@
       class="align-center justify-center v-editabletext"
       filled
       placeholder="Type & Press Enter"
-      @blur="setValue"
-      @keyup.enter="setValue"
+      @keyup.enter="confirmed"
     >
       <template #append-outer>
         <div class="d-flex">
@@ -68,7 +68,7 @@
             color="primary"
             height="40"
             class="mr-2"
-            @click="editMode = false"
+            @click="confirmed"
           >
             <v-icon>{{ icons.mdiCheck }}</v-icon>
           </v-btn>
@@ -77,7 +77,7 @@
             outlined
             depressed
             height="40"
-            @click="editMode = false"
+            @click="cancel"
           >
             <v-icon>{{ icons.mdiClose }}</v-icon>
           </v-btn>
@@ -125,8 +125,9 @@ export default
   },
   data () {
     return {
+      tempText: this.value,
       editMode: this.edit,
-      valTxt: '',
+      valTxt: this.value,
       icons: {
         mdiCheck,
         mdiClose,
@@ -134,37 +135,38 @@ export default
       }
     }
   },
+  // watch: {
+  //   value: {
+  //     handler (newVal) {
+  //       console.log('WATCH ', newVal)
+  //       this.valTxt = newVal
+  //     },
+  //     immediate: true
+  //   }
+  // },
   methods: {
+    confirmed () {
+      this.editMode = false
+      this.setValue()
+      this.$emit('confirmed')
+    },
+    cancel () {
+      this.editMode = false
+      this.valTxt = this.tempText
+      this.$emit('input', this.tempText)
+      this.tempText = ''
+      this.$emit('cancel')
+    },
     editModeOn () {
+      this.tempText = this.value
       this.editMode = true
-      // await nextTick()
-      // this.editableTextRef.focus()
     },
     setValue () {
-      // model = this.valTxt
       this.$emit('input', this.valTxt)
-      // this.editableTextRef.blur()
       this.editMode = false
     }
   }
 }
-// const props = defineProps({ textClass: String, compact: Boolean })
-// const model = defineModel()
-
-// const editMode = ref(false)
-// const valTxt = ref(model.value)
-// const editableTextRef = ref(null)
-
-// async function editModeOn () {
-//   editMode.value = true
-//   await nextTick()
-//   editableTextRef.value.focus()
-// }
-// async function setValue () {
-//   model.value = valTxt.value
-//   editableTextRef.value.blur()
-//   editMode.value = false
-// }
 </script>
 
 <style>

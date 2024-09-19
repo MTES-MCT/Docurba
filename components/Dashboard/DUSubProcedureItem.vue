@@ -51,26 +51,6 @@
             Feuille de route
           </span>
         </nuxt-link>
-        <!-- <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-procedureId-dgd', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
-          <span class="primary--text text-decoration-underline mr-4 ">
-            DGD
-          </span>
-        </nuxt-link>
-        <nuxt-link :to="{name: 'ddt-departement-collectivites-collectiviteId-procedureId-infos', params: {departement: $route.params.departement ,collectiviteId: $route.params.collectiviteId, procedureId: procedure.idProcedure}}">
-          <span class="primary--text text-decoration-underline mr-4 ">
-            Info. générales
-          </span>
-        </nuxt-link> -->
-
-        <span class="primary--text text-decoration-underline mr-4 text--disabled">
-          DGD
-        </span>
-        <nuxt-link
-          class="primary--text text-decoration-underline mr-4"
-          :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}/volet_qualitatif`"
-        >
-          Info. générales
-        </nuxt-link>
 
         <span class="primary--text text-decoration-underline mr-4 text--disabled">
           PAC

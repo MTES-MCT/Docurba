@@ -73,15 +73,6 @@
             Info. générales
           </span>
         </nuxt-link> -->
-        <span class="primary--text text-decoration-underline mr-4 text--disabled">
-          DGD
-        </span>
-        <nuxt-link
-          class="primary--text text-decoration-underline mr-4"
-          :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}/volet_qualitatif`"
-        >
-          Info. générales
-        </nuxt-link>
         <nuxt-link
           class="primary--text text-decoration-underline mr-4"
           :to="`/ddt/${$route.params.departement}/pac?search=${$route.params.collectiviteId}`"

@@ -16,8 +16,10 @@
         </v-btn>
       </div>
 
-      <v-card-title class="text-h5 d-flex flex-column font-weight-bold">
-        DGD
+      <v-card-title class="text-h5 align-start pl-8 ">
+        <div class="font-weight-bold">
+          DGD
+        </div>
       </v-card-title>
 
       <v-card-text class="pt-4">
@@ -38,7 +40,14 @@
           <div v-else>
             <v-expansion-panels accordion flat class="dgd-exp-pan">
               <template v-for="(versement, i) in versements">
-                <FriseDgdVersExpPanel :key="`versement-${i}`" :versement="versement" @delete="deleteVersement" @save-step="saveStep" @delete-step="deleteStep" />
+                <FriseDgdVersExpPanel
+                  :key="`versement-${i}`"
+                  class="mb-4"
+                  :versement="versement"
+                  @delete="deleteVersement"
+                  @save-step="saveStep"
+                  @delete-step="deleteStep"
+                />
               </template>
             </v-expansion-panels>
             <div v-if="showVersementForm">
@@ -58,11 +67,19 @@
                   <div class="mb-4">
                     Commentaire général
                   </div>
-                  <span v-if="!showCommentForm" style="cursor: pointer;" class="primary--text font-weight-bold" text @click="showCommentForm =true">
+                  <span v-if="!showCommentForm && !generalComment " style="cursor: pointer;" class="primary--text font-weight-bold" text @click="clickAddCom">
                     Ajouter un commentaire
                   </span>
                   <div v-else>
-                    <InputsEditableText hide-label edit label="Commentaire:" compact @cancel="showCommentForm=false" />
+                    <InputsEditableText
+                      v-model="generalComment"
+                      hide-label
+                      :edit="!generalComment "
+                      label="Commentaire:"
+                      compact
+                      @confirmed="saveComment"
+                      @cancel="cancelShowCommentForm"
+                    />
                   </div>
                 </div>
               </v-col>
@@ -97,6 +114,7 @@ export default
     return {
       showCommentForm: false,
       showVersementForm: false,
+      generalComment: '',
       versements: [],
       snackbar: false,
       snackbarText: null,
@@ -116,10 +134,26 @@ export default
     await this.refreshVersements()
   },
   methods: {
+    clickAddCom () {
+      this.showCommentForm = true
+    },
+    async saveComment () {
+      console.log('SAVE this.generalComment: ', this.generalComment)
+      const { error } = await this.$supabase.from('procedures').update({ comment_dgd: this.generalComment }).eq('id', this.$route.params.procedureId)
+      if (error) { console.log('ERROR UPDATE COMMENT: ', error) }
+      if (!this.generalComment) { this.showCommentForm = false }
+    },
+    cancelShowCommentForm () {
+      console.log('cancel showFORm')
+      console.log('this.generalComment: ', this.generalComment)
+      if (!this.generalComment) { this.showCommentForm = false }
+    },
     async refreshVersements () {
       const { data: versementsData } = await this.$supabase.from('versements').select('*, etapes_versement(*)').eq('procedure_id', this.$route.params.procedureId)
+      const { data: procedureData } = await this.$supabase.from('procedures').select('id, comment_dgd').eq('id', this.$route.params.procedureId)
+
+      this.generalComment = procedureData[0].comment_dgd
       this.versements = versementsData
-      console.log('refreshVersements: ', this.versements)
     },
     async deleteVersement (versement) {
       this.versements = this.versements.filter(e => e.id !== versement.id)
@@ -127,9 +161,10 @@ export default
       this.snackbarText = 'Versement supprimée.'
     },
     async addNewVersement (versement) {
-      this.versements = [...this.versements, versement]
       this.showVersementForm = false
-      await this.$supabase.from('versements').insert({ amount: versement.amount, year: versement.year, category: versement.category, comment: versement.comment, procedure_id: this.$route.params.procedureId }).select()
+      const { data, error } = await this.$supabase.from('versements').insert({ amount: versement.amount, year: versement.year, category: versement.category, comment: versement.comment, procedure_id: this.$route.params.procedureId }).select()
+      if (error) { console.log('ERROR INSERT: ', error) }
+      this.versements = [...this.versements, data[0]]
     },
     async deleteStep (toDeleteStep) {
       console.log('deleteStep: ', toDeleteStep)

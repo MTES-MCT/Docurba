@@ -1,6 +1,6 @@
 <template>
   <v-expansion-panel :key="`versement-${versement.id}`">
-    <v-expansion-panel-header class="">
+    <v-expansion-panel-header>
       <v-row>
         <v-col cols="12" class="d-flex py-6">
           <div>

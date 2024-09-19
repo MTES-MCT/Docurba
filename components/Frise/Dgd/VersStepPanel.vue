@@ -1,7 +1,7 @@
 <template>
   <div class="pt-7">
     <v-data-table
-      v-if="versement.etapes_versement.length > 0"
+      v-if="versement.etapes_versement?.length > 0"
       :headers="headers"
       :items="versement.etapes_versement"
       hide-default-footer

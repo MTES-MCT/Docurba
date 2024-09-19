@@ -5,6 +5,7 @@ import { sudocuhScotToDocurba } from './steps/5-interTablesToDocurbaScot.mjs'
 import { updatePerimeterStatus } from './steps/6-setPerimeterStatus.mjs'
 import { updateComDPerimeter } from './steps/7-updateComdPerimTable.mjs'
 import { handleTrigger } from './steps/onOffTriggers.mjs'
+import { updateProcedureSec } from './updateProcedureSec.mjs'
 
 /// /////////////////////
 /// ///// INFO ////////
@@ -18,6 +19,8 @@ try {
   /// ///// PART 1 - Prepare the data ////////
   /// ////////////////////////////////////////
 
+  await updateProcedureSec(CONFIG.PG_DEV_CONFIG, CONFIG.PG_PROD_CONFIG)
+  process.exit()
   // Step 0 (Optionnal)
   await clearDev(CONFIG.PG_DEV_CONFIG)
   // // // // Step 1 - Charge un dump particulier venant de l'export de Andy sur notre storage
@@ -38,15 +41,15 @@ try {
   // // Step 4 - Migre les nouvelles données plan entrées dans Sudocuh dans Docurba
   await sudocuhPlanToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_PROD_CONFIG)
   // // // Step 5 - Migre les nouvelles données SCoT entrées dans Sudocuh dans Docurba
-  await sudocuhScotToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_PROD_CONFIG)
+  // await sudocuhScotToDocurba(CONFIG.PG_DEV_CONFIG, CONFIG.PG_PROD_CONFIG)
   // // // Step 6 - Définition des status de procédures au niveau event
-  await setAllStatus(CONFIG.PG_PROD_CONFIG)
+  // await setAllStatus(CONFIG.PG_PROD_CONFIG)
   // // Step 6(Bis) - Définition des status de procédures en fonction des périmètres
-  await updatePerimeterStatus(CONFIG.PG_PROD_CONFIG)
+  // await updatePerimeterStatus(CONFIG.PG_PROD_CONFIG)
   // // Step 7 - Ralliement des communes fusionnées
   // await updateComDPerimeter(CONFIG.PG_PROD_CONFIG)
   // // Step 8 - Réactivation du trigger de changement de status sur nouveaux events
-  await handleTrigger(CONFIG.PG_PROD_CONFIG, 'enable')
+  // await handleTrigger(CONFIG.PG_PROD_CONFIG, 'enable')
 } catch (error) {
   console.log(error)
 }
