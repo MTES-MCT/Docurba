@@ -32,7 +32,7 @@
         </div>
       </v-col>
       <v-col cols="12" class="mb-2">
-        <v-btn v-if="$user?.profile?.side === 'etat' && !procedure.secondary_procedure_of" color="primary" class="mr-2" outlined @click="addSubProcedure">
+        <v-btn v-if="$user?.profile?.side === 'etat' && isAdmin && !procedure.secondary_procedure_of" color="primary" class="mr-2" outlined @click="addSubProcedure">
           Ajouter une procédure secondaire
         </v-btn>
         <v-btn v-if="($user?.id && isAdmin)" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
@@ -46,7 +46,7 @@
           @share_to="addToCollabs"
           @remove_shared="removeCollabShared"
         />
-        <v-menu v-if="$user?.profile?.side === 'etat'">
+        <v-menu v-if="$user?.profile?.side === 'etat' && isAdmin">
           <template #activator="{ on, attrs }">
             <v-btn icon color="primary" v-bind="attrs" v-on="on">
               <v-icon> {{ icons.mdiDotsVertical }}</v-icon>
@@ -257,17 +257,21 @@ export default
       return this.events.length === 0 || this.events.every(e => !e.type || !e.date_iso)
     },
     isAdmin () {
-      if (!this.$user.id || !this.$user.profile?.verified) { return false }
-
-      const adminDept = _.uniq(this.procedure.procedures_perimetres.map(p => p.departement))
-
-      if (this.$user.profile?.is_admin) { return true }
-
-      if (this.$user.profile?.side === 'etat') {
-        return adminDept.includes(this.$user.profile.departement)
+      if (this.procedure.shareable) {
+        return this.collaborators.some(e => e.email === this.$user.email)
       } else {
-        return this.canShare || this.$user.profile?.collectivite_id === this.collectivite.code ||
-          this.$user.profile?.collectivite_id === this.collectivite.intercommunaliteCode
+        if (!this.$user.id || !this.$user.profile?.verified) { return false }
+
+        const adminDept = _.uniq(this.procedure.procedures_perimetres.map(p => p.departement))
+
+        if (this.$user.profile?.is_admin) { return true }
+
+        if (this.$user.profile?.side === 'etat') {
+          return adminDept.includes(this.$user.profile.departement)
+        } else {
+          return this.canShare || this.$user.profile?.collectivite_id === this.collectivite.code ||
+            this.$user.profile?.collectivite_id === this.collectivite.intercommunaliteCode
+        }
       }
     },
     internalDocType () {
@@ -358,7 +362,7 @@ export default
       const {
         data: procedure,
         error: errorProcedure
-      } = await this.$supabase.from('procedures').select('*, procedures_perimetres(*)')
+      } = await this.$supabase.from('procedures').select('*, secondary_procedure_of(id, project_id), procedures_perimetres(*)')
         .eq('id', this.$route.params.procedureId)
 
       if (errorProcedure) { throw errorProcedure }
@@ -378,8 +382,9 @@ export default
       this.events = await this.getEvents()
       this.collaborators = await this.getCollaborators(this.procedure)
       // console.log('this.collaborators :; ', this.collaborators)
-      const canShare = await this.$supabase.from('projects_sharing').select('id').eq('project_id', this.procedure.project_id).eq('user_email', this.$user.profile.email).eq('role', 'write_frise')
-      // console.log('canShare: ', canShare)
+      console.log(' this.procedure: ', this.procedure)
+      const canShare = await this.$supabase.from('projects_sharing').select('id').eq('project_id', this.procedure.project_id ?? this.procedure.secondary_procedure_of.project_id).eq('user_email', this.$user.profile.email).eq('role', 'write_frise')
+      console.log('canShare: ', canShare)
       // console.log('this.collectivite.: ', this.collectivite.code)
 
       this.canShare = canShare.data.length > 0
@@ -427,6 +432,7 @@ export default
         axios.post('/api/projects/notify/shared/frp', {
           sharings: {
             to: ins.user_email,
+            sender_email: this.$user.email,
             sender_firstname: this.$user.profile.firstname,
             sender_lastname: this.$user.profile.lastname,
             procedure_name: this.procedure.doc_type + ' de ' + this.collectivite?.intitule,
@@ -446,15 +452,36 @@ export default
       this.collaborators = await this.getCollaborators(this.procedure)
     },
     async getCollaborators (procedure) {
+      let legacyCollabs = []
+      if (!this.procedure.shareable) {
+        const adminDept = _.uniq(this.procedure.procedures_perimetres.map(p => p.departement))
+        console.log('adminDeptadminDeptadminDeptadminDept: ', adminDept)
+        const { data: stateProfiles, error: errorStateProfiles } = await this.$supabase.from('profiles').select('*')
+          .in('departement', adminDept)
+          .eq('side', 'etat')
+
+        if (errorStateProfiles) { console.log('errorStateProfiles: ', errorStateProfiles) }
+
+        const { data: collectiviteProfiles, error: errorCollectiviteProfiles } = await this.$supabase.from('profiles').select('*')
+          .eq('side', 'collectivite')
+          .or(`collectivite_id.eq.${this.collectivite.code}, collectivite_id.eq.${this.collectivite.intercommunaliteCode}`)
+        if (errorCollectiviteProfiles) { console.log('errorCollectiviteProfiles: ', errorCollectiviteProfiles) }
+
+        console.log('stateProfiles: ', stateProfiles, 'collectiviteProfiles: ', collectiviteProfiles)
+        legacyCollabs = [...stateProfiles ?? [], ...collectiviteProfiles ?? []]
+      }
+
       const { data: collabsData, error: errorCollabs } = await this.$supabase.from('projects_sharing')
         .select('*')
         .eq('project_id', procedure.project_id)
         .eq('role', 'write_frise')
       if (errorCollabs) { console.log('errorCollabs: ', errorCollabs) }
       const emails = _.uniqBy(collabsData, e => e.user_email).map(e => e.user_email)
+
       const { data: profilesData, error: errorProfiles } = await this.$supabase.from('profiles').select('*').in('email', emails)
       if (errorCollabs) { console.log('errorProfiles: ', errorProfiles) }
-      const formattedProfiles = profilesData.map(e => this.$utils.formatProfileToCreator(e))
+      const allCollaborators = [...legacyCollabs ?? [], ...profilesData ?? []]
+      const formattedProfiles = allCollaborators.map(e => this.$utils.formatProfileToCreator(e))
 
       const noProfilesCollabs = emails.filter(e => !profilesData.find(prof => prof.email === e)).map(e => (this.$utils.formatProfileToCreator({ email: e })))
       return formattedProfiles.concat(noProfilesCollabs)

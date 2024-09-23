@@ -7,7 +7,6 @@ const _ = require('lodash')
 const supabase = require('./modules/supabase.js')
 const sendgrid = require('./modules/sendgrid.js')
 const geo = require('./modules/geo.js')
-
 const hour = 1000 * 60 * 60
 const day = hour * 24
 
@@ -19,6 +18,7 @@ app.post('/notify/shared/frp', async (req, res) => {
       to: sharings.to,
       template_id: 'd-3d7eb5e8a8c441d48246cce0c751f812',
       dynamic_template_data: {
+        sender_email: sharings.sender_email,
         sender_firstname: sharings.sender_firstname || '',
         sender_lastname: sharings.sender_lastname || '',
         url_frp: 'https://docurba.beta.gouv.fr/frise/' + sharings.procedure_id || '',

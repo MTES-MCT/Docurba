@@ -227,6 +227,7 @@ export default
         axios.post('/api/projects/notify/shared/frp', {
           sharings: {
             to: ins.user_email,
+            sender_email: this.$user.email,
             sender_firstname: this.$user.profile.firstname,
             sender_lastname: this.$user.profile.lastname,
             procedure_name: `${this.procedure.doc_type} de ${this.collectivite.intitule}`,
