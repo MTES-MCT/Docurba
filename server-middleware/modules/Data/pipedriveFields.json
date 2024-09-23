@@ -511,7 +511,7 @@
       },
       {
         "id": 103,
-        "label": "Gars"
+        "label": "Gard"
       },
       {
         "id": 104,
@@ -731,7 +731,7 @@
       },
       {
         "id": 158,
-        "label": "Vandée"
+        "label": "Vendée"
       },
       {
         "id": 159,
@@ -832,10 +832,6 @@
       {
         "id": 370,
         "label": "Non inscrit.e"
-      },
-      {
-        "id": 371,
-        "label": "Invité.e"
       },
       {
         "id": 372,
@@ -952,6 +948,10 @@
       {
         "id": 389,
         "label": "DREAL"
+      },
+      {
+        "id": 405,
+        "label": "Autre"
       }
     ]
   },
@@ -962,15 +962,59 @@
     "key": "059945cbc967da59d735ea26199d52b475ca4af4"
   },
   {
-    "id": 9093,
-    "name": "Side",
-    "field_type": "varchar",
-    "key": "790e8315bd19072a84e94e9a4ab6420f9a103bba"
-  },
-  {
     "id": 9095,
     "name": "Date d'édition de la FRP",
     "field_type": "date",
     "key": "9f1578c96655a81a330eb09912f0a9b5c1f40d8b"
+  },
+  {
+    "id": 9096,
+    "name": "Parcours",
+    "field_type": "enum",
+    "key": "393b0647cb9dcd1fd769e433591c0336ae4815c2",
+    "options": [
+      {
+        "id": 401,
+        "label": "Ancien user"
+      },
+      {
+        "id": 402,
+        "label": "Réactivé"
+      },
+      {
+        "id": 403,
+        "label": "Initié"
+      },
+      {
+        "id": 404,
+        "label": "Embarqué"
+      },
+      {
+        "id": 406,
+        "label": "Ancien user2"
+      }
+    ]
+  },
+  {
+    "id": 9097,
+    "name": "Invité.e",
+    "field_type": "date",
+    "key": "7689c2ed07954a7dc99d84b4a537532af46238f3"
+  },
+  {
+    "id": 9098,
+    "name": "Side",
+    "field_type": "enum",
+    "key": "1a236f6501ca35f426f5b149861ed13e925317cc",
+    "options": [
+      {
+        "id": 407,
+        "label": "Etat"
+      },
+      {
+        "id": 408,
+        "label": "Territoires"
+      }
+    ]
   }
 ]

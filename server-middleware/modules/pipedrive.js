@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+
+const fs = require('fs')
 const _ = require('lodash')
 const pipedrive = require('pipedrive')
 
@@ -62,6 +64,9 @@ const fieldsMap = {
       true: 'Connecté.e',
       false: 'Non connecté.e'
     }
+  },
+  shared: {
+    key: '9f1578c96655a81a330eb09912f0a9b5c1f40d8b'
   }
 }
 
