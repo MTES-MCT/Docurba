@@ -158,6 +158,8 @@ app.post('/profiles', async (req, res) => {
 
   const { person } = await pipedrive.findPerson(profile.email)
 
+  console.log('person', person)
+
   if (person) {
     const update = await pipedrive.updatePerson(person.id, profile)
 
@@ -172,6 +174,16 @@ app.post('/profiles', async (req, res) => {
     console.log('Person not found')
     res.status(404).send('Person not found')
   }
+})
+
+app.get('/person', async (req, res) => {
+  const { email } = req.query
+
+  const { person } = await pipedrive.findPerson(email)
+
+  console.log('person', person)
+
+  res.status(200).send('OK')
 })
 
 module.exports = app

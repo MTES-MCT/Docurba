@@ -20,7 +20,7 @@ try {
   /// ////////////////////////////////////////
 
   await updateProcedureSec(CONFIG.PG_DEV_CONFIG, CONFIG.PG_PROD_CONFIG)
-  process.exit()
+  // process.exit()
   // Step 0 (Optionnal)
   await clearDev(CONFIG.PG_DEV_CONFIG)
   // // // // Step 1 - Charge un dump particulier venant de l'export de Andy sur notre storage
