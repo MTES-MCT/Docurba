@@ -408,7 +408,8 @@ export default
         dev_test: true
       }))
       console.log('toInsert: ', toInsert)
-      const { data: insertedCollabs } = await this.$supabase.from('projects_sharing').insert(toInsert).select()
+      const { data: insertedCollabs, error: errorInsertedCollabs } = await this.$supabase.from('projects_sharing').insert(toInsert).select()
+      if (errorInsertedCollabs) { console.log('errorInsertedCollabs: ', errorInsertedCollabs) }
       await axios({
         url: '/api/slack/notify/frp_shared',
         method: 'post',
@@ -428,18 +429,6 @@ export default
         }
       })
       console.log('insertedCollabs: ', insertedCollabs)
-      insertedCollabs?.forEach((ins) => {
-        axios.post('/api/projects/notify/shared/frp', {
-          sharings: {
-            to: ins.user_email,
-            sender_email: this.$user.email,
-            sender_firstname: this.$user.profile.firstname,
-            sender_lastname: this.$user.profile.lastname,
-            procedure_name: this.procedure.doc_type + ' de ' + this.collectivite?.intitule,
-            procedure_id: this.$route.params.procedureId
-          }
-        })
-      })
 
       this.collaborators = await this.getCollaborators(this.procedure)
     },

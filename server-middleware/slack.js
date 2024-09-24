@@ -66,32 +66,44 @@ app.post('/notify/admin', (req, res) => {
   res.status(200).send('OK')
 })
 
-app.post('/notify/frp_shared', (req, res) => {
-  slack.shareProcedure(req.body).then((res) => {
-    // eslint-disable-next-line no-console
-    console.log('Slack then: ', res.data)
-    for (const email of req.body.to.emails) {
-      sendgrid.sendEmail(
-        {
-          to: email,
-          template_id: 'd-3d7eb5e8a8c441d48246cce0c751f812',
-          dynamic_template_data: {
-            name: `${!req.body.from.firstname || !req.body.from.lastname ? req.body.from.email : 'M(me) ' + req.body.from.firstname + ' ' + req.body.from.lastname}`,
-            procedure_name: req.body.procedure.name,
-            procedure_url: req.body.procedure.url
-          }
-        }).then((response) => {
-        console.log(response[0].statusCode)
-        console.log(response[0].headers)
+app.post('/notify/frp_shared', async (req, res) => {
+  try {
+    // Send notification to Slack
+    const slackRes = await slack.shareProcedure(req.body)
+    console.log('Slack response:', slackRes.data)
+
+    // Prepare email data
+    const { to, from, procedure } = req.body
+    const senderName = from.firstname && from.lastname
+      ? `M(me) ${from.firstname} ${from.lastname}`
+      : from.email
+
+    const emailPromises = to.emails.map(email =>
+      sendgrid.sendEmail({
+        to: email,
+        template_id: 'd-3d7eb5e8a8c441d48246cce0c751f812',
+        dynamic_template_data: {
+          name: senderName,
+          procedure_name: procedure.name,
+          procedure_url: procedure.url
+        }
       })
-        .catch((error) => {
-          console.error(error)
-        })
-    }
-  }).catch((err) => {
-    // eslint-disable-next-line no-console
-    console.log('Slack catch', err)
-  })
+    )
+
+    // Send emails concurrently
+    const emailResponses = await Promise.all(emailPromises)
+
+    // Log email responses
+    emailResponses.forEach((response) => {
+      console.log(`Email sent. Status: ${response[0].statusCode}`)
+      console.log('Headers:', response[0].headers)
+    })
+
+    res.status(200).send('Notifications sent successfully')
+  } catch (error) {
+    console.error('Error in notification process:', error)
+    res.status(500).send('Internal server error')
+  }
 })
 
 app.post('/notify/frp', (req, res) => {
