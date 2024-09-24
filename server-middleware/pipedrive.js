@@ -158,6 +158,8 @@ app.post('/profiles', async (req, res) => {
 
   const { person } = await pipedrive.findPerson(profile.email)
 
+  console.log('person', person)
+
   if (person) {
     const update = await pipedrive.updatePerson(person.id, profile)
 
@@ -172,6 +174,59 @@ app.post('/profiles', async (req, res) => {
     console.log('Person not found')
     res.status(404).send('Person not found')
   }
+})
+
+async function updateSharing (sharingRecord) {
+  let { person } = await pipedrive.findPerson(sharingRecord.user_email)
+
+  if (!person) {
+    person = await pipedrive.addPerson({
+      email: sharingRecord.user_email,
+      firstname: 'New',
+      lastname: 'User'
+    })
+  }
+
+  const update = await pipedrive.updatePerson(person.id, {
+    shared: sharingRecord.created_at
+  })
+
+  return update
+}
+
+// TEST ROUTE
+app.get('/sharing', async (req, res) => {
+  const { data: sharings } = await supabase.from('projects_sharing').select('*')
+    .eq('user_email', 'fabien@quantedsquare.com')
+
+  const update = await updateSharing(sharings[0])
+
+  console.log(update)
+})
+
+// ROUTE used by supabase webhook on insert in projects_sharing
+app.post('/sharing', async (req, res) => {
+  const { record: sharing } = req.body
+
+  const update = await updateSharing(sharing)
+
+  if (update.success) {
+    console.log('Person updated in pipedrive', sharing.user_email, update.success)
+    res.status(200).send('OK')
+  } else {
+    console.log('Error updating person', update)
+    res.status(500).send(update)
+  }
+})
+
+app.get('/person', async (req, res) => {
+  const { email } = req.query
+
+  const { person } = await pipedrive.findPerson(email)
+
+  console.log('person', person)
+
+  res.status(200).send('OK')
 })
 
 module.exports = app
