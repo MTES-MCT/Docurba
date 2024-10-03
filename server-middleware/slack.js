@@ -85,7 +85,7 @@ app.post('/notify/frp_shared', async (req, res) => {
         dynamic_template_data: {
           name: senderName,
           procedure_name: procedure.name,
-          procedure_url: procedure.url
+          procedure_url: `${process.env.APP_URL}${procedure.url}`
         }
       })
     )

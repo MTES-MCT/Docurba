@@ -21,6 +21,7 @@
           <v-row>
             <v-col cols="12">
               <v-combobox
+                ref="combobox"
                 v-model="selectedCombobox"
                 filled
                 :search-input.sync="search"
@@ -30,7 +31,7 @@
                 placeholder="Email, séparés par une virgule"
               >
                 <template #append>
-                  <v-btn color="primary" depressed @click="$emit('share_to', selectedCombobox)">
+                  <v-btn color="primary" depressed @click="clickShared">
                     Partager
                   </v-btn>
                 </template>
@@ -103,7 +104,7 @@
                           mdi-star-outline
                         </v-icon>
 
-                        <v-menu>
+                        <v-menu v-if="!collaborator.legacy_sudocu">
                           <template #activator="{ on: onMenu, attrs: attrsMenu }">
                             <v-btn icon color="primary" v-bind="attrsMenu" v-on="onMenu">
                               <v-icon> {{ icons.mdiDotsVertical }}</v-icon>
@@ -154,6 +155,10 @@ export default
     departement: {
       type: String,
       required: true
+    },
+    collectivite: {
+      type: Object,
+      required: true
     }
   },
   data () {
@@ -182,15 +187,13 @@ export default
     }
   },
   async mounted () {
-    const {
-      data: collaborators,
-      error: errorCollaborators
-    } = await this.$supabase.from('profiles').select('*').eq('departement', this.departement)
-
-    this.collaboratorsItems = collaborators.map(e => ({ text: e.email, ...this.$utils.formatProfileToCreator(e) })).filter(e => !this.collaborators.find(collab => collab.email === e.email))
-    if (errorCollaborators) { throw errorCollaborators }
+    this.collaboratorsItems = await this.$sharing.getSuggestedCollaborators(this.collectivite)
   },
   methods: {
+    clickShared () {
+      this.$refs.combobox.blur()
+      this.$emit('share_to', this.selectedCombobox)
+    },
     filter (item, queryText, itemText) {
       if (item.header) { return false }
       const hasValue = val => val != null ? val : ''

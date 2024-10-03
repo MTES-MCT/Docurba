@@ -1,7 +1,7 @@
-CREATE POLICY insert_projects_sharing ON projects_sharing
+CREATE POLICY delete_projects_sharing ON projects_sharing
   FOR INSERT TO authenticated
   WITH CHECK (
-    (auth.uid() = shared_by)
+    ((auth.uid() = shared_by) OR (shared_by IS NULL))
     AND (
       (auth.uid() = (SELECT owner FROM projects WHERE id = project_id))
       OR EXISTS (

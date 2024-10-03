@@ -86,7 +86,7 @@ export default {
       actionsCards: [
         {
           title: 'Socle de Porter à connaissance',
-          text: 'Consultez ou modifiez votre socle de Porter à Connaissance.',
+          text: 'Consultez votre socle de Porter à Connaissance.',
           to: {
             name: 'collectivites-collectiviteId-pac',
             params: { collectiviteId: this.collectivite.code },

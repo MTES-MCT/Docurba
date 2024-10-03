@@ -27,7 +27,7 @@
         <div class="d-flex align-center">
           <h1 class="text-h1">
             <!-- {{ procedure.doc_type }} de {{ collectivite.intitule }} -->
-            {{ procedure.fullName }}
+            {{ $utils.formatProcedureName(procedure, collectivite) }}
           </h1>
         </div>
       </v-col>
@@ -43,6 +43,7 @@
           :document-name="`${procedure.doc_type} de ${collectivite.intitule }`"
           :collaborators="collaborators"
           :departement="collectivite.departementCode"
+          :collectivite="collectivite"
           @share_to="addToCollabs"
           @remove_shared="removeCollabShared"
         />
@@ -127,36 +128,38 @@
                 </div>
               </v-col>
               <v-col cols="3" class="my-6">
-                <div class="font-weight-bold">
-                  Collaborateurs
-                </div>
-                <div class="mb-4">
-                  <v-list two-line dense class="py-0">
-                    <template v-for="(collaborator, icollab) in collaborators">
-                      <v-list-item v-if="icollab < 3 || showAllCollabs" :key="collaborator.id" class="pl-0">
-                        <v-list-item-avatar :color="collaborator.color" class="text-capitalize white--text font-weight-bold">
-                          {{ collaborator.avatar }}
-                        </v-list-item-avatar>
-                        <v-list-item-content>
-                          <v-list-item-title>
-                            {{ collaborator.label }}
-                          </v-list-item-title>
-                          <v-list-item-subtitle>
-                            <span> {{ $utils.posteDetails(collaborator.poste) }}</span>
+                <template v-if="$user && $user.email">
+                  <div class="font-weight-bold">
+                    Collaborateurs
+                  </div>
+                  <div class="mb-4">
+                    <v-list two-line dense class="py-0">
+                      <template v-for="(collaborator, icollab) in collaborators">
+                        <v-list-item v-if="icollab < 3 || showAllCollabs" :key="collaborator.id" class="pl-0">
+                          <v-list-item-avatar :color="collaborator.color" class="text-capitalize white--text font-weight-bold">
+                            {{ collaborator.avatar }}
+                          </v-list-item-avatar>
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              {{ collaborator.label }}
+                            </v-list-item-title>
+                            <v-list-item-subtitle>
+                              <span> {{ $utils.posteDetails(collaborator.poste) }}</span>
 
-                            <template v-if="collaborator.detailsPoste">
-                              <span v-for="detail in collaborator.detailsPoste" :key="`colab-${collaborator.email}-${detail}`">{{ ', ' + $utils.posteDetails(detail) }}</span>
-                            </template>
-                          </v-list-item-subtitle>
-                        </v-list-item-content>
-                      </v-list-item>
-                    </template>
-                  </v-list>
-                  <v-btn v-if="collaborators?.length > 3" class="mt-2" depressed @click="showAllCollabs = !showAllCollabs">
-                    <span v-if="showAllCollabs">Cacher</span>
-                    <span v-else>Voir plus</span>
-                  </v-btn>
-                </div>
+                              <template v-if="collaborator.detailsPoste">
+                                <span v-for="detail in collaborator.detailsPoste" :key="`colab-${collaborator.email}-${detail}`">{{ ', ' + $utils.posteDetails(detail) }}</span>
+                              </template>
+                            </v-list-item-subtitle>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </template>
+                    </v-list>
+                    <v-btn v-if="collaborators?.length > 3" class="mt-2" depressed @click="showAllCollabs = !showAllCollabs">
+                      <span v-if="showAllCollabs">Cacher</span>
+                      <span v-else>Voir plus</span>
+                    </v-btn>
+                  </div>
+                </template>
                 <p class="font-weight-bold">
                   Événements clés
                 </p>
@@ -267,7 +270,7 @@ export default
         if (this.$user.profile?.is_admin) { return true }
 
         if (this.$user.profile?.side === 'etat') {
-          return adminDept.includes(this.$user.profile.departement)
+          return adminDept.includes(this.$user.profile.departement) || this.canShare
         } else {
           return this.canShare || this.$user.profile?.collectivite_id === this.collectivite.code ||
             this.$user.profile?.collectivite_id === this.collectivite.intercommunaliteCode
@@ -377,16 +380,13 @@ export default
       })
 
       this.collectivite = collectivite
-      this.procedure.fullName = `${this.procedure.type} ${this.procedure.numero ? this.procedure.numero : ''} ${this.procedure.doc_type} ${this.collectivite?.intitule}`
+      // this.procedure.fullName = `${this.procedure.type} ${this.procedure.numero ? this.procedure.numero : ''} ${this.procedure.doc_type} ${this.collectivite?.intitule}`
 
       this.events = await this.getEvents()
-      this.collaborators = await this.getCollaborators(this.procedure)
-      // console.log('this.collaborators :; ', this.collaborators)
-      console.log(' this.procedure: ', this.procedure)
+      this.collaborators = await this.$sharing.getCollaborators(this.procedure, this.collectivite)
+      console.log(' this.collaborators: ', this.collaborators)
       const canShare = await this.$supabase.from('projects_sharing').select('id').eq('project_id', this.procedure.project_id ?? this.procedure.secondary_procedure_of.project_id).eq('user_email', this.$user.profile.email).eq('role', 'write_frise')
-      console.log('canShare: ', canShare)
-      // console.log('this.collectivite.: ', this.collectivite.code)
-
+      console.log('CANSHARE: ', canShare)
       this.canShare = canShare.data.length > 0
       this.loaded = true
     } catch (error) {
@@ -395,85 +395,15 @@ export default
     }
   },
   methods: {
-    async  addToCollabs (collabs) {
-      // TODO: Add to
-      console.log('collabs: ', collabs)
-      const toInsert = collabs.map(e => ({
-        user_email: e.email,
-        project_id: this.procedure.project_id,
-        shared_by: this.$user.id,
-        notified: false,
-        role: 'write_frise',
-        archived: false,
-        dev_test: true
-      }))
-      console.log('toInsert: ', toInsert)
-      const { data: insertedCollabs, error: errorInsertedCollabs } = await this.$supabase.from('projects_sharing').insert(toInsert).select()
-      if (errorInsertedCollabs) { console.log('errorInsertedCollabs: ', errorInsertedCollabs) }
-      await axios({
-        url: '/api/slack/notify/frp_shared',
-        method: 'post',
-        data: {
-          from: {
-            email: this.$user.email,
-            firstname: this.$user.profile.firstname,
-            lastname: this.$user.profile.lastname,
-            poste: this.$user.profile.poste + ' ' + this.$user.profile.other_poste
-          },
-          to: {
-            emailsFormatted: toInsert.map(e => e.user_email).reduce((acc, curr) => acc + ', ' + curr, '').slice(2),
-            emails: toInsert.map(e => e.user_email)
-          },
-          type: 'frp',
-          procedure: { url: window.location.href, name: this.procedure.fullName }
-        }
-      })
-      console.log('insertedCollabs: ', insertedCollabs)
-
-      this.collaborators = await this.getCollaborators(this.procedure)
+    async addToCollabs (collabs) {
+      console.log('collabs to invite: ', collabs)
+      await this.$sharing.addToCollabs(this.procedure, collabs, this.collectivite)
+      this.collaborators = await this.$sharing.getCollaborators(this.procedure, this.collectivite)
     },
     async removeCollabShared (toRemoveCollaborator) {
-      console.log('toRemoveCollaborator; ', toRemoveCollaborator)
-      // TODO: Delete
-      const { data: removedCollab, error: errorDeleteCollab } = await this.$supabase.from('projects_sharing').delete().eq('user_email', toRemoveCollaborator.email).eq('role', 'write_frise').eq('project_id', this.procedure.project_id).select()
+      const { error: errorDeleteCollab } = await this.$supabase.from('projects_sharing').delete().eq('user_email', toRemoveCollaborator.email).eq('role', 'write_frise').eq('project_id', this.procedure.project_id).select()
       if (errorDeleteCollab) { console.log('errorDeleteCollab: ', errorDeleteCollab) }
-      console.log('Removed: ', removedCollab)
-      this.collaborators = await this.getCollaborators(this.procedure)
-    },
-    async getCollaborators (procedure) {
-      let legacyCollabs = []
-      if (!this.procedure.shareable) {
-        const adminDept = _.uniq(this.procedure.procedures_perimetres.map(p => p.departement))
-        console.log('adminDeptadminDeptadminDeptadminDept: ', adminDept)
-        const { data: stateProfiles, error: errorStateProfiles } = await this.$supabase.from('profiles').select('*')
-          .in('departement', adminDept)
-          .eq('side', 'etat')
-
-        if (errorStateProfiles) { console.log('errorStateProfiles: ', errorStateProfiles) }
-
-        const { data: collectiviteProfiles, error: errorCollectiviteProfiles } = await this.$supabase.from('profiles').select('*')
-          .eq('side', 'collectivite')
-          .or(`collectivite_id.eq.${this.collectivite.code}, collectivite_id.eq.${this.collectivite.intercommunaliteCode}`)
-        if (errorCollectiviteProfiles) { console.log('errorCollectiviteProfiles: ', errorCollectiviteProfiles) }
-
-        console.log('stateProfiles: ', stateProfiles, 'collectiviteProfiles: ', collectiviteProfiles)
-        legacyCollabs = [...stateProfiles ?? [], ...collectiviteProfiles ?? []]
-      }
-
-      const { data: collabsData, error: errorCollabs } = await this.$supabase.from('projects_sharing')
-        .select('*')
-        .eq('project_id', procedure.project_id)
-        .eq('role', 'write_frise')
-      if (errorCollabs) { console.log('errorCollabs: ', errorCollabs) }
-      const emails = _.uniqBy(collabsData, e => e.user_email).map(e => e.user_email)
-
-      const { data: profilesData, error: errorProfiles } = await this.$supabase.from('profiles').select('*').in('email', emails)
-      if (errorCollabs) { console.log('errorProfiles: ', errorProfiles) }
-      const allCollaborators = [...legacyCollabs ?? [], ...profilesData ?? []]
-      const formattedProfiles = allCollaborators.map(e => this.$utils.formatProfileToCreator(e))
-
-      const noProfilesCollabs = emails.filter(e => !profilesData.find(prof => prof.email === e)).map(e => (this.$utils.formatProfileToCreator({ email: e })))
-      return formattedProfiles.concat(noProfilesCollabs)
+      this.collaborators = await this.$sharing.getCollaborators(this.procedure, this.collectivite)
     },
     async downloadFile (attachement) {
       // TODO: Handle link type

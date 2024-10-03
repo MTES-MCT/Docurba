@@ -1,5 +1,8 @@
 export default ({ app }, inject) => {
   const utils = {
+    formatProcedureName (procedure, collectivite) {
+      return `${procedure.type} ${procedure.numero ? procedure.numero : ''} ${procedure.doc_type} ${collectivite?.intitule}`
+    },
     formatEventProfileToCreator (event) {
       if (event.profiles) {
         return this.formatProfileToCreator(event.profiles)
@@ -18,6 +21,7 @@ export default ({ app }, inject) => {
       }
       creator.color = profile.side === 'etat' ? '#69DF97' : '#FA7659'
       creator.email = profile.email
+      creator.legacy_sudocu = profile.legacy_sudocu ?? false
       return creator
     },
     posteDetails (techName) {

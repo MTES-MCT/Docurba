@@ -92,7 +92,7 @@
                 <v-btn color="primary" depressed class="mr-2" @click="confirmShare">
                   Confirmer
                 </v-btn>
-                <v-btn exact color="primary" :to="`/frise/${$route.params.procedureId}`" outlined>
+                <v-btn exact color="primary" outlined @click="bypass">
                   Passer cette étape
                 </v-btn>
               </v-col>
@@ -133,7 +133,6 @@ export default
   },
   computed: {
     emailsToShare () {
-      console.log("this.emailsToShareTxt.split(','): ", this.emailsToShareTxt.split(','))
       return this.emailsToShareTxt.split(',')
     },
     isAdmin () {
@@ -173,7 +172,7 @@ export default
       if (errorProcedure) { throw errorProcedure }
 
       this.procedure = procedure[0]
-      console.log('Procedure, : ', this.procedure, ' -- ', this.$user, ' this.$route. ', this.$route.params.procedureId)
+
       const perimetre = this.procedure.procedures_perimetres.filter(c => c.type === 'COM')
       const collectiviteId = perimetre.length === 1 ? perimetre[0].code : this.procedure.collectivite_porteuse_id
 
@@ -183,19 +182,7 @@ export default
 
       this.collectivite = collectivite
 
-      console.log('collectivite: ', collectivite)
-      const {
-        data: collaborators,
-        error: errorCollaborators
-      } = await this.$supabase.from('profiles').select('*').eq('departement', collectivite.departementCode).neq('email', this.$user.email)
-
-      this.collaborators = collaborators.map(e => this.$utils.formatProfileToCreator(e))
-      if (errorCollaborators) { throw errorCollaborators }
-
-      // this.existingCollaboratorstoInvite = this.collaborators.filter((collab) => {
-      //   return _.intersection(['suivi_procedures', 'referent_sudocuh'], collab.detailsPoste).length > 0
-      // })
-
+      this.collaborators = await this.$sharing.getSuggestedCollaborators(this.collectivite)
       this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -203,22 +190,7 @@ export default
     }
   },
   methods: {
-    addToShare () {
-      const newCollabs = this.emailsToShare.map(e => ({ avatar: e[0], label: e, color: 'error', email: e }))
-      this.collaborators = this.collaborators.concat(newCollabs)
-      this.existingCollaboratorstoInvite = this.existingCollaboratorstoInvite.concat(newCollabs)
-      this.emailsToShareTxt = null
-    },
-    async confirmShare () {
-      const toInsert = this.existingCollaboratorstoInvite.map(e => ({
-        user_email: e.email,
-        project_id: this.procedure.project_id,
-        shared_by: this.$user.id,
-        notified: false,
-        role: 'write_frise',
-        archived: false,
-        dev_test: true
-      }))
+    async bypass () {
       const sender = {
         user_email: this.$user.email,
         project_id: this.procedure.project_id,
@@ -228,29 +200,19 @@ export default
         archived: false,
         dev_test: true
       }
-      console.log('toInsert: ', toInsert)
-      const { data: insertedCollabs } = await this.$supabase.from('projects_sharing').insert([...toInsert, sender]).select()
-      console.log('insertedCollabs: ', insertedCollabs)
-
-      await axios({
-        url: '/api/slack/notify/frp_shared',
-        method: 'post',
-        data: {
-          from: {
-            email: this.$user.email,
-            firstname: this.$user.profile.firstname,
-            lastname: this.$user.profile.lastname,
-            poste: this.$user.profile.poste + ' ' + this.$user.profile.other_poste
-          },
-          to: {
-            emailsFormatted: toInsert.map(e => e.user_email).reduce((acc, curr) => acc + ', ' + curr, '').slice(2),
-            emails: toInsert.map(e => e.user_email)
-          },
-          type: 'frp',
-          procedure: { url: window.location.href, name: this.procedure.fullName }
-        }
-      })
-
+      const { error: errorToInsert } = await this.$supabase.from('projects_sharing').insert([sender]).select()
+      if (errorToInsert) { console.log('errorToInsert: ', errorToInsert) }
+      this.$router.push(`/frise/${this.$route.params.procedureId}`)
+    },
+    addToShare () {
+      const newCollabs = this.emailsToShare.map(e => ({ avatar: e[0], label: e, color: 'error', email: e }))
+      this.collaborators = this.collaborators.concat(newCollabs)
+      this.existingCollaboratorstoInvite = this.existingCollaboratorstoInvite.concat(newCollabs)
+      this.emailsToShareTxt = null
+    },
+    async confirmShare () {
+      const emailsToInvite = this.existingCollaboratorstoInvite.map(e => ({ email: e.email }))
+      await this.$sharing.addToCollabs(this.procedure, emailsToInvite, this.collectivite)
       this.$router.push(`/frise/${this.$route.params.procedureId}`)
     }
   }
