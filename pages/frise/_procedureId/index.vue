@@ -432,13 +432,18 @@ export default
         .select('*')
         .eq('project_id', procedure.project_id)
         .eq('role', 'write_frise')
+
       if (errorCollabs) { console.log('errorCollabs: ', errorCollabs) }
+
       const emails = _.uniqBy(collabsData, e => e.user_email).map(e => e.user_email)
       const { data: profilesData, error: errorProfiles } = await this.$supabase.from('profiles').select('*').in('email', emails)
+
       if (errorCollabs) { console.log('errorProfiles: ', errorProfiles) }
+
       const formattedProfiles = profilesData.map(e => this.$utils.formatProfileToCreator(e))
 
       const noProfilesCollabs = emails.filter(e => !profilesData.find(prof => prof.email === e)).map(e => (this.$utils.formatProfileToCreator({ email: e })))
+
       return formattedProfiles.concat(noProfilesCollabs)
     },
     async downloadFile (attachement) {
