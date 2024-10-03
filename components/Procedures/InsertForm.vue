@@ -303,6 +303,7 @@ export default {
           if (insertRet.error) { throw insertRet.error }
         }
         const { data: insertedProcedure, error: errorInsertedProcedure } = await this.$supabase.from('procedures').insert({
+          shareable: true,
           secondary_procedure_of: this.procedureParent,
           type: this.typeProcedure,
           commentaire: this.objetProcedure && this.objetProcedure.includes('Autre') ? this.objetProcedure?.join(', ') + ' - ' + this.otherObjetProcedure : this.objetProcedure?.join(', '),

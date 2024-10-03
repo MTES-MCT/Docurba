@@ -187,7 +187,7 @@ export default
       const {
         data: collaborators,
         error: errorCollaborators
-      } = await this.$supabase.from('profiles').select('*').eq('departement', collectivite.departementCode)
+      } = await this.$supabase.from('profiles').select('*').eq('departement', collectivite.departementCode).neq('email', this.$user.email)
 
       this.collaborators = collaborators.map(e => this.$utils.formatProfileToCreator(e))
       if (errorCollaborators) { throw errorCollaborators }
@@ -219,21 +219,38 @@ export default
         archived: false,
         dev_test: true
       }))
+      const sender = {
+        user_email: this.$user.email,
+        project_id: this.procedure.project_id,
+        shared_by: this.$user.id,
+        notified: false,
+        role: 'write_frise',
+        archived: false,
+        dev_test: true
+      }
       console.log('toInsert: ', toInsert)
-      const { data: insertedCollabs } = await this.$supabase.from('projects_sharing').insert(toInsert).select()
+      const { data: insertedCollabs } = await this.$supabase.from('projects_sharing').insert([...toInsert, sender]).select()
       console.log('insertedCollabs: ', insertedCollabs)
 
-      insertedCollabs.forEach((ins) => {
-        axios.post('/api/projects/notify/shared/frp', {
-          sharings: {
-            to: ins.user_email,
-            sender_firstname: this.$user.profile.firstname,
-            sender_lastname: this.$user.profile.lastname,
-            procedure_name: `${this.procedure.doc_type} de ${this.collectivite.intitule}`,
-            procedure_id: this.$route.params.procedureId
-          }
-        })
+      await axios({
+        url: '/api/slack/notify/frp_shared',
+        method: 'post',
+        data: {
+          from: {
+            email: this.$user.email,
+            firstname: this.$user.profile.firstname,
+            lastname: this.$user.profile.lastname,
+            poste: this.$user.profile.poste + ' ' + this.$user.profile.other_poste
+          },
+          to: {
+            emailsFormatted: toInsert.map(e => e.user_email).reduce((acc, curr) => acc + ', ' + curr, '').slice(2),
+            emails: toInsert.map(e => e.user_email)
+          },
+          type: 'frp',
+          procedure: { url: window.location.href, name: this.procedure.fullName }
+        }
       })
+
       this.$router.push(`/frise/${this.$route.params.procedureId}`)
     }
   }
