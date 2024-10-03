@@ -1,6 +1,6 @@
 
 <template>
-  <v-dialog id="dgd-dialog" v-model="dialog" width="1000">
+  <v-dialog id="dgd-dialog" v-model="dialog" width="1200">
     <template #activator="{ on, attrs }">
       <v-list-item link v-bind="attrs" v-on="on">
         <v-list-item-title>
@@ -39,9 +39,9 @@
           </v-row>
           <div v-else>
             <v-expansion-panels accordion flat class="dgd-exp-pan">
-              <template v-for="(versement, i) in versements">
+              <template v-for="(versement) in versements">
                 <FriseDgdVersExpPanel
-                  :key="`versement-${i}`"
+                  :key="`versement-${versement.id}`"
                   class="mb-4"
                   :versement="versement"
                   @delete="deleteVersement"
@@ -54,7 +54,7 @@
               <div class="font-weight-bold typo--text mb-1">
                 Ajouter un versement
               </div>
-              <FriseDgdVersementForm @add="addNewVersement" @save="addNewVersement(arguments[0])" @cancel="showVersementForm = false" />
+              <FriseDgdVersementForm @add="addNewVersement" @save="addNewVersement" @cancel="showVersementForm = false" />
             </div>
             <v-row>
               <v-col cols="12">
@@ -67,7 +67,13 @@
                   <div class="mb-4">
                     Commentaire général
                   </div>
-                  <span v-if="!showCommentForm && !generalComment " style="cursor: pointer;" class="primary--text font-weight-bold" text @click="clickAddCom">
+                  <span
+                    v-if="!showCommentForm && !generalComment"
+                    style="cursor: pointer;"
+                    class="primary--text font-weight-bold"
+                    text
+                    @click="clickAddCom"
+                  >
                     Ajouter un commentaire
                   </span>
                   <div v-else>
@@ -139,7 +145,9 @@ export default
     },
     async saveComment () {
       console.log('SAVE this.generalComment: ', this.generalComment)
-      const { error } = await this.$supabase.from('procedures').update({ comment_dgd: this.generalComment }).eq('id', this.$route.params.procedureId)
+      const { error } = await this.$supabase.from('procedures')
+        .update({ comment_dgd: this.generalComment }).eq('id', this.$route.params.procedureId)
+
       if (error) { console.log('ERROR UPDATE COMMENT: ', error) }
       if (!this.generalComment) { this.showCommentForm = false }
     },
@@ -149,8 +157,11 @@ export default
       if (!this.generalComment) { this.showCommentForm = false }
     },
     async refreshVersements () {
-      const { data: versementsData } = await this.$supabase.from('versements').select('*, etapes_versement(*)').eq('procedure_id', this.$route.params.procedureId)
-      const { data: procedureData } = await this.$supabase.from('procedures').select('id, comment_dgd').eq('id', this.$route.params.procedureId)
+      const { data: versementsData } = await this.$supabase.from('versements')
+        .select('*, etapes_versement(*)').eq('procedure_id', this.$route.params.procedureId)
+
+      const { data: procedureData } = await this.$supabase.from('procedures')
+        .select('id, comment_dgd').eq('id', this.$route.params.procedureId)
 
       this.generalComment = procedureData[0].comment_dgd
       this.versements = versementsData
@@ -161,27 +172,24 @@ export default
       this.snackbarText = 'Versement supprimée.'
     },
     async addNewVersement (versement) {
+      console.log('addNewVersement', versement)
+
       this.showVersementForm = false
-      const { data, error } = await this.$supabase.from('versements').insert({ amount: versement.amount, year: versement.year, category: versement.category, comment: versement.comment, procedure_id: this.$route.params.procedureId }).select()
+      const { data, error } = await this.$supabase.from('versements').insert({
+        amount: versement.amount,
+        year: versement.year,
+        category: versement.category,
+        comment: versement.comment,
+        procedure_id: this.$route.params.procedureId
+      }).select()
       if (error) { console.log('ERROR INSERT: ', error) }
       this.versements = [...this.versements, data[0]]
     },
     async deleteStep (toDeleteStep) {
-      console.log('deleteStep: ', toDeleteStep)
-      await this.$supabase.from('etapes_versement').delete().eq('id', toDeleteStep.id)
       await this.refreshVersements()
       this.snackbarText = 'Étape de versement supprimée.'
     },
-    async saveStep ({ step, versement }) {
-      // TODO: Faire un upsert
-      await this.$supabase.from('etapes_versement').insert({
-        name: step.name,
-        versement_id: versement.id,
-        is_done: step.isDone,
-        category: step.category,
-        amount: step.amount,
-        date: '01/07/1992'// step.date
-      }).select()
+    async saveStep () {
       await this.refreshVersements()
     }
   }

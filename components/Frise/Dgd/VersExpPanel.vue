@@ -58,7 +58,11 @@
       </v-row>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
-      <FriseDgdVersStepPanel :versement="versement" @save="$emit('save-step', arguments[0])" @delete="$emit('delete-step', arguments[0])" />
+      <FriseDgdVersStepPanel
+        :versement="versement"
+        @save="$emit('save-step')"
+        @delete="$emit('delete-step')"
+      />
       <div class="mt-10">
         <v-dialog
           v-model="dialogDeleteVersement"

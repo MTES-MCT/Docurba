@@ -11,7 +11,12 @@
       <template #item="{item, index}">
         <tr v-if="editedStepIndex === index && editIsEdit">
           <td colspan="100%">
-            <FriseDgdStepForm v-model="editedStepItem" class="mt-4" @save="saveStep(editedStepItem)" @cancel="editedStepIndex = -1; editIsEdit = false" />
+            <FriseDgdStepForm
+              :value="editedStepItem"
+              class="mt-4"
+              @save="saveStep"
+              @cancel="editedStepIndex = -1; editIsEdit = false"
+            />
           </td>
         </tr>
         <tr v-else>
@@ -72,7 +77,14 @@
         + Ajouter une étape de versement
       </v-btn>
     </div>
-    <div><InputsEditableText label="Commentaire:" compact /></div>
+    <div>
+      <InputsEditableText
+        v-model="comment"
+        label="Commentaire:"
+        compact
+        @confirmed="saveComment"
+      />
+    </div>
     <v-dialog
       v-model="dialogDeleteStepVersement"
       width="500"
@@ -122,6 +134,7 @@ export default
   },
   data () {
     return {
+      comment: this.versement.comment || '',
       editedStepIndex: -1,
       editIsEdit: null,
       editedStepItem: {
@@ -165,24 +178,46 @@ export default
     }
   },
   methods: {
-    saveStep (step) {
-      this.$emit('save', { step, versement: this.versement })
+    async saveStep (step) {
+      const stepData = {
+        name: step.name,
+        versement_id: this.versement.id,
+        is_done: step.isDone,
+        category: step.category,
+        amount: step.amount,
+        date: step.date
+      }
+
+      if (step.id) { stepData.id = step.id }
+
+      await this.$supabase.from('etapes_versement').upsert(stepData)
+
+      this.$emit('save')
       this.showStepForm = false
+      this.editedStepIndex = -1
+      this.editIsEdit = false
     },
     deleteItem (item, index) {
       this.editedStepIndex = index
       this.editedStepItem = Object.assign({}, item)
       this.dialogDeleteStepVersement = true
     },
-    deleteStepConfirm () {
-      this.$emit('delete', { ...this.editedStepItem })
-      console.log('Delete step versement')
+    async deleteStepConfirm () {
+      await this.$supabase.from('etapes_versement').delete().eq('id', this.editedStepItem.id)
+
+      this.$emit('delete')
       this.dialogDeleteStepVersement = false
     },
     editLine (item, index) {
       this.editedStepIndex = index
       this.editIsEdit = true
       this.editedStepItem = { ...item }
+    },
+    async saveComment () {
+      console.log('saveComment', this.comment)
+      await this.$supabase.from('versements').update({
+        comment: this.comment
+      }).eq('id', this.versement.id)
     }
   }
 }
