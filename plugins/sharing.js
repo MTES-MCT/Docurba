@@ -4,8 +4,7 @@ import axios from 'axios'
 export default ({ app, $supabase, $utils, $user }, inject) => {
   const sharing = {
     async  addToCollabs (procedure, collabs, collectivite) {
-      console.log('OKOKOK collabs: ', collabs)
-      const toInsert = collabs.map(e => ({
+      let toInsert = collabs.map(e => ({
         user_email: e.email,
         project_id: procedure.project_id,
         shared_by: $user.id,
@@ -14,8 +13,22 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
         archived: false,
         dev_test: true
       }))
+
+      // TODO: ATTENTION RISQUE DE NE PAS MARCHER SUR LES SECONDAIRES a cause du project_id
+      // Il faut founir le project_id de la procedure principale
+      const sender = {
+        user_email: $user.email,
+        project_id: procedure.project_id ?? procedure.secondary_procedure_of.project_id,
+        shared_by: $user.id,
+        notified: false,
+        role: 'write_frise',
+        archived: false,
+        dev_test: true
+      }
+
+      toInsert = [...toInsert, sender]
       console.log('TO INSERT: ', toInsert)
-      const { error: errorInsertedCollabs } = await $supabase.from('projects_sharing').insert(toInsert).select()
+      const { error: errorInsertedCollabs } = await $supabase.from('projects_sharing').upsert(toInsert, { onConflict: 'project_id,user_email,role', ignoreDuplicates: true }).select()
       if (errorInsertedCollabs) { console.log('errorInsertedCollabs: ', errorInsertedCollabs) }
       await axios({
         url: '/api/slack/notify/frp_shared',

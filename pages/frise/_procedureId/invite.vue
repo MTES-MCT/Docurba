@@ -166,7 +166,7 @@ export default
       const {
         data: procedure,
         error: errorProcedure
-      } = await this.$supabase.from('procedures').select('*, procedures_perimetres(*)')
+      } = await this.$supabase.from('procedures').select('*, procedures_perimetres(*), secondary_procedure_of(id, project_id)')
         .eq('id', this.$route.params.procedureId)
 
       if (errorProcedure) { throw errorProcedure }

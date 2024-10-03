@@ -296,7 +296,8 @@ export default {
             initial_perimetre: oldFomattedPerimetre,
             collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
             collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
-            test: true
+            test: true,
+            owner: this.$user.id
           }).select()
 
           insertedProject = insertRet.data && insertRet.data[0] ? insertRet.data[0].id : null
@@ -332,6 +333,21 @@ export default {
 
         const fomattedPerimetre = detailedPerimetre.map(e => ({ collectivite_code: e.code, collectivite_type: e.type, procedure_id: insertedProcedure[0].id, opposable: false, departement: e.departementCode }))
         await this.$supabase.from('procedures_perimetres').insert(fomattedPerimetre)
+
+        const sender = {
+          user_email: this.$user.email,
+          project_id: insertedProject ?? this.procedureParent.project_id,
+          shared_by: this.$user.id,
+          notified: false,
+          role: 'write_frise',
+          archived: false,
+          dev_test: true
+        }
+
+        const { error: errorInsertedCollabs } = await this.$supabase.from('projects_sharing').insert(sender)
+        if (errorInsertedCollabs) {
+          console.log('errorInsertedCollabs: ', errorInsertedCollabs)
+        }
 
         this.$analytics({
           category: 'procedures',
