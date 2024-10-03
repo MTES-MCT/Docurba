@@ -28,7 +28,8 @@
                 :items="collaboratorsItems"
                 :filter="filter"
                 multiple
-                placeholder="Email, séparés par une virgule"
+                placeholder="Emails"
+                validate-on-blur
               >
                 <template #append>
                   <v-btn color="primary" depressed @click="clickShared">
@@ -47,7 +48,12 @@
                       <v-list-item-subtitle>
                         <span> {{ $utils.posteDetails(item.poste) }}</span>
                         <template v-if="item.detailsPoste">
-                          <span v-for="detail in item.detailsPoste" :key="`colab-${item.email}-${detail}`">{{ ', ' + $utils.posteDetails(detail) }}</span>
+                          <span
+                            v-for="detail in item.detailsPoste"
+                            :key="`colab-${item.email}-${detail}`"
+                          >
+                            {{ ', ' + $utils.posteDetails(detail) }}
+                          </span>
                         </template>
                       </v-list-item-subtitle>
                     </v-list-item-content>
@@ -138,6 +144,7 @@
   </v-dialog>
 </template>
 <script>
+import { uniq } from 'lodash'
 import { mdiDotsVertical } from '@mdi/js'
 
 export default
@@ -192,7 +199,15 @@ export default
   methods: {
     clickShared () {
       this.$refs.combobox.blur()
-      this.$emit('share_to', this.selectedCombobox)
+      const emailsList = [...this.selectedCombobox]
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+      if (emailRegex.test(this.$refs.combobox.searchInput)) {
+        emailsList.push({ email: this.$refs.combobox.searchInput })
+      }
+
+      this.$emit('share_to', uniq(emailsList))
     },
     filter (item, queryText, itemText) {
       if (item.header) { return false }
