@@ -6,7 +6,7 @@
       </v-btn>
     </template>
 
-    <v-card>
+    <v-card max-height="450" class="overflow-auto">
       <div class="text-right pr-2 pt-2">
         <v-btn color="primary" text @click="dialog = false">
           Fermer x
@@ -134,18 +134,24 @@
         </v-container>
       </v-card-text>
     </v-card>
-    <!-- <v-snackbar
-        :timeout="-1"
-        :value="true"
-        top
-      >
-        snackbar with <strong>Shaped</strong> property.
-      </v-snackbar> -->
+    <v-snackbar
+      v-model="snackbar"
+      top
+      color="success"
+      outlined
+      min-width="800"
+      :timeout="5000"
+    >
+      <v-icon small color="success" class="mr-2">
+        {{ icons.mdiCheckCircle }}
+      </v-icon>
+      Collaborateur ajouté.
+    </v-snackbar>
   </v-dialog>
 </template>
 <script>
 import { uniq } from 'lodash'
-import { mdiDotsVertical } from '@mdi/js'
+import { mdiDotsVertical, mdiCheckCircle } from '@mdi/js'
 
 export default
 {
@@ -170,12 +176,14 @@ export default
   },
   data () {
     return {
+      snackbar: false,
       dialog: false,
       collaboratorsItems: null,
       selectedCombobox: [],
       search: null,
       icons: {
-        mdiDotsVertical
+        mdiDotsVertical,
+        mdiCheckCircle
       }
     }
   },
@@ -208,6 +216,7 @@ export default
       }
 
       this.$emit('share_to', uniq(emailsList))
+      this.snackbar = true
     },
     filter (item, queryText, itemText) {
       if (item.header) { return false }
