@@ -45,7 +45,7 @@ extend('password', {
 
 extend('integer', {
   ...integer,
-  message: '{_field_} must be an integer'
+  message: '{_field_} doit être un nombre.'
 })
 
 extend('regex_phone', {

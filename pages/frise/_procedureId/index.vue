@@ -59,11 +59,11 @@
             <FriseVoletQualiDialog />
 
             <FriseDgdDialog />
-            <v-list-item link>
+            <!-- <v-list-item link>
               <v-list-item-title>
                 Éditer la procédure
               </v-list-item-title>
-            </v-list-item>
+            </v-list-item> -->
 
             <v-dialog v-model="dialog" width="500">
               <template #activator="{ on, attrs }">

@@ -4,8 +4,8 @@
       <div class="d-flex">
         <div class="flex-grow-1">
           <div>Montant total</div>
-          <validation-provider v-slot="{ errors }" name="Montant" rules="required">
-            <v-text-field v-model="amount" :error-messages="errors" dense filled />
+          <validation-provider v-slot="{ errors }" name="Montant" rules="required|integer">
+            <v-text-field v-model="amount" type="number" :error-messages="errors" dense filled />
           </validation-provider>
         </div>
         <div class="ml-2 flex-grow-1">

@@ -58,7 +58,7 @@
       :dense="compact"
       class="align-center justify-center v-editabletext"
       filled
-      placeholder="Type & Press Enter"
+      placeholder="Saisissez votre commentaire et appuyez sur Entrée"
       @keyup.enter="confirmed"
     >
       <template #append-outer>
@@ -135,15 +135,6 @@ export default
       }
     }
   },
-  // watch: {
-  //   value: {
-  //     handler (newVal) {
-  //       console.log('WATCH ', newVal)
-  //       this.valTxt = newVal
-  //     },
-  //     immediate: true
-  //   }
-  // },
   methods: {
     confirmed () {
       this.editMode = false
