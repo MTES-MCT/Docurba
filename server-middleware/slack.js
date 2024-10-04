@@ -73,19 +73,20 @@ app.post('/notify/frp_shared', async (req, res) => {
     console.log('Slack response:', slackRes.data)
 
     // Prepare email data
-    const { to, from, procedure } = req.body
+    const { to, from, procedure, title } = req.body
     const senderName = from.firstname && from.lastname
       ? `M(me) ${from.firstname} ${from.lastname}`
       : from.email
 
-    const emailPromises = to.emails.map(email =>
+    const emailPromises = to.emails.filter(email => from.email !== email).map(email =>
       sendgrid.sendEmail({
         to: email,
         template_id: 'd-3d7eb5e8a8c441d48246cce0c751f812',
         dynamic_template_data: {
           name: senderName,
           procedure_name: procedure.name,
-          procedure_url: `${process.env.APP_URL}${procedure.url}`
+          procedure_url: `${process.env.APP_URL}${procedure.url}`,
+          title
         }
       })
     )

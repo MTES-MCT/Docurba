@@ -107,7 +107,7 @@
 
 <script>
 import axios from 'axios'
-// import _ from 'lodash'
+import _ from 'lodash'
 import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical } from '@mdi/js'
 
 export default
@@ -183,6 +183,11 @@ export default
       this.collectivite = collectivite
 
       this.collaborators = await this.$sharing.getSuggestedCollaborators(this.collectivite)
+      this.existingCollaboratorstoInvite = this.collaborators.filter((collab) => {
+        console.log('collab')
+        return _.intersection(['suivi_procedures', 'referent_sudocuh'], collab.detailsPoste).length > 0 || collab.side === 'collectivite'
+        // return _.intersection(['suivi_procedures', 'referent_sudocuh'], collab.detailsPoste).length > 0
+      })
       this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console

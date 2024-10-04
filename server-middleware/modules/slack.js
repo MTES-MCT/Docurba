@@ -5,6 +5,7 @@ const supabase = require('./supabase.js')
 
 module.exports = {
   shareProcedure ({ from, to, type, procedure, pac }) {
+    console.log('from: ', from.poste)
     return axios({
       url: process.env.SLACK_WEBHOOK,
       method: 'post',
@@ -21,7 +22,7 @@ module.exports = {
             type: 'section',
             text: {
               type: 'plain_text',
-              text: `${!from.firstname || !from.lastname ? from.email : from.firstname + ' ' + from.lastname}, ${from.role ? from.role : 'role inconnu'}, a partagé ${type === 'frp' ? 'une FRP' : 'un PaC'} à ${to.emailsFormatted}`
+              text: `${!from.firstname || !from.lastname ? from.email : from.firstname + ' ' + from.lastname}, ${from.poste ? from.poste : 'role inconnu'}, a partagé ${type === 'frp' ? 'une FRP' : 'un PaC'} à ${to.emailsFormatted}`
             }
           },
           {

@@ -21,6 +21,7 @@ export default ({ app }, inject) => {
       }
       creator.color = profile.side === 'etat' ? '#69DF97' : '#FA7659'
       creator.email = profile.email
+      creator.side = profile.side
       creator.legacy_sudocu = profile.legacy_sudocu ?? false
       return creator
     },

@@ -30,6 +30,10 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
       console.log('TO INSERT: ', toInsert)
       const { error: errorInsertedCollabs } = await $supabase.from('projects_sharing').upsert(toInsert, { onConflict: 'project_id,user_email,role', ignoreDuplicates: true }).select()
       if (errorInsertedCollabs) { console.log('errorInsertedCollabs: ', errorInsertedCollabs) }
+
+      let title = 'Invitation à collaborer sur Docurba'
+      if ($user.profile.departement && $user.profile.side === 'etat') { title = `La DDT du ${$user.profile.departement} vous invite à collaborer sur Docurba` }
+      if (collectivite?.intitule && $user.profile.side === 'collectivite') { title = `La collectivité ${collectivite?.intitule} vous invite à collaborer sur Docurba` }
       await axios({
         url: '/api/slack/notify/frp_shared',
         method: 'post',
@@ -38,7 +42,7 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
             email: $user.email,
             firstname: $user.profile.firstname,
             lastname: $user.profile.lastname,
-            poste: $user.profile.poste + ' ' + $user.profile.other_poste
+            poste: `${$user.profile.poste ?? ''} ${$user.profile.other_poste ?? ''}`
           },
           to: {
             emailsFormatted: toInsert.map(e => e.user_email).reduce((acc, curr) => acc + ', ' + curr, '').slice(2),
@@ -48,7 +52,8 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
           procedure: {
             url: `/frise/${procedure.id}`,
             name: $utils.formatProcedureName(procedure, collectivite)
-          }
+          },
+          title
         }
       })
     },
@@ -67,10 +72,6 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
       if (errorCollaborators) { throw errorCollaborators }
 
       collaborators = this.excludeTestCollabs(collaborators)
-      // existingCollaboratorstoInvite = collaborators.filter((collab) => {
-      //   return _.intersection(['suivi_procedures', 'referent_sudocuh'], collab.detailsPoste).length > 0
-      // })
-
       return collaborators
     },
     async  getCollaborators (procedure, collectivite) {
