@@ -23,6 +23,8 @@ export default ({ app }, inject) => {
       creator.email = profile.email
       creator.side = profile.side
       creator.legacy_sudocu = profile.legacy_sudocu ?? false
+      creator.id = profile.user_id
+      creator.initiator = !!profile.initiator
       return creator
     },
     posteDetails (techName) {

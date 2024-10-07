@@ -32,7 +32,7 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
       if (errorInsertedCollabs) { console.log('errorInsertedCollabs: ', errorInsertedCollabs) }
 
       let title = 'Invitation à collaborer sur Docurba'
-      if ($user.profile.departement && $user.profile.side === 'etat') { title = `La DDT du ${$user.profile.departement} vous invite à collaborer sur Docurba` }
+      if ($user.profile.departement && $user.profile.side === 'etat') { title = `La DDT (M) du ${$user.profile.departement} vous invite à collaborer sur Docurba` }
       if (collectivite?.intitule && $user.profile.side === 'collectivite') { title = `La collectivité ${collectivite?.intitule} vous invite à collaborer sur Docurba` }
       await axios({
         url: '/api/slack/notify/frp_shared',
@@ -98,16 +98,21 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
         .eq('project_id', procedure.project_id)
         .eq('role', 'write_frise')
       if (errorCollabs) { console.log('errorCollabs: ', errorCollabs) }
-
+      console.log('collabsData: ', collabsData, ' procedure.project_id: ', procedure.project_id)
       const emails = _.uniqBy(collabsData, e => e.user_email).map(e => e.user_email)
 
       const { data: profilesData, error: errorProfiles } = await $supabase.from('profiles').select('*').in('email', emails)
       if (errorCollabs) { console.log('errorProfiles: ', errorProfiles) }
-      const allCollaborators = [...legacyCollabs ?? [], ...profilesData ?? []]
-      const formattedProfiles = allCollaborators.map(e => $utils.formatProfileToCreator(e))
+      const allCollaborators = [...profilesData ?? [], ...legacyCollabs ?? []]
+      const formattedProfiles = allCollaborators.map((e) => {
+        if (e.user_id === procedure.owner_id) {
+          e.initiator = true
+        }
+        return $utils.formatProfileToCreator(e)
+      })
 
       const noProfilesCollabs = emails.filter(e => !profilesData.find(prof => prof.email === e)).map(e => ($utils.formatProfileToCreator({ email: e })))
-      const finalCollabs = formattedProfiles.concat(noProfilesCollabs)
+      const finalCollabs = [...noProfilesCollabs, ...formattedProfiles]
       const uniqFinalCollabs = _.uniqBy(finalCollabs, e => e.email)
       const realCollabsOnly = this.excludeTestCollabs(uniqFinalCollabs)
 
@@ -120,8 +125,8 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
         !email.includes('docurba.beta.gouv') &&
         !email.includes('yopmail') &&
         !email.includes('okie09@hotmail.fr') &&
-        !email.includes('celia.vermicelli@gmail.com') &&
-        !email.includes('julien.zmiro@gmail.com')
+        !email.includes('celia.vermicelli@gmail.com')
+        // !email.includes('julien.zmiro@gmail.com')
       })
     }
   }

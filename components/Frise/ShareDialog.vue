@@ -24,8 +24,7 @@
                 ref="combobox"
                 v-model="selectedCombobox"
                 filled
-                :search-input.sync="search"
-                :items="collaboratorsItems"
+                :items="suggestedCollabs"
                 :filter="filter"
                 multiple
                 placeholder="Emails"
@@ -110,7 +109,7 @@
                           mdi-star-outline
                         </v-icon>
 
-                        <v-menu v-if="!collaborator.legacy_sudocu">
+                        <v-menu v-if="!collaborator.legacy_sudocu && !collaborator.initiator">
                           <template #activator="{ on: onMenu, attrs: attrsMenu }">
                             <v-btn icon color="primary" v-bind="attrsMenu" v-on="onMenu">
                               <v-icon> {{ icons.mdiDotsVertical }}</v-icon>
@@ -118,7 +117,7 @@
                           </template>
                           <v-list>
                             <v-list-item link>
-                              <v-list-item-title class="error--text" @click="$emit('remove_shared', collaborator)">
+                              <v-list-item-title class="error--text" @click="uninviteShared(collaborator)">
                                 Retirer de la procédure
                               </v-list-item-title>
                             </v-list-item>
@@ -145,7 +144,7 @@
       <v-icon small color="success" class="mr-2">
         {{ icons.mdiCheckCircle }}
       </v-icon>
-      Collaborateur ajouté.
+      {{ snackText }}
     </v-snackbar>
   </v-dialog>
 </template>
@@ -177,6 +176,7 @@ export default
   data () {
     return {
       snackbar: false,
+      snackText: '',
       dialog: false,
       collaboratorsItems: null,
       selectedCombobox: [],
@@ -186,6 +186,14 @@ export default
         mdiCheckCircle
       }
     }
+  },
+  computed: {
+    suggestedCollabs () {
+      return this.collaboratorsItems?.filter(item =>
+        !this.collaborators.some(collaborator => collaborator.email === item.email)
+      ).map(e => ({ ...e, text: e.email })) ?? []
+    }
+
   },
   watch: {
     selectedCombobox (val, prev) {
@@ -205,6 +213,11 @@ export default
     this.collaboratorsItems = await this.$sharing.getSuggestedCollaborators(this.collectivite)
   },
   methods: {
+    uninviteShared (collaborator) {
+      this.$emit('remove_shared', collaborator)
+      this.snackbar = true
+      this.snackText = ' Collaborateur supprimé.'
+    },
     clickShared () {
       this.$refs.combobox.blur()
       const emailsList = [...this.selectedCombobox]
@@ -217,6 +230,7 @@ export default
 
       this.$emit('share_to', uniq(emailsList))
       this.snackbar = true
+      this.snackText = 'Collaborateur ajouté.'
     },
     filter (item, queryText, itemText) {
       if (item.header) { return false }
@@ -224,7 +238,6 @@ export default
 
       const text = hasValue(item.label)
       const query = hasValue(queryText)
-
       return text?.toString()
         ?.toLowerCase()
         .includes(query.toString().toLowerCase())

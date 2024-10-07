@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row v-if="collectivite">
+    <!-- <v-row v-if="collectivite">
       <v-col cols="12" class="pb-0 mt-6">
         <nuxt-link :to="backToCollectivite" class="text-decoration-none d-flex align-center">
           <v-icon color="primary" small class="mr-2">
@@ -9,19 +9,19 @@
           {{ collectivite.intitule }}
         </nuxt-link>
       </v-col>
-    </v-row>
+    </v-row> -->
     <v-row v-if="collectivite && procedure">
-      <v-col cols="12">
+      <!-- <v-col cols="12">
         <div class="d-flex align-center">
           <h1 class="text-h1">
             Nouvelle procédure
           </h1>
         </div>
-      </v-col>
+      </v-col> -->
     </v-row>
     <v-row v-if="loaded">
       <v-col cols="12">
-        <v-card outlined class="mb-16 pa-8">
+        <v-card outlined class="mb-16 pa-8 mt-12">
           <v-container>
             <v-row>
               <v-col cols="12">

@@ -40,7 +40,7 @@
         </v-btn>
         <FriseShareDialog
           v-if="isAdmin"
-          :document-name="`${procedure.doc_type} de ${collectivite.intitule }`"
+          :document-name="$utils.formatProcedureName(procedure, collectivite)"
           :collaborators="collaborators"
           :departement="collectivite.departementCode"
           :collectivite="collectivite"
@@ -68,7 +68,7 @@
             <v-dialog v-model="dialog" width="500">
               <template #activator="{ on, attrs }">
                 <v-list-item link v-bind="attrs" v-on="on">
-                  <v-list-item-title class="text--error">
+                  <v-list-item-title class="error--text">
                     Supprimer la procédure
                   </v-list-item-title>
                 </v-list-item>
@@ -128,7 +128,7 @@
                 </div>
               </v-col>
               <v-col cols="3" class="my-6">
-                <template v-if="$user && $user.email">
+                <template v-if="$user && $user.email && isAdmin">
                   <div class="font-weight-bold">
                     Collaborateurs
                   </div>
