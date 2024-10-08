@@ -5,6 +5,7 @@ app.use(express.json())
 const issues = require('./modules/github/issues.js')
 const sendgrid = require('./modules/sendgrid.js')
 const supabase = require('./modules/supabase.js')
+const sharing = require('./modules/sharing.js')
 
 app.post('/help', async (req, res) => {
   const { title, message, section, email, dir } = req.body
@@ -24,6 +25,7 @@ app.post('/help', async (req, res) => {
 
   const { data: profiles } = await supabase.from('profiles').select('firstname, lastname').eq('email', email)
   const profile = profiles[0] || {}
+  const sharedProcedureUrl = await sharing.hasProcedureShared(profile.email)
 
   // Send a confirmation email to the user.
   sendgrid.sendEmail({
@@ -31,7 +33,8 @@ app.post('/help', async (req, res) => {
     template_id: 'd-23a3309075ab4710af6028e4639bf6dc',
     dynamic_template_data: {
       firstname: profile.firstname,
-      lastname: profile.lastname
+      lastname: profile.lastname,
+      shared_procedure_url: sharedProcedureUrl ?? false
     }
   })
 

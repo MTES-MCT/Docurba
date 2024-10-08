@@ -384,9 +384,7 @@ export default
 
       this.events = await this.getEvents()
       this.collaborators = await this.$sharing.getCollaborators(this.procedure, this.collectivite)
-      console.log(' this.collaborators: ', this.collaborators)
       const canShare = await this.$supabase.from('projects_sharing').select('id').eq('project_id', this.procedure.project_id ?? this.procedure.secondary_procedure_of.project_id).eq('user_email', this.$user.profile.email).eq('role', 'write_frise')
-      console.log('CANSHARE: ', canShare)
       this.canShare = canShare.data.length > 0
       this.loaded = true
     } catch (error) {

@@ -27,11 +27,12 @@
                 :items="suggestedCollabs"
                 :filter="filter"
                 multiple
+                :search-input.sync="search"
                 placeholder="Emails"
                 validate-on-blur
               >
                 <template #append>
-                  <v-btn color="primary" depressed @click="clickShared">
+                  <v-btn color="primary" depressed @click.native="clickShared">
                     Partager
                   </v-btn>
                 </template>
@@ -223,11 +224,9 @@ export default
       const emailsList = [...this.selectedCombobox]
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
       if (emailRegex.test(this.$refs.combobox.searchInput)) {
         emailsList.push({ email: this.$refs.combobox.searchInput })
       }
-
       this.$emit('share_to', uniq(emailsList))
       this.snackbar = true
       this.snackText = 'Collaborateur ajouté.'

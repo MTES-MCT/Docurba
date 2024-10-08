@@ -50,6 +50,8 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
           },
           type: 'frp',
           procedure: {
+            id: procedure.id,
+            project_id: procedure.project_id,
             url: `/frise/${procedure.id}`,
             name: $utils.formatProcedureName(procedure, collectivite)
           },
