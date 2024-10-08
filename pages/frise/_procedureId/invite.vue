@@ -58,10 +58,10 @@
                               </v-list-item-subtitle>
                             </v-list-item-content>
                             <v-list-item-action>
-                              <v-btn v-if="active" depressed color="primary">
+                              <v-btn v-if="active" outlined color="primary">
                                 Retirer
                               </v-btn>
-                              <v-btn v-else outlined color="primary">
+                              <v-btn v-else depressed color="primary">
                                 Inviter
                               </v-btn>
                             </v-list-item-action>
@@ -81,7 +81,7 @@
                 <v-text-field v-model="emailsToShareTxt" filled placeholder="Email, séparés par une virgule" center-affix style="max-width:750px">
                   <template #append>
                     <v-btn color="primary" depressed @click="addToShare">
-                      Partager
+                      Ajouter
                     </v-btn>
                   </template>
                 </v-text-field>

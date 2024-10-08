@@ -111,15 +111,13 @@ app.post('/notify/frp_shared', async (req, res) => {
     // Send emails concurrently
     const emailResponses = await Promise.all(emailPromises)
 
-    console.log('procedure SEND IS: ', JSON.stringify(procedure))
     let projectId = procedure.project_id
     if (!projectId) {
       const { data: pp, error: errorGetProcedure } = await supabase.from('procedures').select('id, project_id').eq('secondary_procedure_of', procedure.id).single()
       if (errorGetProcedure) { console.log('errorGetProcedure: ', errorGetProcedure) }
       projectId = pp.project_id
     }
-    console.log('projectId: ', projectId)
-    console.log('emailsWithoutSender: ', emailsWithoutSender)
+
     if (projectId) {
       await sharing.updateNotifiedStatus(emailsWithoutSender, projectId)
     }

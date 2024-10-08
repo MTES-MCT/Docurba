@@ -55,10 +55,10 @@
           </template>
 
           <v-list>
-            <FriseInfosDialog />
-            <FriseVoletQualiDialog />
+            <FriseInfosDialog v-if="isDgdActive" />
+            <FriseVoletQualiDialog v-if="isDgdActive" />
 
-            <FriseDgdDialog />
+            <FriseDgdDialog v-if="isDgdActive" />
             <!-- <v-list-item link>
               <v-list-item-title>
                 Éditer la procédure
@@ -246,6 +246,7 @@ export default
       syncLoading: false,
       showAllCollabs: false,
       collaborators: [],
+      isDgdActive: process.env.activeDgd === 'true',
       icons: {
         mdiBookmark,
         mdiPaperclip,

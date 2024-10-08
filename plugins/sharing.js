@@ -127,8 +127,10 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
         !email.includes('docurba.beta.gouv') &&
         !email.includes('yopmail') &&
         !email.includes('okie09@hotmail.fr') &&
-        !email.includes('celia.vermicelli@gmail.com')
-        // !email.includes('julien.zmiro@gmail.com')
+        !email.includes('celia.vermicelli@gmail.com') &&
+        !email.includes('julien@quantedsquare.com') &&
+        !email.includes('fabien@quantedsquare.com') &&
+        !email.includes('julien.zmiro@gmail.com')
       })
     }
   }

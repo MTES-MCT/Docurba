@@ -2,6 +2,10 @@ import fr from 'vuetify/lib/locale/fr'
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
+
+  env: {
+    activeDgd: process.env.ACTIVE_DGD || false
+  },
   head: {
     titleTemplate: '%s - Docurba',
     title: 'Docurba',

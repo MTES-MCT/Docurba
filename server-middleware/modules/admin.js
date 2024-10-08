@@ -2,6 +2,7 @@ const regions = require('../Data/INSEE/regions.json')
 const supabase = require('./supabase.js')
 const pipedrive = require('./pipedrive.js')
 const sendgrid = require('./sendgrid.js')
+const sharing = require('./modules/sharing.js')
 
 module.exports = {
   async updateUserRole (userData, role) {
@@ -18,6 +19,7 @@ module.exports = {
       const profile = profiles[0]
       const { firstname, lastname, departement, region } = profile
       const regionData = regions.find(r => r.code === region)
+      const sharedProcedureUrl = await sharing.hasProcedureShared(profile.email)
 
       sendgrid.sendEmail({
         to: userData.email,
@@ -27,7 +29,8 @@ module.exports = {
           lastname,
           departement: departement || '',
           regionName: regionData?.intitule || '',
-          region: (+region).toString()
+          region: (+region).toString(),
+          shared_procedure_url: sharedProcedureUrl ?? false
         }
       })
 
