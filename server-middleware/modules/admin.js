@@ -2,7 +2,7 @@ const regions = require('../Data/INSEE/regions.json')
 const supabase = require('./supabase.js')
 const pipedrive = require('./pipedrive.js')
 const sendgrid = require('./sendgrid.js')
-const sharing = require('./modules/sharing.js')
+const sharing = require('./sharing.js')
 
 module.exports = {
   async updateUserRole (userData, role) {
