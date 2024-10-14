@@ -172,7 +172,8 @@ export default
       if (errorProcedure) { throw errorProcedure }
 
       this.procedure = procedure[0]
-
+      this.procedure.project_id = this.procedure.project_id ?? this.procedure.secondary_procedure_of.project_id
+      console.log('this.procedure.project_id  :::: ', this.procedure.project_id)
       const perimetre = this.procedure.procedures_perimetres.filter(c => c.type === 'COM')
       const collectiviteId = perimetre.length === 1 ? perimetre[0].code : this.procedure.collectivite_porteuse_id
 

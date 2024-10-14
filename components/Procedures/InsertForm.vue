@@ -60,10 +60,10 @@
                   :items="proceduresParents"
                 >
                   <template #selection="{item}">
-                    {{ item.type }} du {{ item | docType }} {{ item.status }} {{ item.collectivite.intitule }} (collec. porteuse {{ item.porteuse.intitule }})
+                    {{ item.type }} du {{ item | docType }} {{ item.status }} {{ item.collectivite.intitule }} (collec. porteuse {{ item.porteuse?.intitule }})
                   </template>
                   <template #item="{item}">
-                    {{ item.type }} du {{ item | docType }} {{ item.status }} {{ item.collectivite.intitule }} (collec. porteuse {{ item.porteuse.intitule }})
+                    {{ item.type }} du {{ item | docType }} {{ item.status }} {{ item.collectivite?.intitule }} (collec. porteuse {{ item.porteuse?.intitule ?? '?' }})
                   </template>
                 </v-select>
               </validation-provider>
@@ -210,6 +210,7 @@ export default {
       if (this.procedureCategory === 'secondaire') {
         const proceduresParents = await this.getProcedures()
         this.proceduresParents = proceduresParents
+        console.log('this.proceduresParents: ', this.proceduresParents)
         if (this.$route.query.secondary_id) {
           this.procedureParent = this.$route.query.secondary_id
         }
@@ -336,14 +337,15 @@ export default {
 
         const sender = {
           user_email: this.$user.email,
-          project_id: insertedProject ?? this.procedureParent.project_id,
+          project_id: insertedProject ?? this.proceduresParents?.find(e => e.id === this.procedureParent)?.project_id,
           shared_by: this.$user.id,
           notified: false,
           role: 'write_frise',
           archived: false,
           dev_test: true
         }
-
+        console.log('this.proceduresParents?.find(e => e.id === this.procedureParent): ', this.proceduresParents?.find(e => e.id === this.procedureParent))
+        console.log('sender SHARING: ', sender)
         const { error: errorInsertedCollabs } = await this.$supabase.from('projects_sharing').insert(sender)
         if (errorInsertedCollabs) {
           console.log('errorInsertedCollabs: ', errorInsertedCollabs)

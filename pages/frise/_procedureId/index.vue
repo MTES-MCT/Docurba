@@ -41,7 +41,7 @@
         <FriseShareDialog
           v-if="isAdmin"
           :document-name="$utils.formatProcedureName(procedure, collectivite)"
-          :collaborators="collaborators"
+          :collaborators="toDisplayCollabs"
           :departement="collectivite.departementCode"
           :collectivite="collectivite"
           @share_to="addToCollabs"
@@ -134,7 +134,7 @@
                   </div>
                   <div class="mb-4">
                     <v-list two-line dense class="py-0">
-                      <template v-for="(collaborator, icollab) in collaborators">
+                      <template v-for="(collaborator, icollab) in toDisplayCollabs">
                         <v-list-item v-if="icollab < 3 || showAllCollabs" :key="collaborator.id" class="pl-0">
                           <v-list-item-avatar :color="collaborator.color" class="text-capitalize white--text font-weight-bold">
                             {{ collaborator.avatar }}
@@ -257,12 +257,16 @@ export default
     }
   },
   computed: {
+    toDisplayCollabs () {
+      return this.$sharing.excludeTestCollabs(this.collaborators)
+    },
     isEmptyFrise () {
       return this.events.length === 0 || this.events.every(e => !e.type || !e.date_iso)
     },
     isAdmin () {
       if (this.procedure.shareable) {
-        return this.collaborators.some(e => e.email === this.$user.email)
+        console.log('this.collaborators; ', this.collaborators, ' this.$user. : ', this.$user)
+        return this.collaborators.some(e => e.email === this.$user.email) || this.$user.profile.is_admin
       } else {
         if (!this.$user.id || !this.$user.profile?.verified) { return false }
 
@@ -372,7 +376,7 @@ export default
       if (errorProcedure) { throw errorProcedure }
 
       this.procedure = procedure[0]
-
+      this.procedure.project_id = this.procedure.project_id ?? this.procedure.secondary_procedure_of.project_id
       const perimetre = this.procedure.procedures_perimetres.filter(c => c.collectivite_type === 'COM')
       const collectiviteId = perimetre.length === 1 ? perimetre[0].collectivite_code : this.procedure.collectivite_porteuse_id
 

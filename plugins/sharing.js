@@ -116,9 +116,9 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
       const noProfilesCollabs = emails.filter(e => !profilesData.find(prof => prof.email === e)).map(e => ($utils.formatProfileToCreator({ email: e })))
       const finalCollabs = [...noProfilesCollabs, ...formattedProfiles]
       const uniqFinalCollabs = _.uniqBy(finalCollabs, e => e.email)
-      const realCollabsOnly = this.excludeTestCollabs(uniqFinalCollabs)
-
-      return realCollabsOnly
+      return uniqFinalCollabs
+      // const realCollabsOnly = this.excludeTestCollabs(uniqFinalCollabs)
+      // return realCollabsOnly
     },
     excludeTestCollabs (collabs) {
       return collabs.filter((collab) => {
@@ -128,9 +128,10 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
         !email.includes('yopmail') &&
         !email.includes('okie09@hotmail.fr') &&
         !email.includes('celia.vermicelli@gmail.com') &&
-        !email.includes('julien@quantedsquare.com') &&
+        // !email.includes('julien@quantedsquare.com') &&
         !email.includes('fabien@quantedsquare.com') &&
-        !email.includes('julien.zmiro@gmail.com')
+        !email.includes('julien.zmiro@gmail.com') &&
+        !email.includes(' vermicellicelia@gmail.com')
       })
     }
   }
