@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "testthings": "node --experimental-json-modules daily_dump/index.mjs",
+    "daily_dump": "node --experimental-json-modules daily_dump/index.mjs",
     "dev": "nuxt",
     "gcp-build": "",
     "build": "nuxt build",

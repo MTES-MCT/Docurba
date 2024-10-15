@@ -264,15 +264,14 @@ export default
       return this.events.length === 0 || this.events.every(e => !e.type || !e.date_iso)
     },
     isAdmin () {
+      console.log('this.$user.profile: ', this.$user)
+      if (this.$user.profile?.is_admin) { return true }
       if (this.procedure.shareable) {
-        console.log('this.collaborators; ', this.collaborators, ' this.$user. : ', this.$user)
         return this.collaborators.some(e => e.email === this.$user.email) || this.$user.profile.is_admin
       } else {
         if (!this.$user.id || !this.$user.profile?.verified) { return false }
 
         const adminDept = _.uniq(this.procedure.procedures_perimetres.map(p => p.departement))
-
-        if (this.$user.profile?.is_admin) { return true }
 
         if (this.$user.profile?.side === 'etat') {
           return adminDept.includes(this.$user.profile.departement) || this.canShare
@@ -304,6 +303,7 @@ export default
       return this.enrichedEvents.filter(e => e.structurant)
     },
     enrichedEvents () {
+      console.log('this.isAdmin: ', this.isAdmin)
       return this.events.map((event) => {
         const ev = this.documentEvents.find(x => x.name === event.type)
         return { ...event, structurant: !!ev?.structurant }
@@ -376,6 +376,7 @@ export default
       if (errorProcedure) { throw errorProcedure }
 
       this.procedure = procedure[0]
+      console.log(' this.procedure: ', this.procedure)
       this.procedure.project_id = this.procedure.project_id ?? this.procedure.secondary_procedure_of.project_id
       const perimetre = this.procedure.procedures_perimetres.filter(c => c.collectivite_type === 'COM')
       const collectiviteId = perimetre.length === 1 ? perimetre[0].collectivite_code : this.procedure.collectivite_porteuse_id

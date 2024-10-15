@@ -21,12 +21,11 @@ async function clearDev (config) {
 async function loadDump (config, dumpName) {
   try {
     console.log('[TODO] - Download the dump.')
-    // TODO: Download the latest dump auto 2024_03_03_dump
     console.log('Restoring latest Sudocuh dump...')
     await execute(`pg_restore -h ${config.host} -d ${config.database} -U ${config.user} ./daily_dump/sudocuh_dumps/${dumpName}`)
     console.log('Sudocuh dump Restored.')
   } catch (error) {
-    console.log(error)
+    // console.log(error)
   }
 }
 
