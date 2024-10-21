@@ -1,56 +1,51 @@
-
 import fs from 'fs'
 import { createClient } from '@supabase/supabase-js'
-import DOCUMENTS_TYPES from './miscs/documentTypes.mjs'
-import PROCEDURES_TYPES from './miscs/proceduresTypes.mjs'
+import CONFIG from './pg_secret_config.mjs'
 
-async function updateProcedureSec (configSource, configTraget) {
-  const supabaseSource = createClient(configSource.url, configSource.admin_key, {
-    auth: { persistSession: false }
-  })
+console.log('Current working directory:', process.cwd())
 
-  const supabase = createClient(configTraget.url, configTraget.admin_key, {
-    auth: { persistSession: false }
-  })
+const filePath = './daily_dump/output/2024_10_14/mapping_procedures_docurba_sudocuh.json'
 
-  // const pageSize = 10000
-  // let currentPage = 1
-  // let hasMore = true
+function readJsonFile (filePath) {
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf8')
+    const jsonArray = JSON.parse(fileContent)
+    if (!Array.isArray(jsonArray)) {
+      throw new TypeError('The file does not contain a JSON array')
+    }
 
-  // let allProceduresSecs = []
-  // currentPage = 1
-  // hasMore = true
-
-  // console.log('Starting processing procedures secondaires.')
-  // while (hasMore) {
-  //   const { data: dataProceduresSecs, error: errorProceduresSecs } = await supabaseSource.from('sudocu_procedure_plan')
-  //     .select('*')
-  //     .in('noserietypeprocedure', PROCEDURES_TYPES.filter(e => !e.siprocedureprincipale).map(e => e.noserietypeprocedure))
-  //     .order('noserieprocedure', { ascending: true })
-  //     .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
-  //     .limit(pageSize)
-  //   if (errorProceduresSecs) { console.log(errorProceduresSecs) }
-  //   if (dataProceduresSecs && dataProceduresSecs.length > 0) {
-  //     console.log('[PROC. SEC.] Processing page: ', currentPage)
-  //     const formattedProcedures = dataProceduresSecs?.map((procedure) => {
-  //       return {
-  //         from_sudocuh: procedure.noserieprocedure,
-  //         secondary_procedure_of: null,
-  //         sudocu_secondary_procedure_of: procedure.noserieprocedureatt
-  //       }
-  //     })
-
-  //     allProceduresSecs = [...allProceduresSecs, ...formattedProcedures]
-  //     currentPage++
-  //   } else { hasMore = false }
-  // }
-
-  // console.log(`End processing for procedures secondaires: ${allProceduresSecs.length} : allProceduresSecs[Ø]: ${allProceduresSecs[0]}`)
-
-  const { data: docurbaToUpdatePs, error: errordocurbaToUpdatePs } = await supabase.from('procedures')
-    .select('*', { count: 'exact', head: true }).is('is_principale', false)// .is('sudocu_secondary_procedure_of', null)
-  if (errordocurbaToUpdatePs) { console.log(errordocurbaToUpdatePs) }
-  console.log('docurbaToUpdatePs: ', docurbaToUpdatePs)
+    return jsonArray
+  } catch (error) {
+    console.error('Error reading or parsing the file:', error.message)
+    return null
+  }
 }
 
-export { updateProcedureSec }
+const proceduresMapping = readJsonFile(filePath)
+console.log('In memory proceduresMapping: ', proceduresMapping[0])
+
+const supabase = createClient(CONFIG.PG_PROD_CONFIG.url, CONFIG.PG_PROD_CONFIG.admin_key, {
+  auth: { persistSession: false }
+})
+/// ///////////////////////////////////////////////////////////////////////////
+/// /////////// MAPPING ID PROCEDURES PRINCIPALES / SECONDAIRES  //////////////
+/// ///////////////////////////////////////////////////////////////////////////
+
+const allPp = proceduresMapping.filter(p => p.is_principale)
+console.log(`Number of principal procedures: ${allPp.length}`)
+const allPsUnbinded = proceduresMapping.filter(p => !p.is_principale && p.sudocu_secondary_procedure_of && !p.secondary_procedure_of)
+console.log(`Number of sec procedures: ${allPsUnbinded.length}`)
+
+const bindedSecondary = allPsUnbinded.map((ps) => {
+  const secOf = allPp.find(pp => pp.from_sudocuh === ps.sudocu_secondary_procedure_of)
+  // console.log(`Searching for principal procedure with from_sudocuh: ${ps.sudocu_secondary_procedure_of}`)
+  if (!secOf) {
+    console.log(`No match found to link PS: ${ps.id}`)
+    return null
+  }
+  return { id: ps.id, secondary_procedure_of: secOf }
+}).filter(e => e)
+console.log(`There is ${bindedSecondary.length} unlinked secondary.`)
+// for (const psUnbinded of allPsUnbinded) {
+//   const { data, error } = await supabase.from('procedures').update({ secondary_procedure_of: psUnbinded.secondary_procedure_of }).eq('id', psUnbinded.id)
+// }

@@ -322,7 +322,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   let proceduresMapping = []
   while (hasMore) {
     const ret = await supabase.from('procedures')
-      .select('id, project_id, from_sudocuh, sudocu_secondary_procedure_of, is_principale')
+      .select('id, project_id, from_sudocuh, sudocu_secondary_procedure_of, secondary_procedure_of, is_principale')
       .order('id', { ascending: true })
       .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
       .limit(pageSize)
