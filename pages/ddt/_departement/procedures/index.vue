@@ -227,6 +227,12 @@ export default {
     async download () {
       const departementCode = this.$route.params.departement
 
+      this.$analytics({
+        category: 'exports dashboard',
+        name: 'exports communes',
+        value: 'departementCode'
+      })
+
       this.loadingDownload = true
       const { data } = await axios(`/api/urba/exports/departements/${departementCode}?csv=true`)
 
