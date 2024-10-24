@@ -38,12 +38,23 @@ app.get('/communes/:inseeCode', async (req, res) => {
 })
 
 app.get('/exports/departements/:code', async (req, res) => {
+  const departement = departements.find(d => d.code === req.params.code)
+
+  await supabase.from('analytics_events').insert([{
+    user_id: null,
+    category: 'api',
+    name: 'exports communes',
+    value: req.fullPath,
+    path: req.fullPath,
+    dept: req.params.code,
+    region: departement.region.code
+  }])
+
   if (req.query.csv) {
     res.redirect(`https://nuxt3.docurba.incubateur.net/api/urba/exports/communes?departementCode=${req.params.code}`)
     // const csv = await csvParser.parse(mapedCommunes).promise()
     // res.status(200).attachment(`${req.params.code}_${departement.intitule}.csv`).send(csv)
   } else {
-    const departement = departements.find(d => d.code === req.params.code)
     const communesCodes = departement.communes.map(c => c.code)
     const communes = await procedures.getCommunes(communesCodes)
 
