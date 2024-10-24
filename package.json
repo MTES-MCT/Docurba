@@ -18,6 +18,7 @@
     "create_perimetre": "node scripts/newProcsPerim.js",
     "sudocu2docurba": "node database/sudocu2docurba.js",
     "check_sec": "node --experimental-json-modules daily_dump/updateProcedureSec.mjs",
+    "add_dgd": "node --experimental-json-modules daily_dump/addDgdHistory.mjs",
     "lint:js": "eslint --ext \".js,.vue\" --ignore-path .gitignore .",
     "lint": "npm run lint:js"
   },

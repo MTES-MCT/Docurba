@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import DOCUMENTS_TYPES from '../miscs/documentTypes.mjs'
 import PROCEDURES_TYPES from '../miscs/proceduresTypes.mjs'
 import communesReferentiel from '../miscs/referentiels/communes.json' assert {type: 'json'}
-
+import { updateProcedureSec } from './linkProceduresSecs.mjs'
 
 function formatDate(date) {
   const year = date.getFullYear();
@@ -346,21 +346,22 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   /// ///////////////////////////////////////////////////////////////////////////
   /// /////////// MAPPING ID PROCEDURES PRINCIPALES / SECONDAIRES  //////////////
   /// ///////////////////////////////////////////////////////////////////////////
-let allPp = proceduresMapping.filter(p => p.is_principale)
-let allPsUnbinded = proceduresMapping.filter(p => !p.is_principale && p.secondary_procedure_of)
-let bindedSecondary = allPsUnbinded.map(ps => {
-    let secOf = allPp.find(pp => pp.from_sudocu === ps.sudocu_secondary_procedure_of)
-    if(!secOf){
-      console.log(`No match found to link PS: ${ps.id}`)
-      return null
-    }
-    return {id: ps.id, secondary_procedure_of: secOf}
-  }).filter(e => e)
-console.log(`There is ${allPsUnbinded.length} unlinked secondary.`)
-  for (const psUnbinded of allPsUnbinded) {
-    const { data, error } = await supabase.from('procedures').update({secondary_procedure_of: psUnbinded.secondary_procedure_of}).eq('id', psUnbinded.id)
-  }
+// let allPp = proceduresMapping.filter(p => p.is_principale)
+// let allPsUnbinded = proceduresMapping.filter(p => !p.is_principale && p.secondary_procedure_of)
+// let bindedSecondary = allPsUnbinded.map(ps => {
+//     let secOf = allPp.find(pp => pp.from_sudocu === ps.sudocu_secondary_procedure_of)
+//     if(!secOf){
+//       console.log(`No match found to link PS: ${ps.id}`)
+//       return null
+//     }
+//     return {id: ps.id, secondary_procedure_of: secOf}
+//   }).filter(e => e)
+// console.log(`There is ${allPsUnbinded.length} unlinked secondary.`)
+//   for (const psUnbinded of allPsUnbinded) {
+//     const { data, error } = await supabase.from('procedures').update({secondary_procedure_of: psUnbinded.secondary_procedure_of}).eq('id', psUnbinded.id)
+//   }
 
+  await updateProcedureSec(proceduresMapping)
 
   /// ////////////////////////////////////////
   /// /////////// UPSERT EVENTS //////////////
