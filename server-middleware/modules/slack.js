@@ -29,7 +29,7 @@ module.exports = {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `Lien: ${procedure.url}`
+              text: `Lien: ${process.env.APP_URL}${procedure.url}`
             }
           }
         ]

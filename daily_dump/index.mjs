@@ -5,6 +5,7 @@ import CONFIG from './pg_secret_config.mjs'
 import { updatePerimeterStatus } from './steps/6-setPerimeterStatus.mjs'
 import { updateComDPerimeter } from './steps/7-updateComdPerimTable.mjs'
 import { handleTrigger } from './steps/onOffTriggers.mjs'
+import { migrateDgd } from './steps/8-migrateDgd.mjs'
 // import { updateProcedureSec } from './updateProcedureSec.mjs'
 
 /// /////////////////////
@@ -46,6 +47,8 @@ try {
   await updatePerimeterStatus(CONFIG.PG_PROD_CONFIG)
   // // Step 7 - Ralliement des communes fusionnées
   // await updateComDPerimeter(CONFIG.PG_PROD_CONFIG)
+  //
+  await migrateDgd(CONFIG.PG_DEV_CONFIG, CONFIG.PG_PROD_CONFIG)
   // // Step 8 - Réactivation du trigger de changement de status sur nouveaux events
   await handleTrigger(CONFIG.PG_PROD_CONFIG, 'enable')
 } catch (error) {

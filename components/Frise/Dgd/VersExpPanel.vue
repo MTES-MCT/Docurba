@@ -1,5 +1,5 @@
 <template>
-  <v-expansion-panel :key="`versement-${versement.id}`">
+  <v-expansion-panel :key="`versement-${versement.id}`" :disabled="!!versement.from_sudocu">
     <v-expansion-panel-header>
       <v-row>
         <v-col cols="12" class="d-flex py-6">
@@ -8,7 +8,10 @@
               Versement terminé
             </div>
             <div>
-              <v-chip v-if="allVersementsDone" small label color="success-light">
+              <span v-if="versement.from_sudocu">
+                -
+              </span>
+              <v-chip v-else-if="allVersementsDone" small label color="success-light">
                 <v-icon small color="success" class="mr-2">
                   {{ icons.mdiCheckCircle }}
                 </v-icon>
@@ -51,7 +54,11 @@
               Montant versé
             </div>
             <div>
-              {{ amoutTransfered }} €
+              <span v-if="!versement.from_sudocu">
+                {{ amoutTransfered }}
+              </span>
+              <span v-else> - </span>
+              €
             </div>
           </div>
         </v-col>

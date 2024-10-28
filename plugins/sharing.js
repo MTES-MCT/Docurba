@@ -14,8 +14,6 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
         dev_test: true
       }))
 
-      // TODO: ATTENTION RISQUE DE NE PAS MARCHER SUR LES SECONDAIRES a cause du project_id
-      // Il faut founir le project_id de la procedure principale
       const sender = {
         user_email: $user.email,
         project_id: procedure.project_id ?? procedure.secondary_procedure_of.project_id,
@@ -84,6 +82,7 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
         const { data: stateProfiles, error: errorStateProfiles } = await $supabase.from('profiles').select('*')
           .in('departement', adminDept)
           .eq('side', 'etat')
+          .is('verified', true)
 
         if (errorStateProfiles) { console.log('errorStateProfiles: ', errorStateProfiles) }
 
@@ -99,6 +98,8 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
         .select('*')
         .eq('project_id', procedure.project_id)
         .eq('role', 'write_frise')
+        .order('created_at', { ascending: false })
+
       if (errorCollabs) { console.log('errorCollabs: ', errorCollabs) }
       console.log('collabsData: ', collabsData, ' procedure.project_id: ', procedure.project_id)
       const emails = _.uniqBy(collabsData, e => e.user_email).map(e => e.user_email)
