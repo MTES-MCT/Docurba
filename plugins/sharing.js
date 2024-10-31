@@ -26,6 +26,13 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
 
       toInsert = [...toInsert, sender]
       console.log('TO INSERT: ', toInsert)
+
+      this.$analytics({
+        category: 'partage',
+        name: 'ajout collaborateur',
+        value: 'write_frise'
+      })
+
       const { error: errorInsertedCollabs } = await $supabase.from('projects_sharing').upsert(toInsert, { onConflict: 'project_id,user_email,role', ignoreDuplicates: true }).select()
       if (errorInsertedCollabs) { console.log('errorInsertedCollabs: ', errorInsertedCollabs) }
 

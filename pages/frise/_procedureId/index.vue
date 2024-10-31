@@ -405,7 +405,16 @@ export default
       this.collaborators = await this.$sharing.getCollaborators(this.procedure, this.collectivite)
     },
     async removeCollabShared (toRemoveCollaborator) {
-      const { error: errorDeleteCollab } = await this.$supabase.from('projects_sharing').delete().eq('user_email', toRemoveCollaborator.email).eq('role', 'write_frise').eq('project_id', this.procedure.project_id).select()
+      const { error: errorDeleteCollab } = await this.$supabase.from('projects_sharing')
+        .delete().eq('user_email', toRemoveCollaborator.email)
+        .eq('role', 'write_frise').eq('project_id', this.procedure.project_id).select()
+
+      this.$analytics({
+        category: 'partage',
+        name: 'suppression collaborateur',
+        value: 'write_frise'
+      })
+
       if (errorDeleteCollab) { console.log('errorDeleteCollab: ', errorDeleteCollab) }
       this.collaborators = await this.$sharing.getCollaborators(this.procedure, this.collectivite)
     },
