@@ -15,6 +15,7 @@ export default ({ route }, inject) => {
         type: 'pac'
       }
     },
+
     // eslint-disable-next-line quote-props
     '52': {
       baseUrl: 'https://catalogue.sigloire.fr/base_territoriale',
