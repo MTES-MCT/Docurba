@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { createClient } from '@supabase/supabase-js'
-import CONFIG from './pg_secret_config.mjs'
+import CONFIG from '../pg_secret_config.mjs'
 
 function formatDate (date) {
   const year = date.getFullYear()
