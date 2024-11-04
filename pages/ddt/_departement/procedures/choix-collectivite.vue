@@ -89,10 +89,12 @@ export default {
       ]
     }
   },
-  async mounted () {
-    const rawReferentiel = await fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
-    const { communes, groupements } = await rawReferentiel.json()
-    this.collectivites = [...groupements, ...communes]
+  mounted () {
+    // TODO: this is using an API route from an other project.
+    // It could use a wrapper to avoid having to re writte the base url all the time.
+    fetch(`https://nuxt3.docurba.incubateur.net/api/geo/search/collectivites?departementCode=${this.$route.params.departement}`).then(async (res) => {
+      this.collectivites = await res.json()
+    })
   },
   methods: {
     customFilter (value, search, item) {
