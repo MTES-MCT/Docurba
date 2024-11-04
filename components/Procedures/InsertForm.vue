@@ -182,7 +182,7 @@ export default {
       otherObjetProcedure: '',
       typeDu: '',
       nameComplement: '',
-      typesDu: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM'],
+      typesDu: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM', 'SCOT'],
       perimetre: null,
       icons: { mdiInformationOutline }
     }
@@ -313,7 +313,7 @@ export default {
           is_principale: this.procedureCategory === 'principale',
           status: 'en cours',
           is_sectoriel: null,
-          is_scot: null,
+          is_scot: this.typeDu === 'SCOT',
           is_pluih: this.typeDu === 'PLUiH',
           is_pdu: null,
           current_perimetre: oldFomattedPerimetre,

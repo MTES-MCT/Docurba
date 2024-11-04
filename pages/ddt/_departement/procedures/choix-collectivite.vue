@@ -30,6 +30,11 @@
           :loading="!collectivites"
           loading-text="Chargement des collectivités..."
         >
+          <template #no-results>
+            <p class="my-8">
+              Vous ne trouvez pas votre collectivité ? Contactez-nous à l'adresse suivante : <a href="mailto:equipe@docurba.beta.gouv.fr">equipe@docurba.beta.gouv.fr</a> !
+            </p>
+          </template>
           <template #top>
             <p>Choisissez la collectivité pour laquelle vous souhaitez créer cette procédure:</p>
             <div class="d-flex align-center justify-space-between ">
