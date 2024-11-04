@@ -158,7 +158,7 @@ export default
     },
     async refreshVersements () {
       const { data: versementsData } = await this.$supabase.from('versements')
-        .select('*, etapes_versement(*)').eq('procedure_id', this.$route.params.procedureId)
+        .select('*, etapes_versement(*)').eq('procedure_id', this.$route.params.procedureId).order('year', { ascending: false })
 
       const { data: procedureData } = await this.$supabase.from('procedures')
         .select('id, comment_dgd').eq('id', this.$route.params.procedureId)
