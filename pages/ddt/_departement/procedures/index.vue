@@ -7,7 +7,7 @@
           <v-btn :loading="loadingDownload" outlined color="primary" class="mr-2" @click="download">
             Exporter les procédures
           </v-btn>
-          <v-btn depressed color="primary" :to="`/ddt/${$route.params.departement}/procedures/add-choose-collectivite`">
+          <v-btn depressed color="primary" :to="`/ddt/${$route.params.departement}/procedures/choix-collectivite`">
             Nouvelle procédure
           </v-btn>
         </div>
