@@ -30,6 +30,11 @@
           :loading="!collectivites"
           loading-text="Chargement des collectivités..."
         >
+          <template #no-results>
+            <p class="my-8">
+              Vous ne trouvez pas votre collectivité ? Contactez-nous à l'adresse suivante : <a href="mailto:equipe@docurba.beta.gouv.fr">equipe@docurba.beta.gouv.fr</a> !
+            </p>
+          </template>
           <template #top>
             <p>Choisissez la collectivité pour laquelle vous souhaitez créer cette procédure:</p>
             <div class="d-flex align-center justify-space-between ">
@@ -89,10 +94,12 @@ export default {
       ]
     }
   },
-  async mounted () {
-    const rawReferentiel = await fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
-    const { communes, groupements } = await rawReferentiel.json()
-    this.collectivites = [...groupements, ...communes]
+  mounted () {
+    // TODO: this is using an API route from an other project.
+    // It could use a wrapper to avoid having to re writte the base url all the time.
+    fetch(`https://nuxt3.docurba.incubateur.net/api/geo/search/collectivites?departementCode=${this.$route.params.departement}`).then(async (res) => {
+      this.collectivites = await res.json()
+    })
   },
   methods: {
     customFilter (value, search, item) {
