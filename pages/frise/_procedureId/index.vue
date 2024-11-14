@@ -357,9 +357,9 @@ export default
       if (this.$user && this.$user.isReady) {
         await this.$user.isReady
 
-        this.$tally('woy4KO', {
+        this.$tally('wzQkQk', {
           max: 3,
-          signupDelay: 30
+          signupDelay: 1
         })
 
         if (this.isVerified) {
