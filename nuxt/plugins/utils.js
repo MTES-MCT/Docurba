@@ -51,6 +51,7 @@ export default ({ app }, inject) => {
       creator.legacy_sudocu = profile.legacy_sudocu ?? false
       creator.id = profile.user_id
       creator.initiator = !!profile.initiator
+      creator.profile = profile
       return creator
     },
     // ⚠️ Les clefs sont a minima aussi utilisées pour Pipedrive et Brevo
