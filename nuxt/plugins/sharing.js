@@ -78,7 +78,7 @@ export default ({ app, $supabase, $utils, $user, $analytics }, inject) => {
       let collaborators = [...stateProfiles, ...collectiviteProfiles].map(e => $utils.formatProfileToCreator(e))
       if (errorCollaborators) { throw errorCollaborators }
 
-      collaborators = this.excludeTestCollabs(collaborators)
+      collaborators = this.excludeStaff(collaborators)
       return collaborators
     },
     async  getCollaborators (procedure, collectivite) {
@@ -125,21 +125,10 @@ export default ({ app, $supabase, $utils, $user, $analytics }, inject) => {
       const finalCollabs = [...noProfilesCollabs, ...formattedProfiles]
       const uniqFinalCollabs = _.uniqBy(finalCollabs, e => e.email)
       return uniqFinalCollabs
-      // const realCollabsOnly = this.excludeTestCollabs(uniqFinalCollabs)
-      // return realCollabsOnly
     },
-    excludeTestCollabs (collabs) {
+    excludeStaff (collabs) {
       return collabs.filter((collab) => {
-        const email = collab.email.toLowerCase()
-        return !email.includes('test') &&
-        !email.includes('docurba.beta.gouv') &&
-        !email.includes('yopmail') &&
-        !email.includes('okie09@hotmail.fr') &&
-        !email.includes('celia.vermicelli@gmail.com') &&
-        // !email.includes('julien@quantedsquare.com') &&
-        !email.includes('fabien@quantedsquare.com') &&
-        !email.includes('julien.zmiro@gmail.com') &&
-        !email.includes(' vermicellicelia@gmail.com')
+        return !(collab.profile?.is_admin || collab.profile?.is_staff)
       })
     }
   }

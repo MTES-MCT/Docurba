@@ -292,7 +292,7 @@ export default
   },
   computed: {
     toDisplayCollabs () {
-      return this.$sharing.excludeTestCollabs(this.collaborators)
+      return this.$sharing.excludeStaff(this.collaborators)
     },
     isEmptyFrise () {
       return this.events.length === 0 || this.events.every(e => !e.type || !e.date_iso)
