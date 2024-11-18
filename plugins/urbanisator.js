@@ -91,7 +91,9 @@ export default ({ $supabase, $dayjs }, inject) => {
           }, p, commune)
         })
 
-        const comd = procedure.procedures_perimetres.find(p => p.type === 'COMD')
+        const comd = procedure.procedures_perimetres.find(p => p.collectivite_type === 'COMD')
+
+        console.log(procedure.procedures_perimetres, comd)
 
         // COMD specifique
         if (procedure.procedures_perimetres.length === 2 && comd) {
