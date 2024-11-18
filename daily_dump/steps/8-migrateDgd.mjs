@@ -85,4 +85,4 @@ async function migrateDgd (configSource, configTarget) {
   }
 }
 
-export default migrateDgd
+export { migrateDgd }
