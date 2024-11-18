@@ -55,8 +55,8 @@
           </template>
 
           <v-list>
-            <FriseInfosDialog v-if="isDgdActive" />
-            <FriseVoletQualiDialog v-if="isDgdActive" />
+            <!-- <FriseInfosDialog v-if="isDgdActive" />
+            <FriseVoletQualiDialog v-if="isDgdActive" /> -->
 
             <FriseDgdDialog v-if="isDgdActive" />
             <!-- <v-list-item link>
