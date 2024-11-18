@@ -355,16 +355,16 @@ export default
   async mounted () {
     try {
       if (this.$user && this.$user.isReady) {
-        this.$user.isReady.then(() => {
-          this.$tally('woy4KO', {
-            max: 3,
-            signupDelay: 30
-          })
+        await this.$user.isReady
 
-          if (this.isVerified) {
-            this.$nuxt.setLayout('ddt')
-          }
+        this.$tally('wzQkQk', {
+          max: 3,
+          signupDelay: 1
         })
+
+        if (this.isVerified) {
+          this.$nuxt.setLayout('ddt')
+        }
       }
 
       const {

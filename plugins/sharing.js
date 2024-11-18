@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import axios from 'axios'
 
-export default ({ app, $supabase, $utils, $user }, inject) => {
+export default ({ app, $supabase, $utils, $user, $analytics }, inject) => {
   const sharing = {
     async  addToCollabs (procedure, collabs, collectivite) {
       let toInsert = collabs.map(e => ({
@@ -27,7 +27,7 @@ export default ({ app, $supabase, $utils, $user }, inject) => {
       toInsert = [...toInsert, sender]
       console.log('TO INSERT: ', toInsert)
 
-      this.$analytics({
+      $analytics({
         category: 'partage',
         name: 'ajout collaborateur',
         value: 'write_frise'

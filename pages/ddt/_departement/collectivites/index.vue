@@ -196,12 +196,17 @@ export default {
       ]
     },
     collectivites () {
-      return this.referentiel?.filter(e => this.selectedCollectiviteTypesFilter.includes(e.type))
+      return this.referentiel?.filter((collectivite) => {
+        return !!this.selectedCollectiviteTypesFilter.find(type => collectivite.type.includes(type))
+      })
     }
   },
   async mounted () {
     const referentiel = await fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
     const { communes, groupements } = await referentiel.json()
+
+    console.log('groupements', groupements)
+
     const procedures = await this.$urbanisator.getCollectivitesProcedures(communes.map(c => c.code))
 
     const enrichedCommunes = this.parseCommunes(communes, procedures)
