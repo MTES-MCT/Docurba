@@ -5,9 +5,11 @@ import { createClient } from '@supabase/supabase-js';
 async function updatePerimeterStatus(config) {
   const supabase = createClient(config.url, config.admin_key);
 
-  await supabase.from('procedures_perimetres').update({
-    opposable: false
-  }).eq('opposable', true).eq('collectivite_type', 'COM');
+  // This should be useless, the API is in charge of properly setting status.
+  // Also, this can create rollback error if this steps does not finish properly.
+  // await supabase.from('procedures_perimetres').update({
+  //   opposable: false
+  // }).eq('opposable', true).eq('collectivite_type', 'COM');
 
   let currentRequest = 0;
 
