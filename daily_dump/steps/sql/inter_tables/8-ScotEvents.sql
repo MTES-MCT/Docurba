@@ -21,4 +21,6 @@ SELECT events.noserieevenement,
 FROM public.eventsdetails events
 INNER JOIN public.sudocu_procedure_schema psdetails ON psdetails.noserieprocedure = events.noserieprocedure;
 
+GRANT USAGE ON SCHEMA sudocu TO public;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO public;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA sudocu TO public;
