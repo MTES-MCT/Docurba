@@ -5,9 +5,11 @@ import { createClient } from '@supabase/supabase-js';
 async function updatePerimeterStatus(config) {
   const supabase = createClient(config.url, config.admin_key);
 
-  await supabase.from('procedures_perimetres').update({
-    opposable: false
-  }).eq('opposable', true).eq('collectivite_type', 'COM');
+  // This should be useless, the API is in charge of properly setting status.
+  // Also, this can create rollback error if this steps does not finish properly.
+  // await supabase.from('procedures_perimetres').update({
+  //   opposable: false
+  // }).eq('opposable', true).eq('collectivite_type', 'COM');
 
   let currentRequest = 0;
 
@@ -21,54 +23,9 @@ async function updatePerimeterStatus(config) {
 
     console.log(`${currentRequest}/${departements.length}`);
 
-    try {
-      const {data: communes} = await axios(`https://nuxt3.docurba.incubateur.net/api/urba/communes?departementCode=${deptCode}`);
-
-      const {data: perimetre} = await supabase.from('procedures_perimetres')
-        .select('*').match({
-        departement: deptCode,
-        collectivite_type: 'COM'
-      });
-
-      const opposablePerimetre = [];
-
-      communes.forEach(commune => {
-        const plan = commune.planOpposable;
-        const scot = commune.scotOpposable;
-
-        if(plan) {
-          const perimPlan = perimetre.find(p => {
-            return p.procedure_id === plan.id && p.collectivite_code === commune.code;
-          });
-
-          if(perimPlan) {
-            opposablePerimetre.push(Object.assign(perimPlan, {
-              opposable: true
-            }));
-          }
-        }
-
-        if(scot) {
-          const perimScot = perimetre.find(p => {
-            return p.procedure_id === scot.id && p.collectivite_code === commune.code;
-          });
-
-          if(perimScot) {
-            opposablePerimetre.push(Object.assign(perimScot, {
-              opposable: true
-            }));
-          }
-        }
-      });
-
-      console.log(deptCode, 'perim oposable', opposablePerimetre.length);
-
-      const {data, error} = await supabase.from('procedures_perimetres')
-        .upsert(opposablePerimetre);
-
-    } catch (err) {
-      console.log('error on dept', deptCode);
-    }
+    // The logic here was replaced by an API call to avoid having to maintain 2 ways of updating perimetres.
+    // I've tested departements individualy but not in batch. So this might need some monitoring when we run the daily dump.
+    await axios(`https://nuxt3.docurba.incubateur.net/api/urba/procedures/perimetres/update?departementCode=${deptCode}`);
 
     return getDepartement();
   }
