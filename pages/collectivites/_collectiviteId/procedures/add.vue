@@ -20,7 +20,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import { mdiChevronLeft } from '@mdi/js'
 export default {
   name: 'ProcedureAdd',
@@ -30,11 +29,12 @@ export default {
       icons: { mdiChevronLeft }
     }
   },
-  async mounted () {
-    this.collectivite = (await axios({
-      url: `/api/geo/${this.$route.params.collectiviteId.length > 5 ? 'intercommunalites' : 'communes'}/${this.$route.params.collectiviteId}`,
-      method: 'get'
-    })).data
+  mounted () {
+    fetch(`https://nuxt3.docurba.incubateur.net/api/geo/search/collectivites?code=${this.$route.params.collectiviteId}`)
+      .then(async (res) => {
+        const collectivites = await res.json()
+        this.collectivite = collectivites[0]
+      })
 
     if (this.$user.profile?.side === 'etat') {
       if (this.$user.profile?.departement !== this.collectivite.departementCode) {
