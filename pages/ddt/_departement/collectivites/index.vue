@@ -23,7 +23,7 @@
           :search="search"
           :loading="!collectivites"
           loading-text="Chargement des collectivités..."
-          show-select
+          :page.sync="page"
         >
           <template #top>
             <v-alert type="info" color="primary" text>
@@ -31,7 +31,6 @@
                 Enquête annuelle
               </div>
               <div>
-                {{ toValidate }}
                 L’enquête annuelle de validation des procédures d’urbanisme anciennement effectuée sur Sudocuh est disponible sur Docurba. Votre service a jusqu’au 31 Janvier pour valider les procédures de vos collectivités.
               </div>
               <div>
@@ -180,7 +179,10 @@
           <template #item.validate="{ item }">
             <div class="d-flex align-end justify-end">
               {{ item.code }} {{ toValidate }}
-              <v-checkbox v-model="toValidate" :value="item.code" />
+              <v-checkbox
+                :input-value="toValidate.includes(item.code)"
+                @change="toggleItem(item.code)"
+              />
             </div>
           </template>
         </v-data-table>
@@ -193,13 +195,26 @@
             <v-btn color="primary" outlined @click="toValidate = []">
               Tout déselectionner
             </v-btn>
-            <v-btn class="ml-2" color="primary" depressed>
+            <v-btn class="ml-2" color="primary" depressed @click="clickValidateCollecs">
               Valider {{ toValidate.length }} collectivités
             </v-btn>
           </div>
         </div>
       </v-col>
     </v-row>
+    <v-snackbar
+      v-model="snackbar"
+      top
+      color="success"
+      outlined
+      min-width="800"
+      :timeout="5000"
+    >
+      <v-icon small color="success" class="mr-2">
+        {{ icons.mdiCheckCircle }}
+      </v-icon>
+      {{ snackText }}
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -216,6 +231,8 @@ export default {
   layout: 'ddt',
   data () {
     return {
+      snackbar: false,
+      snackText: '',
       toValidate: [],
       page: 1,
       selectedCollectiviteTypesFilter: ['COM', 'CA', 'CC', 'EPT', 'SM', 'SIVU', 'PETR'],
@@ -267,12 +284,6 @@ export default {
       return selectedCount > 0 && selectedCount < this.currentPageItems.length
     }
   },
-  watch: {
-    // Update when page changes in data table
-    '$refs.dataTable.page' (newPage) {
-      this.page = newPage
-    }
-  },
   async mounted () {
     const referentiel = await fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
     const { communes, groupements } = await referentiel.json()
@@ -287,8 +298,27 @@ export default {
     this.referentiel = [...enrichedGroups, ...enrichedCommunes]
   },
   methods: {
+    async  clickValidateCollecs () {
+      const collectivitesToValidate = this.collectivites.filter(e => this.toValidate.includes(e.code))
+      const { success, error } = await this.$enquete.validateCollectivites(collectivitesToValidate)
+      if (!success) {
+        this.snackbar = true
+        this.snackText = `ERREUR: ${error}`
+      }
+    },
+    updatePage (newPage) {
+      console.log('newPage: ', newPage)
+      this.page = newPage
+    },
+    toggleItem (code) {
+      const index = this.toValidate.indexOf(code)
+      if (index === -1) {
+        this.toValidate.push(code)
+      } else {
+        this.toValidate.splice(index, 1)
+      }
+    },
     toggleCurrentPage (value) {
-      console.log('this.currentPageItems value: ', value)
       if (value) {
       // Add all current page items that aren't already selected
         this.currentPageItems.forEach((item) => {
@@ -297,12 +327,9 @@ export default {
           }
         })
       } else {
-      // Remove all current page items from selection
-        console.log('LELELELEL: ', this.toValidate)
         this.toValidate = this.toValidate.filter(code =>
           !this.currentPageItems.map(item => item.code).includes(code)
         )
-        console.log(' this.toValidate: ', this.toValidate)
       }
     },
     parseCommunes (communes, procedures) {
