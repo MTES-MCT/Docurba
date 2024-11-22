@@ -1,16 +1,22 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import CONFIG from './pg_secret_config.mjs'
-import { clearDev, loadDump, createSudocuProcessedTables, setAllStatus, createOriginalSchema } from './steps/sqlRunner.mjs'
+import { downloadDump } from './steps/1-downloadDump.mjs'
 import { sudocuhPlanToDocurba } from './steps/4-interTablesToDocurbaPlan.mjs'
 import { sudocuhScotToDocurba } from './steps/5-interTablesToDocurbaScot.mjs'
 import { updatePerimeterStatus } from './steps/6-setPerimeterStatus.mjs'
-import { updateComDPerimeter } from './steps/7-updateComdPerimTable.mjs'
-import { handleTrigger } from './steps/onOffTriggers.mjs'
 import { migrateDgd } from './steps/8-migrateDgd.mjs'
+import { handleTrigger } from './steps/onOffTriggers.mjs'
+import { clearDev, createOriginalSchema, createSudocuProcessedTables, loadDump, setAllStatus } from './steps/sqlRunner.mjs'
 // import { updateProcedureSec } from './updateProcedureSec.mjs'
 
 /// /////////////////////
 /// ///// INFO ////////
 /// /////////////////////
+const DUMP_FILENAME = process.argv.at(-1)
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+await downloadDump(CONFIG.PG_PROD_CONFIG, DUMP_FILENAME, __dirname)
 
 // You need to setup .pgpass in your home if you don't want to enter the db password on pg_restaure
 // https://tableplus.com/blog/2019/09/how-to-use-pgpass-in-postgresql.html
@@ -24,7 +30,7 @@ try {
   await clearDev(CONFIG.PG_DEV_CONFIG)
   // // // // // Step 1 - Charge un dump particulier venant de l'export de Andy sur notre storage
 
-  await loadDump(CONFIG.PG_DEV_CONFIG, process.argv.at(-1))
+  await loadDump(CONFIG.PG_DEV_CONFIG, DUMP_FILENAME)
 
   // // // // // // Step 2 - Créer les tables intermédiaires d'aggregation depuis la donnée Sudocuh
   await createSudocuProcessedTables(CONFIG.PG_DEV_CONFIG)
