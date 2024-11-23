@@ -20,11 +20,14 @@ async function clearDev (config) {
 
 async function loadDump (config, dumpName) {
   try {
-    console.log('[TODO] - Download the dump.')
     console.log('Restoring latest Sudocuh dump...')
     await execute(`pg_restore -h ${config.host} -d ${config.database} -U ${config.user} ./daily_dump/sudocuh_dumps/${dumpName}`)
     console.log('Sudocuh dump Restored.')
   } catch (error) {
+    // Actuellement, `pg_restore` générera une erreur même lors que le restore se passe
+    // suffisamment bien.
+    // Pour enlever le try/catch, il faudra comprendre comment invoquer `pg_restore`
+    // pour qu'il n'émette pas d'erreurs
     // console.log(error)
   }
 }
@@ -42,22 +45,18 @@ async function createSudocuProcessedTables (config) {
     // TODO: Rajouter DGD
     // '9-InfosDgdProcedures.sql'
   ]
-  try {
-    const client = new Client(config)
-    await client.connect()
+  const client = new Client(config)
+  await client.connect()
 
-    for (const sqlFilename of SQLS) {
-      console.log(`Processing ${sqlFilename}...`)
-      const sql = fs.readFileSync(`./daily_dump/steps/sql/inter_tables/${sqlFilename}`)
-        .toString().replace(/(\r\n|\n|\r)/gm, ' ')
-        .replace(/\s+/g, ' ')
-      await client.query(sql)
-    }
-    await client.end()
-    console.log('Intermediate tables written.')
-  } catch (error) {
-    console.log(error)
+  for (const sqlFilename of SQLS) {
+    console.log(`Processing ${sqlFilename}...`)
+    const sql = fs.readFileSync(`./daily_dump/steps/sql/inter_tables/${sqlFilename}`)
+      .toString().replace(/(\r\n|\n|\r)/gm, ' ')
+      .replace(/\s+/g, ' ')
+    await client.query(sql)
   }
+  await client.end()
+  console.log('Intermediate tables written.')
 }
 
 async function setAllStatus (config) {
