@@ -36,7 +36,7 @@
     "@sendgrid/mail": "^8.1.0",
     "@supabase/supabase-js": "^2.33",
     "@tiptap-extend/columns": "^2.1.6",
-    "@tiptap/extension-highlight": "^2.2.4",
+    "@tiptap/extension-highlight": "^2.9.1",
     "@tiptap/extension-image": "^2.2.4",
     "@tiptap/extension-link": "^2.2.4",
     "@tiptap/extension-table": "^2.2.4",
