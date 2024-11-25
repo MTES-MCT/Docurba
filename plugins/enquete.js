@@ -1,5 +1,16 @@
 export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inject) => {
   const enquete = {
+    async getValidationCollectivitesForDepartement (departement) {
+      const { data, error } = await $supabase
+        .rpc('validated_collectivites_2024', {
+          department_param: departement
+        })
+      return {
+        success: !error,
+        data,
+        error
+      }
+    },
     async validateCollectivites (collectivitesToValidate) {
       try {
         if (!Array.isArray(collectivitesToValidate)) {
@@ -13,7 +24,7 @@ export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inj
         const toUpsert = collectivitesToValidate
           .map(formatProceduresCollecToValidate)
           .flat()
-
+        console.log('toUpsert: ', toUpsert)
         if (toUpsert.length === 0) {
           return {
             success: true,

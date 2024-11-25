@@ -35,10 +35,15 @@
               </div>
               <div>
                 <v-switch
-
+                  color="primary"
                   inset
-                  label="Voir seulement les collectivités à valider (36 restantes)"
-                />
+                >
+                  <template #label>
+                    <span class="primary--text">
+                      Voir seulement les collectivités à valider (36 restantes)
+                    </span>
+                  </template>
+                </v-switch>
               </div>
             </v-alert>
             <div class="d-flex align-center justify-space-between mb-6">
@@ -180,9 +185,44 @@
             <div class="d-flex align-end justify-end">
               {{ item.code }} {{ toValidate }}
               <v-checkbox
+                v-if="!areValidate.includes(item.code)"
                 :input-value="toValidate.includes(item.code)"
                 @change="toggleItem(item.code)"
               />
+              <div v-else>
+                <v-menu
+                  top
+                  offset-y
+                  :close-on-content-click="false"
+                >
+                  <template #activator="{ on, attrs }">
+                    <v-chip
+                      v-bind="attrs"
+                      class="bf200 primary--text text--lighten-2 ml-2 font-weight-bold"
+                      small
+                      label
+                      v-on="on"
+                    >
+                      VALIDÉE
+                    </v-chip>
+                  </template>
+                  <v-card class="pa-2">
+                    <div class="text-center">
+                      <div class="mb-2">
+                        Collectivité validée le 12/10/24 par hermance@docurba.fr
+                      </div>
+                      <v-btn
+                        small
+                        color="error"
+                        text
+                        @click="cancelValidation(item)"
+                      >
+                        Annuler la validation
+                      </v-btn>
+                    </div>
+                  </v-card>
+                </v-menu>
+              </div>
             </div>
           </template>
         </v-data-table>
@@ -210,9 +250,6 @@
       min-width="800"
       :timeout="5000"
     >
-      <v-icon small color="success" class="mr-2">
-        {{ icons.mdiCheckCircle }}
-      </v-icon>
       {{ snackText }}
     </v-snackbar>
   </v-container>
@@ -234,6 +271,7 @@ export default {
       snackbar: false,
       snackText: '',
       toValidate: [],
+      areValidate: [],
       page: 1,
       selectedCollectiviteTypesFilter: ['COM', 'CA', 'CC', 'EPT', 'SM', 'SIVU', 'PETR'],
       collectiviteTypeFilterItems: [
@@ -296,6 +334,14 @@ export default {
     const enrichedGroups = this.parseGroupements(groupements, procedures)
 
     this.referentiel = [...enrichedGroups, ...enrichedCommunes]
+
+    const { success, error, data } = await this.$enquete.getValidationCollectivitesForDepartement(this.$route.params.departement)
+    console.log('data valid 2024: ', data)
+    this.areValidate = data.map(e => e.collectivite_code)
+    if (!success) {
+      this.snackbar = true
+      this.snackText = `ERREUR: ${error}`
+    }
   },
   methods: {
     async  clickValidateCollecs () {
@@ -432,6 +478,11 @@ export default {
    tbody tr td{
     vertical-align: top !important;
    }
+}
+
+.tooltip-action-validate{
+  background: red;
+  opacity: 1;
 }
 
 .validation-alert{
