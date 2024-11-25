@@ -68,6 +68,15 @@ const fieldsMap = {
   },
   shared: {
     key: '9f1578c96655a81a330eb09912f0a9b5c1f40d8b'
+  },
+  write_frise: {
+    key: '7689c2ed07954a7dc99d84b4a537532af46238f3'
+  },
+  read: {
+    key: '9f250a47089cec1894bcfabd4eac6324a4d49b5d'
+  },
+  write: {
+    key: '81af38758c248d593b9cbb80bb9467e8096fb801'
   }
 }
 
