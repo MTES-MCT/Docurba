@@ -1,5 +1,51 @@
 export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inject) => {
   const enquete = {
+    async deleteValidationForCollectivite (code) {
+      try {
+        if (!code) {
+          return {
+            success: false,
+            data: null,
+            error: 'Code parameter is required'
+          }
+        }
+        // const { data, error } = await $supabase
+        //   .from('procedures_validations')
+        //   .select('*')
+        //   .eq('collectivite_code', code)
+        //   .gte('created_at', '2024-06-01')
+        // console.log('data: ', data)
+
+        console.log('code to delete: ', code)
+        const { data, error } = await $supabase
+          .from('procedures_validations')
+          .delete()
+          .eq('collectivite_code', code)
+          .gte('created_at', '2024-06-01')
+          .select()
+        console.log('DELETED:', data)
+        if (error) {
+          return {
+            success: false,
+            data: null,
+            error: `Failed to delete validations: ${error.message}`
+          }
+        }
+
+        return {
+          success: true,
+          data,
+          error: null
+        }
+      } catch (error) {
+        console.error('Unexpected error in deleteValidationForCollectivite:', error)
+        return {
+          success: false,
+          data: null,
+          error: error instanceof Error ? error.message : 'Unknown error occurred'
+        }
+      }
+    },
     async getValidationCollectivitesForDepartement (departement) {
       const { data, error } = await $supabase
         .rpc('validated_collectivites_2024', {
@@ -68,11 +114,11 @@ export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inj
     if (!collectiviteToValidate?.code || !collectiviteToValidate?.departementCode) {
       return []
     }
-
     const infosCollec = {
       collectivite_code: collectiviteToValidate.code,
       departement: collectiviteToValidate.departementCode,
-      test2024: true
+      test2024: true,
+      profile_id: $user.id
     }
 
     const formatProcedure = procedure => ({

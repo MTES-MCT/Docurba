@@ -15,7 +15,7 @@
       <v-col v-else cols="12">
         <v-data-table
           :headers="headers"
-          :items="collectivites"
+          :items="onlyNotValidatedFilterOn ? filterNotValidated : collectivites"
           :items-per-page="10"
           class="elevation-1 pa-8 collectivites-dt"
           :custom-filter="customFilter"
@@ -35,7 +35,9 @@
               </div>
               <div>
                 <v-switch
+                  v-model="onlyNotValidatedFilterOn"
                   color="primary"
+                  dark
                   inset
                 >
                   <template #label>
@@ -182,10 +184,9 @@
 
           <!-- eslint-disable-next-line -->
           <template #item.validate="{ item }">
-            <div class="d-flex align-end justify-end">
-              {{ item.code }} {{ toValidate }}
+            <div class="d-flex align-end justify-end my-5">
               <v-checkbox
-                v-if="!areValidate.includes(item.code)"
+                v-if="!areValidate.map(e => e.collectivite_code).includes(item.code)"
                 :input-value="toValidate.includes(item.code)"
                 @change="toggleItem(item.code)"
               />
@@ -209,13 +210,14 @@
                   <v-card class="pa-2">
                     <div class="text-center">
                       <div class="mb-2">
-                        Collectivité validée le 12/10/24 par hermance@docurba.fr
+                        Collectivité validée le {{ formatDate(getValidatedInfos(item.code).created_at) }} par {{ getValidatedInfos(item.code).email }}
                       </div>
                       <v-btn
+                        v-if="item.profile_id === $user.id || $user.profile.is_admin"
                         small
                         color="error"
                         text
-                        @click="cancelValidation(item)"
+                        @click="cancelValidation(item.code)"
                       >
                         Annuler la validation
                       </v-btn>
@@ -256,6 +258,8 @@
 </template>
 
 <script>
+import dayjs from 'dayjs'
+
 const docVersion = '1.0'
 
 const statusMap = {
@@ -268,6 +272,7 @@ export default {
   layout: 'ddt',
   data () {
     return {
+      onlyNotValidatedFilterOn: false,
       snackbar: false,
       snackText: '',
       toValidate: [],
@@ -303,6 +308,10 @@ export default {
         return !!this.selectedCollectiviteTypesFilter.find(type => collectivite.type.includes(type))
       })
     },
+    filterNotValidated () {
+      const validatedCodes = this.areValidate.map(item => item.collectivite_code)
+      return this.collectivites.filter(collectivite => !validatedCodes.includes(collectivite.code))
+    },
     currentPageItems () {
       const start = (this.page - 1) * 10
       const end = start + 10
@@ -334,16 +343,34 @@ export default {
     const enrichedGroups = this.parseGroupements(groupements, procedures)
 
     this.referentiel = [...enrichedGroups, ...enrichedCommunes]
-
-    const { success, error, data } = await this.$enquete.getValidationCollectivitesForDepartement(this.$route.params.departement)
-    console.log('data valid 2024: ', data)
-    this.areValidate = data.map(e => e.collectivite_code)
-    if (!success) {
-      this.snackbar = true
-      this.snackText = `ERREUR: ${error}`
-    }
+    await this.fetchValidation()
   },
   methods: {
+    formatDate (date) {
+      return dayjs(date).format('DD/MM/YYYY')
+    },
+    async fetchValidation () {
+      const { success, error, data } = await this.$enquete.getValidationCollectivitesForDepartement(this.$route.params.departement)
+      console.log('data valid 2024: ', data)
+      this.areValidate = data
+      if (!success) {
+        this.snackbar = true
+        this.snackText = `ERREUR: ${error}`
+      }
+    },
+    async cancelValidation (codeCollec) {
+      const { success, error, data } = await this.$enquete.deleteValidationForCollectivite(codeCollec)
+      console.log('data valid 2024: ', data)
+      this.areValidate = data
+      if (!success) {
+        this.snackbar = true
+        this.snackText = `ERREUR: ${error}`
+      }
+      await this.fetchValidation()
+    },
+    getValidatedInfos (collectiviteCode) {
+      return this.areValidate.find(e => e.collectivite_code === collectiviteCode)
+    },
     async  clickValidateCollecs () {
       const collectivitesToValidate = this.collectivites.filter(e => this.toValidate.includes(e.code))
       const { success, error } = await this.$enquete.validateCollectivites(collectivitesToValidate)
@@ -351,6 +378,8 @@ export default {
         this.snackbar = true
         this.snackText = `ERREUR: ${error}`
       }
+      await this.fetchValidation()
+      this.toValidate = []
     },
     updatePage (newPage) {
       console.log('newPage: ', newPage)
