@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-const fs = require('fs')
+// const fs = require('fs')
 const _ = require('lodash')
 const pipedrive = require('pipedrive')
 
@@ -55,7 +55,8 @@ const fieldsMap = {
       employe_mairie: 'Technicien(ne) ou employé(e)',
       agence_urba: "Agence d'urbanisme",
       elu: 'Elu(e)',
-      be: "Bureau d'étude"
+      be: "Bureau d'étude",
+      autre: 'Autre'
     }
   },
   successfully_logged_once: {
