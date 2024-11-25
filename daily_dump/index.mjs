@@ -26,6 +26,8 @@ try {
 
   // await loadDump(CONFIG.PG_DEV_CONFIG, '2024_11_18_dump')
 
+  await loadDump(CONFIG.PG_DEV_CONFIG, process.argv.at(-1))
+
   // // // // // // Step 2 - Créer les tables intermédiaires d'aggregation depuis la donnée Sudocuh
   // await createSudocuProcessedTables(CONFIG.PG_DEV_CONFIG)
   // // // // // // Replique un schema de test (Optionnal)
