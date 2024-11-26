@@ -83,24 +83,26 @@
               </div>
               <div v-for="(plan, index) in item.plans" :key="plan.id" class="mb-4">
                 <template v-if="index < 2">
-                  <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${plan.id}`">
-                    {{ plan.doc_type }}
-                  </nuxt-link>
-                  <v-chip
-                    :class="{
-                      'success-light': plan.inContextStatus === 'OPPOSABLE',
-                      'success--text': plan.inContextStatus === 'OPPOSABLE',
-                      'bf200': plan.inContextStatus === 'EN COURS',
-                      'primary--text': plan.inContextStatus === 'EN COURS',
-                      'text--lighten-2': plan.inContextStatus === 'EN COURS',
+                  <div class="d-flex align-center">
+                    <nuxt-link style="max-width: 70%;" class="font-weight-bold text-decoration-none text-truncate mr-2" :to="`/frise/${plan.id}`">
+                      {{ $utils.formatProcedureName(plan, item) }}
+                    </nuxt-link>
+                    <v-chip
+                      :class="{
+                        'success-light': plan.inContextStatus === 'OPPOSABLE',
+                        'success--text': plan.inContextStatus === 'OPPOSABLE',
+                        'bf200': plan.inContextStatus === 'EN COURS',
+                        'primary--text': plan.inContextStatus === 'EN COURS',
+                        'text--lighten-2': plan.inContextStatus === 'EN COURS',
 
-                    }"
-                    class="ml-2 font-weight-bold "
-                    small
-                    label
-                  >
-                    {{ plan.inContextStatus }}
-                  </v-chip>
+                      }"
+                      class="ml-2 font-weight-bold "
+                      small
+                      label
+                    >
+                      {{ plan.inContextStatus }}
+                    </v-chip>
+                  </div>
                 </template>
                 <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
                   + {{ item.plans.length - 2 }} procédure{{ item.plans.length - 2 > 1 ? 's' : '' }}
@@ -125,31 +127,33 @@
               <div v-if="!item.scots || item.scots.length === 0">
                 -
               </div>
-              <div v-for="(scot, index) in item.scots" v-else :key="scot.id" class="mb-4">
-                <template v-if="index < 2">
-                  <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.id}`">
-                    {{ scot.doc_type }}
-                  </nuxt-link>
-                  <v-chip
-                    :class="{
-                      'success-light': scot.inContextStatus === 'OPPOSABLE',
-                      'success--text': scot.inContextStatus === 'OPPOSABLE',
-                      'bf200': scot.inContextStatus === 'EN COURS',
-                      'primary--text': scot.inContextStatus === 'EN COURS',
-                      'text--lighten-2': scot.inContextStatus === 'EN COURS',
+              <template v-else>
+                <div v-for="(scot, index) in item.scots" :key="scot.id" class="mb-4">
+                  <template v-if="index < 2">
+                    <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.id}`">
+                      {{ scot.doc_type }}
+                    </nuxt-link>
+                    <v-chip
+                      :class="{
+                        'success-light': scot.inContextStatus === 'OPPOSABLE',
+                        'success--text': scot.inContextStatus === 'OPPOSABLE',
+                        'bf200': scot.inContextStatus === 'EN COURS',
+                        'primary--text': scot.inContextStatus === 'EN COURS',
+                        'text--lighten-2': scot.inContextStatus === 'EN COURS',
 
-                    }"
-                    class="ml-2 font-weight-bold "
-                    small
-                    label
-                  >
-                    {{ scot.inContextStatus }}
-                  </v-chip>
-                </template>
-                <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
-                  + {{ item.scots.length - 2 }} procédure{{ item.scots.length - 2 > 1 ? 's' : '' }}
-                </nuxt-link>
-              </div>
+                      }"
+                      class="ml-2 font-weight-bold "
+                      small
+                      label
+                    >
+                      {{ scot.inContextStatus }}
+                    </v-chip>
+                  </template>
+                  <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
+                    + {{ item.scots.length - 2 }} procédure{{ item.scots.length - 2 > 1 ? 's' : '' }}
+                  </nuxt-link>
+                </div>
+              </template>
             </div>
           </template>
         </v-data-table>
@@ -190,7 +194,7 @@ export default {
     headers () {
       return [
         { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '30%' },
-        { text: 'Type', align: 'start', value: 'type', filterable: false, width: '10%' },
+        // { text: 'Type', align: 'start', value: 'type', filterable: false, width: '10%' },
         { text: 'Procédures', value: 'procedures', filterable: false, sortable: false, width: '30%' },
         { text: 'SCOTs', value: 'scots', filterable: false, sortable: false, width: '30%' }
       ]

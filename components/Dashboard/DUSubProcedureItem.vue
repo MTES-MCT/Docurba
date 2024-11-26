@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12">
         <div class="text-subtitle-1 font-weight-bold">
-          {{ procedure.type }} <span v-if="procedure.numero">numéro {{ procedure.numero }}</span>
+          {{ $utils.formatProcedureName(procedure) }}
         </div>
         <span class="text-caption">{{ procedure.id }} - parent: {{ procedure.procedure_id }}</span>
       </v-col>

@@ -1,7 +1,11 @@
 export default ({ app }, inject) => {
   const utils = {
     formatProcedureName (procedure, collectivite) {
-      return `${procedure.type} ${procedure.numero ? procedure.numero : ''} ${procedure.doc_type} ${collectivite?.intitule}`
+      console.log('procedure?.procedures_perimetresprocedure?.procedures_perimetres: ', procedure.procedures_perimetres)
+      const isInter = procedure && procedure?.procedures_perimetres && procedure?.procedures_perimetres.length > 1
+      console.log('isInterisInter: ', isInter)
+      if (procedure.name) { return procedure.name }
+      return `${procedure.type} ${procedure.numero ? procedure.numero : ''} ${procedure.doc_type}${isInter ? 'i' : ''} ${collectivite && collectivite.intitule ? collectivite.intitule : ''}`
     },
     formatEventProfileToCreator (event) {
       if (event.profiles) {
