@@ -109,7 +109,8 @@
           <template #item.name="{ item }">
             <div class="d-flex align-center my-5">
               <nuxt-link class="d-inline-block font-weight-bold text-truncate text-decoration-none" style="max-width: 300px;" :to="`/frise/${item.procedure_id}`">
-                {{ item.name }}
+                <!-- {{ item.procedures_perimetres }} -->
+                {{ $utils.formatProcedureName({...item.procedures, procedures_perimetres: item.procedures_perimetres}, item) }}
               </nuxt-link>
 
               <div v-if="item.procedures.status === null" />
@@ -195,7 +196,6 @@ export default {
           (this.selectedStatusFilter.includes('en_cours') && (!e.opposable && !(e.procedures.status === 'opposable'))) ||
           (this.selectedStatusFilter.includes('archived') && (!e.opposable && e.procedures.status === 'opposable'))))
       })
-
       return proceduresAndFilters
     }
   },
@@ -217,7 +217,7 @@ export default {
 
         const name = `${e.procedures.type} ${e.procedures.numero ? e.procedures.numero : ''} ${e.procedures.doc_type} ${porteuse?.intitule}`
 
-        return { ...e, name }
+        return { ...e, name, procedures_perimetres: e.perimetre }
       })
     } catch (error) {
       // eslint-disable-next-line no-console
