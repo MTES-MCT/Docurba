@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import DOCUMENTS_TYPES from '../miscs/documentTypes.mjs'
 import PROCEDURES_TYPES from '../miscs/proceduresTypes.mjs'
 import communesReferentiel from '../miscs/referentiels/communes.json' assert {type: 'json'}
-
+import { appendToGithubSummary } from '../common.mjs'
 
 
 function formatDate(date) {
@@ -168,6 +168,8 @@ async function sudocuhScotToDocurba (configSource, configTraget) {
   } else {
     console.log('[SCOT] No new projects. File wont be written in output')
   }
+  appendToGithubSummary(`- ${addedBufferProjects.length} nouveaux projets SCoT`)
+
 
   if (addedBufferProcedures.length > 0) {
     const csvNewProcedures = await parser.parse(addedBufferProcedures).promise()
@@ -180,6 +182,7 @@ async function sudocuhScotToDocurba (configSource, configTraget) {
   } else {
     console.log('[SCOT] No new procedures. File wont be written in output')
   }
+  appendToGithubSummary(`- ${addedBufferProcedures.length} nouvealles procédures principales SCoT`)
   console.log('[SCOT] End processing for procedures principales.')
 
   /// ////////////////////////////////////////
@@ -251,6 +254,7 @@ async function sudocuhScotToDocurba (configSource, configTraget) {
   } else {
     console.log('[SCOT] No new procedures. File wont be written in output')
   }
+  appendToGithubSummary(`- ${addedBufferProceduresSec.length} nouvelles procédures secondaires SCoT`)
   console.log('[SCOT] End processing for procedures secondaires.')
 
   /// ////////////////////////////////////
@@ -294,6 +298,7 @@ async function sudocuhScotToDocurba (configSource, configTraget) {
   } else {
     console.log('[SCOT] No new perimeters. File wont be written in output')
   }
+  appendToGithubSummary(`- ${perimetersInserted?.length} nouveaux périmètres SCoT`)
   console.log('[SCOT] End processing for procedures perimetres.')
 
   /// //////////////////////////////////////////////////////////////////
@@ -389,6 +394,7 @@ async function sudocuhScotToDocurba (configSource, configTraget) {
   } else {
     console.log('[SCOT] No new procedures. File wont be written in output')
   }
+  appendToGithubSummary(`- ${addedBufferEvents.length} nouveaux événements SCoT`)
   console.log('[SCOT] End processing events.')
 
   return true

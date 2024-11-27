@@ -4,18 +4,14 @@ import { execute } from '@getvim/execute'
 const { Client } = pg
 
 async function clearDev (config) {
-  try {
-    const client = new Client(config)
-    await client.connect()
-    console.log('Clearing Docurba DEV database...')
-    const sql = fs.readFileSync('./daily_dump/steps/sql/miscs/0-clearDevSchema.sql')
-      .toString().replace(/(\r\n|\n|\r)/gm, ' ')
-      .replace(/\s+/g, ' ')
-    await client.query(sql)
-    console.log('Docurba Dev Cleared.')
-  } catch (error) {
-    console.log(error)
-  }
+  const client = new Client(config)
+  await client.connect()
+  console.log('Clearing Docurba DEV database...')
+  const sql = fs.readFileSync('./daily_dump/steps/sql/miscs/0-clearDevSchema.sql')
+    .toString().replace(/(\r\n|\n|\r)/gm, ' ')
+    .replace(/\s+/g, ' ')
+  await client.query(sql)
+  console.log('Docurba Dev Cleared.')
 }
 
 async function loadDump (config, dumpName) {
