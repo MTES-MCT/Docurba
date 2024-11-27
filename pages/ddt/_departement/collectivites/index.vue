@@ -16,7 +16,7 @@
         <v-data-table
           :headers="headers"
           :items="onlyNotValidatedFilterOn ? filterNotValidated : collectivites"
-          :items-per-page="10"
+          :items-per-page.sync="nbItemsByPage"
           class="elevation-1 pa-8 collectivites-dt"
           :custom-filter="customFilter"
           :custom-sort="customSort"
@@ -42,7 +42,7 @@
                 >
                   <template #label>
                     <span class="primary--text">
-                      Voir seulement les collectivités à valider (36 restantes)
+                      Voir seulement les collectivités à valider ({{ filterNotValidated.length }} restantes)
                     </span>
                   </template>
                 </v-switch>
@@ -247,12 +247,12 @@
     <v-snackbar
       v-model="snackbar"
       top
-      color="success"
+      :color="snackVal.type"
       outlined
       min-width="800"
       :timeout="5000"
     >
-      {{ snackText }}
+      {{ snackVal.text }}
     </v-snackbar>
   </v-container>
 </template>
@@ -274,10 +274,11 @@ export default {
     return {
       onlyNotValidatedFilterOn: false,
       snackbar: false,
-      snackText: '',
+      snackVal: { text: '', type: 'success' },
       toValidate: [],
       areValidate: [],
       page: 1,
+      nbItemsByPage: 10,
       selectedCollectiviteTypesFilter: ['COM', 'CA', 'CC', 'EPT', 'SM', 'SIVU', 'PETR'],
       collectiviteTypeFilterItems: [
         { text: 'Communes', value: 'COM' },
@@ -313,8 +314,9 @@ export default {
       return this.collectivites.filter(collectivite => !validatedCodes.includes(collectivite.code))
     },
     currentPageItems () {
-      const start = (this.page - 1) * 10
-      const end = start + 10
+      console.log('nbItemsByPage: ', this.nbItemsByPage)
+      const start = (this.page - 1) * this.nbItemsByPage
+      const end = start + this.nbItemsByPage
       return this.collectivites.slice(start, end)
     },
     // Check if all current page items are selected
@@ -355,7 +357,8 @@ export default {
       this.areValidate = data
       if (!success) {
         this.snackbar = true
-        this.snackText = `ERREUR: ${error}`
+
+        this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
       }
     },
     async cancelValidation (codeCollec) {
@@ -364,7 +367,7 @@ export default {
       this.areValidate = data
       if (!success) {
         this.snackbar = true
-        this.snackText = `ERREUR: ${error}`
+        this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
       }
       await this.fetchValidation()
     },
@@ -376,7 +379,7 @@ export default {
       const { success, error } = await this.$enquete.validateCollectivites(collectivitesToValidate)
       if (!success) {
         this.snackbar = true
-        this.snackText = `ERREUR: ${error}`
+        this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
       }
       await this.fetchValidation()
       this.toValidate = []
