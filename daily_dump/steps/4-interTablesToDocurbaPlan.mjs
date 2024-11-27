@@ -6,6 +6,7 @@ import DOCUMENTS_TYPES from '../miscs/documentTypes.mjs'
 import PROCEDURES_TYPES from '../miscs/proceduresTypes.mjs'
 import communesReferentiel from '../miscs/referentiels/communes.json' assert {type: 'json'}
 import { updateProcedureSec } from './linkProceduresSecs.mjs'
+import { appendToGithubSummary } from '../common.mjs'
 
 function formatDate(date) {
   const year = date.getFullYear();
@@ -174,6 +175,8 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   } else {
     console.log('No new projects. File wont be written in output')
   }
+  appendToGithubSummary(`- ${addedBufferProjects.length} nouveaux projets`)
+
 
   if (addedBufferProcedures.length > 0) {
     const csvNewProcedures = await parser.parse(addedBufferProcedures).promise()
@@ -186,6 +189,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   } else {
     console.log('No new procedures. File wont be written in output')
   }
+  appendToGithubSummary(`- ${addedBufferProcedures.length} nouvelles procédures principales`)
 
   // TODO: Get in memory newly added procédures
 
@@ -267,6 +271,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   } else {
     console.log('No new procedures. File wont be written in output')
   }
+  appendToGithubSummary(`- ${addedBufferProceduresSec.length} nouvelles procédures secondaires`)
   console.log('End processing for procedures secondaires.')
 
   /// ////////////////////////////////////
@@ -310,6 +315,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   } else {
     console.log('No new perimeters. File wont be written in output')
   }
+  appendToGithubSummary(`- ${perimetersInserted?.length} nouveaux périmètres`)
   console.log('End processing for procedures perimetres.')
 
   /// //////////////////////////////////////////////////////////////////
@@ -361,7 +367,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
 //     const { data, error } = await supabase.from('procedures').update({secondary_procedure_of: psUnbinded.secondary_procedure_of}).eq('id', psUnbinded.id)
 //   }
 
-  await updateProcedureSec(proceduresMapping)
+  await updateProcedureSec(proceduresMapping, configSource, configTraget)
 
   /// ////////////////////////////////////////
   /// /////////// UPSERT EVENTS //////////////
@@ -426,6 +432,7 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
   } else {
     console.log('No new procedures. File wont be written in output')
   }
+  appendToGithubSummary(`- ${addedBufferEvents.length} nouveaux événements`)
   console.log('End processing events.')
 
   return true

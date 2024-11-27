@@ -1,6 +1,5 @@
 import fs from 'fs'
 import { createClient } from '@supabase/supabase-js'
-import CONFIG from '../pg_secret_config.mjs'
 
 function formatDate (date) {
   const year = date.getFullYear()
@@ -44,15 +43,15 @@ async function fetchInBatches (supabase, ids, batchSize = 100) {
   return { sudocuIdPpPs, unmatchedIds }
 }
 
-export async function updateProcedureSec (prodProcedures) {
+export async function updateProcedureSec (prodProcedures, configSource, configTraget) {
   console.log('In memory prodProcedures: ', prodProcedures[0])
 
-  const supabaseDev = createClient(CONFIG.PG_DEV_CONFIG.url, CONFIG.PG_DEV_CONFIG.admin_key, {
+  const supabaseDev = createClient(configSource.url, configSource.admin_key, {
     auth: { persistSession: false },
     db: { schema: 'sudocu' }
   })
 
-  const supabase = createClient(CONFIG.PG_PROD_CONFIG.url, CONFIG.PG_PROD_CONFIG.admin_key, {
+  const supabase = createClient(configTraget.url, configTraget.admin_key, {
     auth: { persistSession: false }
   })
 
