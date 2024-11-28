@@ -66,9 +66,6 @@ const fieldsMap = {
       false: 'Non connecté.e'
     }
   },
-  shared: {
-    key: '9f1578c96655a81a330eb09912f0a9b5c1f40d8b'
-  },
   write_frise: {
     key: '7689c2ed07954a7dc99d84b4a537532af46238f3'
   },
