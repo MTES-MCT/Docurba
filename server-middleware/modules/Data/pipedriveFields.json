@@ -45,18 +45,6 @@
     ]
   },
   {
-    "id": 9041,
-    "name": "Téléphone",
-    "field_type": "phone",
-    "key": "phone"
-  },
-  {
-    "id": 9042,
-    "name": "E-mail",
-    "field_type": "varchar",
-    "key": "email"
-  },
-  {
     "id": 9043,
     "name": "Personne créée",
     "field_type": "date",
@@ -187,35 +175,96 @@
     "key": "last_name"
   },
   {
-    "id": 9087,
-    "name": "Étiquettes",
-    "field_type": "set",
-    "key": "label_ids",
+    "id": 9042,
+    "name": "Adresse e-mail",
+    "field_type": "varchar",
+    "key": "email"
+  },
+  {
+    "id": 9041,
+    "name": "Téléphone",
+    "field_type": "phone",
+    "key": "phone"
+  },
+  {
+    "id": 9098,
+    "name": "Side",
+    "field_type": "enum",
+    "key": "1a236f6501ca35f426f5b149861ed13e925317cc",
     "options": [
       {
-        "id": 5,
-        "label": "Customer",
-        "color": "green"
+        "id": 407,
+        "label": "Etat"
       },
       {
-        "id": 6,
-        "label": "Hot lead",
-        "color": "red"
+        "id": 408,
+        "label": "Territoires"
+      }
+    ]
+  },
+  {
+    "id": 9085,
+    "name": "Rôles Etat",
+    "field_type": "set",
+    "key": "945716c2fc1edf91e5e8c8aac47c73cbf7508e7e",
+    "options": [
+      {
+        "id": 380,
+        "label": "Chef d'unité/de bureau/de service et adjoint"
       },
       {
-        "id": 7,
-        "label": "Warm lead",
-        "color": "yellow"
+        "id": 381,
+        "label": "Rédacteur(ice) de PAC"
       },
       {
-        "id": 8,
-        "label": "Cold lead",
-        "color": "blue"
+        "id": 382,
+        "label": "Chargé(e) de l'accompagnement des collectivités"
       },
       {
-        "id": 352,
-        "label": "Beta testeurs",
-        "color": "red"
+        "id": 383,
+        "label": "Référent Sudocuh"
+      }
+    ]
+  },
+  {
+    "id": 9092,
+    "name": "Rôles Collectivités",
+    "field_type": "varchar",
+    "key": "059945cbc967da59d735ea26199d52b475ca4af4"
+  },
+  {
+    "id": 9086,
+    "name": "Poste",
+    "field_type": "enum",
+    "key": "f6cac51c5bc627e57a84ce202f5fbeb59b821a87",
+    "options": [
+      {
+        "id": 384,
+        "label": "Bureau d'étude"
+      },
+      {
+        "id": 385,
+        "label": "Elu(e)"
+      },
+      {
+        "id": 386,
+        "label": "Technicien(ne) ou employé(e)"
+      },
+      {
+        "id": 387,
+        "label": "Agence d'urbanisme"
+      },
+      {
+        "id": 388,
+        "label": "DDT/DEAL"
+      },
+      {
+        "id": 389,
+        "label": "DREAL"
+      },
+      {
+        "id": 405,
+        "label": "Autre"
       }
     ]
   },
@@ -224,84 +273,6 @@
     "name": "Autres informations",
     "field_type": "varchar",
     "key": "2a0f1211cad87a393283f3167a72832c53ed7966"
-  },
-  {
-    "id": 9067,
-    "name": "Site web",
-    "field_type": "varchar",
-    "key": "02a5250b99512a5ac58280fe62da359fade1f318"
-  },
-  {
-    "id": 9068,
-    "name": "Institution (ancien champ)",
-    "field_type": "set",
-    "key": "9a301b6f3d5ed37b493969549ab38b4c0aab30a8",
-    "options": [
-      {
-        "id": 48,
-        "label": "DDT/DEAL"
-      },
-      {
-        "id": 49,
-        "label": "Bureau d'études"
-      },
-      {
-        "id": 51,
-        "label": "Commune"
-      },
-      {
-        "id": 52,
-        "label": "DREAL"
-      },
-      {
-        "id": 190,
-        "label": "EPCI"
-      },
-      {
-        "id": 191,
-        "label": "SCoT"
-      },
-      {
-        "id": 192,
-        "label": "Centrale"
-      },
-      {
-        "id": 193,
-        "label": "Préfecture"
-      },
-      {
-        "id": 351,
-        "label": "Agence d'urbanisme"
-      }
-    ]
-  },
-  {
-    "id": 9069,
-    "name": "Chargé de (Ancien Rôles Etat)",
-    "field_type": "set",
-    "key": "55b3f75345d2b8ee9851d6d743062f125678cc76",
-    "options": [
-      {
-        "id": 53,
-        "label": "Rédacteur de PAC"
-      },
-      {
-        "id": 54,
-        "label": "Chargé d'accompagnement des collectivités"
-      },
-      {
-        "id": 188,
-        "label": "Chef d'unité"
-      },
-      {
-        "id": 189,
-        "label": "Référent Sudocuh"
-      },
-      {
-        "id": 346,
-        "label": "Mixte"
-      }
-    ]
   },
   {
     "id": 9070,
@@ -796,30 +767,18 @@
     ]
   },
   {
-    "id": 9073,
-    "name": "Poste (Ancien champ)",
+    "id": 9102,
+    "name": "User actif",
     "field_type": "enum",
-    "key": "8bcc1520e6c87f0c0fde03c8ca757eace73750c8",
+    "key": "f7f80f1ba0c6813522f2fae61e6d651d60e0d0f8",
     "options": [
       {
-        "id": 362,
-        "label": "Bureau d'étude"
+        "id": 409,
+        "label": "Oui"
       },
       {
-        "id": 363,
-        "label": "Elu(e)"
-      },
-      {
-        "id": 364,
-        "label": "Technicien(ne) ou employé(e)"
-      },
-      {
-        "id": 365,
-        "label": "Agence d'urbanisme"
-      },
-      {
-        "id": 366,
-        "label": "Autre"
+        "id": 410,
+        "label": "Non"
       }
     ]
   },
@@ -866,108 +825,6 @@
     ]
   },
   {
-    "id": 9079,
-    "name": "Créateur PAC",
-    "field_type": "double",
-    "key": "4ed76c02db7afd7a49c15ca80b1fb00aaed58692"
-  },
-  {
-    "id": 9080,
-    "name": "Editeur PAC",
-    "field_type": "double",
-    "key": "aa7f686008e27c30c3b5c38e69ad72ff3fd36a59"
-  },
-  {
-    "id": 9081,
-    "name": "Expéditeur PAC",
-    "field_type": "double",
-    "key": "0f4daefc5821d27ae718ab75a06b8114783580a9"
-  },
-  {
-    "id": 9082,
-    "name": "PDF PAC",
-    "field_type": "double",
-    "key": "02278d0eef165253fb69d43319fffa21c99ebc07"
-  },
-  {
-    "id": 9084,
-    "name": "Date de dernière connexion",
-    "field_type": "date",
-    "key": "74e7854d70f7246538a652d823261fc33d553c39"
-  },
-  {
-    "id": 9085,
-    "name": "Rôles Etat",
-    "field_type": "set",
-    "key": "945716c2fc1edf91e5e8c8aac47c73cbf7508e7e",
-    "options": [
-      {
-        "id": 380,
-        "label": "Chef d'unité/de bureau/de service et adjoint"
-      },
-      {
-        "id": 381,
-        "label": "Rédacteur(ice) de PAC"
-      },
-      {
-        "id": 382,
-        "label": "Chargé(e) de l'accompagnement des collectivités"
-      },
-      {
-        "id": 383,
-        "label": "Référent Sudocuh"
-      }
-    ]
-  },
-  {
-    "id": 9086,
-    "name": "Poste",
-    "field_type": "enum",
-    "key": "f6cac51c5bc627e57a84ce202f5fbeb59b821a87",
-    "options": [
-      {
-        "id": 384,
-        "label": "Bureau d'étude"
-      },
-      {
-        "id": 385,
-        "label": "Elu(e)"
-      },
-      {
-        "id": 386,
-        "label": "Technicien(ne) ou employé(e)"
-      },
-      {
-        "id": 387,
-        "label": "Agence d'urbanisme"
-      },
-      {
-        "id": 388,
-        "label": "DDT/DEAL"
-      },
-      {
-        "id": 389,
-        "label": "DREAL"
-      },
-      {
-        "id": 405,
-        "label": "Autre"
-      }
-    ]
-  },
-  {
-    "id": 9092,
-    "name": "Rôles Collectivités",
-    "field_type": "varchar",
-    "key": "059945cbc967da59d735ea26199d52b475ca4af4"
-  },
-  {
-    "id": 9095,
-    "name": "Date d'édition de la FRP",
-    "field_type": "date",
-    "key": "9f1578c96655a81a330eb09912f0a9b5c1f40d8b"
-  },
-  {
     "id": 9096,
     "name": "Parcours",
     "field_type": "enum",
@@ -996,24 +853,201 @@
     ]
   },
   {
+    "id": 9084,
+    "name": "Date de dernière connexion",
+    "field_type": "date",
+    "key": "74e7854d70f7246538a652d823261fc33d553c39"
+  },
+  {
     "id": 9097,
-    "name": "Invité.e",
+    "name": "Invité.e FRP (édition)",
     "field_type": "date",
     "key": "7689c2ed07954a7dc99d84b4a537532af46238f3"
   },
   {
-    "id": 9098,
-    "name": "Side",
-    "field_type": "enum",
-    "key": "1a236f6501ca35f426f5b149861ed13e925317cc",
+    "id": 9099,
+    "name": "Invité.e FRP (lecture)",
+    "field_type": "date",
+    "key": "9f250a47089cec1894bcfabd4eac6324a4d49b5d"
+  },
+  {
+    "id": 9100,
+    "name": "Invité.e PAC (lecture)",
+    "field_type": "date",
+    "key": "81af38758c248d593b9cbb80bb9467e8096fb801"
+  },
+  {
+    "id": 9101,
+    "name": "Invité.e PAC (édition)",
+    "field_type": "date",
+    "key": "4884ef065e81ea7419656556e5749dd3e1659be2"
+  },
+  {
+    "id": 9095,
+    "name": "Date d'édition de la FRP",
+    "field_type": "date",
+    "key": "9f1578c96655a81a330eb09912f0a9b5c1f40d8b"
+  },
+  {
+    "id": 9080,
+    "name": "Editeur PAC",
+    "field_type": "double",
+    "key": "aa7f686008e27c30c3b5c38e69ad72ff3fd36a59"
+  },
+  {
+    "id": 9079,
+    "name": "Créateur PAC",
+    "field_type": "double",
+    "key": "4ed76c02db7afd7a49c15ca80b1fb00aaed58692"
+  },
+  {
+    "id": 9081,
+    "name": "Expéditeur PAC",
+    "field_type": "double",
+    "key": "0f4daefc5821d27ae718ab75a06b8114783580a9"
+  },
+  {
+    "id": 9082,
+    "name": "PDF PAC",
+    "field_type": "double",
+    "key": "02278d0eef165253fb69d43319fffa21c99ebc07"
+  },
+  {
+    "id": 9087,
+    "name": "Étiquettes",
+    "field_type": "set",
+    "key": "label_ids",
     "options": [
       {
-        "id": 407,
-        "label": "Etat"
+        "id": 5,
+        "label": "Customer",
+        "color": "green"
       },
       {
-        "id": 408,
-        "label": "Territoires"
+        "id": 6,
+        "label": "Hot lead",
+        "color": "red"
+      },
+      {
+        "id": 7,
+        "label": "Warm lead",
+        "color": "yellow"
+      },
+      {
+        "id": 8,
+        "label": "Cold lead",
+        "color": "blue"
+      },
+      {
+        "id": 352,
+        "label": "Beta testeurs",
+        "color": "red"
+      }
+    ]
+  },
+  {
+    "id": 9067,
+    "name": "Site web",
+    "field_type": "varchar",
+    "key": "02a5250b99512a5ac58280fe62da359fade1f318"
+  },
+  {
+    "id": 9068,
+    "name": "Institution (ancien champ)",
+    "field_type": "set",
+    "key": "9a301b6f3d5ed37b493969549ab38b4c0aab30a8",
+    "options": [
+      {
+        "id": 48,
+        "label": "DDT/DEAL"
+      },
+      {
+        "id": 49,
+        "label": "Bureau d'études"
+      },
+      {
+        "id": 51,
+        "label": "Commune"
+      },
+      {
+        "id": 52,
+        "label": "DREAL"
+      },
+      {
+        "id": 190,
+        "label": "EPCI"
+      },
+      {
+        "id": 191,
+        "label": "SCoT"
+      },
+      {
+        "id": 192,
+        "label": "Centrale"
+      },
+      {
+        "id": 193,
+        "label": "Préfecture"
+      },
+      {
+        "id": 351,
+        "label": "Agence d'urbanisme"
+      }
+    ]
+  },
+  {
+    "id": 9069,
+    "name": "Chargé de (Ancien Rôles Etat)",
+    "field_type": "set",
+    "key": "55b3f75345d2b8ee9851d6d743062f125678cc76",
+    "options": [
+      {
+        "id": 53,
+        "label": "Rédacteur de PAC"
+      },
+      {
+        "id": 54,
+        "label": "Chargé d'accompagnement des collectivités"
+      },
+      {
+        "id": 188,
+        "label": "Chef d'unité"
+      },
+      {
+        "id": 189,
+        "label": "Référent Sudocuh"
+      },
+      {
+        "id": 346,
+        "label": "Mixte"
+      }
+    ]
+  },
+  {
+    "id": 9073,
+    "name": "Poste (Ancien champ)",
+    "field_type": "enum",
+    "key": "8bcc1520e6c87f0c0fde03c8ca757eace73750c8",
+    "options": [
+      {
+        "id": 362,
+        "label": "Bureau d'étude"
+      },
+      {
+        "id": 363,
+        "label": "Elu(e)"
+      },
+      {
+        "id": 364,
+        "label": "Technicien(ne) ou employé(e)"
+      },
+      {
+        "id": 365,
+        "label": "Agence d'urbanisme"
+      },
+      {
+        "id": 366,
+        "label": "Autre"
       }
     ]
   }

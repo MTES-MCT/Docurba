@@ -187,9 +187,15 @@ async function updateSharing (sharingRecord) {
     })
   }
 
-  const update = await pipedrive.updatePerson(person.id, {
+  const sharingUpdate = {
     shared: sharingRecord.created_at
-  })
+  }
+
+  // This will update the related key on pipedrive.
+  // Each role should be mapped to a pipedrive key.
+  sharingUpdate[sharingRecord.role] = sharingRecord.created_at
+
+  const update = await pipedrive.updatePerson(person.id, sharingUpdate)
 
   return update
 }
