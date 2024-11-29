@@ -26,8 +26,10 @@ jobs:
 
       - env:
           PGPASSWORD: ${{ secrets.DEV_SUPABASE_PASSWORD }}
+          DEV_SUPABASE_USER: ${{ secrets.DEV_SUPABASE_USER }}
           DEV_SUPABASE_ADMIN_KEY: ${{ secrets.DEV_SUPABASE_ADMIN_KEY }}
           DEV_SUPABASE_PASSWORD: ${{ secrets.DEV_SUPABASE_PASSWORD }}
+          PROD_SUPABASE_USER: ${{ secrets.PROD_SUPABASE_USER }}
           PROD_SUPABASE_ADMIN_KEY: ${{ secrets.PROD_SUPABASE_ADMIN_KEY }}
           PROD_SUPABASE_PASSWORD: ${{ secrets.PROD_SUPABASE_PASSWORD }}
         run: npm run daily_dump
