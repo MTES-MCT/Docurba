@@ -182,7 +182,7 @@ async function sudocuhScotToDocurba (configSource, configTraget) {
   } else {
     console.log('[SCOT] No new procedures. File wont be written in output')
   }
-  appendToGithubSummary(`- ${addedBufferProcedures.length} nouvealles procédures principales SCoT`)
+  appendToGithubSummary(`- ${addedBufferProcedures.length} nouvelles procédures principales SCoT`)
   console.log('[SCOT] End processing for procedures principales.')
 
   /// ////////////////////////////////////////
