@@ -69,6 +69,32 @@
                   </span>
                 </template>
               </v-select>
+              <v-select
+                v-model="filterEpci"
+                class="ml-2"
+                style="max-width:350px"
+                :items="searchEpcisItems"
+                placeholder="Tous les EPCIs"
+                item-value="code"
+                item-text="intitule"
+                flat
+                background-color="alt-beige"
+                hide-details
+                solo
+                dense
+                clearable
+              >
+                <template #prepend-item>
+                  <v-list-item>
+                    <v-text-field
+                      v-model="searchEpcis"
+                      dense
+                      outlined
+                      label="Rechercher un EPCI..."
+                    />
+                  </v-list-item>
+                </template>
+              </v-select>
               <v-spacer />
               <v-text-field
                 v-model="search"
@@ -283,6 +309,9 @@ export default {
   layout: 'ddt',
   data () {
     return {
+      searchEpcis: '',
+      groupements: [],
+      filterEpci: null,
       hasValidationEnabled: process.env.ENQUETE_ENABLED,
       hideValidatedCollectives: false,
       snackbar: false,
@@ -307,6 +336,18 @@ export default {
     }
   },
   computed: {
+    searchEpcisItems () {
+      if (!this.searchEpcis) {
+        return this.groupements
+      }
+
+      return this.groupements.filter((groupement) => {
+        const normalizedGroupementIntitule = groupement.intitule.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+        const normalizedSearch = this.searchEpcis.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+
+        return normalizedGroupementIntitule.includes(normalizedSearch)
+      })
+    },
     headers () {
       const headers = [
         { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '30%' },
@@ -322,6 +363,12 @@ export default {
     collectivites () {
       return this.referentiel?.filter((collectivite) => {
         return !!this.selectedCollectiviteTypesFilter.find(type => collectivite.type.includes(type))
+      }).filter((collectivite) => {
+        return (
+          !this.filterEpci ||
+          this.filterEpci === collectivite.code ||
+          collectivite.groupements.some(c => c.code === this.filterEpci)
+        )
       })
     },
     notValidatedCollectivites () {
@@ -365,7 +412,7 @@ export default {
   async mounted () {
     const referentiel = await fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
     const { communes, groupements } = await referentiel.json()
-
+    this.groupements = groupements
     console.log('groupements', groupements)
 
     const procedures = await this.$urbanisator.getCollectivitesProcedures(communes.map(c => c.code))
