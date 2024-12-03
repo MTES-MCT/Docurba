@@ -26,7 +26,7 @@
           :page.sync="page"
         >
           <template #top>
-            <v-alert type="info" color="primary" text>
+            <v-alert v-if="validationFeatureFlag" type="info" color="primary" text>
               <div class="text-h5 text-weight-bold">
                 Enquête annuelle
               </div>
@@ -185,11 +185,24 @@
           <!-- eslint-disable-next-line -->
           <template #item.validate="{ item }">
             <div class="d-flex align-end justify-end my-5">
-              <v-checkbox
-                v-if="!areValidate.map(e => e.collectivite_code).includes(item.code)"
-                :input-value="toValidate.includes(item.code)"
-                @change="toggleItem(item.code)"
-              />
+              <v-tooltip v-if="!areValidate.map(e => e.collectivite_code).includes(item.code)" top>
+                <template #activator="{ on, attrs }">
+                  <div
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-checkbox
+                      v-if="!areValidate.map(e => e.collectivite_code).includes(item.code)"
+
+                      :input-value="toValidate.includes(item.code)"
+
+                      @change="toggleItem(item.code)"
+                    />
+                    <div />
+                  </div>
+                </template>
+                <span>Valider la situation de <br> {{ item.code }} {{ item.intitule }}</span>
+              </v-tooltip>
               <div v-else>
                 <v-menu
                   top
@@ -272,6 +285,7 @@ export default {
   layout: 'ddt',
   data () {
     return {
+      validationFeatureFlag: true,
       onlyNotValidatedFilterOn: false,
       snackbar: false,
       snackVal: { text: '', type: 'success' },
@@ -302,7 +316,7 @@ export default {
         { text: 'Procédures', value: 'procedures', filterable: false, sortable: false, width: '30%' },
         { text: 'SCOTs', value: 'scots', filterable: false, sortable: false, width: '30%' },
         { text: 'Valider', value: 'validate', filterable: false, sortable: false }
-      ]
+      ].filter(e => this.validationFeatureFlag || (!this.validationFeatureFlag && e.value !== 'validate'))
     },
     collectivites () {
       return this.referentiel?.filter((collectivite) => {
