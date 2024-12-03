@@ -69,6 +69,29 @@
                   </span>
                 </template>
               </v-select>
+              <v-select
+                class="ml-2"
+                style="max-width:350px"
+                :items="searchEpcisItems"
+                label="Tous les EPCIs"
+                multiple
+                flat
+                background-color="alt-beige"
+                hide-details
+                solo
+                dense
+              >
+                <template #prepend-item>
+                  <v-list-item>
+                    <v-text-field
+                      v-model="searchEpcis"
+                      dense
+                      outlined
+                      label="Rechercher une EPCI..."
+                    />
+                  </v-list-item>
+                </template>
+              </v-select>
               <v-spacer />
               <v-text-field
                 v-model="search"
@@ -285,6 +308,7 @@ export default {
   layout: 'ddt',
   data () {
     return {
+      searchEpcis: '',
       validationFeatureFlag: true,
       onlyNotValidatedFilterOn: false,
       snackbar: false,
@@ -309,6 +333,15 @@ export default {
     }
   },
   computed: {
+    searchEpcisItems () {
+      return ['toto', 'titi'].filter((value) => {
+        if (this.searchEpcis?.length === 0 || value?.length === 0) { return true }
+        const normalizedValue = value.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+        const normalizedSearch = this.searchEpcis.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+
+        return normalizedValue.includes(normalizedSearch)
+      })
+    },
     headers () {
       return [
         { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '30%' },
@@ -319,6 +352,7 @@ export default {
       ].filter(e => this.validationFeatureFlag || (!this.validationFeatureFlag && e.value !== 'validate'))
     },
     collectivites () {
+      console.log(' this.referentiel: ', this.referentiel)
       return this.referentiel?.filter((collectivite) => {
         return !!this.selectedCollectiviteTypesFilter.find(type => collectivite.type.includes(type))
       })
