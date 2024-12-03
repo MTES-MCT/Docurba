@@ -109,7 +109,7 @@
           <template #item.name="{ item }">
             <div class="d-flex align-center my-5">
               <nuxt-link class="d-inline-block font-weight-bold text-truncate text-decoration-none" style="max-width: 300px;" :to="`/frise/${item.procedure_id}`">
-                {{ $utils.formatProcedureName({...item.procedures, procedures_perimetres: item.procedures_perimetres}, item) }}
+                {{ $utils.formatProcedureName({...item.procedures, procedures_perimetres: item.procedures_perimetres}, item.collectivite) }}
                 {{ item }}
               </nuxt-link>
 
