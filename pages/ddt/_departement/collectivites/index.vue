@@ -70,10 +70,13 @@
                 </template>
               </v-select>
               <v-select
+                v-model="filterEpcis"
                 class="ml-2"
                 style="max-width:350px"
                 :items="searchEpcisItems"
                 label="Tous les EPCIs"
+                item-value="code"
+                item-text="intitule"
                 multiple
                 flat
                 background-color="alt-beige"
@@ -309,6 +312,8 @@ export default {
   data () {
     return {
       searchEpcis: '',
+      groupements: [],
+      filterEpcis: [],
       validationFeatureFlag: true,
       onlyNotValidatedFilterOn: false,
       snackbar: false,
@@ -334,9 +339,9 @@ export default {
   },
   computed: {
     searchEpcisItems () {
-      return ['toto', 'titi'].filter((value) => {
+      return this.groupements.filter((value) => {
         if (this.searchEpcis?.length === 0 || value?.length === 0) { return true }
-        const normalizedValue = value.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+        const normalizedValue = value?.intitule.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
         const normalizedSearch = this.searchEpcis.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
 
         return normalizedValue.includes(normalizedSearch)
@@ -352,9 +357,10 @@ export default {
       ].filter(e => this.validationFeatureFlag || (!this.validationFeatureFlag && e.value !== 'validate'))
     },
     collectivites () {
-      console.log(' this.referentiel: ', this.referentiel)
       return this.referentiel?.filter((collectivite) => {
         return !!this.selectedCollectiviteTypesFilter.find(type => collectivite.type.includes(type))
+      }).filter((collectivite) => {
+        return this.filterEpcis.length === 0 || (this.filterEpcis.length > 0 && this.filterEpcis.includes(collectivite.code))
       })
     },
     filterNotValidated () {
@@ -384,7 +390,7 @@ export default {
   async mounted () {
     const referentiel = await fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
     const { communes, groupements } = await referentiel.json()
-
+    this.groupements = groupements
     console.log('groupements', groupements)
 
     const procedures = await this.$urbanisator.getCollectivitesProcedures(communes.map(c => c.code))
