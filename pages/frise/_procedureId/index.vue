@@ -1,5 +1,10 @@
 <template>
-  <v-container>
+  <v-container v-if="!procedure">
+    <h1 class="text-h1">
+      Nous n'avons pas pu trouver cette procédure
+    </h1>
+  </v-container>
+  <v-container v-else>
     <v-btn
       v-show="$user?.profile?.is_admin"
       fab
@@ -371,11 +376,15 @@ export default
         data: procedure,
         error: errorProcedure
       } = await this.$supabase.from('procedures').select('*, secondary_procedure_of(id, project_id), procedures_perimetres(*)')
-        .eq('id', this.$route.params.procedureId)
+        .eq('id', this.$route.params.procedureId).maybeSingle()
 
       if (errorProcedure) { throw errorProcedure }
 
-      this.procedure = procedure[0]
+      if (!procedure) {
+        console.log('⚠️ 404')
+        return
+      }
+      this.procedure = procedure
       console.log(' this.procedure: ', this.procedure)
       this.procedure.project_id = this.procedure.project_id ?? this.procedure.secondary_procedure_of.project_id
       const perimetre = this.procedure.procedures_perimetres.filter(c => c.collectivite_type === 'COM')
