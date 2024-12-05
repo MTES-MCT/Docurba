@@ -1,5 +1,5 @@
 <template>
-  <v-container v-if="!procedure">
+  <v-container v-if="loaded && !procedure">
     <h1 class="text-h1">
       Nous n'avons pas pu trouver cette procédure
     </h1>
@@ -381,6 +381,7 @@ export default
       if (errorProcedure) { throw errorProcedure }
 
       if (!procedure) {
+        this.loaded = true
         console.log('⚠️ 404')
         return
       }
