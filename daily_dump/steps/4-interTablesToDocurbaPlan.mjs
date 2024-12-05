@@ -415,8 +415,8 @@ async function sudocuhPlanToDocurba (configSource, configTraget) {
       const { data: insertedEvents, error: errorInsertedEvents } = await supabase.from('doc_frise_events').upsert(formattedEvents, { onConflict: 'from_sudocuh', ignoreDuplicates: true }).select()
       console.log('[EVENTS] Page ',currentPage, ' inserted Events ', insertedEvents?.length)
 
+      if (errorInsertedEvents) { console.error(errorInsertedEvents) }
       addedBufferEvents = [...addedBufferEvents, ...insertedEvents]
-      if (errorInsertedEvents) { console.log(errorInsertedEvents) }
       currentPage++
     } else { hasMore = false }
   }
