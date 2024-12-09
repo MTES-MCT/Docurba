@@ -188,8 +188,11 @@ export default {
     }
   },
   computed: {
+    typeCompetence () {
+      return this.typeDu === 'SCOT' ? 'competenceSCOT' : 'competencePLU'
+    },
     collectivitePorteuseCode () {
-      if (this.collectivite.competencePLU) {
+      if (this.collectivite[this.typeCompetence]) {
         // return the collectivite if it has the competence
         return this.collectivite.code
       } else if (this.collectivite.intercommunalite) {
@@ -296,11 +299,13 @@ export default {
     },
     async createProcedure () {
       this.loadingSave = true
+
       try {
         const detailedPerimetre = (await axios({ url: `/api/geo/communes?codes=${this.perimetre}`, method: 'get' })).data
         const oldFomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
         const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
         let insertedProject = null
+
         if (this.procedureCategory === 'principale') {
           const insertRet = await this.$supabase.from('projects').insert({
             name: `${this.typeProcedure} ${this.typeDu}`,
@@ -317,6 +322,7 @@ export default {
           insertedProject = insertRet.data && insertRet.data[0] ? insertRet.data[0].id : null
           if (insertRet.error) { throw insertRet.error }
         }
+
         const { data: insertedProcedure, error: errorInsertedProcedure } = await this.$supabase.from('procedures').insert({
           shareable: true,
           secondary_procedure_of: this.procedureParent,
@@ -357,10 +363,14 @@ export default {
           archived: false,
           dev_test: true
         }
-        console.log('this.proceduresParents?.find(e => e.id === this.procedureParent): ', this.proceduresParents?.find(e => e.id === this.procedureParent))
-        console.log('sender SHARING: ', sender)
+
+        // console.log('this.proceduresParents?.find(e => e.id === this.procedureParent): ', this.proceduresParents?.find(e => e.id === this.procedureParent))
+        // console.log('sender SHARING: ', sender)
+
         const { error: errorInsertedCollabs } = await this.$supabase.from('projects_sharing').insert(sender)
+
         if (errorInsertedCollabs) {
+          // eslint-disable-next-line no-console
           console.log('errorInsertedCollabs: ', errorInsertedCollabs)
         }
 
@@ -374,6 +384,7 @@ export default {
         // this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`)
       } catch (error) {
         this.error = error
+        // eslint-disable-next-line no-console
         console.log(error)
       } finally {
         this.loadingSave = false

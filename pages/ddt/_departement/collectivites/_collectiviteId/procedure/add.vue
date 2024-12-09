@@ -18,6 +18,7 @@
     </v-container>
     <ProceduresInsertTabs :collectivite="collectivite" />
   </div>
+  <VGlobalLoader v-else />
 </template>
 <script>
 import { mdiChevronLeft } from '@mdi/js'
@@ -30,17 +31,9 @@ export default {
       icons: { mdiChevronLeft }
     }
   },
-  mounted () {
-    fetch(`https://nuxt3.docurba.incubateur.net/api/geo/search/collectivites?code=${this.$route.params.collectiviteId}&populate=true`)
-      .then(async (res) => {
-        const collectivites = await res.json()
-        this.collectivite = collectivites[0]
-      })
-
-    // this.collectivite = (await axios({
-    //   url: `/api/geo/${this.$route.params.collectiviteId.length > 5 ? 'intercommunalites' : 'communes'}/${this.$route.params.collectiviteId}`,
-    //   method: 'get'
-    // })).data
+  async mounted () {
+    const collectivites = await this.$nuxt3api(`/api/geo/search/collectivites?code=${this.$route.params.collectiviteId}&populate=true`)
+    this.collectivite = collectivites[0]
   }
 }
 </script>
