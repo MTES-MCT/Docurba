@@ -385,10 +385,20 @@ export default {
     }
   },
   async mounted () {
-    const referentiel = await fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
-    const { communes, groupements } = await referentiel.json()
+    const collectivites = await this.$nuxt3api(`/api/geo/collectivites?departementCode=${this.$route.params.departement}`)
+    const communes = []
+    const groupements = []
+
+    collectivites.forEach((c) => {
+      if (c.type === 'COM') {
+        communes.push(c)
+      }
+
+      if (c.code.length > 5) {
+        groupements.push(c)
+      }
+    })
     this.groupements = groupements
-    console.log('groupements', groupements)
 
     const procedures = await this.$urbanisator.getCollectivitesProcedures(communes.map(c => c.code))
 
@@ -474,9 +484,27 @@ export default {
         }
       })
     },
+    findCommunes (membres, groupements) {
+      const communes = []
+
+      membres.forEach((m) => {
+        if (m.code.length > 5) {
+          const group = groupements.find(g => g.code === m.code)
+          if (group && group.membres) {
+            communes.push(...this.findCommunes(group.membres, groupements))
+          }
+        } else {
+          communes.push(m)
+        }
+      })
+
+      return communes
+    },
     parseGroupements (groupements, procedures) {
       return groupements.map((groupement) => {
-        const collectivitesSet = new Set(groupement.membres.map(m => m.code))
+        const communesCodes = this.findCommunes(groupement.membres, groupements).map(m => m.code)
+
+        const collectivitesSet = new Set(communesCodes)
         const groupementProcedures = procedures.filter((procedure) => {
           return procedure.procedures_perimetres.map(p => p.collectivite_code).some((code) => {
             return collectivitesSet.has(code)
