@@ -188,7 +188,9 @@ async function updateSharing (sharingRecord) {
   }
 
   const update = await pipedrive.updatePerson(person.id, {
-    shared: sharingRecord.created_at
+    // This will update the related key on pipedrive.
+    // Each role should be mapped to a pipedrive key.
+    [sharingRecord.role]: sharingRecord.created_at
   })
 
   return update
@@ -202,6 +204,8 @@ app.get('/sharing', async (req, res) => {
   const update = await updateSharing(sharings[0])
 
   console.log(update)
+
+  res.status(200).send('OK')
 })
 
 // ROUTE used by supabase webhook on insert in projects_sharing

@@ -72,6 +72,7 @@ async function main () {
 
   const idPsUnbinded = allPsUnbinded.map(e => e.from_sudocuh)
   console.log('Total IDs to process:', idPsUnbinded.length)
+  console.log('allPsUnbinded FINDDDD: ', proceduresMapping.find(e => e.noserieprocedure === 194131))
 
   try {
     const { sudocuIdPpPs, unmatchedIds } = await fetchInBatches(supabaseDev, idPsUnbinded)
@@ -87,6 +88,9 @@ async function main () {
 
     // on met le sudocu_secondary_procedure_of
     const allPsUnbindedEnrich1 = allPsUnbinded.map((ps) => {
+      if (ps.from_sudocuh == 194131) {
+        console.log('HERE 1: ', ps)
+      }
       const psMap = sudocuIdPpPs.find(sudoId => sudoId.noserieprocedure === ps.from_sudocuh)
       if (!psMap) {
         console.log('No match found for:', ps)
@@ -98,6 +102,9 @@ async function main () {
     console.log('-------allPsUnbindedEnrich2-----')
     const allPsUnbindedEnrich2 = allPsUnbindedEnrich1.map((ps) => {
       const pp = allPp.find(e => e.from_sudocuh === ps.sudocu_secondary_procedure_of)
+      if (ps.sudocu_secondary_procedure_of == 194131) {
+        console.log('HERE 2: ', ps)
+      }
       if (!pp) {
         console.log('No match found for:', ps)
         return null
@@ -114,15 +121,15 @@ async function main () {
     for (const ps of allPsUnbindedEnrich2) {
       if (ps && ps.id && ps.sudocu_secondary_procedure_of && ps.secondary_procedure_of) {
         try {
-          const { error } = await supabase
-            .from('procedures')
-            .update({
-              sudocu_secondary_procedure_of: ps.sudocu_secondary_procedure_of,
-              secondary_procedure_of: ps.secondary_procedure_of
-            })
-            .eq('id', ps.id)
+          // const { error } = await supabase
+          //   .from('procedures')
+          //   .update({
+          //     sudocu_secondary_procedure_of: ps.sudocu_secondary_procedure_of,
+          //     secondary_procedure_of: ps.secondary_procedure_of
+          //   })
+          //   .eq('id', ps.id)
 
-          if (error) { throw error }
+          // if (error) { throw error }
 
           updateCount++
           if (updateCount % 100 === 0) {

@@ -11,7 +11,7 @@ const defaultUser = {
   user_metadata: {}
 }
 
-async function handleRedirect ($supabase, event, user, router) {
+function handleRedirect ($supabase, event, user, router) {
   // console.log('handleRedirect: ', event, user)
   if (event === 'SIGNED_IN') {
     if (user.profile.poste === 'dreal') {
@@ -26,11 +26,6 @@ async function handleRedirect ($supabase, event, user, router) {
     } else if (user.profile.poste === 'ddt') {
       router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
     }
-
-    await $supabase.from('profiles')
-      .update({
-        successfully_logged_once: true
-      }).eq('user_id', user.id)
 
     if (user.profile.side === 'collectivite') {
       axios({
@@ -63,20 +58,28 @@ export default async ({ $supabase, app }, inject) => {
       user.isReady = new Promise((resolve, reject) => {
         // console.log('session.user.id', session.user.id)
 
-        $supabase.from('profiles').select('*').eq('user_id', session.user.id).then(({ data, error }) => {
+        $supabase.from('profiles').select('*').eq('user_id', session.user.id)
+          .then(async ({ data, error }) => {
           // console.log('profiles', data)
-          if (data[0]) {
-            user.profile = data[0]
+            if (data[0]) {
+              user.profile = data[0]
 
-            resolve(true)
-          } else if (retry) {
-            setTimeout(async () => {
-              await updateUser(session, false)
-            }, 200)
+              if (!user.profile.successfully_logged_once) {
+                await $supabase.from('profiles')
+                  .update({
+                    successfully_logged_once: true
+                  }).eq('user_id', session.user.id)
+              }
 
-            resolve(false)
-          }
-        })
+              resolve(true)
+            } else if (retry) {
+              setTimeout(async () => {
+                await updateUser(session, false)
+              }, 200)
+
+              resolve(false)
+            }
+          })
       })
     }
 
