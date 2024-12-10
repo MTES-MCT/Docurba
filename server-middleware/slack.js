@@ -139,9 +139,11 @@ app.post('/notify/frp', (req, res) => {
   slack.notifyFrpEvent(req.body).then((res) => {
     // eslint-disable-next-line no-console
     console.log('Slack then: ', res.data)
+    res.status(200).send('OK')
   }).catch((err) => {
     // eslint-disable-next-line no-console
     console.log('Slack catch', err.response.data)
+    res.status(500).send(err.response.data)
   })
 })
 

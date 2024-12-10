@@ -91,10 +91,7 @@
 <script>
 import axios from 'axios'
 
-const validationBetaDDT = [
-  '25', '29', '35', '56', '58',
-  '81', '89'
-]
+const validationBetaDDT = []
 
 export default {
   name: 'DdtLayout',
