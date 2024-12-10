@@ -30,7 +30,8 @@ CONFIG.PG_PROD_CONFIG.password = process.env.PROD_SUPABASE_PASSWORD
 /// /////////////////////
 /// ///// INFO ////////
 /// /////////////////////
-const latestDumpName = await downloadDump(CONFIG.PG_PROD_CONFIG, __dirname)
+const DUMP_FILENAME = process.argv.at(-1)
+await downloadDump(CONFIG.PG_PROD_CONFIG, DUMP_FILENAME, __dirname)
 
 // You need to setup .pgpass in your home if you don't want to enter the db password on pg_restaure
 // https://tableplus.com/blog/2019/09/how-to-use-pgpass-in-postgresql.html
@@ -43,7 +44,8 @@ const latestDumpName = await downloadDump(CONFIG.PG_PROD_CONFIG, __dirname)
 await clearDev(CONFIG.PG_DEV_CONFIG)
 // // // // // Step 1 - Charge un dump particulier venant de l'export de Andy sur notre storage
 
-await loadDump(CONFIG.PG_DEV_CONFIG, latestDumpName)
+await loadDump(CONFIG.PG_DEV_CONFIG, DUMP_FILENAME)
+
 // // // // // // Step 2 - Créer les tables intermédiaires d'aggregation depuis la donnée Sudocuh
 await createSudocuProcessedTables(CONFIG.PG_DEV_CONFIG)
 // // // // // // Replique un schema de test (Optionnal)
@@ -69,7 +71,3 @@ await updatePerimeterStatus(CONFIG.PG_PROD_CONFIG)
 await migrateDgd(CONFIG.PG_DEV_CONFIG, CONFIG.PG_PROD_CONFIG)
 // // Step 8 - Réactivation du trigger de changement de status sur nouveaux events
 await handleTrigger(CONFIG.PG_PROD_CONFIG, 'enable')
-
-// Pour une raison que nous ne connaissons pas, le process Node ne se termine pas.
-// process.exit le force.
-process.exit(0)
