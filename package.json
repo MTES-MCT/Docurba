@@ -11,6 +11,7 @@
     "gcp-build": "",
     "build": "nuxt build",
     "start": "nuxt start",
+    "generate_communes_by_dept": "node scripts/nb_communes_by_dept.js",
     "enrich": "node scripts/enrich_procedures_status.js",
     "cleanSM": "node scripts/cleanSM.js",
     "fillTrame": "node scripts/fillTrame.js",
