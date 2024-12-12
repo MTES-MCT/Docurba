@@ -22,14 +22,14 @@ declare
         "en cours": ["Délibération de l''établissement public qui prescrit"],
         "opposable": ["Délibération d''approbation", "Caractère exécutoire", "Retrait de l''annulation totale"],
         "abandon": ["Abandon", "Retrait de la délibération de prescription"],
-        "annule": ["Annulation TA totale"],
+        "annule": ["Annulation TA totale", "Annulation TA"],
         "caduc": ["Caducité"]
       },
       "SD": {
         "en cours": ["Délibération de l''établissement public qui prescrit"],
         "opposable": ["Délibération d''approbation", "Caractère exécutoire"],
         "abandon": ["Abandon"],
-        "annule": ["Annulation TA totale"],
+        "annule": ["Annulation TA totale", "Annulation TA"],
         "caduc": ["Caducité"]
       },
       "PLU": {
