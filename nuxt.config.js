@@ -4,7 +4,8 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
 
   env: {
-    activeDgd: process.env.ACTIVE_DGD || false
+    activeDgd: process.env.ACTIVE_DGD || false,
+    ENQUETE_ENABLED: process.env.ENQUETE_ENABLED === '1'
   },
   head: {
     titleTemplate: '%s - Docurba',
@@ -50,7 +51,8 @@ export default {
     // { src: '~/plugins/stonly.js', mode: 'client' },
     { src: '~/plugins/tally.js', mode: 'client' },
     { src: '~/plugins/githubRefRoles.js', mode: 'client' },
-    { src: '~/plugins/sharing.js' }
+    { src: '~/plugins/sharing.js' },
+    { src: '~/plugins/enquete.js' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

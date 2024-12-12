@@ -50,7 +50,7 @@
       <v-row>
         <v-col cols="12">
           <v-alert type="info">
-            L'extract de données Sudocuh vers Docurba est désormais journalier, les données sur Docurba sont donc à jour.
+            Les nouvelles procédures et événements saisis dans Sudocuh sont visibles dans Docurba dès le lendemain matin.
           </v-alert>
         </v-col>
         <v-col cols="12">
