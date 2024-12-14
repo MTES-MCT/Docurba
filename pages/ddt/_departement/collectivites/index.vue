@@ -19,9 +19,11 @@
           :items="collectivitesToDisplay"
           :items-per-page="10"
           item-key="code"
+          sort-by="code"
+          sort-desc
+          must-sort
           class="elevation-1 pa-8 collectivites-dt"
           :custom-filter="customFilter"
-          :custom-sort="customSort"
           :search="search"
           :loading="!collectivites"
           loading-text="Chargement des collectivités..."
@@ -111,7 +113,7 @@
           </template>
 
           <!-- eslint-disable-next-line -->
-          <template #item.name="{ item }">
+          <template #item.code="{ item }">
             <div class="my-5">
               <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`" class="text-decoration-none font-weight-bold">
                 {{ item.code }} {{ item.intitule }}
@@ -351,7 +353,7 @@ export default {
     },
     headers () {
       const headers = [
-        { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '30%' },
+        { text: 'Nom', align: 'start', value: 'code', filterable: true, width: '30%', sort (a, b) { return b.localeCompare(a) } },
         { text: 'Type', align: 'start', value: 'type', filterable: false, width: '10%' },
         { text: 'Procédures', value: 'procedures', filterable: false, sortable: false, width: '30%' },
         { text: 'SCOTs', value: 'scots', filterable: false, sortable: false, width: '30%' }
@@ -506,19 +508,6 @@ export default {
       const normalizedSearch = search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
 
       return normalizedValue.includes(normalizedSearch)
-    },
-    customSort (items, index, isDesc) {
-      items.sort((a, b) => {
-        if (index[0] === 'name' || index[0] === 'type') {
-          if (!isDesc[0]) {
-            return a.code.toLowerCase().localeCompare(b.code.toLowerCase())
-          } else {
-            return b.code.toLowerCase().localeCompare(a.code.toLowerCase())
-          }
-        }
-        return true
-      })
-      return items
     },
     showClose () {
       this.clickedOnDocLink = true
