@@ -14,16 +14,19 @@
       </v-col>
       <v-col v-else cols="12">
         <v-data-table
+          v-model="selected"
           :headers="headers"
           :items="collectivitesToDisplay"
-          :items-per-page.sync="nbItemsByPage"
+          :items-per-page="10"
+          item-key="code"
           class="elevation-1 pa-8 collectivites-dt"
           :custom-filter="customFilter"
           :custom-sort="customSort"
           :search="search"
           :loading="!collectivites"
           loading-text="Chargement des collectivités..."
-          :page.sync="page"
+          :show-select="hasValidationEnabled"
+          selectable-key="isNotValidated"
         >
           <template #top>
             <v-alert v-if="hasValidationEnabled" type="info" color="primary" text>
@@ -198,28 +201,28 @@
           </template>
 
           <!-- eslint-disable-next-line -->
-          <template #header.validate="{ item }">
+          <template #header.data-table-select="{ props, on }">
             <div class="d-flex align-center justify-center">
-              <div>Valider</div> <v-checkbox
-                :value="isAllCurrentPageSelected"
-                :indeterminate="isPartiallySelected"
-                @change="toggleSelectedForValidationForCurrentPage"
+              <div>Valider</div>
+              <v-checkbox
+                v-bind="props"
+                @change="on.input"
               />
             </div>
           </template>
 
           <!-- eslint-disable-next-line -->
-          <template #item.validate="{ item }">
+          <template #item.data-table-select="{ item, isSelected, select}">
             <div class="d-flex align-end justify-end my-5">
-              <v-tooltip v-if="!validatedCollectivites.map(e => e.collectivite_code).includes(item.code)" top>
+              <v-tooltip v-if="item.isNotValidated" top>
                 <template #activator="{ on, attrs }">
                   <div
                     v-bind="attrs"
                     v-on="on"
                   >
                     <v-checkbox
-                      :input-value="codesCollectivitesSelectedForValidation.includes(item.code)"
-                      @change="toggleSelectedForValidationForCollectivite(item.code)"
+                      :input-value="isSelected"
+                      @change="select"
                     />
                     <div />
                   </div>
@@ -266,16 +269,16 @@
           </template>
         </v-data-table>
         <div
-          v-if="codesCollectivitesSelectedForValidation.length > 0 "
+          v-if="selected.length > 0 "
           class="pa-6 elevation-4 validation-toolbar"
         >
           <div class="d-flex">
             <v-spacer />
-            <v-btn color="primary" outlined @click="codesCollectivitesSelectedForValidation = []">
+            <v-btn color="primary" outlined @click="selected = []">
               Tout déselectionner
             </v-btn>
             <v-btn class="ml-2" color="primary" depressed @click="validateSelectedCollectivites">
-              Valider {{ codesCollectivitesSelectedForValidation.length }} collectivités
+              Valider {{ selected.length }} collectivités
             </v-btn>
           </div>
         </div>
@@ -309,6 +312,7 @@ export default {
   layout: 'ddt',
   data () {
     return {
+      selected: [],
       searchEpcis: '',
       groupements: [],
       filterEpci: null,
@@ -316,10 +320,7 @@ export default {
       hideValidatedCollectives: false,
       snackbar: false,
       snackVal: { text: '', type: 'success' },
-      codesCollectivitesSelectedForValidation: [],
       validatedCollectivites: [],
-      page: 1,
-      nbItemsByPage: 10,
       selectedCollectiviteTypesFilter: ['COM', 'CA', 'CC', 'EPT', 'SM', 'SIVU', 'PETR'],
       collectiviteTypeFilterItems: [
         { text: 'Communes', value: 'COM' },
@@ -356,7 +357,7 @@ export default {
         { text: 'SCOTs', value: 'scots', filterable: false, sortable: false, width: '30%' }
       ]
       if (this.hasValidationEnabled) {
-        headers.push({ text: 'Valider', value: 'validate', filterable: false, sortable: false })
+        headers.push({ text: 'Valider', value: 'data-table-select' })
       }
       return headers
     },
@@ -372,41 +373,13 @@ export default {
       })
     },
     notValidatedCollectivites () {
-      const validatedCodes = this.validatedCollectivites.map(item => item.collectivite_code)
-      return this.collectivites.filter(collectivite => !validatedCodes.includes(collectivite.code))
+      return this.collectivites.filter(collectivite => collectivite.isNotValidated)
     },
     collectivitesToDisplay () {
       if (this.hideValidatedCollectives) {
         return this.notValidatedCollectivites
       }
       return this.collectivites
-    },
-    collectivitesOnCurrentPage () {
-      console.log('page, nbItemsByPage: ', this.page, this.nbItemsByPage)
-      const ALL_ITEMS = -1
-      if (this.nbItemsByPage === ALL_ITEMS) {
-        return this.collectivitesToDisplay
-      }
-
-      const start = (this.page - 1) * this.nbItemsByPage
-      const end = start + this.nbItemsByPage
-      return this.collectivitesToDisplay.slice(start, end)
-    },
-    notValidatedCollectivitesOnCurrentPage () {
-      return this.collectivitesOnCurrentPage.filter(collectivite => this.notValidatedCollectivites.includes(collectivite))
-    },
-    // Check if all current page collectivites not yet validated are selected for validation
-    isAllCurrentPageSelected () {
-      return this.notValidatedCollectivitesOnCurrentPage.every(item =>
-        this.codesCollectivitesSelectedForValidation.includes(item.code)
-      )
-    },
-    // Check if some but not all current page collectivites not yet validated are selected for validation
-    isPartiallySelected () {
-      const selectedCount = this.notValidatedCollectivitesOnCurrentPage.filter(item =>
-        this.codesCollectivitesSelectedForValidation.includes(item.code)
-      ).length
-      return selectedCount > 0 && selectedCount < this.notValidatedCollectivitesOnCurrentPage.length
     }
   },
   async mounted () {
@@ -431,6 +404,10 @@ export default {
       const { success, error, data } = await this.$enquete.getValidatedCollectivitesForDepartement(this.$route.params.departement)
       console.log('data valid 2024: ', data)
       this.validatedCollectivites = data
+      const validatedCodes = this.validatedCollectivites.map(c => c.collectivite_code)
+      for (const collectivite of this.referentiel) {
+        collectivite.isNotValidated = !validatedCodes.includes(collectivite.code)
+      }
       if (!success) {
         this.snackbar = true
 
@@ -440,7 +417,6 @@ export default {
     async cancelValidation (codeCollec) {
       const { success, error, data } = await this.$enquete.deleteValidationForCollectivite(codeCollec)
       console.log('data valid 2024: ', data)
-      this.validatedCollectivites = data
       if (!success) {
         this.snackbar = true
         this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
@@ -451,35 +427,13 @@ export default {
       return this.validatedCollectivites.find(e => e.collectivite_code === collectiviteCode)
     },
     async validateSelectedCollectivites () {
-      const collectivitesToValidate = this.collectivites.filter(e => this.codesCollectivitesSelectedForValidation.includes(e.code))
-      const { success, error } = await this.$enquete.validateCollectivites(collectivitesToValidate)
+      const { success, error } = await this.$enquete.validateCollectivites(this.selected)
       if (!success) {
         this.snackbar = true
         this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
       }
       await this.fetchValidation()
-      this.codesCollectivitesSelectedForValidation = []
-    },
-    toggleSelectedForValidationForCollectivite (code) {
-      const index = this.codesCollectivitesSelectedForValidation.indexOf(code)
-      if (index === -1) {
-        this.codesCollectivitesSelectedForValidation.push(code)
-      } else {
-        this.codesCollectivitesSelectedForValidation.splice(index, 1)
-      }
-    },
-    toggleSelectedForValidationForCurrentPage (value) {
-      if (value) {
-        for (const collectivite of this.notValidatedCollectivitesOnCurrentPage) {
-          if (!this.codesCollectivitesSelectedForValidation.includes(collectivite.code)) {
-            this.codesCollectivitesSelectedForValidation.push(collectivite.code)
-          }
-        }
-      } else {
-        this.codesCollectivitesSelectedForValidation = this.codesCollectivitesSelectedForValidation.filter(code =>
-          !this.notValidatedCollectivitesOnCurrentPage.map(item => item.code).includes(code)
-        )
-      }
+      this.selected = []
     },
     parseCommunes (communes, procedures) {
       return communes.map((commune) => {
@@ -512,6 +466,7 @@ export default {
 
         return {
           ...commune,
+          isNotValidated: true,
           plans: inContextProcedures.filter(p => p.doc_type !== 'SCOT'),
           scots: inContextProcedures.filter(p => p.doc_type === 'SCOT')
         }
@@ -538,6 +493,7 @@ export default {
 
         return {
           ...groupement,
+          isNotValidated: true,
           plans: inContextProcedures.filter(p => p.doc_type !== 'SCOT' && p.procedures_perimetres.length > 1),
           scots: inContextProcedures.filter(p => p.doc_type === 'SCOT')
         }
