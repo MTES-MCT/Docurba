@@ -175,9 +175,9 @@ export default ({ $supabase, $dayjs }, inject) => {
           return +$dayjs(b.created_at) - +$dayjs(a.created_at)
         })
 
-        const schemas = proceduresPrincipales.filter(e => e.doc_type === 'SCOT')
+        const schemas = proceduresPrincipales.filter(e => e.doc_type === 'SCOT' || e.doc_type === 'SD')
         // The specific ID here is to prevent a duplicated created by sudocuh. This is suposed to be temporary for a demo.
-        const plans = proceduresPrincipales.filter(e => e.doc_type !== 'SCOT' && e.id !== '760d88f0-008d-4505-98f6-a7a9a2ebaf61')
+        const plans = proceduresPrincipales.filter(e => e.doc_type !== 'SCOT' && e.doc_type !== 'SD' && e.id !== '760d88f0-008d-4505-98f6-a7a9a2ebaf61')
 
         // eslint-disable-next-line no-console
         // console.log('urbanisator get projects', { schemas, plans })
