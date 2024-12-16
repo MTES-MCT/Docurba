@@ -104,3 +104,6 @@ database/pg_secret_config.json
 database/dump/
 
 .zed
+
+# Output file for help.
+ColPorteuse.csv
