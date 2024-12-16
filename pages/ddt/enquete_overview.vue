@@ -25,7 +25,7 @@
           </template>
 
           <!-- eslint-disable-next-line -->
-        <template #item.communes="{ item }">
+        <template #item.collectivites="{ item }">
             <span class="primary--text font-weight-bold">{{ item.nb_validated }}</span> <span class="mention-grey--text"> / {{ item.nb_communes }}</span>
           </template>
 
@@ -71,13 +71,16 @@ export default {
           align: 'start',
           value: 'departement'
         },
-        { text: 'Communes', align: 'start', value: 'communes' },
+        { text: 'Collectivités', align: 'start', value: 'collectivites' },
+        { text: 'Restantes', align: 'start', value: 'restantes' },
+        { text: '% validées', align: 'start', value: 'percentage' },
         { text: 'Schémas', value: 'schemas' },
         { text: '', value: 'action' }
       ]
     }
   },
   async mounted () {
+    // TODO: Need to add EPCI/SCOT to the count
     const { data: communesByDepts } = await axios('/json/communes_by_department_enriched.json')
     console.log('communesByDepts: ', communesByDepts)
     this.deptsItems = communesByDepts
