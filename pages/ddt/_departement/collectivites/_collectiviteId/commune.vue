@@ -27,6 +27,11 @@
             Les nouvelles procédures et événements saisis dans Sudocuh sont visibles dans Docurba dès le lendemain matin.
           </v-alert>
         </v-col>
+        <v-col v-if="recentDelete" cols="12">
+          <v-alert type="info">
+            Une procédure a récemment été supprimée. Les statuts peuvent prendre quelques minutes pour être de nouveau à jour. N'hésitez pas à actualiser la page dans quelques minutes.
+          </v-alert>
+        </v-col>
         <v-col cols="12">
           <p class="text-h2">
             Documents d'urbanisme
@@ -40,7 +45,7 @@
         :collectivite="collectivite"
         :procedures="plans"
         :schemas="schemas"
-        @deleteProcedure="getProcedures"
+        @deleteProcedure="onDelete"
       />
     </template>
 
@@ -64,6 +69,7 @@ export default {
       loaded: false,
       tab: null,
       collectivite: null,
+      recentDelete: false,
       plans: [],
       schemas: [],
       icons: { mdiArrowLeft }
@@ -74,6 +80,10 @@ export default {
     this.loaded = true
   },
   methods: {
+    onDelete () {
+      this.recentDelete = true
+      this.getProcedures()
+    },
     async getProcedures () {
       this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
