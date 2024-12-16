@@ -52,7 +52,8 @@ export default {
     { src: '~/plugins/tally.js', mode: 'client' },
     { src: '~/plugins/githubRefRoles.js', mode: 'client' },
     { src: '~/plugins/sharing.js' },
-    { src: '~/plugins/enquete.js' }
+    { src: '~/plugins/enquete.js' },
+    { src: '~/plugins/nuxt3api.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
