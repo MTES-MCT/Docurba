@@ -14,17 +14,45 @@
       </v-col>
       <v-col v-else cols="12">
         <v-data-table
+          v-model="selected"
           :headers="headers"
-          :items="collectivites"
+          :items="collectivitesToDisplay"
           :items-per-page="10"
+          item-key="code"
+          sort-by="code"
+          sort-desc
+          must-sort
           class="elevation-1 pa-8 collectivites-dt"
           :custom-filter="customFilter"
-          :custom-sort="customSort"
           :search="search"
           :loading="!collectivites"
           loading-text="Chargement des collectivités..."
+          :show-select="hasValidationEnabled"
+          selectable-key="isNotValidated"
         >
           <template #top>
+            <v-alert v-if="hasValidationEnabled" type="info" color="primary" text>
+              <div class="text-h5 text-weight-bold">
+                Enquête annuelle
+              </div>
+              <div>
+                L’enquête annuelle de validation des procédures d’urbanisme anciennement effectuée sur Sudocuh est disponible sur Docurba. Votre service a jusqu’au 31 Janvier pour valider les procédures de vos collectivités.
+              </div>
+              <div>
+                <v-switch
+                  v-model="hideValidatedCollectives"
+                  color="primary"
+                  dark
+                  inset
+                >
+                  <template #label>
+                    <span class="primary--text">
+                      Voir seulement les collectivités à valider ({{ notValidatedCollectivites.length }} restantes)
+                    </span>
+                  </template>
+                </v-switch>
+              </div>
+            </v-alert>
             <div class="d-flex align-center justify-space-between mb-6">
               <v-select
                 v-model="selectedCollectiviteTypesFilter"
@@ -46,6 +74,32 @@
                   </span>
                 </template>
               </v-select>
+              <v-select
+                v-model="filterEpci"
+                class="ml-2"
+                style="max-width:350px"
+                :items="searchEpcisItems"
+                placeholder="Tous les EPCIs"
+                item-value="code"
+                item-text="intitule"
+                flat
+                background-color="alt-beige"
+                hide-details
+                solo
+                dense
+                clearable
+              >
+                <template #prepend-item>
+                  <v-list-item>
+                    <v-text-field
+                      v-model="searchEpcis"
+                      dense
+                      outlined
+                      label="Rechercher un EPCI..."
+                    />
+                  </v-list-item>
+                </template>
+              </v-select>
               <v-spacer />
               <v-text-field
                 v-model="search"
@@ -59,7 +113,7 @@
           </template>
 
           <!-- eslint-disable-next-line -->
-          <template #item.name="{ item }">
+          <template #item.code="{ item }">
             <div class="my-5">
               <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`" class="text-decoration-none font-weight-bold">
                 {{ item.code }} {{ item.intitule }}
@@ -113,52 +167,141 @@
             <div v-if="!item.scots || item.scots.length === 0" class="my-6">
               -
             </div>
-            <!-- <div v-for="scot in item.scots" :key="scot.id">
-              <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.id}`">
-                {{ scot.doc_type }}
-              </nuxt-link>
-               &nbsp;
-              {{ scot.id }}
-            </div> -->
 
             <div class="my-5">
               <div v-if="!item.scots || item.scots.length === 0">
                 -
               </div>
-              <div v-for="(scot, index) in item.scots" v-else :key="scot.id" class="mb-4">
-                <template v-if="index < 2">
-                  <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.id}`">
-                    {{ scot.doc_type }}
-                  </nuxt-link>
-                  <v-chip
-                    :class="{
-                      'success-light': scot.inContextStatus === 'OPPOSABLE',
-                      'success--text': scot.inContextStatus === 'OPPOSABLE',
-                      'bf200': scot.inContextStatus === 'EN COURS',
-                      'primary--text': scot.inContextStatus === 'EN COURS',
-                      'text--lighten-2': scot.inContextStatus === 'EN COURS',
+              <div v-else>
+                <div v-for="(scot, index) in item.scots" :key="scot.id" class="mb-4">
+                  <template v-if="index < 2">
+                    <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.id}`">
+                      {{ scot.doc_type }}
+                    </nuxt-link>
+                    <v-chip
+                      :class="{
+                        'success-light': scot.inContextStatus === 'OPPOSABLE',
+                        'success--text': scot.inContextStatus === 'OPPOSABLE',
+                        'bf200': scot.inContextStatus === 'EN COURS',
+                        'primary--text': scot.inContextStatus === 'EN COURS',
+                        'text--lighten-2': scot.inContextStatus === 'EN COURS',
 
-                    }"
-                    class="ml-2 font-weight-bold "
-                    small
-                    label
+                      }"
+                      class="ml-2 font-weight-bold "
+                      small
+                      label
+                    >
+                      {{ scot.inContextStatus }}
+                    </v-chip>
+                  </template>
+                  <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
+                    + {{ item.scots.length - 2 }} procédure{{ item.scots.length - 2 > 1 ? 's' : '' }}
+                  </nuxt-link>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- eslint-disable-next-line -->
+          <template #header.data-table-select="{ props, on }">
+            <div class="d-flex align-center justify-center">
+              <div>Valider</div>
+              <v-checkbox
+                v-bind="props"
+                @change="on.input"
+              />
+            </div>
+          </template>
+
+          <!-- eslint-disable-next-line -->
+          <template #item.data-table-select="{ item, isSelected, select}">
+            <div class="d-flex align-end justify-end my-5">
+              <v-tooltip v-if="item.isNotValidated" top>
+                <template #activator="{ on, attrs }">
+                  <div
+                    v-bind="attrs"
+                    v-on="on"
                   >
-                    {{ scot.inContextStatus }}
-                  </v-chip>
+                    <v-checkbox
+                      :input-value="isSelected"
+                      @change="select"
+                    />
+                    <div />
+                  </div>
                 </template>
-                <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
-                  + {{ item.scots.length - 2 }} procédure{{ item.scots.length - 2 > 1 ? 's' : '' }}
-                </nuxt-link>
+                <span>Valider la situation de <br> {{ item.code }} {{ item.intitule }}</span>
+              </v-tooltip>
+              <div v-else>
+                <v-menu
+                  top
+                  offset-y
+                  :close-on-content-click="false"
+                >
+                  <template #activator="{ on, attrs }">
+                    <v-chip
+                      v-bind="attrs"
+                      class="bf200 primary--text text--lighten-2 ml-2 font-weight-bold"
+                      small
+                      label
+                      v-on="on"
+                    >
+                      VALIDÉE
+                    </v-chip>
+                  </template>
+                  <v-card class="pa-2">
+                    <div class="text-center">
+                      <div class="mb-2">
+                        Collectivité validée le {{ formatDate(getValidatedInfosForCollectivite(item.code).created_at) }}
+                        par {{ getValidatedInfosForCollectivite(item.code).email }}
+                      </div>
+                      <v-btn
+                        v-if="item.profile_id === $user.id || $user.profile.is_admin"
+                        small
+                        color="error"
+                        text
+                        @click="cancelValidation(item.code)"
+                      >
+                        Annuler la validation
+                      </v-btn>
+                    </div>
+                  </v-card>
+                </v-menu>
               </div>
             </div>
           </template>
         </v-data-table>
+        <div
+          v-if="selected.length > 0 "
+          class="pa-6 elevation-4 validation-toolbar"
+        >
+          <div class="d-flex">
+            <v-spacer />
+            <v-btn color="primary" outlined @click="selected = []">
+              Tout déselectionner
+            </v-btn>
+            <v-btn class="ml-2" color="primary" depressed @click="validateSelectedCollectivites">
+              Valider {{ selected.length }} collectivités
+            </v-btn>
+          </div>
+        </div>
       </v-col>
     </v-row>
+    <v-snackbar
+      v-model="snackbar"
+      top
+      :color="snackVal.type"
+      outlined
+      min-width="800"
+      :timeout="5000"
+    >
+      {{ snackVal.text }}
+    </v-snackbar>
   </v-container>
 </template>
 
 <script>
+import dayjs from 'dayjs'
+
 const docVersion = '1.0'
 
 const statusMap = {
@@ -171,6 +314,15 @@ export default {
   layout: 'ddt',
   data () {
     return {
+      selected: [],
+      searchEpcis: '',
+      groupements: [],
+      filterEpci: null,
+      hasValidationEnabled: process.env.ENQUETE_ENABLED,
+      hideValidatedCollectives: false,
+      snackbar: false,
+      snackVal: { text: '', type: 'success' },
+      validatedCollectivites: [],
       selectedCollectiviteTypesFilter: ['COM', 'CA', 'CC', 'EPT', 'SM', 'SIVU', 'PETR'],
       collectiviteTypeFilterItems: [
         { text: 'Communes', value: 'COM' },
@@ -187,24 +339,55 @@ export default {
     }
   },
   computed: {
+    searchEpcisItems () {
+      if (!this.searchEpcis) {
+        return this.groupements
+      }
+
+      return this.groupements.filter((groupement) => {
+        const normalizedGroupementIntitule = groupement.intitule.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+        const normalizedSearch = this.searchEpcis.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+
+        return normalizedGroupementIntitule.includes(normalizedSearch)
+      })
+    },
     headers () {
-      return [
-        { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '30%' },
+      const headers = [
+        { text: 'Nom', align: 'start', value: 'code', filterable: true, width: '30%', sort (a, b) { return b.localeCompare(a) } },
         { text: 'Type', align: 'start', value: 'type', filterable: false, width: '10%' },
         { text: 'Procédures', value: 'procedures', filterable: false, sortable: false, width: '30%' },
         { text: 'SCOTs', value: 'scots', filterable: false, sortable: false, width: '30%' }
       ]
+      if (this.hasValidationEnabled) {
+        headers.push({ text: 'Valider', value: 'data-table-select' })
+      }
+      return headers
     },
     collectivites () {
       return this.referentiel?.filter((collectivite) => {
         return !!this.selectedCollectiviteTypesFilter.find(type => collectivite.type.includes(type))
+      }).filter((collectivite) => {
+        return (
+          !this.filterEpci ||
+          this.filterEpci === collectivite.code ||
+          collectivite.groupements.some(c => c.code === this.filterEpci)
+        )
       })
+    },
+    notValidatedCollectivites () {
+      return this.collectivites.filter(collectivite => collectivite.isNotValidated)
+    },
+    collectivitesToDisplay () {
+      if (this.hideValidatedCollectives) {
+        return this.notValidatedCollectivites
+      }
+      return this.collectivites
     }
   },
   async mounted () {
     const referentiel = await fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
     const { communes, groupements } = await referentiel.json()
-
+    this.groupements = groupements
     console.log('groupements', groupements)
 
     const procedures = await this.$urbanisator.getCollectivitesProcedures(communes.map(c => c.code))
@@ -213,8 +396,47 @@ export default {
     const enrichedGroups = this.parseGroupements(groupements, procedures)
 
     this.referentiel = [...enrichedGroups, ...enrichedCommunes]
+    await this.fetchValidation()
   },
   methods: {
+    formatDate (date) {
+      return dayjs(date).format('DD/MM/YYYY')
+    },
+    async fetchValidation () {
+      const { success, error, data } = await this.$enquete.getValidatedCollectivitesForDepartement(this.$route.params.departement)
+      console.log('data valid 2024: ', data)
+      this.validatedCollectivites = data
+      const validatedCodes = this.validatedCollectivites.map(c => c.collectivite_code)
+      for (const collectivite of this.referentiel) {
+        collectivite.isNotValidated = !validatedCodes.includes(collectivite.code)
+      }
+      if (!success) {
+        this.snackbar = true
+
+        this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
+      }
+    },
+    async cancelValidation (codeCollec) {
+      const { success, error, data } = await this.$enquete.deleteValidationForCollectivite(codeCollec)
+      console.log('data valid 2024: ', data)
+      if (!success) {
+        this.snackbar = true
+        this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
+      }
+      await this.fetchValidation()
+    },
+    getValidatedInfosForCollectivite (collectiviteCode) {
+      return this.validatedCollectivites.find(e => e.collectivite_code === collectiviteCode)
+    },
+    async validateSelectedCollectivites () {
+      const { success, error } = await this.$enquete.validateCollectivites(this.selected)
+      if (!success) {
+        this.snackbar = true
+        this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
+      }
+      await this.fetchValidation()
+      this.selected = []
+    },
     parseCommunes (communes, procedures) {
       return communes.map((commune) => {
         const communeProcedures = procedures.filter((procedure) => {
@@ -246,6 +468,7 @@ export default {
 
         return {
           ...commune,
+          isNotValidated: true,
           plans: inContextProcedures.filter(p => p.doc_type !== 'SCOT'),
           scots: inContextProcedures.filter(p => p.doc_type === 'SCOT')
         }
@@ -272,6 +495,7 @@ export default {
 
         return {
           ...groupement,
+          isNotValidated: true,
           plans: inContextProcedures.filter(p => p.doc_type !== 'SCOT' && p.procedures_perimetres.length > 1),
           scots: inContextProcedures.filter(p => p.doc_type === 'SCOT')
         }
@@ -284,19 +508,6 @@ export default {
       const normalizedSearch = search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
 
       return normalizedValue.includes(normalizedSearch)
-    },
-    customSort (items, index, isDesc) {
-      items.sort((a, b) => {
-        if (index[0] === 'name' || index[0] === 'type') {
-          if (!isDesc[0]) {
-            return a.code.toLowerCase().localeCompare(b.code.toLowerCase())
-          } else {
-            return b.code.toLowerCase().localeCompare(a.code.toLowerCase())
-          }
-        }
-        return true
-      })
-      return items
     },
     showClose () {
       this.clickedOnDocLink = true
@@ -317,4 +528,18 @@ export default {
    }
 }
 
+.tooltip-action-validate{
+  background: red;
+  opacity: 1;
+}
+
+.validation-toolbar{
+  position: sticky;
+  bottom:20px;
+  width:95%;
+  margin:auto;
+  background:var(--v-primary-lighten4);
+  border: 1px solid  var(--v-primary-base) !important;
+  border-radius: 4px;
+}
 </style>

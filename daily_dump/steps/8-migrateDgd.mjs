@@ -29,7 +29,7 @@ async function migrateDgd(configSource, configTarget) {
   let startIndex = 0
   let hasMore = true
 
-  const allInsertedVersements = [{ a: 1 }]
+  const allInsertedVersements = []
 
   while (hasMore) {
     console.log(`Processing ${pageSize} from ${startIndex}`)
