@@ -1,11 +1,23 @@
 import fs from 'fs'
+import { parseArgs } from 'node:util'
 import { createClient } from '@supabase/supabase-js'
 import cliProgress from 'cli-progress'
 import { AsyncParser } from '@json2csv/node'
 
-import CONFIG from './pg_secret_config.mjs'
+const { values: { write } } = parseArgs({
+  options: {
+    write: {
+      type: 'boolean', default: false
+    }
+  },
+  strict: true
+})
 
-async function convertArrayToCsv (dataArray, outputFile) {
+if (write) {
+  console.warn('La base de données sera éditée')
+}
+
+function convertArrayToCsv (dataArray, outputFile) {
   try {
     const fields = Object.keys(dataArray[0])
     const opts = { fields }
@@ -28,7 +40,7 @@ const progressBar = new cliProgress.SingleBar({
   hideCursor: true
 })
 
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', CONFIG.SUPABASE_ADMIN, {
+const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.PROD_SUPABASE_ADMIN_KEY, {
   auth: { persistSession: false }
 })
 
@@ -72,9 +84,11 @@ for (let index = 0; index < procedures.length; index++) {
 
     // console.log('PLUi porté par commune')
     needToChange['PLUi porté par commune'] += 1
-    // await supabase.update({
-    //   collectivite_porteuse_id: commune.intercommunaliteCode
-    // }).eq('id', procedure.id)
+    if (write) {
+      await supabase.from('procedures').update({
+        collectivite_porteuse_id: commune.intercommunaliteCode
+      }).eq('id', procedure.id)
+    }
   }
 
   if (perim.length === 1) {
@@ -92,22 +106,26 @@ for (let index = 0; index < procedures.length; index++) {
         procToChange.push({
           id: procedure.id,
           url: `https://dev.docurba.beta.gouv.fr/frise/${procedure.id}`,
-          isPrincipale: procedure.is_principale
+          isPrincipale: procedure.is_principale,
+          sudocuh: procedure.collectivite_porteuse_id,
+          banatic: commune.code
         })
+      } else if (write) {
+        await supabase.from('procedures').update({
+          collectivite_porteuse_id: commune.code
+        }).eq('id', procedure.id)
       }
-
-      // await supabase.update({
-      //   collectivite_porteuse_id: commune.code
-      // }).eq('id', procedure.id)
     }
 
     // Commune does not have competence so code should be its group.
     if (!commune.competencePLU && procedure.collectivite_porteuse_id.length < 6) {
       // console.log('PLU porté par commune au lieu de interco')
       needToChange['PLU porté par commune au lieu de interco'] += 1
-      // await supabase.update({
-      //   collectivite_porteuse_id: commune.intercommunaliteCode
-      // }).eq('id', procedure.id)
+      if (write) {
+        await supabase.from('procedures').update({
+          collectivite_porteuse_id: commune.intercommunaliteCode
+        }).eq('id', procedure.id)
+      }
     }
   }
 }
