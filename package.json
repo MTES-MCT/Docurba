@@ -2,6 +2,9 @@
   "name": "docurba",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "20"
+  },
   "scripts": {
     "daily_dump": "node --experimental-json-modules daily_dump/index.mjs",
     "dev": "nuxt",
