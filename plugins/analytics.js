@@ -30,8 +30,7 @@ export default ({ $supabase, $user, $isDev, app }, inject) => {
 
     if (collectiviteId) {
       try {
-        const baseUrl = $isDev ? 'http://localhost:3000' : 'https://docurba.beta.gouv.fr'
-        const { data: collectivite } = await axios(`${baseUrl}/api/geo/collectivites/${collectiviteId}`)
+        const { data: collectivite } = await axios(`https://nuxt3.docurba.incubateur.net/api/geo/search/collectivites?code=${collectiviteId}`)
         dept = collectivite.departementCode
       } catch (err) {
         // eslint-disable-next-line no-console
