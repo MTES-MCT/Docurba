@@ -188,6 +188,19 @@ export default {
     }
   },
   computed: {
+    collectivitePorteuseCode () {
+      if (this.collectivite.competencePLU) {
+        // return the collectivite if it has the competence
+        return this.collectivite.code
+      } else if (this.collectivite.intercommunalite) {
+        // return the interco if it exist.
+        return this.collectivite.intercommunalite.code
+      } else {
+        // Return the collectivite code if there is no groupement available.
+        // This can create an anomaly with Banatic but is better than nothing.
+        return this.collectivite.code
+      }
+    },
     procedureParentDocType () {
       return this.proceduresParents?.find(e => e.id === this.procedureParent)?.doc_type
     },
@@ -202,7 +215,13 @@ export default {
     },
     communes () {
       const coms = this.collectivite.membres || this.collectivite.intercommunalite.membres
-      return uniqBy(coms, 'code').filter(e => e.type === 'COM')
+      const uniqComs = uniqBy(coms, 'code').filter(e => e.type === 'COM')
+
+      if (this.collectivite.code.length < 6) {
+        uniqComs.push(this.collectivite)
+      }
+
+      return uniqComs
     }
   },
   async mounted () {
@@ -210,7 +229,6 @@ export default {
       if (this.procedureCategory === 'secondaire') {
         const proceduresParents = await this.getProcedures()
         this.proceduresParents = proceduresParents
-        console.log('this.proceduresParents: ', this.proceduresParents)
         if (this.$route.query.secondary_id) {
           this.procedureParent = this.$route.query.secondary_id
         }
@@ -296,7 +314,7 @@ export default {
             current_perimetre: oldFomattedPerimetre,
             initial_perimetre: oldFomattedPerimetre,
             collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
-            collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
+            collectivite_porteuse_id: this.collectivitePorteuseCode,
             test: true,
             owner: this.$user.id
           }).select()
@@ -309,7 +327,7 @@ export default {
           secondary_procedure_of: this.procedureParent,
           type: this.typeProcedure,
           commentaire: this.objetProcedure && this.objetProcedure.includes('Autre') ? this.objetProcedure?.join(', ') + ' - ' + this.otherObjetProcedure : this.objetProcedure?.join(', '),
-          collectivite_porteuse_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
+          collectivite_porteuse_id: this.collectivitePorteuseCode,
           is_principale: this.procedureCategory === 'principale',
           status: 'en cours',
           is_sectoriel: null,

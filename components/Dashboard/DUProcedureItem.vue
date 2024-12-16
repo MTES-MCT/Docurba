@@ -106,7 +106,13 @@
               <v-btn color="primary" text @click="dialog = false">
                 Annuler
               </v-btn>
-              <v-btn v-if="!censored" color="error" depressed @click="archiveProcedure(procedure.id)">
+              <v-btn
+                v-if="!censored"
+                color="error"
+                depressed
+                :loading="deleteLoading"
+                @click="archiveProcedure(procedure.id)"
+              >
                 Supprimer
               </v-btn>
             </v-card-actions>
@@ -159,7 +165,8 @@ export default {
         mdiArrowRight
       },
       dialog: false,
-      displayedCollectivite: null
+      displayedCollectivite: null,
+      deleteLoading: false
     }
   },
   computed: {
@@ -188,6 +195,8 @@ export default {
   },
   methods: {
     async  archiveProcedure (idProcedure) {
+      this.deleteLoading = true
+
       try {
         // console.log('idProcedure to archive: ', idProcedure)
         const { error } = await this.$supabase
@@ -202,6 +211,8 @@ export default {
         // eslint-disable-next-line no-console
         console.log(error)
       }
+
+      this.deleteLoading = false
     }
   }
 }
