@@ -123,6 +123,9 @@ export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inj
 
     const plans = (collectiviteToValidate.plans || []).map(formatProcedure)
     const scots = (collectiviteToValidate.scots || []).map(formatProcedure)
+    if (plans.length === 0 && scots.length === 0) {
+      return [{ ...infosCollec, status: 'RNU' }]
+    }
 
     return [...plans, ...scots].filter(
       e => e.status === 'opposable' || e.status === 'en cours'
