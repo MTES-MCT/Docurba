@@ -1,0 +1,7 @@
+{
+  "env": {
+    "APP_URL": {
+      "generator": "url"
+    }
+  }
+}
