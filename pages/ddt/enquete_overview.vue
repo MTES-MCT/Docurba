@@ -26,7 +26,7 @@
 
           <!-- eslint-disable-next-line -->
         <template #item.collectivites="{ item }">
-            <span class="primary--text font-weight-bold">{{ item.nb_validated }}</span> <span class="mention-grey--text"> / {{ item.nb_communes }}</span>
+            <span class="primary--text font-weight-bold">{{ item.nb_validated }}</span> <span class="mention-grey--text"> / {{ item.nb_collectivites }}</span>
           </template>
 
           <!-- eslint-disable-next-line -->
@@ -72,40 +72,32 @@ export default {
           value: 'departement'
         },
         { text: 'Collectivités', align: 'start', value: 'collectivites' },
-        { text: 'Restantes', align: 'start', value: 'restantes' },
-        { text: '% validées', align: 'start', value: 'percentage' },
-        { text: 'Schémas', value: 'schemas' },
+        { text: 'Restantes', align: 'start', value: 'restantes', sortable: true },
+        { text: '% validées', align: 'start', value: 'percentage', sortable: true },
         { text: '', value: 'action' }
       ]
     }
   },
   async mounted () {
-    // TODO: Need to add EPCI/SCOT to the count
-    console.log('TEST')
-    const { data: communesByDepts } = await axios('/json/communes_by_department_enriched.json')
-    console.log('communesByDepts: ', communesByDepts)
-    this.deptsItems = communesByDepts
-    console.log('TEST')
+    const { data: collectivitesByDepts } = await axios('/json/collectivites_by_department_enriched.json')
+    this.deptsItems = collectivitesByDepts
     const { data: nbValidationByDepts, error } = await this.$supabase.rpc('validated_collectivites_by_depts_2024')
     console.log('error: ', error)
-    console.log('nbValidationByDepts: ', nbValidationByDepts)
 
     const validationsMap = new Map(
       nbValidationByDepts?.map(item => [item.departement, item.unique_collectivites_count]) || []
     )
 
     // Enrich deptsItems with nb_validated
-    console.log('deptsItems: ', this.deptsItems)
-    this.deptsItems = communesByDepts.map((dept) => {
+    this.deptsItems = collectivitesByDepts.map((dept) => {
       const nbValidated = validationsMap.get(dept.departement_code) || 0
       return {
         ...dept,
         nb_validated: nbValidated,
-        restantes: dept.nb_communes - nbValidated,
-        percentage: Math.round((nbValidated / dept.nb_communes) * 100)
+        restantes: dept.nb_collectivites - nbValidated,
+        percentage: Math.round((nbValidated / dept.nb_collectivites) * 100)
       }
     })
-    console.log('this.deptsItems aftet: ', this.deptsItems)
   },
   methods: {
     customSort (items, sortBy, sortDesc) {
@@ -119,8 +111,14 @@ export default {
           const codeB = b.departement_code.padStart(2, '0')
           return direction * codeA.localeCompare(codeB)
         }
-        if (sortBy[0] === 'communes') {
+        if (sortBy[0] === 'collectivites') {
           return direction * (a.nb_validated - b.nb_validated)
+        }
+        if (sortBy[0] === 'restantes') {
+          return direction * (a.restantes - b.restantes)
+        }
+        if (sortBy[0] === 'percentage') {
+          return direction * (a.percentage - b.percentage)
         }
         // Add other sort cases if needed
         return 0
