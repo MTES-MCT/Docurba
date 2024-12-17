@@ -25,17 +25,8 @@
 import FormInput from '@/mixins/FormInput.js'
 
 import PluEvents from '@/assets/data/events/PLU_events.json'
-// import ScotEvents from '@/assets/data/events/ScotEvents.json'
+import ScotEvents from '@/assets/data/events/SCOT_events.json'
 import ccEvents from '@/assets/data/events/CC_events.json'
-
-// Solution peu idéale. Mais il faudrait que Julien revoit la génération de liste d'events à partir du fichier d'Hermance.
-const ScotEvents = PluEvents.map((e) => {
-  if (e.name === "Délibération d'approbation du conseil municipal ou communautaire") {
-    return Object.assign({}, e, {
-      name: "Délibération d'approbation"
-    })
-  } else { return e }
-})
 
 export default {
   mixins: [FormInput],
@@ -65,7 +56,6 @@ export default {
         PLU: PluEvents,
         PLUi: PluEvents,
         POS: PluEvents,
-        // TODO: Mettre a jour la liste des events SCOTs avec le tableau d'Hermance. Voir comment plus haut..
         SCOT: ScotEvents,
         CC: ccEvents
       }

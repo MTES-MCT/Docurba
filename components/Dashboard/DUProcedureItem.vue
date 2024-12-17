@@ -188,8 +188,6 @@ export default {
   },
   methods: {
     async  archiveProcedure (idProcedure) {
-      this.deleteLoading = true
-
       try {
         // console.log('idProcedure to archive: ', idProcedure)
         const { error } = await this.$supabase

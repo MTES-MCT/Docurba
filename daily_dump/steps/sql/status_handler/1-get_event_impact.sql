@@ -19,7 +19,7 @@ declare
         "caduc": []
       },
       "SCOT": {
-        "en cours": ["Délibération de l''établissement public qui prescrit"],
+        "en cours": ["Délibération de l''établissement public qui prescrit", "Retrait de la délibération d''approbation"],
         "opposable": ["Délibération d''approbation", "Caractère exécutoire", "Retrait de l''annulation totale"],
         "abandon": ["Abandon", "Retrait de la délibération de prescription"],
         "annule": ["Annulation TA totale", "Annulation TA"],
