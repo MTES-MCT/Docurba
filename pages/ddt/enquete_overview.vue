@@ -81,10 +81,11 @@ export default {
   },
   async mounted () {
     // TODO: Need to add EPCI/SCOT to the count
+    console.log('TEST')
     const { data: communesByDepts } = await axios('/json/communes_by_department_enriched.json')
     console.log('communesByDepts: ', communesByDepts)
     this.deptsItems = communesByDepts
-
+    console.log('TEST')
     const { data: nbValidationByDepts, error } = await this.$supabase.rpc('validated_collectivites_by_depts_2024')
     console.log('error: ', error)
     console.log('nbValidationByDepts: ', nbValidationByDepts)
@@ -94,10 +95,16 @@ export default {
     )
 
     // Enrich deptsItems with nb_validated
-    this.deptsItems = communesByDepts.map(dept => ({
-      ...dept,
-      nb_validated: validationsMap.get(dept.departement_code) || 0
-    }))
+    console.log('deptsItems: ', this.deptsItems)
+    this.deptsItems = communesByDepts.map((dept) => {
+      const nbValidated = validationsMap.get(dept.departement_code) || 0
+      return {
+        ...dept,
+        nb_validated: nbValidated,
+        restantes: dept.nb_communes - nbValidated,
+        percentage: Math.round((nbValidated / dept.nb_communes) * 100)
+      }
+    })
     console.log('this.deptsItems aftet: ', this.deptsItems)
   },
   methods: {
