@@ -218,7 +218,13 @@ export default {
     },
     communes () {
       const coms = this.collectivite.membres || this.collectivite.intercommunalite.membres
-      return uniqBy(coms, 'code').filter(e => e.type === 'COM')
+      const uniqComs = uniqBy(coms, 'code').filter(e => e.type === 'COM')
+
+      if (this.collectivite.code.length < 6) {
+        uniqComs.push(this.collectivite)
+      }
+
+      return uniqComs
     }
   },
   async mounted () {
@@ -226,7 +232,6 @@ export default {
       if (this.procedureCategory === 'secondaire') {
         const proceduresParents = await this.getProcedures()
         this.proceduresParents = proceduresParents
-        console.log('this.proceduresParents: ', this.proceduresParents)
         if (this.$route.query.secondary_id) {
           this.procedureParent = this.$route.query.secondary_id
         }
