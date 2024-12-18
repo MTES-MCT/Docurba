@@ -43,6 +43,8 @@ const latestDumpName = await downloadDump(CONFIG.PG_PROD_CONFIG, __dirname)
 await clearDev(CONFIG.PG_DEV_CONFIG)
 // // // // // Step 1 - Charge un dump particulier venant de l'export de Andy sur notre storage
 
+await loadDump(CONFIG.PG_DEV_CONFIG, process.argv.at(-1))
+
 await loadDump(CONFIG.PG_DEV_CONFIG, latestDumpName)
 // // // // // // Step 2 - Créer les tables intermédiaires d'aggregation depuis la donnée Sudocuh
 await createSudocuProcessedTables(CONFIG.PG_DEV_CONFIG)
