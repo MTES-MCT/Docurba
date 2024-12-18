@@ -1,7 +1,15 @@
 export default ({ app }, inject) => {
   const utils = {
-    formatProcedureName (procedure, collectivite) {
-      return `${procedure.type} ${procedure.numero ? procedure.numero : ''} ${procedure.doc_type} ${collectivite?.intitule}`
+    formatProcedureName (procedure, collectivite, test) {
+      const isInter = procedure && procedure?.procedures_perimetres && procedure?.procedures_perimetres.length > 1
+
+      let porteuse = collectivite && collectivite.intitule ? collectivite.intitule : ''
+      if (isInter && collectivite?.intercommunaliteCode && collectivite?.groupements) {
+        porteuse = collectivite.groupements.find(e => e.code === collectivite.intercommunaliteCode).intitule ?? ''
+      }
+      // TODO: probleme pour la page mes procedures dans le cas de procedure sans name cad historique
+      if (procedure.name) { return procedure.name }
+      return `${procedure.type} ${procedure.numero ? procedure.numero : ''} ${procedure.doc_type}${isInter ? 'i' : ''} ${porteuse}`
     },
     formatEventProfileToCreator (event) {
       if (event.profiles) {
