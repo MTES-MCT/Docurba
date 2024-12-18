@@ -94,12 +94,8 @@ export default {
       ]
     }
   },
-  mounted () {
-    // TODO: this is using an API route from an other project.
-    // It could use a wrapper to avoid having to re writte the base url all the time.
-    fetch(`https://nuxt3.docurba.incubateur.net/api/geo/search/collectivites?departementCode=${this.$route.params.departement}`).then(async (res) => {
-      this.collectivites = await res.json()
-    })
+  async mounted () {
+    this.collectivites = await this.$nuxt3api(`/api/geo/search/collectivites?departementCode=${this.$route.params.departement}`)
   },
   methods: {
     customFilter (value, search, item) {

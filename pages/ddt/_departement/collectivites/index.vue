@@ -386,6 +386,7 @@ export default {
   },
   async mounted () {
     const collectivites = await this.$nuxt3api(`/api/geo/collectivites?departementCode=${this.$route.params.departement}`)
+
     const communes = []
     const groupements = []
 
