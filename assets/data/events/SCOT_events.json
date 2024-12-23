@@ -5,9 +5,7 @@
     "law": "",
     "phases": "",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": ""
   },
@@ -17,11 +15,7 @@
     "law": "",
     "phases": "Définition des modalités",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "m",
-      "ms"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": "en cours"
   },
@@ -31,9 +25,7 @@
     "law": "",
     "phases": "",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "mc"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": ""
   },
@@ -53,9 +45,7 @@
     "law": "art. L. 153-8 (1°) du code de l'urbanisme",
     "phases": "Définition des modalités",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -65,13 +55,7 @@
     "law": "",
     "phases": "Définition des modalités",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -81,10 +65,7 @@
     "law": "",
     "phases": "",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -114,10 +95,7 @@
     "law": "",
     "phases": "",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -137,10 +115,7 @@
     "law": "L. 132-2 du CU",
     "phases": "Diagnostic",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -150,9 +125,7 @@
     "law": "L. 132-4-1 du CU",
     "phases": "Diagnostic ou PAS",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -172,11 +145,7 @@
     "law": "",
     "phases": "",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -196,10 +165,7 @@
     "law": "",
     "phases": "Diagnostic",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": ""
   },
@@ -209,10 +175,7 @@
     "law": "Elaboration : L. 104-1 (3°bis) et R. 104-11 (I-1°) du CU\nRévision : L. 104-1 (3°bis) et R. 104-11 (I-2°) du CU",
     "phases": "EE",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -222,10 +185,7 @@
     "law": "",
     "phases": "PAS",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -235,10 +195,7 @@
     "law": "",
     "phases": "PAS",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -248,10 +205,7 @@
     "law": "",
     "phases": "PAS",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -261,9 +215,7 @@
     "law": "L. 153-12 du CU",
     "phases": "PAS",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": ""
   },
@@ -273,10 +225,7 @@
     "law": "",
     "phases": "Rapport de présentation",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -286,10 +235,7 @@
     "law": "",
     "phases": "DOO",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -299,11 +245,7 @@
     "law": "",
     "phases": "Pré-arrêt",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": ""
   },
@@ -313,11 +255,7 @@
     "law": "",
     "phases": "",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -327,11 +265,7 @@
     "law": "",
     "phases": "",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "rms",
-      "m",
-      "ms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -361,11 +295,7 @@
     "law": "R. 153-3",
     "phases": "Concertation",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -375,10 +305,7 @@
     "law": "",
     "phases": "",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "m",
-      "ms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -388,11 +315,7 @@
     "law": "L. 153-14",
     "phases": "Arrêt du projet",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": ""
   },
@@ -402,10 +325,7 @@
     "law": "art. R. 104-23",
     "phases": "Arrêt du projet",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -425,11 +345,7 @@
     "law": "L. 153-16\nL151-11 à 13",
     "phases": "Arrêt du projet",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -439,10 +355,7 @@
     "law": "L. 153-16\nL132-7",
     "phases": "Arrêt du projet",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -452,9 +365,7 @@
     "law": "L. 153-16",
     "phases": "Arrêt du projet",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -464,10 +375,7 @@
     "law": "",
     "phases": "Arrêt du projet",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -477,11 +385,7 @@
     "law": "",
     "phases": "?",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -491,11 +395,7 @@
     "law": "",
     "phases": "?",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -505,10 +405,7 @@
     "law": "",
     "phases": "Arrêt du projet",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": ""
   },
@@ -528,9 +425,7 @@
     "law": "L. 153-34 et R. 153-12",
     "phases": "",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "rms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -540,9 +435,7 @@
     "law": "",
     "phases": "",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "ms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -552,9 +445,7 @@
     "law": "L. 153-47 CU",
     "phases": "",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "ms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -564,9 +455,7 @@
     "law": "L. 153-47 CU",
     "phases": "",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "ms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -576,12 +465,7 @@
     "law": "L. 153-19",
     "phases": "Enquête publique",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms",
-      "m"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -591,12 +475,7 @@
     "law": "",
     "phases": "Enquête publique",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms",
-      "m"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": ""
   },
@@ -606,12 +485,7 @@
     "law": "",
     "phases": "Enquête publique",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms",
-      "m"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": ""
   },
@@ -621,12 +495,7 @@
     "law": "",
     "phases": "Enquête publique",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms",
-      "m"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -636,12 +505,7 @@
     "law": "",
     "phases": "Enquête publique",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms",
-      "m"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -661,13 +525,7 @@
     "law": "L. 153-21 (2°)",
     "phases": "Approbation",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": "opposable"
   },
@@ -707,13 +565,7 @@
     "law": "L. 153-23",
     "phases": "Caractère exécutoire",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": ""
   },
@@ -733,13 +585,7 @@
     "law": "R. 153-21",
     "phases": "Caractère exécutoire",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -749,13 +595,7 @@
     "law": "R. 153-21",
     "phases": "Caractère exécutoire",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms",
-      "m",
-      "ms"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -765,9 +605,7 @@
     "law": "R. 153-21",
     "phases": "Caractère exécutoire",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": false,
     "impact": ""
   },
@@ -777,12 +615,7 @@
     "law": "L. 153-23",
     "phases": "Caractère exécutoire",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi",
-      "rms",
-      "m"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": ""
   },
@@ -932,10 +765,7 @@
     "law": "L. 153-27 du CU",
     "phases": "Bilan/évaluation",
     "scope_liste": ["pp", "ppi", "rms", "m", "ms", "mc", "mj"],
-    "scope_sugg": [
-      "pp",
-      "ppi"
-    ],
+    "scope_sugg": [],
     "structurant": true,
     "impact": ""
   },
