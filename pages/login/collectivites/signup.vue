@@ -181,7 +181,8 @@ export default {
             userData: {
               ...this.userData,
               collectivite_id: this.selectedCollectivite.code,
-              departement: this.selectedCollectivite.departementCode
+              departement: this.selectedCollectivite.departementCode,
+              region: this.selectedCollectivite.regionCode
             },
             detailsCollectivite: this.selectedCollectivite,
             redirectTo: window.location.origin
