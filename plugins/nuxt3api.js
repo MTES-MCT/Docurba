@@ -1,4 +1,5 @@
 // This could be changed to be dynamic in dev mode ?
+// const BASE_URL = 'http://localhost:3001'
 const BASE_URL = 'https://nuxt3.docurba.incubateur.net'
 
 export default (_, inject) => {
