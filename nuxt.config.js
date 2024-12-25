@@ -4,7 +4,6 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
 
   env: {
-    activeDgd: process.env.ACTIVE_DGD || false,
     ENQUETE_ENABLED: process.env.ENQUETE_ENABLED === '1'
   },
   head: {
