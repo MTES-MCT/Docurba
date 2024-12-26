@@ -301,6 +301,7 @@
 
 <script>
 import dayjs from 'dayjs'
+import { partition } from 'lodash'
 
 const docVersion = '1.0'
 
@@ -308,6 +309,8 @@ const statusMap = {
   opposable: 'OPPOSABLE',
   'en cours': 'EN COURS'
 }
+
+const SCOT_LIKE = ['SCOT', 'SD']
 
 export default {
   name: 'CollectiviteDU',
@@ -478,11 +481,13 @@ export default {
           return 0
         }).reverse()
 
+        const [scots, plans] = partition(inContextProcedures, p => SCOT_LIKE.includes(p.doc_type))
+
         return {
           ...commune,
           isNotValidated: true,
-          plans: inContextProcedures.filter(p => p.doc_type !== 'SCOT'),
-          scots: inContextProcedures.filter(p => p.doc_type === 'SCOT')
+          plans,
+          scots
         }
       })
     },
@@ -523,11 +528,13 @@ export default {
           return 0
         }).reverse()
 
+        const [scots, plans] = partition(inContextProcedures, p => SCOT_LIKE.includes(p.doc_type))
+
         return {
           ...groupement,
           isNotValidated: true,
-          plans: inContextProcedures.filter(p => p.doc_type !== 'SCOT' && p.procedures_perimetres.length > 1),
-          scots: inContextProcedures.filter(p => p.doc_type === 'SCOT')
+          plans: plans.filter(p => p.procedures_perimetres.length > 1),
+          scots
         }
       })
     },
