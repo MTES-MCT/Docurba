@@ -83,8 +83,6 @@ export default {
   },
   methods: {
     async signUp () {
-      // console.log('regin', this.userData.region?.code.padStart(2, '0') || this.userData.departement?.code_region.toString().padStart(2, '0'))
-
       try {
         this.loading = true
         const { profile } = await this.$auth.signUpStateAgent({
