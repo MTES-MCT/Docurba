@@ -133,6 +133,8 @@
                 </div>
               </v-col>
               <v-col cols="3" class="my-6">
+                <SignalementProbleme class="mb-4" />
+
                 <template v-if="$user && $user.email && isAdmin">
                   <div class="font-weight-bold">
                     Collaborateurs

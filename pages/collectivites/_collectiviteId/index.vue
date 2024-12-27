@@ -41,13 +41,14 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12">
+      <v-col class="d-flex justify-space-between">
         <h2>Documents d'urbanisme</h2>
+        <SignalementProbleme />
       </v-col>
-      <v-col cols="12">
-        <p>
-          Documents d’urbanismes disponibles pour la commune recherchée :
-        </p>
+    </v-row>
+    <v-row>
+      <v-col>
+        Documents d’urbanismes disponibles pour la commune recherchée :
       </v-col>
     </v-row>
     <DashboardDUItemsList
@@ -60,7 +61,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'CollectiviteDetails',
   props: {
