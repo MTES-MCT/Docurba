@@ -53,10 +53,15 @@
             Les nouvelles procédures et événements saisis dans Sudocuh sont visibles dans Docurba dès le lendemain matin.
           </v-alert>
         </v-col>
-        <v-col cols="12">
+        <v-col cols="12" class="d-flex justify-space-between">
           <p class="text-h2">
             Documents d'urbanisme
           </p>
+          <SignalementProbleme />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
           <p class="text-h6">
             Documents d’urbanisme sous la compétence de {{ collectivite.intitule }} :
           </p>
