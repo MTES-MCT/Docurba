@@ -88,12 +88,9 @@ export default {
         const { profile } = await this.$auth.signUpStateAgent({
           ...this.userData,
           departement: this.userData.departement?.code_departement.toString().padStart(2, '0'),
-          region: this.userData.region?.code.padStart(2, '0')
+          region: this.userData.region?.code.padStart(2, '0') || this.userData.departement?.code_region.toString().padStart(2, '0')
         })
 
-        // console.log('SINGUP profile: ', profile)
-
-        // const sanitizedUserData = omit(this.userData, ['password'])
         axios({
           method: 'post',
           url: '/api/auth/hooksSignupStateAgent',
