@@ -138,7 +138,7 @@
               <div v-for="(plan, index) in item.plans" :key="plan.id" class="mb-4">
                 <template v-if="index < 2">
                   <div class="d-flex align-center">
-                    <nuxt-link style="max-width: 70%;" class="font-weight-bold text-decoration-none text-truncate mr-2" :to="`/frise/${plan.id}`">
+                    <nuxt-link class="font-weight-bold text-decoration-none text-truncate mr-2" :to="`/frise/${plan.id}`">
                       {{ $utils.formatProcedureName(plan, item) }}
                     </nuxt-link>
                     <v-chip
@@ -177,8 +177,9 @@
               <div v-else>
                 <div v-for="(scot, index) in item.scots" :key="scot.id" class="mb-4">
                   <template v-if="index < 2">
-                    <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.id}`">
-                      {{ scot.doc_type }}
+                    <nuxt-link class="font-weight-bold text-decoration-none text-truncate mr-2" :to="`/frise/${scot.id}`">
+                      {{ $utils.formatProcedureName(scot, item) }}
+                      <!-- {{ scot.doc_type }} -->
                     </nuxt-link>
                     <v-chip
                       :class="{
