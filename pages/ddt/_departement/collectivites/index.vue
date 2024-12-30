@@ -36,7 +36,7 @@
                 Enquête annuelle
               </div>
               <div>
-                L’enquête annuelle de validation des procédures d’urbanisme anciennement effectuée sur Sudocuh est disponible sur Docurba. Votre service a jusqu’au 31 Janvier pour valider les procédures de vos collectivités.
+                L’enquête annuelle sur l’état d’avancement des documents d’urbanisme est disponible sur Docurba jusqu’au <span style="font-weight: bold;">31 Janvier 2025</span>. <a href="https://docurba.crisp.help/fr/article/conditions-de-lenquete-annuelle-2024-tout-ce-quil-faut-savoir-agents-ddtmdeal-1mxhu8a/?bust=1735549774570">Consignes et astuces dans notre FAQ</a>.
               </div>
               <div>
                 <v-switch
