@@ -10,8 +10,8 @@
           :headers="headers"
           :items="deptsItems"
           :items-per-page="-1"
-          :sort-by="['departement_code']"
-          :sort-desc="[false]"
+          sort-by="percentage"
+          sort-desc
           must-sort
           style="font-variant-numeric: tabular-nums;"
         >
