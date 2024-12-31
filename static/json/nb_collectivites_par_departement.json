@@ -1,0 +1,507 @@
+[
+  {
+    "departement_code": "21",
+    "departement_intitule": "Côte-d'Or",
+    "nb_collectivites": 723
+  },
+  {
+    "departement_code": "22",
+    "departement_intitule": "Côtes-d'Armor",
+    "nb_collectivites": 359
+  },
+  {
+    "departement_code": "23",
+    "departement_intitule": "Creuse",
+    "nb_collectivites": 265
+  },
+  {
+    "departement_code": "24",
+    "departement_intitule": "Dordogne",
+    "nb_collectivites": 527
+  },
+  {
+    "departement_code": "25",
+    "departement_intitule": "Doubs",
+    "nb_collectivites": 590
+  },
+  {
+    "departement_code": "26",
+    "departement_intitule": "Drôme",
+    "nb_collectivites": 376
+  },
+  {
+    "departement_code": "27",
+    "departement_intitule": "Eure",
+    "nb_collectivites": 598
+  },
+  {
+    "departement_code": "28",
+    "departement_intitule": "Eure-et-Loir",
+    "nb_collectivites": 377
+  },
+  {
+    "departement_code": "29",
+    "departement_intitule": "Finistère",
+    "nb_collectivites": 302
+  },
+  {
+    "departement_code": "2A",
+    "departement_intitule": "Corse-du-Sud",
+    "nb_collectivites": 131
+  },
+  {
+    "departement_code": "2B",
+    "departement_intitule": "Haute-Corse",
+    "nb_collectivites": 249
+  },
+  {
+    "departement_code": "01",
+    "departement_intitule": "Ain",
+    "nb_collectivites": 408
+  },
+  {
+    "departement_code": "02",
+    "departement_intitule": "Aisne",
+    "nb_collectivites": 821
+  },
+  {
+    "departement_code": "03",
+    "departement_intitule": "Allier",
+    "nb_collectivites": 329
+  },
+  {
+    "departement_code": "04",
+    "departement_intitule": "Alpes-de-Haute-Provence",
+    "nb_collectivites": 206
+  },
+  {
+    "departement_code": "05",
+    "departement_intitule": "Hautes-Alpes",
+    "nb_collectivites": 168
+  },
+  {
+    "departement_code": "06",
+    "departement_intitule": "Alpes-Maritimes",
+    "nb_collectivites": 172
+  },
+  {
+    "departement_code": "07",
+    "departement_intitule": "Ardèche",
+    "nb_collectivites": 353
+  },
+  {
+    "departement_code": "08",
+    "departement_intitule": "Ardennes",
+    "nb_collectivites": 457
+  },
+  {
+    "departement_code": "09",
+    "departement_intitule": "Ariège",
+    "nb_collectivites": 335
+  },
+  {
+    "departement_code": "10",
+    "departement_intitule": "Aube",
+    "nb_collectivites": 446
+  },
+  {
+    "departement_code": "11",
+    "departement_intitule": "Aude",
+    "nb_collectivites": 440
+  },
+  {
+    "departement_code": "12",
+    "departement_intitule": "Aveyron",
+    "nb_collectivites": 307
+  },
+  {
+    "departement_code": "13",
+    "departement_intitule": "Bouches-du-Rhône",
+    "nb_collectivites": 124
+  },
+  {
+    "departement_code": "14",
+    "departement_intitule": "Calvados",
+    "nb_collectivites": 548
+  },
+  {
+    "departement_code": "15",
+    "departement_intitule": "Cantal",
+    "nb_collectivites": 258
+  },
+  {
+    "departement_code": "16",
+    "departement_intitule": "Charente",
+    "nb_collectivites": 373
+  },
+  {
+    "departement_code": "17",
+    "departement_intitule": "Charente-Maritime",
+    "nb_collectivites": 480
+  },
+  {
+    "departement_code": "18",
+    "departement_intitule": "Cher",
+    "nb_collectivites": 306
+  },
+  {
+    "departement_code": "19",
+    "departement_intitule": "Corrèze",
+    "nb_collectivites": 291
+  },
+  {
+    "departement_code": "30",
+    "departement_intitule": "Gard",
+    "nb_collectivites": 369
+  },
+  {
+    "departement_code": "31",
+    "departement_intitule": "Haute-Garonne",
+    "nb_collectivites": 608
+  },
+  {
+    "departement_code": "32",
+    "departement_intitule": "Gers",
+    "nb_collectivites": 477
+  },
+  {
+    "departement_code": "33",
+    "departement_intitule": "Gironde",
+    "nb_collectivites": 570
+  },
+  {
+    "departement_code": "34",
+    "departement_intitule": "Hérault",
+    "nb_collectivites": 362
+  },
+  {
+    "departement_code": "35",
+    "departement_intitule": "Ille-et-Vilaine",
+    "nb_collectivites": 356
+  },
+  {
+    "departement_code": "36",
+    "departement_intitule": "Indre",
+    "nb_collectivites": 260
+  },
+  {
+    "departement_code": "37",
+    "departement_intitule": "Indre-et-Loire",
+    "nb_collectivites": 287
+  },
+  {
+    "departement_code": "38",
+    "departement_intitule": "Isère",
+    "nb_collectivites": 533
+  },
+  {
+    "departement_code": "39",
+    "departement_intitule": "Jura",
+    "nb_collectivites": 510
+  },
+  {
+    "departement_code": "40",
+    "departement_intitule": "Landes",
+    "nb_collectivites": 349
+  },
+  {
+    "departement_code": "41",
+    "departement_intitule": "Loir-et-Cher",
+    "nb_collectivites": 282
+  },
+  {
+    "departement_code": "42",
+    "departement_intitule": "Loire",
+    "nb_collectivites": 335
+  },
+  {
+    "departement_code": "43",
+    "departement_intitule": "Haute-Loire",
+    "nb_collectivites": 268
+  },
+  {
+    "departement_code": "44",
+    "departement_intitule": "Loire-Atlantique",
+    "nb_collectivites": 225
+  },
+  {
+    "departement_code": "45",
+    "departement_intitule": "Loiret",
+    "nb_collectivites": 347
+  },
+  {
+    "departement_code": "46",
+    "departement_intitule": "Lot",
+    "nb_collectivites": 324
+  },
+  {
+    "departement_code": "47",
+    "departement_intitule": "Lot-et-Garonne",
+    "nb_collectivites": 331
+  },
+  {
+    "departement_code": "48",
+    "departement_intitule": "Lozère",
+    "nb_collectivites": 163
+  },
+  {
+    "departement_code": "49",
+    "departement_intitule": "Maine-et-Loire",
+    "nb_collectivites": 187
+  },
+  {
+    "departement_code": "50",
+    "departement_intitule": "Manche",
+    "nb_collectivites": 456
+  },
+  {
+    "departement_code": "51",
+    "departement_intitule": "Marne",
+    "nb_collectivites": 628
+  },
+  {
+    "departement_code": "52",
+    "departement_intitule": "Haute-Marne",
+    "nb_collectivites": 437
+  },
+  {
+    "departement_code": "53",
+    "departement_intitule": "Mayenne",
+    "nb_collectivites": 249
+  },
+  {
+    "departement_code": "54",
+    "departement_intitule": "Meurthe-et-Moselle",
+    "nb_collectivites": 610
+  },
+  {
+    "departement_code": "55",
+    "departement_intitule": "Meuse",
+    "nb_collectivites": 514
+  },
+  {
+    "departement_code": "56",
+    "departement_intitule": "Morbihan",
+    "nb_collectivites": 266
+  },
+  {
+    "departement_code": "57",
+    "departement_intitule": "Moselle",
+    "nb_collectivites": 752
+  },
+  {
+    "departement_code": "58",
+    "departement_intitule": "Nièvre",
+    "nb_collectivites": 321
+  },
+  {
+    "departement_code": "59",
+    "departement_intitule": "Nord",
+    "nb_collectivites": 673
+  },
+  {
+    "departement_code": "60",
+    "departement_intitule": "Oise",
+    "nb_collectivites": 704
+  },
+  {
+    "departement_code": "61",
+    "departement_intitule": "Orne",
+    "nb_collectivites": 402
+  },
+  {
+    "departement_code": "62",
+    "departement_intitule": "Pas-de-Calais",
+    "nb_collectivites": 920
+  },
+  {
+    "departement_code": "63",
+    "departement_intitule": "Puy-de-Dôme",
+    "nb_collectivites": 481
+  },
+  {
+    "departement_code": "64",
+    "departement_intitule": "Pyrénées-Atlantiques",
+    "nb_collectivites": 556
+  },
+  {
+    "departement_code": "65",
+    "departement_intitule": "Hautes-Pyrénées",
+    "nb_collectivites": 480
+  },
+  {
+    "departement_code": "66",
+    "departement_intitule": "Pyrénées-Orientales",
+    "nb_collectivites": 239
+  },
+  {
+    "departement_code": "67",
+    "departement_intitule": "Bas-Rhin",
+    "nb_collectivites": 548
+  },
+  {
+    "departement_code": "68",
+    "departement_intitule": "Haut-Rhin",
+    "nb_collectivites": 387
+  },
+  {
+    "departement_code": "69",
+    "departement_intitule": "Rhône",
+    "nb_collectivites": 282
+  },
+  {
+    "departement_code": "70",
+    "departement_intitule": "Haute-Saône",
+    "nb_collectivites": 560
+  },
+  {
+    "departement_code": "71",
+    "departement_intitule": "Saône-et-Loire",
+    "nb_collectivites": 586
+  },
+  {
+    "departement_code": "72",
+    "departement_intitule": "Sarthe",
+    "nb_collectivites": 373
+  },
+  {
+    "departement_code": "73",
+    "departement_intitule": "Savoie",
+    "nb_collectivites": 294
+  },
+  {
+    "departement_code": "74",
+    "departement_intitule": "Haute-Savoie",
+    "nb_collectivites": 303
+  },
+  {
+    "departement_code": "75",
+    "departement_intitule": "Paris",
+    "nb_collectivites": 2
+  },
+  {
+    "departement_code": "76",
+    "departement_intitule": "Seine-Maritime",
+    "nb_collectivites": 731
+  },
+  {
+    "departement_code": "77",
+    "departement_intitule": "Seine-et-Marne",
+    "nb_collectivites": 533
+  },
+  {
+    "departement_code": "78",
+    "departement_intitule": "Yvelines",
+    "nb_collectivites": 269
+  },
+  {
+    "departement_code": "79",
+    "departement_intitule": "Deux-Sèvres",
+    "nb_collectivites": 265
+  },
+  {
+    "departement_code": "80",
+    "departement_intitule": "Somme",
+    "nb_collectivites": 789
+  },
+  {
+    "departement_code": "81",
+    "departement_intitule": "Tarn",
+    "nb_collectivites": 332
+  },
+  {
+    "departement_code": "82",
+    "departement_intitule": "Tarn-et-Garonne",
+    "nb_collectivites": 207
+  },
+  {
+    "departement_code": "83",
+    "departement_intitule": "Var",
+    "nb_collectivites": 167
+  },
+  {
+    "departement_code": "84",
+    "departement_intitule": "Vaucluse",
+    "nb_collectivites": 166
+  },
+  {
+    "departement_code": "85",
+    "departement_intitule": "Vendée",
+    "nb_collectivites": 279
+  },
+  {
+    "departement_code": "86",
+    "departement_intitule": "Vienne",
+    "nb_collectivites": 274
+  },
+  {
+    "departement_code": "87",
+    "departement_intitule": "Haute-Vienne",
+    "nb_collectivites": 211
+  },
+  {
+    "departement_code": "88",
+    "departement_intitule": "Vosges",
+    "nb_collectivites": 523
+  },
+  {
+    "departement_code": "89",
+    "departement_intitule": "Yonne",
+    "nb_collectivites": 442
+  },
+  {
+    "departement_code": "90",
+    "departement_intitule": "Territoire de Belfort",
+    "nb_collectivites": 105
+  },
+  {
+    "departement_code": "91",
+    "departement_intitule": "Essonne",
+    "nb_collectivites": 204
+  },
+  {
+    "departement_code": "92",
+    "departement_intitule": "Hauts-de-Seine",
+    "nb_collectivites": 40
+  },
+  {
+    "departement_code": "93",
+    "departement_intitule": "Seine-Saint-Denis",
+    "nb_collectivites": 44
+  },
+  {
+    "departement_code": "94",
+    "departement_intitule": "Val-de-Marne",
+    "nb_collectivites": 50
+  },
+  {
+    "departement_code": "95",
+    "departement_intitule": "Val-d'Oise",
+    "nb_collectivites": 193
+  },
+  {
+    "departement_code": "971",
+    "departement_intitule": "Guadeloupe",
+    "nb_collectivites": 38
+  },
+  {
+    "departement_code": "972",
+    "departement_intitule": "Martinique",
+    "nb_collectivites": 37
+  },
+  {
+    "departement_code": "973",
+    "departement_intitule": "Guyane",
+    "nb_collectivites": 26
+  },
+  {
+    "departement_code": "974",
+    "departement_intitule": "La Réunion",
+    "nb_collectivites": 30
+  },
+  {
+    "departement_code": "976",
+    "departement_intitule": "Mayotte",
+    "nb_collectivites": 22
+  }
+]
