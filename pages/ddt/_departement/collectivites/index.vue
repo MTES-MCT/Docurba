@@ -255,7 +255,7 @@
                         par {{ getValidatedInfosForCollectivite(item.code).email }}
                       </div>
                       <v-btn
-                        v-if="item.profile_id === $user.id || $user.profile.is_admin"
+                        v-if="getValidatedInfosForCollectivite(item.code).profile_id === $user.id || $user.profile.is_admin"
                         small
                         color="error"
                         text
