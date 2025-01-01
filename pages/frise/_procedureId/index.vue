@@ -36,6 +36,16 @@
           </h1>
         </div>
       </v-col>
+      <v-col v-if="procedure.archived" cols="12">
+        <v-alert type="warning">
+          Cette procédure est archivée.
+          <span v-if="procedure.doublon_cache_de_id">
+            <nuxt-link :to="{name: 'frise-procedureId', params: {procedureId: procedure.doublon_cache_de_id}}">
+              Visiter la procédure canonique.
+            </nuxt-link>
+          </span>
+        </v-alert>
+      </v-col>
       <v-col cols="12" class="mb-2">
         <v-btn v-if="$user?.profile?.side === 'etat' && isAdmin && !procedure.secondary_procedure_of" color="primary" class="mr-2" outlined @click="addSubProcedure">
           Ajouter une procédure secondaire
