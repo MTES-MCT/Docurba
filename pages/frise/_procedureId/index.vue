@@ -145,6 +145,10 @@
               <v-col cols="3" class="my-6">
                 <SignalementProbleme class="mb-4" />
 
+                <v-alert v-if="procedure.from_sudocuh" type="warning" dense text>
+                  Procédure débutée sur Sudocuh
+                </v-alert>
+
                 <template v-if="$user && $user.email && isAdmin">
                   <div class="font-weight-bold">
                     Collaborateurs
