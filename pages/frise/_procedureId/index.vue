@@ -145,7 +145,7 @@
               <v-col cols="3" class="my-6">
                 <SignalementProbleme class="mb-4" />
 
-                <v-alert v-if="procedure.from_sudocuh" type="warning" dense text>
+                <v-alert v-if="procedure.from_sudocuh" type="info" dense text>
                   Procédure débutée sur Sudocuh
                 </v-alert>
 
@@ -245,13 +245,13 @@
 </template>
 
 <script>
+import { mdiBookmark, mdiChevronLeft, mdiDotsVertical, mdiPaperclip, mdiSync } from '@mdi/js'
 import axios from 'axios'
 import _ from 'lodash'
-import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical, mdiSync } from '@mdi/js'
 
+import ccEvents from '@/assets/data/events/CC_events.json'
 import PluEvents from '@/assets/data/events/PLU_events.json'
 import ScotEvents from '@/assets/data/events/SCOT_events.json'
-import ccEvents from '@/assets/data/events/CC_events.json'
 
 export default
 {
