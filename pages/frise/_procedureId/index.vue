@@ -46,7 +46,7 @@
           </span>
         </v-alert>
       </v-col>
-      <v-col cols="12" class="mb-2">
+      <v-col v-if="!procedure.archived" cols="12" class="mb-2">
         <v-btn v-if="$user?.profile?.side === 'etat' && isAdmin && !procedure.secondary_procedure_of" color="primary" class="mr-2" outlined @click="addSubProcedure">
           Ajouter une procédure secondaire
         </v-btn>
@@ -121,7 +121,12 @@
           <v-container>
             <v-row>
               <v-col cols="9">
-                <FriseEventCard v-if="$user?.id && recommendedEvent && isAdmin" :event="recommendedEvent" suggestion @addSuggestedEvent="addSuggestedEvent" />
+                <FriseEventCard
+                  v-if="!procedure.archived && $user?.id && recommendedEvent && isAdmin"
+                  :event="recommendedEvent"
+                  suggestion
+                  @addSuggestedEvent="addSuggestedEvent"
+                />
                 <div v-if="isEmptyFrise" class="d-flex align-center justify-center flex-column py-16">
                   <p class="text-h6 font-weight-bold">
                     Aucun événement
