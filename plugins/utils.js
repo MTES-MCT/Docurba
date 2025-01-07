@@ -11,8 +11,8 @@ export default ({ app }, inject) => {
       if (isInter && collectivite?.intercommunaliteCode && collectivite?.groupements) {
         collectivitePorteuse = collectivite.groupements.find(e => e.code === collectivite.intercommunaliteCode)
       }
-      // TODO: probleme pour la page mes procedures dans le cas de procedure sans name cad historique
-      return `${procedure.type} ${procedure.numero ?? ''} ${procedure.doc_type}${isInter ? 'i' : ''} ${collectivitePorteuse?.intitule ?? ''}`
+
+      return `${procedure.type} ${procedure.numero ?? ''} ${procedure.doc_type}${isInter ? 'i' : ''}${procedure.is_pluih ? 'H' : ''} ${collectivitePorteuse?.intitule ?? ''}`
     },
     formatEventProfileToCreator (event) {
       if (event.profiles) {
