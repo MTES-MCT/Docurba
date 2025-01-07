@@ -2,11 +2,8 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        <span v-if="procedure && collectivite">
-          {{ $utils.formatProcedureName(procedure, collectivite) }}
-          {{ isCommunal ? `(${collectivite.code})` : '' }}
-        </span>
-
+        {{ $utils.formatProcedureName(procedure, collectivite) }}
+        {{ isCommunal ? `(${collectivite?.code})` : '' }}
         <br>
         <span class="text-caption">{{ procedure.id }} - (sudocu: {{ procedure.from_sudocuh }}) parent: {{ procedure.procedure_id }}</span>
       </v-col>
