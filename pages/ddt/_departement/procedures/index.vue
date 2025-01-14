@@ -155,13 +155,14 @@ export default {
   name: 'ProceduresDepartement',
   layout: 'ddt',
   data () {
+    const documentTypes = ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiHM', 'PLUiM', 'SCOT']
     return {
       loadingDownload: false,
       referentiel: null,
       selectedTypesFilter: ['pp', 'ps'],
       typeFilterItems: [{ text: 'Procédures principales', value: 'pp' }, { text: 'Procédures secondaires', value: 'ps' }],
-      selectedDocumentsFilter: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiHM', 'PLUiM', 'SCOT'],
-      documentFilterItems: [{ text: 'CC', value: 'CC' }, { text: 'PLU', value: 'PLU' }, { text: 'SCOT', value: 'SCOT' }],
+      selectedDocumentsFilter: documentTypes,
+      documentFilterItems: documentTypes.map(documentType => ({ text: documentType, value: documentType })),
       selectedStatusFilter: ['en_cours', 'opposable', 'archived'],
       statusFilterItems: [{ text: 'En cours', value: 'en_cours' }, { text: 'Opposable', value: 'opposable' }, { text: 'Archivée', value: 'archived' }],
       rawProcedures: null,
