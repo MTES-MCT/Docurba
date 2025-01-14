@@ -114,8 +114,6 @@
   </v-container>
 </template>
 <script>
-import axios from 'axios'
-
 import { mdiArrowRight } from '@mdi/js'
 import BaseDUProcedureItem from '@/mixins/BaseDUProcedureItem.js'
 
@@ -123,6 +121,10 @@ export default {
   mixins: [BaseDUProcedureItem],
   props: {
     procedure: {
+      type: Object,
+      required: true
+    },
+    collectivite: {
       type: Object,
       required: true
     },
@@ -136,26 +138,12 @@ export default {
       icons: {
         mdiArrowRight
       },
-      dialog: false,
-      collectivite: null
+      dialog: false
     }
   },
-
   computed: {
     isCommunal () {
       return this.procedure.procedures_perimetres.length === 1
-    }
-  },
-  async mounted () {
-    if (this.isCommunal) {
-      this.collectivite = this.procedure.procedures_perimetres[0]
-    } else {
-      try {
-        const { data: collectiviteData } = await axios(`/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}`)
-        this.collectivite = collectiviteData
-      } catch (err) {
-        console.log('no coll', this.procedure, this.collectivite)
-      }
     }
   },
   methods: {
