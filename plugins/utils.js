@@ -12,7 +12,15 @@ export default ({ app }, inject) => {
         collectivitePorteuse = collectivite.groupements.find(e => e.code === collectivite.intercommunaliteCode)
       }
 
-      return `${procedure.type} ${procedure.numero ?? ''} ${procedure.doc_type}${isInter ? 'i' : ''}${procedure.is_pluih ? 'H' : ''} ${collectivitePorteuse?.intitule ?? ''}`
+      const parts = [
+        procedure.type,
+        procedure.numero,
+        procedure.doc_type +
+          (isInter ? 'i' : '') +
+          (procedure.is_pluih ? 'H' : ''),
+        collectivitePorteuse?.intitule ?? ''
+      ].filter(Boolean)
+      return parts.join(' ')
     },
     formatEventProfileToCreator (event) {
       if (event.profiles) {

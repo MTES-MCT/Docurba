@@ -109,7 +109,7 @@
           <template #item.name="{ item }">
             <div class="d-flex align-center my-5">
               <nuxt-link class="d-inline-block font-weight-bold text-truncate text-decoration-none" style="max-width: 300px;" :to="`/frise/${item.procedure_id}`">
-                {{ $utils.formatProcedureName({...item.procedures, procedures_perimetres: item.procedures_perimetres}, item.collectivite, item) }}
+                {{ $utils.formatProcedureName({...item.procedures, procedures_perimetres: item.procedures_perimetres}, item.collectivitePorteuse) }}
               </nuxt-link>
 
               <div v-if="item.procedures.status === null" />
@@ -127,7 +127,8 @@
 
           <!-- eslint-disable-next-line -->
             <template #item.perimetre="{ item }">
-            <DashboardPerimetreDialog :perimetre="item.perimetre" :doc-name="`${item.name}`" />
+            <!-- FIXME: Comment tester ? -->
+            <DashboardPerimetreDialog :perimetre="item.perimetre" :doc-name="$utils.formatProcedureName({...item.procedures, procedures_perimetres: item.procedures_perimetres}, item.collectivitePorteuse)" />
           </template>
 
           <!-- eslint-disable-next-line -->
@@ -187,6 +188,16 @@ export default {
 
         return e
       }).filter((e) => {
+        if (e.procedure_id === '6abdd4cd-f1a0-49d6-9f17-186ac0ba640c') {
+          console.warn('⚠️ TROUVÉ ?', this.selectedDocumentsFilter.includes(e.procedures.doc_type), e.procedures.created_at &&
+        this.selectedDocumentsFilter.includes(e.procedures.doc_type) &&
+          ((this.selectedTypesFilter.includes('pp') && e.procedures.is_principale) ||
+          (this.selectedTypesFilter.includes('ps') && !e.procedures.is_principale)) &&
+          (((this.selectedStatusFilter.includes('opposable') && e.opposable) ||
+          (this.selectedStatusFilter.includes('en_cours') && (!e.opposable && !(e.procedures.status === 'opposable'))) ||
+          (this.selectedStatusFilter.includes('archived') && (!e.opposable && e.procedures.status === 'opposable')))))
+        }
+
         return e.procedures.created_at &&
         this.selectedDocumentsFilter.includes(e.procedures.doc_type) &&
           ((this.selectedTypesFilter.includes('pp') && e.procedures.is_principale) ||
@@ -206,17 +217,18 @@ export default {
       const [rawProcedures, referentiel] = await Promise.all([promProcedures, rawReferentiel])
       const { communes, groupements } = await referentiel.json()
       this.rawProcedures = rawProcedures.map((e) => {
-        let porteuse = null
-
-        if (e.perimetre.length > 1) {
-          porteuse = groupements.find(grp => grp.code === e.procedures.collectivite_porteuse_id)
-        } else {
-          porteuse = communes.find(com => com.code === e.perimetre[0].collectivite_code)
+        if (e.procedure_id === '6abdd4cd-f1a0-49d6-9f17-186ac0ba640c') {
+          console.warn('⚠️ TROUVÉ')
         }
 
-        const name = `${e.procedures.type} ${e.procedures.numero ? e.procedures.numero : ''} ${e.procedures.doc_type} ${porteuse?.intitule}`
+        let collectivitePorteuse
+        if (e.perimetre.length > 1) {
+          collectivitePorteuse = groupements.find(grp => grp.code === e.procedures.collectivite_porteuse_id)
+        } else {
+          collectivitePorteuse = communes.find(com => com.code === e.perimetre[0].collectivite_code)
+        }
 
-        return { ...e, name, procedures_perimetres: e.perimetre }
+        return { ...e, procedures_perimetres: e.perimetre, collectivitePorteuse }
       })
     } catch (error) {
       // eslint-disable-next-line no-console
