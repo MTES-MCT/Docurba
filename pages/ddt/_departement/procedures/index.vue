@@ -160,7 +160,7 @@ export default {
       referentiel: null,
       selectedTypesFilter: ['pp', 'ps'],
       typeFilterItems: [{ text: 'Procédures principales', value: 'pp' }, { text: 'Procédures secondaires', value: 'ps' }],
-      selectedDocumentsFilter: ['CC', 'PLU', 'SCOT'],
+      selectedDocumentsFilter: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiHM', 'PLUiM', 'SCOT'],
       documentFilterItems: [{ text: 'CC', value: 'CC' }, { text: 'PLU', value: 'PLU' }, { text: 'SCOT', value: 'SCOT' }],
       selectedStatusFilter: ['en_cours', 'opposable', 'archived'],
       statusFilterItems: [{ text: 'En cours', value: 'en_cours' }, { text: 'Opposable', value: 'opposable' }, { text: 'Archivée', value: 'archived' }],
