@@ -64,6 +64,7 @@ export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inj
         const toUpsert = collectivitesToValidate
           .map(formatProceduresCollecToValidate)
           .flat()
+
         console.log('toUpsert: ', toUpsert)
         if (toUpsert.length === 0) {
           return {
@@ -121,15 +122,18 @@ export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inj
       ...infosCollec
     })
 
-    const plans = (collectiviteToValidate.plans || []).map(formatProcedure)
-    const scots = (collectiviteToValidate.scots || []).map(formatProcedure)
-    if (plans.length === 0 && scots.length === 0) {
-      return [{ ...infosCollec, status: 'RNU' }]
-    }
-
-    return [...plans, ...scots].filter(
+    const plans = (collectiviteToValidate.plans || []).map(formatProcedure).filter(
       e => e.status === 'opposable' || e.status === 'en cours'
     )
+    const scots = (collectiviteToValidate.scots || []).map(formatProcedure).filter(
+      e => e.status === 'opposable' || e.status === 'en cours'
+    )
+
+    if (plans.length === 0) {
+      plans.push({ ...infosCollec, status: 'RNU' })
+    }
+
+    return [...plans, ...scots]
   }
 
   inject('enquete', enquete)
