@@ -187,16 +187,6 @@ export default {
 
         return e
       }).filter((e) => {
-        if (e.procedure_id === '6abdd4cd-f1a0-49d6-9f17-186ac0ba640c') {
-          console.warn('⚠️ TROUVÉ ?', this.selectedDocumentsFilter.includes(e.procedures.doc_type), e.procedures.created_at &&
-        this.selectedDocumentsFilter.includes(e.procedures.doc_type) &&
-          ((this.selectedTypesFilter.includes('pp') && e.procedures.is_principale) ||
-          (this.selectedTypesFilter.includes('ps') && !e.procedures.is_principale)) &&
-          (((this.selectedStatusFilter.includes('opposable') && e.opposable) ||
-          (this.selectedStatusFilter.includes('en_cours') && (!e.opposable && !(e.procedures.status === 'opposable'))) ||
-          (this.selectedStatusFilter.includes('archived') && (!e.opposable && e.procedures.status === 'opposable')))))
-        }
-
         return e.procedures.created_at &&
         this.selectedDocumentsFilter.includes(e.procedures.doc_type) &&
           ((this.selectedTypesFilter.includes('pp') && e.procedures.is_principale) ||
@@ -216,10 +206,6 @@ export default {
       const [rawProcedures, referentiel] = await Promise.all([promProcedures, rawReferentiel])
       const { communes, groupements } = await referentiel.json()
       this.rawProcedures = rawProcedures.map((e) => {
-        if (e.procedure_id === '6abdd4cd-f1a0-49d6-9f17-186ac0ba640c') {
-          console.warn('⚠️ TROUVÉ')
-        }
-
         let collectivitePorteuse
         if (e.perimetre.length > 1) {
           collectivitePorteuse = groupements.find(grp => grp.code === e.procedures.collectivite_porteuse_id)
