@@ -108,18 +108,18 @@
           <!-- eslint-disable-next-line -->
           <template #item.name="{ item }">
             <div class="d-flex align-center my-5">
-              <nuxt-link class="d-inline-block font-weight-bold text-truncate text-decoration-none" style="max-width: 300px;" :to="`/frise/${item.procedure_id}`">
-                {{ item.name }}
+              <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${item.procedure_id}`">
+                {{ $utils.formatProcedureName({...item.procedures, procedures_perimetres: item.procedures_perimetres}, item.collectivitePorteuse) }}
               </nuxt-link>
 
               <div v-if="item.procedures.status === null" />
-              <v-chip v-else-if="item.opposable" class="ml-2 success--text font-weight-bold" small label color="success-light">
+              <v-chip v-else-if="item.opposable" class="ml-2 flex-shrink-0 success--text font-weight-bold" small label color="success-light">
                 OPPOSABLE
               </v-chip>
-              <v-chip v-else-if="!item.opposable && item.procedures.status === 'opposable'" class="ml-2 font-weight-bold" small label>
+              <v-chip v-else-if="!item.opposable && item.procedures.status === 'opposable'" class="ml-2 flex-shrink-0 font-weight-bold" small label>
                 ARCHIVÉ
               </v-chip>
-              <v-chip v-else class="ml-2 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
+              <v-chip v-else class="ml-2 flex-shrink-0 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
                 EN COURS
               </v-chip>
             </div>
@@ -127,7 +127,7 @@
 
           <!-- eslint-disable-next-line -->
             <template #item.perimetre="{ item }">
-            <DashboardPerimetreDialog :perimetre="item.perimetre" :doc-name="`${item.name}`" />
+            <DashboardPerimetreDialog :perimetre="item.perimetre" :doc-name="$utils.formatProcedureName({...item.procedures, procedures_perimetres: item.procedures_perimetres}, item.collectivitePorteuse)" />
           </template>
 
           <!-- eslint-disable-next-line -->
@@ -195,7 +195,6 @@ export default {
           (this.selectedStatusFilter.includes('en_cours') && (!e.opposable && !(e.procedures.status === 'opposable'))) ||
           (this.selectedStatusFilter.includes('archived') && (!e.opposable && e.procedures.status === 'opposable'))))
       })
-
       return proceduresAndFilters
     }
   },
@@ -207,17 +206,14 @@ export default {
       const [rawProcedures, referentiel] = await Promise.all([promProcedures, rawReferentiel])
       const { communes, groupements } = await referentiel.json()
       this.rawProcedures = rawProcedures.map((e) => {
-        let porteuse = null
-
+        let collectivitePorteuse
         if (e.perimetre.length > 1) {
-          porteuse = groupements.find(grp => grp.code === e.procedures.collectivite_porteuse_id)
+          collectivitePorteuse = groupements.find(grp => grp.code === e.procedures.collectivite_porteuse_id)
         } else {
-          porteuse = communes.find(com => com.code === e.perimetre[0].collectivite_code)
+          collectivitePorteuse = communes.find(com => com.code === e.perimetre[0].collectivite_code)
         }
 
-        const name = `${e.procedures.type} ${e.procedures.numero ? e.procedures.numero : ''} ${e.procedures.doc_type} ${porteuse?.intitule}`
-
-        return { ...e, name }
+        return { ...e, procedures_perimetres: e.perimetre, collectivitePorteuse }
       })
     } catch (error) {
       // eslint-disable-next-line no-console

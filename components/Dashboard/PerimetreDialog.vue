@@ -1,9 +1,9 @@
 <template>
   <div>
     <slot>
-      <div class="primary--text" style="font-weight: 500; cursor:pointer;" @click.stop="dialog = true">
+      <v-btn text color="primary" @click.stop="dialog = true">
         {{ perimetre?.length }} commune<span v-if="perimetre?.length > 1">s</span>
-      </div>
+      </v-btn>
     </slot>
     <v-dialog
       v-model="dialog"

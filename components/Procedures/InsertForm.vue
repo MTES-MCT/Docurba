@@ -60,10 +60,10 @@
                   :items="proceduresParents"
                 >
                   <template #selection="{item}">
-                    {{ item.type }} du {{ item | docType }} {{ item.status }} {{ item.collectivite.intitule }} (collec. porteuse {{ item.porteuse?.intitule }})
+                    {{ $utils.formatProcedureName(item, item.porteuse) }}
                   </template>
                   <template #item="{item}">
-                    {{ item.type }} du {{ item | docType }} {{ item.status }} {{ item.collectivite?.intitule }} (collec. porteuse {{ item.porteuse?.intitule ?? '?' }})
+                    {{ $utils.formatProcedureName(item, item.porteuse) }}
                   </template>
                 </v-select>
               </validation-provider>

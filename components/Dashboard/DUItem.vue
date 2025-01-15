@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-4">
+  <div v-if="collectivite" class="mb-4">
     <v-card outlined class="no-border-radius-bottom">
       <v-card-text>
         <DashboardDUProcedureItem
@@ -37,6 +37,7 @@
   </div>
 </template>
 <script>
+import axios from 'axios'
 import dayjs from 'dayjs'
 
 export default {
@@ -45,10 +46,6 @@ export default {
     procedure: {
       type: Object,
       required: true
-    },
-    collectivite: {
-      type: Object,
-      default () { return {} }
     },
     censored: {
       type: Boolean,
@@ -61,23 +58,26 @@ export default {
     })
 
     return {
-      secondaryProcs
+      secondaryProcs,
+      collectivite: null
     }
   },
   computed: {
-    // This is not used ?
-    // step () {
-    //   if (this.procedure.abort_date) {
-    //     return `Abandon (${this.procedure.abort_date})`
-    //   } else if (this.procedure.enforceable_date) {
-    //     return `Executoire (${this.procedure.enforceable_date})`
-    //   } else if (this.procedure.approval_date) {
-    //     return `Approbation (${this.procedure.approval_date})`
-    //   } else if (this.procedure.launch_date) {
-    //     return `Lancement (${this.procedure.launch_date})`
-    //   }
-    //   return '-'
-    // }
+    isCommunal () {
+      return this.procedure.procedures_perimetres.length === 1
+    }
+  },
+  async mounted () {
+    if (this.isCommunal) {
+      this.collectivite = this.procedure.procedures_perimetres[0]
+    } else {
+      try {
+        const { data: collectiviteData } = await axios(`/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}`)
+        this.collectivite = collectiviteData
+      } catch (err) {
+        console.log('no coll', this.procedure, this.collectivite)
+      }
+    }
   }
 }
 </script>

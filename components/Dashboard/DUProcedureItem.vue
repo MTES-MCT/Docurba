@@ -2,15 +2,8 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        <span v-if="procedure.name">
-          {{ procedure.name }}
-        </span>
-        <div v-else>
-          <span>{{ procedure | docType }}</span>
-          <span v-if="displayedIntitule"> - {{ displayedIntitule }}</span>
-          <span v-if="procedure.numero">numéro {{ procedure.numero }}</span>
-        </div>
-
+        {{ $utils.formatProcedureName(procedure, collectivite) }}
+        {{ isCommunal ? `(${collectivite?.code})` : '' }}
         <br>
         <span class="text-caption">{{ procedure.id }} - (sudocu: {{ procedure.from_sudocuh }}) parent: {{ procedure.procedure_id }}</span>
       </v-col>
@@ -65,23 +58,12 @@
             Feuille de route
           </span>
         </nuxt-link>
-        <!-- <nuxt-link :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}-dgd`">
-          <span class="primary--text text-decoration-underline mr-4 ">DGD</span>
-        </nuxt-link>
-        <nuxt-link :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${procedure.id}-infos`">
-          <span class="primary--text text-decoration-underline mr-4 ">
-            Info. générales
-          </span>
-        </nuxt-link> -->
         <nuxt-link
           class="primary--text text-decoration-underline mr-4"
           :to="`/ddt/${$route.params.departement}/pac?search=${$route.params.collectiviteId}`"
         >
           PAC
         </nuxt-link>
-        <!-- <span class="primary--text text-decoration-underline text--disabled">
-          Note d'enjeux
-        </span> -->
 
         <v-dialog v-model="dialog" width="500">
           <template #activator="{ on, attrs }">
@@ -132,8 +114,6 @@
   </v-container>
 </template>
 <script>
-import axios from 'axios'
-
 import { mdiArrowRight } from '@mdi/js'
 import BaseDUProcedureItem from '@/mixins/BaseDUProcedureItem.js'
 
@@ -158,38 +138,17 @@ export default {
       icons: {
         mdiArrowRight
       },
-      dialog: false,
-      displayedCollectivite: null
+      dialog: false
     }
   },
   computed: {
-    displayedIntitule () {
-      if (!this.displayedCollectivite) { return '' }
-
-      if (this.displayedCollectivite.collectivite_type?.includes('COM')) {
-        const type = this.displayedCollectivite.collectivite_type === 'COMD' ? ' COMD' : ''
-        return `${this.displayedCollectivite.intitule} (${this.displayedCollectivite.code}${type})`
-      } else {
-        return this.displayedCollectivite.intitule
-      }
-    }
-  },
-  async mounted () {
-    if (this.procedure.procedures_perimetres.length === 1) {
-      this.displayedCollectivite = this.procedure.procedures_perimetres[0]
-    } else {
-      try {
-        const { data: collectiviteData } = await axios(`/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}`)
-        this.displayedCollectivite = collectiviteData
-      } catch (err) {
-        console.log('no coll', this.procedure, this.collectivite)
-      }
+    isCommunal () {
+      return this.procedure.procedures_perimetres.length === 1
     }
   },
   methods: {
     async  archiveProcedure (idProcedure) {
       try {
-        // console.log('idProcedure to archive: ', idProcedure)
         const { error } = await this.$supabase
           .from('procedures')
           .delete()

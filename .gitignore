@@ -107,3 +107,5 @@ database/dump/
 
 # Output file for help.
 ColPorteuse.csv
+
+__pycache__

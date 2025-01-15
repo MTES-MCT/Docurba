@@ -1,7 +1,26 @@
 export default ({ app }, inject) => {
   const utils = {
     formatProcedureName (procedure, collectivite) {
-      return `${procedure.type} ${procedure.numero ? procedure.numero : ''} ${procedure.doc_type} ${collectivite?.intitule}`
+      if (procedure.name) {
+        return procedure.name
+      }
+
+      const isInter = procedure?.procedures_perimetres?.length > 1
+
+      let collectivitePorteuse = collectivite
+      if (isInter && collectivite?.intercommunaliteCode && collectivite?.groupements) {
+        collectivitePorteuse = collectivite.groupements.find(e => e.code === collectivite.intercommunaliteCode)
+      }
+
+      const parts = [
+        procedure.type,
+        procedure.numero,
+        procedure.doc_type +
+          (isInter ? 'i' : '') +
+          (procedure.is_pluih ? 'H' : ''),
+        collectivitePorteuse?.intitule ?? ''
+      ].filter(Boolean)
+      return parts.join(' ')
     },
     formatEventProfileToCreator (event) {
       if (event.profiles) {
