@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-4">
+  <div v-if="collectivite" class="mb-4">
     <v-card outlined class="no-border-radius-bottom">
       <v-card-text>
         <DashboardDUProcedureItem

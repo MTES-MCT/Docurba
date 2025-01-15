@@ -79,7 +79,6 @@ class CommonCollectivitePage:
         )
         procedures_secondaires_buttons.first.wait_for()
         for button in procedures_secondaires_buttons.all():
-            logging.warning("CLICKING!")
             button.click()
         expect(self.page.get_by_text(re.compile(rf"{titre}\s+{uuid}"))).to_be_visible()
 
@@ -90,7 +89,6 @@ class CommonCollectivitePage:
         )
         procedures_secondaires_buttons.first.wait_for()
         for button in procedures_secondaires_buttons.all():
-            logging.warning("CLICKING!")
             button.click()
         expect(self.page.get_by_text(re.compile(rf"{titre}\s+{uuid}"))).to_be_visible()
 
@@ -109,6 +107,22 @@ class DDTCommunePage(CommonCollectivitePage):
             ORIGIN + f"/ddt/{code_departement}/collectivites/{code_commune}/commune/"
         )
         return cls(page)
+
+    def goto_ajouter_procedure(self):
+        self.page.get_by_role("link", name="Ajouter une procédure").click()
+        return AjoutProcedurePage(self.page)
+
+
+class AjoutProcedurePage:
+    def __init__(self, page):
+        self.page = page
+
+    def expect_procedure_parent(self, titre):
+        self.page.get_by_role("tab", name="Procédure secondaire").click()
+        self.page.get_by_label("Procédure parente").click()
+
+        self.page.get_by_role("option", name=titre, exact=True).click()
+        expect(self.page.get_by_role("button", name=titre)).to_be_visible()
 
 
 class DDTIntercommunalitePage(CommonCollectivitePage):
@@ -131,8 +145,7 @@ class DDTCollectivitesPage:
         return cls(page)
 
     def expect_procedure(self, titre):
-        # page.get_by_label()
-        self.page.get_by_role("button", name="10").click()
+        self.page.get_by_role("button", name="10", exact=True).click()
         self.page.get_by_role("option", name="Tous").click()
         expect(self.page.get_by_text(titre).first).to_be_visible()
 
@@ -146,11 +159,20 @@ class DDTProceduresPage:
         page.goto(ORIGIN + f"/ddt/{code_departement}/procedures")
         return cls(page)
 
-    def expect_procedure(self, titre):
-        # page.get_by_label()
-        self.page.get_by_role("button", name="10").click()
+    def show_all_procedures(self):
+        self.page.get_by_role("button", name="10", exact=True).click()
         self.page.get_by_role("option", name="Tous").click()
-        expect(self.page.get_by_text(titre).first).to_be_visible()
+
+    def expect_procedure(self, titre):
+        expect(self.page.get_by_role("row", name=titre).first).to_be_visible()
+
+    def expect_dialog(self, titre):
+        self.page.get_by_role("row", name=titre).first.get_by_role(
+            "button", name="commune"
+        ).click()
+        expect(
+            self.page.get_by_role("dialog").get_by_text(f"Périmètre de {titre}")
+        ).to_be_visible()
 
 
 def common_principale(page, uuid, titre, code_departement):
@@ -164,7 +186,9 @@ def common_principale(page, uuid, titre, code_departement):
 
     # DDT Procédures
     ddt_procedures = DDTProceduresPage.navigate(page, code_departement)
+    ddt_procedures.show_all_procedures()
     ddt_procedures.expect_procedure(titre)
+    ddt_procedures.expect_dialog(titre)
 
 
 @pytest.mark.parametrize(
@@ -351,7 +375,9 @@ def test_procedure_secondaire_communale(
 
     # DDT Procédures
     ddt_procedures = DDTProceduresPage.navigate(page, code_departement)
+    ddt_procedures.show_all_procedures()
     ddt_procedures.expect_procedure(titre)
+    ddt_procedures.expect_dialog(titre)
 
     # Collectivité
     commune_page = CollectivitePage.navigate(page, code_commune)
@@ -409,7 +435,9 @@ def test_procedure_secondaire_intercommunale(
 
     # DDT Procédures
     ddt_procedures = DDTProceduresPage.navigate(page, code_departement)
+    ddt_procedures.show_all_procedures()
     ddt_procedures.expect_procedure(titre)
+    ddt_procedures.expect_dialog(titre)
 
     # Collectivité
     commune_page = CollectivitePage.navigate(page, code_commune)
@@ -427,3 +455,29 @@ def test_procedure_secondaire_intercommunale(
         page, code_departement, code_intercommunalite
     )
     ddt_intercommunalite_page.expect_procedure_secondaire_intercommunale(titre, uuid)
+
+
+@pytest.mark.parametrize(
+    "uuid,titre,code_departement,code_commune",
+    [
+        (
+            "e45a53d6-1c09-412a-8dab-3cb2d29c6971",
+            "Révision PLU Bulgnéville",  # Pas de titre en base
+            "88",
+            "88079",
+        ),
+        (
+            "0fe7e354-a655-42da-822b-5b8cb915ea75",
+            "Elaboration 001 PLUi CC Touraine Val de Vienne",  # Pas de titre en base
+            "37",
+            "37005",
+        ),
+    ],
+)
+def test_ajout_procedure(page: Page, uuid, titre, code_departement, code_commune):
+    procedure_page = ProcedurePage.navigate(page, uuid)
+    expect(procedure_page.titre).to_contain_text(titre)
+
+    ddt_commune_page = DDTCommunePage.navigate(page, code_departement, code_commune)
+    ajout_procedure_page = ddt_commune_page.goto_ajouter_procedure()
+    ajout_procedure_page.expect_procedure_parent(titre)

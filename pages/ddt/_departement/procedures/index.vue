@@ -108,18 +108,18 @@
           <!-- eslint-disable-next-line -->
           <template #item.name="{ item }">
             <div class="d-flex align-center my-5">
-              <nuxt-link class="d-inline-block font-weight-bold text-truncate text-decoration-none" style="max-width: 300px;" :to="`/frise/${item.procedure_id}`">
+              <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${item.procedure_id}`">
                 {{ $utils.formatProcedureName({...item.procedures, procedures_perimetres: item.procedures_perimetres}, item.collectivitePorteuse) }}
               </nuxt-link>
 
               <div v-if="item.procedures.status === null" />
-              <v-chip v-else-if="item.opposable" class="ml-2 success--text font-weight-bold" small label color="success-light">
+              <v-chip v-else-if="item.opposable" class="ml-2 flex-shrink-0 success--text font-weight-bold" small label color="success-light">
                 OPPOSABLE
               </v-chip>
-              <v-chip v-else-if="!item.opposable && item.procedures.status === 'opposable'" class="ml-2 font-weight-bold" small label>
+              <v-chip v-else-if="!item.opposable && item.procedures.status === 'opposable'" class="ml-2 flex-shrink-0 font-weight-bold" small label>
                 ARCHIVÉ
               </v-chip>
-              <v-chip v-else class="ml-2 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
+              <v-chip v-else class="ml-2 flex-shrink-0 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
                 EN COURS
               </v-chip>
             </div>
@@ -127,7 +127,6 @@
 
           <!-- eslint-disable-next-line -->
             <template #item.perimetre="{ item }">
-            <!-- FIXME: Comment tester ? -->
             <DashboardPerimetreDialog :perimetre="item.perimetre" :doc-name="$utils.formatProcedureName({...item.procedures, procedures_perimetres: item.procedures_perimetres}, item.collectivitePorteuse)" />
           </template>
 
