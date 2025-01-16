@@ -164,6 +164,7 @@ class DDTProceduresPage:
         self.page.get_by_role("option", name="Tous").click()
 
     def expect_procedure(self, titre):
+        self.page.get_by_label("Rechercher une procédure...").fill(titre)
         expect(self.page.get_by_role("row", name=titre).first).to_be_visible()
 
     def expect_dialog(self, titre):
@@ -186,7 +187,6 @@ def common_principale(page, uuid, titre, code_departement):
 
     # DDT Procédures
     ddt_procedures = DDTProceduresPage.navigate(page, code_departement)
-    ddt_procedures.show_all_procedures()
     ddt_procedures.expect_procedure(titre)
     ddt_procedures.expect_dialog(titre)
 
@@ -375,7 +375,6 @@ def test_procedure_secondaire_communale(
 
     # DDT Procédures
     ddt_procedures = DDTProceduresPage.navigate(page, code_departement)
-    ddt_procedures.show_all_procedures()
     ddt_procedures.expect_procedure(titre)
     ddt_procedures.expect_dialog(titre)
 
@@ -435,13 +434,11 @@ def test_procedure_secondaire_intercommunale(
 
     # DDT Procédures
     ddt_procedures = DDTProceduresPage.navigate(page, code_departement)
-    ddt_procedures.show_all_procedures()
     ddt_procedures.expect_procedure(titre)
     ddt_procedures.expect_dialog(titre)
 
     # Collectivité
     commune_page = CollectivitePage.navigate(page, code_commune)
-    page.pause()
     commune_page.expect_procedure_secondaire_intercommunale(titre, uuid)
     intercommunalite_page = CollectivitePage.navigate(page, code_intercommunalite)
     intercommunalite_page.expect_procedure_secondaire_intercommunale(titre, uuid)

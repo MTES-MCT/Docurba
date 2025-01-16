@@ -109,7 +109,7 @@
           <template #item.name="{ item }">
             <div class="d-flex align-center my-5">
               <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${item.procedure_id}`">
-                {{ $utils.formatProcedureName({...item.procedures, procedures_perimetres: item.procedures_perimetres}, item.collectivitePorteuse) }}
+                {{ item.procedureName }}
               </nuxt-link>
 
               <div v-if="item.procedures.status === null" />
@@ -127,7 +127,7 @@
 
           <!-- eslint-disable-next-line -->
             <template #item.perimetre="{ item }">
-            <DashboardPerimetreDialog :perimetre="item.perimetre" :doc-name="$utils.formatProcedureName({...item.procedures, procedures_perimetres: item.procedures_perimetres}, item.collectivitePorteuse)" />
+            <DashboardPerimetreDialog :perimetre="item.perimetre" :doc-name="item.procedureName" />
           </template>
 
           <!-- eslint-disable-next-line -->
@@ -213,7 +213,9 @@ export default {
           collectivitePorteuse = communes.find(com => com.code === e.perimetre[0].collectivite_code)
         }
 
-        return { ...e, procedures_perimetres: e.perimetre, collectivitePorteuse }
+        const procedureName = this.$utils.formatProcedureName({ ...e.procedures, procedures_perimetres: e.perimetre }, collectivitePorteuse)
+
+        return { ...e, procedureName }
       })
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -244,7 +246,7 @@ export default {
     customFilter (value, search, item) {
       if (!search?.length) { return true }
 
-      const normalizedValue = item.name.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
+      const normalizedValue = item.procedureName.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
       const normalizedSearch = search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
 
       return normalizedValue.includes(normalizedSearch)
