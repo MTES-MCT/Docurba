@@ -23,8 +23,9 @@ export default ({ $supabase, $dayjs }, inject) => {
     },
     async getProceduresForDept (departementCode) {
       const { data } = await $supabase.from('procedures_perimetres')
-        .select('*, procedures(*, doc_frise_events(*))')
+        .select('*, procedures!inner(*, doc_frise_events(*))')
         .eq('departement', departementCode)
+        .is('procedures.archived', false)
         .throwOnError()
       const groupedProceduresPerim = groupBy(data, e => e.procedure_id)
       const procedures = data.map((e) => {
