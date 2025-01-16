@@ -146,6 +146,12 @@ export default {
       const link = this.$refs[`file-${attachement.id}`][0]
       link.href = URL.createObjectURL(data)
       link.click()
+
+      this.$analytics({
+        category: 'frp',
+        name: 'download_attachment',
+        value: path
+      })
     }
   }
 }
