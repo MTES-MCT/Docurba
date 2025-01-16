@@ -21,18 +21,11 @@ export default ({ $supabase, $dayjs }, inject) => {
     isEpci (collectiviteId) {
       return collectiviteId.length > 5
     },
-    async getProceduresForDept (departementCode, { minimal = false } = {}) {
-      // TODO: Update postgres to make order works
-      // TODO: Optimise with index, selected fields, order and limit
-      // TODO: Essayer de faire le fetch depuis procedure et filter
-      let select = '*, procedures(*, doc_frise_events(*))'
-      if (minimal) {
-        select = '*, procedures(*, doc_frise_events(*))'
-      }
+    async getProceduresForDept (departementCode) {
       const { data } = await $supabase.from('procedures_perimetres')
-        .select(select)
+        .select('*, procedures(*, doc_frise_events(*))')
         .eq('departement', departementCode)
-      // .order('doc_frise_events(date_iso)', { ascending: false })
+        .throwOnError()
       const groupedProceduresPerim = groupBy(data, e => e.procedure_id)
       const procedures = data.map((e) => {
         const lastEvent = maxBy(e.procedures.doc_frise_events, 'date_iso')
