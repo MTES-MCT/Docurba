@@ -144,10 +144,15 @@ class DDTCollectivitesPage:
         page.goto(ORIGIN + f"/ddt/{code_departement}/collectivites")
         return cls(page)
 
-    def expect_procedure(self, titre):
+    def show_all_procedures(self):
         self.page.get_by_role("button", name="10", exact=True).click()
         self.page.get_by_role("option", name="Tous").click()
-        expect(self.page.get_by_text(titre).first).to_be_visible()
+
+    def expect_procedure(self, uuid, titre):
+        all_procedures = self.page.locator(f"[href='/frise/{uuid}']")
+        all_procedures.first.wait_for()
+        for procedure in all_procedures.all():
+            expect(procedure).to_have_text(titre)
 
 
 class DDTProceduresPage:
@@ -183,7 +188,8 @@ def common_principale(page, uuid, titre, code_departement):
 
     # DDT Collectivités
     ddt_collectivites = DDTCollectivitesPage.navigate(page, code_departement)
-    ddt_collectivites.expect_procedure(titre)
+    ddt_collectivites.show_all_procedures()
+    ddt_collectivites.expect_procedure(uuid, titre)
 
     # DDT Procédures
     ddt_procedures = DDTProceduresPage.navigate(page, code_departement)
@@ -478,3 +484,37 @@ def test_ajout_procedure(page: Page, uuid, titre, code_departement, code_commune
     ddt_commune_page = DDTCommunePage.navigate(page, code_departement, code_commune)
     ajout_procedure_page = ddt_commune_page.goto_ajouter_procedure()
     ajout_procedure_page.expect_procedure_parent(titre)
+
+
+@pytest.mark.parametrize(
+    "uuid,titre,code_departement",
+    [
+        (
+            "ca5074d4-8ab5-43f4-9276-36a3042f0acc",
+            "Elaboration PLUi CC Côtes de Meuse Woëvre",
+            "55",
+        ),
+        (
+            "0bb59a5a-a979-485a-9c8a-201ba063a086",
+            "Elaboration PLUi CC de l'Aire à l'Argonne",
+            "55",
+        ),
+        (
+            "a4d2feee-5a0e-47fe-b8d0-b7eefcaea52b",
+            "Elaboration PLUi CC Levroux Boischaut Champagne",
+            "36",
+        ),
+        (
+            "78d1bd1b-ae45-403d-85c6-2dda56f3a110",
+            "Elaboration PLUi CC du Châtillonnais en Berry",
+            "36",
+        ),
+    ],
+)
+def test_mes_collectivites_collectivite_porteuse_est_un_membre(page: Page, uuid, titre, code_departement):
+    procedure_page = ProcedurePage.navigate(page, uuid)
+    expect(procedure_page.titre).to_contain_text(titre)
+
+    ddt_collectivites = DDTCollectivitesPage.navigate(page, code_departement)
+    ddt_collectivites.show_all_procedures()
+    ddt_collectivites.expect_procedure(uuid, titre)

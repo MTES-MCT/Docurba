@@ -8,8 +8,15 @@ export default ({ app }, inject) => {
       const isInter = procedure?.procedures_perimetres?.length > 1
 
       let collectivitePorteuse = collectivite
-      if (isInter && collectivite?.intercommunaliteCode && collectivite?.groupements) {
-        collectivitePorteuse = collectivite.groupements.find(e => e.code === collectivite.intercommunaliteCode)
+      if (
+        isInter &&
+        collectivite &&
+        procedure.collectivite_porteuse_id !== collectivitePorteuse?.code
+      ) {
+        collectivitePorteuse = [
+          ...collectivite.groupements,
+          ...collectivite.membres
+        ].find(e => e.code === procedure.collectivite_porteuse_id)
       }
 
       const parts = [
