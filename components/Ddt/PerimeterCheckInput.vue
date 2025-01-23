@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-col cols="12" class="pt-0">
-      <p> Communes concernées : ({{ perimetre.length }})</p>
+      <p> Périmètre du document d'urbanisme : ({{ perimetre.length }})</p>
       <v-btn
         color="primary"
         class="mr-4"
