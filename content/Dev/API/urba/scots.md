@@ -4,7 +4,7 @@ files: []
 order: 10
 visible: true
 ---
-## Documentation de l'API : `/api/urba/exports/scots`
+https://nuxt3.docurba.incubateur.net/api/urba/exports/scots
 
 ### Description
 Cet endpoint retourne les données des procédures SCOTS par combinaison SCOT en cours/SCOT opposable. 

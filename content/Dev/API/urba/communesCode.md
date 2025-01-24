@@ -4,7 +4,7 @@ files: []
 order: 10
 visible: true
 ---
-## Route : `/api/urba/exports/communes`
+https://nuxt3.docurba.incubateur.net/api/urba/exports/communes?departementCode=56
 
 ### Description
 Cet endpoint retourne les données procédures par communes.

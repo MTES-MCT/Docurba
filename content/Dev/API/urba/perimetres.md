@@ -4,7 +4,7 @@ files: []
 order: 10
 visible: true
 ---
-## Documentation de l'API : `/api/urba/exports/perimetres`
+https://nuxt3.docurba.incubateur.net/api/urba/exports/perimetres?departement=01
 
 ### Description
 Cet endpoint retourne code INSEE des communes par procédures.
