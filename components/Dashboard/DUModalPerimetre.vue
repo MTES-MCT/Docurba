@@ -9,13 +9,13 @@
         class="primary--text text-decoration-underline mr-4"
         v-on="on"
       >
-        Liste des communes concernées ({{ perimetres.length }})
+        Périmètre du document d'urbanisme ({{ perimetres.length }})
       </span>
     </template>
 
     <v-card>
       <v-card-title class="text-h5 primary white--text">
-        Liste des communes concernées ({{ perimetres.length }})
+        Périmètre du document d'urbanisme ({{ perimetres.length }})
       </v-card-title>
 
       <v-card-text class="pb-0">
