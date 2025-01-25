@@ -36,6 +36,11 @@
           </h1>
         </div>
       </v-col>
+      <v-col v-if="!procedure.project_id">
+        <v-alert type="warning">
+          Cette procédure n'a pas de projet associé.
+        </v-alert>
+      </v-col>
       <v-col v-if="procedure.archived" cols="12">
         <v-alert type="warning">
           Cette procédure est archivée.
@@ -46,7 +51,7 @@
           </span>
         </v-alert>
       </v-col>
-      <v-col v-if="!procedure.archived" cols="12" class="mb-2">
+      <v-col v-if="!isProcedureReadOnly()" cols="12" class="mb-2">
         <v-btn v-if="$user?.profile?.side === 'etat' && isAdmin && !procedure.secondary_procedure_of" color="primary" class="mr-2" outlined @click="addSubProcedure">
           Ajouter une procédure secondaire
         </v-btn>
@@ -122,7 +127,7 @@
             <v-row>
               <v-col cols="9">
                 <FriseEventCard
-                  v-if="!procedure.archived && $user?.id && recommendedEvent && isAdmin"
+                  v-if="!isProcedureReadOnly() && $user?.id && recommendedEvent && isAdmin"
                   :event="recommendedEvent"
                   suggestion
                   @addSuggestedEvent="addSuggestedEvent"
@@ -407,7 +412,6 @@ export default
       }
       this.procedure = procedure
       console.log(' this.procedure: ', this.procedure)
-      this.procedure.project_id = this.procedure.project_id ?? this.procedure.secondary_procedure_of.project_id
       const perimetre = this.procedure.procedures_perimetres.filter(c => c.collectivite_type === 'COM')
       const collectiviteId = perimetre.length === 1 ? perimetre[0].collectivite_code : this.procedure.collectivite_porteuse_id
 
@@ -416,12 +420,16 @@ export default
       })
 
       this.collectivite = collectivite
-      // this.procedure.fullName = `${this.procedure.type} ${this.procedure.numero ? this.procedure.numero : ''} ${this.procedure.doc_type} ${this.collectivite?.intitule}`
 
       this.events = await this.getEvents()
       this.collaborators = await this.$sharing.getCollaborators(this.procedure, this.collectivite)
-      const canShare = await this.$supabase.from('projects_sharing').select('id').eq('project_id', this.procedure.project_id ?? this.procedure.secondary_procedure_of.project_id).eq('user_email', this.$user.profile.email).eq('role', 'write_frise')
-      this.canShare = canShare.data.length > 0
+
+      this.procedure.project_id = this.procedure.project_id ?? this.procedure.secondary_procedure_of?.project_id
+      if (this.procedure.project_id) {
+        const canShare = await this.$supabase.from('projects_sharing').select('id').eq('project_id', this.procedure.project_id).eq('user_email', this.$user.profile.email).eq('role', 'write_frise')
+        this.canShare = canShare.data.length > 0
+      }
+
       this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -456,6 +464,9 @@ export default
       const link = this.$refs[`file-${attachement.id}`][0]
       link.href = URL.createObjectURL(data)
       link.click()
+    },
+    isProcedureReadOnly () {
+      return this.procedure.archived || !this.procedure.project_id
     },
     addSubProcedure () {
       this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/procedure/add?secondary_id=${this.$route.params.procedureId}`)
