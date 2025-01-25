@@ -412,19 +412,18 @@ export default
       }
       this.procedure = procedure
       console.log(' this.procedure: ', this.procedure)
+      this.procedure.project_id = this.procedure.project_id ?? this.procedure.secondary_procedure_of?.project_id
+
       const perimetre = this.procedure.procedures_perimetres.filter(c => c.collectivite_type === 'COM')
       const collectiviteId = perimetre.length === 1 ? perimetre[0].collectivite_code : this.procedure.collectivite_porteuse_id
-
       const { data: collectivite } = await axios({
         url: `/api/geo/collectivites/${collectiviteId}`
       })
-
       this.collectivite = collectivite
 
       this.events = await this.getEvents()
-      this.collaborators = await this.$sharing.getCollaborators(this.procedure, this.collectivite)
 
-      this.procedure.project_id = this.procedure.project_id ?? this.procedure.secondary_procedure_of?.project_id
+      this.collaborators = await this.$sharing.getCollaborators(this.procedure, this.collectivite)
       if (this.procedure.project_id) {
         const canShare = await this.$supabase.from('projects_sharing').select('id').eq('project_id', this.procedure.project_id).eq('user_email', this.$user.profile.email).eq('role', 'write_frise')
         this.canShare = canShare.data.length > 0
