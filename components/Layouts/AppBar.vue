@@ -90,6 +90,11 @@
                 Contact
               </v-list-item-title>
             </v-list-item>
+            <v-list-item link to="/dev/api">
+              <v-list-item-title>
+                API
+              </v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
 

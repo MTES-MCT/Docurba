@@ -15,6 +15,11 @@
               <a href="https://docurba.crisp.help/fr/category/ressources-1jtg3x2/" target="_blank">Webinaires</a>
             </li>
             <li>
+              <nuxt-link to="/dev/api">
+                API
+              </nuxt-link>
+            </li>
+            <li>
               <nuxt-link to="/accessibilite">
                 Accessibilité: non conforme
               </nuxt-link>
