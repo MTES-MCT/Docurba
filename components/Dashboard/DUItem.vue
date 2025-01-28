@@ -1,5 +1,6 @@
 <template>
-  <div v-if="collectivite" class="mb-4">
+  <VGlobalLoader v-if="$fetchState.pending" />
+  <div v-else class="mb-4">
     <v-card outlined class="no-border-radius-bottom">
       <v-card-text>
         <DashboardDUProcedureItem
@@ -62,12 +63,8 @@ export default {
       collectivite: null
     }
   },
-  computed: {
-    isCommunal () {
-      return this.procedure.procedures_perimetres.length === 1
-    }
-  },
-  async mounted () {
+  fetchDelay: 0,
+  async fetch () {
     if (this.isCommunal) {
       this.collectivite = this.procedure.procedures_perimetres[0]
     } else {
@@ -77,6 +74,11 @@ export default {
       } catch (err) {
         console.log('no coll', this.procedure, this.collectivite)
       }
+    }
+  },
+  computed: {
+    isCommunal () {
+      return this.procedure.procedures_perimetres.length === 1
     }
   }
 }
