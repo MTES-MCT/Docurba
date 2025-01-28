@@ -77,6 +77,9 @@ class CommonCollectivitePage:
         procedures_secondaires_buttons = self.page.get_by_role(
             "button", name="Procédures secondaires"
         )
+
+        expect(self.page.get_by_role("progressbar")).to_have_count(0)
+
         procedures_secondaires_buttons.first.wait_for()
         for button in procedures_secondaires_buttons.all():
             button.click()
@@ -87,6 +90,9 @@ class CommonCollectivitePage:
         procedures_secondaires_buttons = self.page.get_by_role(
             "button", name="Procédures secondaires"
         )
+
+        expect(self.page.get_by_role("progressbar")).to_have_count(0)
+
         procedures_secondaires_buttons.first.wait_for()
         for button in procedures_secondaires_buttons.all():
             button.click()
@@ -511,7 +517,9 @@ def test_ajout_procedure(page: Page, uuid, titre, code_departement, code_commune
         ),
     ],
 )
-def test_mes_collectivites_collectivite_porteuse_est_un_membre(page: Page, uuid, titre, code_departement):
+def test_mes_collectivites_collectivite_porteuse_est_un_membre(
+    page: Page, uuid, titre, code_departement
+):
     procedure_page = ProcedurePage.navigate(page, uuid)
     expect(procedure_page.titre).to_contain_text(titre)
 
