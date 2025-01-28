@@ -40,11 +40,11 @@ declare
         "caduc": ["Caducité"]
       },
       "POS": {
-        "en cours": ["Délibération de prescription du conseil municipal ou communautaire"],
-        "opposable": ["Caractère exécutoire", "Délibération d''approbation du municipal ou communautaire", "Délibération d''approbation du conseil municipal ou communautaire", "Délibération d''approbation"],
-        "abandon": ["Abandon"],
+        "en cours": [],
+        "opposable": [],
+        "abandon": ["Abandon", "Délibération de prescription du conseil municipal ou communautaire"],
         "annule": ["Annulation TA", "Annulation TA totale", "Caducité"],
-        "caduc": []
+        "caduc": ["Caractère exécutoire", "Délibération d''approbation du municipal ou communautaire", "Délibération d''approbation du conseil municipal ou communautaire", "Délibération d''approbation"]
       }
     }';
 begin
