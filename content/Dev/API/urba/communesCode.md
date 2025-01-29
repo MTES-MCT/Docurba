@@ -1,13 +1,15 @@
 ---
 apiPath: "/api/urba/exports/communes"
 files: []
-order: 10
+order: 2
 visible: true
 ---
 https://nuxt3.docurba.incubateur.net/api/urba/exports/communes?departementCode=56
 
 ### Description
-Cet endpoint retourne les données procédures par communes.
+Cet endpoint retourne les données des procédures, par communes.
+
+La réponse est un fichier CSV contenant les informations listées ci-dessous.
 
 ---
 
@@ -17,10 +19,8 @@ Cet endpoint retourne les données procédures par communes.
 GET `/api/urba/exports/communes`
 
 #### Paramètres de requête disponibles :
-1. **`csv=true`**  
-   - Permet d'obtenir le résultat au format CSV au lieu de JSON.
 
-2. **Filtres sur les attributs des communes**  
+**Filtres sur les attributs des communes**  
    Vous pouvez filtrer les communes en ajoutant des paramètres de requête basés sur les attributs suivants :
    - `code` : Le code INSEE de la commune.
    - `siren` : Le code SIREN de la commune.
