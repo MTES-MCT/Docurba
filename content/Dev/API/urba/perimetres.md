@@ -1,10 +1,12 @@
 ---
 apiPath: "/api/urba/exports/perimetres"
 files: []
-order: 10
+order: 3
 visible: true
 ---
 https://nuxt3.docurba.incubateur.net/api/urba/exports/perimetres?departement=01
+
+La réponse est un fichier CSV contenant les informations listées ci-dessous.
 
 ### Description
 Cet endpoint retourne code INSEE des communes par procédures.
