@@ -12,7 +12,7 @@ Cet endpoint retourne les données des procédures SCOTS par combinaison SCOT en
 ⚠️ **Note importante :**  
 Une collectivité porteuse peut avoir plusieurs procédures opposables, et donc la même procédure en cours peut apparaître plusieurs fois.
 
-Ici la préposition `scot_` fait en faire référence à la collectivité porteuse des procédures de type SCOT de l'export.
+Ici la préposition `scot_` fait référence à la collectivité porteuse des procédures de type SCOT de l'export.
 
 ---
 
