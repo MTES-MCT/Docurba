@@ -1,12 +1,17 @@
 ---
 apiPath: "/api/geo/communes/:code"
 files: []
-order: 2
+order: 9
 visible: true
 ---
 Récupère une commune via son code INSEE.
 
 https://docurba.beta.gouv.fr/api/geo/communes/01001
+
+### Format de la réponse
+La réponse est un JSON contenant les informations suivantes :
+
+
 ```json
 {
   "code": "01001",
