@@ -1,7 +1,7 @@
 ---
 apiPath: "/api/urba/exports/scots"
 files: []
-order: 10
+order: 1
 visible: true
 ---
 https://nuxt3.docurba.incubateur.net/api/urba/exports/scots
@@ -28,7 +28,7 @@ Aucun paramètre de requête disponible, car les fichiers générés sont plus p
 
 ### Format de la réponse
 
-La réponse est un objet JSON contenant les informations suivantes :
+La réponse est un CSV contenant les informations suivantes :
 
 ```json
 {
