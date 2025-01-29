@@ -7,6 +7,11 @@ visible: true
 Listes des communes de France au format INSEE et enrichie du code Intercomunalite. Il est possible de filtrer sur chaque clé.
 
 https://docurba.beta.gouv.fr/api/geo/communes?code=01001
+
+### Format de la réponse
+
+La réponse est un JSON contenant les informations suivantes :
+
 ```json
 [{
   "code": "01001",
