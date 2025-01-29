@@ -4,7 +4,7 @@ files: []
 order: 7
 visible: true
 ---
-Renvoit une intercommunalite via son code SIREN
+Renvoit une intercommunalité via son code SIREN
 
 ### Format de la réponse
 La réponse est un JSON contenant les informations suivantes :
