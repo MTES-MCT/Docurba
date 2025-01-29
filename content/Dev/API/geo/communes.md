@@ -1,10 +1,10 @@
 ---
 apiPath: "/api/geo/communes"
 files: []
-order: 1
+order: 10
 visible: true
 ---
-Listes des communes de France au format INSEE et enrichie du code Intercomunalite. Il est possible de filtré sur chaque clé.
+Listes des communes de France au format INSEE et enrichie du code Intercomunalite. Il est possible de filtrer sur chaque clé.
 
 https://docurba.beta.gouv.fr/api/geo/communes?code=01001
 ```json
