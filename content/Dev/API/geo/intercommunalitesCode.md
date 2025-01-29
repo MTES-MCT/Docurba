@@ -1,10 +1,13 @@
 ---
 apiPath: "/api/geo/intercommunalites/:code"
 files: []
-order: 4
+order: 7
 visible: true
 ---
 Renvoit une intercommunalite via son code SIREN
+
+### Format de la réponse
+La réponse est un JSON contenant les informations suivantes :
 
 https://docurba.beta.gouv.fr/api/geo/intercommunalites/200000172
 ```json
