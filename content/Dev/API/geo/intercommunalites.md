@@ -4,7 +4,7 @@ files: []
 order: 8
 visible: true
 ---
-Listes des intercommunalites de France au format INSEE et enrichie de leur liste de communes. 
+Listes des intercommunalités de France au format INSEE et enrichie de leur liste de communes. 
 Il est possible de filtrer sur chaque clé.
 
 https://docurba.beta.gouv.fr/api/geo/intercommunalites?code=200000172
