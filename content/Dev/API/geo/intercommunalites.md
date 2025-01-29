@@ -1,12 +1,17 @@
 ---
 apiPath: "/api/geo/intercommunalites"
 files: []
-order: 3
+order: 8
 visible: true
 ---
-Listes des intercommunalites de France au format INSEE et enrichie de leur liste de communes. Il est possible de filtré sur chaque clé.
+Listes des intercommunalites de France au format INSEE et enrichie de leur liste de communes. 
+Il est possible de filtrer sur chaque clé.
 
 https://docurba.beta.gouv.fr/api/geo/intercommunalites?code=200000172
+
+### Format de la réponse
+La réponse est un JSON contenant les informations suivantes :
+
 ```json
 [{
   "code": "200000172",
