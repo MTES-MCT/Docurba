@@ -1,0 +1,25 @@
+[project]
+name = "docurba"
+version = "1"
+requires-python = ">=3.13"
+dependencies = [
+    "django",
+    "django-environ",
+    "django-revproxy",
+    "gunicorn[gevent]",
+    "sentry-sdk[django]",
+]
+
+[dependency-groups]
+dev = ["honcho", "ptpython", "ruff"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "COM812", # Missing trailing comma, conflicts with formatter
+    "D10",    # Missing docstring
+    "E501",   # Line too long
+]
+[tool.ruff.lint.pydocstyle]
+# Use Google-style docstrings.
+convention = "pep257"
