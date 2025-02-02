@@ -2,16 +2,19 @@
 name = "docurba"
 version = "1"
 requires-python = ">=3.13"
+
 dependencies = [
     "django",
+    "django-browser-reload",
     "django-environ",
     "django-revproxy",
     "gunicorn[gevent]",
     "sentry-sdk[django]",
+    "whitenoise[brotli]",
 ]
 
 [dependency-groups]
-dev = ["honcho", "ptpython", "ruff"]
+dev = ["honcho", "ptpython", "pytest-cov", "ruff"]
 
 [tool.ruff.lint]
 select = ["ALL"]
