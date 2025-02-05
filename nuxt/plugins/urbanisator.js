@@ -122,7 +122,11 @@ export default ({ $supabase, $dayjs }, inject) => {
         codes: collectivites.filter(c => c.type === 'COM').map(c => c.code)
       })
 
-      return await this.getProceduresPerimetre(procedures.filter(p => !p.archived), collectiviteId)
+      const filteredProcedures = procedures.filter((procedure) => {
+        return !procedure.archived && procedure.type !== 'Abrogation'
+      })
+
+      return await this.getProceduresPerimetre(filteredProcedures, collectiviteId)
     },
     parseProceduresStatus (procedures) {
       procedures.forEach((procedure) => {
@@ -151,8 +155,15 @@ export default ({ $supabase, $dayjs }, inject) => {
         codes
       })
 
-      // The specific ID here is to prevent a duplicated created by sudocuh. This is suposed to be temporary for a demo.
-      return this.parseProceduresStatus(procedures.filter(p => !p.secondary_procedure_of && !p.archived && p.id !== '760d88f0-008d-4505-98f6-a7a9a2ebaf61'))
+      const filteredProcedures = procedures.filter((p) => {
+        return p.type !== 'Abrogation' &&
+          !p.secondary_procedure_of &&
+          !p.archived &&
+        // The specific ID here is to prevent a duplicated created by sudocuh. This is suposed to be temporary for a demo.
+          p.id !== '760d88f0-008d-4505-98f6-a7a9a2ebaf61'
+      })
+
+      return this.parseProceduresStatus(filteredProcedures)
     },
     async getProjects (collectiviteId) {
       try {
