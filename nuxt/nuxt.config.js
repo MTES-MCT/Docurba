@@ -4,7 +4,7 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
 
   env: {
-    ENQUETE_ENABLED: process.env.ENQUETE_ENABLED === '1'
+    DDT_ENQUETE_ENABLED: process.env.DDT_ENQUETE_ENABLED?.split(',') ?? []
   },
   head: {
     titleTemplate: '%s - Docurba',
