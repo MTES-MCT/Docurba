@@ -118,7 +118,6 @@ export default {
 
   serverMiddleware: [
     '~/server-middleware/redirects.js',
-    '~/server-middleware/supabaseServer.js',
     { path: '/api/admin', handler: '~/server-middleware/admin.js' },
     { path: '/api/auth', handler: '~/server-middleware/auth.js' },
     { path: '/api/communes', handler: '~/server-middleware/communes.js' },
