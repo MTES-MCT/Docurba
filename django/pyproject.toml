@@ -9,12 +9,16 @@ dependencies = [
     "django-environ",
     "django-revproxy",
     "gunicorn[gevent]",
+    "psycopg[binary]",
     "sentry-sdk[django]",
     "whitenoise[brotli]",
 ]
 
 [dependency-groups]
-dev = ["honcho", "ptpython", "pytest-cov", "ruff"]
+dev = ["honcho", "polars", "ptpython", "pytest-cov", "pytest-django", "ruff"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "core.settings"
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -22,6 +26,11 @@ ignore = [
     "COM812", # Missing trailing comma, conflicts with formatter
     "D10",    # Missing docstring
     "E501",   # Line too long
+]
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**.py" = [
+    "S101",    # asserts allowed in tests...
+    "PLR2004", # Magic value used in comparison
 ]
 [tool.ruff.lint.pydocstyle]
 # Use Google-style docstrings.
