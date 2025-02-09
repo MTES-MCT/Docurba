@@ -20,6 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env.str("SECRET_KEY")
 
 DEBUG = env.str("DEBUG", False)
+UNDER_TEST = env.str("PYTEST_VERSION", None) is not None
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
@@ -34,6 +35,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "revproxy.apps.RevProxyConfig",
     "django_browser_reload",
+    "django_extensions",
     "core",
 ]
 
@@ -56,6 +58,7 @@ STORAGES = {
     },
 }
 
+DATABASES = {"default": env.db("DATABASE_URL")}
 
 TEMPLATES = [
     {
