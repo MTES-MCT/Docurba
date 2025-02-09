@@ -15,10 +15,19 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["honcho", "polars", "ptpython", "pytest-cov", "pytest-django", "ruff"]
+dev = [
+    "django-extensions",
+    "honcho",
+    "polars",
+    "ptpython",
+    "pytest-cov",
+    "pytest-django",
+    "ruff",
+]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "core.settings"
+addopts = "--reuse-db --no-migrations"
 
 [tool.ruff.lint]
 select = ["ALL"]
