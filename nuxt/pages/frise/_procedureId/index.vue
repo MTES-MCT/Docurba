@@ -484,7 +484,11 @@ export default
     },
     async archiveProcedure (idProcedure) {
       try {
-        const { error } = await this.$supabase.from('procedures').delete().eq('id', idProcedure)
+        const { error } = await this.$supabase
+          .from('procedures')
+          .update({ soft_delete: true })
+          .eq('id', idProcedure)
+
         if (error) { throw error }
         this.$emit('delete', idProcedure)
         this.dialog = false
