@@ -151,7 +151,7 @@ export default {
       try {
         const { error } = await this.$supabase
           .from('procedures')
-          .delete()
+          .update({ soft_delete: true })
           .eq('id', idProcedure)
 
         if (error) { throw error }
