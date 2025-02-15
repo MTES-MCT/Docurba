@@ -13,6 +13,10 @@ def _format_perimetre(perimetre: dict) -> dict:
     return perimetre
 
 
+# FIXME : Procédures secondaires ?
+# FIXME : Procédures archivées ?
+
+
 def perimetres(request: HttpRequest) -> HttpResponse:
     perimetres = CommuneProcedure.objects.all()
     if departement := request.GET.get("departement"):
@@ -33,8 +37,8 @@ def perimetres(request: HttpRequest) -> HttpResponse:
     )
     csv_writer.writeheader()
     csv_writer.writerows(
-        _format_perimetre(perimetre)
-        for perimetre in perimetres.values(*csv_writer.fieldnames).iterator()
+        {field: getattr(perimetre, field) for field in csv_writer.fieldnames}
+        for perimetre in perimetres[: int(request.GET["limit"])]  # .iterator()
     )
 
     return response

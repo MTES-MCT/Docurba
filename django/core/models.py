@@ -1,6 +1,9 @@
+import logging
 import uuid
 from enum import StrEnum, auto
+from functools import cached_property
 from json import load
+from operator import attrgetter
 from typing import TypedDict
 
 from django.conf import settings
@@ -128,6 +131,7 @@ class Procedure(models.Model):
     type_document = models.TextField(  # noqa: DJ001
         choices=TypeDocument, db_column="doc_type", blank=True, null=True
     )
+    is_principale = models.BooleanField(blank=True, null=True)
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
     numero = models.TextField(blank=True, null=True)  # noqa: DJ001
     collectivite_porteuse_id = models.TextField(blank=True, null=True)  # noqa: DJ001
@@ -136,7 +140,6 @@ class Procedure(models.Model):
     # created_at = models.DateTimeField(blank=True, null=True)
     # last_updated_at = models.DateTimeField(blank=True, null=True)
     # from_sudocuh = models.IntegerField(unique=True, blank=True, null=True)
-    # is_principale = models.BooleanField(blank=True, null=True)
     # status = models.TextField(blank=True, null=True)
     # secondary_procedure_of = models.ForeignKey(
     #     "self",
@@ -192,16 +195,46 @@ class Procedure(models.Model):
         db_table = "procedures"
 
     def __str__(self) -> str:
+        return str(self.id)
         return (
             self.name
             or f"Gen {self.type} {self.numero or ''} {self.type_document} {communes[self.collectivite_porteuse_id]['intitule']}"
         )
 
     @property
-    def opposable(self) -> bool:
-        return any(
-            event.impact == EventImpact.OPPOSABLE for event in self.event_set.all()
+    def statut(self) -> EventImpact | None:
+        if not self.is_principale:
+            return None
+
+        return next(
+            (event.impact for event in self.event_set.all() if event.impact), None
         )
+
+    @cached_property
+    def event_prescription(self) -> "Event | None":
+        prescription_event_types = [
+            event_type
+            for event_type, event_impact in EVENT_IMPACT_BY_DOCUMENT_TYPE[
+                self.type_document_simplifie
+            ].items()
+            if event_impact == EventImpact.EN_COURS
+        ]
+
+        return next(
+            (
+                event
+                for event in self.event_set.all()
+                if event.type in prescription_event_types
+                and event.date_iso < "2025-01-01"
+            ),
+            None,
+        )
+
+    @property
+    def date_prescription(self) -> str:
+        if not self.event_prescription:
+            return "0000-00-00"
+        return self.event_prescription.date_iso
 
     @property
     def type_document_simplifie(self) -> TypeDocumentSimplifie:
@@ -209,14 +242,18 @@ class Procedure(models.Model):
             return TypeDocumentSimplifie("PLU")
         return TypeDocumentSimplifie(self.type_document)
 
+    @property
+    def is_schema(self) -> bool:
+        return self.type_document in (TypeDocument.SCOT, TypeDocument.SD)
+
 
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
+    date_iso = models.CharField(blank=True, null=True)  # noqa: DJ001
 
     # project = models.ForeignKey("Projects", models.DO_NOTHING, blank=True, null=True)
-    # date_iso = models.CharField(blank=True, null=True)
     # description = models.TextField(blank=True, null=True)
     # created_at = models.DateTimeField(blank=True, null=True)
     # actors = models.TextField(blank=True, null=True)  # This field type is a guess.
@@ -236,6 +273,7 @@ class Event(models.Model):
     class Meta:
         managed = settings.UNDER_TEST
         db_table = "doc_frise_events"
+        ordering = ("-date_iso",)
 
     def __str__(self) -> str:
         return f"{self.procedure}  - {self.type}"
@@ -249,7 +287,7 @@ class Event(models.Model):
 
 class CommuneProcedure(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(db_default=models.functions.Now())
     collectivite_code = models.TextField()
     collectivite_type = models.TextField()
     procedure = models.ForeignKey(
@@ -265,3 +303,24 @@ class CommuneProcedure(models.Model):
 
     def __str__(self) -> str:
         return f"{self.collectivite_code} {communes[self.collectivite_code]['intitule']} - {self.procedure}"
+
+    @property
+    def opposable(self) -> bool:
+        all_procedures = Procedure.objects.prefetch_related("event_set").filter(
+            perimetre__collectivite_code=self.collectivite_code
+        )
+        procedures_opposables = sorted(
+            (
+                procedure
+                for procedure in all_procedures
+                if self.procedure.is_schema == procedure.is_schema
+                and procedure.statut == EventImpact.OPPOSABLE
+            ),
+            key=attrgetter("date_prescription"),
+        )
+        if self.collectivite_code == "56190":
+            for p in procedures_opposables:
+                logging.warning(f"{p.id=!s} {p.date_prescription=!s}")
+        if not procedures_opposables:
+            return False
+        return procedures_opposables[-1].id == self.procedure_id

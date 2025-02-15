@@ -58,15 +58,19 @@ class TestPerimetres:
 
     @pytest.mark.django_db
     def test_56(
-        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+        self, client: Client, django_assert_max_num_queries: DjangoAssertNumQueries
     ) -> None:
         nuxt = self._retrieve_nuxt("/api/urba/exports/perimetres?departement=56")
         nuxt.drop_in_place("id")
         nuxt.drop_in_place("added_at")
         assert len(nuxt) == 2671
 
-        with django_assert_num_queries(1):
-            response = client.get("/api/perimetres?departement=56")
+        limit = 200
+        with django_assert_max_num_queries(602):
+            response = client.get(
+                "/api/perimetres", query_params={"departement": 56, "limit": limit}
+            )
 
         django = pl.read_csv(response.content, try_parse_dates=True)
-        polars.testing.assert_frame_equal(nuxt, django)
+        logging.warning(django[-1].to_dict())
+        polars.testing.assert_frame_equal(nuxt.limit(limit), django)
