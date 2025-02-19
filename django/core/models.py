@@ -1,13 +1,14 @@
 import logging
 import uuid
 from enum import StrEnum, auto
-from functools import cached_property
+from itertools import groupby
 from json import load
-from operator import attrgetter
-from typing import TypedDict
+from operator import attrgetter, itemgetter
+from typing import Self, TypedDict
 
 from django.conf import settings
 from django.db import models
+from django.db.models.functions import Coalesce
 
 
 class Foo(TypedDict):
@@ -32,7 +33,9 @@ class Commune(TypedDict):
 
 
 with (settings.BASE_DIR / "communes.json").open() as f:
-    communes: dict[str, Commune] = {commune["code"]: commune for commune in load(f)}
+    communes: dict[str, Commune] = {
+        f"{commune['code']}_{commune['type']}": commune for commune in load(f)
+    }
 
 
 class TypeDocumentSimplifie(models.TextChoices):
@@ -64,8 +67,8 @@ class EventImpact(StrEnum):
     CADUC = auto()
 
 
-EVENT_IMPACT_BY_DOCUMENT_TYPE = {
-    TypeDocumentSimplifie.CC: {
+EVENT_IMPACT_BY_TYPE_DOCUMENT = {
+    TypeDocument.CC: {
         "Délibération de prescription du conseil municipal": EventImpact.EN_COURS,
         "Approbation du préfet": EventImpact.OPPOSABLE,
         "Caractère exécutoire": EventImpact.OPPOSABLE,
@@ -76,7 +79,7 @@ EVENT_IMPACT_BY_DOCUMENT_TYPE = {
         "Annulation TA": EventImpact.ANNULE,
         "Abrogation effective": EventImpact.ANNULE,
     },
-    TypeDocumentSimplifie.SCOT: {
+    TypeDocument.SCOT: {
         "Délibération de l'établissement public qui prescrit": EventImpact.EN_COURS,
         "Retrait de la délibération d'approbation": EventImpact.EN_COURS,
         "Délibération d'approbation": EventImpact.OPPOSABLE,
@@ -88,7 +91,7 @@ EVENT_IMPACT_BY_DOCUMENT_TYPE = {
         "Annulation TA": EventImpact.ANNULE,
         "Caducité": EventImpact.CADUC,
     },
-    TypeDocumentSimplifie.SD: {
+    TypeDocument.SD: {
         "Délibération de l'établissement public qui prescrit": EventImpact.EN_COURS,
         "Délibération d'approbation": EventImpact.OPPOSABLE,
         "Caractère exécutoire": EventImpact.OPPOSABLE,
@@ -97,7 +100,7 @@ EVENT_IMPACT_BY_DOCUMENT_TYPE = {
         "Annulation TA": EventImpact.ANNULE,
         "Caducité": EventImpact.CADUC,
     },
-    TypeDocumentSimplifie.PLU: {
+    TypeDocument.PLU: {
         "Délibération de prescription du conseil municipal ou communautaire": EventImpact.EN_COURS,
         "Caractère exécutoire": EventImpact.OPPOSABLE,
         "Retrait de l'annulation totale": EventImpact.OPPOSABLE,
@@ -112,7 +115,7 @@ EVENT_IMPACT_BY_DOCUMENT_TYPE = {
         "Arrêté d'abrogation": EventImpact.ANNULE,
         "Caducité": EventImpact.CADUC,
     },
-    TypeDocumentSimplifie.POS: {
+    TypeDocument.POS: {
         "Délibération de prescription du conseil municipal ou communautaire": EventImpact.EN_COURS,
         "Caractère exécutoire": EventImpact.OPPOSABLE,
         "Délibération d'approbation du municipal ou communautaire": EventImpact.OPPOSABLE,
@@ -124,6 +127,89 @@ EVENT_IMPACT_BY_DOCUMENT_TYPE = {
         "Caducité": EventImpact.ANNULE,
     },
 }
+EVENT_IMPACT_BY_TYPE_DOCUMENT |= {
+    plu_like: EVENT_IMPACT_BY_TYPE_DOCUMENT[TypeDocumentSimplifie.PLU]
+    for plu_like in (
+        TypeDocument.PLUI,
+        TypeDocument.PLUIH,
+        TypeDocument.PLUIHM,
+        TypeDocument.PLUIM,
+    )
+}
+
+
+class ProcedureQuerySet(models.QuerySet):
+    def with_events(self) -> Self:
+        prescription_event_types = [
+            event_type
+            for lol in EVENT_IMPACT_BY_TYPE_DOCUMENT.values()
+            for event_type, event_impact in lol.items()
+            if event_impact == EventImpact.EN_COURS
+        ]
+
+        # event_types = [
+        #     event_type
+        #     for lol in EVENT_IMPACT_BY_DOCUMENT_TYPE.values()
+        #     for event_type in lol
+        # ]
+
+        whens = [
+            models.When(
+                type_document=type_document,
+                then=models.Subquery(
+                    Event.objects.filter(
+                        procedure=models.OuterRef("pk"),
+                        is_valid=True,
+                        type__in=event_impact_by_event_type.keys(),
+                    ).values("type")[:1]
+                ),
+            )
+            for (
+                type_document,
+                event_impact_by_event_type,
+            ) in EVENT_IMPACT_BY_TYPE_DOCUMENT.items()
+        ]
+
+        # whens = [
+        #     models.When(
+        #         procedure__type_document=type_document,
+        #         then=list(event_impact_by_event_type.keys()),
+        #     )
+        #     for (
+        #         type_document,
+        #         event_impact_by_event_type,
+        #     ) in EVENT_IMPACT_BY_TYPE_DOCUMENT.items()
+        # ]
+
+        return self.annotate(
+            date_prescription=Coalesce(
+                models.Subquery(
+                    Event.objects.filter(
+                        procedure=models.OuterRef("pk"),
+                        type__in=prescription_event_types,
+                    ).values("date_iso")[:1]
+                ),
+                models.Value("0000-00-00"),
+            ),
+            # dernier_event_impactant=models.Subquery(
+            #     Event.objects.filter(
+            #         procedure=models.OuterRef("pk"), type__in=event_types, is_valid=True
+            #     ).values("type")[:1]
+            # ),
+            dernier_event_impactant=models.Case(*whens),
+            # dernier_event_impactant=models.Subquery(
+            #     Event.objects.filter(
+            #         procedure=models.OuterRef("pk"),
+            #         is_valid=True,
+            #         type__in=models.Case(*whens),
+            #     ).values("type")[:1]
+            # ),
+        )
+
+
+class ProcedureManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().with_events()
 
 
 class Procedure(models.Model):
@@ -135,6 +221,8 @@ class Procedure(models.Model):
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
     numero = models.TextField(blank=True, null=True)  # noqa: DJ001
     collectivite_porteuse_id = models.TextField(blank=True, null=True)  # noqa: DJ001
+    created_at = models.DateTimeField(db_default=models.functions.Now())
+
     # project = models.ForeignKey("Projects", models.DO_NOTHING, blank=True, null=True)
     # commentaire = models.TextField(blank=True, null=True)
     # created_at = models.DateTimeField(blank=True, null=True)
@@ -190,6 +278,8 @@ class Procedure(models.Model):
     #     db_persist=True,
     # )
 
+    objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
+
     class Meta:
         managed = settings.UNDER_TEST
         db_table = "procedures"
@@ -205,42 +295,21 @@ class Procedure(models.Model):
     def statut(self) -> EventImpact | None:
         if not self.is_principale:
             return None
+        if not self.dernier_event_impactant:
+            return None
 
-        return next(
-            (event.impact for event in self.event_set.all() if event.impact), None
-        )
+        impact_by_event_type = {
+            event_type: event_impact
+            for lol in EVENT_IMPACT_BY_TYPE_DOCUMENT.values()
+            for event_type, event_impact in lol.items()
+        }
+        return impact_by_event_type[self.dernier_event_impactant]
 
-    @cached_property
-    def event_prescription(self) -> "Event | None":
-        prescription_event_types = [
-            event_type
-            for event_type, event_impact in EVENT_IMPACT_BY_DOCUMENT_TYPE[
-                self.type_document_simplifie
-            ].items()
-            if event_impact == EventImpact.EN_COURS
-        ]
-
-        return next(
-            (
-                event
-                for event in self.event_set.all()
-                if event.type in prescription_event_types
-                and event.date_iso < "2025-01-01"
-            ),
-            None,
-        )
-
-    @property
-    def date_prescription(self) -> str:
-        if not self.event_prescription:
-            return "0000-00-00"
-        return self.event_prescription.date_iso
-
-    @property
-    def type_document_simplifie(self) -> TypeDocumentSimplifie:
-        if self.type_document.startswith("PLU"):
-            return TypeDocumentSimplifie("PLU")
-        return TypeDocumentSimplifie(self.type_document)
+    # @property
+    # def type_document_simplifie(self) -> TypeDocumentSimplifie:
+    #     if self.type_document.startswith("PLU"):
+    #         return TypeDocumentSimplifie("PLU")
+    #     return TypeDocumentSimplifie(self.type_document)
 
     @property
     def is_schema(self) -> bool:
@@ -252,6 +321,7 @@ class Event(models.Model):
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
     date_iso = models.CharField(blank=True, null=True)  # noqa: DJ001
+    is_valid = models.BooleanField(db_default=True)
 
     # project = models.ForeignKey("Projects", models.DO_NOTHING, blank=True, null=True)
     # description = models.TextField(blank=True, null=True)
@@ -263,7 +333,6 @@ class Event(models.Model):
     # )  # This field type is a guess.
     # visibility = models.TextField(blank=True, null=True)
     # from_sudocuh = models.IntegerField(unique=True, blank=True, null=True)
-    # is_valid = models.BooleanField()
     # is_sudocuh_scot = models.BooleanField(blank=True, null=True)
     # profile = models.ForeignKey("Profiles", models.DO_NOTHING, blank=True, null=True)
     # test = models.BooleanField(blank=True, null=True)
@@ -280,9 +349,32 @@ class Event(models.Model):
 
     @property
     def impact(self) -> EventImpact | None:
-        return EVENT_IMPACT_BY_DOCUMENT_TYPE[
-            self.procedure.type_document_simplifie
-        ].get(self.type)
+        if not self.is_valid:
+            return None
+
+        return EVENT_IMPACT_BY_TYPE_DOCUMENT[self.procedure.type_document].get(
+            self.type
+        )
+
+
+class CommuneProcedureQuerySet(models.QuerySet):
+    def departement(self, departement: str | None = None) -> list["CommuneProcedure"]:
+        perimetres = self.prefetch_related(
+            models.Prefetch("procedure", Procedure.objects.all())
+        ).order_by("collectivite_code", "created_at")
+
+        if departement:
+            perimetres = perimetres.filter(departement=departement)
+
+        a = []
+        for _, collectivite_perims in groupby(
+            perimetres, attrgetter("collectivite_code", "collectivite_type")
+        ):
+            c = list(collectivite_perims)
+            for perim in c:
+                perim.opposable = perim._opposable(c)  # noqa: SLF001
+                a.append(perim)
+        return a
 
 
 class CommuneProcedure(models.Model):
@@ -296,31 +388,36 @@ class CommuneProcedure(models.Model):
     # opposable = models.BooleanField()
     departement = models.TextField(blank=True, null=True)
 
+    objects = CommuneProcedureQuerySet.as_manager()
+
     class Meta:
         managed = settings.UNDER_TEST
         db_table = "procedures_perimetres"
         unique_together = (("collectivite_code", "procedure", "collectivite_type"),)
 
     def __str__(self) -> str:
-        return f"{self.collectivite_code} {communes[self.collectivite_code]['intitule']} - {self.procedure}"
+        try:
+            return f"{self.collectivite_code} {communes[self.collectivite_code]['intitule']} - {self.procedure}"
+        except KeyError:
+            return f"{self.collectivite_code} - {self.procedure}"
 
-    @property
-    def opposable(self) -> bool:
-        all_procedures = Procedure.objects.prefetch_related("event_set").filter(
-            perimetre__collectivite_code=self.collectivite_code
-        )
+    def _opposable(self, all_perims) -> bool:
         procedures_opposables = sorted(
             (
-                procedure
-                for procedure in all_procedures
-                if self.procedure.is_schema == procedure.is_schema
-                and procedure.statut == EventImpact.OPPOSABLE
+                perim.procedure
+                for perim in all_perims
+                if self.procedure.is_schema == perim.procedure.is_schema
+                and perim.procedure.statut == EventImpact.OPPOSABLE
             ),
-            key=attrgetter("date_prescription"),
+            key=attrgetter(
+                "date_prescription",
+                "created_at",  # FIXME Test created_at order
+            ),
         )
-        if self.collectivite_code == "56190":
-            for p in procedures_opposables:
-                logging.warning(f"{p.id=!s} {p.date_prescription=!s}")
+        # if self.collectivite_code == "56144":  # FIXME COMD 05001 cf448ad5-193b-4c1f-a38b-d92a9b4472e6
+        #     for p in procedures_opposables:
+        #         if p.is_principale:
+        #             logging.warning(f"{p.id=!s} {p.date_prescription=!s}")
         if not procedures_opposables:
             return False
         return procedures_opposables[-1].id == self.procedure_id
