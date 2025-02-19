@@ -58,7 +58,7 @@ async function magicLinkSignIn ({ email, redirectBasePath }) {
       type: 'magiclink',
       email,
       options: {
-        redirectTo: profile.successfully_logged_once ? `https://docurba.beta.gouv.fr/collectivites/${profile.collectivite_id}/` : redirectBasePath
+        redirectTo: profile.successfully_logged_once ? `${process.env.APP_URL}/collectivites/${profile.collectivite_id}/` : redirectBasePath
       }
     })
 
