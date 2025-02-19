@@ -312,7 +312,7 @@ export default
       }
     },
     canCreateSecondaryProcedure () {
-      return this.$user?.profile?.side === 'etat' && this.isAdmin && !this.procedure.secondary_procedure_of
+      return this.isAdmin && !this.procedure.secondary_procedure_of
     },
     internalDocType () {
       let currDocType = this.procedure.doc_type
