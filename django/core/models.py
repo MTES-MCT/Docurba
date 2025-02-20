@@ -414,10 +414,12 @@ class CommuneProcedure(models.Model):
                 "created_at",  # FIXME Test created_at order
             ),
         )
-        # if self.collectivite_code == "56144":  # FIXME COMD 05001 cf448ad5-193b-4c1f-a38b-d92a9b4472e6
-        #     for p in procedures_opposables:
-        #         if p.is_principale:
-        #             logging.warning(f"{p.id=!s} {p.date_prescription=!s}")
+        if (
+            self.collectivite_code == "05001" and self.collectivite_type == "COMD"
+        ):  # FIXME COMD 05001 cf448ad5-193b-4c1f-a38b-d92a9b4472e6
+            for p in procedures_opposables:
+                if p.is_principale:
+                    logging.warning(f"{p.id=!s} {p.date_prescription=} {p.created_at=}")
         if not procedures_opposables:
             return False
         return procedures_opposables[-1].id == self.procedure_id
