@@ -407,6 +407,7 @@ class CommuneProcedure(models.Model):
                 perim.procedure
                 for perim in all_perims
                 if self.procedure.is_schema == perim.procedure.is_schema
+                and perim.procedure.type != "Abrogation"
                 and perim.procedure.statut == EventImpact.OPPOSABLE
             ),
             key=attrgetter(
