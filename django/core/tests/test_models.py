@@ -372,3 +372,28 @@ class TestCommuneProcedure:
         with django_assert_num_queries(0):
             assert perimetres == [commune_procedure_en_cours]
             assert not perimetres[0].opposable
+
+    @pytest.mark.django_db
+    def test_abrogation_non_opposable(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        procedure_opposable = Procedure.objects.create(
+            is_principale=True, type_document=TypeDocument.PLUI, type="Abrogation"
+        )
+        procedure_opposable.event_set.create(type="Caractère exécutoire")
+        commune_procedure_opposable = procedure_opposable.perimetre.create(
+            collectivite_code="12345", departement="12"
+        )
+
+        with django_assert_num_queries(1):
+            procedure_opposable_with_events = Procedure.objects.with_events().get(
+                id=procedure_opposable.id
+            )
+
+            assert procedure_opposable_with_events.statut == EventImpact.OPPOSABLE
+
+        with django_assert_num_queries(2):
+            perimetres = CommuneProcedure.objects.departement("12")
+        with django_assert_num_queries(0):
+            assert perimetres == [commune_procedure_opposable]
+            assert not perimetres[0].opposable
