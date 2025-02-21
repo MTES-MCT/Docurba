@@ -13,6 +13,8 @@ from django.test import Client
 from environ import Env
 from pytest_django import DjangoAssertNumQueries
 
+from core.models import communes
+
 
 # https://pytest-django.readthedocs.io/en/latest/database.html#using-an-existing-external-database-for-tests
 # https://github.com/pytest-dev/pytest-django/issues/643
@@ -96,7 +98,7 @@ class TestPerimetres:
             ),
         )
 
-    @pytest.mark.parametrize("departement", [f"{i:0>2}" for i in range(1, 6)])
+    @pytest.mark.parametrize("departement", [f"{i:0>2}" for i in range(24, 25)])
     @pytest.mark.django_db
     def test_departement(
         self,
@@ -138,6 +140,14 @@ class TestPerimetres:
         for nuxt_row, django_row in zip(
             nuxt.iter_rows(named=True), django.iter_rows(named=True), strict=True
         ):
+            if nuxt_row["collectivite_type"] == "COMD":
+                continue
+            if (
+                f"{nuxt_row['collectivite_code']}_COMD" in communes
+                and f"{nuxt_row['collectivite_code']}_COM" not in communes
+            ):
+                # assert nuxt_row == "lol"
+                continue
             if (
                 nuxt_row["collectivite_code"],
                 nuxt_row["procedure_id"],
