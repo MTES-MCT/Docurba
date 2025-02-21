@@ -2,15 +2,6 @@
   <v-container v-if="!loading">
     <v-row>
       <v-col cols="12">
-        <v-alert type="warning" text>
-          L'outil de rédaction des Porter à Connaissance sera en maintenance ce <strong class="font-weight-bold">vendredi 21 février de 12 à 14h</strong>.<br>
-          Évitez toute édition de votre travail pendant cette période, au risque qu'il ne soit pas sauvegardé.<br>
-          Merci de votre compréhension.
-        </v-alert>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12">
         <PACEditingAdvicesCard :avoided-tags="(project && project.id) ? [] : ['projet']" />
       </v-col>
     </v-row>
