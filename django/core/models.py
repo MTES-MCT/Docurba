@@ -416,11 +416,14 @@ class CommuneProcedure(models.Model):
             ),
         )
         if (
-            self.collectivite_code == "05001" and self.collectivite_type == "COMD"
+            self.collectivite_code == "24183"
+            and str(self.procedure.id) == "4c4cb7e7-f660-40d8-8cc5-9b6a34cfb741"
         ):  # FIXME COMD 05001 cf448ad5-193b-4c1f-a38b-d92a9b4472e6
             for p in procedures_opposables:
                 if p.is_principale:
-                    logging.warning(f"{p.id=!s} {p.date_prescription=} {p.created_at=}")
+                    logging.warning(
+                        f"{p.id=!s} {p.date_prescription=} {p.created_at=!s}"
+                    )
         if not procedures_opposables:
             return False
         return procedures_opposables[-1].id == self.procedure_id
