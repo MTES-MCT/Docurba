@@ -115,6 +115,9 @@ app.get('/exports/gpu/maillages', async (req, res) => {
     if (c.intercommunaliteCode) {
       parents.push(c.intercommunaliteCode)
     }
+    if (c.codeParent) {
+      parents.push(c.codeParent)
+    }
 
     return {
       name: c.code,
