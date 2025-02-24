@@ -17,7 +17,6 @@ import sudocuhCommunes from './modules/exportMaps/sudocuhCommunes.js'
 
 // exports maps GPU
 import gpuMaillages from './modules/exportMaps/gpuMaillages.js'
-import gpuParente from './modules/exportMaps/gpuParente.js'
 
 const csvParser = new AsyncParser()
 
@@ -121,24 +120,6 @@ app.get('/exports/gpu/maillages', async (req, res) => {
   if (req.query.csv) {
     const csv = await csvParser.parse(mapedCommunes).promise()
     res.status(200).attachment('gpu_maillages.csv').send(csv)
-  } else {
-    res.status(200).send(mapedCommunes)
-  }
-})
-
-app.get('/exports/gpu/parente', async (req, res) => {
-  const allCollectivites = [...allCommunes, ...groupements]
-
-  const mapedCommunes = allCollectivites.map((c) => {
-    return Object.assign(mapValues(gpuParente, key => get(c, key, '')), {
-      // parents: `${c.departementCode} ${c.intercommunaliteCode}`.trim(),
-      // administered_by: c.code.length > 5 ? c.departementCode : ''
-    })
-  })
-
-  if (req.query.csv) {
-    const csv = await csvParser.parse(mapedCommunes).promise()
-    res.status(200).attachment('gpu_parente.csv').send(csv)
   } else {
     res.status(200).send(mapedCommunes)
   }
