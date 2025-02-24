@@ -105,9 +105,12 @@ app.get('/exports/prescriptions', async (req, res) => {
 })
 
 app.get('/exports/gpu/maillages', async (req, res) => {
-  const allCollectivites = [...allCommunes, ...groupements]
+  const groupementsCompetents = groupements.filter(
+    groupement => groupement.competencePLU || groupement.competenceSCOT
+  )
+  const collectivites = [...allCommunes, ...groupementsCompetents]
 
-  const mapedCommunes = allCollectivites.map((c) => {
+  const mapedCommunes = collectivites.map((c) => {
     const parents = []
     if (c.departementCode) {
       parents.push(c.departementCode)
