@@ -121,7 +121,9 @@ app.get('/exports/gpu/maillages', async (req, res) => {
       title: c.intitule,
       type: c.type,
       parents: parents.join(' '),
-      administered_by: c.code.length > 5 ? c.departementCode : ''
+      administered_by: c.code.length > 5 ? c.departementCode : '',
+      competencePLU: c.competencePLU,
+      competenceSCOT: c.competenceSCOT
     }
   })
 
