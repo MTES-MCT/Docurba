@@ -141,13 +141,9 @@ export default {
   data () {
     return {
       icons: { mdiArrowLeft },
-      postes: [
-        { text: 'Bureau d\'étude', value: 'be' },
-        { text: 'Elu(e)', value: 'elu' },
-        { text: 'Technicien(ne) ou employé(e)', value: 'employe_mairie' },
-        { text: 'Agence d\'urbanisme', value: 'agence_urba' },
-        { text: 'Autre', value: 'autre' }
-      ],
+      postes: Object.entries(this.$utils.POSTES_COLLECTIVITE).map(
+        ([value, text]) => ({ value, text })
+      ),
       selectedCollectivite: {},
       loading: false,
       userData: {
