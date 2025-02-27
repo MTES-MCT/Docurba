@@ -23,7 +23,7 @@
         <v-select
           v-model="userData.poste"
           :error-messages="errors"
-          :items="roles"
+          :items="postes"
           filled
           label="Administration"
         />
@@ -35,7 +35,7 @@
           v-model="userData.other_poste"
           multiple
           :error-messages="errors"
-          :items="postes"
+          :items="roles"
           filled
           label="Rôle(s)"
         />
@@ -81,17 +81,12 @@ export default {
   },
   data () {
     return {
-      roles: [
-        { text: 'DDT/DEAL', value: 'ddt' },
-        { text: 'DREAL', value: 'dreal' }
-      ],
-      postes: [
-        { text: 'Chef d\'unité/de bureau/de service et adjoint', value: 'chef_unite' },
-        { text: 'Rédacteur(ice) de PAC ', value: 'redacteur_pac' },
-        { text: 'Chargé(e) de l\'accompagnement des collectivités', value: 'suivi_procedures' },
-        { text: 'Référent(e) Sudocuh', value: 'referent_sudocuh' }
-
-      ],
+      postes: Object.entries(this.$utils.POSTES_ETAT).map(
+        ([value, text]) => ({ value, text })
+      ),
+      roles: Object.entries(this.$utils.ROLES_ETAT).map(
+        ([value, text]) => ({ value, text })
+      ),
       icons: {
         mdiEye,
         mdiEyeOff

@@ -164,27 +164,21 @@
                     Collaborateurs
                   </div>
                   <div class="mb-4">
-                    <v-list two-line dense class="py-0">
+                    <ul class="pl-0">
                       <template v-for="(collaborator, icollab) in toDisplayCollabs">
-                        <v-list-item v-if="icollab < 3 || showAllCollabs" :key="collaborator.id" class="pl-0">
-                          <v-list-item-avatar :color="collaborator.color" class="text-capitalize white--text font-weight-bold">
+                        <li v-if="icollab < 3 || showAllCollabs" :key="collaborator.id" class="d-flex py-2 text-body-2 font-weight-medium" style="font-size: .8125rem !important; gap: 0.5rem;">
+                          <v-avatar size="40" :color="collaborator.color" class="text-capitalize text-body-1 font-weight-bold white--text">
                             {{ collaborator.avatar }}
-                          </v-list-item-avatar>
-                          <v-list-item-content>
-                            <v-list-item-title>
-                              {{ collaborator.label }}
-                            </v-list-item-title>
-                            <v-list-item-subtitle>
-                              <span> {{ $utils.posteDetails(collaborator.poste) }}</span>
-
-                              <template v-if="collaborator.detailsPoste">
-                                <span v-for="detail in collaborator.detailsPoste" :key="`colab-${collaborator.email}-${detail}`">{{ ', ' + $utils.posteDetails(detail) }}</span>
-                              </template>
-                            </v-list-item-subtitle>
-                          </v-list-item-content>
-                        </v-list-item>
+                          </v-avatar>
+                          <div>
+                            {{ collaborator.label }}
+                            <div class="mention-grey--text">
+                              {{ $utils.formatPostes(collaborator) }}
+                            </div>
+                          </div>
+                        </li>
                       </template>
-                    </v-list>
+                    </ul>
                     <v-btn v-if="collaborators?.length > 3" class="mt-2" depressed @click="showAllCollabs = !showAllCollabs">
                       <span v-if="showAllCollabs">Cacher</span>
                       <span v-else>Voir plus</span>

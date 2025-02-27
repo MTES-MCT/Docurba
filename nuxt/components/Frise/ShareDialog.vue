@@ -46,15 +46,7 @@
                         {{ item.label }}
                       </v-list-item-title>
                       <v-list-item-subtitle>
-                        <span> {{ $utils.posteDetails(item.poste) }}</span>
-                        <template v-if="item.detailsPoste">
-                          <span
-                            v-for="detail in item.detailsPoste"
-                            :key="`colab-${item.email}-${detail}`"
-                          >
-                            {{ ', ' + $utils.posteDetails(detail) }}
-                          </span>
-                        </template>
+                        {{ $utils.formatPostes(item) }}
                       </v-list-item-subtitle>
                     </v-list-item-content>
                   </v-list-item>
@@ -97,10 +89,7 @@
                           {{ collaborator.label }}
                         </v-list-item-title>
                         <v-list-item-subtitle>
-                          <span> {{ $utils.posteDetails(collaborator.poste) }}</span>
-                          <template v-if="collaborator.detailsPoste">
-                            <span v-for="detail in collaborator.detailsPoste" :key="`colab-${collaborator.email}-${detail}`">{{ ', ' + $utils.posteDetails(detail) }}</span>
-                          </template>
+                          {{ $utils.formatPostes(collaborator) }}
                         </v-list-item-subtitle>
                       </v-list-item-content>
                       <v-list-item-action>
