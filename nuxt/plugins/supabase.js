@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 export default (_, inject) => {
   // const supabaseUrl = 'https://ixxbyuandbmplfnqtxyw.supabase.co'
   const supabaseUrl = 'https://supabase.docurba.beta.gouv.fr'
-  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNDk3NTU3NiwiZXhwIjoxOTUwNTUxNTc2fQ.zvgWeMG3sKSwBKv8uGm5uy82cEyMyEMivQvNIDFhBkA'
+  const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4eGJ5dWFuZGJtcGxmbnF0eHl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA4NTA4ODMsImV4cCI6MjA1NjQyNjg4M30.UDomMAiu5MZrQ8NqfDBfSrXRL_O3dSIrP8pyGy6QTAc'
 
   inject('supabase', createClient(supabaseUrl, supabaseAnonKey))
   // const DB_CONFIG = PG_DEV_CONFIG
