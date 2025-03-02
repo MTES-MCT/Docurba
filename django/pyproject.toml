@@ -6,7 +6,9 @@ requires-python = ">=3.13"
 dependencies = [
     "django",
     "django-browser-reload",
+    "django-debug-toolbar",
     "django-environ",
+    "django-extensions",
     "django-revproxy",
     "gunicorn[gevent]",
     "psycopg[binary]",
@@ -16,8 +18,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "django-debug-toolbar",
-    "django-extensions",
     "honcho",
     "polars",
     "ptpython",
@@ -36,6 +36,8 @@ ignore = [
     "COM812", # Missing trailing comma, conflicts with formatter
     "D10",    # Missing docstring
     "E501",   # Line too long
+    "TD",     # Todos
+    # "ERA001", # Commented out code
 ]
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**.py" = [

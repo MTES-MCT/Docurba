@@ -179,7 +179,9 @@ source = { virtual = "." }
 dependencies = [
     { name = "django" },
     { name = "django-browser-reload" },
+    { name = "django-debug-toolbar" },
     { name = "django-environ" },
+    { name = "django-extensions" },
     { name = "django-revproxy" },
     { name = "gunicorn", extra = ["gevent"] },
     { name = "psycopg", extra = ["binary"] },
@@ -189,8 +191,6 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "django-debug-toolbar" },
-    { name = "django-extensions" },
     { name = "honcho" },
     { name = "polars" },
     { name = "ptpython" },
@@ -203,7 +203,9 @@ dev = [
 requires-dist = [
     { name = "django" },
     { name = "django-browser-reload" },
+    { name = "django-debug-toolbar" },
     { name = "django-environ" },
+    { name = "django-extensions" },
     { name = "django-revproxy" },
     { name = "gunicorn", extras = ["gevent"] },
     { name = "psycopg", extras = ["binary"] },
@@ -213,8 +215,6 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "django-debug-toolbar" },
-    { name = "django-extensions" },
     { name = "honcho" },
     { name = "polars" },
     { name = "ptpython" },
