@@ -122,7 +122,6 @@ export default {
     { path: '/api/auth', handler: '~/server-middleware/auth.js' },
     { path: '/api/communes', handler: '~/server-middleware/communes.js' },
     { path: '/api/data', handler: '~/server-middleware/data.js' },
-    { path: '/api/epci', handler: '~/server-middleware/EPCI.js' },
     { path: '/api/geoide', handler: '~/server-middleware/geoide.js' },
     { path: '/api/georisques', handler: '~/server-middleware/georisques.js' },
     { path: '/api/pdf', handler: '~/server-middleware/pdf.js' },
