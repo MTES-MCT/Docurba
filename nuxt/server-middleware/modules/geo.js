@@ -3,12 +3,6 @@ const _ = require('lodash')
 const { topology } = require('topojson-server')
 const { center } = require('@turf/turf')
 
-// const communes = require('../Data/EnrichedCommunes.json')
-// const intercommunalites = require('../Data/EnrichedIntercommunalites.json')
-
-// const refCommunes = require('../Data/referentiels/communes.json')
-// const refGroupements = require('../Data/referentiels/groupements.json')
-
 const communes = require('../Data/referentiels/communes.json')
 const intercommunalites = require('../Data/referentiels/groupements.json')
 
