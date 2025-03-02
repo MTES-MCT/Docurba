@@ -60,7 +60,16 @@ STORAGES = {
     },
 }
 
-DATABASES = {"default": env.db("DATABASE_URL")}
+DATABASES = {
+    "default": {
+        **env.db("DATABASE_URL"),
+        "OPTIONS": {
+            "pool": {
+                "min_size": 1,
+            }
+        },
+    }
+}
 
 TEMPLATES = [
     {

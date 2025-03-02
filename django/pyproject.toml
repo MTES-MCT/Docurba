@@ -11,7 +11,7 @@ dependencies = [
     "django-extensions",
     "django-revproxy",
     "gunicorn[gevent]",
-    "psycopg[binary]",
+    "psycopg[binary,pool]",
     "sentry-sdk[django]",
     "whitenoise[brotli]",
 ]
