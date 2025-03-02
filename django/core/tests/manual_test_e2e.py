@@ -98,13 +98,13 @@ class TestPerimetres:
             ),
         )
 
-    @pytest.mark.parametrize("departement", [f"{i:0>2}" for i in range(24, 25)])
+    @pytest.mark.parametrize("departement", [f"{i:0>2}" for i in range(9, 10)])
     @pytest.mark.django_db
     def test_departement(
         self,
         client: Client,
         django_assert_num_queries: DjangoAssertNumQueries,
-        departement,
+        departement: str,
     ) -> None:
         nuxt = self._retrieve_nuxt(
             f"/api/urba/exports/perimetres?departement={departement}"
@@ -115,10 +115,12 @@ class TestPerimetres:
         limit = 1000000
         nuxt = nuxt.limit(limit)
         with django_assert_num_queries(2):
+            before = datetime.now()
             response = client.get(
                 "/api/perimetres",
                 query_params={"departement": departement, "limit": limit},
             )
+            logging.warning((datetime.now() - before) / timedelta(milliseconds=1))
 
         django = pl.read_csv(
             response.content,

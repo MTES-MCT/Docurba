@@ -18,23 +18,31 @@ class Foo(TypedDict):
     intitule: str
 
 
-class Commune(TypedDict):
-    code: str
-    codeParent: str
-    siren: str
+class Collectivite(TypedDict):
     type: str
     intitule: str
+    siren: str
+    code: str
     regionCode: str
-    intercommunaliteCode: str
+    departementCode: str
     competencePLU: bool
     competenceSCOT: bool
     groupements: list[Foo]
     membres: list[Foo]
 
 
+class Commune(Collectivite):
+    codeParent: str
+    intercommunaliteCode: str
+
+
 with (settings.BASE_DIR / "communes.json").open() as f:
     communes: dict[str, Commune] = {
         f"{commune['code']}_{commune['type']}": commune for commune in load(f)
+    }
+with (settings.BASE_DIR / "groupements.json").open() as f:
+    groupements: dict[str, Collectivite] = {
+        groupement["code"]: groupement for groupement in load(f)
     }
 
 
@@ -140,11 +148,11 @@ EVENT_IMPACT_BY_TYPE_DOCUMENT |= {
 
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self) -> Self:
-        prescription_event_types = [
+        approbation_event_types = [
             event_type
             for lol in EVENT_IMPACT_BY_TYPE_DOCUMENT.values()
             for event_type, event_impact in lol.items()
-            if event_impact == EventImpact.EN_COURS
+            if event_impact == EventImpact.OPPOSABLE
         ]
 
         # event_types = [
@@ -182,11 +190,11 @@ class ProcedureQuerySet(models.QuerySet):
         # ]
 
         return self.annotate(
-            date_prescription=Coalesce(
+            date_approbation=Coalesce(
                 models.Subquery(
                     Event.objects.filter(
                         procedure=models.OuterRef("pk"),
-                        type__in=prescription_event_types,
+                        type__in=approbation_event_types,
                     ).values("date_iso")[:1]
                 ),
                 models.Value("0000-00-00"),
@@ -214,13 +222,14 @@ class ProcedureManager(models.Manager):
 
 class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    type_document = models.TextField(  # noqa: DJ001
+    type_document = models.CharField(  # noqa: DJ001
         choices=TypeDocument, db_column="doc_type", blank=True, null=True
     )
     is_principale = models.BooleanField(blank=True, null=True)
-    type = models.TextField(blank=True, null=True)  # noqa: DJ001
-    numero = models.TextField(blank=True, null=True)  # noqa: DJ001
-    collectivite_porteuse_id = models.TextField(blank=True, null=True)  # noqa: DJ001
+    name = models.TextField(blank=True, null=True)  # noqa: DJ001
+    type = models.CharField(blank=True, null=True)  # noqa: DJ001
+    numero = models.CharField(blank=True, null=True)  # noqa: DJ001
+    collectivite_porteuse_id = models.CharField(blank=True, null=True)  # noqa: DJ001
     created_at = models.DateTimeField(db_default=models.functions.Now())
 
     # project = models.ForeignKey("Projects", models.DO_NOTHING, blank=True, null=True)
@@ -250,7 +259,6 @@ class Procedure(models.Model):
     # )  # This field type is a guess.
     # current_perimetre = models.JSONField(blank=True, null=True)
     # initial_perimetre = models.JSONField(blank=True, null=True)
-    # name = models.TextField(blank=True, null=True)
     # is_sudocuh_scot = models.BooleanField(blank=True, null=True)
     # testing = models.BooleanField(blank=True, null=True)
     # # owner = models.ForeignKey("Profiles", models.DO_NOTHING, blank=True, null=True)
@@ -285,11 +293,18 @@ class Procedure(models.Model):
         db_table = "procedures"
 
     def __str__(self) -> str:
-        return str(self.id)
+        collectivite = f"{self.collectivite_porteuse_id}_COM"
+        if collectivite in communes:
+            collectivite = communes[collectivite]["intitule"]
+        if self.collectivite_porteuse_id in groupements:
+            collectivite = groupements[self.collectivite_porteuse_id]["intitule"]
         return (
             self.name
-            or f"Gen {self.type} {self.numero or ''} {self.type_document} {communes[self.collectivite_porteuse_id]['intitule']}"
+            or f"🤖 {self.type} {self.numero or ''} {self.type_document} {collectivite}"
         )
+
+    def get_absolute_url(self) -> str:
+        return f"https://docurba.beta.gouv.fr/frise/{self.pk}"
 
     @property
     def statut(self) -> EventImpact | None:
@@ -380,13 +395,13 @@ class CommuneProcedureQuerySet(models.QuerySet):
 class CommuneProcedure(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     created_at = models.DateTimeField(db_default=models.functions.Now())
-    collectivite_code = models.TextField()
-    collectivite_type = models.TextField()
+    collectivite_code = models.CharField()
+    collectivite_type = models.CharField()
     procedure = models.ForeignKey(
         Procedure, models.DO_NOTHING, related_name="perimetre"
     )
     # opposable = models.BooleanField()
-    departement = models.TextField(blank=True, null=True)
+    departement = models.CharField(blank=True, null=True)
 
     objects = CommuneProcedureQuerySet.as_manager()
 
@@ -411,7 +426,7 @@ class CommuneProcedure(models.Model):
                 and perim.procedure.statut == EventImpact.OPPOSABLE
             ),
             key=attrgetter(
-                "date_prescription",
+                "date_approbation",
                 "created_at",  # FIXME Test created_at order
             ),
         )
@@ -422,7 +437,7 @@ class CommuneProcedure(models.Model):
             for p in procedures_opposables:
                 if p.is_principale:
                     logging.warning(
-                        f"{p.id=!s} {p.date_prescription=} {p.created_at=!s}"
+                        f"{p.id=!s} {p.date_approbation=} {p.created_at=!s}"
                     )
         if not procedures_opposables:
             return False
