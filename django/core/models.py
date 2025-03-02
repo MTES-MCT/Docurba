@@ -3,7 +3,7 @@ import uuid
 from enum import StrEnum, auto
 from itertools import groupby
 from json import load
-from operator import attrgetter, itemgetter
+from operator import attrgetter
 from typing import Self, TypedDict
 
 from django.conf import settings
@@ -216,7 +216,7 @@ class ProcedureQuerySet(models.QuerySet):
 
 
 class ProcedureManager(models.Manager):
-    def get_queryset(self):
+    def get_queryset(self) -> ProcedureQuerySet:
         return super().get_queryset().with_events()
 
 
@@ -401,7 +401,7 @@ class CommuneProcedure(models.Model):
         Procedure, models.DO_NOTHING, related_name="perimetre"
     )
     # opposable = models.BooleanField()
-    departement = models.CharField(blank=True, null=True)
+    departement = models.CharField(blank=True, null=True)  # noqa: DJ001
 
     objects = CommuneProcedureQuerySet.as_manager()
 
@@ -416,7 +416,7 @@ class CommuneProcedure(models.Model):
         except KeyError:
             return f"{self.collectivite_code} - {self.procedure}"
 
-    def _opposable(self, all_perims) -> bool:
+    def _opposable(self, all_perims: list[Self]) -> bool:
         procedures_opposables = sorted(
             (
                 perim.procedure
@@ -437,7 +437,7 @@ class CommuneProcedure(models.Model):
             for p in procedures_opposables:
                 if p.is_principale:
                     logging.warning(
-                        f"{p.id=!s} {p.date_approbation=} {p.created_at=!s}"
+                        f"{p.id=!s} {p.date_approbation=} {p.created_at=!s}"  # noqa: G004
                     )
         if not procedures_opposables:
             return False
