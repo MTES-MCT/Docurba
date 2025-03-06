@@ -49,8 +49,12 @@
     <template v-if="loaded">
       <v-row>
         <v-col cols="12">
-          <v-alert type="info">
-            Les nouvelles procédures et événements saisis dans Sudocuh sont visibles dans Docurba dès le lendemain matin.
+          <v-alert type="warning">
+            En raison d'un problème affectant le centre serveur du MTE, les données saisies sur Sudocuh n'ont pas pu être importées depuis le 01/03/2025.
+            <br>
+            Au rétablissement de la situation dans les jours à venir, toutes les saisies seront récupérées.
+            <br>
+            Veuillez-nous excuser pour la gêne occasionnée.
           </v-alert>
         </v-col>
         <v-col cols="12" class="d-flex justify-space-between">
