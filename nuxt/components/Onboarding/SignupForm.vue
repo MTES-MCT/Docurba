@@ -81,17 +81,12 @@ export default {
   },
   data () {
     return {
-      roles: [
-        { text: 'DDT/DEAL', value: 'ddt' },
-        { text: 'DREAL', value: 'dreal' }
-      ],
-      postes: [
-        { text: 'Chef d\'unité/de bureau/de service et adjoint', value: 'chef_unite' },
-        { text: 'Rédacteur(ice) de PAC ', value: 'redacteur_pac' },
-        { text: 'Chargé(e) de l\'accompagnement des collectivités', value: 'suivi_procedures' },
-        { text: 'Référent(e) Sudocuh', value: 'referent_sudocuh' }
-
-      ],
+      roles: Object.entries(this.$utils.ROLES_ETAT).map(
+        ([value, text]) => ({ value, text })
+      ),
+      postes: Object.entries(this.$utils.POSTES_ETAT).map(
+        ([value, text]) => ({ value, text })
+      ),
       icons: {
         mdiEye,
         mdiEyeOff

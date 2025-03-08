@@ -53,19 +53,37 @@ export default ({ app }, inject) => {
       creator.initiator = !!profile.initiator
       return creator
     },
-    posteDetails (techName) {
-      const map = {
-        employe_mairie: 'Employé de mairie',
-        redacteur_pac: 'Rédacteur de PAC',
-        ddt: 'DDT',
-        be: 'Bureau d\'étude',
-        elu: 'Élu',
-        autre: 'Autre',
-        suivi_procedures: 'Suivi de procédure',
-        referent_sudocuh: 'Référent Sudocuh',
-        chef_unite: 'Chef d\'unité'
+    ROLES_ETAT: {
+      ddt: 'DDT(M)/DEAL',
+      dreal: 'DREAL/DRIEAT'
+    },
+    POSTES_ETAT: {
+      chef_unite: 'Chef·fe d\'unité/de bureau/de service et adjoint·e',
+      redacteur_pac: 'Rédacteur·ice de PAC',
+      suivi_procedures: 'Chargé·e de l\'accompagnement des collectivités',
+      referent_sudocuh: 'Référent·e Sudocuh'
+    },
+    POSTES_COLLECTIVITE: {
+      be: 'Bureau d\'études',
+      elu: 'Collectivité, Élu·e',
+      employe_mairie: 'Collectivité, Technicien·ne ou employé·e',
+      agence_urba: 'Agence d\'urbanisme',
+      autre: 'Autre'
+    },
+    formatPostes (profile) {
+      const postes = []
+
+      const POSTES_PRINCIPAUX = { ...this.ROLES_ETAT, ...this.POSTES_COLLECTIVITE }
+      if (profile.poste !== 'autre') {
+        postes.push(POSTES_PRINCIPAUX[profile.poste] ?? profile.poste)
       }
-      return map[techName] ?? techName
+
+      const ALL_POSTES = { ...this.POSTES_ETAT, ...this.POSTES_COLLECTIVITE }
+      for (const poste of profile.detailsPoste ?? []) {
+        postes.push(ALL_POSTES[poste] ?? poste)
+      }
+
+      return postes.join(', ')
     }
   }
   inject('utils', utils)
