@@ -78,10 +78,6 @@ app.post('/:ref', async (req, res) => {
   // Someone miss using a userId should not be able to modify anithing else than what this userId is allowed.
   const commitRes = await github(`PUT /repos/{owner}/{repo}/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
     branch: ref,
-    committer: {
-      name: 'Fabien', // allowedRole.user_email.replace(/@(.*)/, ''),
-      email: 'fabien.ungerer@gmail.com' // allowedRole.user_email
-    },
     message: `${commit.sha ? 'Edit' : 'Create'} ${commit.path} for ${ref} from Docurba`
   }))
 
@@ -94,10 +90,6 @@ app.delete('/:ref', async (req, res) => {
 
   const commitRes = await github(`DELETE /repos/{owner}/{repo}/contents/${encodeURIComponent(commit.path)}`, Object.assign({}, commit, {
     branch: ref,
-    committer: {
-      name: 'Fabien', // allowedRole.user_email.replace(/@(.*)/, ''),
-      email: 'fabien.ungerer@gmail.com' // allowedRole.user_email
-    },
     message: `Delete ${commit.path} for ${ref} from Docurba`
   }))
 
