@@ -121,7 +121,10 @@ export default {
     await this.$user.isReady
     this.isLoading = false
 
-    if (this.$user.profile.side !== 'etat' && !this.$isDev) { this.$router.push('/') }
+    if (this.$user.profile.side !== 'etat') {
+      console.warn('Page réservée au side État')
+      this.$router.push('/')
+    }
 
     // const displayedKey = 'tally-displayed-m6kNJP'
     // const formNb = window.localStorage.getItem(displayedKey) || 0
