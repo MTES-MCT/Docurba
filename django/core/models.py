@@ -148,6 +148,7 @@ EVENT_IMPACT_BY_TYPE_DOCUMENT |= {
 
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self) -> Self:
+        # FIXME : Il va falloir individualiser cela ?
         approbation_event_types = [
             event_type
             for lol in EVENT_IMPACT_BY_TYPE_DOCUMENT.values()
@@ -391,6 +392,20 @@ class CommuneProcedureQuerySet(models.QuerySet):
                 a.append(perim)
         return a
 
+    # FIXME: Non testé
+    def collectivite(
+        self, collectivite_code: str, collectivite_type: str
+    ) -> list["CommuneProcedure"]:
+        perimetres = self.prefetch_related(
+            models.Prefetch("procedure", Procedure.objects.all())
+        ).filter(
+            collectivite_code=collectivite_code, collectivite_type=collectivite_type
+        )
+
+        for perim in perimetres:
+            perim.opposable = perim._opposable(perimetres)
+        return perimetres
+
 
 class CommuneProcedure(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -430,15 +445,6 @@ class CommuneProcedure(models.Model):
                 "created_at",  # FIXME Test created_at order
             ),
         )
-        if (
-            self.collectivite_code == "24183"
-            and str(self.procedure.id) == "4c4cb7e7-f660-40d8-8cc5-9b6a34cfb741"
-        ):  # FIXME COMD 05001 cf448ad5-193b-4c1f-a38b-d92a9b4472e6
-            for p in procedures_opposables:
-                if p.is_principale:
-                    logging.warning(
-                        f"{p.id=!s} {p.date_approbation=} {p.created_at=!s}"  # noqa: G004
-                    )
         if not procedures_opposables:
             return False
         return procedures_opposables[-1].id == self.procedure_id

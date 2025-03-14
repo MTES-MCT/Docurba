@@ -52,55 +52,64 @@ class TestProcedure:
         assert Procedure(type_document=TypeDocument.SD).is_schema
 
     @pytest.mark.django_db
-    def test_plus_recent_event_prescription(
+    def test_date_approbation_retourne_plus_recent_event_approbation(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
         procedure.event_set.create(
-            type="Délibération de prescription du conseil municipal ou communautaire",
+            type="Caractère exécutoire",
             date_iso="2022-12-01",
         )
-        event_prescription = procedure.event_set.create(
-            type="Délibération de prescription du conseil municipal ou communautaire",
+        procedure.event_set.create(
+            type="Délibération d'approbation du municipal ou communautaire",
             date_iso="2024-12-01",
         )
+        procedure.event_set.create(
+            type="Délibération d'approbation",
+            date_iso="2023-12-01",
+        )
+
+        # FIXME More checks
+        assert [event.impact for event in procedure.event_set.all()] == [
+            EventImpact.OPPOSABLE,
+            EventImpact.OPPOSABLE,
+            EventImpact.OPPOSABLE,
+        ]
+        with django_assert_num_queries(1):
+            procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
+
+            assert procedure_with_events.date_approbation == "2024-12-01"
+
+    @pytest.mark.django_db
+    def test_date_approbation_ignore_event_pas_approbation(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
         procedure.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
             date_iso="2023-12-01",
         )
-
-        assert event_prescription.impact == EventImpact.EN_COURS
-        with django_assert_num_queries(1):
-            procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
-
-            assert procedure_with_events.date_prescription == "2024-12-01"
-
-    @pytest.mark.django_db
-    def test_event_prescription_uniquement(
-        self, django_assert_num_queries: DjangoAssertNumQueries
-    ) -> None:
-        procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
-        procedure.event_set.create(
+        event_approbation = procedure.event_set.create(
             type="Caractère exécutoire",
-            date_iso="2025-12-01",
-        )
-        event_prescription = procedure.event_set.create(
-            type="Délibération de prescription du conseil municipal ou communautaire",
             date_iso="2024-12-01",
         )
         procedure.event_set.create(
-            type="Caractère exécutoire",
+            type="Délibération de prescription du conseil municipal ou communautaire",
             date_iso="2025-12-01",
         )
 
-        assert event_prescription.impact == EventImpact.EN_COURS
+        assert [event.impact for event in procedure.event_set.all()] == [
+            EventImpact.EN_COURS,
+            EventImpact.OPPOSABLE,
+            EventImpact.EN_COURS,
+        ]
         with django_assert_num_queries(1):
             procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
 
-            assert procedure_with_events.date_prescription == "2024-12-01"
+            assert procedure_with_events.date_approbation == "2024-12-01"
 
     @pytest.mark.django_db
-    def test_event_prescription_manquant(
+    def test_date_approbation_quand_event_approbation_manquant(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
@@ -108,7 +117,7 @@ class TestProcedure:
         with django_assert_num_queries(1):
             procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
 
-            assert procedure_with_events.date_prescription == "0000-00-00"
+            assert procedure_with_events.date_approbation == "0000-00-00"
 
 
 class TestProcedureStatut:
@@ -233,10 +242,8 @@ class TestCommuneProcedure:
             is_principale=True, type_document=TypeDocument.PLUI
         )
         procedure_opposable.event_set.create(
-            type="Délibération de prescription du conseil municipal ou communautaire",
-            date_iso="2024-12-01",
+            type="Caractère exécutoire", date_iso="2024-12-01"
         )
-        procedure_opposable.event_set.create(type="Caractère exécutoire")
         commune_procedure_opposable = procedure_opposable.perimetre.create(
             collectivite_code="12345", departement="12"
         )
@@ -245,11 +252,7 @@ class TestCommuneProcedure:
             is_principale=True, type_document=TypeDocument.PLU
         )
         procedure_precedente.event_set.create(
-            type="Délibération de prescription du conseil municipal ou communautaire",
-            date_iso="2023-12-01",
-        )
-        procedure_precedente.event_set.create(
-            type="Caractère exécutoire",
+            type="Caractère exécutoire", date_iso="2023-12-01"
         )
         commune_procedure_precedente = procedure_precedente.perimetre.create(
             collectivite_code="12345", departement="12"

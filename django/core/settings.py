@@ -63,11 +63,8 @@ STORAGES = {
 DATABASES = {
     "default": {
         **env.db("DATABASE_URL"),
-        "OPTIONS": {
-            "pool": {
-                "min_size": 1,
-            }
-        },
+        "CONN_MAX_AGE": env.int("CONN_MAX_AGE", 0),
+        "CONN_HEALTH_CHECK": True,
     }
 }
 
