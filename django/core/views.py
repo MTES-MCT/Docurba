@@ -3,6 +3,7 @@ from operator import attrgetter
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
+from django.views.decorators.http import require_safe
 
 from core.models import CommuneProcedure, communes
 
@@ -18,6 +19,7 @@ def _format_perimetre(perimetre: dict) -> dict:
 # FIXME : Procédures archivées ?
 
 
+@require_safe
 def perimetres(request: HttpRequest) -> HttpResponse:
     departement = request.GET.get("departement")
     perimetres = CommuneProcedure.objects.filter(
@@ -45,6 +47,7 @@ def perimetres(request: HttpRequest) -> HttpResponse:
     return response
 
 
+@require_safe
 def collectivite(
     request: HttpRequest, collectivite_code: str, collectivite_type: str = "COM"
 ) -> HttpResponse:
@@ -59,5 +62,7 @@ def collectivite(
 
     commune = communes[f"{collectivite_code}_{collectivite_type}"]
     return render(
-        request, "collectivite.html", {"collectivite": commune, "cp": communes_procedures}
+        request,
+        "collectivite.html",
+        {"collectivite": commune, "cp": communes_procedures},
     )

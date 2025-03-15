@@ -9,6 +9,7 @@ from core import views
 urlpatterns = [
     path("_admin/", admin.site.urls),
     path("collectivite/<collectivite_code>/", views.collectivite),
+    path("collectivite/<collectivite_code>/<collectivite_type>/", views.collectivite),
     path("api/perimetres", views.perimetres),
     path("__reload__/", include("django_browser_reload.urls")),
     *debug_toolbar_urls(),

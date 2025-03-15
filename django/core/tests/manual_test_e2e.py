@@ -31,6 +31,8 @@ def django_db_setup(django_db_modify_db_settings: None) -> None:
     connections["default"] = connections.create_connection("default")
 
 
+# FIXME: Problème sur 91390/8a0f3202-6721-4b60-ac63-7363319539b8
+# Approbation pas détectée. Est-ce un problème de normalisation unicode ?
 DATE_DAPPROBATION_MAL_DETECTEE = [
     ("09106", "93de19ac-d609-4b26-8651-6c43ed5a2a8a"),
     ("09106", "51ded599-7b22-44ca-b740-bf8b7475f266"),

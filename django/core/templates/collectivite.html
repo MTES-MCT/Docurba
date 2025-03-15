@@ -18,6 +18,7 @@
                 <th>Opposable</th>
                 <th>Statut</th>
                 <th>Date d'approbation</th>
+                <th>Denier event impactant</th>
             </tr>
             {% for procedure in procedures %}
             <tr>
@@ -31,6 +32,7 @@
                 <td>{{ procedure.opposable }}</td>
                 <td>{{ procedure.procedure.statut }}</td>
                 <td>{{ procedure.procedure.date_approbation }}</td>
+                <td>{{ procedure.procedure.dernier_event_impactant }}</td>
             </tr>
             {% endfor %}
         </table>
