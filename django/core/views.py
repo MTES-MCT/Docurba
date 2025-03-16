@@ -40,7 +40,7 @@ def perimetres(request: HttpRequest) -> HttpResponse:
         ],
     )
     csv_writer.writeheader()
-    for perimetre in perimetres[: int(request.GET.get("limit", -1))]:  # .iterator()
+    for perimetre in perimetres:
         a = {field: getattr(perimetre, field) for field in csv_writer.fieldnames}
         csv_writer.writerow(a)
 

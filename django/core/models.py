@@ -377,7 +377,7 @@ class CommuneProcedureQuerySet(models.QuerySet):
     def departement(self, departement: str | None = None) -> list["CommuneProcedure"]:
         perimetres = self.prefetch_related(
             models.Prefetch("procedure", Procedure.objects.all())
-        ).order_by("collectivite_code", "created_at")
+        ).order_by("collectivite_code", "collectivite_type")  # FIXME: Écrire un Test
 
         if departement:
             perimetres = perimetres.filter(departement=departement)
