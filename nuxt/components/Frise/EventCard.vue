@@ -134,7 +134,7 @@ export default {
       return this.$utils.formatEventProfileToCreator(this.event)
     },
     formatDate () {
-      return this.$dayjs(this.event.date_iso).format('DD/MM/YY')
+      return this.$dayjs(this.event.date_iso).format('DD/MM/YYYY')
     }
   },
   methods: {
