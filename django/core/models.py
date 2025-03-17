@@ -232,6 +232,16 @@ class Procedure(models.Model):
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
     collectivite_porteuse_id = models.CharField(blank=True, null=True)  # noqa: DJ001
     created_at = models.DateTimeField(db_default=models.functions.Now())
+    doublon_cache_de = models.OneToOneField(
+        "self", on_delete=models.DO_NOTHING, blank=True, null=True, unique=True
+    )
+    soft_delete = models.BooleanField(db_default=False)
+    archived = models.GeneratedField(
+        expression=models.Q(doublon_cache_de__isnull=False)
+        | models.Q(soft_delete=True),
+        output_field=models.BooleanField(),
+        db_persist=True,
+    )
 
     # project = models.ForeignKey("Projects", models.DO_NOTHING, blank=True, null=True)
     # commentaire = models.TextField(blank=True, null=True)
@@ -276,16 +286,6 @@ class Procedure(models.Model):
     # doc_type_code = models.TextField(blank=True, null=True)
     # comment_dgd = models.TextField(blank=True, null=True)
     # shareable = models.BooleanField(blank=True, null=True)
-    # doublon_cache_de = models.OneToOneField(
-    #     "self", on_delete=models.DO_NOTHING, blank=True, null=True, unique=True
-    # )
-    # soft_delete = models.BooleanField()
-    # archived = models.GeneratedField(
-    #     expression=models.Q(doublon_cache_de__isnull=False)
-    #     | models.Q(soft_delete=True),
-    #     output_field=models.BooleanField(),
-    #     db_persist=True,
-    # )
 
     objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
@@ -305,7 +305,7 @@ class Procedure(models.Model):
         )
 
     def get_absolute_url(self) -> str:
-        return f"https://docurba.beta.gouv.fr/frise/{self.pk}"
+        return f"/frise/{self.pk}"
 
     @property
     def statut(self) -> EventImpact | None:
@@ -375,9 +375,11 @@ class Event(models.Model):
 
 class CommuneProcedureQuerySet(models.QuerySet):
     def departement(self, departement: str | None = None) -> list["CommuneProcedure"]:
-        perimetres = self.prefetch_related(
-            models.Prefetch("procedure", Procedure.objects.all())
-        ).order_by("collectivite_code", "collectivite_type")  # FIXME: Écrire un Test
+        perimetres = (
+            self.prefetch_related(models.Prefetch("procedure", Procedure.objects.all()))
+            .filter(procedure__archived=False)  # FIXME: Écrire un Test
+            .order_by("collectivite_code", "collectivite_type")  # FIXME: Écrire un Test
+        )
 
         if departement:
             perimetres = perimetres.filter(departement=departement)
@@ -399,7 +401,9 @@ class CommuneProcedureQuerySet(models.QuerySet):
         perimetres = self.prefetch_related(
             models.Prefetch("procedure", Procedure.objects.all())
         ).filter(
-            collectivite_code=collectivite_code, collectivite_type=collectivite_type
+            collectivite_code=collectivite_code,
+            collectivite_type=collectivite_type,
+            procedure__archived=False,
         )
 
         for perim in perimetres:

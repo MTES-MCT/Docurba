@@ -8,17 +8,6 @@ from django.views.decorators.http import require_safe
 from core.models import CommuneProcedure, communes
 
 
-def _format_perimetre(perimetre: dict) -> dict:
-    perimetre["opposable"] = str(perimetre["opposable"]).lower()
-    perimetre["created_at"] = perimetre["created_at"].isoformat()
-
-    return perimetre
-
-
-# FIXME : Procédures secondaires ?
-# FIXME : Procédures archivées ?
-
-
 @require_safe
 def perimetres(request: HttpRequest) -> HttpResponse:
     departement = request.GET.get("departement")
