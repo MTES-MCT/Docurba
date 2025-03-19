@@ -2,6 +2,16 @@
   <v-container>
     <v-row>
       <v-col cols="12">
+        <v-alert type="info" text>
+          Nouveau webinaire ce 31 mars : comment et pourquoi les collectivités utilisent Docurba ?
+          <a
+            href="https://app.livestorm.co/mte/pourquoi-et-comment-les-collectivites-utilisent-docurba-formation-22"
+          >
+            Plus d’informations et inscription
+          </a>
+        </v-alert>
+      </v-col>
+      <v-col cols="12">
         <h1>Mes collectivités - {{ $route.params.departement }}</h1>
       </v-col>
       <v-col v-if="!collectivites" cols="12">
