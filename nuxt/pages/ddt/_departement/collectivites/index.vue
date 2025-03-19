@@ -2,9 +2,6 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <LayoutsBannerAlert />
-      </v-col>
-      <v-col cols="12">
         <h1>Mes collectivités - {{ $route.params.departement }}</h1>
       </v-col>
       <v-col v-if="!collectivites" cols="12">
