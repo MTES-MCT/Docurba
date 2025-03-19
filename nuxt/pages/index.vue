@@ -6,7 +6,6 @@
           Docurba vous accompagne dans l'élaboration de vos
           <LandingWordSlider />
         </h1>
-        <LayoutsBannerAlert />
         <div class="search">
           <p>
             Pour commencer, accédez aux ressources de votre

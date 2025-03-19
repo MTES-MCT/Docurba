@@ -3,9 +3,6 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <LayoutsBannerAlert />
-        </v-col>
-        <v-col cols="12">
           <h1>{{ collectivite.intitule }} ({{ collectivite.code }})</h1>
         </v-col>
       </v-row>
