@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark light" />
+
+        <title>Document</title>
+    </head>
+    <body>
+        <h1>{{ collectivite.code }} {{ collectivite.intitule }}</h1>
+        {% regroup cp by procedure.is_schema as wesh %}
+        {% for wes, procedures in wesh %}
+        {{ wes }}
+        <table>
+            <tr>
+                <th>P</th>
+                <th>Opposable</th>
+                <th>Statut</th>
+                <th>Date d'approbation</th>
+                <th>Denier event impactant</th>
+            </tr>
+            {% for procedure in procedures %}
+            <tr>
+                <td>
+                    <a href="{{ procedure.procedure.get_absolute_url }}">
+                        {{ procedure.procedure }}
+                    </a>
+                    <br />
+                    {{ procedure.procedure_id }}
+                </td>
+                <td>{{ procedure.opposable }}</td>
+                <td>{{ procedure.procedure.statut }}</td>
+                <td>{{ procedure.procedure.date_approbation }}</td>
+                <td>{{ procedure.procedure.dernier_event_impactant }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endfor %}
+    </body>
+</html>

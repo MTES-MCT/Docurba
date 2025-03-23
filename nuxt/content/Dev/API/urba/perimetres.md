@@ -1,50 +1,31 @@
 ---
-apiPath: "/api/urba/exports/perimetres"
+apiPath: "/api/perimetres"
 files: []
 order: 10
 visible: true
 ---
-https://nuxt3.docurba.incubateur.net/api/urba/exports/perimetres?departement=01
+
+https://docurba.beta.gouv.fr/exports/perimetres?departement=01
 
 ### Description
-Cet endpoint retourne code INSEE des communes par procédures.
 
----
+Retourne les procédures de chaque commune et leur opposabilité.
 
-### Format de la requête
+### Requête
 
 #### Endpoint
-`/api/urba/exports/perimetres`
 
-#### Paramètres de requête disponibles :
-1. **Filtres sur les attributs**  
-   Vous pouvez filtrer les résultats en utilisant les paramètres suivants :
-   - `collectivite_code` : Filtrer par le code de la collectivité. Utile pour retrouver l'historique des procédures d'une commune.
-   - `collectivite_type` : Filtrer par le type de collectivité. `collectivite_type=COM` permet d'exclure les COMD.
-   - `procedure_id` : Filtrer par l'identifiant de la procédure.
-   - `opposable` : Filtrer selon si le périmètre est opposable (`true` ou `false`).
-   - `departement` : Filtrer par le département.
+`/api/perimetres`
 
-2. **`doc_type`**  
-   - Permet de filtrer le périmètre par type de procédure :
-     - `CC`
-     - `PLU`
-     - `SCOT`
+#### Paramètres de requête disponibles
 
----
+- `departement` : Filtrer par le code INSEE du département.
 
-### Format de la réponse
+### Réponse
 
-La réponse est une liste d'objets, chaque objet représentant un périmètre avec les attributs suivants :
+La réponse est un CSV avec les colonnes suivantes :
 
-```json
-{
-  "id": "Identifiant unique du périmètre", // String
-  "created_at": "Date de création du périmètre (ISO)", // String
-  "added_at": "Date d'ajout du périmètre (ISO)", // String
-  "collectivite_code": "Code INSEE de la collectivité associée", // String
-  "collectivite_type": "Type de la collectivité associée", // String
-  "procedure_id": "Identifiant de la procédure liée", // String
-  "opposable": "Indique si le périmètre est opposable", // Boolean
-  "departement": "Département du périmètre", // String
-}
+- `collectivite_code` : Code INSEE de la commune associée
+- `collectivite_type` : Type de la commune associée
+- `procedure_id` : Identifiant de la procédure liée
+- `opposable` : `True` si la procédure est opposable, `False` sinon
