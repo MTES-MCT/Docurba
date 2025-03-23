@@ -12,6 +12,20 @@ defaults:
 jobs:
   all:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15.1
+        env:
+          POSTGRES_PASSWORD: docurba
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 1s
+          --health-timeout 1s
+          --health-retries 50
+        ports:
+          - 5434:5432
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -19,5 +33,11 @@ jobs:
           python-version-file: django/.python-version
           cache: "pip"
       - run: pip install -r requirements-dev.txt
+      - run: pytest
+        env:
+          SECRET_KEY: test_secret_key
+          DEBUG: "True"
+          DATABASE_URL: postgres://postgres:docurba@localhost:5434/docurba
+          UPSTREAM_NUXT: http://localhost:3000
       - run: ruff format --diff .
       - run: ruff check --output-format=github .

@@ -2,16 +2,33 @@
 name = "docurba"
 version = "1"
 requires-python = ">=3.13"
+
 dependencies = [
     "django",
+    "django-browser-reload",
+    "django-debug-toolbar",
     "django-environ",
+    "django-extensions",
     "django-revproxy",
     "gunicorn[gevent]",
+    "psycopg[binary,pool]",
     "sentry-sdk[django]",
+    "whitenoise[brotli]",
 ]
 
 [dependency-groups]
-dev = ["honcho", "ptpython", "ruff"]
+dev = [
+    "honcho",
+    "polars",
+    "ptpython",
+    "pytest-cov",
+    "pytest-django",
+    "ruff",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "core.settings"
+addopts = "--reuse-db --no-migrations --cov=."
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -19,6 +36,13 @@ ignore = [
     "COM812", # Missing trailing comma, conflicts with formatter
     "D10",    # Missing docstring
     "E501",   # Line too long
+    "TD",     # Todos
+    # "ERA001", # Commented out code
+]
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**.py" = [
+    "S101",    # asserts allowed in tests...
+    "PLR2004", # Magic value used in comparison
 ]
 [tool.ruff.lint.pydocstyle]
 # Use Google-style docstrings.

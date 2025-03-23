@@ -1,0 +1,7 @@
+{
+    "env": {
+        "ALLOWED_HOSTS": {
+            "generator": "url"
+        }
+    }
+}
