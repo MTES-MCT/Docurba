@@ -41,6 +41,7 @@ export default {
       this.$user.profile.collectivite_id === this.collectivite.intercommunaliteCode)
 
     const canCreateProcedure =
+      this.$user.profile.is_admin ||
       isSideEtatWithMatchingDepartement ||
       isSideCollectiviteWithMatchingCollectivite
 
