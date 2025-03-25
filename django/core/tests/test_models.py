@@ -34,15 +34,15 @@ class TestProcedure:
         procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
         procedure.event_set.create(
             type="Caractère exécutoire",
-            date_iso="2022-12-01",
+            date_evenement_string="2022-12-01",
         )
         procedure.event_set.create(
             type="Délibération d'approbation du municipal ou communautaire",
-            date_iso="2024-12-01",
+            date_evenement_string="2024-12-01",
         )
         procedure.event_set.create(
             type="Délibération d'approbation",
-            date_iso="2023-12-01",
+            date_evenement_string="2023-12-01",
         )
 
         assert [event.impact for event in procedure.event_set.all()] == [
@@ -62,15 +62,15 @@ class TestProcedure:
         procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
         procedure.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
-            date_iso="2023-12-01",
+            date_evenement_string="2023-12-01",
         )
         procedure.event_set.create(
             type="Caractère exécutoire",
-            date_iso="2024-12-01",
+            date_evenement_string="2024-12-01",
         )
         procedure.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
-            date_iso="2025-12-01",
+            date_evenement_string="2025-12-01",
         )
 
         assert [event.impact for event in procedure.event_set.all()] == [
@@ -217,7 +217,7 @@ class TestCommuneProcedure:
             is_principale=True, type_document=TypeDocument.PLUI
         )
         procedure_opposable.event_set.create(
-            type="Caractère exécutoire", date_iso="2024-12-01"
+            type="Caractère exécutoire", date_evenement_string="2024-12-01"
         )
         commune_procedure_opposable = procedure_opposable.perimetre.create(
             collectivite_code="12345"
@@ -227,7 +227,7 @@ class TestCommuneProcedure:
             is_principale=True, type_document=TypeDocument.PLU
         )
         procedure_precedente.event_set.create(
-            type="Caractère exécutoire", date_iso="2023-12-01"
+            type="Caractère exécutoire", date_evenement_string="2023-12-01"
         )
         commune_procedure_precedente = procedure_precedente.perimetre.create(
             collectivite_code="12345"
@@ -259,7 +259,7 @@ class TestCommuneProcedure:
         )
         plan_opposable.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
-            date_iso="2024-12-01",
+            date_evenement_string="2024-12-01",
         )
         plan_opposable.event_set.create(type="Caractère exécutoire")
         commune_plan_opposable = plan_opposable.perimetre.create(
@@ -271,7 +271,7 @@ class TestCommuneProcedure:
         )
         schema_opposable.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
-            date_iso="2023-12-01",
+            date_evenement_string="2023-12-01",
         )
         schema_opposable.event_set.create(
             type="Caractère exécutoire",
@@ -331,7 +331,7 @@ class TestCommuneProcedure:
         )
         procedure_en_cours.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
-            date_iso="2024-12-01",
+            date_evenement_string="2024-12-01",
         )
 
         commune_procedure_en_cours = procedure_en_cours.perimetre.create(

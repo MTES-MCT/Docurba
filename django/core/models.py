@@ -165,7 +165,7 @@ class ProcedureQuerySet(models.QuerySet):
                     Event.objects.filter(
                         procedure=models.OuterRef("pk"),
                         type__in=approbation_event_types,
-                    ).values("date_iso")[:1]
+                    ).values("date_evenement_string")[:1]
                 ),
                 models.Value("0000-00-00"),
             ),
@@ -243,13 +243,13 @@ class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
-    date_iso = models.CharField(blank=True, null=True)  # noqa: DJ001
+    date_evenement_string = models.CharField(db_column="date_iso", null=True)  # noqa: DJ001
     is_valid = models.BooleanField(db_default=True)
 
     class Meta:
         managed = settings.UNDER_TEST
         db_table = "doc_frise_events"
-        ordering = ("-date_iso",)
+        ordering = ("-date_evenement_string",)
 
     def __str__(self) -> str:
         return f"{self.procedure}  - {self.type}"
