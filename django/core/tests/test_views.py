@@ -57,3 +57,28 @@ class TestAPIPerimetres:
         response = client.get("/api/perimetres")
         reader = DictReader(response.content.decode().splitlines())
         assert len(list(reader)) == 2
+
+    @pytest.mark.django_db
+    def test_ignore_event_apres(self, client: Client) -> None:
+        commune_procedure = create_commune_procedure(code="12345", departement="12")
+        commune_procedure.procedure.event_set.create(
+            type="Caractère exécutoire", date_evenement_string="2023-01-01"
+        )
+
+        response = client.get("/api/perimetres", {"avant": "2023-01-01"})
+        reader = DictReader(response.content.decode().splitlines())
+        assert [cp["opposable"] for cp in reader] == ["False"]
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        "invalid_avant",
+        ["2023-1-01", "2023-02-30", "invalid-date", "2023/01/01"],
+    )
+    def test_parsing_avant(self, client: Client, invalid_avant: str) -> None:
+        response = client.get("/api/perimetres", {"avant": invalid_avant})
+
+        assert response.status_code == 400
+        assert (
+            response.content.decode()
+            == "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
+        )

@@ -1,3 +1,5 @@
+from datetime import date
+
 import pytest
 from pytest_django import DjangoAssertNumQueries
 
@@ -94,6 +96,31 @@ class TestProcedure:
 
             assert procedure_with_events.date_approbation == "0000-00-00"
 
+    @pytest.mark.django_db
+    def test_date_approbation_ignore_event_apres(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        procedure.event_set.create(
+            type="Caractère exécutoire",
+            date_evenement_string="2022-12-01",
+        )
+        procedure.event_set.create(
+            type="Délibération d'approbation",
+            date_evenement_string="2023-12-01",
+        )
+
+        assert [event.impact for event in procedure.event_set.all()] == [
+            EventImpact.OPPOSABLE,
+            EventImpact.OPPOSABLE,
+        ]
+        with django_assert_num_queries(1):
+            procedure_with_events = Procedure.objects.with_events(
+                avant=date(2023, 12, 1)
+            ).get(id=procedure.id)
+
+            assert procedure_with_events.date_approbation == "2022-12-01"
+
 
 class TestProcedureStatut:
     @pytest.mark.django_db
@@ -110,6 +137,42 @@ class TestProcedureStatut:
             procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
 
             assert procedure_with_events.statut == EventImpact.OPPOSABLE
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("jour_limite", "impact"),
+        [
+            (3, None),
+            (4, EventImpact.EN_COURS),
+            (5, EventImpact.EN_COURS),
+            (6, EventImpact.OPPOSABLE),
+        ],
+    )
+    def test_ignore_event_apres(
+        self,
+        django_assert_num_queries: DjangoAssertNumQueries,
+        jour_limite: int,
+        impact: EventImpact,
+    ) -> None:
+        procedure = Procedure.objects.create(
+            is_principale=True, type_document=TypeDocument.PLUI
+        )
+        event_prescription = procedure.event_set.create(
+            type="Délibération de prescription du conseil municipal ou communautaire",
+            date_evenement_string="2024-12-03",
+        )
+        event_approbation = procedure.event_set.create(
+            type="Caractère exécutoire", date_evenement_string="2024-12-05"
+        )
+
+        assert event_prescription.impact == EventImpact.EN_COURS
+        assert event_approbation.impact == EventImpact.OPPOSABLE
+        with django_assert_num_queries(1):
+            procedure_with_events = Procedure.objects.with_events(
+                avant=date(2024, 12, jour_limite)
+            ).get(id=procedure.id)
+
+            assert procedure_with_events.statut == impact
 
     @pytest.mark.django_db
     def test_principale_sans_evenement(
@@ -454,3 +517,46 @@ class TestCommuneProcedure:
             perimetres = CommuneProcedure.objects.with_opposabilite()
         with django_assert_num_queries(0):
             assert perimetres == [commune_procedure_reelle]
+
+    @pytest.mark.django_db
+    def test_ignore_event_apres(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        procedure_opposable_fevrier = Procedure.objects.create(
+            is_principale=True, type_document=TypeDocument.PLUI
+        )
+        procedure_opposable_fevrier.event_set.create(
+            type="Caractère exécutoire", date_evenement_string="2024-02-01"
+        )
+        commune_procedure_opposable_fevrier = (
+            procedure_opposable_fevrier.perimetre.create(collectivite_code="12345")
+        )
+
+        procedure_opposable_janvier = Procedure.objects.create(
+            is_principale=True, type_document=TypeDocument.PLU
+        )
+        procedure_opposable_janvier.event_set.create(
+            type="Caractère exécutoire", date_evenement_string="2024-01-01"
+        )
+        commune_procedure_opposable_janvier = (
+            procedure_opposable_janvier.perimetre.create(collectivite_code="12345")
+        )
+
+        with django_assert_num_queries(1):
+            procedures = Procedure.objects.with_events()
+
+            assert all(
+                procedure.statut == EventImpact.OPPOSABLE for procedure in procedures
+            )
+
+        with django_assert_num_queries(2):
+            perimetres = CommuneProcedure.objects.with_opposabilite(
+                avant=date(2024, 2, 1)
+            )
+        with django_assert_num_queries(0):
+            assert perimetres == [
+                commune_procedure_opposable_fevrier,
+                commune_procedure_opposable_janvier,
+            ]
+            assert not perimetres[0].opposable
+            assert perimetres[1].opposable
