@@ -1,4 +1,5 @@
 import uuid
+from datetime import date
 from enum import StrEnum, auto
 from itertools import groupby
 from json import load
@@ -134,7 +135,11 @@ EVENT_IMPACT_BY_TYPE_DOCUMENT |= {
 
 
 class ProcedureQuerySet(models.QuerySet):
-    def with_events(self) -> Self:
+    def with_events(self, *, avant: date | None = None) -> Self:
+        events = Event.objects.all()
+        if avant:
+            events = events.filter(date_evenement_string__lt=str(avant))
+
         approbation_event_types = [
             event_type
             for event_impact_by_event_type in EVENT_IMPACT_BY_TYPE_DOCUMENT.values()
@@ -146,7 +151,7 @@ class ProcedureQuerySet(models.QuerySet):
             models.When(
                 type_document=type_document,
                 then=models.Subquery(
-                    Event.objects.filter(
+                    events.filter(
                         procedure=models.OuterRef("pk"),
                         is_valid=True,
                         type__in=event_impact_by_event_type.keys(),
@@ -162,7 +167,7 @@ class ProcedureQuerySet(models.QuerySet):
         return self.annotate(
             date_approbation=Coalesce(
                 models.Subquery(
-                    Event.objects.filter(
+                    events.filter(
                         procedure=models.OuterRef("pk"),
                         type__in=approbation_event_types,
                     ).values("date_evenement_string")[:1]
@@ -271,13 +276,16 @@ class CommuneProcedureQuerySet(models.QuerySet):
         departement: str | None = None,
         collectivite_code: str | None = None,
         collectivite_type: str | None = None,
+        avant: date | None = None,
     ) -> list["CommuneProcedure"]:
         communes_procedures = (
             self.filter(
                 procedure__is_principale=True,
                 procedure__archived=False,
             )
-            .prefetch_related(models.Prefetch("procedure", Procedure.objects.all()))
+            .prefetch_related(
+                models.Prefetch("procedure", Procedure.objects.with_events(avant=avant))
+            )
             .order_by("collectivite_code", "collectivite_type")
         )
 

@@ -20,6 +20,7 @@ Retourne les procédures de chaque commune et leur opposabilité.
 #### Paramètres de requête disponibles
 
 - `departement` : Filtrer par le code INSEE du département.
+- `avant` : Ne prend en compte que les événements avant ce jour, au format `YYYY-MM-DD`.
 
 ### Réponse
 
