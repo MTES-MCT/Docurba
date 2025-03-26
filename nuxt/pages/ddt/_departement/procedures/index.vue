@@ -191,13 +191,7 @@ export default {
       ]
     },
     procedures () {
-      const proceduresAndFilters = this.rawProcedures?.map((e) => {
-        if (e.prescription?.date_iso) {
-          e.prescription.date_iso = e.prescription.date_iso ? dayjs(e.prescription.date_iso).format('DD/MM/YY') : null
-        }
-
-        return e
-      }).filter((e) => {
+      const proceduresAndFilters = this.rawProcedures?.filter((e) => {
         return e.procedures.created_at &&
         this.selectedDocumentsFilter.includes(e.procedures.doc_type) &&
           ((this.selectedTypesFilter.includes('pp') && e.procedures.is_principale) ||
@@ -225,6 +219,13 @@ export default {
         }
 
         const procedureName = this.$utils.formatProcedureName({ ...e.procedures, procedures_perimetres: e.perimetre }, collectivitePorteuse)
+
+        if (e.prescription?.date_iso) {
+          e.prescription.date_iso = dayjs(e.prescription.date_iso).format('DD/MM/YYYY')
+        }
+        if (e.last_event?.date_iso) {
+          e.last_event.date_iso = dayjs(e.last_event.date_iso).format('DD/MM/YYYY')
+        }
 
         return { ...e, procedureName }
       })
