@@ -38,7 +38,7 @@
                   Privé
                 </v-chip>
               </template>
-              Cet événement n’est visible que pour la collectivité et les services de l’État.
+              Visible uniquement par les collaborateur·ices de la procédure
             </v-tooltip>
             <v-btn v-if="creator.label != 'Sudocuh' && ($user.profile?.side === 'etat' || event.profile_id === $user.id )" class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
               <v-icon color="grey darken-2">
