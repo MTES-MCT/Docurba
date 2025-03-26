@@ -1,18 +1,21 @@
 <template>
   <v-menu v-model="menu" :close-on-content-click="false" min-width="auto">
     <template #activator="{on}">
-      <v-text-field
-        readonly
-        filled
-        :label="label"
-        :value="desplayedDate"
-        hide-details
-        v-on="on"
-      >
-        <template #append>
-          <v-icon>{{ icons.mdiCalendar }}</v-icon>
-        </template>
-      </v-text-field>
+      <validation-provider v-slot="{ errors }" :rules="rules" name="Date">
+        <v-text-field
+          readonly
+          filled
+          :label="label"
+          :value="desplayedDate"
+          hide-details
+          :error-messages="errors"
+          v-on="on"
+        >
+          <template #append>
+            <v-icon>{{ icons.mdiCalendar }}</v-icon>
+          </template>
+        </v-text-field>
+      </validation-provider>
     </template>
     <v-date-picker
       v-model="pickerDate"
@@ -24,8 +27,10 @@
 
 <script>
 import { mdiCalendar } from '@mdi/js'
+import FormInput from '@/mixins/FormInput'
 
 export default {
+  mixins: [FormInput],
   model: {
     prop: 'date',
     event: 'input'
@@ -33,7 +38,7 @@ export default {
   props: {
     date: {
       type: String,
-      default () { return this.$dayjs().format('YYYY-MM-DD') }
+      default: null
     },
     label: {
       type: String,
@@ -42,6 +47,10 @@ export default {
     diplayedFormat: {
       type: String,
       default: 'DD/MM/YYYY'
+    },
+    rules: {
+      type: [String, Object, Array],
+      default: 'required'
     }
   },
   data () {
@@ -52,6 +61,9 @@ export default {
   },
   computed: {
     desplayedDate () {
+      if (!this.date) {
+        return ''
+      }
       return this.$dayjs(this.date, 'YYYY-MM-DD').format(this.diplayedFormat)
     },
     pickerDate: {

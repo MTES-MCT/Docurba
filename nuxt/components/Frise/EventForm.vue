@@ -117,7 +117,7 @@ export default {
   data () {
     const defaultEvent = {
       type: this.$route.query.eventType || '',
-      date_iso: this.$dayjs().format('YYYY-MM-DD'),
+      date_iso: null,
       description: '',
       attachements: [],
       visibility: 'private'
