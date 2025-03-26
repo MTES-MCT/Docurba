@@ -18,17 +18,17 @@
                     label="Description"
                     filled
                     hide-details=""
-                    placeholder="Vous pouvez inscrire ici une description qui sera visible par tous"
                   />
                 </v-col>
                 <v-col cols="12">
                   <v-select
                     v-model="event.visibility"
-                    persistent-hint
-                    hint="Les événements privés sont visibles uniquement par la DDT et la collectivité en charge de la procédure, ainsi que par le bureau d’études le cas échéant."
                     label="Visibilité de l'évènement"
                     filled
-                    :items="[{value: 'public', text: 'Publique'}, {value: 'private', text: 'Privé'}]"
+                    :items="[
+                      {value: 'public', text: 'Publique - Visible par le grand public'},
+                      {value: 'private', text: 'Privé - Visible uniquement par les collaborateur·ices de la procédure'},
+                    ]"
                   />
                 </v-col>
                 <v-col cols="12">
