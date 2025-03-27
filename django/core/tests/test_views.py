@@ -17,9 +17,7 @@ def create_commune_et_procedure(
         type=type_collectivite,
         departement=departement,
     )
-    commune.procedures.create(
-        type_document=TypeDocument.PLU, collectivite_porteuse=commune
-    )
+    commune.procedures.create(doc_type=TypeDocument.PLU, collectivite_porteuse=commune)
     return commune
 
 

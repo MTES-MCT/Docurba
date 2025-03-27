@@ -4,7 +4,7 @@ import pytest
 from pytest_django import DjangoAssertNumQueries
 
 from core.models import (
-    EVENT_IMPACT_BY_TYPE_DOCUMENT,
+    EVENT_IMPACT_BY_DOC_TYPE,
     Commune,
     Event,
     EventImpact,
@@ -26,20 +26,20 @@ def create_commune() -> Commune:
 
 
 def test_tous_document_types_ont_event_impact() -> None:
-    assert list(TypeDocument) == list(EVENT_IMPACT_BY_TYPE_DOCUMENT.keys())
+    assert list(TypeDocument) == list(EVENT_IMPACT_BY_DOC_TYPE.keys())
 
 
 class TestProcedure:
     def test_is_schema(self) -> None:
-        assert not Procedure(type_document=TypeDocument.CC).is_schema
-        assert not Procedure(type_document=TypeDocument.PLU).is_schema
-        assert not Procedure(type_document=TypeDocument.PLUI).is_schema
-        assert not Procedure(type_document=TypeDocument.PLUIM).is_schema
-        assert not Procedure(type_document=TypeDocument.PLUIH).is_schema
-        assert not Procedure(type_document=TypeDocument.PLUIHM).is_schema
+        assert not Procedure(doc_type=TypeDocument.CC).is_schema
+        assert not Procedure(doc_type=TypeDocument.PLU).is_schema
+        assert not Procedure(doc_type=TypeDocument.PLUI).is_schema
+        assert not Procedure(doc_type=TypeDocument.PLUIM).is_schema
+        assert not Procedure(doc_type=TypeDocument.PLUIH).is_schema
+        assert not Procedure(doc_type=TypeDocument.PLUIHM).is_schema
 
-        assert Procedure(type_document=TypeDocument.SCOT).is_schema
-        assert Procedure(type_document=TypeDocument.SD).is_schema
+        assert Procedure(doc_type=TypeDocument.SCOT).is_schema
+        assert Procedure(doc_type=TypeDocument.SD).is_schema
 
     @pytest.mark.django_db
     def test_date_approbation_retourne_plus_recent_event_approbation(
@@ -47,7 +47,7 @@ class TestProcedure:
     ) -> None:
         commune = create_commune()
         procedure = Procedure.objects.create(
-            type_document=TypeDocument.PLUI,
+            doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
         )
         procedure.event_set.create(
@@ -79,7 +79,7 @@ class TestProcedure:
     ) -> None:
         commune = create_commune()
         procedure = Procedure.objects.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
@@ -110,7 +110,7 @@ class TestProcedure:
     ) -> None:
         commune = create_commune()
         procedure = Procedure.objects.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
 
         with django_assert_num_queries(1):
@@ -124,7 +124,7 @@ class TestProcedure:
     ) -> None:
         commune = create_commune()
         procedure = Procedure.objects.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure.event_set.create(
             type="Caractère exécutoire",
@@ -154,7 +154,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = create_commune()
         procedure = Procedure.objects.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(type="Caractère exécutoire")
 
@@ -182,7 +182,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = create_commune()
         procedure = Procedure.objects.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         event_prescription = procedure.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
@@ -207,7 +207,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = create_commune()
         procedure = Procedure.objects.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         Event.objects.create(procedure=procedure)
 
@@ -222,7 +222,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = create_commune()
         procedure = Procedure.objects.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(type="Abrogation")
 
@@ -238,7 +238,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = create_commune()
         procedure = Procedure.objects.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(type="Caractère exécutoire", is_valid=False)
 
@@ -254,7 +254,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = create_commune()
         procedure = Procedure.objects.create(
-            type_document=TypeDocument.CC, collectivite_porteuse=commune
+            doc_type=TypeDocument.CC, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(type="Délibération d'approbation")
 
@@ -270,11 +270,11 @@ class TestProcedureStatut:
     ) -> None:
         commune = create_commune()
         procedure_principale = Procedure.objects.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_secondaire = Procedure.objects.create(
             parente=procedure_principale,
-            type_document=TypeDocument.PLUI,
+            doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
         )
         procedure_secondaire.event_set.create(type="Caractère exécutoire")
@@ -288,7 +288,7 @@ class TestProcedureStatut:
 
 class TestEvent:
     @pytest.mark.parametrize(
-        ("type_document", "type_event", "impact"),
+        ("doc_type", "type_event", "impact"),
         [
             ("PLU", "lol", None),
             (
@@ -305,9 +305,9 @@ class TestEvent:
         ],
     )
     def test_event_impact(
-        self, type_document: str, type_event: str, impact: EventImpact
+        self, doc_type: str, type_event: str, impact: EventImpact
     ) -> None:
-        procedure = Procedure(type_document=type_document)
+        procedure = Procedure(doc_type=doc_type)
         assert Event(procedure=procedure, type=type_event).impact == impact
 
 
@@ -319,11 +319,11 @@ class TestCommuneProceduresPrincipales:
         commune = create_commune()
 
         procedure_principale = commune.procedures.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         _procedure_secondaire = commune.procedures.create(
             parente=procedure_principale,
-            type_document=TypeDocument.PLUI,
+            doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
         )
 
@@ -337,7 +337,7 @@ class TestCommuneProceduresPrincipales:
     ) -> None:
         commune = create_commune()
         procedure_reelle = commune.procedures.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
 
         _procedure_supprimee = commune.procedures.create(
@@ -361,14 +361,14 @@ class TestCommuneOpposabilite:
         commune = create_commune()
 
         procedure_opposable = commune.procedures.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_opposable.event_set.create(
             type="Caractère exécutoire", date_evenement_string="2024-12-01"
         )
 
         procedure_precedente = commune.procedures.create(
-            type_document=TypeDocument.PLU, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
         procedure_precedente.event_set.create(
             type="Caractère exécutoire", date_evenement_string="2023-12-01"
@@ -394,7 +394,7 @@ class TestCommuneOpposabilite:
         commune = create_commune()
 
         plan_opposable = commune.procedures.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         plan_opposable.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
@@ -403,7 +403,7 @@ class TestCommuneOpposabilite:
         plan_opposable.event_set.create(type="Caractère exécutoire")
 
         schema_opposable = commune.procedures.create(
-            type_document=TypeDocument.SCOT, collectivite_porteuse=commune
+            doc_type=TypeDocument.SCOT, collectivite_porteuse=commune
         )
         schema_opposable.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
@@ -433,7 +433,7 @@ class TestCommuneOpposabilite:
         commune = create_commune()
 
         procedure_opposable = commune.procedures.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_opposable.event_set.create(type="Caractère exécutoire")
 
@@ -453,7 +453,7 @@ class TestCommuneOpposabilite:
         commune = create_commune()
 
         procedure_en_cours = commune.procedures.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_en_cours.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
@@ -476,7 +476,7 @@ class TestCommuneOpposabilite:
         commune = create_commune()
 
         procedure_approuvee = commune.procedures.create(
-            type_document=TypeDocument.PLUI,
+            doc_type=TypeDocument.PLUI,
             type="Abrogation",
             collectivite_porteuse=commune,
         )
@@ -498,11 +498,11 @@ class TestCommuneOpposabilite:
         commune = create_commune()
 
         procedure_principale = commune.procedures.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_secondaire = commune.procedures.create(
             parente=procedure_principale,
-            type_document=TypeDocument.PLUI,
+            doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
         )
         procedure_secondaire.event_set.create(type="Caractère exécutoire")
@@ -552,14 +552,14 @@ class TestCommuneOpposabilite:
         commune = create_commune()
 
         procedure_opposable_fevrier = commune.procedures.create(
-            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_opposable_fevrier.event_set.create(
             type="Caractère exécutoire", date_evenement_string="2024-02-01"
         )
 
         procedure_opposable_janvier = commune.procedures.create(
-            type_document=TypeDocument.PLU, collectivite_porteuse=commune
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
         procedure_opposable_janvier.event_set.create(
             type="Caractère exécutoire", date_evenement_string="2024-01-01"
