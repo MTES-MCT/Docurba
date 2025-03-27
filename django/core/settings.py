@@ -8,7 +8,7 @@ env.smart_cast = False
 
 sentry_sdk.init(
     dsn=env.str("SENTRY_DSN", default=""),
-    traces_sample_rate=0.1,
+    traces_sample_rate=1,
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
