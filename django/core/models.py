@@ -49,7 +49,7 @@ class EventImpact(StrEnum):
     CADUC = auto()
 
 
-EVENT_IMPACT_BY_TYPE_DOCUMENT = {
+EVENT_IMPACT_BY_DOC_TYPE = {
     TypeDocument.CC: {
         "Délibération de prescription du conseil municipal": EventImpact.EN_COURS,
         "Approbation du préfet": EventImpact.APPROUVE,
@@ -109,9 +109,9 @@ EVENT_IMPACT_BY_TYPE_DOCUMENT = {
         "Caducité": EventImpact.ANNULE,
     },
 }
-EVENT_IMPACT_BY_TYPE_DOCUMENT |= dict.fromkeys(
+EVENT_IMPACT_BY_DOC_TYPE |= dict.fromkeys(
     (TypeDocument.PLUI, TypeDocument.PLUIH, TypeDocument.PLUIHM, TypeDocument.PLUIM),
-    EVENT_IMPACT_BY_TYPE_DOCUMENT[TypeDocument.PLU],
+    EVENT_IMPACT_BY_DOC_TYPE[TypeDocument.PLU],
 )
 
 
@@ -123,14 +123,14 @@ class ProcedureQuerySet(models.QuerySet):
 
         approbation_event_types = [
             event_type
-            for event_impact_by_event_type in EVENT_IMPACT_BY_TYPE_DOCUMENT.values()
+            for event_impact_by_event_type in EVENT_IMPACT_BY_DOC_TYPE.values()
             for event_type, event_impact in event_impact_by_event_type.items()
             if event_impact == EventImpact.APPROUVE
         ]
 
         dernier_event_impactant_whens = [
             models.When(
-                type_document=type_document,
+                doc_type=doc_type,
                 then=models.Subquery(
                     events.filter(
                         procedure=models.OuterRef("pk"),
@@ -140,9 +140,9 @@ class ProcedureQuerySet(models.QuerySet):
                 ),
             )
             for (
-                type_document,
+                doc_type,
                 event_impact_by_event_type,
-            ) in EVENT_IMPACT_BY_TYPE_DOCUMENT.items()
+            ) in EVENT_IMPACT_BY_DOC_TYPE.items()
         ]
 
         return self.annotate(
@@ -166,9 +166,7 @@ class ProcedureManager(models.Manager):
 
 class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    type_document = models.CharField(  # noqa: DJ001
-        choices=TypeDocument, db_column="doc_type", blank=True, null=True
-    )
+    doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001
     parente = models.ForeignKey(
         "self",
         models.CASCADE,
@@ -203,7 +201,7 @@ class Procedure(models.Model):
     def __str__(self) -> str:
         return (
             self.name
-            or f"🤖 {self.type} {self.numero or ''} {self.type_document} {self.collectivite_porteuse}"
+            or f"🤖 {self.type} {self.numero or ''} {self.doc_type} {self.collectivite_porteuse}"
         )
 
     def get_absolute_url(self) -> str:
@@ -218,14 +216,14 @@ class Procedure(models.Model):
 
         impact_by_event_type = {
             event_type: event_impact
-            for event_impact_by_event_type in EVENT_IMPACT_BY_TYPE_DOCUMENT.values()
+            for event_impact_by_event_type in EVENT_IMPACT_BY_DOC_TYPE.values()
             for event_type, event_impact in event_impact_by_event_type.items()
         }
         return impact_by_event_type[self.dernier_event_impactant]
 
     @property
     def is_schema(self) -> bool:
-        return self.type_document in (TypeDocument.SCOT, TypeDocument.SD)
+        return self.doc_type in (TypeDocument.SCOT, TypeDocument.SD)
 
 
 class Event(models.Model):
@@ -248,9 +246,7 @@ class Event(models.Model):
         if not self.is_valid:
             return None
 
-        return EVENT_IMPACT_BY_TYPE_DOCUMENT[self.procedure.type_document].get(
-            self.type
-        )
+        return EVENT_IMPACT_BY_DOC_TYPE[self.procedure.doc_type].get(self.type)
 
 
 class Region(models.Model):
