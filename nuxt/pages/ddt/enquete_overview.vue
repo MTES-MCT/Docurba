@@ -13,7 +13,6 @@
           sort-by="percentage"
           sort-desc
           must-sort
-          style="font-variant-numeric: tabular-nums;"
         >
           <!-- eslint-disable-next-line -->
         <template #item.departement_code="{ item }">
