@@ -2,6 +2,7 @@ from csv import DictReader
 
 import pytest
 from django.test import Client
+from pytest_django import DjangoAssertNumQueries
 
 from core.models import Commune, Region, TypeDocument
 
@@ -23,10 +24,12 @@ def create_commune_et_procedure(
 
 class TestAPIPerimetres:
     @pytest.mark.django_db
-    def test_format_csv(self, client: Client) -> None:
+    def test_format_csv(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
         commune = create_commune_et_procedure()
-
-        response = client.get("/api/perimetres", {"departement": "12"})
+        with django_assert_num_queries(2):
+            response = client.get("/api/perimetres", {"departement": "12"})
 
         assert response.status_code == 200
         assert response["content-type"] == "text/csv;charset=utf-8"
@@ -39,6 +42,7 @@ class TestAPIPerimetres:
                 "collectivite_type": "COM",
                 "procedure_id": str(commune.procedures.first().id),
                 "opposable": "False",
+                "type_document": commune.procedures.first().type_document,
             }
         ]
 

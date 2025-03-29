@@ -1,3 +1,4 @@
+# ruff: noqa: FBT001, N803
 from datetime import date
 
 import pytest
@@ -145,6 +146,168 @@ class TestProcedure:
             ).get(id=procedure.id)
 
             assert procedure_with_events.date_approbation == "2022-12-01"
+
+
+class TestProcedureTypeDocument:
+    def test_non_plu_like(self) -> None:
+        assert Procedure(doc_type=TypeDocument.CC).type_document == TypeDocument.CC
+        assert Procedure(doc_type=TypeDocument.SCOT).type_document == TypeDocument.SCOT
+        assert Procedure(doc_type=TypeDocument.SD).type_document == TypeDocument.SD
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        "doc_type",
+        [
+            (TypeDocument.PLU),
+            (TypeDocument.PLUI),
+            (TypeDocument.PLUIH),
+            (TypeDocument.PLUIM),
+            (TypeDocument.PLUIHM),
+        ],
+    )
+    def test_plu(
+        self, doc_type: TypeDocument, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=doc_type, collectivite_porteuse=commune
+        )
+        procedure.perimetre.add(commune)
+
+        with django_assert_num_queries(1):
+            procedure = Procedure.objects.get(id=procedure.id)
+            assert procedure.type_document == TypeDocument.PLU
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        "doc_type",
+        [
+            (TypeDocument.PLU),
+            (TypeDocument.PLUI),
+        ],
+    )
+    def test_plui(
+        self, doc_type: TypeDocument, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=doc_type, collectivite_porteuse=commune
+        )
+        procedure.perimetre.add(commune)
+        procedure.perimetre.create(
+            id="12346_COM",
+            code_insee="12346",
+            type="COM",
+            departement=commune.departement,
+        )
+
+        with django_assert_num_queries(1):
+            procedure = Procedure.objects.get(id=procedure.id)
+            assert procedure.type_document == TypeDocument.PLUI
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("doc_type", "vaut_PLH"),
+        [
+            (TypeDocument.PLU, True),
+            (TypeDocument.PLUI, True),
+            (TypeDocument.PLUIH, False),
+            (TypeDocument.PLUIH, True),
+        ],
+    )
+    def test_pluih(
+        self,
+        doc_type: TypeDocument,
+        vaut_PLH: bool,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=doc_type, collectivite_porteuse=commune, vaut_PLH=vaut_PLH
+        )
+        procedure.perimetre.add(commune)
+        procedure.perimetre.create(
+            id="12346_COM",
+            code_insee="12346",
+            type="COM",
+            departement=commune.departement,
+        )
+
+        with django_assert_num_queries(1):
+            procedure = Procedure.objects.get(id=procedure.id)
+            assert procedure.type_document == TypeDocument.PLUIH
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("doc_type", "vaut_PDM"),
+        [
+            (TypeDocument.PLU, True),
+            (TypeDocument.PLUI, True),
+            (TypeDocument.PLUIM, False),
+            (TypeDocument.PLUIM, True),
+        ],
+    )
+    def test_pluim(
+        self,
+        doc_type: TypeDocument,
+        vaut_PDM: bool,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=doc_type, collectivite_porteuse=commune, vaut_PDM=vaut_PDM
+        )
+        procedure.perimetre.add(commune)
+        procedure.perimetre.create(
+            id="12346_COM",
+            code_insee="12346",
+            type="COM",
+            departement=commune.departement,
+        )
+
+        with django_assert_num_queries(1):
+            procedure = Procedure.objects.get(id=procedure.id)
+            assert procedure.type_document == TypeDocument.PLUIM
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("doc_type", "vaut_PLH", "vaut_PDM"),
+        [
+            (TypeDocument.PLU, True, True),
+            (TypeDocument.PLUI, True, True),
+            (TypeDocument.PLUIH, True, True),
+            (TypeDocument.PLUIM, True, True),
+            (TypeDocument.PLUIHM, False, False),
+            (TypeDocument.PLUIHM, False, True),
+            (TypeDocument.PLUIHM, True, False),
+            (TypeDocument.PLUIHM, True, True),
+        ],
+    )
+    def test_pluihm(
+        self,
+        doc_type: TypeDocument,
+        vaut_PLH: bool,
+        vaut_PDM: bool,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=doc_type,
+            collectivite_porteuse=commune,
+            vaut_PLH=vaut_PLH,
+            vaut_PDM=vaut_PDM,
+        )
+        procedure.perimetre.add(commune)
+        procedure.perimetre.create(
+            id="12346_COM",
+            code_insee="12346",
+            type="COM",
+            departement=commune.departement,
+        )
+
+        with django_assert_num_queries(1):
+            procedure = Procedure.objects.get(id=procedure.id)
+            assert procedure.type_document == TypeDocument.PLUIHM
 
 
 class TestProcedureStatut:

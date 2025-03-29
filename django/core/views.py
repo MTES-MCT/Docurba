@@ -30,6 +30,7 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
         communes = communes.filter(departement__code_insee=departement)
 
     response = HttpResponse(content_type="text/csv;charset=utf-8")
+
     csv_writer = DictWriter(
         response,
         dialect="unix",
@@ -37,6 +38,7 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
             "collectivite_code",
             "collectivite_type",
             "procedure_id",
+            "type_document",
             "opposable",
         ],
     )
@@ -46,12 +48,12 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
             "collectivite_code": commune.code_insee,
             "collectivite_type": commune.type,
             "procedure_id": procedure.id,
+            "type_document": procedure.type_document,
             "opposable": commune.is_opposable(procedure),
         }
-        for commune in communes
+        for commune in communes.iterator(chunk_size=1000)
         for procedure in commune.procedures_principales
     )
-
     return response
 
 
