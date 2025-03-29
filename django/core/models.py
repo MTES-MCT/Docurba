@@ -7,6 +7,7 @@ from typing import Self
 from django.conf import settings
 from django.db import models
 from django.db.models.functions import Coalesce
+from django.db.models.lookups import GreaterThan
 from django.urls import reverse
 
 
@@ -39,6 +40,14 @@ class TypeDocument(models.TextChoices):
     PLUIH = "PLUiH"
     PLUIHM = "PLUiHM"
     PLUIM = "PLUiM"
+
+
+PLU_LIKE = (
+    TypeDocument.PLUI,
+    TypeDocument.PLUIH,
+    TypeDocument.PLUIHM,
+    TypeDocument.PLUIM,
+)
 
 
 class EventImpact(StrEnum):
@@ -110,8 +119,7 @@ EVENT_IMPACT_BY_DOC_TYPE = {
     },
 }
 EVENT_IMPACT_BY_DOC_TYPE |= dict.fromkeys(
-    (TypeDocument.PLUI, TypeDocument.PLUIH, TypeDocument.PLUIHM, TypeDocument.PLUIM),
-    EVENT_IMPACT_BY_DOC_TYPE[TypeDocument.PLU],
+    PLU_LIKE, EVENT_IMPACT_BY_DOC_TYPE[TypeDocument.PLU]
 )
 
 
@@ -158,15 +166,39 @@ class ProcedureQuerySet(models.QuerySet):
             dernier_event_impactant=models.Case(*dernier_event_impactant_whens),
         )
 
+    def with_is_intercommunal(self) -> Self:
+        # On utilise une Subquery plutôt qu'une expression directe pour permettre
+        # à Django d'ignorer la Subquery quand il fait des count(*) dans l'admin,
+        # ce qui rend l'admin plus rapide.
+        return self.annotate(
+            is_intercommunal=models.Subquery(
+                CommuneProcedure.objects.filter(procedure=models.OuterRef("pk"))
+                .values("procedure")
+                .annotate(is_intercommunal=GreaterThan(models.Count("*"), 1))
+                .values("is_intercommunal")
+            )
+        )
+
 
 class ProcedureManager(models.Manager):
     def get_queryset(self) -> ProcedureQuerySet:
-        return super().get_queryset().with_events()
+        return (
+            super()
+            .get_queryset()
+            .with_events()
+            .with_is_intercommunal()
+            .select_related("collectivite_porteuse")
+        )
 
 
 class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001
+    # Programme Local de l'Habitat
+    vaut_PLH = models.BooleanField(db_column="is_pluih", blank=True, null=True)  # noqa: N815
+    # Plan De Mobilité (anciennement Plan de Déplacements Urbains)
+    vaut_PDM = models.BooleanField(db_column="is_pdu", blank=True, null=True)  # noqa: N815
+
     parente = models.ForeignKey(
         "self",
         models.CASCADE,
@@ -201,7 +233,7 @@ class Procedure(models.Model):
     def __str__(self) -> str:
         return (
             self.name
-            or f"🤖 {self.type} {self.numero or ''} {self.doc_type} {self.collectivite_porteuse}"
+            or f"🤖 {self.type} {self.numero or ''} {self.type_document} {self.collectivite_porteuse}"
         )
 
     def get_absolute_url(self) -> str:
@@ -224,6 +256,23 @@ class Procedure(models.Model):
     @property
     def is_schema(self) -> bool:
         return self.doc_type in (TypeDocument.SCOT, TypeDocument.SD)
+
+    @property
+    def type_document(self) -> TypeDocument:
+        if self.doc_type in (TypeDocument.PLU, *PLU_LIKE):
+            if not self.is_intercommunal:
+                return TypeDocument.PLU
+            if (
+                self.vaut_PLH and self.vaut_PDM
+            ) or self.doc_type == TypeDocument.PLUIHM:
+                return TypeDocument.PLUIHM
+            if self.vaut_PLH or self.doc_type == TypeDocument.PLUIH:
+                return TypeDocument.PLUIH
+            if self.vaut_PDM or self.doc_type == TypeDocument.PLUIM:
+                return TypeDocument.PLUIM
+            return TypeDocument.PLUI
+
+        return self.doc_type
 
 
 class Event(models.Model):
