@@ -13,7 +13,7 @@ class CommuneProcedureInline(admin.StackedInline):
 class ProcedureAdmin(admin.ModelAdmin):
     readonly_fields = ("id", "created_at")
     list_filter = (
-        "is_principale",
+        ("parente", admin.EmptyFieldListFilter),
         ("name", admin.EmptyFieldListFilter),
     )
     list_display = ("__str__", "statut")
