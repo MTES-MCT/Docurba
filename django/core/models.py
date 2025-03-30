@@ -1,6 +1,7 @@
 import uuid
 from datetime import date
 from enum import StrEnum, auto
+from functools import cached_property
 from itertools import groupby
 from json import load
 from operator import attrgetter
@@ -10,36 +11,25 @@ from django.conf import settings
 from django.db import models
 from django.db.models.functions import Coalesce
 
-
-class CollectiviteLight(TypedDict):
-    type: str
-    intitule: str
-    siren: str
-    code: str
-
-
-class Collectivite(CollectiviteLight):
-    regionCode: str
-    departementCode: str
-    competencePLU: bool
-    competenceSCOT: bool
-    groupements: list[CollectiviteLight]
-    membres: list[CollectiviteLight]
+# class CollectiviteLight(TypedDict):
+#     type: str
+#     intitule: str
+#     siren: str
+#     code: str
 
 
-class Commune(Collectivite):
-    codeParent: str
-    intercommunaliteCode: str
+# class Collectivite(CollectiviteLight):
+#     regionCode: str
+#     departementCode: str
+#     competencePLU: bool
+#     competenceSCOT: bool
+#     groupements: list[CollectiviteLight]
+#     membres: list[CollectiviteLight]
 
 
-with (settings.BASE_DIR / "data" / "communes.json").open() as f:
-    communes: dict[str, Commune] = {
-        f"{commune['code']}_{commune['type']}": commune for commune in load(f)
-    }
-with (settings.BASE_DIR / "data" / "groupements.json").open() as f:
-    groupements: dict[str, Collectivite] = {
-        groupement["code"]: groupement for groupement in load(f)
-    }
+# class Commune(Collectivite):
+#     codeParent: str
+#     intercommunaliteCode: str
 
 
 class TypeDocument(models.TextChoices):
@@ -57,7 +47,7 @@ class TypeDocument(models.TextChoices):
 
 class EventImpact(StrEnum):
     EN_COURS = "en cours"
-    OPPOSABLE = auto()
+    APPROUVE = auto()
     ABANDON = auto()
     ANNULE = auto()
     CADUC = auto()
@@ -66,9 +56,9 @@ class EventImpact(StrEnum):
 EVENT_IMPACT_BY_TYPE_DOCUMENT = {
     TypeDocument.CC: {
         "Délibération de prescription du conseil municipal": EventImpact.EN_COURS,
-        "Approbation du préfet": EventImpact.OPPOSABLE,
-        "Caractère exécutoire": EventImpact.OPPOSABLE,
-        "Retrait de l'annulation totale": EventImpact.OPPOSABLE,
+        "Approbation du préfet": EventImpact.APPROUVE,
+        "Caractère exécutoire": EventImpact.APPROUVE,
+        "Retrait de l'annulation totale": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Retrait de la délibération de prescription": EventImpact.ABANDON,
         "Annulation TA totale": EventImpact.ANNULE,
@@ -78,9 +68,9 @@ EVENT_IMPACT_BY_TYPE_DOCUMENT = {
     TypeDocument.SCOT: {
         "Délibération de l'établissement public qui prescrit": EventImpact.EN_COURS,
         "Retrait de la délibération d'approbation": EventImpact.EN_COURS,
-        "Délibération d'approbation": EventImpact.OPPOSABLE,
-        "Caractère exécutoire": EventImpact.OPPOSABLE,
-        "Retrait de l'annulation totale": EventImpact.OPPOSABLE,
+        "Délibération d'approbation": EventImpact.APPROUVE,
+        "Caractère exécutoire": EventImpact.APPROUVE,
+        "Retrait de l'annulation totale": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Retrait de la délibération de prescription": EventImpact.ABANDON,
         "Annulation TA totale": EventImpact.ANNULE,
@@ -89,8 +79,8 @@ EVENT_IMPACT_BY_TYPE_DOCUMENT = {
     },
     TypeDocument.SD: {
         "Délibération de l'établissement public qui prescrit": EventImpact.EN_COURS,
-        "Délibération d'approbation": EventImpact.OPPOSABLE,
-        "Caractère exécutoire": EventImpact.OPPOSABLE,
+        "Délibération d'approbation": EventImpact.APPROUVE,
+        "Caractère exécutoire": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Annulation TA totale": EventImpact.ANNULE,
         "Annulation TA": EventImpact.ANNULE,
@@ -98,11 +88,11 @@ EVENT_IMPACT_BY_TYPE_DOCUMENT = {
     },
     TypeDocument.PLU: {
         "Délibération de prescription du conseil municipal ou communautaire": EventImpact.EN_COURS,
-        "Caractère exécutoire": EventImpact.OPPOSABLE,
-        "Retrait de l'annulation totale": EventImpact.OPPOSABLE,
-        "Délibération d'approbation du municipal ou communautaire": EventImpact.OPPOSABLE,
-        "Délibération d'approbation du conseil municipal ou communautaire": EventImpact.OPPOSABLE,
-        "Délibération d'approbation": EventImpact.OPPOSABLE,
+        "Caractère exécutoire": EventImpact.APPROUVE,
+        "Retrait de l'annulation totale": EventImpact.APPROUVE,
+        "Délibération d'approbation du municipal ou communautaire": EventImpact.APPROUVE,
+        "Délibération d'approbation du conseil municipal ou communautaire": EventImpact.APPROUVE,
+        "Délibération d'approbation": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Retrait de la délibération de prescription": EventImpact.ABANDON,
         "Annulation TA totale": EventImpact.ANNULE,
@@ -113,25 +103,20 @@ EVENT_IMPACT_BY_TYPE_DOCUMENT = {
     },
     TypeDocument.POS: {
         "Délibération de prescription du conseil municipal ou communautaire": EventImpact.EN_COURS,
-        "Caractère exécutoire": EventImpact.OPPOSABLE,
-        "Délibération d'approbation du municipal ou communautaire": EventImpact.OPPOSABLE,
-        "Délibération d'approbation du conseil municipal ou communautaire": EventImpact.OPPOSABLE,
-        "Délibération d'approbation": EventImpact.OPPOSABLE,
+        "Caractère exécutoire": EventImpact.APPROUVE,
+        "Délibération d'approbation du municipal ou communautaire": EventImpact.APPROUVE,
+        "Délibération d'approbation du conseil municipal ou communautaire": EventImpact.APPROUVE,
+        "Délibération d'approbation": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Annulation TA": EventImpact.ANNULE,
         "Annulation TA totale": EventImpact.ANNULE,
         "Caducité": EventImpact.ANNULE,
     },
 }
-EVENT_IMPACT_BY_TYPE_DOCUMENT |= {
-    plu_like: EVENT_IMPACT_BY_TYPE_DOCUMENT[TypeDocument.PLU]
-    for plu_like in (
-        TypeDocument.PLUI,
-        TypeDocument.PLUIH,
-        TypeDocument.PLUIHM,
-        TypeDocument.PLUIM,
-    )
-}
+EVENT_IMPACT_BY_TYPE_DOCUMENT |= dict.fromkeys(
+    (TypeDocument.PLUI, TypeDocument.PLUIH, TypeDocument.PLUIHM, TypeDocument.PLUIM),
+    EVENT_IMPACT_BY_TYPE_DOCUMENT[TypeDocument.PLU],
+)
 
 
 class ProcedureQuerySet(models.QuerySet):
@@ -144,7 +129,7 @@ class ProcedureQuerySet(models.QuerySet):
             event_type
             for event_impact_by_event_type in EVENT_IMPACT_BY_TYPE_DOCUMENT.values()
             for event_type, event_impact in event_impact_by_event_type.items()
-            if event_impact == EventImpact.OPPOSABLE
+            if event_impact == EventImpact.APPROUVE
         ]
 
         dernier_event_impactant_whens = [
@@ -216,13 +201,14 @@ class Procedure(models.Model):
     class Meta:
         managed = settings.UNDER_TEST
         db_table = "procedures"
+        # ordering = ("-date_approbation",)
 
     def __str__(self) -> str:
         collectivite = f"{self.collectivite_porteuse_id}_COM"
-        if collectivite in communes:
-            collectivite = communes[collectivite]["intitule"]
-        if self.collectivite_porteuse_id in groupements:
-            collectivite = groupements[self.collectivite_porteuse_id]["intitule"]
+        # if collectivite in communes:
+        #     collectivite = communes[collectivite]["intitule"]
+        # if self.collectivite_porteuse_id in groupements:
+        #     collectivite = groupements[self.collectivite_porteuse_id]["intitule"]
         return (
             self.name
             or f"🤖 {self.type} {self.numero or ''} {self.type_document} {collectivite}"
@@ -315,40 +301,73 @@ class CommuneProcedureQuerySet(models.QuerySet):
         return communes_procedures_with_opposabilite
 
 
-class CommuneProcedure(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    created_at = models.DateTimeField(db_default=models.functions.Now())
-    collectivite_code = models.CharField()
-    collectivite_type = models.CharField()
-    procedure = models.ForeignKey(
-        Procedure, models.DO_NOTHING, related_name="perimetre"
-    )
-    departement = models.CharField(blank=True, null=True)  # noqa: DJ001
+# ALTER TABLE procedures_perimetres
+# ADD commune_id text GENERATED always AS (collectivite_code || '_' || collectivite_type) stored
 
-    objects = CommuneProcedureQuerySet.as_manager()
+
+class CommuneQuerySet(models.QuerySet):
+    def with_procedures_principales(self):
+        return self.prefetch_related(
+            models.Prefetch(
+                "procedures",
+                Procedure.objects.filter(parente=None, archived=False).order_by(
+                    "-date_approbation"
+                ),
+                to_attr="procedures_principales",
+            )
+        )
+
+
+class Commune(models.Model):
+    id = models.CharField(primary_key=True)
+    procedures = models.ManyToManyField(
+        Procedure, through="CommuneProcedure", related_name="perimetre"
+    )
+
+    objects = CommuneQuerySet.as_manager()
+
+    class Meta:
+        managed = settings.UNDER_TEST
+
+    def __str__(self) -> str:
+        return f"Commune {self.id}"
+
+    @cached_property
+    def procedures_principales_approuvees(self):
+        return [
+            procedure
+            for procedure in self.procedures_principales
+            if procedure.type != "Abrogation"
+            and procedure.statut == EventImpact.APPROUVE
+        ]
+
+    @cached_property
+    def plan_opposable(self):
+        return next(
+            (
+                procedure
+                for procedure in self.procedures_principales_approuvees
+                if not procedure.is_schema
+            ),
+            None,
+        )
+
+    @cached_property
+    def schema_opposable(self):
+        return next(
+            (
+                procedure
+                for procedure in self.procedures_principales_approuvees
+                if procedure.is_schema
+            ),
+            None,
+        )
+
+
+class CommuneProcedure(models.Model):
+    commune = models.ForeignKey(Commune, models.DO_NOTHING)
+    procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
 
     class Meta:
         managed = settings.UNDER_TEST
         db_table = "procedures_perimetres"
-        unique_together = (("collectivite_code", "collectivite_type", "procedure"),)
-
-    def __str__(self) -> str:
-        try:
-            return f"{self.collectivite_code} {communes[self.collectivite_code]['intitule']} - {self.procedure}"
-        except KeyError:
-            return f"{self.collectivite_code} - {self.procedure}"
-
-    def _opposable(self, communes_procedures_meme_commune: list[Procedure]) -> bool:
-        procedures_opposables = sorted(
-            (
-                commune_procedure.procedure
-                for commune_procedure in communes_procedures_meme_commune
-                if self.procedure.is_schema == commune_procedure.procedure.is_schema
-                and commune_procedure.procedure.type != "Abrogation"
-                and commune_procedure.procedure.statut == EventImpact.OPPOSABLE
-            ),
-            key=attrgetter("date_approbation"),
-        )
-        if not procedures_opposables:
-            return False
-        return procedures_opposables[-1].id == self.procedure_id

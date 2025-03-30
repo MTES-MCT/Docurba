@@ -6,7 +6,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from django.views.decorators.http import require_safe
 
-from core.models import CommuneProcedure, communes
+from core.models import CommuneProcedure
 
 
 @require_safe
