@@ -188,7 +188,13 @@ class Procedure(models.Model):
     type_document = models.CharField(  # noqa: DJ001
         choices=TypeDocument, db_column="doc_type", blank=True, null=True
     )
-    is_principale = models.BooleanField(blank=True, null=True)
+    parente = models.ForeignKey(
+        "self",
+        models.CASCADE,
+        db_column="secondary_procedure_of",
+        related_name="secondaires",
+        null=True,
+    )
     name = models.TextField(blank=True, null=True)  # noqa: DJ001
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
@@ -227,7 +233,7 @@ class Procedure(models.Model):
 
     @property
     def statut(self) -> EventImpact | None:
-        if not self.is_principale:
+        if self.parente_id:
             return None
         if not self.dernier_event_impactant:
             return None
@@ -280,7 +286,7 @@ class CommuneProcedureQuerySet(models.QuerySet):
     ) -> list["CommuneProcedure"]:
         communes_procedures = (
             self.filter(
-                procedure__is_principale=True,
+                procedure__parente=None,
                 procedure__archived=False,
             )
             .prefetch_related(

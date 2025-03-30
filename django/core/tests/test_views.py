@@ -9,7 +9,6 @@ from core.models import CommuneProcedure, Procedure, TypeDocument
 def create_commune_procedure(*, code: str, departement: str) -> CommuneProcedure:
     procedure = Procedure.objects.create(
         type_document=TypeDocument.PLU,
-        is_principale=True,
         collectivite_porteuse_id=code,
     )
     return procedure.perimetre.create(
