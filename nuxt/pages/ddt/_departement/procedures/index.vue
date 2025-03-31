@@ -133,12 +133,12 @@
           <!-- eslint-disable-next-line -->
           <template #item.prescription="{ item }">
 
-            <span class="mention-grey--text">{{ item.prescription?.date_iso ? item.prescription?.date_iso : '-' }}</span>
+            <span class="mention-grey--text">{{ item.prescription?.date_iso_formattee ?? '-' }}</span>
           </template>
 
           <!-- eslint-disable-next-line -->
           <template #item.last_event="{ item }">
-            <span class="mention-grey--text">{{ item.last_event?.date_iso }} - {{ item.last_event?.type }}</span>
+            <span class="mention-grey--text">{{ item.last_event?.date_iso_formattee }} - {{ item.last_event?.type }}</span>
           </template>
         </v-data-table>
       </v-col>
@@ -210,10 +210,10 @@ export default {
         const procedureName = this.$utils.formatProcedureName({ ...e.procedures, procedures_perimetres: e.perimetre }, collectivitePorteuse)
 
         if (e.prescription?.date_iso) {
-          e.prescription.date_iso = dayjs(e.prescription.date_iso).format('DD/MM/YYYY')
+          e.prescription.date_iso_formattee = dayjs(e.prescription.date_iso).format('DD/MM/YYYY')
         }
         if (e.last_event?.date_iso) {
-          e.last_event.date_iso = dayjs(e.last_event.date_iso).format('DD/MM/YYYY')
+          e.last_event.date_iso_formattee = dayjs(e.last_event.date_iso).format('DD/MM/YYYY')
         }
 
         return { ...e, procedureName }
