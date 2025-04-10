@@ -2,34 +2,30 @@ import uuid
 from datetime import date
 from enum import StrEnum, auto
 from functools import cached_property
-from itertools import groupby
-from json import load
-from operator import attrgetter
-from typing import Self, TypedDict
+from typing import Self
 
 from django.conf import settings
 from django.db import models
 from django.db.models.functions import Coalesce
-
-# class CollectiviteLight(TypedDict):
-#     type: str
-#     intitule: str
-#     siren: str
-#     code: str
+from django.urls import reverse
 
 
-# class Collectivite(CollectiviteLight):
-#     regionCode: str
-#     departementCode: str
-#     competencePLU: bool
-#     competenceSCOT: bool
-#     groupements: list[CollectiviteLight]
-#     membres: list[CollectiviteLight]
-
-
-# class Commune(Collectivite):
-#     codeParent: str
-#     intercommunaliteCode: str
+class TypeCollectivite(models.TextChoices):
+    COM = "COM", "Commune"
+    COMD = "COMD", "Commune déléguée"
+    COMA = "COMA", "Commune associée"
+    CC = "CC", "Communauté de communes"
+    SMF = "SMF", "Syndicat Mixte Fermé"
+    SMO = "SMO", "Syndicat Mixte Ouvert"
+    METRO = "METRO", "Métropole"
+    CU = "CU", "Communauté Urbaine"
+    PETR = "PETR", "Pôle d'Équilibre Territorial et Rural"
+    MET69 = "MET69", "Métropole de Lyon"
+    SIVU = "SIVU", "Syndicat Intercommunal à Vocation Unique"
+    EPT = "EPT", "Établissement Public Territorial"
+    CA = "CA", "Communauté d'Agglomération"
+    POLEM = "POLEM", "Pôle Métropolitain"
+    SIVOM = "SIVOM", "Syndicat Intercommunal à Vocation Multiple"
 
 
 class TypeDocument(models.TextChoices):
@@ -183,10 +179,12 @@ class Procedure(models.Model):
     name = models.TextField(blank=True, null=True)  # noqa: DJ001
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
-    collectivite_porteuse_id = models.CharField(blank=True, null=True)  # noqa: DJ001
+    collectivite_porteuse = models.ForeignKey(
+        "Collectivite", models.RESTRICT, to_field="code_insee"
+    )
     created_at = models.DateTimeField(db_default=models.functions.Now())
     doublon_cache_de = models.OneToOneField(
-        "self", on_delete=models.DO_NOTHING, blank=True, null=True, unique=True
+        "self", on_delete=models.RESTRICT, blank=True, null=True, unique=True
     )
     soft_delete = models.BooleanField(db_default=False)
     archived = models.GeneratedField(
@@ -201,17 +199,11 @@ class Procedure(models.Model):
     class Meta:
         managed = settings.UNDER_TEST
         db_table = "procedures"
-        # ordering = ("-date_approbation",)
 
     def __str__(self) -> str:
-        collectivite = f"{self.collectivite_porteuse_id}_COM"
-        # if collectivite in communes:
-        #     collectivite = communes[collectivite]["intitule"]
-        # if self.collectivite_porteuse_id in groupements:
-        #     collectivite = groupements[self.collectivite_porteuse_id]["intitule"]
         return (
             self.name
-            or f"🤖 {self.type} {self.numero or ''} {self.type_document} {collectivite}"
+            or f"🤖 {self.type} {self.numero or ''} {self.type_document} {self.collectivite_porteuse}"
         )
 
     def get_absolute_url(self) -> str:
@@ -238,7 +230,7 @@ class Procedure(models.Model):
 
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
+    procedure = models.ForeignKey(Procedure, models.RESTRICT)
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
     date_evenement_string = models.CharField(db_column="date_iso", null=True)  # noqa: DJ001
     is_valid = models.BooleanField(db_default=True)
@@ -261,79 +253,78 @@ class Event(models.Model):
         )
 
 
-class CommuneProcedureQuerySet(models.QuerySet):
-    def with_opposabilite(
-        self,
-        *,
-        departement: str | None = None,
-        collectivite_code: str | None = None,
-        collectivite_type: str | None = None,
-        avant: date | None = None,
-    ) -> list["CommuneProcedure"]:
-        communes_procedures = (
-            self.filter(
-                procedure__parente=None,
-                procedure__archived=False,
-            )
-            .prefetch_related(
-                models.Prefetch("procedure", Procedure.objects.with_events(avant=avant))
-            )
-            .order_by("collectivite_code", "collectivite_type")
-        )
+class Region(models.Model):
+    code_insee = models.CharField(unique=True)
+    nom = models.CharField()
 
-        if departement:
-            communes_procedures = communes_procedures.filter(departement=departement)
-        elif collectivite_code and collectivite_type:
-            communes_procedures = communes_procedures.filter(
-                collectivite_code=collectivite_code, collectivite_type=collectivite_type
-            )
-
-        communes_procedures_with_opposabilite = []
-        for _, commune_procedures_iterator in groupby(
-            communes_procedures, attrgetter("collectivite_code", "collectivite_type")
-        ):
-            communes_procedures_meme_commune = list(commune_procedures_iterator)
-            for commune_procedure in communes_procedures_meme_commune:
-                commune_procedure.opposable = commune_procedure._opposable(  # noqa: SLF001
-                    communes_procedures_meme_commune
-                )
-                communes_procedures_with_opposabilite.append(commune_procedure)
-        return communes_procedures_with_opposabilite
+    def __str__(self) -> str:
+        return self.nom
 
 
-# ALTER TABLE procedures_perimetres
-# ADD commune_id text GENERATED always AS (collectivite_code || '_' || collectivite_type) stored
+class Departement(models.Model):
+    code_insee = models.CharField(unique=True)
+    nom = models.CharField()
+    region = models.ForeignKey(Region, models.RESTRICT, related_name="departements")
+
+    def __str__(self) -> str:
+        return f"{self.code_insee} - {self.nom}"
+
+
+class Collectivite(models.Model):
+    id = models.CharField(primary_key=True)  # Au format code_type
+    code_insee = models.CharField(unique=True, null=True)  # noqa: DJ001
+    type = models.CharField(choices=TypeCollectivite.choices)
+    intitule = models.CharField()
+    competence_plan = models.BooleanField()
+    competence_schema = models.BooleanField()
+    groupements = models.ManyToManyField(
+        "self", related_name="membres", symmetrical=False
+    )
+    departement = models.ForeignKey(
+        Departement, models.RESTRICT, related_name="collectivites"
+    )
+
+    def __str__(self) -> str:
+        return self.intitule
 
 
 class CommuneQuerySet(models.QuerySet):
-    def with_procedures_principales(self):
+    def with_procedures_principales(self, avant: date | None = None) -> Self:
         return self.prefetch_related(
             models.Prefetch(
                 "procedures",
-                Procedure.objects.filter(parente=None, archived=False).order_by(
-                    "-date_approbation"
-                ),
+                Procedure.objects.with_events(avant=avant)
+                .filter(parente=None, archived=False)
+                .order_by("-date_approbation"),
                 to_attr="procedures_principales",
             )
         )
 
 
-class Commune(models.Model):
-    id = models.CharField(primary_key=True)
+class Commune(Collectivite):
+    intercommunalite = models.ForeignKey(
+        Collectivite, models.RESTRICT, null=True, related_name="communes"
+    )
+    nouvelle = models.ForeignKey(
+        "self", models.RESTRICT, null=True, related_name="deleguee"
+    )
     procedures = models.ManyToManyField(
         Procedure, through="CommuneProcedure", related_name="perimetre"
     )
 
     objects = CommuneQuerySet.as_manager()
 
-    class Meta:
-        managed = settings.UNDER_TEST
-
-    def __str__(self) -> str:
-        return f"Commune {self.id}"
+    def get_absolute_url(self) -> str:
+        return reverse(
+            "collectivite-detail",
+            kwargs={
+                "collectivite_code": self.code_insee,
+                "collectivite_type": self.type,
+            },
+        )
 
     @cached_property
-    def procedures_principales_approuvees(self):
+    def procedures_principales_approuvees(self) -> list[Procedure]:
         return [
             procedure
             for procedure in self.procedures_principales
@@ -342,7 +333,7 @@ class Commune(models.Model):
         ]
 
     @cached_property
-    def plan_opposable(self):
+    def plan_opposable(self) -> Procedure | None:
         return next(
             (
                 procedure
@@ -353,7 +344,7 @@ class Commune(models.Model):
         )
 
     @cached_property
-    def schema_opposable(self):
+    def schema_opposable(self) -> Procedure | None:
         return next(
             (
                 procedure
@@ -363,10 +354,17 @@ class Commune(models.Model):
             None,
         )
 
+    def is_opposable(self, procedure: Procedure) -> bool:
+        return procedure in (self.plan_opposable, self.schema_opposable)
 
-class CommuneProcedure(models.Model):
-    commune = models.ForeignKey(Commune, models.DO_NOTHING)
-    procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
+
+# ALTER TABLE procedures_perimetres
+# ADD commune_id text GENERATED always AS (collectivite_code || '_' || collectivite_type) stored
+
+
+class CommuneProcedure(models.Model):  # noqa: DJ008
+    commune = models.ForeignKey(Commune, models.RESTRICT)
+    procedure = models.ForeignKey(Procedure, models.RESTRICT)
 
     class Meta:
         managed = settings.UNDER_TEST

@@ -1,20 +1,52 @@
+# ruff: noqa: ARG002
+# ruff: noqa: ANN001
 from django.contrib import admin
 
-from core.models import CommuneProcedure, Procedure
+from core.models import Collectivite, Commune, Procedure
 
 
-class CommuneProcedureInline(admin.StackedInline):
-    model = CommuneProcedure
-    extra = 0
-    readonly_fields = ("id", "created_at")
+@admin.register(Collectivite)
+class CollectiviteAdmin(admin.ModelAdmin):
+    list_display = (
+        "code_insee",
+        "__str__",
+        "type",
+        "competence_plan",
+        "competence_schema",
+    )
+    list_display_links = ("code_insee", "__str__")
+    list_filter = ("type", "competence_plan", "competence_schema", "departement")
+    search_fields = ("intitule", "code_insee")
+    readonly_fields = ("commune",)
+
+    def has_add_permission(self, request) -> bool:
+        return False
+
+    def has_delete_permission(self, request, obj=None) -> bool:
+        return False
+
+    def has_change_permission(self, request, obj=None) -> bool:
+        return False
+
+
+@admin.register(Commune)
+class CommuneAdmin(CollectiviteAdmin):
+    pass
 
 
 @admin.register(Procedure)
 class ProcedureAdmin(admin.ModelAdmin):
-    readonly_fields = ("id", "created_at")
     list_filter = (
         ("parente", admin.EmptyFieldListFilter),
         ("name", admin.EmptyFieldListFilter),
     )
     list_display = ("__str__", "statut")
-    inlines = (CommuneProcedureInline,)
+
+    def has_add_permission(self, request: object) -> bool:
+        return False
+
+    def has_delete_permission(self, request, obj=None) -> bool:
+        return False
+
+    def has_change_permission(self, request, obj=None) -> bool:
+        return False
