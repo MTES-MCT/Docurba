@@ -180,11 +180,11 @@ class Procedure(models.Model):
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
     collectivite_porteuse = models.ForeignKey(
-        "Collectivite", models.RESTRICT, to_field="code_insee"
+        "Collectivite", models.DO_NOTHING, to_field="code_insee"
     )
     created_at = models.DateTimeField(db_default=models.functions.Now())
     doublon_cache_de = models.OneToOneField(
-        "self", on_delete=models.RESTRICT, blank=True, null=True, unique=True
+        "self", on_delete=models.DO_NOTHING, blank=True, null=True, unique=True
     )
     soft_delete = models.BooleanField(db_default=False)
     archived = models.GeneratedField(
@@ -230,7 +230,7 @@ class Procedure(models.Model):
 
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    procedure = models.ForeignKey(Procedure, models.RESTRICT)
+    procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
     date_evenement_string = models.CharField(db_column="date_iso", null=True)  # noqa: DJ001
     is_valid = models.BooleanField(db_default=True)
@@ -264,7 +264,7 @@ class Region(models.Model):
 class Departement(models.Model):
     code_insee = models.CharField(unique=True)
     nom = models.CharField()
-    region = models.ForeignKey(Region, models.RESTRICT, related_name="departements")
+    region = models.ForeignKey(Region, models.DO_NOTHING, related_name="departements")
 
     def __str__(self) -> str:
         return f"{self.code_insee} - {self.nom}"
@@ -272,20 +272,24 @@ class Departement(models.Model):
 
 class Collectivite(models.Model):
     id = models.CharField(primary_key=True)  # Au format code_type
-    code_insee = models.CharField(unique=True, null=True)  # noqa: DJ001
+    code_insee = models.CharField(  # noqa: DJ001
+        unique=True,
+        null=True,
+        db_comment="Peut-être vide pour une COMD ayant le même code que sa commune parente",
+    )
     type = models.CharField(choices=TypeCollectivite.choices)
-    intitule = models.CharField()
+    nom = models.CharField()
     competence_plan = models.BooleanField()
     competence_schema = models.BooleanField()
     groupements = models.ManyToManyField(
         "self", related_name="membres", symmetrical=False
     )
     departement = models.ForeignKey(
-        Departement, models.RESTRICT, related_name="collectivites"
+        Departement, models.DO_NOTHING, related_name="collectivites"
     )
 
     def __str__(self) -> str:
-        return self.intitule
+        return self.nom
 
 
 class CommuneQuerySet(models.QuerySet):
@@ -303,10 +307,10 @@ class CommuneQuerySet(models.QuerySet):
 
 class Commune(Collectivite):
     intercommunalite = models.ForeignKey(
-        Collectivite, models.RESTRICT, null=True, related_name="communes"
+        Collectivite, models.DO_NOTHING, null=True, related_name="communes"
     )
     nouvelle = models.ForeignKey(
-        "self", models.RESTRICT, null=True, related_name="deleguee"
+        "self", models.DO_NOTHING, null=True, related_name="deleguee"
     )
     procedures = models.ManyToManyField(
         Procedure, through="CommuneProcedure", related_name="perimetre"
@@ -358,13 +362,9 @@ class Commune(Collectivite):
         return procedure in (self.plan_opposable, self.schema_opposable)
 
 
-# ALTER TABLE procedures_perimetres
-# ADD commune_id text GENERATED always AS (collectivite_code || '_' || collectivite_type) stored
-
-
 class CommuneProcedure(models.Model):  # noqa: DJ008
-    commune = models.ForeignKey(Commune, models.RESTRICT)
-    procedure = models.ForeignKey(Procedure, models.RESTRICT)
+    commune = models.ForeignKey(Commune, models.DO_NOTHING)
+    procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
 
     class Meta:
         managed = settings.UNDER_TEST

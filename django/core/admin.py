@@ -16,7 +16,7 @@ class CollectiviteAdmin(admin.ModelAdmin):
     )
     list_display_links = ("code_insee", "__str__")
     list_filter = ("type", "competence_plan", "competence_schema", "departement")
-    search_fields = ("intitule", "code_insee")
+    search_fields = ("nom", "code_insee")
     readonly_fields = ("commune",)
 
     def has_add_permission(self, request) -> bool:

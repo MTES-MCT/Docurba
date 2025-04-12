@@ -313,11 +313,6 @@ class TestEvent:
         assert Event(procedure=procedure, type=type_event).impact == impact
 
 
-class TestCollectivite:
-    # test récupérer toutes les communes d'un EPCI
-    pass
-
-
 class TestCommuneProceduresPrincipales:
     @pytest.mark.django_db
     def test_exclut_secondaires(

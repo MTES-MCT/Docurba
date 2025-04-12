@@ -3,12 +3,12 @@ from csv import DictReader
 import pytest
 from django.test import Client
 
-from core.models import Commune, CommuneProcedure, Region, TypeDocument
+from core.models import Commune, Region, TypeDocument
 
 
 def create_commune_et_procedure(
     *, code_insee: str = "12345", type_collectivite: str = "COM"
-) -> CommuneProcedure:
+) -> Commune:
     region, _ = Region.objects.get_or_create(code_insee=12)
     departement = region.departements.create(code_insee=code_insee[:2])
     commune = Commune.objects.create(
