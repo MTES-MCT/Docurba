@@ -805,6 +805,7 @@ class TestCommunes:
                 "pc_date_pac",
                 "pc_date_pac_comp",
                 "pc_plui_valant_scot",
+                "pc_sectoriel",
                 "pc_pdu_obligatoire",
                 "pc_nom_sst",
                 "pc_cout_sst_ht",
@@ -813,6 +814,7 @@ class TestCommunes:
                 "pa_docurba_id",
                 "pa_num_procedure_sudocuh",
                 "pa_type_procedure",
+                "pa_sectoriel",
                 "pa_date_prescription",
                 "pa_date_arret_projet",
                 "pa_date_pac",
@@ -836,7 +838,7 @@ class TestCommunes:
                 if k in colonnes_filtrees
             }
             django_row = {  # noqa: PLW2901
-                k: str(v).capitalize()
+                k: str(v or "").capitalize()
                 for k, v in django_row.items()
                 if k in colonnes_filtrees
             }

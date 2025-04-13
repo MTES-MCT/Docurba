@@ -6,8 +6,7 @@ from functools import cached_property
 from operator import attrgetter
 from typing import Self
 
-from django.conf import settings
-from django.db import models
+from django.db import connection, models
 from django.db.models.lookups import GreaterThan
 from django.urls import reverse
 
@@ -192,6 +191,29 @@ class ProcedureQuerySet(models.QuerySet):
             )
         )
 
+    def with_communes_counts(self) -> Self:
+        return self.annotate(
+            communes_adherentes__count=models.Subquery(
+                Collectivite.objects.filter(
+                    code_insee_unique=models.OuterRef("collectivite_porteuse")
+                )
+                .annotate(
+                    communes_adherentes__count=models.Count(
+                        "collectivites_adherentes_deep__commune", distinct=True
+                    )
+                )
+                .values("communes_adherentes__count")
+            ),
+            perimetre__count=models.Subquery(
+                CommuneProcedure.objects.filter(
+                    procedure=models.OuterRef("pk"), commune__nouvelle=None
+                )
+                .values("procedure")
+                .annotate(perimetre__count=models.Count("*"))
+                .values("perimetre__count")
+            ),
+        )
+
 
 class ProcedureManager(models.Manager):
     def get_queryset(self) -> ProcedureQuerySet:
@@ -250,7 +272,7 @@ class Procedure(models.Model):
     objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
     class Meta:
-        managed = settings.UNDER_TEST
+        managed = False
         db_table = "procedures"
 
     def __str__(self) -> str:
@@ -372,6 +394,11 @@ class Procedure(models.Model):
         else:
             return delai.days
 
+    @property
+    def is_sectoriel_consolide(self) -> bool:
+        # TODO Ajouter la vérif de la colonne is_sectoriel  # noqa: FIX002
+        return self.communes_adherentes__count > self.perimetre__count
+
 
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -381,7 +408,7 @@ class Event(models.Model):
     is_valid = models.BooleanField(db_default=True)
 
     class Meta:
-        managed = settings.UNDER_TEST
+        managed = False
         db_table = "doc_frise_events"
         ordering = ("-date_evenement_string",)
 
@@ -467,6 +494,12 @@ class Collectivite(models.Model):
     adhesions = models.ManyToManyField(
         "self", related_name="collectivites_adherentes", symmetrical=False
     )
+    adhesions_deep = models.ManyToManyField(
+        "self",
+        through="ViewCollectiviteAdhesionsDeep",
+        related_name="collectivites_adherentes_deep",
+        symmetrical=False,
+    )
     departement = models.ForeignKey(
         Departement, models.DO_NOTHING, related_name="collectivites"
     )
@@ -526,14 +559,33 @@ class Collectivite(models.Model):
         ]
 
 
+class ViewCollectiviteAdhesionsDeep(models.Model):  # noqa: DJ008
+    from_collectivite = models.ForeignKey(
+        Collectivite, models.DO_NOTHING, related_name="+"
+    )
+    to_collectivite = models.ForeignKey(
+        Collectivite, models.DO_NOTHING, related_name="+"
+    )
+
+    class Meta:
+        db_table = "view_core_collectivite_adhesions_deep"
+        managed = False
+
+    @classmethod
+    def _refresh_materialized_view(cls) -> None:
+        """Uniquement pour les tests."""
+        with connection.cursor() as cursor:
+            cursor.execute(f"REFRESH MATERIALIZED VIEW {cls._meta.db_table}")
+
+
 class CommuneQuerySet(models.QuerySet):
     def with_procedures_principales(self, avant: date | None = None) -> Self:
         return self.prefetch_related(
             models.Prefetch(
                 "procedures",
-                Procedure.objects.with_events(avant=avant).filter(
-                    parente=None, archived=False
-                ),
+                Procedure.objects.with_events(avant=avant)
+                .with_communes_counts()
+                .filter(parente=None, archived=False),
                 to_attr="procedures_principales",
             )
         )
@@ -667,5 +719,5 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
 
     class Meta:
-        managed = settings.UNDER_TEST
+        managed = False
         db_table = "procedures_perimetres"

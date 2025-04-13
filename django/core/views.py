@@ -126,7 +126,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "pc_date_pac_comp",
             "pc_plui_valant_scot",
             # "pc_pluih",
-            # "pc_sectoriel",
+            "pc_sectoriel",
             # "pc_pdu_tient_lieu",
             "pc_pdu_obligatoire",
             "pc_nom_sst",
@@ -138,7 +138,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "pa_nb_communes",
             "pa_type_document",
             "pa_type_procedure",
-            # "pa_sectoriel",
+            "pa_sectoriel",
             "pa_date_prescription",
             "pa_date_arret_projet",
             "pa_date_pac",
@@ -214,7 +214,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
                 "pc_date_pac_comp": plan_en_cours.date_porter_a_connaissance_complementaire,
                 "pc_plui_valant_scot": plan_en_cours.vaut_SCoT,
                 # "pc_pluih": "planCurrent.is_pluih",  # noqa: ERA001
-                # "pc_sectoriel": "planCurrent.isSectoriel",  # noqa: ERA001
+                "pc_sectoriel": plan_en_cours.is_sectoriel_consolide,
                 # "pc_pdu_tient_lieu": "planCurrent.is_pdu",  # noqa: ERA001
                 "pc_pdu_obligatoire": plan_en_cours.obligation_PDU,
                 "pc_nom_sst": plan_en_cours.maitrise_d_oeuvre
@@ -233,7 +233,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
                 "pa_nb_communes": len(plan_opposable.perimetre_prefetched),
                 "pa_type_document": plan_opposable.type_document,
                 "pa_type_procedure": plan_opposable.type,
-                # "pa_sectoriel": plan_opposable.is_sectoriel,  # noqa: ERA001
+                "pa_sectoriel": plan_opposable.is_sectoriel_consolide,
                 "pa_date_prescription": plan_opposable.date_prescription,
                 "pa_date_arret_projet": plan_opposable.date_arret_projet,
                 "pa_date_pac": plan_opposable.date_porter_a_connaissance,
