@@ -28,7 +28,7 @@ dev = [
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "core.settings"
-addopts = "--reuse-db --no-migrations --cov=."
+addopts = "--reuse-db --cov=."
 
 [tool.ruff.lint]
 select = ["ALL"]
