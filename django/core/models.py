@@ -1,45 +1,31 @@
 import uuid
 from datetime import date
 from enum import StrEnum, auto
-from itertools import groupby
-from json import load
-from operator import attrgetter
-from typing import Self, TypedDict
+from functools import cached_property
+from typing import Self
 
 from django.conf import settings
 from django.db import models
 from django.db.models.functions import Coalesce
+from django.urls import reverse
 
 
-class CollectiviteLight(TypedDict):
-    type: str
-    intitule: str
-    siren: str
-    code: str
-
-
-class Collectivite(CollectiviteLight):
-    regionCode: str
-    departementCode: str
-    competencePLU: bool
-    competenceSCOT: bool
-    groupements: list[CollectiviteLight]
-    membres: list[CollectiviteLight]
-
-
-class Commune(Collectivite):
-    codeParent: str
-    intercommunaliteCode: str
-
-
-with (settings.BASE_DIR / "data" / "communes.json").open() as f:
-    communes: dict[str, Commune] = {
-        f"{commune['code']}_{commune['type']}": commune for commune in load(f)
-    }
-with (settings.BASE_DIR / "data" / "groupements.json").open() as f:
-    groupements: dict[str, Collectivite] = {
-        groupement["code"]: groupement for groupement in load(f)
-    }
+class TypeCollectivite(models.TextChoices):
+    COM = "COM", "Commune"
+    COMD = "COMD", "Commune déléguée"
+    COMA = "COMA", "Commune associée"
+    CC = "CC", "Communauté de communes"
+    SMF = "SMF", "Syndicat Mixte Fermé"
+    SMO = "SMO", "Syndicat Mixte Ouvert"
+    METRO = "METRO", "Métropole"
+    CU = "CU", "Communauté Urbaine"
+    PETR = "PETR", "Pôle d'Équilibre Territorial et Rural"
+    MET69 = "MET69", "Métropole de Lyon"
+    SIVU = "SIVU", "Syndicat Intercommunal à Vocation Unique"
+    EPT = "EPT", "Établissement Public Territorial"
+    CA = "CA", "Communauté d'Agglomération"
+    POLEM = "POLEM", "Pôle Métropolitain"
+    SIVOM = "SIVOM", "Syndicat Intercommunal à Vocation Multiple"
 
 
 class TypeDocument(models.TextChoices):
@@ -57,7 +43,7 @@ class TypeDocument(models.TextChoices):
 
 class EventImpact(StrEnum):
     EN_COURS = "en cours"
-    OPPOSABLE = auto()
+    APPROUVE = auto()
     ABANDON = auto()
     ANNULE = auto()
     CADUC = auto()
@@ -66,9 +52,9 @@ class EventImpact(StrEnum):
 EVENT_IMPACT_BY_TYPE_DOCUMENT = {
     TypeDocument.CC: {
         "Délibération de prescription du conseil municipal": EventImpact.EN_COURS,
-        "Approbation du préfet": EventImpact.OPPOSABLE,
-        "Caractère exécutoire": EventImpact.OPPOSABLE,
-        "Retrait de l'annulation totale": EventImpact.OPPOSABLE,
+        "Approbation du préfet": EventImpact.APPROUVE,
+        "Caractère exécutoire": EventImpact.APPROUVE,
+        "Retrait de l'annulation totale": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Retrait de la délibération de prescription": EventImpact.ABANDON,
         "Annulation TA totale": EventImpact.ANNULE,
@@ -78,9 +64,9 @@ EVENT_IMPACT_BY_TYPE_DOCUMENT = {
     TypeDocument.SCOT: {
         "Délibération de l'établissement public qui prescrit": EventImpact.EN_COURS,
         "Retrait de la délibération d'approbation": EventImpact.EN_COURS,
-        "Délibération d'approbation": EventImpact.OPPOSABLE,
-        "Caractère exécutoire": EventImpact.OPPOSABLE,
-        "Retrait de l'annulation totale": EventImpact.OPPOSABLE,
+        "Délibération d'approbation": EventImpact.APPROUVE,
+        "Caractère exécutoire": EventImpact.APPROUVE,
+        "Retrait de l'annulation totale": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Retrait de la délibération de prescription": EventImpact.ABANDON,
         "Annulation TA totale": EventImpact.ANNULE,
@@ -89,8 +75,8 @@ EVENT_IMPACT_BY_TYPE_DOCUMENT = {
     },
     TypeDocument.SD: {
         "Délibération de l'établissement public qui prescrit": EventImpact.EN_COURS,
-        "Délibération d'approbation": EventImpact.OPPOSABLE,
-        "Caractère exécutoire": EventImpact.OPPOSABLE,
+        "Délibération d'approbation": EventImpact.APPROUVE,
+        "Caractère exécutoire": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Annulation TA totale": EventImpact.ANNULE,
         "Annulation TA": EventImpact.ANNULE,
@@ -98,11 +84,11 @@ EVENT_IMPACT_BY_TYPE_DOCUMENT = {
     },
     TypeDocument.PLU: {
         "Délibération de prescription du conseil municipal ou communautaire": EventImpact.EN_COURS,
-        "Caractère exécutoire": EventImpact.OPPOSABLE,
-        "Retrait de l'annulation totale": EventImpact.OPPOSABLE,
-        "Délibération d'approbation du municipal ou communautaire": EventImpact.OPPOSABLE,
-        "Délibération d'approbation du conseil municipal ou communautaire": EventImpact.OPPOSABLE,
-        "Délibération d'approbation": EventImpact.OPPOSABLE,
+        "Caractère exécutoire": EventImpact.APPROUVE,
+        "Retrait de l'annulation totale": EventImpact.APPROUVE,
+        "Délibération d'approbation du municipal ou communautaire": EventImpact.APPROUVE,
+        "Délibération d'approbation du conseil municipal ou communautaire": EventImpact.APPROUVE,
+        "Délibération d'approbation": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Retrait de la délibération de prescription": EventImpact.ABANDON,
         "Annulation TA totale": EventImpact.ANNULE,
@@ -113,25 +99,20 @@ EVENT_IMPACT_BY_TYPE_DOCUMENT = {
     },
     TypeDocument.POS: {
         "Délibération de prescription du conseil municipal ou communautaire": EventImpact.EN_COURS,
-        "Caractère exécutoire": EventImpact.OPPOSABLE,
-        "Délibération d'approbation du municipal ou communautaire": EventImpact.OPPOSABLE,
-        "Délibération d'approbation du conseil municipal ou communautaire": EventImpact.OPPOSABLE,
-        "Délibération d'approbation": EventImpact.OPPOSABLE,
+        "Caractère exécutoire": EventImpact.APPROUVE,
+        "Délibération d'approbation du municipal ou communautaire": EventImpact.APPROUVE,
+        "Délibération d'approbation du conseil municipal ou communautaire": EventImpact.APPROUVE,
+        "Délibération d'approbation": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Annulation TA": EventImpact.ANNULE,
         "Annulation TA totale": EventImpact.ANNULE,
         "Caducité": EventImpact.ANNULE,
     },
 }
-EVENT_IMPACT_BY_TYPE_DOCUMENT |= {
-    plu_like: EVENT_IMPACT_BY_TYPE_DOCUMENT[TypeDocument.PLU]
-    for plu_like in (
-        TypeDocument.PLUI,
-        TypeDocument.PLUIH,
-        TypeDocument.PLUIHM,
-        TypeDocument.PLUIM,
-    )
-}
+EVENT_IMPACT_BY_TYPE_DOCUMENT |= dict.fromkeys(
+    (TypeDocument.PLUI, TypeDocument.PLUIH, TypeDocument.PLUIHM, TypeDocument.PLUIM),
+    EVENT_IMPACT_BY_TYPE_DOCUMENT[TypeDocument.PLU],
+)
 
 
 class ProcedureQuerySet(models.QuerySet):
@@ -144,7 +125,7 @@ class ProcedureQuerySet(models.QuerySet):
             event_type
             for event_impact_by_event_type in EVENT_IMPACT_BY_TYPE_DOCUMENT.values()
             for event_type, event_impact in event_impact_by_event_type.items()
-            if event_impact == EventImpact.OPPOSABLE
+            if event_impact == EventImpact.APPROUVE
         ]
 
         dernier_event_impactant_whens = [
@@ -198,7 +179,9 @@ class Procedure(models.Model):
     name = models.TextField(blank=True, null=True)  # noqa: DJ001
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
-    collectivite_porteuse_id = models.CharField(blank=True, null=True)  # noqa: DJ001
+    collectivite_porteuse = models.ForeignKey(
+        "Collectivite", models.DO_NOTHING, to_field="code_insee"
+    )
     created_at = models.DateTimeField(db_default=models.functions.Now())
     doublon_cache_de = models.OneToOneField(
         "self", on_delete=models.DO_NOTHING, blank=True, null=True, unique=True
@@ -218,14 +201,9 @@ class Procedure(models.Model):
         db_table = "procedures"
 
     def __str__(self) -> str:
-        collectivite = f"{self.collectivite_porteuse_id}_COM"
-        if collectivite in communes:
-            collectivite = communes[collectivite]["intitule"]
-        if self.collectivite_porteuse_id in groupements:
-            collectivite = groupements[self.collectivite_porteuse_id]["intitule"]
         return (
             self.name
-            or f"🤖 {self.type} {self.numero or ''} {self.type_document} {collectivite}"
+            or f"🤖 {self.type} {self.numero or ''} {self.type_document} {self.collectivite_porteuse}"
         )
 
     def get_absolute_url(self) -> str:
@@ -275,80 +253,119 @@ class Event(models.Model):
         )
 
 
-class CommuneProcedureQuerySet(models.QuerySet):
-    def with_opposabilite(
-        self,
-        *,
-        departement: str | None = None,
-        collectivite_code: str | None = None,
-        collectivite_type: str | None = None,
-        avant: date | None = None,
-    ) -> list["CommuneProcedure"]:
-        communes_procedures = (
-            self.filter(
-                procedure__parente=None,
-                procedure__archived=False,
+class Region(models.Model):
+    code_insee = models.CharField(unique=True)
+    nom = models.CharField()
+
+    def __str__(self) -> str:
+        return self.nom
+
+
+class Departement(models.Model):
+    code_insee = models.CharField(unique=True)
+    nom = models.CharField()
+    region = models.ForeignKey(Region, models.DO_NOTHING, related_name="departements")
+
+    def __str__(self) -> str:
+        return f"{self.code_insee} - {self.nom}"
+
+
+class Collectivite(models.Model):
+    id = models.CharField(primary_key=True)  # Au format code_type
+    code_insee = models.CharField(  # noqa: DJ001
+        unique=True,
+        null=True,
+        db_comment="Peut-être vide pour une COMD ayant le même code que sa commune parente",
+    )
+    type = models.CharField(choices=TypeCollectivite.choices)
+    nom = models.CharField()
+    competence_plan = models.BooleanField(db_default=False)
+    competence_schema = models.BooleanField(db_default=False)
+    adhesions = models.ManyToManyField(
+        "self", related_name="collectivites_adherentes", symmetrical=False
+    )
+    departement = models.ForeignKey(
+        Departement, models.DO_NOTHING, related_name="collectivites"
+    )
+
+    def __str__(self) -> str:
+        return self.nom
+
+
+class CommuneQuerySet(models.QuerySet):
+    def with_procedures_principales(self, avant: date | None = None) -> Self:
+        return self.prefetch_related(
+            models.Prefetch(
+                "procedures",
+                Procedure.objects.with_events(avant=avant)
+                .filter(parente=None, archived=False)
+                .order_by("-date_approbation"),
+                to_attr="procedures_principales",
             )
-            .prefetch_related(
-                models.Prefetch("procedure", Procedure.objects.with_events(avant=avant))
-            )
-            .order_by("collectivite_code", "collectivite_type")
         )
 
-        if departement:
-            communes_procedures = communes_procedures.filter(departement=departement)
-        elif collectivite_code and collectivite_type:
-            communes_procedures = communes_procedures.filter(
-                collectivite_code=collectivite_code, collectivite_type=collectivite_type
-            )
 
-        communes_procedures_with_opposabilite = []
-        for _, commune_procedures_iterator in groupby(
-            communes_procedures, attrgetter("collectivite_code", "collectivite_type")
-        ):
-            communes_procedures_meme_commune = list(commune_procedures_iterator)
-            for commune_procedure in communes_procedures_meme_commune:
-                commune_procedure.opposable = commune_procedure._opposable(  # noqa: SLF001
-                    communes_procedures_meme_commune
-                )
-                communes_procedures_with_opposabilite.append(commune_procedure)
-        return communes_procedures_with_opposabilite
-
-
-class CommuneProcedure(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    created_at = models.DateTimeField(db_default=models.functions.Now())
-    collectivite_code = models.CharField()
-    collectivite_type = models.CharField()
-    procedure = models.ForeignKey(
-        Procedure, models.DO_NOTHING, related_name="perimetre"
+class Commune(Collectivite):
+    intercommunalite = models.ForeignKey(
+        Collectivite, models.DO_NOTHING, null=True, related_name="communes"
     )
-    departement = models.CharField(blank=True, null=True)  # noqa: DJ001
+    nouvelle = models.ForeignKey(
+        "self", models.DO_NOTHING, null=True, related_name="deleguee"
+    )
+    procedures = models.ManyToManyField(
+        Procedure, through="CommuneProcedure", related_name="perimetre"
+    )
 
-    objects = CommuneProcedureQuerySet.as_manager()
+    objects = CommuneQuerySet.as_manager()
+
+    def get_absolute_url(self) -> str:
+        return reverse(
+            "collectivite-detail",
+            kwargs={
+                "collectivite_code": self.code_insee,
+                "collectivite_type": self.type,
+            },
+        )
+
+    @cached_property
+    def procedures_principales_approuvees(self) -> list[Procedure]:
+        return [
+            procedure
+            for procedure in self.procedures_principales
+            if procedure.type != "Abrogation"
+            and procedure.statut == EventImpact.APPROUVE
+        ]
+
+    @cached_property
+    def plan_opposable(self) -> Procedure | None:
+        return next(
+            (
+                procedure
+                for procedure in self.procedures_principales_approuvees
+                if not procedure.is_schema
+            ),
+            None,
+        )
+
+    @cached_property
+    def schema_opposable(self) -> Procedure | None:
+        return next(
+            (
+                procedure
+                for procedure in self.procedures_principales_approuvees
+                if procedure.is_schema
+            ),
+            None,
+        )
+
+    def is_opposable(self, procedure: Procedure) -> bool:
+        return procedure in (self.plan_opposable, self.schema_opposable)
+
+
+class CommuneProcedure(models.Model):  # noqa: DJ008
+    commune = models.ForeignKey(Commune, models.DO_NOTHING)
+    procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
 
     class Meta:
         managed = settings.UNDER_TEST
         db_table = "procedures_perimetres"
-        unique_together = (("collectivite_code", "collectivite_type", "procedure"),)
-
-    def __str__(self) -> str:
-        try:
-            return f"{self.collectivite_code} {communes[self.collectivite_code]['intitule']} - {self.procedure}"
-        except KeyError:
-            return f"{self.collectivite_code} - {self.procedure}"
-
-    def _opposable(self, communes_procedures_meme_commune: list[Procedure]) -> bool:
-        procedures_opposables = sorted(
-            (
-                commune_procedure.procedure
-                for commune_procedure in communes_procedures_meme_commune
-                if self.procedure.is_schema == commune_procedure.procedure.is_schema
-                and commune_procedure.procedure.type != "Abrogation"
-                and commune_procedure.procedure.statut == EventImpact.OPPOSABLE
-            ),
-            key=attrgetter("date_approbation"),
-        )
-        if not procedures_opposables:
-            return False
-        return procedures_opposables[-1].id == self.procedure_id

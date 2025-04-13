@@ -5,12 +5,24 @@ from pytest_django import DjangoAssertNumQueries
 
 from core.models import (
     EVENT_IMPACT_BY_TYPE_DOCUMENT,
-    CommuneProcedure,
+    Commune,
     Event,
     EventImpact,
     Procedure,
+    Region,
     TypeDocument,
 )
+
+
+def create_commune() -> Commune:
+    region = Region.objects.create()
+    departement = region.departements.create()
+    return Commune.objects.create(
+        id="12345_COM",
+        code_insee="12345",
+        type="COM",
+        departement=departement,
+    )
 
 
 def test_tous_document_types_ont_event_impact() -> None:
@@ -33,7 +45,11 @@ class TestProcedure:
     def test_date_approbation_retourne_plus_recent_event_approbation(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            type_document=TypeDocument.PLUI,
+            collectivite_porteuse=commune,
+        )
         procedure.event_set.create(
             type="Caractère exécutoire",
             date_evenement_string="2022-12-01",
@@ -48,9 +64,9 @@ class TestProcedure:
         )
 
         assert [event.impact for event in procedure.event_set.all()] == [
-            EventImpact.OPPOSABLE,
-            EventImpact.OPPOSABLE,
-            EventImpact.OPPOSABLE,
+            EventImpact.APPROUVE,
+            EventImpact.APPROUVE,
+            EventImpact.APPROUVE,
         ]
         with django_assert_num_queries(1):
             procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
@@ -61,7 +77,10 @@ class TestProcedure:
     def test_date_approbation_ignore_event_pas_approbation(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
         procedure.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
             date_evenement_string="2023-12-01",
@@ -77,7 +96,7 @@ class TestProcedure:
 
         assert [event.impact for event in procedure.event_set.all()] == [
             EventImpact.EN_COURS,
-            EventImpact.OPPOSABLE,
+            EventImpact.APPROUVE,
             EventImpact.EN_COURS,
         ]
         with django_assert_num_queries(1):
@@ -89,7 +108,10 @@ class TestProcedure:
     def test_date_approbation_quand_event_approbation_manquant(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
 
         with django_assert_num_queries(1):
             procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
@@ -100,7 +122,10 @@ class TestProcedure:
     def test_date_approbation_ignore_event_apres(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
         procedure.event_set.create(
             type="Caractère exécutoire",
             date_evenement_string="2022-12-01",
@@ -111,8 +136,8 @@ class TestProcedure:
         )
 
         assert [event.impact for event in procedure.event_set.all()] == [
-            EventImpact.OPPOSABLE,
-            EventImpact.OPPOSABLE,
+            EventImpact.APPROUVE,
+            EventImpact.APPROUVE,
         ]
         with django_assert_num_queries(1):
             procedure_with_events = Procedure.objects.with_events(
@@ -127,14 +152,17 @@ class TestProcedureStatut:
     def test_principale_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
         event = procedure.event_set.create(type="Caractère exécutoire")
 
-        assert event.impact == EventImpact.OPPOSABLE
+        assert event.impact == EventImpact.APPROUVE
         with django_assert_num_queries(1):
             procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
 
-            assert procedure_with_events.statut == EventImpact.OPPOSABLE
+            assert procedure_with_events.statut == EventImpact.APPROUVE
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
@@ -143,7 +171,7 @@ class TestProcedureStatut:
             (3, None),
             (4, EventImpact.EN_COURS),
             (5, EventImpact.EN_COURS),
-            (6, EventImpact.OPPOSABLE),
+            (6, EventImpact.APPROUVE),
         ],
     )
     def test_ignore_event_apres(
@@ -152,7 +180,10 @@ class TestProcedureStatut:
         jour_limite: int,
         impact: EventImpact,
     ) -> None:
-        procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
         event_prescription = procedure.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
             date_evenement_string="2024-12-03",
@@ -162,7 +193,7 @@ class TestProcedureStatut:
         )
 
         assert event_prescription.impact == EventImpact.EN_COURS
-        assert event_approbation.impact == EventImpact.OPPOSABLE
+        assert event_approbation.impact == EventImpact.APPROUVE
         with django_assert_num_queries(1):
             procedure_with_events = Procedure.objects.with_events(
                 avant=date(2024, 12, jour_limite)
@@ -174,7 +205,10 @@ class TestProcedureStatut:
     def test_principale_sans_evenement(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
         Event.objects.create(procedure=procedure)
 
         with django_assert_num_queries(1):
@@ -186,7 +220,10 @@ class TestProcedureStatut:
     def test_principale_annule(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
         event = procedure.event_set.create(type="Abrogation")
 
         assert event.impact == EventImpact.ANNULE
@@ -199,7 +236,10 @@ class TestProcedureStatut:
     def test_principale_ignore_event_invalide(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
         event = procedure.event_set.create(type="Caractère exécutoire", is_valid=False)
 
         assert event.impact is None
@@ -212,7 +252,10 @@ class TestProcedureStatut:
     def test_principale_carte_communale_deliberation_d_approbation_pas_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure = Procedure.objects.create(type_document=TypeDocument.CC)
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            type_document=TypeDocument.CC, collectivite_porteuse=commune
+        )
         event = procedure.event_set.create(type="Délibération d'approbation")
 
         assert event.impact is None
@@ -225,9 +268,14 @@ class TestProcedureStatut:
     def test_secondaire_non_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure_principale = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+        procedure_principale = Procedure.objects.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
         procedure_secondaire = Procedure.objects.create(
-            parente=procedure_principale, type_document=TypeDocument.PLUI
+            parente=procedure_principale,
+            type_document=TypeDocument.PLUI,
+            collectivite_porteuse=commune,
         )
         procedure_secondaire.event_set.create(type="Caractère exécutoire")
 
@@ -263,59 +311,100 @@ class TestEvent:
         assert Event(procedure=procedure, type=type_event).impact == impact
 
 
-class TestCommuneProcedure:
+class TestCommuneProceduresPrincipales:
+    @pytest.mark.django_db
+    def test_exclut_secondaires(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+
+        procedure_principale = commune.procedures.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        _procedure_secondaire = commune.procedures.create(
+            parente=procedure_principale,
+            type_document=TypeDocument.PLUI,
+            collectivite_porteuse=commune,
+        )
+
+        with django_assert_num_queries(2):
+            commune = Commune.objects.with_procedures_principales().get()
+            assert commune.procedures_principales == [procedure_principale]
+
+    @pytest.mark.django_db
+    def test_exclut_archivees(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+        procedure_reelle = commune.procedures.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+
+        _procedure_supprimee = commune.procedures.create(
+            soft_delete=True, collectivite_porteuse=commune
+        )
+
+        _procedure_doublon = commune.procedures.create(
+            doublon_cache_de=procedure_reelle, collectivite_porteuse=commune
+        )
+
+        with django_assert_num_queries(2):
+            commune = Commune.objects.with_procedures_principales().get()
+            assert commune.procedures_principales == [procedure_reelle]
+
+
+class TestCommuneOpposabilite:
     @pytest.mark.django_db
     def test_plus_recente_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure_opposable = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+
+        procedure_opposable = commune.procedures.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
         procedure_opposable.event_set.create(
             type="Caractère exécutoire", date_evenement_string="2024-12-01"
         )
-        commune_procedure_opposable = procedure_opposable.perimetre.create(
-            collectivite_code="12345"
-        )
 
-        procedure_precedente = Procedure.objects.create(type_document=TypeDocument.PLU)
+        procedure_precedente = commune.procedures.create(
+            type_document=TypeDocument.PLU, collectivite_porteuse=commune
+        )
         procedure_precedente.event_set.create(
             type="Caractère exécutoire", date_evenement_string="2023-12-01"
         )
-        commune_procedure_precedente = procedure_precedente.perimetre.create(
-            collectivite_code="12345"
-        )
-
-        with django_assert_num_queries(1):
-            procedures = Procedure.objects.with_events()
-
-            assert all(
-                procedure.statut == EventImpact.OPPOSABLE for procedure in procedures
-            )
 
         with django_assert_num_queries(2):
-            perimetres = CommuneProcedure.objects.with_opposabilite()
-        with django_assert_num_queries(0):
-            assert perimetres == [
-                commune_procedure_opposable,
-                commune_procedure_precedente,
+            commune = Commune.objects.with_procedures_principales().get()
+            assert commune.procedures_principales_approuvees == [
+                procedure_opposable,
+                procedure_precedente,
             ]
-            assert perimetres[0].opposable
-            assert not perimetres[1].opposable
+
+            assert commune.plan_opposable == procedure_opposable
+            assert not commune.schema_opposable
+
+            assert commune.is_opposable(procedure_opposable)
+            assert not commune.is_opposable(procedure_precedente)
 
     @pytest.mark.django_db
     def test_plans_et_schemas_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        plan_opposable = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+
+        plan_opposable = commune.procedures.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
         plan_opposable.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
             date_evenement_string="2024-12-01",
         )
         plan_opposable.event_set.create(type="Caractère exécutoire")
-        commune_plan_opposable = plan_opposable.perimetre.create(
-            collectivite_code="12345"
-        )
 
-        schema_opposable = Procedure.objects.create(type_document=TypeDocument.SCOT)
+        schema_opposable = commune.procedures.create(
+            type_document=TypeDocument.SCOT, collectivite_porteuse=commune
+        )
         schema_opposable.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
             date_evenement_string="2023-12-01",
@@ -323,216 +412,181 @@ class TestCommuneProcedure:
         schema_opposable.event_set.create(
             type="Caractère exécutoire",
         )
-        commune_schema_opposable = schema_opposable.perimetre.create(
-            collectivite_code="12345"
-        )
-
-        with django_assert_num_queries(1):
-            procedures = Procedure.objects.with_events()
-
-            assert all(
-                procedure.statut == EventImpact.OPPOSABLE for procedure in procedures
-            )
 
         with django_assert_num_queries(2):
-            perimetres = CommuneProcedure.objects.with_opposabilite()
-        with django_assert_num_queries(0):
-            assert perimetres == [
-                commune_plan_opposable,
-                commune_schema_opposable,
+            commune = Commune.objects.with_procedures_principales().get()
+            assert commune.procedures_principales_approuvees == [
+                plan_opposable,
+                schema_opposable,
             ]
-            assert perimetres[0].opposable
-            assert perimetres[1].opposable
+
+            assert commune.plan_opposable == plan_opposable
+            assert commune.schema_opposable == schema_opposable
+
+            assert commune.is_opposable(plan_opposable)
+            assert commune.is_opposable(schema_opposable)
 
     @pytest.mark.django_db
     def test_opposable_sans_prescription(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure_opposable = Procedure.objects.create(type_document=TypeDocument.PLUI)
-        procedure_opposable.event_set.create(type="Caractère exécutoire")
-        commune_procedure_opposable = procedure_opposable.perimetre.create(
-            collectivite_code="12345"
+        commune = create_commune()
+
+        procedure_opposable = commune.procedures.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
         )
-
-        with django_assert_num_queries(1):
-            procedure_opposable_with_events = Procedure.objects.with_events().get(
-                id=procedure_opposable.id
-            )
-
-            assert procedure_opposable_with_events.statut == EventImpact.OPPOSABLE
+        procedure_opposable.event_set.create(type="Caractère exécutoire")
 
         with django_assert_num_queries(2):
-            perimetres = CommuneProcedure.objects.with_opposabilite()
-        with django_assert_num_queries(0):
-            assert perimetres == [commune_procedure_opposable]
-            assert perimetres[0].opposable
+            commune = Commune.objects.with_procedures_principales().get()
+            assert commune.procedures_principales_approuvees == [procedure_opposable]
+
+            assert commune.plan_opposable == procedure_opposable
+            assert not commune.schema_opposable
+
+            assert commune.is_opposable(procedure_opposable)
 
     @pytest.mark.django_db
     def test_aucune_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure_en_cours = Procedure.objects.create(type_document=TypeDocument.PLUI)
+        commune = create_commune()
+
+        procedure_en_cours = commune.procedures.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
         procedure_en_cours.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
             date_evenement_string="2024-12-01",
         )
 
-        commune_procedure_en_cours = procedure_en_cours.perimetre.create(
-            collectivite_code="12345"
-        )
-
-        with django_assert_num_queries(1):
-            procedure_en_cours_with_events = Procedure.objects.with_events().get(
-                id=procedure_en_cours.id
-            )
-
-            assert procedure_en_cours_with_events.statut == EventImpact.EN_COURS
-
         with django_assert_num_queries(2):
-            perimetres = CommuneProcedure.objects.with_opposabilite()
-        with django_assert_num_queries(0):
-            assert perimetres == [commune_procedure_en_cours]
-            assert not perimetres[0].opposable
+            commune = Commune.objects.with_procedures_principales().get()
+            assert commune.procedures_principales_approuvees == []
+
+            assert not commune.plan_opposable
+            assert not commune.schema_opposable
+
+            assert not commune.is_opposable(procedure_en_cours)
 
     @pytest.mark.django_db
     def test_abrogation_non_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure_opposable = Procedure.objects.create(
-            type_document=TypeDocument.PLUI, type="Abrogation"
-        )
-        procedure_opposable.event_set.create(type="Caractère exécutoire")
-        commune_procedure_opposable = procedure_opposable.perimetre.create(
-            collectivite_code="12345"
-        )
+        commune = create_commune()
 
-        with django_assert_num_queries(1):
-            procedure_opposable_with_events = Procedure.objects.with_events().get(
-                id=procedure_opposable.id
-            )
-
-            assert procedure_opposable_with_events.statut == EventImpact.OPPOSABLE
+        procedure_approuvee = commune.procedures.create(
+            type_document=TypeDocument.PLUI,
+            type="Abrogation",
+            collectivite_porteuse=commune,
+        )
+        procedure_approuvee.event_set.create(type="Caractère exécutoire")
 
         with django_assert_num_queries(2):
-            perimetres = CommuneProcedure.objects.with_opposabilite()
-        with django_assert_num_queries(0):
-            assert perimetres == [commune_procedure_opposable]
-            assert not perimetres[0].opposable
+            commune = Commune.objects.with_procedures_principales().get()
+            assert commune.procedures_principales_approuvees == []
 
-    @pytest.mark.django_db
-    def test_opposable_com_et_comd_enchevetree(
-        self, django_assert_num_queries: DjangoAssertNumQueries
-    ) -> None:
-        procedure_com_precedente = Procedure.objects.create(
-            type_document=TypeDocument.PLU
-        )
-        procedure_com_precedente.event_set.create(type="Caractère exécutoire")
-        commune_procedure_com_precedente = procedure_com_precedente.perimetre.create(
-            collectivite_code="12345", collectivite_type="COM"
-        )
+            assert not commune.plan_opposable
+            assert not commune.schema_opposable
 
-        procedure_comd_opposable = Procedure.objects.create(
-            type_document=TypeDocument.PLU
-        )
-        procedure_comd_opposable.event_set.create(type="Caractère exécutoire")
-        commune_procedure_comd_opposable = procedure_comd_opposable.perimetre.create(
-            collectivite_code="12345", collectivite_type="COMD"
-        )
-
-        procedure_com_opposable = Procedure.objects.create(
-            type_document=TypeDocument.PLU
-        )
-        procedure_com_opposable.event_set.create(type="Caractère exécutoire")
-        commune_procedure_com_opposable = procedure_com_opposable.perimetre.create(
-            collectivite_code="12345", collectivite_type="COM"
-        )
-
-        with django_assert_num_queries(2):
-            perimetres = CommuneProcedure.objects.with_opposabilite()
-        with django_assert_num_queries(0):
-            assert perimetres == [
-                commune_procedure_com_precedente,
-                commune_procedure_com_opposable,
-                commune_procedure_comd_opposable,
-            ]
-            assert not perimetres[0].opposable
-            assert perimetres[1].opposable
-            assert perimetres[2].opposable
+            assert not commune.is_opposable(procedure_approuvee)
 
     @pytest.mark.django_db
     def test_ignore_procedures_secondaires(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure_principale = Procedure.objects.create()
-        commune_procedure_principale = procedure_principale.perimetre.create(
-            collectivite_code="12345"
+        commune = create_commune()
+
+        procedure_principale = commune.procedures.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
         )
-        procedure_secondaire = Procedure.objects.create(parente=procedure_principale)
-        procedure_secondaire.perimetre.create(collectivite_code="12345")
+        procedure_secondaire = commune.procedures.create(
+            parente=procedure_principale,
+            type_document=TypeDocument.PLUI,
+            collectivite_porteuse=commune,
+        )
+        procedure_secondaire.event_set.create(type="Caractère exécutoire")
 
         with django_assert_num_queries(2):
-            perimetres = CommuneProcedure.objects.with_opposabilite()
-        with django_assert_num_queries(0):
-            assert perimetres == [commune_procedure_principale]
+            commune = Commune.objects.with_procedures_principales().get()
+            assert commune.procedures_principales_approuvees == []
+
+            assert not commune.plan_opposable
+            assert not commune.schema_opposable
+
+            assert not commune.is_opposable(procedure_principale)
+            assert not commune.is_opposable(procedure_secondaire)
 
     @pytest.mark.django_db
     def test_ignore_procedures_archivees(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure_reelle = Procedure.objects.create()
-        commune_procedure_reelle = procedure_reelle.perimetre.create(
-            collectivite_code="12345"
-        )
-        procedure_doublon = Procedure.objects.create(soft_delete=True)
-        procedure_doublon.perimetre.create(collectivite_code="12345")
+        commune = create_commune()
+        procedure_reelle = commune.procedures.create(collectivite_porteuse=commune)
 
-        procedure_doublon = Procedure.objects.create(doublon_cache_de=procedure_reelle)
-        procedure_doublon.perimetre.create(collectivite_code="12345")
+        procedure_supprimee = commune.procedures.create(
+            soft_delete=True, collectivite_porteuse=commune
+        )
+        procedure_supprimee.event_set.create(type="Caractère exécutoire")
+
+        procedure_doublon = commune.procedures.create(
+            doublon_cache_de=procedure_reelle, collectivite_porteuse=commune
+        )
+        procedure_doublon.event_set.create(type="Caractère exécutoire")
 
         with django_assert_num_queries(2):
-            perimetres = CommuneProcedure.objects.with_opposabilite()
-        with django_assert_num_queries(0):
-            assert perimetres == [commune_procedure_reelle]
+            commune = Commune.objects.with_procedures_principales().get()
+            assert commune.procedures_principales_approuvees == []
+
+            assert not commune.plan_opposable
+            assert not commune.schema_opposable
+
+            assert not commune.is_opposable(procedure_reelle)
+            assert not commune.is_opposable(procedure_supprimee)
+            assert not commune.is_opposable(procedure_doublon)
 
     @pytest.mark.django_db
     def test_ignore_event_apres(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        procedure_opposable_fevrier = Procedure.objects.create(
-            type_document=TypeDocument.PLUI
+        commune = create_commune()
+
+        procedure_opposable_fevrier = commune.procedures.create(
+            type_document=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_opposable_fevrier.event_set.create(
             type="Caractère exécutoire", date_evenement_string="2024-02-01"
         )
-        commune_procedure_opposable_fevrier = (
-            procedure_opposable_fevrier.perimetre.create(collectivite_code="12345")
-        )
 
-        procedure_opposable_janvier = Procedure.objects.create(
-            type_document=TypeDocument.PLU
+        procedure_opposable_janvier = commune.procedures.create(
+            type_document=TypeDocument.PLU, collectivite_porteuse=commune
         )
         procedure_opposable_janvier.event_set.create(
             type="Caractère exécutoire", date_evenement_string="2024-01-01"
-        )
-        commune_procedure_opposable_janvier = (
-            procedure_opposable_janvier.perimetre.create(collectivite_code="12345")
         )
 
         with django_assert_num_queries(1):
             procedures = Procedure.objects.with_events()
 
             assert all(
-                procedure.statut == EventImpact.OPPOSABLE for procedure in procedures
+                procedure.statut == EventImpact.APPROUVE for procedure in procedures
             )
 
         with django_assert_num_queries(2):
-            perimetres = CommuneProcedure.objects.with_opposabilite(
+            commune = Commune.objects.with_procedures_principales(
                 avant=date(2024, 2, 1)
-            )
+            ).get()
+
         with django_assert_num_queries(0):
-            assert perimetres == [
-                commune_procedure_opposable_fevrier,
-                commune_procedure_opposable_janvier,
+            assert commune.procedures_principales == [
+                procedure_opposable_janvier,
+                procedure_opposable_fevrier,
             ]
-            assert not perimetres[0].opposable
-            assert perimetres[1].opposable
+            assert commune.procedures_principales_approuvees == [
+                procedure_opposable_janvier,
+            ]
+            assert commune.plan_opposable == procedure_opposable_janvier
+            assert not commune.schema_opposable
+
+            assert commune.is_opposable(procedure_opposable_janvier)
+            assert not commune.is_opposable(procedure_opposable_fevrier)

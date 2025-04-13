@@ -8,31 +8,38 @@
         <title>Document</title>
     </head>
     <body>
-        <h1>{{ collectivite.code }} {{ collectivite.intitule }}</h1>
-        {% regroup cp by procedure.is_schema as wesh %}
-        {% for wes, procedures in wesh %}
-        {{ wes }}
+        <h1>{{ collectivite.code_insee }} {{ collectivite.nom }}</h1>
+        {% for is_schema, procedures in procedures_principales_by_schema.items %}
+
+
         <table>
+            <caption>
+                {% if is_schema %}
+                    Schémas
+                {% else %}
+                    Plans
+                {% endif %}
+            </caption>
             <tr>
-                <th>P</th>
+                <th>Nom</th>
                 <th>Opposable</th>
                 <th>Statut</th>
                 <th>Date d'approbation</th>
                 <th>Denier event impactant</th>
             </tr>
-            {% for procedure in procedures %}
+            {% for procedure, is_opposable in procedures %}
             <tr>
                 <td>
-                    <a href="{{ procedure.procedure.get_absolute_url }}">
-                        {{ procedure.procedure }}
+                    <a href="{{ procedure.get_absolute_url }}">
+                        {{ procedure }}
                     </a>
                     <br />
-                    {{ procedure.procedure_id }}
+                    {{ procedure.id }}
                 </td>
-                <td>{{ procedure.opposable }}</td>
-                <td>{{ procedure.procedure.statut }}</td>
-                <td>{{ procedure.procedure.date_approbation }}</td>
-                <td>{{ procedure.procedure.dernier_event_impactant }}</td>
+                <td>{% if is_opposable %}✅{% endif %}</td>
+                <td>{{ procedure.statut }}</td>
+                <td>{{ procedure.date_approbation }}</td>
+                <td>{{ procedure.dernier_event_impactant }}</td>
             </tr>
             {% endfor %}
         </table>

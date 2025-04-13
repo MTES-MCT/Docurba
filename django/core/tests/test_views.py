@@ -3,25 +3,30 @@ from csv import DictReader
 import pytest
 from django.test import Client
 
-from core.models import CommuneProcedure, Procedure, TypeDocument
+from core.models import Commune, Region, TypeDocument
 
 
-def create_commune_procedure(*, code: str, departement: str) -> CommuneProcedure:
-    procedure = Procedure.objects.create(
-        type_document=TypeDocument.PLU,
-        collectivite_porteuse_id=code,
-    )
-    return procedure.perimetre.create(
-        collectivite_code=code,
-        collectivite_type="COM",
+def create_commune_et_procedure(
+    *, code_insee: str = "12345", type_collectivite: str = "COM"
+) -> Commune:
+    region, _ = Region.objects.get_or_create(code_insee=12)
+    departement = region.departements.create(code_insee=code_insee[:2])
+    commune = Commune.objects.create(
+        id=f"{code_insee}_{type_collectivite}",
+        code_insee=code_insee,
+        type=type_collectivite,
         departement=departement,
     )
+    commune.procedures.create(
+        type_document=TypeDocument.PLU, collectivite_porteuse=commune
+    )
+    return commune
 
 
 class TestAPIPerimetres:
     @pytest.mark.django_db
     def test_format_csv(self, client: Client) -> None:
-        commune_procedure = create_commune_procedure(code="12345", departement="12")
+        commune = create_commune_et_procedure()
 
         response = client.get("/api/perimetres", {"departement": "12"})
 
@@ -32,17 +37,17 @@ class TestAPIPerimetres:
 
         assert list(reader) == [
             {
-                "collectivite_code": commune_procedure.collectivite_code,
-                "collectivite_type": commune_procedure.collectivite_type,
-                "procedure_id": str(commune_procedure.procedure_id),
+                "collectivite_code": "12345",
+                "collectivite_type": "COM",
+                "procedure_id": str(commune.procedures.first().id),
                 "opposable": "False",
             }
         ]
 
     @pytest.mark.django_db
     def test_filtre_par_department(self, client: Client) -> None:
-        create_commune_procedure(code="12345", departement="12")
-        create_commune_procedure(code="34567", departement="34")
+        create_commune_et_procedure(code_insee="12345", type_collectivite="COM")
+        create_commune_et_procedure(code_insee="34567", type_collectivite="COM")
 
         response = client.get("/api/perimetres", {"departement": "12"})
         reader = DictReader(response.content.decode().splitlines())
@@ -50,8 +55,8 @@ class TestAPIPerimetres:
 
     @pytest.mark.django_db
     def test_retourne_tout_sans_filtre_departement(self, client: Client) -> None:
-        create_commune_procedure(code="12345", departement="12")
-        create_commune_procedure(code="34567", departement="34")
+        create_commune_et_procedure(code_insee="12345", type_collectivite="COM")
+        create_commune_et_procedure(code_insee="34567", type_collectivite="COM")
 
         response = client.get("/api/perimetres")
         reader = DictReader(response.content.decode().splitlines())
@@ -59,8 +64,8 @@ class TestAPIPerimetres:
 
     @pytest.mark.django_db
     def test_ignore_event_apres(self, client: Client) -> None:
-        commune_procedure = create_commune_procedure(code="12345", departement="12")
-        commune_procedure.procedure.event_set.create(
+        commune = create_commune_et_procedure()
+        commune.procedures.first().event_set.create(
             type="Caractère exécutoire", date_evenement_string="2023-01-01"
         )
 
