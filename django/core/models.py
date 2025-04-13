@@ -279,10 +279,10 @@ class Collectivite(models.Model):
     )
     type = models.CharField(choices=TypeCollectivite.choices)
     nom = models.CharField()
-    competence_plan = models.BooleanField()
-    competence_schema = models.BooleanField()
-    groupements = models.ManyToManyField(
-        "self", related_name="membres", symmetrical=False
+    competence_plan = models.BooleanField(db_default=False)
+    competence_schema = models.BooleanField(db_default=False)
+    adhesions = models.ManyToManyField(
+        "self", related_name="collectivites_adherentes", symmetrical=False
     )
     departement = models.ForeignKey(
         Departement, models.DO_NOTHING, related_name="collectivites"

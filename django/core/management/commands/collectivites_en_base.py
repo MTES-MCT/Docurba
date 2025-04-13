@@ -71,9 +71,9 @@ class Command(BaseCommand):
         }
         self.stdout.write(f"{len(groupements)} groupements loaded.")
 
-        Collectivite.groupements.through.objects.bulk_create(
+        Collectivite.adhesions.through.objects.bulk_create(
             [
-                Collectivite.groupements.through(
+                Collectivite.adhesions.through(
                     from_collectivite=groupements_by_code[groupement["code"]],
                     to_collectivite=groupements_by_code[membre_de["code"]],
                 )
@@ -104,6 +104,18 @@ class Command(BaseCommand):
                 )
                 communes_by_code[commune_instance.code_insee] = commune_instance
         self.stdout.write(f"{len(communes_by_code)} communes of type 'COM' loaded.")
+
+        Collectivite.adhesions.through.objects.bulk_create(
+            [
+                Collectivite.adhesions.through(
+                    from_collectivite=communes_by_code[commune["code"]],
+                    to_collectivite=groupements_by_code[membre_de["code"]],
+                )
+                for commune in communes_json
+                for membre_de in commune["groupements"]
+            ]
+        )
+        self.stdout.write("Commune relationships loaded.")
 
         for commune in communes_json:
             if commune["type"] != "COM":

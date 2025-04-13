@@ -22,8 +22,6 @@ def create_commune() -> Commune:
         code_insee="12345",
         type="COM",
         departement=departement,
-        competence_plan=False,
-        competence_schema=False,
     )
 
 

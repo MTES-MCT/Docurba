@@ -16,8 +16,6 @@ def create_commune_et_procedure(
         code_insee=code_insee,
         type=type_collectivite,
         departement=departement,
-        competence_plan=False,
-        competence_schema=False,
     )
     commune.procedures.create(
         type_document=TypeDocument.PLU, collectivite_porteuse=commune
