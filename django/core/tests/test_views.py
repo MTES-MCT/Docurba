@@ -1,25 +1,33 @@
 from csv import DictReader
+from itertools import product
 
 import pytest
 from django.test import Client
 from pytest_django import DjangoAssertNumQueries
 
-from core.models import Commune, Region, TypeDocument
+from core.models import TypeDocument
+from core.tests.factories import (
+    create_commune,
+    create_groupement,
+)
 
 
-def create_commune_et_procedure(
-    *, code_insee: str = "12345", type_collectivite: str = "COM"
-) -> Commune:
-    region, _ = Region.objects.get_or_create(code_insee=12)
-    departement = region.departements.create(code_insee=code_insee[:2])
-    commune = Commune.objects.create(
-        id=f"{code_insee}_{type_collectivite}",
-        code_insee_unique=code_insee,
-        type=type_collectivite,
-        departement=departement,
+class TestAPI:
+    @pytest.mark.parametrize(
+        ("invalid_avant", "path"),
+        product(
+            ("2023-1-01", "2023-02-30", "invalid-date", "2023/01/01"),
+            ("/api/perimetres", "/api/scots"),
+        ),
     )
-    commune.procedures.create(doc_type=TypeDocument.PLU, collectivite_porteuse=commune)
-    return commune
+    def test_parsing_avant(self, client: Client, invalid_avant: str, path: str) -> None:
+        response = client.get(path, {"avant": invalid_avant})
+
+        assert response.status_code == 400
+        assert (
+            response.content.decode()
+            == "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
+        )
 
 
 class TestAPIPerimetres:
@@ -27,9 +35,15 @@ class TestAPIPerimetres:
     def test_format_csv(
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune_et_procedure()
+        commune = create_commune(code_insee="12345", commune_type="COM")
+        commune.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        )
+
         with django_assert_num_queries(2):
-            response = client.get("/api/perimetres", {"departement": "12"})
+            response = client.get(
+                "/api/perimetres", {"departement": commune.departement.code_insee}
+            )
 
         assert response.status_code == 200
         assert response["content-type"] == "text/csv;charset=utf-8"
@@ -49,43 +63,164 @@ class TestAPIPerimetres:
 
     @pytest.mark.django_db
     def test_filtre_par_department(self, client: Client) -> None:
-        create_commune_et_procedure(code_insee="12345", type_collectivite="COM")
-        create_commune_et_procedure(code_insee="34567", type_collectivite="COM")
+        commune_a = create_commune()
+        commune_b = create_commune()
 
-        response = client.get("/api/perimetres", {"departement": "12"})
+        commune_a.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune_a
+        )
+        commune_b.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune_b
+        )
+
+        response = client.get(
+            "/api/perimetres", {"departement": commune_a.departement.code_insee}
+        )
         reader = DictReader(response.content.decode().splitlines())
         assert len(list(reader)) == 1
 
     @pytest.mark.django_db
     def test_retourne_tout_sans_filtre_departement(self, client: Client) -> None:
-        create_commune_et_procedure(code_insee="12345", type_collectivite="COM")
-        create_commune_et_procedure(code_insee="34567", type_collectivite="COM")
+        commune_a = create_commune()
+        commune_b = create_commune()
+
+        commune_a.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune_a
+        )
+        commune_b.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune_b
+        )
 
         response = client.get("/api/perimetres")
         reader = DictReader(response.content.decode().splitlines())
         assert len(list(reader)) == 2
 
     @pytest.mark.django_db
-    def test_ignore_event_apres(self, client: Client) -> None:
-        commune = create_commune_et_procedure()
-        commune.procedures.first().event_set.create(
-            type="Caractère exécutoire", date_evenement_string="2023-01-01"
+    @pytest.mark.parametrize(
+        ("avant", "opposable"),
+        [
+            ("", "True"),
+            ("2023-01-01", "False"),
+        ],
+    )
+    def test_ignore_event_apres(
+        self, client: Client, avant: str, opposable: str
+    ) -> None:
+        commune = create_commune()
+        procedure = commune.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
 
-        response = client.get("/api/perimetres", {"avant": "2023-01-01"})
+        procedure.event_set.create(
+            type="Délibération d'approbation", date_evenement_string="2023-01-01"
+        )
+
+        response = client.get("/api/perimetres", {"avant": avant})
         reader = DictReader(response.content.decode().splitlines())
-        assert [cp["opposable"] for cp in reader] == ["False"]
+        assert [cp["opposable"] for cp in reader] == [opposable]
+
+
+class TestAPIScots:
+    @pytest.mark.django_db
+    def test_format_csv(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        groupement = create_groupement()
+        scot_en_cours = groupement.procedure_set.create(doc_type=TypeDocument.SCOT)
+
+        with django_assert_num_queries(3):
+            response = client.get("/api/scots")
+
+        assert response.status_code == 200
+        assert response["content-type"] == "text/csv;charset=utf-8"
+
+        reader = DictReader(response.content.decode().splitlines())
+
+        assert list(reader) == [
+            {
+                "annee_cog": "2024",
+                # Collectivité
+                "scot_code_region": groupement.departement.region.code_insee,
+                "scot_libelle_region": "",
+                "scot_code_departement": groupement.departement.code_insee,
+                "scot_lib_departement": "",
+                "scot_codecollectivite": groupement.code_insee,
+                "scot_code_type_collectivite": groupement.type,
+                "scot_nom_collectivite": "",
+                # Approuvée
+                "pa_id": "",
+                "pa_nom_schema": "",
+                "pa_noserie_procedure": "",
+                "pa_scot_interdepartement": "",
+                "pa_date_publication_perimetre": "",
+                "pa_date_prescription": "",
+                "pa_date_arret_projet": "",
+                "pa_date_approbation": "",
+                "pa_annee_approbation": "",
+                "pa_date_fin_echeance": "",
+                "pa_nombre_communes": "",
+                # En cours
+                "pc_id": str(scot_en_cours.id),
+                "pc_nom_schema": "",
+                "pc_noserie_procedure": "",
+                "pc_proc_elaboration_revision": "",
+                "pc_scot_interdepartement": "False",
+                "pc_date_publication_perimetre": "",
+                "pc_date_prescription": "0000-00-00",
+                "pc_date_arret_projet": "",
+                "pc_nombre_communes": "0",
+            }
+        ]
+
+    @pytest.mark.django_db
+    def test_filtre_par_department(self, client: Client) -> None:
+        groupement_a = create_groupement()
+        groupement_b = create_groupement()
+
+        groupement_a.procedure_set.create(doc_type=TypeDocument.SCOT)
+        groupement_b.procedure_set.create(doc_type=TypeDocument.SCOT)
+
+        response = client.get(
+            "/api/scots", {"departement": groupement_a.departement.code_insee}
+        )
+        reader = DictReader(response.content.decode().splitlines())
+        assert len(list(reader)) == 1
+
+    @pytest.mark.django_db
+    def test_retourne_tout_sans_filtre_departement(self, client: Client) -> None:
+        groupement_a = create_groupement()
+        groupement_b = create_groupement()
+
+        groupement_a.procedure_set.create(doc_type=TypeDocument.SCOT)
+        groupement_b.procedure_set.create(doc_type=TypeDocument.SCOT)
+
+        response = client.get("/api/scots")
+        reader = DictReader(response.content.decode().splitlines())
+        assert len(list(reader)) == 2
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
-        "invalid_avant",
-        ["2023-1-01", "2023-02-30", "invalid-date", "2023/01/01"],
+        ("avant", "champ_procedure_id"),
+        [
+            ("", "pa_id"),
+            ("2023-01-01", "pc_id"),
+        ],
     )
-    def test_parsing_avant(self, client: Client, invalid_avant: str) -> None:
-        response = client.get("/api/perimetres", {"avant": invalid_avant})
+    def test_ignore_event_apres(
+        self, client: Client, avant: str, champ_procedure_id: str
+    ) -> None:
+        groupement = create_groupement()
+        commune = create_commune()
+        procedure = groupement.procedure_set.create(doc_type=TypeDocument.SCOT)
+        procedure.perimetre.add(commune)
 
-        assert response.status_code == 400
-        assert (
-            response.content.decode()
-            == "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
+        procedure.event_set.create(
+            type="Délibération d'approbation", date_evenement_string="2024-01-01"
         )
+
+        response = client.get("/api/scots", {"avant": avant})
+
+        reader = DictReader(response.content.decode().splitlines())
+        assert [collectivite[champ_procedure_id] for collectivite in reader] == [
+            str(procedure.id)
+        ]

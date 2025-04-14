@@ -15,6 +15,7 @@ urlpatterns = [
         name="collectivite-detail",
     ),
     path("api/perimetres", views.api_perimetres),
+    path("api/scots", views.api_scots),
     path("__reload__/", include("django_browser_reload.urls")),
     *debug_toolbar_urls(),
     re_path(r"(?P<path>.*)", ProxyView.as_view(upstream=settings.UPSTREAM_NUXT)),
