@@ -335,3 +335,136 @@ class TestPerimetres:
                 assert nuxt_row != django_row
             else:
                 assert nuxt_row == django_row
+
+
+class TestScots:
+    PLUSIEURS_EN_COURS = [  # noqa: RUF012
+        200035319,
+    ]
+
+    # Taille de périmètre fausse
+    COMMUNE_FUSIONNEE_EN_2024 = [  # noqa: RUF012
+        200041473,  # 86231
+        200048858,  # 16355
+        200052629,  # 49321
+        200060259,  # 19092_UNKWN
+        200061836,  # 25549 25282
+        200068070,  # 25134_UNKWN 25628_UNKWN
+        200086643,  # 45287_UNKWN
+        200088730,  # 08294
+        251802161,  # 18131
+        253514632,  # 35112
+    ]
+
+    # https://github.com/betagouv/docurba-nuxt3/pull/17/
+    FILTRE_SUDOCU_PRESCRIPTION_NON_IMPLEMENTE = [  # noqa: RUF012
+        200069532,  # Lisieux https://docurba.beta.gouv.fr/collectivite/14366/
+        200010700,
+        200079903,
+        200000099,
+    ]
+
+    NUXT_NE_REGARDE_PAS_EVENT_INVALIDE = [  # noqa: RUF012
+        240500462,
+    ]
+    DIFFERENCES = (
+        PLUSIEURS_EN_COURS
+        + COMMUNE_FUSIONNEE_EN_2024
+        + FILTRE_SUDOCU_PRESCRIPTION_NON_IMPLEMENTE
+        + NUXT_NE_REGARDE_PAS_EVENT_INVALIDE
+    )
+
+    def _retrieve_nuxt(self, original: str) -> pl.DataFrame:
+        cached_csv = (
+            Path("core/tests/nuxt_snapshots")
+            / hashlib.md5(original.encode(), usedforsecurity=False).hexdigest()
+        )
+        if not cached_csv.exists() or (
+            datetime.now(UTC) - datetime.fromtimestamp(cached_csv.stat().st_mtime, UTC)
+            > timedelta(seconds=1)  # hours=1)
+        ):
+            logging.warning("Refreshing CSV")
+            urlretrieve(Env().str("UPSTREAM_NUXT") + original, cached_csv)  # noqa: S310
+        return pl.read_csv(
+            cached_csv,
+            try_parse_dates=True,
+            schema_overrides={
+                "scot_code_departement": pl.String(),
+                "collectivite_code": pl.String(),
+            },
+        )
+
+    @pytest.mark.django_db
+    def test_all(
+        self,
+        client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        nuxt = self._retrieve_nuxt("/api/urba/exports/scots")
+
+        with django_assert_num_queries(4):
+            response = client.get("/api/scots")
+
+        django = pl.read_csv(
+            response.content,
+            try_parse_dates=True,
+            schema_overrides={
+                "scot_code_departement": pl.String(),
+                "collectivite_code": pl.String(),
+            },
+        )  # .sort("collectivite_code", "collectivite_type", "procedure_id")
+
+        differences = pl.col("scot_codecollectivite").is_in(self.DIFFERENCES).not_()
+        nuxt = nuxt.sort("scot_codecollectivite", "pa_id", "pc_id").filter(differences)
+        django = django.sort("scot_codecollectivite", "pa_id", "pc_id").filter(
+            differences
+        )
+
+        foo = 0
+        for nuxt_row, django_row in zip(
+            nuxt.iter_rows(named=True), django.iter_rows(named=True), strict=True
+        ):
+            colonnes_filtrees = (
+                "annee_cog",
+                "scot_code_region",
+                "scot_libelle_region",
+                "scot_code_departement",
+                "scot_lib_departement",
+                "scot_codecollectivite",
+                "scot_code_type_collectivite",
+                "scot_nom_collectivite",
+                "pa_id",
+                "pa_nom_schema",
+                "pa_noserie_procedure",
+                "pa_scot_interdepartement",
+                "pa_date_publication_perimetre",
+                # "pa_date_prescription",
+                "pa_date_arret_projet",
+                "pa_date_approbation",
+                "pa_date_fin_echeance",
+                # "pa_nombre_communes",
+                "pc_id",
+                "pc_nom_schema",
+                "pc_noserie_procedure",
+                "pc_proc_elaboration_revision",
+                "pc_scot_interdepartement",
+                "pc_date_publication_perimetre",
+                # "pc_date_prescription",
+                "pc_date_arret_projet",
+                # "pc_nombre_communes",
+            )
+
+            nuxt_row = {  # noqa: PLW2901
+                k: str(v or "").capitalize()
+                for k, v in nuxt_row.items()
+                if k in colonnes_filtrees
+            }
+            django_row = {  # noqa: PLW2901
+                k: str(v).capitalize()
+                for k, v in django_row.items()
+                if k.startswith(colonnes_filtrees)
+            }
+
+            assert nuxt_row == django_row, foo
+
+            foo += 1  # noqa: SIM113
