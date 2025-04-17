@@ -38,6 +38,7 @@ class TestAPIPerimetres:
 
         assert list(reader) == [
             {
+                "annee_cog": "2024",
                 "collectivite_code": "12345",
                 "collectivite_type": "COM",
                 "procedure_id": str(commune.procedures.first().id),

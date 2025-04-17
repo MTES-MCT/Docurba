@@ -35,6 +35,7 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
         response,
         dialect="unix",
         fieldnames=[
+            "annee_cog",
             "collectivite_code",
             "collectivite_type",
             "procedure_id",
@@ -45,6 +46,7 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
     csv_writer.writeheader()
     csv_writer.writerows(
         {
+            "annee_cog": "2024",
             "collectivite_code": commune.code_insee,
             "collectivite_type": commune.type,
             "procedure_id": procedure.id,
