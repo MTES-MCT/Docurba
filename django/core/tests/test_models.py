@@ -560,20 +560,14 @@ class TestCommuneOpposabilite:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         plan_opposable.event_set.create(
-            type="Délibération de prescription du conseil municipal ou communautaire",
-            date_evenement_string="2024-12-01",
+            type="Caractère exécutoire", date_evenement_string="2024-01-02"
         )
-        plan_opposable.event_set.create(type="Caractère exécutoire")
 
         schema_opposable = commune.procedures.create(
             doc_type=TypeDocument.SCOT, collectivite_porteuse=commune
         )
         schema_opposable.event_set.create(
-            type="Délibération de prescription du conseil municipal ou communautaire",
-            date_evenement_string="2023-12-01",
-        )
-        schema_opposable.event_set.create(
-            type="Caractère exécutoire",
+            type="Caractère exécutoire", date_evenement_string="2024-01-01"
         )
 
         with django_assert_num_queries(2):
