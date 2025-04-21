@@ -26,7 +26,9 @@ Retourne les procédures de chaque commune et leur opposabilité.
 
 La réponse est un CSV avec les colonnes suivantes :
 
+- `annee_cog` : Pour l'instant codé en dur avec la valeur `2024`
 - `collectivite_code` : Code INSEE de la commune associée
 - `collectivite_type` : Type de la commune associée
 - `procedure_id` : Identifiant de la procédure liée
+- `type_document` : Type de document d'urbanisme parmi `CC`, `POS`, `PLU`, `PLUi`, `PLUiH`, `PLUiHM`, `PLUiM`, `SCOT`, `SD`
 - `opposable` : `True` si la procédure est opposable, `False` sinon
