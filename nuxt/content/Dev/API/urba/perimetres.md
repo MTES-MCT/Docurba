@@ -5,7 +5,7 @@ order: 10
 visible: true
 ---
 
-https://docurba.beta.gouv.fr/exports/perimetres?departement=01
+https://docurba.beta.gouv.fr/api/perimetres?departement=01
 
 ### Description
 
