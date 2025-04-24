@@ -14,7 +14,7 @@ def create_commune_et_procedure(
     departement = region.departements.create(code_insee=code_insee[:2])
     commune = Commune.objects.create(
         id=f"{code_insee}_{type_collectivite}",
-        code_insee=code_insee,
+        code_insee_unique=code_insee,
         type=type_collectivite,
         departement=departement,
     )

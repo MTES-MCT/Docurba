@@ -20,10 +20,15 @@ def create_commune() -> Commune:
     departement = region.departements.create()
     return Commune.objects.create(
         id="12345_COM",
-        code_insee="12345",
+        code_insee_unique="12345",
         type="COM",
         departement=departement,
     )
+
+
+class TestCollectivite:
+    def test_code_insee(self) -> None:
+        assert Commune(id="12345_COM").code_insee == "12345"
 
 
 def test_tous_document_types_ont_event_impact() -> None:
@@ -196,7 +201,7 @@ class TestProcedureTypeDocument:
         procedure.perimetre.add(commune)
         procedure.perimetre.create(
             id="12346_COM",
-            code_insee="12346",
+            code_insee_unique="12346",
             type="COM",
             departement=commune.departement,
         )
@@ -228,7 +233,7 @@ class TestProcedureTypeDocument:
         procedure.perimetre.add(commune)
         procedure.perimetre.create(
             id="12346_COM",
-            code_insee="12346",
+            code_insee_unique="12346",
             type="COM",
             departement=commune.departement,
         )
@@ -260,7 +265,7 @@ class TestProcedureTypeDocument:
         procedure.perimetre.add(commune)
         procedure.perimetre.create(
             id="12346_COM",
-            code_insee="12346",
+            code_insee_unique="12346",
             type="COM",
             departement=commune.departement,
         )
@@ -300,7 +305,7 @@ class TestProcedureTypeDocument:
         procedure.perimetre.add(commune)
         procedure.perimetre.create(
             id="12346_COM",
-            code_insee="12346",
+            code_insee_unique="12346",
             type="COM",
             departement=commune.departement,
         )
