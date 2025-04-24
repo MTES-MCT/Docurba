@@ -210,7 +210,7 @@ class Procedure(models.Model):
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
     collectivite_porteuse = models.ForeignKey(
-        "Collectivite", models.DO_NOTHING, to_field="code_insee"
+        "Collectivite", models.DO_NOTHING, to_field="code_insee_unique"
     )
     created_at = models.DateTimeField(db_default=models.functions.Now())
     doublon_cache_de = models.OneToOneField(
@@ -317,7 +317,7 @@ class Departement(models.Model):
 
 class Collectivite(models.Model):
     id = models.CharField(primary_key=True)  # Au format code_type
-    code_insee = models.CharField(  # noqa: DJ001
+    code_insee_unique = models.CharField(  # noqa: DJ001
         unique=True,
         null=True,
         db_comment="Peut-être vide pour une COMD ayant le même code que sa commune parente",
@@ -335,6 +335,10 @@ class Collectivite(models.Model):
 
     def __str__(self) -> str:
         return self.nom
+
+    @property
+    def code_insee(self) -> str:
+        return self.id.split("_")[0]
 
 
 class CommuneQuerySet(models.QuerySet):
