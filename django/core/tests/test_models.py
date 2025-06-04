@@ -57,7 +57,7 @@ class TestProcedure:
             collectivite_porteuse=commune,
         )
         procedure.event_set.create(
-            type="Caractère exécutoire",
+            type="Délibération d'approbation du conseil municipal ou communautaire",
             date_evenement_string="2022-12-01",
         )
         procedure.event_set.create(
@@ -92,7 +92,7 @@ class TestProcedure:
             date_evenement_string="2023-12-01",
         )
         procedure.event_set.create(
-            type="Caractère exécutoire",
+            type="Délibération d'approbation du conseil municipal ou communautaire",
             date_evenement_string="2024-12-01",
         )
         procedure.event_set.create(
@@ -119,7 +119,7 @@ class TestProcedure:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure.event_set.create(
-            type="Caractère exécutoire",
+            type="Délibération d'approbation",
             date_evenement_string="2024-12-01",
             is_valid=False,
         )
@@ -152,7 +152,7 @@ class TestProcedure:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure.event_set.create(
-            type="Caractère exécutoire",
+            type="Délibération d'approbation du conseil municipal ou communautaire",
             date_evenement_string="2022-12-01",
         )
         procedure.event_set.create(
@@ -343,7 +343,7 @@ class TestProcedureStatut:
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
-        event = procedure.event_set.create(type="Caractère exécutoire")
+        event = procedure.event_set.create(type="Délibération d'approbation")
 
         assert event.impact == EventImpact.APPROUVE
         with django_assert_num_queries(1):
@@ -376,7 +376,7 @@ class TestProcedureStatut:
             date_evenement_string="2024-12-03",
         )
         event_approbation = procedure.event_set.create(
-            type="Caractère exécutoire", date_evenement_string="2024-12-05"
+            type="Délibération d'approbation", date_evenement_string="2024-12-05"
         )
 
         assert event_prescription.impact == EventImpact.EN_COURS
@@ -427,7 +427,9 @@ class TestProcedureStatut:
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
-        event = procedure.event_set.create(type="Caractère exécutoire", is_valid=False)
+        event = procedure.event_set.create(
+            type="Délibération d'approbation", is_valid=False
+        )
 
         assert event.impact is None
         with django_assert_num_queries(1):
@@ -464,7 +466,7 @@ class TestProcedureStatut:
             doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
         )
-        procedure_secondaire.event_set.create(type="Caractère exécutoire")
+        procedure_secondaire.event_set.create(type="Délibération d'approbation")
 
         with django_assert_num_queries(1):
             procedure_with_events = Procedure.objects.with_events().get(
@@ -551,14 +553,14 @@ class TestCommuneOpposabilite:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_opposable.event_set.create(
-            type="Caractère exécutoire", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement_string="2024-12-01"
         )
 
         procedure_precedente = commune.procedures.create(
             doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
         procedure_precedente.event_set.create(
-            type="Caractère exécutoire", date_evenement_string="2023-12-01"
+            type="Délibération d'approbation", date_evenement_string="2023-12-01"
         )
 
         with django_assert_num_queries(2):
@@ -584,14 +586,14 @@ class TestCommuneOpposabilite:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         plan_opposable.event_set.create(
-            type="Caractère exécutoire", date_evenement_string="2024-01-02"
+            type="Délibération d'approbation", date_evenement_string="2024-01-02"
         )
 
         schema_opposable = commune.procedures.create(
             doc_type=TypeDocument.SCOT, collectivite_porteuse=commune
         )
         schema_opposable.event_set.create(
-            type="Caractère exécutoire", date_evenement_string="2024-01-01"
+            type="Délibération d'approbation", date_evenement_string="2024-01-01"
         )
 
         with django_assert_num_queries(2):
@@ -616,7 +618,7 @@ class TestCommuneOpposabilite:
         procedure_opposable = commune.procedures.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
-        procedure_opposable.event_set.create(type="Caractère exécutoire")
+        procedure_opposable.event_set.create(type="Délibération d'approbation")
 
         with django_assert_num_queries(2):
             commune = Commune.objects.with_procedures_principales().get()
@@ -661,7 +663,7 @@ class TestCommuneOpposabilite:
             type="Abrogation",
             collectivite_porteuse=commune,
         )
-        procedure_approuvee.event_set.create(type="Caractère exécutoire")
+        procedure_approuvee.event_set.create(type="Délibération d'approbation")
 
         with django_assert_num_queries(2):
             commune = Commune.objects.with_procedures_principales().get()
@@ -686,7 +688,7 @@ class TestCommuneOpposabilite:
             doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
         )
-        procedure_secondaire.event_set.create(type="Caractère exécutoire")
+        procedure_secondaire.event_set.create(type="Délibération d'approbation")
 
         with django_assert_num_queries(2):
             commune = Commune.objects.with_procedures_principales().get()
@@ -708,12 +710,12 @@ class TestCommuneOpposabilite:
         procedure_supprimee = commune.procedures.create(
             soft_delete=True, collectivite_porteuse=commune
         )
-        procedure_supprimee.event_set.create(type="Caractère exécutoire")
+        procedure_supprimee.event_set.create(type="Délibération d'approbation")
 
         procedure_doublon = commune.procedures.create(
             doublon_cache_de=procedure_reelle, collectivite_porteuse=commune
         )
-        procedure_doublon.event_set.create(type="Caractère exécutoire")
+        procedure_doublon.event_set.create(type="Délibération d'approbation")
 
         with django_assert_num_queries(2):
             commune = Commune.objects.with_procedures_principales().get()
@@ -736,14 +738,14 @@ class TestCommuneOpposabilite:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_opposable_fevrier.event_set.create(
-            type="Caractère exécutoire", date_evenement_string="2024-02-01"
+            type="Délibération d'approbation", date_evenement_string="2024-02-01"
         )
 
         procedure_opposable_janvier = commune.procedures.create(
             doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
         procedure_opposable_janvier.event_set.create(
-            type="Caractère exécutoire", date_evenement_string="2024-01-01"
+            type="Délibération d'approbation", date_evenement_string="2024-01-01"
         )
 
         with django_assert_num_queries(1):
