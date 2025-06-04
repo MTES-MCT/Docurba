@@ -111,6 +111,25 @@ class TestProcedure:
             assert procedure_with_events.date_approbation == "2024-12-01"
 
     @pytest.mark.django_db
+    def test_date_approbation_ignore_event_approbation_pas_valid(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure.event_set.create(
+            type="Caractère exécutoire",
+            date_evenement_string="2024-12-01",
+            is_valid=False,
+        )
+
+        with django_assert_num_queries(1):
+            procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
+
+            assert procedure_with_events.date_approbation == "0000-00-00"
+
+    @pytest.mark.django_db
     def test_date_approbation_quand_event_approbation_manquant(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
