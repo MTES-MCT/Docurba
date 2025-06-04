@@ -365,7 +365,7 @@ async function sudocuhScotToDocurba (configSource, configTraget) {
           from_sudocuh_procedure_id: event.noserieprocedure,
           type: event.libtypeevenement,
           code: event.codetypeevenement,
-          is_valid: event.codestatutevenement === 'V',
+          is_valid: event.codestatutevenement === 'V' || event.codestatutevenement === 'AP',
           date_iso: event.dateevenement,
           description: event.commentaire,
           attachements: parseAttachment(event.nomdocument),
