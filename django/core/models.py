@@ -125,7 +125,7 @@ EVENT_IMPACT_BY_DOC_TYPE |= dict.fromkeys(
 
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self, *, avant: date | None = None) -> Self:
-        events = Event.objects.all()
+        events = Event.objects.filter(is_valid=True)
         if avant:
             events = events.filter(date_evenement_string__lt=str(avant))
 
@@ -142,7 +142,6 @@ class ProcedureQuerySet(models.QuerySet):
                 then=models.Subquery(
                     events.filter(
                         procedure=models.OuterRef("pk"),
-                        is_valid=True,
                         type__in=event_impact_by_event_type.keys(),
                     ).values("type")[:1]
                 ),
