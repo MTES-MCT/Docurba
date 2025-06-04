@@ -62,7 +62,6 @@ EVENT_IMPACT_BY_DOC_TYPE = {
     TypeDocument.CC: {
         "Délibération de prescription du conseil municipal": EventImpact.EN_COURS,
         "Approbation du préfet": EventImpact.APPROUVE,
-        "Caractère exécutoire": EventImpact.APPROUVE,
         "Retrait de l'annulation totale": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Retrait de la délibération de prescription": EventImpact.ABANDON,
@@ -74,7 +73,6 @@ EVENT_IMPACT_BY_DOC_TYPE = {
         "Délibération de l'établissement public qui prescrit": EventImpact.EN_COURS,
         "Retrait de la délibération d'approbation": EventImpact.EN_COURS,
         "Délibération d'approbation": EventImpact.APPROUVE,
-        "Caractère exécutoire": EventImpact.APPROUVE,
         "Retrait de l'annulation totale": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Retrait de la délibération de prescription": EventImpact.ABANDON,
@@ -85,7 +83,6 @@ EVENT_IMPACT_BY_DOC_TYPE = {
     TypeDocument.SD: {
         "Délibération de l'établissement public qui prescrit": EventImpact.EN_COURS,
         "Délibération d'approbation": EventImpact.APPROUVE,
-        "Caractère exécutoire": EventImpact.APPROUVE,
         "Abandon": EventImpact.ABANDON,
         "Annulation TA totale": EventImpact.ANNULE,
         "Annulation TA": EventImpact.ANNULE,
@@ -93,7 +90,6 @@ EVENT_IMPACT_BY_DOC_TYPE = {
     },
     TypeDocument.PLU: {
         "Délibération de prescription du conseil municipal ou communautaire": EventImpact.EN_COURS,
-        "Caractère exécutoire": EventImpact.APPROUVE,
         "Retrait de l'annulation totale": EventImpact.APPROUVE,
         "Délibération d'approbation du municipal ou communautaire": EventImpact.APPROUVE,
         "Délibération d'approbation du conseil municipal ou communautaire": EventImpact.APPROUVE,
@@ -108,7 +104,6 @@ EVENT_IMPACT_BY_DOC_TYPE = {
     },
     TypeDocument.POS: {
         "Délibération de prescription du conseil municipal ou communautaire": EventImpact.EN_COURS,
-        "Caractère exécutoire": EventImpact.APPROUVE,
         "Délibération d'approbation du municipal ou communautaire": EventImpact.APPROUVE,
         "Délibération d'approbation du conseil municipal ou communautaire": EventImpact.APPROUVE,
         "Délibération d'approbation": EventImpact.APPROUVE,
