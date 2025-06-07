@@ -204,7 +204,11 @@ class Procedure(models.Model):
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
     collectivite_porteuse = models.ForeignKey(
-        "Collectivite", models.DO_NOTHING, to_field="code_insee_unique"
+        "Collectivite",
+        models.DO_NOTHING,
+        db_constraint=False,
+        null=True,
+        to_field="code_insee_unique",
     )
     created_at = models.DateTimeField(db_default=models.functions.Now())
     doublon_cache_de = models.OneToOneField(
@@ -406,7 +410,7 @@ class Commune(Collectivite):
 
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
-    commune = models.ForeignKey(Commune, models.DO_NOTHING)
+    commune = models.ForeignKey(Commune, models.DO_NOTHING, db_constraint=False)
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
 
     class Meta:
