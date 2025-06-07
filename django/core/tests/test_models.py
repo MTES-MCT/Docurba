@@ -48,6 +48,21 @@ class TestProcedure:
         assert Procedure(doc_type=TypeDocument.SD).is_schema
 
     @pytest.mark.django_db
+    def test_liable_a_collectivite_porteuse_inexistante(self) -> None:
+        """Tant que l'on ne gère pas bien les communes des anciens COG."""
+        Procedure.objects.create(collectivite_porteuse_id=12)
+
+        assert Procedure.objects.count() == 1
+
+    @pytest.mark.django_db
+    def test_liable_a_commune_inexistante(self) -> None:
+        """Tant que l'on ne gère pas bien les communes des anciens COG."""
+        procedure = Procedure.objects.create()
+        procedure.perimetre.through.objects.create(commune_id=12, procedure=procedure)
+
+        assert procedure.perimetre.through.objects.count() == 1
+
+    @pytest.mark.django_db
     def test_date_approbation_retourne_plus_recent_event_approbation(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
