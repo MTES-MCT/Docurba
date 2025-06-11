@@ -1,64 +1,74 @@
 ---
-apiPath: "/api/urba/exports/scots"
+apiPath: "/api/scots"
 files: []
 order: 10
 visible: true
 ---
-https://nuxt3.docurba.incubateur.net/api/urba/exports/scots
+
+https://docurba.beta.gouv.fr/api/scots?departement=01
 
 ### Description
-Cet endpoint retourne les données des procédures SCOTS par combinaison SCOT en cours/SCOT opposable. 
 
-⚠️ **Note importante :**  
-Une collectivité porteuse peut avoir plusieurs procédures opposables, et donc la même procédure en cours peut apparaître plusieurs fois.
+Cet endpoint retourne les collectivités porteuses de procédures SCoTs par combinaison SCoT opposable/SCoT en cours.
+
+⚠️ **Note importante :**
+Lorsqu'une collectivité porte plusieurs SCoT opposables, il y a une ligne par SCoT opposable et chacune de ces lignes répète la procédure en cours.
 
 Ici la préposition `scot_` fait en faire référence à la collectivité porteuse des procédures de type SCOT de l'export.
 
----
-
-### Format de la requête
+### Requête
 
 #### Endpoint
-`/api/urba/exports/scots`
 
-#### Paramètres de requête
-Aucun paramètre de requête disponible, car les fichiers générés sont plus petits.
+`/api/scots`
 
----
+#### Paramètres de requête disponibles
 
-### Format de la réponse
+- `departement` : Filtrer par le code INSEE du département.
+- `avant` : Ne prend en compte que les événements avant ce jour, au format `YYYY-MM-DD`.
 
-La réponse est un objet JSON contenant les informations suivantes :
+### Réponse
 
-```json
-{
-  "annee_cog": "Année de référence pour le COG (Code Officiel Géographique)", // Number
-  "scot_code_region": "Code de la région", // String
-  "scot_libelle_region": "Nom de la région", // String
-  "scot_code_departement": "Code du département", // String
-  "scot_lib_departement": "Nom du département", // String
-  "scot_codecollectivite": "SIREN de la collectivité porteuse", // String
-  "scot_code_type_collectivite": "Type de collectivité", // String
-  "scot_nom_collectivite": "Nom de la collectivité porteuse", // String
-  "pa_nom_schema": "Nom du document opposable", // String
-  "pa_id": "Identifiant du document opposable", // String
-  "pa_noserie_procedure": "Numéro de série de la procédure opposable (Sudocuh)", // String
-  "pa_scot_interdepartement": "Indique si le SCOT est interdépartemental", // Boolean
-  "pa_date_publication_perimetre": "Date de publication du périmètre de la procédure opposable (ISO)", // String
-  "pa_date_prescription": "Date de prescription de la procédure opposable (ISO)", // String
-  "pa_date_arret_projet": "Date d'arrêt de projet de la procédure opposable (ISO)", // String
-  "pa_date_approbation": "Date d'approbation de la procédure opposable (ISO)", // String
-  "pa_annee_approbation": "Année d'approbation de la procédure opposable", // Number
-  "pa_date_approbation_precedent": "Date d'approbation de la procédure opposable précédente (ISO)", // String
-  "pa_date_fin_echeance": "Date de fin d'échéance de la procédure opposable (ISO)", // String
-  "pa_nombre_communes": "Nombre de communes dans le périmètre de la procédure opposable", // Number
-  "pc_nom_schema": "Nom du document en cours", // String
-  "pc_id": "Identifiant du document en cours", // String
-  "pc_noserie_procedure": "Numéro de série de la procédure en cours (Sudocuh)", // String
-  "pc_proc_elaboration_revision": "Type de procédure en cours (élaboration, révision, etc.)", // String
-  "pc_scot_interdepartement": "Indique si le SCOT en cours est interdépartemental", // Boolean
-  "pc_date_publication_perimetre": "Date de publication du périmètre de la procédure en cours (ISO)", // String
-  "pc_date_prescription": "Date de prescription de la procédure en cours (ISO)", // String
-  "pc_date_arret_projet": "Date d'arrêt de projet de la procédure en cours (ISO)", // String
-  "pc_nombre_communes": "Nombre de communes dans le périmètre de la procédure en cours", // Number
-}
+La réponse est un CSV avec les colonnes suivantes :
+
+Pour la collectivité :
+
+- `annee_cog` : Pour l'instant codé en dur avec la valeur `2024`
+- `scot_code_region` : Code INSEE de la région
+- `scot_libelle_region` : Nom de la région
+- `scot_code_departement` : Code INSEE du département
+- `scot_lib_departement` : Nom du département
+- `scot_codecollectivite` : SIREN de la collectivité porteuse
+- `scot_code_type_collectivite` : Type de collectivité
+- `scot_nom_collectivite` : Nom de la collectivité porteuse
+
+<br>
+Pour le SCoT opposable :
+
+- `pa_nom_schema` : Nom du document
+- `pa_id` : Identifiant Docurba
+- `pa_noserie_procedure` : Identifiant Sudocuh, optionnel
+- `pa_scot_interdepartement` : Indique si le SCoT est interdépartemental
+- `pa_date_publication_perimetre` : Date de publication du périmètre
+- `pa_date_prescription` : Date de prescription
+- `pa_date_arret_projet` : Date d'arrêt de projet
+- `pa_date_approbation` : Date d'approbation
+- `pa_annee_approbation` : Année d'approbation
+- `pa_date_fin_echeance` : Date de fin d'échéance
+- `pa_nombre_communes` : Nombre de communes dans le périmètre de la procédure
+
+<br>
+Pour le SCoT en cours :
+
+- `pc_nom_schema` : Nom du document
+- `pc_id` : Identifiant Docurba
+- `pc_noserie_procedure` : Identifiant Sudocuh, optionnel
+- `pc_proc_elaboration_revision` : Type de procédure en cours (élaboration, révision, etc.)
+- `pc_scot_interdepartement` : Indique si le SCoT est interdépartemental
+- `pc_date_publication_perimetre` : Date de publication du périmètre
+- `pc_date_prescription` : Date de prescription
+- `pc_date_arret_projet` : Date d'arrêt de projet
+- `pc_nombre_communes` : Nombre de communes dans le périmètre de la procédure
+
+<br>
+Toutes les dates sont au format ISO 8601.
