@@ -6,7 +6,7 @@ export default ({ route }, inject) => {
   const sourceMap = {
     // eslint-disable-next-line quote-props
     '84': {
-      baseUrl: 'https://bdterr.datara.gouv.fr/base_territoriale',
+      baseUrl: 'https://bdterr.open-datara.fr/base_territoriale',
       data: {
         limit: -1,
         list: false,
