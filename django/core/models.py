@@ -82,6 +82,7 @@ EVENT_IMPACT_BY_DOC_TYPE = {
         "Abrogation effective": EventImpact.ANNULE,
     },
     TypeDocument.SCOT: {
+        "Délibération de l'Etablissement Public": EventImpact.EN_COURS,
         "Délibération de l'établissement public qui prescrit": EventImpact.EN_COURS,
         "Retrait de la délibération d'approbation": EventImpact.EN_COURS,
         "Délibération d'approbation": EventImpact.APPROUVE,
