@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex" :style="{ gap: '0.5rem' }">
+  <div class="d-flex flex-wrap" :style="{ gap: '0.5rem' }">
     <v-chip
       v-for="file in files"
       :key="file.id"
