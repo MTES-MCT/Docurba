@@ -120,6 +120,114 @@ class TestAPIPerimetres:
         assert [cp["opposable"] for cp in reader] == [opposable]
 
 
+class TestAPICommunes:
+    @pytest.mark.django_db
+    def test_format_csv(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+        plan_en_cours = commune.procedures.create(doc_type=TypeDocument.PLU)
+        plan_opposable = commune.procedures.create(doc_type=TypeDocument.PLU)
+        plan_opposable.event_set.create(
+            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+        )
+
+        with django_assert_num_queries(5):
+            response = client.get("/api/communes")
+
+        assert response.status_code == 200
+        assert response["content-type"] == "text/csv;charset=utf-8"
+
+        reader = DictReader(response.content.decode().splitlines())
+
+        communes = list(reader)
+        assert len(communes) == 1
+        assert communes[0]["pc_docurba_id"] == str(plan_en_cours.id)
+        assert communes[0]["pa_docurba_id"] == str(plan_opposable.id)
+
+    @pytest.mark.django_db
+    def test_commune_sans_intercommunalite_ne_crashe_pas(self, client: Client) -> None:
+        """
+        4 îles n'ont pas d'intercommunalité.
+
+        https://fr.wikipedia.org/wiki/Catégorie:Commune_hors_intercommunalité_à_fiscalité_propre_en_France
+        """
+        create_commune(intercommunalite=None)
+
+        response = client.get("/api/communes")
+
+        assert response.status_code == 200
+
+        reader = DictReader(response.content.decode().splitlines())
+
+        assert len(list(reader)) == 1
+
+    @pytest.mark.django_db
+    def test_filtre_par_department(self, client: Client) -> None:
+        commune_a = create_commune()
+        commune_b = create_commune()
+
+        commune_a.procedures.create(doc_type=TypeDocument.PLU)
+        commune_b.procedures.create(doc_type=TypeDocument.PLU)
+
+        response = client.get(
+            "/api/communes", {"departement": commune_a.departement.code_insee}
+        )
+        reader = DictReader(response.content.decode().splitlines())
+        assert len(list(reader)) == 1
+
+    @pytest.mark.django_db
+    def test_retourne_tout_sans_filtre_departement(self, client: Client) -> None:
+        commune_a = create_commune()
+        commune_b = create_commune()
+
+        commune_a.procedures.create(doc_type=TypeDocument.PLU)
+        commune_b.procedures.create(doc_type=TypeDocument.PLU)
+
+        response = client.get("/api/communes")
+        reader = DictReader(response.content.decode().splitlines())
+        assert len(list(reader)) == 2
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("avant", "champ_procedure_id"),
+        [
+            ("", "pa_docurba_id"),
+            ("2023-01-01", "pc_docurba_id"),
+        ],
+    )
+    def test_ignore_event_apres(
+        self, client: Client, avant: str, champ_procedure_id: str
+    ) -> None:
+        commune = create_commune()
+        procedure = commune.procedures.create(doc_type=TypeDocument.PLU)
+
+        procedure.event_set.create(
+            type="Délibération d'approbation", date_evenement_string="2024-01-01"
+        )
+
+        response = client.get("/api/communes", {"avant": avant})
+
+        reader = DictReader(response.content.decode().splitlines())
+        assert [collectivite[champ_procedure_id] for collectivite in reader] == [
+            str(procedure.id)
+        ]
+
+    @pytest.mark.django_db
+    def test_nb_queries(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        for _ in range(2):
+            commune = create_commune()
+            _ = commune.procedures.create(doc_type=TypeDocument.PLU)
+
+            with django_assert_num_queries(5):
+                response = client.get("/api/communes")
+
+        reader = DictReader(response.content.decode().splitlines())
+        assert [cp["pc_type_document"] for cp in reader] == ["PLU", "PLU"]
+
+
 class TestAPIScots:
     @pytest.mark.django_db
     def test_format_csv(

@@ -66,10 +66,10 @@ class EventCategory(StrEnum):
 
 
 EVENT_CATEGORY_PRIORISES = (
+    EventCategory.ABANDON,
     EventCategory.APPROUVE,
     EventCategory.PRESCRIPTION,
     EventCategory.ANNULE,
-    EventCategory.ABANDON,
     EventCategory.CADUC,
 )
 
@@ -86,6 +86,13 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Annulation TA totale": EventCategory.ANNULE,
         "Annulation TA": EventCategory.ANNULE,
         "Abrogation effective": EventCategory.ANNULE,
+        "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
+        "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,
+        "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
+        "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
+        "Fin d'échéance": EventCategory.FIN_ECHEANCE,
     },
     TypeDocument.SCOT: {
         "Prescription": EventCategory.PRESCRIPTION,
@@ -130,6 +137,13 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Abrogation": EventCategory.ANNULE,
         "Arrêté d'abrogation": EventCategory.ANNULE,
         "Caducité": EventCategory.CADUC,
+        "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
+        "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,
+        "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
+        "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
+        "Fin d'échéance": EventCategory.FIN_ECHEANCE,
     },
     TypeDocument.POS: {
         "Prescription": EventCategory.PRESCRIPTION,
@@ -141,6 +155,13 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Annulation TA": EventCategory.ANNULE,
         "Annulation TA totale": EventCategory.ANNULE,
         "Caducité": EventCategory.ANNULE,
+        "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
+        "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,
+        "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
+        "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
+        "Fin d'échéance": EventCategory.FIN_ECHEANCE,
     },
 }
 EVENT_CATEGORY_BY_DOC_TYPE |= dict.fromkeys(
@@ -185,10 +206,15 @@ class ProcedureManager(models.Manager):
 class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001
+    vaut_SCoT = models.BooleanField(db_column="is_scot", blank=True, null=True)  # noqa: N815
     # Programme Local de l'Habitat
     vaut_PLH = models.BooleanField(db_column="is_pluih", blank=True, null=True)  # noqa: N815
     # Plan De Mobilité (anciennement Plan de Déplacements Urbains)
     vaut_PDM = models.BooleanField(db_column="is_pdu", blank=True, null=True)  # noqa: N815
+    obligation_PDU = models.BooleanField(  # noqa: N815
+        db_column="mandatory_pdu", blank=True, null=True
+    )
+    maitrise_d_oeuvre = models.JSONField(db_column="moe", null=True)
 
     from_sudocuh = models.IntegerField(unique=True, blank=True, null=True)
 
@@ -232,6 +258,13 @@ class Procedure(models.Model):
             self.name
             or f"🤖 {self.type} {self.numero or ''} {self.type_document} {self.collectivite_porteuse}"
         )
+
+    def __lt__(self, other: Self) -> bool:
+        if self.date_approbation and other.date_approbation:
+            return self.date_approbation < other.date_approbation
+        if self.date_prescription and other.date_prescription:
+            return self.date_prescription < other.date_prescription
+        return self.created_at < other.created_at
 
     def get_absolute_url(self) -> str:
         return f"/frise/{self.pk}"
@@ -294,6 +327,18 @@ class Procedure(models.Model):
         return self._date(EventCategory.FIN_ECHEANCE)
 
     @property
+    def date_porter_a_connaissance(self) -> date | None:
+        return self._date(EventCategory.PORTER_A_CONNAISSANCE)
+
+    @property
+    def date_porter_a_connaissance_complementaire(self) -> date | None:
+        return self._date(EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE)
+
+    @property
+    def date_caractere_executoire(self) -> date | None:
+        return self._date(EventCategory.CARACTERE_EXECUTOIRE)
+
+    @property
     def is_schema(self) -> bool:
         return self.doc_type in (TypeDocument.SCOT, TypeDocument.SD)
 
@@ -317,6 +362,15 @@ class Procedure(models.Model):
     @cached_property
     def is_interdepartemental(self) -> bool:
         return len({commune.departement for commune in self.communes}) > 1
+
+    @property
+    def delai_d_approbation(self) -> int | None:
+        try:
+            delai = self.date_approbation - self.date_prescription
+        except TypeError:
+            return None
+        else:
+            return delai.days
 
 
 class Event(models.Model):
@@ -476,6 +530,18 @@ class CommuneQuerySet(models.QuerySet):
             )
         )
 
+    def csv_prefetch(self) -> Self:
+        return self.select_related(
+            "departement__region", "intercommunalite__departement__region"
+        ).prefetch_related(
+            "deleguee",
+            models.Prefetch(
+                "procedures_principales__perimetre",
+                Commune.objects.all(),
+                to_attr="perimetre_prefetched",
+            ),
+        )
+
     def with_scots(self, avant: date | None = None) -> Self:
         return self.prefetch_related(
             models.Prefetch(
@@ -521,7 +587,21 @@ class Commune(Collectivite):
                 if procedure.type != "Abrogation"
                 and procedure.statut == EventCategory.APPROUVE
             ),
-            key=attrgetter("date_approbation"),
+            reverse=True,
+        )
+
+    @cached_property
+    def procedures_principales_en_cours(self) -> list[Procedure]:
+        return sorted(
+            (
+                procedure
+                for procedure in self.procedures_principales
+                if procedure.type != "Abrogation"
+                and (
+                    procedure.statut == EventCategory.PRESCRIPTION
+                    or not procedure.statut
+                )
+            ),
             reverse=True,
         )
 
@@ -531,6 +611,17 @@ class Commune(Collectivite):
             (
                 procedure
                 for procedure in self.procedures_principales_approuvees
+                if not procedure.is_schema
+            ),
+            None,
+        )
+
+    @cached_property
+    def plan_en_cours(self) -> Procedure | None:
+        return next(
+            (
+                procedure
+                for procedure in self.procedures_principales_en_cours
                 if not procedure.is_schema
             ),
             None,
@@ -549,6 +640,10 @@ class Commune(Collectivite):
 
     def is_opposable(self, procedure: Procedure) -> bool:
         return procedure in (self.plan_opposable, self.schema_opposable)
+
+    @property
+    def is_nouvelle(self) -> bool:
+        return self.deleguee.count() > 0
 
 
 class CommuneProcedure(models.Model):  # noqa: DJ008

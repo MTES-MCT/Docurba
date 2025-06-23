@@ -60,12 +60,20 @@ def create_commune(
     code_insee: str = Auto,
     commune_type: TypeCollectivite = Auto,
     departement: Departement = Auto,
+    intercommunalite: Collectivite | None = Auto,
+    nouvelle: Commune = Auto,
 ) -> Commune:
     code_insee = code_insee or next(GROUPEMENT_CODE_INSEE_SEQUENCE)
     commune_type = commune_type or TypeCollectivite.COM
+    intercommunalite = (
+        create_groupement() if intercommunalite is Auto else intercommunalite
+    )
+
     return Commune.objects.create(
         id=f"{code_insee}_{commune_type}",
         code_insee_unique=code_insee,
         type=commune_type,
         departement=departement or create_departement(),
+        intercommunalite=intercommunalite,
+        nouvelle=nouvelle or None,
     )

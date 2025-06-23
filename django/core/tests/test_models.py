@@ -598,6 +598,156 @@ class TestProcedureTypeDocument:
             assert procedure.type_document == TypeDocument.PLUIHM
 
 
+class TestProcedureDelaiApprobation:
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("date_approbation", "date_prescription"),
+        [
+            (None, None),
+            ("2024-12-01", None),
+            (None, "2024-01-01"),
+        ],
+    )
+    def test_none_si_au_moins_une_date_absente(
+        self, date_approbation: str, date_prescription: str
+    ) -> None:
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        if date_approbation:
+            procedure.event_set.create(
+                type="Délibération d'approbation",
+                date_evenement_string=date_approbation,
+            )
+        if date_prescription:
+            procedure.event_set.create(
+                type="Prescription", date_evenement_string=date_prescription
+            )
+
+        procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
+        assert procedure_with_events.delai_d_approbation is None
+
+    @pytest.mark.django_db
+    def test_delai_d_approbation_calcule(self) -> None:
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure.event_set.create(
+            type="Prescription", date_evenement_string="2024-01-01"
+        )
+        procedure.event_set.create(
+            type="Délibération d'approbation", date_evenement_string="2024-02-01"
+        )
+
+        procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
+        assert procedure_with_events.delai_d_approbation == 31
+
+
+class TestProcedureSort:
+    @pytest.mark.django_db
+    def test_approuvee_plus_recemment(self) -> None:
+        commune = create_commune()
+        procedure_recente = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure_recente.event_set.create(
+            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+        )
+
+        procedure_vieille = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure_vieille.event_set.create(
+            type="Délibération d'approbation", date_evenement_string="2023-12-01"
+        )
+
+        procedure_recent_with_events = Procedure.objects.with_events().get(
+            id=procedure_recente.id
+        )
+        procedure_vieille_with_events = Procedure.objects.with_events().get(
+            id=procedure_vieille.id
+        )
+        assert procedure_vieille_with_events < procedure_recent_with_events
+
+    @pytest.mark.django_db
+    def test_prescrite_plus_recemment(self) -> None:
+        commune = create_commune()
+        procedure_recente = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure_recente.event_set.create(
+            type="Prescription", date_evenement_string="2024-12-01"
+        )
+
+        procedure_vieille = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure_vieille.event_set.create(
+            type="Prescription", date_evenement_string="2023-12-01"
+        )
+
+        procedure_recent_with_events = Procedure.objects.with_events().get(
+            id=procedure_recente.id
+        )
+        procedure_vieille_with_events = Procedure.objects.with_events().get(
+            id=procedure_vieille.id
+        )
+        assert procedure_vieille_with_events < procedure_recent_with_events
+
+    @pytest.mark.django_db
+    def test_date_approbation_priorite_quand_date_entremelees(self) -> None:
+        commune = create_commune()
+        procedure_recente = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure_recente.event_set.create(
+            type="Prescription", date_evenement_string="1999-12-01"
+        )
+        procedure_recente.event_set.create(
+            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+        )
+
+        procedure_vieille = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure_vieille.event_set.create(
+            type="Prescription", date_evenement_string="2023-12-01"
+        )
+        procedure_vieille.event_set.create(
+            type="Délibération d'approbation", date_evenement_string="2023-12-02"
+        )
+
+        procedure_recent_with_events = Procedure.objects.with_events().get(
+            id=procedure_recente.id
+        )
+        procedure_vieille_with_events = Procedure.objects.with_events().get(
+            id=procedure_vieille.id
+        )
+        assert procedure_vieille_with_events < procedure_recent_with_events
+
+    @pytest.mark.django_db
+    def test_sans_prescription_utilise_date_creation(self) -> None:
+        commune = create_commune()
+        procedure_vieille = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure_recente = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+
+        procedure_recent_with_events = Procedure.objects.with_events().get(
+            id=procedure_recente.id
+        )
+        procedure_vieille_with_events = Procedure.objects.with_events().get(
+            id=procedure_vieille.id
+        )
+
+        assert procedure_vieille_with_events < procedure_recent_with_events
+        assert not procedure_vieille_with_events > procedure_recent_with_events
+
+
 class TestProcedureStatut:
     @pytest.mark.django_db
     def test_principale_opposable(
@@ -783,32 +933,32 @@ class TestProcedureStatut:
             assert procedure_with_events.statut == EventCategory.APPROUVE
 
     @pytest.mark.django_db
-    def test_prescrite_quand_prescription_et_abandon_meme_jour(
+    def test_abandon_quand_prescription_et_abandon_meme_jour(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = create_commune()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
-        abandon_insere_avant = procedure.event_set.create(
-            type="Abandon", date_evenement_string="2023-04-26"
-        )
-        prescription = procedure.event_set.create(
+        prescription_insere_avant = procedure.event_set.create(
             type="Prescription", date_evenement_string="2023-04-26"
         )
-        abandon_insere_apres = procedure.event_set.create(
+        abandon = procedure.event_set.create(
             type="Abandon", date_evenement_string="2023-04-26"
         )
+        prescription_insere_apres = procedure.event_set.create(
+            type="Prescription", date_evenement_string="2023-04-26"
+        )
 
-        assert prescription.category == EventCategory.PRESCRIPTION
-        assert abandon_insere_avant.category == EventCategory.ABANDON
-        assert abandon_insere_apres.category == EventCategory.ABANDON
+        assert abandon.category == EventCategory.ABANDON
+        assert prescription_insere_avant.category == EventCategory.PRESCRIPTION
+        assert prescription_insere_apres.category == EventCategory.PRESCRIPTION
 
         with django_assert_num_queries(2):
             procedure_with_events = Procedure.objects.with_events().first()
 
-            assert procedure_with_events.dernier_event_impactant == prescription
-            assert procedure_with_events.statut == EventCategory.PRESCRIPTION
+            assert procedure_with_events.dernier_event_impactant == abandon
+            assert procedure_with_events.statut == EventCategory.ABANDON
 
     @pytest.mark.django_db
     def test_event_sans_date_ignore(
@@ -897,6 +1047,88 @@ class TestCommuneProceduresPrincipales:
         with django_assert_num_queries(3):
             commune = Commune.objects.with_procedures_principales().get()
             assert commune.procedures_principales == [procedure_reelle]
+
+
+class TestCommunePlanEnCours:
+    """Ces tests devront être revus avec https://github.com/MTES-MCT/Docurba/issues/1174."""
+
+    @pytest.mark.django_db
+    def test_plus_recent_en_cours(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+
+        procedure_saisie_avant = commune.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        )
+        procedure_saisie_avant.event_set.create(
+            type="Prescription", date_evenement_string="2022-12-01"
+        )
+
+        procedure_en_cours = commune.procedures.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure_en_cours.event_set.create(
+            type="Prescription", date_evenement_string="2024-12-01"
+        )
+
+        procedure_saisie_apres = commune.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        )
+        procedure_saisie_apres.event_set.create(
+            type="Prescription", date_evenement_string="2023-12-01"
+        )
+
+        with django_assert_num_queries(3):
+            commune = Commune.objects.with_procedures_principales().get()
+            assert commune.procedures_principales_en_cours == [
+                procedure_en_cours,
+                procedure_saisie_apres,
+                procedure_saisie_avant,
+            ]
+            assert commune.plan_en_cours == procedure_en_cours
+
+    @pytest.mark.django_db
+    def test_exclut_abrogation(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+
+        procedure_principale = commune.procedures.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure_principale.event_set.create(
+            type="Prescription", date_evenement_string="2024-12-01"
+        )
+
+        procedure_abrogation = commune.procedures.create(
+            doc_type=TypeDocument.PLUI,
+            type="Abrogation",
+            collectivite_porteuse=commune,
+        )
+        procedure_abrogation.event_set.create(
+            type="Prescription", date_evenement_string="2024-12-01"
+        )
+
+        with django_assert_num_queries(3):
+            commune = Commune.objects.with_procedures_principales().get()
+            assert commune.procedures_principales_en_cours == [procedure_principale]
+            assert commune.plan_en_cours == procedure_principale
+
+
+class TestCommune:
+    @pytest.mark.django_db
+    def test_is_pas_nouvelle(self) -> None:
+        commune = create_commune()
+
+        assert not commune.is_nouvelle
+
+    @pytest.mark.django_db
+    def test_is_nouvelle(self) -> None:
+        commune_nouvelle = create_commune()
+        _commune_deleguee = create_commune(nouvelle=commune_nouvelle)
+
+        assert commune_nouvelle.is_nouvelle
 
 
 class TestCommuneOpposabilite:
@@ -1135,10 +1367,10 @@ class TestCommuneOpposabilite:
             ).get()
 
         with django_assert_num_queries(0):
-            assert commune.procedures_principales == [
+            assert set(commune.procedures_principales) == {
                 procedure_opposable_fevrier,
                 procedure_opposable_janvier,
-            ]
+            }
             assert commune.procedures_principales_approuvees == [
                 procedure_opposable_janvier,
             ]
