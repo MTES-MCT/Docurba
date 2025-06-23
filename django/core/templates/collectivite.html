@@ -24,6 +24,7 @@
                 <th>Nom</th>
                 <th>Opposable</th>
                 <th>Statut</th>
+                <th>Date de prescription</th>
                 <th>Date d'approbation</th>
                 <th>Denier event impactant</th>
             </tr>
@@ -38,6 +39,7 @@
                 </td>
                 <td>{% if is_opposable %}✅{% endif %}</td>
                 <td>{{ procedure.statut }}</td>
+                <td>{{ procedure.date_prescription }}</td>
                 <td>{{ procedure.date_approbation }}</td>
                 <td>{{ procedure.dernier_event_impactant.type }}</td>
             </tr>

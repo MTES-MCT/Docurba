@@ -468,3 +468,367 @@ class TestScots:
             assert nuxt_row == django_row, foo
 
             foo += 1  # noqa: SIM113
+
+
+class TestCommunes:
+    COMD_PAS_PRIS_EN_COMPTE = (
+        1130,  # COMD avec même code que COM
+        2018,  # COMD avec même code que COM
+        2053,  # COMD avec même code que COM
+        3168,
+        11251,
+        12224,
+        14098,
+        14666,
+        15141,
+        16192,
+        16286,
+        19010,
+        19098,
+        19123,
+        21178,
+        24087,
+        24117,
+        24142,
+        24316,
+        24376,
+        25575,
+        26001,
+        26086,
+        27107,
+        27448,
+        29076,
+        29227,
+        31471,
+        33008,
+        33380,
+        34246,
+        35163,
+        38292,
+        38297,
+        38439,
+        39137,
+        39331,
+        39339,
+        39491,
+        39577,
+        45051,
+        45129,
+        48009,
+        48027,
+        48099,
+        49029,
+        49067,
+        50142,
+        50260,
+        50388,
+        50591,
+        51171,
+        52140,
+        52405,
+        54099,
+        55537,
+        56144,  # COM avec des COMD
+        56173,  # COM avec COMD disparues,
+        57578,
+        60088,
+        60245,
+        60256,
+        60694,
+        61168,
+        61211,
+        61486,
+        65399,
+        68006,
+        68143,
+        70285,
+        70489,
+        70491,
+        73187,
+        73227,
+        73236,
+        73257,
+        76164,
+        76258,
+        77109,
+        77504,
+        78551,
+        79061,
+        79083,
+        80442,
+        85162,
+        85177,
+        86123,
+        88465,
+        89130,
+        91228,
+    )
+
+    NUXT_TROUVE_PAS_EN_COURS = (
+        7342,
+        9125,
+        9160,
+        12012,
+        12018,
+        26243,
+        26373,
+        28330,
+        31539,
+        35134,  # Nuxt ne voit pas bien l'abandon invalide
+        39188,
+        39396,
+        46053,
+        46223,
+        46249,
+        46270,
+        46338,
+        54364,
+        57107,
+        77315,
+        77341,
+        77413,
+        77522,
+        86112,
+        86191,
+    )
+
+    EN_COURS_SANS_EVENEMENTS = (
+        26117,
+        26364,
+        31113,
+        34303,
+        35359,
+        37003,
+        74056,
+        83034,
+        83047,
+        83069,
+        83098,
+        83126,
+        83129,
+        83137,
+        83144,
+        84006,
+        84050,
+    )
+
+    NUXT_DONNE_ABROGATION_OPPOSABLE = (15006, 70296, 73189)
+
+    DEUX_OPPOSABLES_MEME_JOUR = (
+        9336,
+        26179,
+        14365,
+        44213,
+        63284,
+        68298,
+        89264,
+    )
+
+    ABANDON_MEME_JOUR_PRESCRIPTION = (
+        6003,  # https://docurba.beta.gouv.fr/frise/55bccdeb-e1ae-4c3e-9cc2-9cb713ecde25
+        11221,  # Cas compliqué
+        21054,
+        25113,
+        25511,
+        27056,
+        30032,
+        30152,
+        33310,
+        33402,
+        77260,
+        78520,
+    )
+
+    PROCEDURES_DOUBLONS = (
+        # 31005,
+        # 31023,
+        # 31028,
+        # 31039,
+        # 31063,
+        # 31083,
+        # 31086,
+        # 31109,
+        # 35012,
+        # 35030,
+        # 35054,
+        # 35098,
+        # 35124,
+        # 35212,
+        # 35218,
+        # 35231,
+        # 35249,
+        # 35316,
+        # 35332,
+        # 35322,
+        # 35343,
+        84129,
+    )
+
+    POS_BIZARRE = (
+        42127,
+        54261,
+        60006,
+        69027,
+        78152,
+        80261,
+    )
+
+    PLUSIEURS_EN_COURS = (
+        45191,
+        58172,  # PLU devrait avoir priorité
+        68188,
+    )
+
+    NUXT_SE_TROMPE_APPROBATION = (77207,)
+
+    def _retrieve_nuxt(self, original: str) -> pl.DataFrame:
+        cached_csv = (
+            Path("core/tests/nuxt_snapshots")
+            / hashlib.md5(original.encode(), usedforsecurity=False).hexdigest()
+        )
+        if not cached_csv.exists() or (
+            datetime.now(UTC) - datetime.fromtimestamp(cached_csv.stat().st_mtime, UTC)
+            > timedelta(hours=1)
+            # > timedelta(seconds=1)
+        ):
+            logging.warning("Refreshing CSV")
+            urlretrieve(Env().str("UPSTREAM_NUXT") + original, cached_csv)  # noqa: S310
+        return pl.read_csv(
+            cached_csv,
+            try_parse_dates=True,
+            schema_overrides={
+                "pa_plui_valant_scot": pl.String(),
+                "pa_pdu_obligatoire": pl.String(),
+                "pa_annee_prescription": pl.String(),
+                "pa_annee_approbation": pl.String(),
+                "pa_date_prescription": pl.String(),
+                "pa_date_approbation": pl.String(),
+                "pa_delai_approbation": pl.String(),
+                "pa_num_procedure_sudocuh": pl.String(),
+            },
+        )
+
+    @pytest.mark.parametrize(
+        "departement",
+        [
+            f"{i:0>2}"
+            for i in ["976", "974", "973", "972", "971", "2B", "2A", *range(95, 0, -1)]
+        ],
+    )
+    @pytest.mark.django_db
+    def test_departement(
+        self,
+        client: Client,
+        departement: str,
+    ) -> None:
+        nuxt = self._retrieve_nuxt(
+            f"/api/urba/exports/communes?departementCode={departement}"
+        ).sort("code_insee")
+
+        # with django_assert_num_queries(4):
+        response = client.get(
+            "/api/communes", query_params={"departement": departement}
+        )
+
+        django = pl.read_csv(
+            response.content,
+            try_parse_dates=True,
+            schema_overrides={
+                "pa_plui_valant_scot": pl.String(),
+                "pa_pdu_obligatoire": pl.String(),
+                "pa_annee_prescription": pl.String(),
+                "pa_annee_approbation": pl.String(),
+                "pa_date_prescription": pl.String(),
+                "pa_date_approbation": pl.String(),
+                "pa_delai_approbation": pl.String(),
+                "pa_num_procedure_sudocuh": pl.String(),
+            },
+        ).sort("code_insee")
+
+        differences = (
+            pl.col("code_insee")
+            .is_in(
+                self.COMD_PAS_PRIS_EN_COMPTE
+                + self.NUXT_TROUVE_PAS_EN_COURS
+                + self.PROCEDURES_DOUBLONS
+                + self.NUXT_DONNE_ABROGATION_OPPOSABLE
+                + self.EN_COURS_SANS_EVENEMENTS
+                + self.DEUX_OPPOSABLES_MEME_JOUR
+                + self.POS_BIZARRE
+                + self.PLUSIEURS_EN_COURS
+                + self.NUXT_SE_TROMPE_APPROBATION
+                + self.ABANDON_MEME_JOUR_PRESCRIPTION
+            )
+            .not_()
+        )
+        nuxt = nuxt.filter(differences)
+        django = django.filter(differences)
+
+        foo = 0
+        for nuxt_row, django_row in zip(
+            nuxt.iter_rows(named=True), django.iter_rows(named=True), strict=True
+        ):
+            colonnes_filtrees = (
+                "annee_cog",
+                "code_insee",
+                "com_nom",
+                "com_code_departement",
+                "com_nom_departement",
+                "com_code_region",
+                "com_nom_region",
+                # "com_nouvelle",  # On ignore car Nuxt retourne toujours False en comparant des strings et des int
+                "epci_reg",
+                "epci_region",
+                "epci_dept",
+                "epci_departement",
+                "epci_type",
+                "epci_nom",
+                "epci_siren",
+                # En cours
+                "pc_docurba_id",
+                "pc_num_procedure_sudocuh",
+                "pc_type_procedure",
+                "pc_date_prescription",
+                "pc_date_arret_projet",
+                "pc_date_pac",
+                "pc_date_pac_comp",
+                "pc_plui_valant_scot",
+                "pc_pdu_obligatoire",
+                "pc_nom_sst",
+                "pc_cout_sst_ht",
+                "pc_cout_sst_ttc",
+                # Approuvé
+                "pa_docurba_id",
+                "pa_num_procedure_sudocuh",
+                "pa_type_procedure",
+                "pa_date_prescription",
+                "pa_date_arret_projet",
+                "pa_date_pac",
+                "pa_date_pac_comp",
+                "pa_date_approbation",
+                "pa_annee_prescription",
+                "pa_annee_approbation",
+                "pa_delai_approbation",
+                "pa_plui_valant_scot",
+                "pa_pdu_obligatoire",
+                "pa_nom_sst",
+                "pa_cout_sst_ht",
+                "pa_cout_sst_ttc",
+            )
+
+            if django_row["pc_date_prescription"] == "0000-00-00":
+                django_row["pc_date_prescription"] = ""
+            nuxt_row = {  # noqa: PLW2901
+                k: str(v or "").capitalize()
+                for k, v in nuxt_row.items()
+                if k in colonnes_filtrees
+            }
+            django_row = {  # noqa: PLW2901
+                k: str(v).capitalize()
+                for k, v in django_row.items()
+                if k in colonnes_filtrees
+            }
+
+            assert nuxt_row == django_row, foo
+
+            foo += 1  # noqa: SIM113
