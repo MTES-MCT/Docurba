@@ -4,11 +4,10 @@
     <form @submit.prevent="handleSubmit(createProcedure)">
       <v-container class="pa-0">
         <v-row>
-          <v-col cols="12">
+          <v-col cols="6">
             <validation-provider v-slot="{ errors }" name="Type de la procédure" rules="required">
               <v-select
                 v-model="typeProcedure"
-                style="max-width:50%;"
                 :error-messages="errors"
                 filled
                 placeholder="Selectionner une option"
@@ -17,10 +16,26 @@
               />
             </validation-provider>
           </v-col>
-          <v-col cols="12" class="pt-0 pb-2">
+          <v-col cols="6">
+            <p class="pt-3">
+              <v-icon color="primary">
+                {{ icons.mdiInformationOutline }}
+              </v-icon>
+              <a
+                href="https://docurba.crisp.help/fr/article/comment-bien-choisir-sa-procedure-pour-faire-evoluer-son-document-durbanisme-plu-xku87n/"
+                target="_blank"
+              >
+                Comment choisir le type de procédure</a>
+              <v-icon color="primary">
+                {{ icons.mdiOpenInNew }}
+              </v-icon>
+            </p>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="6" class="pt-0 pb-2">
             <v-select
               v-model="objetProcedure"
-              style="max-width:50%;"
               :hide-details="objetProcedure.includes('Autre')"
               filled
               multiple
@@ -28,16 +43,19 @@
               :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']"
             />
           </v-col>
-          <v-col v-if="objetProcedure.includes('Autre')" cols="12" class="pt-0 pb-2">
+        </v-row>
+        <v-row>
+          <v-col v-if="objetProcedure.includes('Autre')" cols="6" class="pt-0 pb-2">
             <validation-provider v-slot="{ errors }" name="Details de la procédure" rules="required">
-              <v-text-field v-model="otherObjetProcedure" style="max-width:50%;" :error-messages="errors" filled label="Description de l’objet de la procédure" />
+              <v-text-field v-model="otherObjetProcedure" :error-messages="errors" filled label="Description de l’objet de la procédure" />
             </validation-provider>
           </v-col>
-          <v-col v-if="procedureCategory === 'principale'" cols="12">
+        </v-row>
+        <v-row>
+          <v-col v-if="procedureCategory === 'principale'" cols="6">
             <validation-provider v-slot="{ errors }" name="Type de document d'urbanisme" rules="required">
               <v-select
                 v-model="typeDu"
-                style="max-width:50%;"
                 :error-messages="errors"
                 filled
                 placeholder="Selectionner une option"
@@ -46,12 +64,13 @@
               />
             </validation-provider>
           </v-col>
+        </v-row>
+        <v-row>
           <template v-if="procedureCategory === 'secondaire'">
-            <v-col cols="12">
+            <v-col cols="6">
               <validation-provider v-slot="{ errors }" name="Procédure parente" rules="required">
                 <v-select
                   v-model="procedureParent"
-                  style="max-width:50%;"
                   :error-messages="errors"
                   filled
                   placeholder="Selectionner une option"
@@ -69,21 +88,18 @@
               </validation-provider>
             </v-col>
           </template>
-          <v-col v-if="procedureCategory === 'secondaire' || typeProcedure === 'Révision'" cols="12" class="d-flex align-start">
-            <v-text-field v-model="numberProcedure" style="max-width:50%;" filled placeholder="Ex. 4" label="Numéro de procédure" />
-            <v-tooltip right>
-              <template #activator="{ on, attrs }">
-                <v-icon
-                  color="primary"
-                  class="ml-4"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  {{ icons.mdiInformationOutline }}
-                </v-icon>
-              </template>
-              <div>Le numéro est dans l’acte (ex : modification simplifiée n°4)</div>
-            </v-tooltip>
+        </v-row>
+        <v-row>
+          <v-col v-if="procedureCategory === 'secondaire' || typeProcedure === 'Révision'" cols="6" class="d-flex align-start">
+            <v-text-field v-model="numberProcedure" filled placeholder="Ex. 4" label="Numéro de procédure" />
+          </v-col>
+          <v-col cols="6">
+            <p class="pt-3">
+              <v-icon color="primary">
+                {{ icons.mdiInformationOutline }}
+              </v-icon>
+              Le numéro est dans l’acte (ex : modification simplifiée n°4)
+            </p>
           </v-col>
         </v-row>
         <DdtPerimeterCheckInput v-model="perimetre" :communes="communes" />
@@ -148,7 +164,7 @@
 </template>
 
 <script>
-import { mdiInformationOutline } from '@mdi/js'
+import { mdiInformationOutline, mdiOpenInNew } from '@mdi/js'
 import axios from 'axios'
 import { uniqBy } from 'lodash'
 import FormInput from '@/mixins/FormInput.js'
@@ -184,7 +200,7 @@ export default {
       nameComplement: '',
       typesDu: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM', 'SCOT'],
       perimetre: null,
-      icons: { mdiInformationOutline }
+      icons: { mdiInformationOutline, mdiOpenInNew }
     }
   },
   computed: {
