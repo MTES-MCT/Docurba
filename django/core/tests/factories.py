@@ -60,6 +60,7 @@ def create_commune(
     code_insee: str = Auto,
     commune_type: TypeCollectivite = Auto,
     departement: Departement = Auto,
+    nouvelle: Commune = Auto,
 ) -> Commune:
     code_insee = code_insee or next(GROUPEMENT_CODE_INSEE_SEQUENCE)
     commune_type = commune_type or TypeCollectivite.COM
@@ -68,4 +69,5 @@ def create_commune(
         code_insee_unique=code_insee,
         type=commune_type,
         departement=departement or create_departement(),
+        nouvelle=nouvelle or None,
     )

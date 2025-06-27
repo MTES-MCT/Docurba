@@ -468,3 +468,110 @@ class TestScots:
             assert nuxt_row == django_row, foo
 
             foo += 1  # noqa: SIM113
+
+
+class TestCommunes:
+    DIFFERENCES_OPPOSABLE = (
+        56144,  # COM avec des COMD
+        56173,  # COM avec COMD disparues
+    )
+
+    def _retrieve_nuxt(self, original: str) -> pl.DataFrame:
+        cached_csv = (
+            Path("core/tests/nuxt_snapshots")
+            / hashlib.md5(original.encode(), usedforsecurity=False).hexdigest()
+        )
+        if not cached_csv.exists() or (
+            datetime.now(UTC) - datetime.fromtimestamp(cached_csv.stat().st_mtime, UTC)
+            > timedelta(hours=1)
+            # > timedelta(seconds=1)
+        ):
+            logging.warning("Refreshing CSV")
+            urlretrieve(Env().str("UPSTREAM_NUXT") + original, cached_csv)  # noqa: S310
+        return pl.read_csv(
+            cached_csv,
+            try_parse_dates=True,
+            schema_overrides={
+                # "scot_code_departement": pl.String(),
+                # "collectivite_code": pl.String(),
+            },
+        )
+
+    @pytest.mark.parametrize(
+        "departement",
+        [
+            f"{i:0>2}"
+            for i in ["976", "974", "973", "972", "971", "2B", "2A", *range(95, 0, -1)]
+        ],
+    )
+    @pytest.mark.django_db
+    def test_departement(
+        self,
+        client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+        departement: str,
+    ) -> None:
+        nuxt = self._retrieve_nuxt(
+            f"/api/urba/exports/communes?departementCode={departement}"
+        ).sort("code_insee")
+
+        # with django_assert_num_queries(4):
+        response = client.get(
+            "/api/communes", query_params={"departement": departement}
+        )
+
+        django = pl.read_csv(
+            response.content,
+            try_parse_dates=True,
+            schema_overrides={
+                # "scot_code_departement": pl.String(),
+                # "collectivite_code": pl.String(),
+            },
+        ).sort("code_insee")
+
+        differences = pl.col("code_insee").is_in(self.DIFFERENCES_OPPOSABLE).not_()
+        nuxt = nuxt.filter(differences)
+        django = django.filter(differences)
+
+        foo = 0
+        for nuxt_row, django_row in zip(
+            nuxt.iter_rows(named=True), django.iter_rows(named=True), strict=True
+        ):
+            colonnes_filtrees = (
+                "annee_cog",
+                "code_insee",
+                "com_nom",
+                "com_code_departement",
+                "com_nom_departement",
+                "com_code_region",
+                "com_nom_region",
+                # "com_nouvelle",  # On ignore car Nuxt retourne toujours False en comparant des strings et des int
+                "epci_reg",
+                "epci_region",
+                "epci_dept",
+                "epci_departement",
+                "epci_type",
+                "epci_nom",
+                "epci_siren",
+                # Approuvé
+                "pa_docurba_id",
+                "pa_num_procedure_sudocuh",
+                # "pa_nb_communes",  # FIXME Check a une près ?
+                # "pa_type_document",  # FIXME On retourne un truc ultra complet, que faire ?
+                "pa_type_procedure",
+            )
+
+            nuxt_row = {  # noqa: PLW2901
+                k: str(v or "").capitalize()
+                for k, v in nuxt_row.items()
+                if k in colonnes_filtrees
+            }
+            django_row = {  # noqa: PLW2901
+                k: str(v).capitalize()
+                for k, v in django_row.items()
+                if k.startswith(colonnes_filtrees)
+            }
+
+            assert nuxt_row == django_row, foo
+
+            foo += 1  # noqa: SIM113
