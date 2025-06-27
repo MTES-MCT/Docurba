@@ -102,9 +102,8 @@
             </p>
           </v-col>
         </v-row>
-        <DdtPerimeterCheckInput v-model="perimetre" :communes="communes" />
         <v-row>
-          <v-col cols="12" class="mt-4 ">
+          <v-col cols="12">
             <div class="mb-2">
               Nom de la procédure
             </div>
@@ -134,6 +133,7 @@
             </div>
           </v-col>
         </v-row>
+        <DdtPerimeterCheckInput v-model="perimetre" :communes="communes" />
         <v-row>
           <v-col cols="12" class="d-flex mt-8">
             <v-btn
