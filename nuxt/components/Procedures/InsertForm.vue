@@ -89,8 +89,8 @@
             </v-col>
           </template>
         </v-row>
-        <v-row>
-          <v-col v-if="procedureCategory === 'secondaire' || typeProcedure === 'Révision'" cols="6" class="d-flex align-start">
+        <v-row v-if="procedureCategory === 'secondaire' || typeProcedure === 'Révision'">
+          <v-col cols="6" class="d-flex align-start">
             <v-text-field v-model="numberProcedure" filled placeholder="Ex. 4" label="Numéro de procédure" />
           </v-col>
           <v-col cols="6">
