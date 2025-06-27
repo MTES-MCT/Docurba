@@ -1,6 +1,6 @@
 <template>
   <v-row>
-    <v-col cols="12" class="pt-0">
+    <v-col cols="12" class="mt-4">
       <p> Périmètre du document d'urbanisme : ({{ perimetre.length }})</p>
       <v-btn
         color="primary"
