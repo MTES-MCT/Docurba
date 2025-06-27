@@ -4,9 +4,6 @@
       <v-col cols="12" class="d-flex align-center justify-space-between pb-0 pt-4">
         <h1>Mes Procédures</h1>
         <div>
-          <v-btn :loading="loadingDownload" outlined color="primary" class="mr-2" @click="download">
-            Exporter les procédures
-          </v-btn>
           <v-btn depressed color="primary" :to="`/ddt/${$route.params.departement}/procedures/choix-collectivite`">
             Nouvelle procédure
           </v-btn>
@@ -148,7 +145,6 @@
 
 <script>
 import dayjs from 'dayjs'
-import axios from 'axios'
 // import { AsyncParser } from '@json2csv/node'
 
 export default {
@@ -157,7 +153,6 @@ export default {
   data () {
     const documentTypes = ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiHM', 'PLUiM', 'SCOT']
     return {
-      loadingDownload: false,
       referentiel: null,
       selectedTypesFilter: ['pp', 'ps'],
       typeFilterItems: [{ text: 'Procédures principales', value: 'pp' }, { text: 'Procédures secondaires', value: 'ps' }],
@@ -224,26 +219,6 @@ export default {
     }
   },
   methods: {
-    async download () {
-      const departementCode = this.$route.params.departement
-
-      this.$analytics({
-        category: 'exports dashboard',
-        name: 'exports communes',
-        value: 'departementCode'
-      })
-
-      this.loadingDownload = true
-      const { data } = await axios(`/api/urba/exports/departements/${departementCode}?csv=true`)
-
-      const a = document.createElement('a')
-      const blob = new Blob([data], { type: 'text/csv' })
-      a.href = window.URL.createObjectURL(blob)
-      a.download = `docurba_procedures_${departementCode}.csv`
-      a.click()
-
-      this.loadingDownload = false
-    },
     customFilter (value, search, item) {
       if (!search?.length) { return true }
 

@@ -1,8 +1,22 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12">
+      <v-col
+        cols="12"
+        class="d-flex align-center justify-space-between"
+      >
         <h1>Mes collectivités - {{ $route.params.departement }}</h1>
+        <div>
+          <v-btn
+            outlined
+            color="primary"
+            class="mr-2"
+            :loading="exportingCommunes"
+            @click="exportCommunes"
+          >
+            Exporter les communes
+          </v-btn>
+        </div>
       </v-col>
       <v-col v-if="!collectivites" cols="12">
         <v-skeleton-loader
@@ -301,6 +315,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import dayjs from 'dayjs'
 import { partition } from 'lodash'
 
@@ -318,6 +333,8 @@ export default {
   layout: 'ddt',
   data () {
     return {
+      exportingCommunes: false,
+
       selected: [],
       searchEpcis: '',
       groupements: [],
@@ -552,7 +569,28 @@ export default {
     showClose () {
       this.clickedOnDocLink = true
       localStorage.setItem('docVersion', docVersion)
+    },
+    async exportCommunes () {
+      const departementCode = this.$route.params.departement
+
+      this.$analytics({
+        category: 'exports dashboard',
+        name: 'exports communes',
+        value: 'departementCode'
+      })
+
+      this.exportingCommunes = true
+      const { data } = await axios(`/api/communes?departement=${departementCode}`)
+
+      const a = document.createElement('a')
+      const blob = new Blob([data], { type: 'text/csv' })
+      a.href = window.URL.createObjectURL(blob)
+      a.download = `docurba_communes_${departementCode}.csv`
+      a.click()
+
+      this.exportingCommunes = false
     }
+
   }
 }
 </script>
