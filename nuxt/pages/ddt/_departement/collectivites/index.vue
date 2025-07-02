@@ -16,6 +16,15 @@
           >
             Exporter les communes
           </v-btn>
+          <v-btn
+            outlined
+            color="primary"
+            class="mr-2"
+            :loading="exportingSCoTs"
+            @click="exportSCoTs"
+          >
+            Exporter les SCoTs
+          </v-btn>
         </div>
       </v-col>
       <v-col v-if="!collectivites" cols="12">
@@ -334,6 +343,7 @@ export default {
   data () {
     return {
       exportingCommunes: false,
+      exportingSCoTs: false,
 
       selected: [],
       searchEpcis: '',
@@ -589,6 +599,26 @@ export default {
       a.click()
 
       this.exportingCommunes = false
+    },
+    async exportSCoTs () {
+      const departementCode = this.$route.params.departement
+
+      this.$analytics({
+        category: 'exports dashboard',
+        name: 'exports scots',
+        value: 'departementCode'
+      })
+
+      this.exportingSCoTs = true
+      const { data } = await axios(`/api/scots?departement=${departementCode}`)
+
+      const a = document.createElement('a')
+      const blob = new Blob([data], { type: 'text/csv' })
+      a.href = window.URL.createObjectURL(blob)
+      a.download = `docurba_scots_${departementCode}.csv`
+      a.click()
+
+      this.exportingSCoTs = false
     }
 
   }
