@@ -2,7 +2,7 @@ const supabase = require('./supabase.js')
 
 module.exports = {
   async  latestProcedurePrincipaleSharedUrl (email) {
-    const { data: latestSharing } = await this.$supabase
+    const { data: latestSharing } = await supabase
       .from('projects_sharing')
       .select('id, projects!inner(id, procedures!inner(id))')
       .eq('user_email', email)
