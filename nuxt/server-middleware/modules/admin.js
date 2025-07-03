@@ -19,7 +19,7 @@ module.exports = {
       const profile = profiles[0]
       const { firstname, lastname, departement, region } = profile
       const regionData = regions.find(r => r.code === region)
-      const sharedProcedureUrl = await sharing.hasProcedureShared(profile.email)
+      const sharedProcedureUrl = await sharing.latestProcedurePrincipaleSharedUrl(profile.email)
 
       sendgrid.sendEmail({
         to: userData.email,

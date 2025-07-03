@@ -169,7 +169,7 @@ async function collectiviteValidation (data, responseUrl) {
     const profile = profiles[0]
     const collectivite = geo.getCollectivite(profile.collectivite_id)
 
-    const sharedProcedureUrl = await sharing.hasProcedureShared(data.email)
+    const sharedProcedureUrl = await sharing.latestProcedurePrincipaleSharedUrl(data.email)
     sendgrid.sendEmail({
       to: profile.email,
       template_id: 'd-0143010573f6497b86abbd4e4c96f46e',

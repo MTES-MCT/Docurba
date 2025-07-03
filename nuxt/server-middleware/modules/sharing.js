@@ -1,16 +1,24 @@
 const supabase = require('./supabase.js')
 
 module.exports = {
-  async  hasProcedureShared (email) {
-    const { data: sharedProcedure } = await supabase
+  async  latestProcedurePrincipaleSharedUrl (email) {
+    const { data: latestSharing } = await this.$supabase
       .from('projects_sharing')
-      .select('id, projects(id, procedures(id, is_principale))')
+      .select('id, projects!inner(id, procedures!inner(id))')
       .eq('user_email', email)
       .eq('role', 'write_frise')
-      .single()
-    console.log('sharedProcedure: ', sharedProcedure)
-    const procedureId = sharedProcedure?.projects?.procedures?.id
-    const sharedProcedureUrl = `${process.env.APP_URL}/frise/${procedureId}`
+      .eq('projects.procedures.is_principale', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (!latestSharing) {
+      return
+    }
+
+    const latestProcedurePrincipaleShared = latestSharing.projects.procedures[0]
+    const sharedProcedureUrl = `${process.env.APP_URL}/frise/${latestProcedurePrincipaleShared.id}`
+
     return sharedProcedureUrl
   },
   async updateNotifiedStatus (emails, projectId) {
