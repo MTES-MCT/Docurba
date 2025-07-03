@@ -120,6 +120,11 @@ class TestAPIPerimetres:
         assert [cp["opposable"] for cp in reader] == [opposable]
 
 
+class TestAPICommunes:
+    def test_format_csv(self):
+        pass
+
+
 class TestAPIScots:
     @pytest.mark.django_db
     def test_format_csv(
