@@ -140,9 +140,7 @@ def api_scots(request: HttpRequest) -> HttpResponse:
                 "pa_date_prescription": scot_opposable.date_prescription,
                 "pa_date_arret_projet": scot_opposable.date_arret_projet,
                 "pa_date_approbation": scot_opposable.date_approbation,
-                "pa_annee_approbation": date.fromisoformat(
-                    scot_opposable.date_approbation
-                ).year,
+                "pa_annee_approbation": scot_opposable.date_approbation.year,
                 "pa_date_fin_echeance": scot_opposable.date_fin_echeance,
                 "pa_nombre_communes": len(scot_opposable.communes),
             }

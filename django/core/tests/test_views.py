@@ -40,7 +40,7 @@ class TestAPIPerimetres:
             doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
 
-        with django_assert_num_queries(2):
+        with django_assert_num_queries(3):
             response = client.get(
                 "/api/perimetres", {"departement": commune.departement.code_insee}
             )
@@ -128,7 +128,7 @@ class TestAPIScots:
         groupement = create_groupement()
         scot_en_cours = groupement.procedure_set.create(doc_type=TypeDocument.SCOT)
 
-        with django_assert_num_queries(3):
+        with django_assert_num_queries(4):
             response = client.get("/api/scots")
 
         assert response.status_code == 200
@@ -166,7 +166,7 @@ class TestAPIScots:
                 "pc_proc_elaboration_revision": "",
                 "pc_scot_interdepartement": "False",
                 "pc_date_publication_perimetre": "",
-                "pc_date_prescription": "0000-00-00",
+                "pc_date_prescription": "",
                 "pc_date_arret_projet": "",
                 "pc_nombre_communes": "0",
             }

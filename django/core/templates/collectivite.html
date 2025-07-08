@@ -39,7 +39,7 @@
                 <td>{% if is_opposable %}✅{% endif %}</td>
                 <td>{{ procedure.statut }}</td>
                 <td>{{ procedure.date_approbation }}</td>
-                <td>{{ procedure.dernier_event_impactant }}</td>
+                <td>{{ procedure.dernier_event_impactant.type }}</td>
             </tr>
             {% endfor %}
         </table>
