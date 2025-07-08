@@ -94,11 +94,13 @@
             <v-text-field v-model="numberProcedure" filled placeholder="Ex. 4" label="Numéro de procédure" />
           </v-col>
           <v-col cols="6">
-            <p class="pt-3">
+            <p>
               <v-icon color="primary">
                 {{ icons.mdiInformationOutline }}
               </v-icon>
-              Le numéro est dans l’acte (ex : modification simplifiée n°4)
+              Le numéro est dans l’acte
+              <br>
+              ex : pour une modification simplifiée n°4, saisir <strong>4</strong>
             </p>
           </v-col>
         </v-row>
