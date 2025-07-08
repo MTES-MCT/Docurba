@@ -3,11 +3,11 @@ import uuid
 from datetime import date
 from enum import StrEnum, auto
 from functools import cached_property
+from operator import attrgetter
 from typing import Self
 
 from django.conf import settings
 from django.db import models
-from django.db.models.functions import Coalesce
 from django.db.models.lookups import GreaterThan
 from django.urls import reverse
 
@@ -51,184 +51,112 @@ PLU_LIKE = (
 )
 
 
-class EventImpact(StrEnum):
-    EN_COURS = "en cours"
+class EventCategory(StrEnum):
+    PRESCRIPTION = auto()
     APPROUVE = auto()
     ABANDON = auto()
     ANNULE = auto()
     CADUC = auto()
-
-
-class EventNotable(StrEnum):
     ARRET_DE_PROJET = auto()
     PORTER_A_CONNAISSANCE = auto()
     PORTER_A_CONNAISSANCE_COMPLEMENTAIRE = auto()
-    DELIBERATION = auto()
     PUBLICATION_PERIMETRE = auto()
     CARACTERE_EXECUTOIRE = auto()
     FIN_ECHEANCE = auto()
 
 
-# https://docs.google.com/spreadsheets/d/1NEcWazdx7LvpnydcyP4pBdFWl9fI_Iu9zy9AQcDtll0/edit?gid=637043323#gid=637043323
-EVENT_IMPACT_BY_DOC_TYPE = {
-    TypeDocument.CC: {
-        "Délibération de prescription du conseil municipal": EventImpact.EN_COURS,
-        "Approbation du préfet": EventImpact.APPROUVE,
-        "Retrait de l'annulation totale": EventImpact.APPROUVE,
-        "Abandon": EventImpact.ABANDON,
-        "Retrait de la délibération de prescription": EventImpact.ABANDON,
-        "Annulation TA totale": EventImpact.ANNULE,
-        "Annulation TA": EventImpact.ANNULE,
-        "Abrogation effective": EventImpact.ANNULE,
-    },
-    TypeDocument.SCOT: {
-        "Délibération de l'Etablissement Public": EventImpact.EN_COURS,
-        "Délibération de l'établissement public qui prescrit": EventImpact.EN_COURS,
-        "Retrait de la délibération d'approbation": EventImpact.EN_COURS,
-        "Délibération d'approbation": EventImpact.APPROUVE,
-        "Retrait de l'annulation totale": EventImpact.APPROUVE,
-        "Abandon": EventImpact.ABANDON,
-        "Retrait de la délibération de prescription": EventImpact.ABANDON,
-        "Annulation TA totale": EventImpact.ANNULE,
-        "Annulation TA": EventImpact.ANNULE,
-        "Caducité": EventImpact.CADUC,
-    },
-    TypeDocument.SD: {
-        "Délibération de l'établissement public qui prescrit": EventImpact.EN_COURS,
-        "Délibération d'approbation": EventImpact.APPROUVE,
-        "Abandon": EventImpact.ABANDON,
-        "Annulation TA totale": EventImpact.ANNULE,
-        "Annulation TA": EventImpact.ANNULE,
-        "Caducité": EventImpact.CADUC,
-    },
-    TypeDocument.PLU: {
-        "Délibération de prescription du conseil municipal ou communautaire": EventImpact.EN_COURS,
-        "Retrait de l'annulation totale": EventImpact.APPROUVE,
-        "Délibération d'approbation du municipal ou communautaire": EventImpact.APPROUVE,
-        "Délibération d'approbation du conseil municipal ou communautaire": EventImpact.APPROUVE,
-        "Délibération d'approbation": EventImpact.APPROUVE,
-        "Abandon": EventImpact.ABANDON,
-        "Retrait de la délibération de prescription": EventImpact.ABANDON,
-        "Annulation TA totale": EventImpact.ANNULE,
-        "Annulation TA": EventImpact.ANNULE,
-        "Abrogation": EventImpact.ANNULE,
-        "Arrêté d'abrogation": EventImpact.ANNULE,
-        "Caducité": EventImpact.CADUC,
-    },
-    TypeDocument.POS: {
-        "Délibération de prescription du conseil municipal ou communautaire": EventImpact.EN_COURS,
-        "Délibération d'approbation du municipal ou communautaire": EventImpact.APPROUVE,
-        "Délibération d'approbation du conseil municipal ou communautaire": EventImpact.APPROUVE,
-        "Délibération d'approbation": EventImpact.APPROUVE,
-        "Abandon": EventImpact.ABANDON,
-        "Annulation TA": EventImpact.ANNULE,
-        "Annulation TA totale": EventImpact.ANNULE,
-        "Caducité": EventImpact.ANNULE,
-    },
-}
-EVENT_IMPACT_BY_DOC_TYPE |= dict.fromkeys(
-    PLU_LIKE, EVENT_IMPACT_BY_DOC_TYPE[TypeDocument.PLU]
+EVENT_CATEGORY_PRIORISES = (
+    EventCategory.APPROUVE,
+    EventCategory.PRESCRIPTION,
+    EventCategory.ANNULE,
+    EventCategory.ABANDON,
+    EventCategory.CADUC,
 )
 
-EVENT_NOTABLE_BY_DOC_TYPE = {
+
+# https://docs.google.com/spreadsheets/d/1NEcWazdx7LvpnydcyP4pBdFWl9fI_Iu9zy9AQcDtll0/edit?gid=637043323#gid=637043323
+EVENT_CATEGORY_BY_DOC_TYPE = {
+    TypeDocument.CC: {
+        "Prescription": EventCategory.PRESCRIPTION,
+        "Délibération de prescription du conseil municipal": EventCategory.PRESCRIPTION,
+        "Approbation du préfet": EventCategory.APPROUVE,
+        "Retrait de l'annulation totale": EventCategory.APPROUVE,
+        "Abandon": EventCategory.ABANDON,
+        "Retrait de la délibération de prescription": EventCategory.ABANDON,
+        "Annulation TA totale": EventCategory.ANNULE,
+        "Annulation TA": EventCategory.ANNULE,
+        "Abrogation effective": EventCategory.ANNULE,
+    },
     TypeDocument.SCOT: {
-        "Arrêt de projet": EventNotable.ARRET_DE_PROJET,
-        "Porter à connaissance": EventNotable.PORTER_A_CONNAISSANCE,
-        "Porter à connaissance complémentaire": EventNotable.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
-        "Délibération de l'Etab Pub sur les modalités de concertation": EventNotable.DELIBERATION,
-        "Délibération de l'Etablissement Public": EventNotable.DELIBERATION,
-        "Publication de périmètre": EventNotable.PUBLICATION_PERIMETRE,
-        "Publication périmètre": EventNotable.PUBLICATION_PERIMETRE,
-        "Caractère exécutoire": EventNotable.CARACTERE_EXECUTOIRE,
-        "Fin d'échéance": EventNotable.FIN_ECHEANCE,
-    }
+        "Prescription": EventCategory.PRESCRIPTION,
+        "Délibération de l'Etablissement Public": EventCategory.PRESCRIPTION,
+        "Délibération de l'établissement public qui prescrit": EventCategory.PRESCRIPTION,
+        "Retrait de la délibération d'approbation": EventCategory.PRESCRIPTION,
+        "Délibération d'approbation": EventCategory.APPROUVE,
+        "Retrait de l'annulation totale": EventCategory.APPROUVE,
+        "Abandon": EventCategory.ABANDON,
+        "Retrait de la délibération de prescription": EventCategory.ABANDON,
+        "Annulation TA totale": EventCategory.ANNULE,
+        "Annulation TA": EventCategory.ANNULE,
+        "Caducité": EventCategory.CADUC,
+        "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
+        "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,
+        "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
+        "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
+        "Fin d'échéance": EventCategory.FIN_ECHEANCE,
+    },
+    TypeDocument.SD: {
+        "Prescription": EventCategory.PRESCRIPTION,
+        "Délibération de l'établissement public qui prescrit": EventCategory.PRESCRIPTION,
+        "Délibération d'approbation": EventCategory.APPROUVE,
+        "Abandon": EventCategory.ABANDON,
+        "Annulation TA totale": EventCategory.ANNULE,
+        "Annulation TA": EventCategory.ANNULE,
+        "Caducité": EventCategory.CADUC,
+    },
+    TypeDocument.PLU: {
+        "Prescription": EventCategory.PRESCRIPTION,
+        "Délibération de prescription du conseil municipal ou communautaire": EventCategory.PRESCRIPTION,
+        "Retrait de l'annulation totale": EventCategory.APPROUVE,
+        "Délibération d'approbation du municipal ou communautaire": EventCategory.APPROUVE,
+        "Délibération d'approbation du conseil municipal ou communautaire": EventCategory.APPROUVE,
+        "Délibération d'approbation": EventCategory.APPROUVE,
+        "Abandon": EventCategory.ABANDON,
+        "Retrait de la délibération de prescription": EventCategory.ABANDON,
+        "Annulation TA totale": EventCategory.ANNULE,
+        "Annulation TA": EventCategory.ANNULE,
+        "Abrogation": EventCategory.ANNULE,
+        "Arrêté d'abrogation": EventCategory.ANNULE,
+        "Caducité": EventCategory.CADUC,
+    },
+    TypeDocument.POS: {
+        "Prescription": EventCategory.PRESCRIPTION,
+        "Délibération de prescription du conseil municipal ou communautaire": EventCategory.PRESCRIPTION,
+        "Délibération d'approbation du municipal ou communautaire": EventCategory.APPROUVE,
+        "Délibération d'approbation du conseil municipal ou communautaire": EventCategory.APPROUVE,
+        "Délibération d'approbation": EventCategory.APPROUVE,
+        "Abandon": EventCategory.ABANDON,
+        "Annulation TA": EventCategory.ANNULE,
+        "Annulation TA totale": EventCategory.ANNULE,
+        "Caducité": EventCategory.ANNULE,
+    },
 }
+EVENT_CATEGORY_BY_DOC_TYPE |= dict.fromkeys(
+    PLU_LIKE, EVENT_CATEGORY_BY_DOC_TYPE[TypeDocument.PLU]
+)
 
 
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self, *, avant: date | None = None) -> Self:
-        events = Event.objects.filter(is_valid=True)
+        events = Event.objects.exclude(date_evenement_string=None)
         if avant:
             events = events.filter(date_evenement_string__lt=str(avant))
 
-        approbation_event_types = [
-            event_type
-            for event_impact_by_event_type in EVENT_IMPACT_BY_DOC_TYPE.values()
-            for event_type, event_impact in event_impact_by_event_type.items()
-            if event_impact == EventImpact.APPROUVE
-        ]
-        prescription_event_types = [
-            event_type
-            for event_impact_by_event_type in EVENT_IMPACT_BY_DOC_TYPE.values()
-            for event_type, event_impact in event_impact_by_event_type.items()
-            if event_impact == EventImpact.EN_COURS
-        ]
-
-        dernier_event_impactant_whens = [
-            models.When(
-                doc_type=doc_type,
-                then=models.Subquery(
-                    events.filter(
-                        procedure=models.OuterRef("pk"),
-                        type__in=event_impact_by_event_type.keys(),
-                    ).values("type")[:1]
-                ),
-            )
-            for (
-                doc_type,
-                event_impact_by_event_type,
-            ) in EVENT_IMPACT_BY_DOC_TYPE.items()
-        ]
-
-        return self.annotate(
-            date_approbation=Coalesce(
-                models.Subquery(
-                    events.filter(
-                        procedure=models.OuterRef("pk"),
-                        type__in=approbation_event_types,
-                    ).values("date_evenement_string")[:1]
-                ),
-                models.Value("0000-00-00"),
-            ),
-            date_prescription=Coalesce(
-                models.Subquery(
-                    events.filter(
-                        procedure=models.OuterRef("pk"),
-                        type__in=prescription_event_types,
-                    ).values("date_evenement_string")[:1]
-                ),
-                models.Value("0000-00-00"),
-            ),
-            dernier_event_impactant=models.Case(*dernier_event_impactant_whens),
+        return self.prefetch_related(
+            models.Prefetch("event_set", events, to_attr="events_prefetched")
         )
-
-    def with_dates_notables(self, *, avant: date | None = None) -> Self:
-        events = Event.objects.filter(is_valid=True)
-        if avant:
-            events = events.filter(date_evenement_string__lt=str(avant))
-
-        queryset = self
-        for date_notable, category_notable in {
-            "date_publication_perimetre": EventNotable.PUBLICATION_PERIMETRE,
-            "date_arret_projet": EventNotable.ARRET_DE_PROJET,
-            "date_fin_echeance": EventNotable.FIN_ECHEANCE,
-        }.items():
-            event_types = [
-                event_type
-                for event_notable_by_event_type in EVENT_NOTABLE_BY_DOC_TYPE.values()
-                for event_type, event_notable in event_notable_by_event_type.items()
-                if event_notable == category_notable
-            ]
-            queryset = queryset.annotate(
-                **{
-                    date_notable: models.Subquery(
-                        events.filter(
-                            procedure=models.OuterRef("pk"), type__in=event_types
-                        ).values("date_evenement_string")[:1]
-                    )
-                }
-            )
-        return queryset
 
     def with_is_intercommunal(self) -> Self:
         # On utilise une Subquery plutôt qu'une expression directe pour permettre
@@ -249,7 +177,6 @@ class ProcedureManager(models.Manager):
         return (
             super()
             .get_queryset()
-            .with_events()
             .with_is_intercommunal()
             .select_related("collectivite_porteuse")
         )
@@ -309,19 +236,62 @@ class Procedure(models.Model):
     def get_absolute_url(self) -> str:
         return f"/frise/{self.pk}"
 
-    @property
-    def statut(self) -> EventImpact | None:
+    _events_processed = False
+
+    def _process_events(self) -> None:
+        if self._events_processed:
+            return
+
+        for event in reversed(self.events_prefetched):
+            if event.category:
+                setattr(self, event.category, event)
+        self._events_processed = True
+
+    @cached_property
+    def dernier_event_impactant(self) -> "Event | None":
         if self.parente_id:
             return None
+        self._process_events()
+
+        events_impactants_priorises = (
+            event
+            for event_category in EVENT_CATEGORY_PRIORISES
+            if (event := getattr(self, event_category, None))
+        )
+        return max(events_impactants_priorises, key=attrgetter("date"), default=None)
+
+    @property
+    def statut(self) -> EventCategory | None:
         if not self.dernier_event_impactant:
             return None
+        return self.dernier_event_impactant.category
 
-        impact_by_event_type = {
-            event_type: event_impact
-            for event_impact_by_event_type in EVENT_IMPACT_BY_DOC_TYPE.values()
-            for event_type, event_impact in event_impact_by_event_type.items()
-        }
-        return impact_by_event_type[self.dernier_event_impactant]
+    def _date(self, event_type: EventCategory) -> date | None:
+        self._process_events()
+        event = getattr(self, event_type, None)
+        if not event:
+            return None
+        return event.date
+
+    @property
+    def date_approbation(self) -> date | None:
+        return self._date(EventCategory.APPROUVE)
+
+    @property
+    def date_prescription(self) -> date | None:
+        return self._date(EventCategory.PRESCRIPTION)
+
+    @property
+    def date_publication_perimetre(self) -> date | None:
+        return self._date(EventCategory.PUBLICATION_PERIMETRE)
+
+    @property
+    def date_arret_projet(self) -> date | None:
+        return self._date(EventCategory.ARRET_DE_PROJET)
+
+    @property
+    def date_fin_echeance(self) -> date | None:
+        return self._date(EventCategory.FIN_ECHEANCE)
 
     @property
     def is_schema(self) -> bool:
@@ -365,11 +335,18 @@ class Event(models.Model):
         return f"{self.procedure}  - {self.type}"
 
     @property
-    def impact(self) -> EventImpact | None:
+    def category(self) -> EventCategory | None:
         if not self.is_valid:
             return None
 
-        return EVENT_IMPACT_BY_DOC_TYPE[self.procedure.doc_type].get(self.type)
+        return EVENT_CATEGORY_BY_DOC_TYPE[self.procedure.doc_type].get(self.type)
+
+    @property
+    def date(self) -> date | None:
+        if not self.date_evenement_string:
+            return None
+
+        return date.fromisoformat(self.date_evenement_string)
 
 
 class Region(models.Model):
@@ -403,7 +380,6 @@ class CollectiviteQuerySet(models.QuerySet):
                 models.Prefetch(
                     "procedure_set",
                     Procedure.objects.with_events(avant=avant)
-                    .with_dates_notables(avant=avant)
                     .filter(
                         doc_type="SCOT",
                         parente=None,
@@ -455,7 +431,7 @@ class Collectivite(models.Model):
         return [
             scot
             for scot in self.scots
-            if scot.statut == EventImpact.APPROUVE
+            if scot.statut == EventCategory.APPROUVE
             and any(commune.is_opposable(scot) for commune in scot.communes)
         ]
 
@@ -464,7 +440,7 @@ class Collectivite(models.Model):
         en_cours = [
             procedure
             for procedure in self.scots
-            if procedure.statut == EventImpact.EN_COURS or not procedure.statut
+            if procedure.statut == EventCategory.PRESCRIPTION or not procedure.statut
         ]
 
         if not en_cours:
@@ -493,9 +469,9 @@ class CommuneQuerySet(models.QuerySet):
         return self.prefetch_related(
             models.Prefetch(
                 "procedures",
-                Procedure.objects.with_events(avant=avant)
-                .filter(parente=None, archived=False)
-                .order_by("-date_approbation"),
+                Procedure.objects.with_events(avant=avant).filter(
+                    parente=None, archived=False
+                ),
                 to_attr="procedures_principales",
             )
         )
@@ -508,8 +484,7 @@ class CommuneQuerySet(models.QuerySet):
                 .annotate(
                     is_intercommunal=models.Value("1")  # Désactive la jointure
                 )
-                .filter(doc_type="SCOT", parente=None, archived=False)
-                .order_by("-date_approbation"),
+                .filter(doc_type="SCOT", parente=None, archived=False),
                 to_attr="procedures_principales",
             )
         )
@@ -539,12 +514,16 @@ class Commune(Collectivite):
 
     @cached_property
     def procedures_principales_approuvees(self) -> list[Procedure]:
-        return [
-            procedure
-            for procedure in self.procedures_principales
-            if procedure.type != "Abrogation"
-            and procedure.statut == EventImpact.APPROUVE
-        ]
+        return sorted(
+            (
+                procedure
+                for procedure in self.procedures_principales
+                if procedure.type != "Abrogation"
+                and procedure.statut == EventCategory.APPROUVE
+            ),
+            key=attrgetter("date_approbation"),
+            reverse=True,
+        )
 
     @cached_property
     def plan_opposable(self) -> Procedure | None:
