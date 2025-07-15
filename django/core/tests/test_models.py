@@ -899,6 +899,25 @@ class TestCommuneProceduresPrincipales:
             assert commune.procedures_principales == [procedure_reelle]
 
 
+class TestCommune:
+    @pytest.mark.django_db
+    def test_is_pas_nouvelle(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+
+        assert not commune.is_nouvelle
+
+    @pytest.mark.django_db
+    def test_is_nouvelle(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune_nouvelle = create_commune()
+        _commune_deleguee = create_commune(nouvelle=commune_nouvelle)
+
+        assert commune_nouvelle.is_nouvelle
+
+
 class TestCommuneOpposabilite:
     @pytest.mark.django_db
     def test_plus_recente_opposable(

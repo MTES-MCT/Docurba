@@ -1,13 +1,15 @@
+import logging
 from csv import DictWriter
 from datetime import date
 from itertools import groupby
 from operator import attrgetter
 
+from django.db import models
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from django.views.decorators.http import require_safe
 
-from core.models import Collectivite, Commune, Procedure
+from core.models import Collectivite, Commune, Procedure, TypeCollectivite
 
 
 def _avant(request: HttpRequest) -> date | None:
@@ -57,6 +59,206 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
         }
         for commune in communes.iterator(chunk_size=1000)
         for procedure in commune.procedures_principales
+    )
+    return response
+
+
+@require_safe
+def api_communes(request: HttpRequest) -> HttpResponse:
+    try:
+        avant = _avant(request)
+    except ValueError:
+        return HttpResponseBadRequest(
+            "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
+        )
+
+    communes = (
+        Commune.objects.filter(type=TypeCollectivite.COM)
+        .select_related("departement__region", "intercommunalite__departement__region")
+        .with_procedures_principales(avant=avant)
+        .prefetch_related(
+            "deleguee",
+            models.Prefetch(
+                "procedures_principales__perimetre",
+                Commune.objects.all(),
+                to_attr="communes",
+            ),
+        )
+    )  # FIXME
+    if departement := request.GET.get("departement"):
+        communes = communes.filter(departement__code_insee=departement)
+
+    # Ne regarde que les procédures principales non-archivées impliquant une commune COM
+    response = HttpResponse(content_type="text/csv;charset=utf-8")
+    csv_writer = DictWriter(
+        response,
+        dialect="unix",
+        fieldnames=[
+            "annee_cog",
+            "code_insee",
+            "com_nom",
+            "com_code_departement",
+            "com_nom_departement",
+            "com_code_region",
+            "com_nom_region",
+            "com_nouvelle",
+            "epci_reg",
+            "epci_region",
+            "epci_dept",
+            "epci_departement",
+            "epci_type",
+            "epci_nom",
+            "epci_siren",
+            # "collectivite_porteuse",
+            # "cp_type",
+            # "cp_code_region",
+            # "cp_lib_region",
+            # "cp_code_departement",
+            # "cp_nom_departement",
+            # "cp_nom",
+            # "cp_siren",
+            # "cp_code_insee",
+            # "plan_code_etat_simplifie",
+            # "plan_libelle_code_etat_simplifie",
+            # "plan_code_etat_complet",
+            # "plan_libelle_code_etat_complet",
+            # "types_pc",
+            # # En cours
+            # "pc_docurba_id",
+            # "pc_num_procedure_sudocuh",
+            # "pc_nb_communes",
+            # "pc_type_document",
+            # "pc_type_procedure",
+            # "pc_date_prescription",
+            # "pc_date_arret_projet",
+            # "pc_date_pac",
+            # "pc_date_pac_comp",
+            # "pc_plui_valant_scot",
+            # "pc_pluih",
+            # "pc_sectoriel",
+            # "pc_pdu_tient_lieu",
+            # "pc_pdu_obligatoire",
+            # "pc_nom_sst",
+            # "pc_cout_sst_ht",
+            # "pc_cout_sst_ttc",
+            # # Approuvée
+            "pa_docurba_id",
+            "pa_num_procedure_sudocuh",
+            "pa_nb_communes",
+            "pa_type_document",
+            "pa_type_procedure",
+            # "pa_sectoriel",
+            # "pa_date_prescription",
+            # "pa_date_arret_projet",
+            # "pa_date_pac",
+            # "pa_date_pac_comp",
+            # "pa_date_approbation",
+            # "pa_annee_prescription",
+            # "pa_annee_approbation",
+            # "pa_date_executoire",
+            # "pa_delai_approbation",
+            # "pa_plui_valant_scot",
+            # "pa_pluih",
+            # "pa_pdu_tient_lieu",
+            # "pa_pdu_obligatoire",
+            # "pa_nom_sst",
+            # "pa_cout_sst_ht",
+            # "pa_cout_sst_ttc",
+            # "q_eval_environmnt",
+        ],
+    )
+
+    def format_row(commune: Commune) -> dict[str, str]:
+        champs_commune = {
+            "annee_cog": "2024",
+            "code_insee": commune.code_insee_unique,
+            "com_nom": commune.nom,
+            "com_code_departement": commune.departement.code_insee,
+            "com_nom_departement": commune.departement.nom,
+            "com_code_region": commune.departement.region.code_insee,
+            "com_nom_region": commune.departement.region.nom,
+            "com_nouvelle": commune.is_nouvelle,
+            "epci_reg": commune.intercommunalite.departement.region.code_insee,
+            "epci_region": commune.intercommunalite.departement.region.nom,
+            "epci_dept": commune.intercommunalite.departement.code_insee,
+            "epci_departement": commune.intercommunalite.departement.nom,
+            "epci_type": commune.intercommunalite.type,
+            "epci_nom": commune.intercommunalite.nom,
+            "epci_siren": commune.intercommunalite.code_insee,
+            # "collectivite_porteuse": "collectivitePorteuse",  const collectivitePorteuse = (planCurrent || planOpposable)?.collectivite_porteuse_id || commune.code
+            # "cp_type": "porteuse.type",
+            # "cp_code_region": "porteuse.regionCode",
+            # "cp_lib_region": "porteuse.departement.region.intitule",
+            # "cp_code_departement": "porteuse.departementCode",
+            # "cp_nom_departement": "porteuse.departement.intitule",
+            # "cp_nom": "porteuse.intitule",
+            # "cp_siren": "porteuse.siren",
+            # "cp_code_insee": "porteuse.insee",
+            # "plan_code_etat_simplifie": "sudocuhCodes.etat.code",
+            # "plan_libelle_code_etat_simplifie": "sudocuhCodes.etat.label",
+            # "plan_code_etat_complet": "sudocuhCodes.bcsi.code",
+            # "plan_libelle_code_etat_complet": "sudocuhCodes.bcsi.label",
+            # "types_pc": "currentsDocTypes",
+        }
+
+        champs_en_cours = {}
+        if False:
+            champs_en_cours = {  # "pc_docurba_id": "planCurrent.id",
+                # "pc_num_procedure_sudocuh": "planCurrent.from_sudocuh",
+                # "pc_nb_communes": "planCurrent.communesPerimetres.length",
+                # "pc_type_document": "planCurrent.docType",
+                # "pc_type_procedure": "planCurrent.type",
+                # "pc_date_prescription": "planCurrent.prescription.date_iso",
+                # "pc_date_arret_projet": "planCurrent.arret.date_iso",
+                # "pc_date_pac": "planCurrent.pac.date_iso",
+                # "pc_date_pac_comp": "planCurrent.pacComp.date_iso",
+                # "pc_plui_valant_scot": "planCurrent.is_scot",
+                # "pc_pluih": "planCurrent.is_pluih",
+                # "pc_sectoriel": "planCurrent.isSectoriel",
+                # "pc_pdu_tient_lieu": "planCurrent.is_pdu",
+                # "pc_pdu_obligatoire": "planCurrent.mandatory_pdu",
+                # "pc_nom_sst": "planCurrent.moe.nomprestaexterne",
+                # "pc_cout_sst_ht": "planCurrent.moe.coutplanht",
+                # "pc_cout_sst_ttc": "planCurrent.moe.coutplanttc",
+                # "pc_trajectoire_ZAN": "",
+                # "pc_zone_acceleration_ENR": "",
+                # "pc_trait_de_cote": "",
+                # "pc_feu_de_foret": "",
+                # "pc_autre": "",
+            }
+
+        champs_opposable = {}
+        if commune.plan_opposable:
+            champs_opposable = {
+                "pa_docurba_id": commune.plan_opposable.id,
+                "pa_num_procedure_sudocuh": commune.plan_opposable.from_sudocuh,
+                "pa_nb_communes": len(commune.plan_opposable.communes),
+                "pa_type_document": commune.plan_opposable.doc_type,
+                "pa_type_procedure": commune.plan_opposable.type,
+                # "pa_sectoriel": "planOpposable.isSectoriel",
+                # "pa_date_prescription": "planOpposable.prescription.date_iso",
+                # "pa_date_arret_projet": "planOpposable.arret.date_iso",
+                # "pa_date_pac": "planOpposable.pac.date_iso",
+                # "pa_date_pac_comp": "planOpposable.pacComp.date_iso",
+                # "pa_date_approbation": "planOpposable.approbation.date_iso",
+                # "pa_annee_prescription": "planOpposable.prescription.year",
+                # "pa_annee_approbation": "planOpposable.approbation.year",
+                # "pa_date_executoire": "planOpposable.exec.date_iso",
+                # "pa_delai_approbation": "planOpposable.approbationDelay",
+                # "pa_plui_valant_scot": "planOpposable.is_scot",
+                # "pa_pluih": "planOpposable.is_pluih",
+                # "pa_pdu_tient_lieu": "planOpposable.is_pdu",
+                # "pa_pdu_obligatoire": "planOpposable.mandatory_pdu",
+                # "pa_nom_sst": "planOpposable.moe.nomprestaexterne",
+                # "pa_cout_sst_ht": "planOpposable.moe.coutplanht",
+                # "pa_cout_sst_ttc": "planOpposable.moe.coutplanttc",
+                # "q_eval_environmnt": "planOpposable.volet_qualitatif.eval_environmental",
+            }
+        return champs_commune | champs_opposable | champs_en_cours
+
+    csv_writer.writeheader()
+    csv_writer.writerows(
+        format_row(commune) for commune in communes.iterator(chunk_size=1000)
     )
     return response
 

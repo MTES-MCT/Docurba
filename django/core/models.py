@@ -550,6 +550,10 @@ class Commune(Collectivite):
     def is_opposable(self, procedure: Procedure) -> bool:
         return procedure in (self.plan_opposable, self.schema_opposable)
 
+    @property
+    def is_nouvelle(self) -> bool:
+        return self.deleguee.count() > 0
+
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
     commune = models.ForeignKey(Commune, models.DO_NOTHING, db_constraint=False)
