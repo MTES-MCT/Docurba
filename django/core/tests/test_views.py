@@ -125,9 +125,14 @@ class TestAPICommunes:
     def test_format_csv(
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
+        groupement = create_groupement()
         commune = create_commune()
-        plan_en_cours = commune.procedures.create(doc_type=TypeDocument.PLU)
-        plan_opposable = commune.procedures.create(doc_type=TypeDocument.PLU)
+        plan_en_cours = commune.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+        )
+        plan_opposable = commune.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+        )
         plan_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement_string="2024-12-01"
         )
@@ -164,11 +169,17 @@ class TestAPICommunes:
 
     @pytest.mark.django_db
     def test_filtre_par_department(self, client: Client) -> None:
+        groupement = create_groupement()
+
         commune_a = create_commune()
         commune_b = create_commune()
 
-        commune_a.procedures.create(doc_type=TypeDocument.PLU)
-        commune_b.procedures.create(doc_type=TypeDocument.PLU)
+        commune_a.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+        )
+        commune_b.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+        )
 
         response = client.get(
             "/api/communes", {"departement": commune_a.departement.code_insee}
@@ -178,11 +189,16 @@ class TestAPICommunes:
 
     @pytest.mark.django_db
     def test_retourne_tout_sans_filtre_departement(self, client: Client) -> None:
+        groupement = create_groupement()
         commune_a = create_commune()
         commune_b = create_commune()
 
-        commune_a.procedures.create(doc_type=TypeDocument.PLU)
-        commune_b.procedures.create(doc_type=TypeDocument.PLU)
+        commune_a.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+        )
+        commune_b.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+        )
 
         response = client.get("/api/communes")
         reader = DictReader(response.content.decode().splitlines())
@@ -199,8 +215,11 @@ class TestAPICommunes:
     def test_ignore_event_apres(
         self, client: Client, avant: str, champ_procedure_id: str
     ) -> None:
+        groupement = create_groupement()
         commune = create_commune()
-        procedure = commune.procedures.create(doc_type=TypeDocument.PLU)
+        procedure = commune.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+        )
 
         procedure.event_set.create(
             type="Délibération d'approbation", date_evenement_string="2024-01-01"
@@ -218,8 +237,11 @@ class TestAPICommunes:
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         for _ in range(2):
+            groupement = create_groupement()
             commune = create_commune()
-            _ = commune.procedures.create(doc_type=TypeDocument.PLU)
+            commune.procedures.create(
+                doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+            )
 
             with django_assert_num_queries(5):
                 response = client.get("/api/communes")

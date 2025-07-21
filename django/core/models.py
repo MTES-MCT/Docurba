@@ -199,7 +199,7 @@ class ProcedureManager(models.Manager):
             super()
             .get_queryset()
             .with_is_intercommunal()
-            .select_related("collectivite_porteuse")
+            .select_related("collectivite_porteuse__departement__region")
         )
 
 
@@ -480,6 +480,14 @@ class Collectivite(models.Model):
     def code_insee(self) -> str:
         return self.id.split("_")[0]
 
+    @property
+    def is_commune(self) -> bool:
+        return self.type in (
+            TypeCollectivite.COM,
+            TypeCollectivite.COMA,
+            TypeCollectivite.COMD,
+        )
+
     @cached_property
     def _scots_opposables(self) -> list[Procedure]:
         return [
@@ -637,6 +645,14 @@ class Commune(Collectivite):
             ),
             None,
         )
+
+    @property
+    def collectivite_porteuse(self) -> Collectivite:
+        if self.plan_en_cours:
+            return self.plan_en_cours.collectivite_porteuse
+        if self.plan_opposable:
+            return self.plan_opposable.collectivite_porteuse
+        return self
 
     def is_opposable(self, procedure: Procedure) -> bool:
         return procedure in (self.plan_opposable, self.schema_opposable)
