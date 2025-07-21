@@ -84,6 +84,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
         dialect="unix",
         fieldnames=[
             "annee_cog",
+            # Commune
             "code_insee",
             "com_nom",
             "com_code_departement",
@@ -98,15 +99,16 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "epci_type",
             "epci_nom",
             "epci_siren",
-            # "collectivite_porteuse",
-            # "cp_type",
-            # "cp_code_region",
-            # "cp_lib_region",
-            # "cp_code_departement",
-            # "cp_nom_departement",
-            # "cp_nom",
-            # "cp_siren",
-            # "cp_code_insee",
+            # Collectivité Porteuse
+            "collectivite_porteuse",
+            "cp_type",
+            "cp_code_region",
+            "cp_lib_region",
+            "cp_code_departement",
+            "cp_nom_departement",
+            "cp_nom",
+            "cp_siren",
+            "cp_code_insee",
             # "plan_code_etat_simplifie",
             # "plan_libelle_code_etat_simplifie",
             # "plan_code_etat_complet",
@@ -166,6 +168,24 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "com_code_region": commune.departement.region.code_insee,
             "com_nom_region": commune.departement.region.nom,
             "com_nouvelle": commune.is_nouvelle,
+            "collectivite_porteuse": commune.collectivite_porteuse.code_insee,
+            "cp_type": commune.collectivite_porteuse.type,
+            "cp_code_region": commune.collectivite_porteuse.departement.region.code_insee,
+            "cp_lib_region": commune.collectivite_porteuse.departement.region.nom,
+            "cp_code_departement": commune.collectivite_porteuse.departement.code_insee,
+            "cp_nom_departement": commune.collectivite_porteuse.departement.nom,
+            "cp_nom": commune.collectivite_porteuse.nom,
+            "cp_siren": commune.collectivite_porteuse.code_insee
+            if not commune.collectivite_porteuse.is_commune
+            else "",
+            "cp_code_insee": commune.collectivite_porteuse.code_insee
+            if commune.collectivite_porteuse.is_commune
+            else "",
+            # "plan_code_etat_simplifie": "sudocuhCodes.etat.code",  # noqa: ERA001
+            # "plan_libelle_code_etat_simplifie": "sudocuhCodes.etat.label",  # noqa: ERA001
+            # "plan_code_etat_complet": "sudocuhCodes.bcsi.code",  # noqa: ERA001
+            # "plan_libelle_code_etat_complet": "sudocuhCodes.bcsi.label",  # noqa: ERA001
+            # "types_pc": "currentsDocTypes",  # noqa: ERA001
         }
 
         champs_intercommunalite = {}
@@ -179,20 +199,6 @@ def api_communes(request: HttpRequest) -> HttpResponse:
                 "epci_nom": intercommunalite.nom,
                 "epci_siren": intercommunalite.code_insee,
             }
-        # "collectivite_porteuse": "collectivitePorteuse",  const collectivitePorteuse = (planCurrent || planOpposable)?.collectivite_porteuse_id || commune.code
-        # "cp_type": "porteuse.type",  # noqa: ERA001
-        # "cp_code_region": "porteuse.regionCode",  # noqa: ERA001
-        # "cp_lib_region": "porteuse.departement.region.intitule",  # noqa: ERA001
-        # "cp_code_departement": "porteuse.departementCode",  # noqa: ERA001
-        # "cp_nom_departement": "porteuse.departement.intitule",  # noqa: ERA001
-        # "cp_nom": "porteuse.intitule",  # noqa: ERA001
-        # "cp_siren": "porteuse.siren",  # noqa: ERA001
-        # "cp_code_insee": "porteuse.insee",  # noqa: ERA001
-        # "plan_code_etat_simplifie": "sudocuhCodes.etat.code",  # noqa: ERA001
-        # "plan_libelle_code_etat_simplifie": "sudocuhCodes.etat.label",  # noqa: ERA001
-        # "plan_code_etat_complet": "sudocuhCodes.bcsi.code",  # noqa: ERA001
-        # "plan_libelle_code_etat_complet": "sudocuhCodes.bcsi.label",  # noqa: ERA001
-        # "types_pc": "currentsDocTypes",  # noqa: ERA001
 
         champs_en_cours = {}
         if plan_en_cours := commune.plan_en_cours:
