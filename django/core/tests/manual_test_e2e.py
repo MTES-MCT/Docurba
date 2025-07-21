@@ -697,6 +697,7 @@ class TestCommunes:
             cached_csv,
             try_parse_dates=True,
             schema_overrides={
+                "cp_siren": pl.String(),
                 "pa_plui_valant_scot": pl.String(),
                 "pa_pdu_obligatoire": pl.String(),
                 "pa_annee_prescription": pl.String(),
@@ -734,6 +735,7 @@ class TestCommunes:
             response.content,
             try_parse_dates=True,
             schema_overrides={
+                "cp_siren": pl.String(),
                 "pa_plui_valant_scot": pl.String(),
                 "pa_pdu_obligatoire": pl.String(),
                 "pa_annee_prescription": pl.String(),
@@ -784,6 +786,16 @@ class TestCommunes:
                 "epci_type",
                 "epci_nom",
                 "epci_siren",
+                # Collectivité Porteuse
+                "collectivite_porteuse",
+                "cp_type",
+                "cp_code_region",
+                "cp_lib_region",
+                "cp_code_departement",
+                "cp_nom_departement",
+                "cp_nom",
+                "cp_siren",
+                "cp_code_insee",
                 # En cours
                 "pc_docurba_id",
                 "pc_num_procedure_sudocuh",

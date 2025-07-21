@@ -1131,6 +1131,44 @@ class TestCommune:
         assert commune_nouvelle.is_nouvelle
 
 
+class TestCommuneCollectivitePorteuse:
+    @pytest.mark.parametrize(
+        ("plan_opposable", "plan_en_cours", "collectivite_attendue"),
+        [
+            (False, True, "EN COURS"),
+            (True, False, "OPPOSABLE"),
+            (True, True, "EN COURS"),
+            (False, False, "SOI MÊME"),
+        ],
+    )
+    @pytest.mark.django_db
+    def test_retourne_collectivite_portant_plan_en_cours(
+        self, plan_opposable: bool, plan_en_cours: bool, collectivite_attendue: str
+    ) -> None:
+        commune = create_commune(code_insee="SOI MÊME")
+
+        if plan_en_cours:
+            groupement = create_groupement(code_insee="EN COURS")
+            procedure = commune.procedures.create(
+                doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+            )
+            procedure.event_set.create(
+                type="Prescription", date_evenement_string="2022-12-01"
+            )
+
+        if plan_opposable:
+            groupement = create_groupement(code_insee="OPPOSABLE")
+            procedure = commune.procedures.create(
+                doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+            )
+            procedure.event_set.create(
+                type="Délibération d'approbation", date_evenement_string="2022-12-01"
+            )
+
+        commune = Commune.objects.with_procedures_principales().first()
+        assert commune.collectivite_porteuse.code_insee == collectivite_attendue
+
+
 class TestCommuneOpposabilite:
     @pytest.mark.django_db
     def test_plus_recente_opposable(
