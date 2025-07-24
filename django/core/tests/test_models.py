@@ -1,12 +1,15 @@
 # ruff: noqa: FBT001, N803
 import logging
+from collections.abc import Callable
 from datetime import date
+from unittest import mock
 
 import pytest
 from pytest_django import DjangoAssertNumQueries
 
 from core.models import (
     EVENT_CATEGORY_BY_DOC_TYPE,
+    CodeCompetencePerimetre,
     Collectivite,
     Commune,
     Event,
@@ -1252,6 +1255,33 @@ class TestCommunePlanEnCours:
             assert commune.procedures_principales_en_cours == [procedure_principale]
             assert commune.plan_en_cours == procedure_principale
 
+    @pytest.mark.django_db
+    def test_exclut_pos(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        # Ce test pourra être supprimé quand les POS ne seront pas considérés "lancés"/ en cours
+        # https://github.com/MTES-MCT/Docurba/issues/1174
+        commune = create_commune()
+
+        procedure_principale = commune.procedures.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure_principale.event_set.create(
+            type="Prescription", date_evenement_string="2024-12-01"
+        )
+
+        procedure_pos = commune.procedures.create(
+            doc_type=TypeDocument.POS, collectivite_porteuse=commune
+        )
+        procedure_pos.event_set.create(
+            type="Prescription", date_evenement_string="2024-12-01"
+        )
+
+        with django_assert_num_queries(3):
+            commune = Commune.objects.with_procedures_principales().get()
+            assert commune.procedures_principales_en_cours == [procedure_principale]
+            assert commune.plan_en_cours == procedure_principale
+
 
 class TestCommune:
     @pytest.mark.django_db
@@ -1552,3 +1582,80 @@ class TestCommuneOpposabilite:
 
             assert commune.is_opposable(procedure_opposable_janvier)
             assert not commune.is_opposable(procedure_opposable_fevrier)
+
+
+class TestCommuneCodeEtat:
+    @pytest.mark.django_db
+    def test_commune_sans_plans(self) -> None:
+        commune = create_commune()
+
+        commune = Commune.objects.with_procedures_principales().first()
+        assert commune.code_etat_simplifie == "99"
+        assert commune.code_etat_complet == "9999"
+
+    @pytest.mark.django_db
+    def test_fonctionne_et_log_erreur_quand_code_etat_incoherent(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        commune = create_commune()
+
+        with mock.patch.object(
+            Commune, "code_etat_complet", new_callable=mock.PropertyMock
+        ) as mock_code_etat_complet:
+            mock_code_etat_complet.return_value = "8888"
+            assert commune.libelle_code_etat_complet == ""
+            assert caplog.record_tuples == [
+                (
+                    "root",
+                    logging.ERROR,
+                    f"Code état (8888) incohérent pour {commune.code_insee}",
+                )
+            ]
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("create_collectivite", "perimetre_count", "expected_code"),
+        [
+            (create_commune, 1, CodeCompetencePerimetre.COMPETENCE_COMMUNE),
+            (
+                create_groupement,
+                1,
+                CodeCompetencePerimetre.COMPETENCE_EPCI_PROCEDURE_COMMUNALE,
+            ),
+            (
+                create_groupement,
+                2,
+                CodeCompetencePerimetre.COMPETENCE_EPCI_PERIMETRE_INFERIEUR_EPCI,
+            ),
+            (
+                create_groupement,
+                3,
+                CodeCompetencePerimetre.COMPETENCE_EPCI_PERIMETRE_EPCI,
+            ),
+        ],
+    )
+    def test_competence_intercommunalite_code(
+        self,
+        create_collectivite: Callable[[], Collectivite],
+        perimetre_count: int,
+        expected_code: CodeCompetencePerimetre,
+    ) -> None:
+        collectivite_porteuse = create_collectivite()
+
+        if not collectivite_porteuse.is_commune:
+            for _ in range(3):
+                commune = create_commune()
+                commune.adhesions.add(collectivite_porteuse)
+
+            ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        procedure = collectivite_porteuse.procedure_set.create()
+        for _ in range(perimetre_count):
+            commune = create_commune()
+            procedure.perimetre.add(commune)
+
+        procedure = Procedure.objects.get(id=procedure.id)
+        assert (
+            procedure.competence_intercommunalite_code(collectivite_porteuse)
+            == expected_code
+        )

@@ -111,10 +111,10 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "cp_nom",
             "cp_siren",
             "cp_code_insee",
-            # "plan_code_etat_simplifie",
-            # "plan_libelle_code_etat_simplifie",
-            # "plan_code_etat_complet",
-            # "plan_libelle_code_etat_complet",
+            "plan_code_etat_simplifie",
+            "plan_libelle_code_etat_simplifie",
+            "plan_code_etat_complet",
+            "plan_libelle_code_etat_complet",
             # "types_pc",
             # En cours
             "pc_docurba_id",
@@ -183,10 +183,10 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "cp_code_insee": commune.collectivite_porteuse.code_insee
             if commune.collectivite_porteuse.is_commune
             else "",
-            # "plan_code_etat_simplifie": "sudocuhCodes.etat.code",  # noqa: ERA001
-            # "plan_libelle_code_etat_simplifie": "sudocuhCodes.etat.label",  # noqa: ERA001
-            # "plan_code_etat_complet": "sudocuhCodes.bcsi.code",  # noqa: ERA001
-            # "plan_libelle_code_etat_complet": "sudocuhCodes.bcsi.label",  # noqa: ERA001
+            "plan_code_etat_simplifie": commune.code_etat_simplifie,
+            "plan_libelle_code_etat_simplifie": commune.libelle_code_etat_simplifie,
+            "plan_code_etat_complet": commune.code_etat_complet,
+            "plan_libelle_code_etat_complet": commune.libelle_code_etat_complet,
             # "types_pc": "currentsDocTypes",  # noqa: ERA001
         }
 
