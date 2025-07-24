@@ -1,87 +1,114 @@
 ---
-apiPath: "/api/urba/exports/communes"
+apiPath: "/api/communes"
 files: []
 order: 1
 visible: true
 ---
-https://nuxt3.docurba.incubateur.net/api/urba/exports/communes?departementCode=56
+
+https://docurba.beta.gouv.fr/api/communes?departement=01
+
+https://docurba.beta.gouv.fr/api/communes?departement=01&avant=2025-01-01
 
 ### Description
-Cet endpoint retourne les données procédures par communes.
 
----
+Cet endpoint retourne les données par communes avec des informations sur l'intercommunalité, la collectivité porteuse, le plan en cours et le plan opposable.
 
-### Format de la requête
+### Requête
 
 #### Endpoint
-GET `/api/urba/exports/communes`
 
-#### Paramètres de requête disponibles :
-1. **`csv=true`**  
-   - Permet d'obtenir le résultat au format CSV au lieu de JSON.
+`/api/communes`
 
-2. **Filtres sur les attributs des communes**  
-   Vous pouvez filtrer les communes en ajoutant des paramètres de requête basés sur les attributs suivants :
-   - `code` : Le code INSEE de la commune.
-   - `siren` : Le code SIREN de la commune.
-   - `regionCode` : Le code de la région.
-   - `departementCode` : Le code du département.
-   - `intercomunaliteCode` : Le code de l'intercommunalité.
-   - `competencePLU` : La compétence de la commune en matière de PLU (Plan Local d'Urbanisme) true/false.
+#### Paramètres de requête disponibles
 
----
+- `departement` : Filtrer par le code INSEE du département.
+- `avant` : Ne prend en compte que les événements avant ce jour, au format `YYYY-MM-DD`.
 
-### Format de la réponse
+### Réponse
 
-La réponse est une liste d'objets, chaque objet représentant les données d'une commune. Voici la structure de la réponse :
+La réponse est un CSV avec les colonnes suivantes :
 
-```json
-{
-  "epci_reg": "Code de la région de l'intercommunalité", // String
-  "epci_region": "Nom de la région de l'intercommunalité", // String
-  "epci_dept": "Code du département de l'intercommunalité", // String
-  "epci_departement": "Nom du département de l'intercommunalité", // String
-  "epci_type": "Type d'intercommunalité", // String
-  "epci_nom": "Nom de l'intercommunalité", // String
-  "epci_siren": "SIREN de l'intercommunalité", // String
-  "com_nom": "Nom de la commune", // String
-  "collectivite_porteuse": "Code INSEE ou SIREN de la commune ou de l'intercommunalité porteuse", // String
-  "plan_etat_code1": "Code état 1 sudocuh", // String
-  "plan_libelle_etat_code1": "Libellé du code état 1 sudocuh", // String
-  "plan_etat_code2": "Code état 2 sudocuh", // String
-  "plan_libelle_etat_code2": "Libellé du code état 2 sudocuh", // String
-  "plan_code_etat_bcsi": "Code état BCSI", // String
-  "plan_libelle_code_etat_bcsi": "Libellé du code état BCSI", // String
-  "types_pc": "Types de procédures principales en cours", // String
-  "pc_num_procedure": "Identifiant sudocuh de la procédure principale en cours", // Number
-  "pc_nb_communes": "Nombre de communes dans le périmètre de la procédure en cours", // Number
-  "pc_type_document": "Type de document du plan en cours", // String
-  "pc_type_procedure": "Type de procédure en cours", // String
-  "pc_date_prescription": "Date ISO de la prescription en cours", // String
-  "pc_date_arret_projet": "Date ISO de l'arrêt de projet en cours", // String
-  "pc_date_pac": "Date ISO du PAC en cours", // String
-  "pc_date_pac_comp": "Date ISO de la complétion du PAC en cours", // String
-  "pc_plui_valant_scot": "Le plan en cours vaut SCOT", // Boolean
-  "pc_pluih": "Le plan en cours est un PLUIH", // Boolean
-  "pc_sectoriel": "Le plan en cours est sectoriel", // Boolean
-  "pc_pdu_tient_lieu": "Le plan en cours tient lieu de PDU", // Boolean
-  "pc_pdu_obligatoire": "Le plan en cours rend le PDU obligatoire", // Boolean
-  "pa_id": "Identifiant Docurba du document opposable", // String
-  "pa_num_procedure": "Identifiant sudocuh de la procédure opposable", // Number
-  "pa_nb_communes": "Nombre de communes dans le périmètre du plan opposable", // Number
-  "pa_type_document": "Type de document du plan opposable", // String
-  "pa_type_procedure": "Type de procédure opposable", // String
-  "pa_sectoriel": "Le plan opposable est sectoriel", // Boolean
-  "pa_date_prescription": "Date ISO de la prescription opposable", // String
-  "pa_date_arret_projet": "Date ISO de l'arrêt de projet opposable", // String
-  "pa_date_pac": "Date ISO du PAC opposable", // String
-  "pa_date_pac_comp": "Date ISO de la complétion du PAC opposable", // String
-  "pa_date_approval": "Date ISO de l'approbation du plan opposable", // String
-  "pa_plui_valant_scot": "Le plan opposable vaut SCOT", // Boolean
-  "pa_pluih": "Le plan opposable est un PLUIH", // Boolean
-  "pa_pdu_tient_lieu": "Le plan opposable tient lieu de PDU", // Boolean
-  "pa_pdu_obligatoire": "Le plan opposable rend le PDU obligatoire", // Boolean
-  "proc_nb_revisions": "Nombre de révisions", // Number
-  "proc_nb_modifications": "Nombre de modifications", // Number
-}
+Pour la commune :
 
+- `annee_cog` : Pour l'instant codé en dur avec la valeur `2024`
+- `code_insee` : Code INSEE de la commune
+- `com_nom` : Nom de la commune
+- `com_code_departement` : Code INSEE du département
+- `com_nom_departement` : Nom du département
+- `com_code_region` : Code INSEE de la région
+- `com_nom_region` : Nom de la région
+- `com_nouvelle` : Booléen indiquant si c'est c'est une commune nouvelle
+- `plan_code_etat_simplifie` : Code État sur 2 chiffres
+- `plan_libelle_code_etat_simplifie` : Libellé du code État simplifié
+- `plan_code_etat_complet` : Code état sur 4 chiffres
+- `plan_libelle_code_etat_complet` : Libellé du code État complet
+
+<br>
+Pour l'intercommunalité, si elle existe :
+
+- `epci_reg` : Code INSEE de la région
+- `epci_region` : Nom de la région
+- `epci_dept` : Code INSEE du département
+- `epci_departement` : Nom du département
+- `epci_type` : Type d'intercommunalité
+- `epci_nom` : Nom de l'intercommunalité
+- `epci_siren` : SIREN de l'intercommunalité
+
+<br>
+Pour la collectivité porteuse :
+
+- `collectivite_porteuse` : Code INSEE
+- `cp_type` : Type de la collectivité
+- `cp_code_region` : Code INSEE de la région
+- `cp_lib_region` : Nom de la région
+- `cp_code_departement` : Code INSEE du département
+- `cp_nom_departement` : Nom du département
+- `cp_nom` : Nom de la collectivité
+- `cp_siren` : SIREN si la collectivité porteuse est une intercommunalité
+- `cp_code_insee` : Code INSEE si la collectivité porteuse est une commune
+
+<br>
+Pour le plan en cours :
+
+- `pc_docurba_id` : Identifiant Docurba
+- `pc_num_procedure_sudocuh` : Identifiant Sudocuh, optionnel
+- `pc_nb_communes` : Taille du périmètre de plan
+- `pc_type_document` : Type de document
+- `pc_type_procedure` : Type de procédure
+- `pc_date_prescription` : Date de prescription
+- `pc_date_arret_projet` : Date d'arrêt de projet
+- `pc_date_pac` : Date de porter à connaissance
+- `pc_date_pac_comp` : Date de porter à connaissance complémentaire
+- `pc_plui_valant_scot` : Booléen indiquant si ce plan vaut SCoT
+- `pc_sectoriel` : Booléen indiquant si le plan est sectoriel
+- `pc_pdu_obligatoire` : Booléen indiquant si un PDU est obligatoire
+- `pc_nom_sst` : Nom du prestataire externe
+- `pc_cout_sst_ht` : Coût HT
+- `pc_cout_sst_ttc` : Coût TTC
+
+<br>
+Pour le plan opposable :
+
+- `pa_docurba_id` : Identifiant Docurba
+- `pa_num_procedure_sudocuh` : Identifiant Sudocuh, optionnel
+- `pa_nb_communes` : Taille du périmètre de ce plan
+- `pa_type_document` : Type de document
+- `pa_type_procedure` : Type de procédure
+- `pa_date_prescription` : Date de prescription
+- `pa_date_arret_projet` : Date d'arrêt de projet
+- `pa_date_pac` : Date de porter à connaissance
+- `pa_date_pac_comp` : Date de porter à connaissance complémentaire
+- `pa_date_approbation` : Date d'approbation
+- `pa_annee_prescription` : Année de prescription
+- `pa_annee_approbation` : Année d'approbation
+- `pa_date_executoire` : Date du caractère exécutoire
+- `pa_delai_approbation` : Nombre de jours entre la prescription et l'approbation
+- `pa_plui_valant_scot` : Booléen indiquant si ce plan vaut SCoT
+- `pa_sectoriel` : Booléen indiquant si le plan est sectoriel
+- `pa_pdu_obligatoire` : Booléen indiquant si un PDU est obligatoire
+- `pa_nom_sst` : Nom du prestataire externe
+- `pa_cout_sst_ht` : Coût HT
+- `pa_cout_sst_ttc` : Coût TTC
+
+<br>
+Toutes les dates sont au format ISO 8601.

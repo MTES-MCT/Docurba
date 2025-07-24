@@ -7,6 +7,8 @@ visible: true
 
 https://docurba.beta.gouv.fr/api/perimetres?departement=01
 
+https://docurba.beta.gouv.fr/api/perimetres?departement=01&avant=2025-01-01
+
 ### Description
 
 Retourne les procédures de chaque commune et leur opposabilité.
