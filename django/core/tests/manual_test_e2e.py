@@ -796,6 +796,10 @@ class TestCommunes:
                 "cp_nom",
                 "cp_siren",
                 "cp_code_insee",
+                "plan_code_etat_simplifie",
+                "plan_libelle_code_etat_simplifie",
+                "plan_code_etat_complet",
+                "plan_libelle_code_etat_complet",
                 # En cours
                 "pc_docurba_id",
                 "pc_num_procedure_sudocuh",
@@ -833,12 +837,12 @@ class TestCommunes:
             if django_row["pc_date_prescription"] == "0000-00-00":
                 django_row["pc_date_prescription"] = ""
             nuxt_row = {  # noqa: PLW2901
-                k: str(v or "").capitalize()
+                k: str(v or "").capitalize().strip()
                 for k, v in nuxt_row.items()
                 if k in colonnes_filtrees
             }
             django_row = {  # noqa: PLW2901
-                k: str(v or "").capitalize()
+                k: str(v or "").capitalize().strip()
                 for k, v in django_row.items()
                 if k in colonnes_filtrees
             }

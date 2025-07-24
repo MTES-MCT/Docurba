@@ -1,7 +1,7 @@
 import logging
 import uuid
 from datetime import date
-from enum import StrEnum, auto
+from enum import IntEnum, StrEnum, auto
 from functools import cached_property
 from operator import attrgetter
 from typing import Self
@@ -47,6 +47,78 @@ PLU_LIKE = (
     TypeDocument.PLUIHM,
     TypeDocument.PLUIM,
 )
+
+
+class CodeCompetencePerimetre(IntEnum):
+    COMPETENCE_COMMUNE = 1
+    COMPETENCE_EPCI_PERIMETRE_EPCI = 2
+    COMPETENCE_EPCI_PERIMETRE_INFERIEUR_EPCI = 3
+    COMPETENCE_EPCI_PROCEDURE_COMMUNALE = 4
+    PAS_DE_PLAN = 9
+
+
+TYPE_DOCUMENT_TO_CODE = {
+    TypeDocument.CC: 1,
+    TypeDocument.POS: 2,
+    TypeDocument.PLU: 3,
+    TypeDocument.PLUI: 3,
+    TypeDocument.PLUIH: 3,
+    TypeDocument.PLUIM: 3,
+    TypeDocument.PLUIHM: 3,
+}
+
+CODE_ETAT_SIMPLIFIE_TO_LIBELLE = {
+    "99": "RNU",
+    "91": "CC en élaboration",
+    "92": "POS en élaboration",
+    "93": "PLU en élaboration",
+    "19": "CC approuvée",
+    "11": "CC en révision",
+    "13": "CC approuvée - PLU en élaboration",
+    "29": "POS approuvé",
+    "21": "POS approuvé - CC en élaboration",
+    "22": "POS en révision ",
+    "23": "POS approuvé - PLU en révision",
+    "39": "PLU approuvé",
+    "31": "PLU approuvé - CC en élaboration",
+    "33": "PLU en révision",
+}
+
+CODE_ETAT_COMPLET_TO_LIBELLE = {
+    "1111": "CC approuvée - révision CC - Compétence commune",
+    "1131": "CC approuvée - élaboration PLU - Compétence commune",
+    "1199": "CC approuvée - aucune procédure en cours - Compétence commune",
+    "1332": "CC-I sect approuvée - élaboration PLU-I",
+    "1399": "CC-I sect approuvée - aucune procédure en cours",
+    "1414": "CC approuvée - révision CC - Compétence EPCI",
+    "1432": "CC approuvée - élaboration PLU-I",
+    "1433": "CC approuvée - élaboration PLU-I sectoriel",
+    "1434": "CC approuvée - élaboration PLU - Compétence EPCI",
+    "1499": "CC approuvée - aucune procédure en cours - Compétence EPCI",
+    "2131": "POS approuvé - révision de PLU - Compétence commune",
+    "2199": "POS approuvé - aucune procédure en cours - Compétence commune",
+    "2432": "POS approuvé - révision de PLU-I",
+    "2499": "POS approuvé - aucune procédure en cours - Compétence EPCI",
+    "3111": "PLU approuvé - élaboration CC - Compétence commune",
+    "3131": "PLU approuvé - révision de PLU - Compétence commune",
+    "3199": "PLU approuvé - aucune procédure en cours - Compétence commune",
+    "3232": "PLU-I approuvé - révision de PLU-I",
+    "3299": "PLU-I approuvé - aucune procédure en cours",
+    "3332": "PLU-I sect approuvé - révision de PLU-I",
+    "3333": "PLU-I sect approuvé - révision de PLU-I sectoriel",
+    "3399": "PLU-I sect approuvé - aucune procédure en cours",
+    "3432": "PLU approuvé - révision de PLU-I",
+    "3433": "PLU approuvé - révision de PLU-I sectoriel",
+    "3434": "PLU approuvé - révision de PLU - Compétence EPCI",
+    "3499": "PLU approuvé - aucune procédure en cours - Compétence EPCI",
+    "9911": "RNU - élaboration CC - Compétence commune",
+    "9914": "RNU - élaboration CC - Compétence EPCI",
+    "9931": "RNU - élaboration PLU - Compétence commune",
+    "9932": "RNU - élaboration PLU-I",
+    "9933": "RNU - élaboration PLU-I sectoriel",
+    "9934": "RNU - élaboration PLU - Compétence EPCI",
+    "9999": "RNU - aucune procédure en cours",
+}
 
 
 class EventCategory(StrEnum):
@@ -380,6 +452,21 @@ class Procedure(models.Model):
 
         return self.doc_type
 
+    @property
+    def type_document_code(self) -> int:
+        return TYPE_DOCUMENT_TO_CODE[self.type_document]
+
+    def competence_intercommunalite_code(
+        self, collectivite: "Collectivite"
+    ) -> CodeCompetencePerimetre:
+        if collectivite.is_commune:
+            return CodeCompetencePerimetre.COMPETENCE_COMMUNE
+        if not self.is_intercommunal:
+            return CodeCompetencePerimetre.COMPETENCE_EPCI_PROCEDURE_COMMUNALE
+        if self.is_sectoriel_consolide:
+            return CodeCompetencePerimetre.COMPETENCE_EPCI_PERIMETRE_INFERIEUR_EPCI
+        return CodeCompetencePerimetre.COMPETENCE_EPCI_PERIMETRE_EPCI
+
     @cached_property
     def is_interdepartemental(self) -> bool:
         return len({commune.departement for commune in self.communes}) > 1
@@ -664,6 +751,7 @@ class Commune(Collectivite):
                 procedure
                 for procedure in self.procedures_principales
                 if procedure.type != "Abrogation"
+                and procedure.type_document != TypeDocument.POS
                 and (
                     procedure.statut == EventCategory.PRESCRIPTION
                     or not procedure.statut
@@ -719,6 +807,56 @@ class Commune(Collectivite):
     @property
     def is_nouvelle(self) -> bool:
         return self.deleguee.count() > 0
+
+    @property
+    def code_etat_simplifie(self) -> str:
+        code_type_opposable = (
+            self.plan_opposable.type_document_code if self.plan_opposable else 9
+        )
+        code_type_en_cours = (
+            self.plan_en_cours.type_document_code if self.plan_en_cours else 9
+        )
+        return f"{code_type_opposable}{code_type_en_cours}"
+
+    @property
+    def code_etat_complet(self) -> str:
+        code_type_opposable = (
+            self.plan_opposable.type_document_code if self.plan_opposable else 9
+        )
+        code_competence_opposable = (
+            self.plan_opposable.competence_intercommunalite_code(
+                self.collectivite_porteuse
+            )
+            if self.plan_opposable
+            else 9
+        )
+        code_type_en_cours = (
+            self.plan_en_cours.type_document_code if self.plan_en_cours else 9
+        )
+        code_competence_en_cours = (
+            self.plan_en_cours.competence_intercommunalite_code(
+                self.collectivite_porteuse
+            )
+            if self.plan_en_cours
+            else 9
+        )
+        return f"{code_type_opposable}{code_competence_opposable}{code_type_en_cours}{code_competence_en_cours}"
+
+    @property
+    def libelle_code_etat_simplifie(self) -> str:
+        return CODE_ETAT_SIMPLIFIE_TO_LIBELLE[self.code_etat_simplifie]
+
+    @property
+    def libelle_code_etat_complet(self) -> str:
+        try:
+            return CODE_ETAT_COMPLET_TO_LIBELLE[self.code_etat_complet]
+        except KeyError:
+            logging.exception(
+                "Code état (%s) incohérent pour %s",
+                self.code_etat_complet,
+                self.code_insee,
+            )
+            return ""
 
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
