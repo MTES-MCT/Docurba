@@ -7,6 +7,8 @@ visible: true
 
 https://docurba.beta.gouv.fr/api/scots?departement=01
 
+https://docurba.beta.gouv.fr/api/scots?departement=01&avant=2025-01-01
+
 ### Description
 
 Cet endpoint retourne les collectivités porteuses de procédures SCoTs par combinaison SCoT opposable/SCoT en cours.
