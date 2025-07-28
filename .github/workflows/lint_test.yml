@@ -33,7 +33,7 @@ jobs:
           python-version-file: django/.python-version
           cache: "pip"
       - run: pip install -r requirements-dev.txt
-      - run: pytest
+      - run: pytest --create-db
         env:
           SECRET_KEY: test_secret_key
           DEBUG: "True"
