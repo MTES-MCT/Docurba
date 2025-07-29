@@ -137,7 +137,7 @@ class TestAPICommunes:
             type="Délibération d'approbation", date_evenement_string="2024-12-01"
         )
 
-        with django_assert_num_queries(5):
+        with django_assert_num_queries(4):
             response = client.get("/api/communes")
 
         assert response.status_code == 200
@@ -243,7 +243,7 @@ class TestAPICommunes:
                 doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
             )
 
-            with django_assert_num_queries(5):
+            with django_assert_num_queries(4):
                 response = client.get("/api/communes")
 
         reader = DictReader(response.content.decode().splitlines())

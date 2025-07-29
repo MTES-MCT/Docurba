@@ -13,7 +13,7 @@ from core.models import (
     EventCategory,
     Procedure,
     TypeDocument,
-    ViewCollectiviteAdhesionsDeep,
+    ViewCommuneAdhesionsDeep,
 )
 from core.tests.factories import (
     create_commune,
@@ -48,7 +48,7 @@ class TestProcedureCommunesCounts:
         commune_grand_grand_enfant = create_commune()
         commune_grand_grand_enfant.adhesions.add(groupement_grand_enfant)
 
-        ViewCollectiviteAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
         procedure_sectorielle = groupement.procedure_set.create(
             doc_type=TypeDocument.PLU
@@ -56,10 +56,8 @@ class TestProcedureCommunesCounts:
         procedure_sectorielle.perimetre.add(commune_enfant)
 
         with django_assert_num_queries(1):
-            procedure_sectorielle_with_counts = (
-                Procedure.objects.with_communes_counts().get(
-                    id=procedure_sectorielle.id
-                )
+            procedure_sectorielle_with_counts = Procedure.objects.get(
+                id=procedure_sectorielle.id
             )
             assert procedure_sectorielle_with_counts.perimetre__count == 1
             assert procedure_sectorielle_with_counts.communes_adherentes__count == 3
@@ -85,7 +83,7 @@ class TestProcedureCommunesCounts:
         commune_grand_grand_enfant = create_commune()
         commune_grand_grand_enfant.adhesions.add(groupement_grand_enfant)
 
-        ViewCollectiviteAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
         procedure_non_sectorielle = groupement.procedure_set.create(
             doc_type=TypeDocument.PLU
@@ -95,10 +93,8 @@ class TestProcedureCommunesCounts:
         )
 
         with django_assert_num_queries(1):
-            procedure_non_sectorielle_with_counts = (
-                Procedure.objects.with_communes_counts().get(
-                    id=procedure_non_sectorielle.id
-                )
+            procedure_non_sectorielle_with_counts = Procedure.objects.get(
+                id=procedure_non_sectorielle.id
             )
             assert procedure_non_sectorielle_with_counts.perimetre__count == 3
             assert procedure_non_sectorielle_with_counts.communes_adherentes__count == 3
@@ -120,15 +116,13 @@ class TestProcedureCommunesCounts:
         commune_double_adherente.adhesions.add(groupement_enfant)
         commune_double_adherente.adhesions.add(groupement)
 
-        ViewCollectiviteAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
         procedure = groupement.procedure_set.create(doc_type=TypeDocument.PLU)
         procedure.perimetre.add(commune_enfant, commune_double_adherente)
 
         with django_assert_num_queries(1):
-            procedure_with_counts = Procedure.objects.with_communes_counts().get(
-                id=procedure.id
-            )
+            procedure_with_counts = Procedure.objects.get(id=procedure.id)
             assert procedure_with_counts.perimetre__count == 2
             assert procedure_with_counts.communes_adherentes__count == 2
 
@@ -143,17 +137,30 @@ class TestProcedureCommunesCounts:
 
         commune_deleguee = create_commune(nouvelle=commune_enfant)
 
-        ViewCollectiviteAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
         procedure = groupement.procedure_set.create(doc_type=TypeDocument.PLU)
         procedure.perimetre.add(commune_enfant, commune_deleguee)
 
         with django_assert_num_queries(1):
-            procedure_with_counts = Procedure.objects.with_communes_counts().get(
-                id=procedure.id
-            )
+            procedure_with_counts = Procedure.objects.get(id=procedure.id)
             assert procedure_with_counts.perimetre__count == 1
             assert procedure_with_counts.communes_adherentes__count == 1
+
+    @pytest.mark.django_db
+    def test_retourne_zero_quand_pas_de_commune(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        groupement = create_groupement()
+
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        procedure = groupement.procedure_set.create(doc_type=TypeDocument.PLU)
+
+        with django_assert_num_queries(1):
+            procedure_with_counts = Procedure.objects.get(id=procedure.id)
+            assert procedure_with_counts.perimetre__count == 0
+            assert procedure_with_counts.communes_adherentes__count == 0
 
 
 def test_tous_document_types_ont_event_category() -> None:
