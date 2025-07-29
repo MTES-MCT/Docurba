@@ -7,7 +7,6 @@ from operator import attrgetter
 from typing import Self
 
 from django.db import connection, models
-from django.db.models.lookups import GreaterThan
 from django.urls import reverse
 
 
@@ -178,41 +177,41 @@ class ProcedureQuerySet(models.QuerySet):
             models.Prefetch("event_set", events, to_attr="events_prefetched")
         )
 
-    def with_is_intercommunal(self) -> Self:
+    def with_communes_counts(self) -> Self:
         # On utilise une Subquery plutôt qu'une expression directe pour permettre
         # à Django d'ignorer la Subquery quand il fait des count(*) dans l'admin,
         # ce qui rend l'admin plus rapide.
         return self.annotate(
-            is_intercommunal=models.Subquery(
-                CommuneProcedure.objects.filter(procedure=models.OuterRef("pk"))
-                .values("procedure")
-                .annotate(is_intercommunal=GreaterThan(models.Count("*"), 1))
-                .values("is_intercommunal")
-            )
+            # 254003304 est un bon EPCI pour tester DISTINCT : 1279 communes en 2024
+            communes_adherentes__count=models.functions.Coalesce(
+                models.Subquery(
+                    ViewCommuneAdhesionsDeep.objects.filter(
+                        groupement=models.OuterRef("collectivite_porteuse__id")
+                    )
+                    .values("groupement")
+                    .annotate(
+                        communes_adherentes__count=models.Count("commune"),
+                    )
+                    .values("communes_adherentes__count")
+                ),
+                0,
+            ),
+            perimetre__count=models.functions.Coalesce(
+                models.Subquery(
+                    CommuneProcedure.objects.filter(
+                        procedure=models.OuterRef("pk"), commune__nouvelle=None
+                    )
+                    .values("procedure")
+                    .annotate(perimetre__count=models.Count("*"))
+                    .values("perimetre__count")
+                ),
+                0,
+            ),
         )
 
-    def with_communes_counts(self) -> Self:
-        return self.annotate(
-            communes_adherentes__count=models.Subquery(
-                Collectivite.objects.filter(
-                    code_insee_unique=models.OuterRef("collectivite_porteuse")
-                )
-                .annotate(
-                    communes_adherentes__count=models.Count(
-                        "collectivites_adherentes_deep__commune", distinct=True
-                    )
-                )
-                .values("communes_adherentes__count")
-            ),
-            perimetre__count=models.Subquery(
-                CommuneProcedure.objects.filter(
-                    procedure=models.OuterRef("pk"), commune__nouvelle=None
-                )
-                .values("procedure")
-                .annotate(perimetre__count=models.Count("*"))
-                .values("perimetre__count")
-            ),
-        )
+    def without_adhesions_count(self) -> Self:
+        self.query.annotations.pop("communes_adherentes__count")
+        return self
 
 
 class ProcedureManager(models.Manager):
@@ -220,7 +219,7 @@ class ProcedureManager(models.Manager):
         return (
             super()
             .get_queryset()
-            .with_is_intercommunal()
+            .with_communes_counts()
             .select_related("collectivite_porteuse__departement__region")
         )
 
@@ -395,6 +394,10 @@ class Procedure(models.Model):
             return delai.days
 
     @property
+    def is_intercommunal(self) -> bool:
+        return self.perimetre__count > 1
+
+    @property
     def is_sectoriel_consolide(self) -> bool:
         # TODO Ajouter la vérif de la colonne is_sectoriel  # noqa: FIX002
         return self.communes_adherentes__count > self.perimetre__count
@@ -461,13 +464,11 @@ class CollectiviteQuerySet(models.QuerySet):
                 models.Prefetch(
                     "procedure_set",
                     Procedure.objects.with_events(avant=avant)
+                    .without_adhesions_count()
                     .filter(
                         doc_type="SCOT",
                         parente=None,
                         archived=False,
-                    )
-                    .annotate(
-                        is_intercommunal=models.Value("1")  # Désactive la jointure
                     ),
                     to_attr="scots",
                 ),
@@ -493,12 +494,6 @@ class Collectivite(models.Model):
     competence_schema = models.BooleanField(db_default=False)
     adhesions = models.ManyToManyField(
         "self", related_name="collectivites_adherentes", symmetrical=False
-    )
-    adhesions_deep = models.ManyToManyField(
-        "self",
-        through="ViewCollectiviteAdhesionsDeep",
-        related_name="collectivites_adherentes_deep",
-        symmetrical=False,
     )
     departement = models.ForeignKey(
         Departement, models.DO_NOTHING, related_name="collectivites"
@@ -579,38 +574,33 @@ class ViewCollectiviteAdhesionsDeep(models.Model):  # noqa: DJ008
 
 
 class CommuneQuerySet(models.QuerySet):
-    def with_procedures_principales(self, avant: date | None = None) -> Self:
+    def with_procedures_principales(
+        self, *, avant: date | None = None, with_adhesions_count: bool = True
+    ) -> Self:
+        procedures_principales = Procedure.objects.with_events(avant=avant).filter(
+            parente=None, archived=False
+        )
+        if not with_adhesions_count:
+            procedures_principales = procedures_principales.without_adhesions_count()
+
         return self.prefetch_related(
             models.Prefetch(
-                "procedures",
-                Procedure.objects.with_events(avant=avant)
-                .with_communes_counts()
-                .filter(parente=None, archived=False),
-                to_attr="procedures_principales",
+                "procedures", procedures_principales, to_attr="procedures_principales"
             )
         )
 
     def csv_prefetch(self) -> Self:
         return self.select_related(
             "departement__region", "intercommunalite__departement__region"
-        ).prefetch_related(
-            "deleguee",
-            models.Prefetch(
-                "procedures_principales__perimetre",
-                Commune.objects.all(),
-                to_attr="perimetre_prefetched",
-            ),
-        )
+        ).prefetch_related("deleguee")
 
     def with_scots(self, avant: date | None = None) -> Self:
         return self.prefetch_related(
             models.Prefetch(
                 "procedures",
-                Procedure.objects.with_events(avant=avant)
-                .annotate(
-                    is_intercommunal=models.Value("1")  # Désactive la jointure
-                )
-                .filter(doc_type="SCOT", parente=None, archived=False),
+                Procedure.objects.with_events(avant=avant).filter(
+                    doc_type="SCOT", parente=None, archived=False
+                ),
                 to_attr="procedures_principales",
             )
         )
@@ -625,6 +615,11 @@ class Commune(Collectivite):
     )
     procedures = models.ManyToManyField(
         Procedure, through="CommuneProcedure", related_name="perimetre"
+    )
+    adhesions_deep = models.ManyToManyField(
+        Collectivite,
+        through="ViewCommuneAdhesionsDeep",
+        related_name="communes_adherentes_deep",
     )
 
     objects = CommuneQuerySet.as_manager()
@@ -721,3 +716,18 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     class Meta:
         managed = False
         db_table = "procedures_perimetres"
+
+
+class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008
+    commune = models.ForeignKey(Commune, models.DO_NOTHING, related_name="+")
+    groupement = models.ForeignKey(Collectivite, models.DO_NOTHING, related_name="+")
+
+    class Meta:
+        db_table = "view_commune_adhesions_deep"
+        managed = False
+
+    @classmethod
+    def _refresh_materialized_view(cls) -> None:
+        """Uniquement pour les tests."""
+        with connection.cursor() as cursor:
+            cursor.execute(f"REFRESH MATERIALIZED VIEW {cls._meta.db_table}")

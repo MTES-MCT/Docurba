@@ -27,7 +27,9 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
             "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
         )
 
-    communes = Commune.objects.with_procedures_principales(avant=avant)
+    communes = Commune.objects.with_procedures_principales(
+        avant=avant, with_adhesions_count=False
+    )
     if departement := request.GET.get("departement"):
         communes = communes.filter(departement__code_insee=departement)
 
@@ -205,7 +207,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             champs_en_cours = {
                 "pc_docurba_id": plan_en_cours.id,
                 "pc_num_procedure_sudocuh": plan_en_cours.from_sudocuh,
-                "pc_nb_communes": len(plan_en_cours.perimetre_prefetched),
+                "pc_nb_communes": plan_en_cours.perimetre__count,
                 "pc_type_document": plan_en_cours.type_document,
                 "pc_type_procedure": plan_en_cours.type,
                 "pc_date_prescription": plan_en_cours.date_prescription,
@@ -230,7 +232,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             champs_opposable = {
                 "pa_docurba_id": plan_opposable.id,
                 "pa_num_procedure_sudocuh": plan_opposable.from_sudocuh,
-                "pa_nb_communes": len(plan_opposable.perimetre_prefetched),
+                "pa_nb_communes": plan_opposable.perimetre__count,
                 "pa_type_document": plan_opposable.type_document,
                 "pa_type_procedure": plan_opposable.type,
                 "pa_sectoriel": plan_opposable.is_sectoriel_consolide,
