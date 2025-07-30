@@ -16,6 +16,7 @@ class Migration(migrations.Migration):
                 condition=models.Q(("nouvelle__isnull", True)),
                 fields=["collectivite_ptr"],
                 name="collectivite_nouvelle_null_idx",
+                opclasses=["varchar_pattern_ops"],
             ),
         ),
     ]

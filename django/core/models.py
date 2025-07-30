@@ -632,6 +632,7 @@ class Commune(Collectivite):
                 fields=["collectivite_ptr"],
                 condition=models.Q(nouvelle__isnull=True),
                 name="collectivite_nouvelle_null_idx",
+                opclasses=["varchar_pattern_ops"],
             ),
         )
 
