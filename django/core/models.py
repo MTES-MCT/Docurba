@@ -624,6 +624,17 @@ class Commune(Collectivite):
 
     objects = CommuneQuerySet.as_manager()
 
+    class Meta:
+        indexes = (
+            # perimetre__count utilise commune__nouvelle=None pour savoir si une commune est déléguée.
+            # Cet index partiel permet un Index Only Scan (au lieu de Index Scan)
+            models.Index(
+                fields=["collectivite_ptr"],
+                condition=models.Q(nouvelle__isnull=True),
+                name="collectivite_nouvelle_null_idx",
+            ),
+        )
+
     def get_absolute_url(self) -> str:
         return reverse(
             "collectivite-detail",
