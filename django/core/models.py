@@ -657,25 +657,6 @@ class Collectivite(models.Model):
         ]
 
 
-class ViewCollectiviteAdhesionsDeep(models.Model):  # noqa: DJ008
-    from_collectivite = models.ForeignKey(
-        Collectivite, models.DO_NOTHING, related_name="+"
-    )
-    to_collectivite = models.ForeignKey(
-        Collectivite, models.DO_NOTHING, related_name="+"
-    )
-
-    class Meta:
-        db_table = "view_core_collectivite_adhesions_deep"
-        managed = False
-
-    @classmethod
-    def _refresh_materialized_view(cls) -> None:
-        """Uniquement pour les tests."""
-        with connection.cursor() as cursor:
-            cursor.execute(f"REFRESH MATERIALIZED VIEW {cls._meta.db_table}")
-
-
 class CommuneQuerySet(models.QuerySet):
     def with_procedures_principales(
         self, *, avant: date | None = None, with_adhesions_count: bool = True
