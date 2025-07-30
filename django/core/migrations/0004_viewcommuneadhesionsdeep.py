@@ -37,10 +37,10 @@ GROUP BY
 """
 
 CREATE_INDEX_FROM_COLLECTIVITE = """
-CREATE INDEX IF NOT EXISTS view_commune_adhesions_deep_commune_id_idx ON view_commune_adhesions_deep (commune_id) include (groupement_id)
+CREATE INDEX IF NOT EXISTS view_commune_adhesions_deep_commune_id_idx ON view_commune_adhesions_deep (commune_id varchar_pattern_ops) include (groupement_id)
 """
 CREATE_INDEX_TO_COLLECTIVITE = """
-CREATE INDEX IF NOT EXISTS view_commune_adhesions_deep_groupement_id_idx ON view_commune_adhesions_deep (groupement_id) include (commune_id)
+CREATE INDEX IF NOT EXISTS view_commune_adhesions_deep_groupement_id_idx ON view_commune_adhesions_deep (groupement_id varchar_pattern_ops) include (commune_id)
 """
 
 DROP_VIEW = "DROP MATERIALIZED VIEW if EXISTS view_commune_adhesions_deep"
