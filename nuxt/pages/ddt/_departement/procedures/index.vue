@@ -3,8 +3,14 @@
     <v-row>
       <v-col cols="12">
         <v-alert type="info" text class="mb-0">
-          L'export des communes a été déplacé dans l'onglet <a href="">Mes collectivités</a>.
-          Suivez les nouveautés de l'outil grâce à notre <a href="https://docurba.crisp.help/fr/article/les-lettres-dinfos-1t8h3i/?bust=1752738164382">lettre d'info</a> !
+          L'export des communes a été déplacé dans l'onglet
+          <NuxtLink :to="`/ddt/${$route.params.departement}/collectivites`">
+            Mes collectivités
+          </NuxtLink>.
+          Suivez les nouveautés de l'outil grâce à notre
+          <a href="https://docurba.crisp.help/fr/article/les-lettres-dinfos-1t8h3i/?bust=1752738164382">
+            lettre d'info
+          </a> !
         </v-alert>
       </v-col>
       <v-col cols="12" class="d-flex align-center justify-space-between pb-0 pt-0">
