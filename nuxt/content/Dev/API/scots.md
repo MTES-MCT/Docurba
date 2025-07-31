@@ -1,7 +1,7 @@
 ---
 apiPath: "/api/scots"
 files: []
-order: 10
+order: 2
 visible: true
 ---
 

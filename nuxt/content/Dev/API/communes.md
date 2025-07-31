@@ -1,7 +1,7 @@
 ---
 apiPath: "/api/urba/exports/communes"
 files: []
-order: 10
+order: 1
 visible: true
 ---
 https://nuxt3.docurba.incubateur.net/api/urba/exports/communes?departementCode=56
