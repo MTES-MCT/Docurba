@@ -2,6 +2,7 @@
   <div v-if="collectivite">
     <v-container>
       <v-row>
+        <LayoutsBannerVacances />
         <v-col cols="12">
           <h1>{{ collectivite.intitule }} ({{ collectivite.code }})</h1>
         </v-col>
