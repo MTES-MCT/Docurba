@@ -39,6 +39,14 @@ def create_departement(*, code_insee: str = Auto, region: Region = Auto) -> Depa
     )
 
 
+TYPE_GROUPEMENTS = [
+    type_groupement
+    for type_groupement in TypeCollectivite
+    if type_groupement
+    not in (TypeCollectivite.COM, TypeCollectivite.COMA, TypeCollectivite.COMD)
+]
+
+
 def create_groupement(
     *,
     code_insee: str = Auto,
@@ -46,7 +54,7 @@ def create_groupement(
     departement: Departement = Auto,
 ) -> Collectivite:
     code_insee = code_insee or next(GROUPEMENT_CODE_INSEE_SEQUENCE)
-    groupement_type = groupement_type or random.choice(list(TypeCollectivite))  # noqa: S311
+    groupement_type = groupement_type or random.choice(TYPE_GROUPEMENTS)  # noqa: S311
     return Collectivite.objects.create(
         id=f"{code_insee}_{groupement_type}",
         code_insee_unique=code_insee,
