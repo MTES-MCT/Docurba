@@ -1,7 +1,7 @@
 ---
 apiPath: "/api/perimetres"
 files: []
-order: 10
+order: 3
 visible: true
 ---
 
