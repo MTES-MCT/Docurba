@@ -144,9 +144,6 @@
 </template>
 
 <script>
-import dayjs from 'dayjs'
-// import { AsyncParser } from '@json2csv/node'
-
 export default {
   name: 'ProceduresDepartement',
   layout: 'ddt',
@@ -188,35 +185,9 @@ export default {
     }
   },
   async mounted () {
-    try {
-      const promProcedures = await this.$urbanisator.getProceduresForDept(this.$route.params.departement)
-      const rawReferentiel = fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
-
-      const [rawProcedures, referentiel] = await Promise.all([promProcedures, rawReferentiel])
-      const { communes, groupements } = await referentiel.json()
-      this.rawProcedures = rawProcedures.map((e) => {
-        let collectivitePorteuse
-        if (e.perimetre.length > 1) {
-          collectivitePorteuse = groupements.find(grp => grp.code === e.procedures.collectivite_porteuse_id)
-        } else {
-          collectivitePorteuse = communes.find(com => com.code === e.perimetre[0].collectivite_code)
-        }
-
-        const procedureName = this.$utils.formatProcedureName({ ...e.procedures, procedures_perimetres: e.perimetre }, collectivitePorteuse)
-
-        if (e.prescription?.date_iso) {
-          e.prescription.date_iso_formattee = dayjs(e.prescription.date_iso).format('DD/MM/YYYY')
-        }
-        if (e.last_event?.date_iso) {
-          e.last_event.date_iso_formattee = dayjs(e.last_event.date_iso).format('DD/MM/YYYY')
-        }
-
-        return { ...e, procedureName }
-      })
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('ERROR: ', error)
-    }
+    const response = await fetch(`/procedures/${this.$route.params.departement}/`)
+    const json = await response.json()
+    this.rawProcedures = json.results
   },
   methods: {
     customFilter (value, search, item) {

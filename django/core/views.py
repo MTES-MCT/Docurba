@@ -3,7 +3,13 @@ from datetime import date
 from itertools import groupby
 from operator import attrgetter
 
-from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
+from django.db import models
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseBadRequest,
+    JsonResponse,
+)
 from django.shortcuts import render
 from django.views.decorators.http import require_safe
 
@@ -408,3 +414,64 @@ def collectivite(
             "procedures_principales_by_schema": procedures_principales_by_schema,
         },
     )
+
+
+@require_safe
+def procedures(request: HttpRequest, departement: str) -> HttpResponse:
+    procedures = (
+        Procedure.objects.with_events()
+        .distinct()
+        .prefetch_related(
+            models.Prefetch(
+                "perimetre",
+                Commune.objects.select_related("departement"),
+                to_attr="perimetre_prefetched",
+            )
+        )
+        .filter(perimetre__departement__code_insee=departement, archived=False)
+        .exclude(doc_type="")  # FIXME: WTF ?
+    )
+
+    def format_row(procedure: Procedure):
+        a = {
+            "procedure_id": procedure.pk,
+            "procedureName": str(procedure),  # FIXME Meilleur nom
+            "procedures": {
+                "created_at": True,  # FIXME : Pourquoi ? Il y a plein de procédures secondaires sans created_at. Why ????
+                "doc_type": procedure.type_document,
+                "is_principale": procedure.parente_id is None,
+                "status": procedure.statut,
+            },
+            "prescription": {
+                "date_iso_formattee": procedure.date_prescription,  # FIXME À formatter
+            },
+            "perimetre": [
+                {
+                    "code": commune.code_insee,
+                    "departementCode": commune.departement.code_insee,
+                    "intitule": commune.nom,
+                }
+                for commune in procedure.perimetre_prefetched
+            ],
+            "opposable": False,  # FIXME any()
+        }
+        last_event = {}
+        if procedure.events_prefetched and (
+            last_event_obj := procedure.events_prefetched[0]
+        ):
+            last_event = {
+                "last_event": {
+                    "type": last_event_obj.type,
+                    "date_iso_formattee": last_event_obj.date_evenement,  # FIXME À formatter
+                }
+            }
+
+        return a | last_event
+
+    # FIXME : Sort
+    response = JsonResponse(
+        {"results": [format_row(procedure) for procedure in procedures]}
+    )
+    # response["content-type"] = "text/html; charset=utf-8"
+    # response.write("</body>")
+    return response
