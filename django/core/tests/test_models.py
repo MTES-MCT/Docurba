@@ -605,6 +605,8 @@ class TestProcedureTypeDocument:
         with django_assert_num_queries(1):
             procedure = Procedure.objects.get(id=procedure.id)
             assert procedure.type_document == TypeDocument.PLU
+            assert not procedure.vaut_PLH_consolide
+            assert not procedure.vaut_PDM_consolide
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
@@ -632,6 +634,8 @@ class TestProcedureTypeDocument:
         with django_assert_num_queries(1):
             procedure = Procedure.objects.get(id=procedure.id)
             assert procedure.type_document == TypeDocument.PLUI
+            assert not procedure.vaut_PLH_consolide
+            assert not procedure.vaut_PDM_consolide
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
@@ -664,6 +668,8 @@ class TestProcedureTypeDocument:
         with django_assert_num_queries(1):
             procedure = Procedure.objects.get(id=procedure.id)
             assert procedure.type_document == TypeDocument.PLUIH
+            assert procedure.vaut_PLH_consolide
+            assert not procedure.vaut_PDM_consolide
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
@@ -696,6 +702,8 @@ class TestProcedureTypeDocument:
         with django_assert_num_queries(1):
             procedure = Procedure.objects.get(id=procedure.id)
             assert procedure.type_document == TypeDocument.PLUIM
+            assert not procedure.vaut_PLH_consolide
+            assert procedure.vaut_PDM_consolide
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
@@ -736,6 +744,8 @@ class TestProcedureTypeDocument:
         with django_assert_num_queries(1):
             procedure = Procedure.objects.get(id=procedure.id)
             assert procedure.type_document == TypeDocument.PLUIHM
+            assert procedure.vaut_PLH_consolide
+            assert procedure.vaut_PDM_consolide
 
 
 class TestProcedureDelaiApprobation:

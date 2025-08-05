@@ -80,6 +80,8 @@ Pour le plan en cours :
 - `pc_date_pac` : Date de porter à connaissance
 - `pc_date_pac_comp` : Date de porter à connaissance complémentaire
 - `pc_plui_valant_scot` : Booléen indiquant si ce plan vaut SCoT
+- `pc_pluih` : Booléen indiquant si ce plan vaut PLH
+- `pc_pdu_tient_lieu` : Booléen indiquant si ce plan vaut PDM
 - `pc_sectoriel` : Booléen indiquant si le plan est sectoriel
 - `pc_pdu_obligatoire` : Booléen indiquant si un PDU est obligatoire
 - `pc_nom_sst` : Nom du prestataire externe
@@ -104,6 +106,8 @@ Pour le plan opposable :
 - `pa_date_executoire` : Date du caractère exécutoire
 - `pa_delai_approbation` : Nombre de jours entre la prescription et l'approbation
 - `pa_plui_valant_scot` : Booléen indiquant si ce plan vaut SCoT
+- `pa_pluih` : Booléen indiquant si ce plan vaut PLH
+- `pa_pdu_tient_lieu` : Booléen indiquant si ce plan vaut PDM
 - `pa_sectoriel` : Booléen indiquant si le plan est sectoriel
 - `pa_pdu_obligatoire` : Booléen indiquant si un PDU est obligatoire
 - `pa_nom_sst` : Nom du prestataire externe
