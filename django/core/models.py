@@ -436,17 +436,33 @@ class Procedure(models.Model):
         return self.doc_type in (TypeDocument.SCOT, TypeDocument.SD)
 
     @property
+    def vaut_PLH_consolide(self) -> bool:  # noqa: N802
+        if not self.is_intercommunal:
+            return False
+        return self.vaut_PLH or self.doc_type in (
+            TypeDocument.PLUIH,
+            TypeDocument.PLUIHM,
+        )
+
+    @property
+    def vaut_PDM_consolide(self) -> bool:  # noqa: N802
+        if not self.is_intercommunal:
+            return False
+        return self.vaut_PDM or self.doc_type in (
+            TypeDocument.PLUIM,
+            TypeDocument.PLUIHM,
+        )
+
+    @property
     def type_document(self) -> TypeDocument:
         if self.doc_type in (TypeDocument.PLU, *PLU_LIKE):
             if not self.is_intercommunal:
                 return TypeDocument.PLU
-            if (
-                self.vaut_PLH and self.vaut_PDM
-            ) or self.doc_type == TypeDocument.PLUIHM:
+            if self.vaut_PLH_consolide and self.vaut_PDM_consolide:
                 return TypeDocument.PLUIHM
-            if self.vaut_PLH or self.doc_type == TypeDocument.PLUIH:
+            if self.vaut_PLH_consolide:
                 return TypeDocument.PLUIH
-            if self.vaut_PDM or self.doc_type == TypeDocument.PLUIM:
+            if self.vaut_PDM_consolide:
                 return TypeDocument.PLUIM
             return TypeDocument.PLUI
 

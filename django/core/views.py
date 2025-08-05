@@ -127,9 +127,9 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "pc_date_pac",
             "pc_date_pac_comp",
             "pc_plui_valant_scot",
-            # "pc_pluih",
+            "pc_pluih",
             "pc_sectoriel",
-            # "pc_pdu_tient_lieu",
+            "pc_pdu_tient_lieu",
             "pc_pdu_obligatoire",
             "pc_nom_sst",
             "pc_cout_sst_ht",
@@ -151,8 +151,8 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "pa_date_executoire",
             "pa_delai_approbation",
             "pa_plui_valant_scot",
-            # "pa_pluih",
-            # "pa_pdu_tient_lieu",
+            "pa_pluih",
+            "pa_pdu_tient_lieu",
             "pa_pdu_obligatoire",
             "pa_nom_sst",
             "pa_cout_sst_ht",
@@ -215,9 +215,9 @@ def api_communes(request: HttpRequest) -> HttpResponse:
                 "pc_date_pac": plan_en_cours.date_porter_a_connaissance,
                 "pc_date_pac_comp": plan_en_cours.date_porter_a_connaissance_complementaire,
                 "pc_plui_valant_scot": plan_en_cours.vaut_SCoT,
-                # "pc_pluih": "planCurrent.is_pluih",  # noqa: ERA001
+                "pc_pluih": plan_en_cours.vaut_PLH_consolide,
                 "pc_sectoriel": plan_en_cours.is_sectoriel_consolide,
-                # "pc_pdu_tient_lieu": "planCurrent.is_pdu",  # noqa: ERA001
+                "pc_pdu_tient_lieu": plan_en_cours.vaut_PDM_consolide,
                 "pc_pdu_obligatoire": plan_en_cours.obligation_PDU,
                 "pc_nom_sst": plan_en_cours.maitrise_d_oeuvre
                 and plan_en_cours.maitrise_d_oeuvre["nomprestaexterne"],
@@ -247,8 +247,8 @@ def api_communes(request: HttpRequest) -> HttpResponse:
                 "pa_date_executoire": plan_opposable.date_caractere_executoire,
                 "pa_delai_approbation": plan_opposable.delai_d_approbation,
                 "pa_plui_valant_scot": plan_opposable.vaut_SCoT,
-                # "pa_pluih": "planOpposable.is_pluih",  # noqa: ERA001
-                # "pa_pdu_tient_lieu": "planOpposable.is_pdu",  # noqa: ERA001
+                "pa_pluih": plan_opposable.vaut_PLH_consolide,
+                "pa_pdu_tient_lieu": plan_opposable.vaut_PDM_consolide,
                 "pa_pdu_obligatoire": plan_opposable.obligation_PDU,
                 "pa_nom_sst": plan_opposable.maitrise_d_oeuvre
                 and plan_opposable.maitrise_d_oeuvre["nomprestaexterne"],
