@@ -22,8 +22,8 @@
           class="elevation-1 pa-8 procedures-dt"
           :custom-filter="customFilter"
           :search="search"
-          :loading="!procedures"
-          loading-text="Chargement des collectivités..."
+          sort-by="last_event.date_iso"
+          sort-desc="true"
         >
           <template #top>
             <div class="d-flex  align-center justify-space-between mb-6">
@@ -109,11 +109,10 @@
                 {{ item.procedureName }}
               </nuxt-link>
 
-              <div v-if="item.procedures.status === null" />
-              <v-chip v-else-if="item.opposable" class="ml-2 flex-shrink-0 success--text font-weight-bold" small label color="success-light">
+              <v-chip v-if="item.statut_simplifie === 'opposable'" class="ml-2 flex-shrink-0 success--text font-weight-bold" small label color="success-light">
                 OPPOSABLE
               </v-chip>
-              <v-chip v-else-if="!item.opposable && item.procedures.status === 'opposable'" class="ml-2 flex-shrink-0 font-weight-bold" small label>
+              <v-chip v-else-if="item.statut_simplifie === 'archive'" class="ml-2 flex-shrink-0 font-weight-bold" small label>
                 ARCHIVÉ
               </v-chip>
               <v-chip v-else class="ml-2 flex-shrink-0 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
@@ -128,14 +127,14 @@
           </template>
 
           <!-- eslint-disable-next-line -->
-          <template #item.prescription="{ item }">
+          <template #item.date_prescription="{ item }">
 
-            <span class="mention-grey--text">{{ item.prescription?.date_iso_formattee ?? '-' }}</span>
+            <span class="mention-grey--text">{{ item.date_prescription ?? '-' }}</span>
           </template>
 
           <!-- eslint-disable-next-line -->
-          <template #item.last_event.date_iso_formattee="{ item }">
-            <span class="mention-grey--text">{{ item.last_event?.date_iso_formattee }} - {{ item.last_event?.type }}</span>
+          <template #item.last_event.date_iso="{ item }">
+            <span class="mention-grey--text">{{ item.last_event?.date_iso }} - {{ item.last_event?.type }}</span>
           </template>
         </v-data-table>
       </v-col>
@@ -155,8 +154,8 @@ export default {
       typeFilterItems: [{ text: 'Procédures principales', value: 'pp' }, { text: 'Procédures secondaires', value: 'ps' }],
       selectedDocumentsFilter: documentTypes,
       documentFilterItems: documentTypes.map(documentType => ({ text: documentType, value: documentType })),
-      selectedStatusFilter: ['en_cours', 'opposable', 'archived'],
-      statusFilterItems: [{ text: 'En cours', value: 'en_cours' }, { text: 'Opposable', value: 'opposable' }, { text: 'Archivée', value: 'archived' }],
+      selectedStatusFilter: ['en cours', 'opposable', 'archive'],
+      statusFilterItems: [{ text: 'En cours', value: 'en cours' }, { text: 'Opposable', value: 'opposable' }, { text: 'Archivée', value: 'archive' }],
       rawProcedures: null,
       search: this.$route.query.search || ''
 
@@ -167,19 +166,20 @@ export default {
       return [
         { text: 'Nom', align: 'start', value: 'procedureName', filterable: true, width: '45%' },
         { text: 'Périmètre', align: 'start', value: 'perimetre', filterable: false, width: '150px' },
-        { text: 'Prescription', value: 'prescription', filterable: false, width: '135px' },
-        { text: 'Dernier évènement', value: 'last_event.date_iso_formattee', filterable: false }
+        { text: 'Prescription', value: 'date_prescription', filterable: false, width: '135px' },
+        { text: 'Dernier évènement', value: 'last_event.date_iso', filterable: false }
       ]
     },
     procedures () {
       const proceduresAndFilters = this.rawProcedures?.filter((e) => {
-        return e.procedures.created_at &&
-        this.selectedDocumentsFilter.includes(e.procedures.doc_type) &&
-          ((this.selectedTypesFilter.includes('pp') && e.procedures.is_principale) ||
-          (this.selectedTypesFilter.includes('ps') && !e.procedures.is_principale)) &&
-          (((this.selectedStatusFilter.includes('opposable') && e.opposable) ||
-          (this.selectedStatusFilter.includes('en_cours') && (!e.opposable && !(e.procedures.status === 'opposable'))) ||
-          (this.selectedStatusFilter.includes('archived') && (!e.opposable && e.procedures.status === 'opposable'))))
+        return (
+          this.selectedDocumentsFilter.includes(e.type_document) &&
+          ((this.selectedTypesFilter.includes('pp') && e.is_principale) ||
+            (this.selectedTypesFilter.includes('ps') && !e.is_principale)) &&
+          ((this.selectedStatusFilter.includes('opposable') && e.statut_simplifie === 'opposable') ||
+            (this.selectedStatusFilter.includes('en cours') && e.statut_simplifie === 'en cours') ||
+            (this.selectedStatusFilter.includes('archive') && e.statut_simplifie === 'archive'))
+        )
       })
       return proceduresAndFilters
     }

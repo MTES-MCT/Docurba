@@ -424,28 +424,27 @@ def procedures(request: HttpRequest, departement: str) -> HttpResponse:
         .prefetch_related(
             models.Prefetch(
                 "perimetre",
-                Commune.objects.select_related("departement"),  # FIXME COM sans COMD ?
+                Commune.objects.select_related(  # FIXME COM sans COMD ?
+                    "departement"
+                ).with_procedures_principales(
+                    with_adhesions_count=False,
+                ),
                 to_attr="perimetre_prefetched",
             )
         )
         .filter(perimetre__departement__code_insee=departement, archived=False)
         .exclude(doc_type="")
-        .filter(created_at=None)  # FIXME: WTF ?
+        .exclude(created_at=None)  # FIXME: WTF ?
     )
 
     def format_row(procedure: Procedure):
         a = {
             "procedure_id": procedure.pk,
             "procedureName": str(procedure),  # FIXME Meilleur nom
-            "procedures": {
-                "created_at": True,
-                "doc_type": procedure.type_document,
-                "is_principale": procedure.parente_id is None,
-                "status": procedure.statut,
-            },
-            "prescription": {
-                "date_iso_formattee": procedure.date_prescription,  # FIXME À formatter
-            },
+            "statut_simplifie": procedure.statut_simplifie,
+            "type_document": procedure.type_document,
+            "is_principale": procedure.parente_id is None,
+            "date_prescription": procedure.date_prescription,  # FIXME À formatter
             "perimetre": [
                 {
                     "code": commune.code_insee,
@@ -454,7 +453,6 @@ def procedures(request: HttpRequest, departement: str) -> HttpResponse:
                 }
                 for commune in procedure.perimetre_prefetched
             ],
-            "opposable": False,  # FIXME any()
         }
         last_event = {}
         if procedure.events_prefetched and (
@@ -463,13 +461,13 @@ def procedures(request: HttpRequest, departement: str) -> HttpResponse:
             last_event = {
                 "last_event": {
                     "type": last_event_obj.type,
-                    "date_iso_formattee": last_event_obj.date_evenement,  # FIXME À formatter
+                    "date_iso": last_event_obj.date_evenement,  # FIXME À formatter
                 }
             }
 
         return a | last_event
 
-    # FIXME : Sort
+    # FIXME : Sort ?
     response = JsonResponse(
         {"results": [format_row(procedure) for procedure in procedures]}
     )

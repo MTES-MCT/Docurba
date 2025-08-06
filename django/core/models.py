@@ -4,7 +4,7 @@ from datetime import date
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
 from operator import attrgetter
-from typing import Self
+from typing import Literal, Self
 
 from django.db import connection, models
 from django.urls import reverse
@@ -395,6 +395,25 @@ class Procedure(models.Model):
         if not self.dernier_event_impactant:
             return None
         return self.dernier_event_impactant.category
+
+    @property
+    def statut_simplifie(self) -> Literal["archive", "opposable", "en cours"]:
+        if self.statut in (
+            EventCategory.ABANDON,
+            EventCategory.ANNULE,
+            EventCategory.CADUC,
+        ):
+            return "archive"
+        if self.statut == EventCategory.APPROUVE:
+            if self.is_opposable:
+                return "opposable"
+            return "archive"
+        return "en cours"
+
+    @property
+    def is_opposable(self) -> bool:
+        # FIXME: Attention à N+1
+        return any(commune.is_opposable(self) for commune in self.perimetre_prefetched)
 
     def _date(self, event_type: EventCategory) -> date | None:
         self._process_events()
