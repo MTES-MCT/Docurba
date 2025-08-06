@@ -103,7 +103,7 @@
           </template>
 
           <!-- eslint-disable-next-line -->
-          <template #item.name="{ item }">
+          <template #item.procedureName="{ item }">
             <div class="d-flex align-center my-5">
               <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${item.procedure_id}`">
                 {{ item.procedureName }}
@@ -134,7 +134,7 @@
           </template>
 
           <!-- eslint-disable-next-line -->
-          <template #item.last_event="{ item }">
+          <template #item.last_event.date_iso_formattee="{ item }">
             <span class="mention-grey--text">{{ item.last_event?.date_iso_formattee }} - {{ item.last_event?.type }}</span>
           </template>
         </v-data-table>
@@ -165,10 +165,10 @@ export default {
   computed: {
     headers () {
       return [
-        { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '45%' },
+        { text: 'Nom', align: 'start', value: 'procedureName', filterable: true, width: '45%' },
         { text: 'Périmètre', align: 'start', value: 'perimetre', filterable: false, width: '150px' },
         { text: 'Prescription', value: 'prescription', filterable: false, width: '135px' },
-        { text: 'Dernier évènement', value: 'last_event', filterable: false }
+        { text: 'Dernier évènement', value: 'last_event.date_iso_formattee', filterable: false }
       ]
     },
     procedures () {

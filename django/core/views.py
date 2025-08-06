@@ -420,16 +420,17 @@ def collectivite(
 def procedures(request: HttpRequest, departement: str) -> HttpResponse:
     procedures = (
         Procedure.objects.with_events()
-        .distinct()
+        .distinct("pk")
         .prefetch_related(
             models.Prefetch(
                 "perimetre",
-                Commune.objects.select_related("departement"),
+                Commune.objects.select_related("departement"),  # FIXME COM sans COMD ?
                 to_attr="perimetre_prefetched",
             )
         )
         .filter(perimetre__departement__code_insee=departement, archived=False)
-        .exclude(doc_type="")  # FIXME: WTF ?
+        .exclude(doc_type="")
+        .filter(created_at=None)  # FIXME: WTF ?
     )
 
     def format_row(procedure: Procedure):
@@ -437,7 +438,7 @@ def procedures(request: HttpRequest, departement: str) -> HttpResponse:
             "procedure_id": procedure.pk,
             "procedureName": str(procedure),  # FIXME Meilleur nom
             "procedures": {
-                "created_at": True,  # FIXME : Pourquoi ? Il y a plein de procédures secondaires sans created_at. Why ????
+                "created_at": True,
                 "doc_type": procedure.type_document,
                 "is_principale": procedure.parente_id is None,
                 "status": procedure.statut,
