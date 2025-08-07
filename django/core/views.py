@@ -418,11 +418,16 @@ def collectivite(
 
 @require_safe
 def collectivite_json(request: HttpRequest, collectivite_code: str) -> HttpResponse:
-    collectivite = Collectivite.objects.select_related("departement").get(
+    collectivite = Collectivite.objects.select_related("departement", "commune").get(
         code_insee_unique=collectivite_code
     )
-    communes = list(collectivite.communes_adherentes_deep.all())
+    if collectivite.is_commune:
+        communes = [collectivite.commune]
+    else:
+        communes = list(collectivite.communes_adherentes_deep.all())
+
     # FIXME : Enlever les procedures archivées et abrogées
+    # FIXME : Quand c'est une commune, pas besoin de prefetch le perimetre ?
     procedures = (
         Procedure.objects.distinct()
         .filter(perimetre__in=[commune.pk for commune in communes])
@@ -480,6 +485,7 @@ def collectivite_json(request: HttpRequest, collectivite_code: str) -> HttpRespo
 
         return a
 
+    # FIXME Sort
     response = JsonResponse(
         {
             "collectivite": {
@@ -495,8 +501,8 @@ def collectivite_json(request: HttpRequest, collectivite_code: str) -> HttpRespo
             "schemas": [format_procedure(schema) for schema in schemas],
         }
     )
-    response["content-type"] = "text/html; charset=utf-8"
-    response.write("</body>")
+    # response["content-type"] = "text/html; charset=utf-8"
+    # response.write("</body>")
     return response
 
 

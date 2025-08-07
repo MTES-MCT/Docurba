@@ -12,7 +12,6 @@
       :is-epci="isEpci"
       :collectivite="collectivite"
       :procedures="plans"
-      :communes="communes"
       :schemas="schemas"
       @snackMessage="Object.assign(snackbar, {visible: true, message: arguments[0]})"
     />
@@ -24,8 +23,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   name: 'Collectivite',
   data () {
@@ -35,7 +32,6 @@ export default {
         message: ''
       },
       collectivite: null,
-      communes: [],
       plans: [],
       schemas: [],
       loaded: false,
@@ -53,19 +49,11 @@ export default {
   },
   methods: {
     async getProcedures () {
-      // console.log('this.$route.params.collectiviteId: ', this.$route.params.collectiviteId)
-      const { data: collectivite } = await axios({
-        url: `/api/geo/collectivites/${this.$route.params.collectiviteId}`
-      })
-
-      this.collectivite = collectivite
-      this.communes = this.isEpci ? this.collectivite.membres.filter(m => m.type.startsWith('COM')) : [this.collectivite]
-
-      const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
-      this.schemas = schemas
-      this.plans = plans
-
-      // console.log('schemas: ', schemas, ' plans: ', plans)
+      const response = await fetch(`/collectivite_json/${this.$route.params.collectiviteId}/`)
+      const json = await response.json()
+      this.collectivite = json.collectivite
+      this.schemas = json.schemas
+      this.plans = json.plans
     }
   }
 }
