@@ -1,5 +1,10 @@
 <template>
   <v-row>
+    <v-alert v-if="collectivite.warn_commune_nouvelle" type="warning" cols="12">
+      Des travaux sont en cours sur l'affichage des procédures concernant les communes déléguées.
+      Si besoin, contactez-nous via le bouton "Signaler un problème".
+    </v-alert>
+
     <v-col v-if="procedures.length > 0 || schemas.length > 0">
       <v-tabs
         v-model="tab"

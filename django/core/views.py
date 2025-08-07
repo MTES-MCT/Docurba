@@ -1,9 +1,11 @@
+import logging
 from csv import DictWriter
 from datetime import date
 from itertools import groupby
 from operator import attrgetter
 
-from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
+from django.db import models
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_safe
 
@@ -408,3 +410,71 @@ def collectivite(
             "procedures_principales_by_schema": procedures_principales_by_schema,
         },
     )
+
+
+@require_safe
+def pour_nuxt_collectivite(
+    request: HttpRequest, collectivite_code: str
+) -> HttpResponse:
+    collectivite = Collectivite.objects.select_related("departement", "commune").get(
+        code_insee_unique=collectivite_code
+    )
+
+    procedures_principales = collectivite.procedures()
+
+    plans = [
+        procedure for procedure in procedures_principales if not procedure.is_schema
+    ]
+    schemas = [procedure for procedure in procedures_principales if procedure.is_schema]
+
+    def format_procedure(procedure: Procedure) -> dict:
+        a = {
+            "id": procedure.pk,
+            "from_sudocuh": procedure.from_sudocuh,
+            "name": str(procedure),
+            "status": procedure.statut_libelle,
+            "type": procedure.type,
+            "commentaire": procedure.commentaire,
+            "procedures_perimetres": [
+                {
+                    "intitule": commune.nom,
+                    "code": commune.code_insee,
+                    "collectivite_type": commune.type,
+                }
+                for commune in procedure.perimetre_prefetched
+            ],
+        }
+
+        if procedure.secondaires_manuel:
+            a["procSecs"] = [format_procedure(p) for p in procedure.secondaires_manuel]
+
+        return a
+
+    collectivite_json = {
+        "collectivite": {
+            "intitule": collectivite.nom,
+            "code": collectivite.code_insee,
+            "departementCode": collectivite.departement.code_insee,
+            "membres": [
+                {"intitule": commune.nom, "code": commune.code_insee}
+                for commune in collectivite.communes
+            ],
+        },
+        "plans": [format_procedure(plan) for plan in plans],
+        "schemas": [format_procedure(schema) for schema in schemas],
+    }
+    if collectivite.is_commune:
+        collectivite_json["collectivite"]["warn_commune_nouvelle"] = (
+            collectivite.commune.is_nouvelle
+        )
+
+        intercommunalite = collectivite.commune.intercommunalite
+        collectivite_json["collectivite"]["intercommunaliteCode"] = (
+            intercommunalite.code_insee_unique
+        )
+        collectivite_json["collectivite"]["intercommunalite"] = {
+            "departementCode": intercommunalite.departement.code_insee,
+            "intitule": intercommunalite.nom,
+        }
+
+    return JsonResponse(collectivite_json)

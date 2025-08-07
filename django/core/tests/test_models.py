@@ -363,6 +363,9 @@ class TestCollectivitePortantScot:
             ]
 
 
+# FIXME : Ajouter des tests Collectivite.procedures() ici ?
+
+
 class TestScotInterdepartemental:
     @pytest.mark.django_db
     def test_un_departement(
@@ -1246,6 +1249,8 @@ class TestProcedureStatut:
 
             assert not procedure_with_events.dernier_event_impactant
             assert not procedure_with_events.statut
+
+    # FIXME : Ajouter des tests statut_libelle ici ?
 
 
 class TestProcedureEnCours:
