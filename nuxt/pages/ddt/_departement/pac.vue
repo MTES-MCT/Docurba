@@ -1,7 +1,6 @@
 <template>
   <v-container>
     <v-row>
-      <LayoutsBannerVacances />
       <v-col cols="12">
         <h1>Mes Porter à Connaissance</h1>
       </v-col>
