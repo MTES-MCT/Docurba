@@ -17,6 +17,11 @@ urlpatterns = [
         views.collectivite,
         name="collectivite-detail",
     ),
+    path(
+        "pour_nuxt/collectivite/<collectivite_code>/",
+        views.pour_nuxt_collectivite,
+        name="pour_nuxt_collectivite",
+    ),
     path("api/perimetres", views.api_perimetres),
     path("api/communes", views.api_communes),
     path("api/scots", views.api_scots, name="api_scots"),

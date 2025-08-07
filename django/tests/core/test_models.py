@@ -16,6 +16,7 @@ from core.models import (
     Event,
     EventCategory,
     Procedure,
+    ProcedureStatusLibelle,
     TypeDocument,
     ViewCommuneAdhesionsDeep,
 )
@@ -1246,6 +1247,97 @@ class TestProcedureStatut:
 
             assert not procedure_with_events.dernier_event_impactant
             assert not procedure_with_events.statut
+
+
+class TestProcedureStatutLibelle:
+    @pytest.mark.django_db
+    def test_opposable_et_precedent(self) -> None:
+        commune = create_commune()
+        plan_precedent = commune.procedures.create(
+            collectivite_porteuse=commune, doc_type=TypeDocument.PLU
+        )
+        plan_precedent.event_set.create(
+            type="Délibération d'approbation", date_evenement="2023-01-01"
+        )
+
+        plan_opposable = commune.procedures.create(
+            collectivite_porteuse=commune, doc_type=TypeDocument.PLU
+        )
+        plan_opposable.event_set.create(
+            type="Délibération d'approbation", date_evenement="2024-01-01"
+        )
+
+        plan_a, plan_b = commune.collectivite_ptr.procedures()
+        assert plan_a == plan_opposable
+        assert plan_a.statut_libelle == ProcedureStatusLibelle.OPPOSABLE
+
+        assert plan_b == plan_precedent
+        assert plan_b.statut_libelle == ProcedureStatusLibelle.PRECEDENT
+
+    @pytest.mark.django_db
+    def test_opposable_des_qu_une_commune(self) -> None:
+        commune_a = create_commune()
+        commune_b = create_commune()
+
+        approuvee_deux_communes = Procedure.objects.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune_a
+        )
+        approuvee_deux_communes.perimetre.add(commune_a, commune_b)
+        approuvee_deux_communes.event_set.create(
+            type="Délibération d'approbation", date_evenement="2024-01-01"
+        )
+
+        approuvee_une_commune = Procedure.objects.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune_a
+        )
+        approuvee_une_commune.perimetre.add(commune_a)
+        approuvee_une_commune.event_set.create(
+            type="Délibération d'approbation", date_evenement="2024-02-01"
+        )
+
+        plan_a, plan_b = commune_a.collectivite_ptr.procedures()
+        assert plan_a == approuvee_une_commune
+        assert plan_a.statut_libelle == ProcedureStatusLibelle.OPPOSABLE
+
+        assert plan_b == approuvee_deux_communes
+        assert plan_b.statut_libelle == ProcedureStatusLibelle.OPPOSABLE
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("event_type", "expected_libelle"),
+        [
+            ("Prescription", ProcedureStatusLibelle.EN_COURS),
+            ("Abandon", ProcedureStatusLibelle.ABANDON),
+            ("Annulation TA", ProcedureStatusLibelle.ANNULE),
+            ("Caducité", ProcedureStatusLibelle.CADUC),
+        ],
+    )
+    def test_autres_libelles(
+        self,
+        event_type: str,
+        expected_libelle: ProcedureStatusLibelle,
+    ) -> None:
+        commune = create_commune()
+
+        procedure = commune.procedures.create(
+            collectivite_porteuse=commune, doc_type="SCOT"
+        )
+        procedure.event_set.create(type=event_type, date_evenement="2020-01-01")
+
+        proc = Procedure.objects.with_events().with_perimetre().get(pk=procedure.pk)
+        assert proc.statut_libelle == expected_libelle
+
+    @pytest.mark.django_db
+    def test_pos_ne_peut_pas_etre_en_cours_dans_lapi(self) -> None:
+        commune = create_commune()
+
+        procedure = commune.procedures.create(
+            collectivite_porteuse=commune, doc_type="POS"
+        )
+        procedure.event_set.create(type="Prescription", date_evenement="2020-01-01")
+
+        proc = Procedure.objects.with_events().with_perimetre().get(pk=procedure.pk)
+        assert proc.statut_libelle == ProcedureStatusLibelle.EN_COURS
 
 
 class TestProcedureEnCours:

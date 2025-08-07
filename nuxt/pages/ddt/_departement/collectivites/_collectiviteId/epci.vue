@@ -115,13 +115,11 @@ export default {
   },
   methods: {
     async getProcedures () {
-      const collectivites = await this.$nuxt3api(`/api/geo/collectivites?code=${this.$route.params.collectiviteId}`)
-      this.collectivite = collectivites[0]
-      const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
-      this.schemas = schemas
-      this.plans = plans
-      console.log('schemas: ', schemas, ' plans: ', plans)
-      console.log('this.collectivite: ', this.collectivite.membres)
+      const response = await fetch(`/pour_nuxt/collectivite/${this.$route.params.collectiviteId}/`)
+      const json = await response.json()
+      this.collectivite = json.collectivite
+      this.schemas = json.schemas
+      this.plans = json.plans
     }
   }
 }
