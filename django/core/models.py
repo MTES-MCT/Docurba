@@ -4,7 +4,7 @@ from datetime import date
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
 from operator import attrgetter
-from typing import Self
+from typing import Literal, Self
 
 from django.db import connection, models
 from django.urls import reverse
@@ -330,6 +330,7 @@ class Procedure(models.Model):
     name = models.TextField(blank=True, null=True)  # noqa: DJ001
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
+    commentaire = models.CharField(blank=True, null=True)  # noqa: DJ001
     collectivite_porteuse = models.ForeignKey(
         "Collectivite",
         models.DO_NOTHING,
@@ -424,6 +425,20 @@ class Procedure(models.Model):
         if self.date_fin_echeance and self.date_fin_echeance < self.date_pivot:
             return EventCategory.CADUC
         return self.dernier_event_impactant.category
+
+    @property
+    def statut_libelle(
+        self,
+    ) -> Literal["opposable", "precedent", "en cours", "abandon", "annule"]:
+        if self.statut == EventCategory.APPROUVE:
+            if any(commune.is_opposable(self) for commune in self.perimetre_prefetched):
+                return "opposable"
+            return "precedent"
+
+        if self.is_en_cours or not self.statut:
+            return "en cours"
+
+        return str(self.statut)
 
     def _date(self, event_type: EventCategory) -> date | None:
         self._process_events()

@@ -69,6 +69,7 @@ export default {
       this.collectivite = this.procedure.procedures_perimetres[0]
     } else {
       try {
+        // FIXME Remove me ?
         const { data: collectiviteData } = await axios(`/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}`)
         this.collectivite = collectiviteData
       } catch (err) {
