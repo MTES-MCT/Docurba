@@ -1,0 +1,10 @@
+version: 2
+
+updates:
+  - package-ecosystem: "uv"
+    directory: "/django"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Paris"
