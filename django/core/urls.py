@@ -15,6 +15,7 @@ urlpatterns = [
         views.collectivite,
         name="collectivite-detail",
     ),
+    path("collectivites/<departement>/", views.collectivites),
     path("procedures/<departement>/", views.procedures),
     path("api/perimetres", views.api_perimetres),
     path("api/communes", views.api_communes),
