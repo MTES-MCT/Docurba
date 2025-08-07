@@ -36,6 +36,7 @@ export default ({ $supabase, $dayjs }, inject) => {
 
       return procedures
     },
+    // FIXME : À supprimer
     async getIntercoProcedures (collectiviteId) {
       const { data: procedures } = await $supabase.from('procedures')
         .select('*').eq('archived', false)
@@ -43,6 +44,7 @@ export default ({ $supabase, $dayjs }, inject) => {
 
       return procedures
     },
+    // FIXME : À supprimer
     async getProceduresPerimetre (procedures, collectiviteId) {
       const collectivitesCodes = [collectiviteId]
       procedures.forEach((p) => {
@@ -97,6 +99,7 @@ export default ({ $supabase, $dayjs }, inject) => {
 
       return procedures
     },
+    // FIXME : À supprimer
     async getCollectiviteProcedures (collectiviteId) {
       const { data: collectivite } = await axios(`/api/geo/collectivites/${collectiviteId}`)
       const collectivites = [collectivite]
@@ -149,6 +152,7 @@ export default ({ $supabase, $dayjs }, inject) => {
 
       return this.parseProceduresStatus(filteredProcedures)
     },
+    // FIXME : À supprimer
     async getProjects (collectiviteId) {
       try {
         const procedures = await this.getCollectiviteProcedures(collectiviteId)

@@ -417,6 +417,90 @@ def collectivite(
 
 
 @require_safe
+def collectivite_json(request: HttpRequest, collectivite_code: str) -> HttpResponse:
+    collectivite = Collectivite.objects.select_related("departement").get(
+        code_insee_unique=collectivite_code
+    )
+    communes = list(collectivite.communes_adherentes_deep.all())
+    # FIXME : Enlever les procedures archivées et abrogées
+    procedures = (
+        Procedure.objects.distinct()
+        .filter(perimetre__in=[commune.pk for commune in communes])
+        .with_events()
+        .prefetch_related(
+            models.Prefetch(
+                "perimetre",
+                Commune.objects.select_related(  # FIXME COM sans COMD ?
+                    "departement"
+                ).with_procedures_principales(
+                    with_adhesions_count=False,
+                ),
+                to_attr="perimetre_prefetched",
+            )
+        )
+    )
+
+    procedures_principales = [p for p in procedures if not p.parente_id]
+
+    # FIXME Meilleure partition
+    plans = [
+        procedure
+        for procedure in procedures_principales
+        if procedure.type_document not in ["SCOT", "SD"]
+    ]
+    schemas = [
+        procedure
+        for procedure in procedures_principales
+        if procedure.type_document in ["SCOT", "SD"]
+    ]
+
+    def format_procedure(procedure: Procedure):
+        a = {
+            "id": procedure.pk,
+            "from_sudocuh": procedure.from_sudocuh,
+            "name": str(procedure),  # FIXME Meilleur nom
+            "status": "",  # FIXME vide
+            "type": procedure.type,
+            "commentaire": "",  # FIXME vide
+            "procedures_perimetres": [
+                {
+                    "intitule": commune.nom,
+                    "code": commune.code_insee,
+                    "collectivite_type": commune.type,
+                }
+                for commune in procedure.perimetre_prefetched
+            ],
+        }
+
+        if not procedure.parente_id:
+            procedures_secondaires = [
+                p for p in procedures if p.parente_id == procedure.pk
+            ]
+            a["procSecs"] = [format_procedure(p) for p in procedures_secondaires]
+
+        return a
+
+    response = JsonResponse(
+        {
+            "collectivite": {
+                "intitule": collectivite.nom,
+                "code": collectivite.code_insee,
+                "departementCode": collectivite.departement.code_insee,
+                "membres": [
+                    {"intitule": commune.nom, "code": commune.code_insee}
+                    for commune in communes
+                ],
+            },
+            "plans": [format_procedure(plan) for plan in plans],
+            "schemas": [format_procedure(schema) for schema in schemas],
+        }
+    )
+    response["content-type"] = "text/html; charset=utf-8"
+    response.write("</body>")
+    return response
+
+
+@require_safe
 def collectivites(request: HttpRequest, departement: str) -> HttpResponse:
     procedures = (
         Procedure.objects.with_events()
