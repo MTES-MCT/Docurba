@@ -32,7 +32,10 @@ jobs:
         with:
           python-version-file: django/.python-version
           cache: "pip"
-      - run: pip install -r requirements-dev.txt
+      - uses: astral-sh/setup-uv@v6
+        with:
+          activate-environment: true
+      - run: uv sync --locked --all-extras --dev --active
       - run: pytest --create-db
         env:
           SECRET_KEY: test_secret_key
