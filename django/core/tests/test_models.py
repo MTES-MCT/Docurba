@@ -181,7 +181,7 @@ class TestCollectivitePortantScot:
         )
         scot_en_cours.event_set.create(
             type="Délibération de l'établissement public qui prescrit",
-            date_evenement_string="2024-12-01",
+            date_evenement="2024-12-01",
         )
 
         _groupement_sans_procedure = create_groupement()
@@ -240,7 +240,7 @@ class TestCollectivitePortantScot:
                 doc_type=TypeDocument.SCOT
             )
             scot_opposable.event_set.create(
-                type="Délibération d'approbation", date_evenement_string=date_string
+                type="Délibération d'approbation", date_evenement=date_string
             )
             scot_opposable.perimetre.add(commune)
             scots_opposables.append(scot_opposable)
@@ -266,7 +266,7 @@ class TestCollectivitePortantScot:
             )
             scot_en_cours.event_set.create(
                 type="Délibération de l'établissement public qui prescrit",
-                date_evenement_string="2024-12-01",
+                date_evenement="2024-12-01",
             )
             scots_en_cours.append(scot_en_cours)
 
@@ -312,14 +312,14 @@ class TestCollectivitePortantScot:
             doc_type=TypeDocument.SCOT, type="A"
         )
         scot_opposable_a.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-01-01"
+            type="Délibération d'approbation", date_evenement="2024-01-01"
         )
 
         scot_precedent_a = groupement.procedure_set.create(
             doc_type=TypeDocument.SCOT, type="B"
         )
         scot_precedent_a.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="1999-01-01"
+            type="Délibération d'approbation", date_evenement="1999-01-01"
         )
         commune_a.procedures.add(scot_opposable_a, scot_precedent_a)
 
@@ -327,7 +327,7 @@ class TestCollectivitePortantScot:
             doc_type=TypeDocument.SCOT, type="C"
         )
         scot_opposable_a_et_b.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2023-01-01"
+            type="Délibération d'approbation", date_evenement="2023-01-01"
         )
         scot_opposable_a_et_b.perimetre.add(commune_a, commune_b)
 
@@ -354,7 +354,7 @@ class TestCollectivitePortantScot:
         )
         scot_en_cours.event_set.create(
             type="Délibération de l'établissement public qui prescrit",
-            date_evenement_string="2024-12-01",
+            date_evenement="2024-12-01",
         )
 
         scots_opposables = []
@@ -363,7 +363,7 @@ class TestCollectivitePortantScot:
                 doc_type=TypeDocument.SCOT
             )
             scot_opposable.event_set.create(
-                type="Délibération d'approbation", date_evenement_string="2024-12-01"
+                type="Délibération d'approbation", date_evenement="2024-12-01"
             )
             scot_opposable.perimetre.add(commune)
             scots_opposables.append(scot_opposable)
@@ -392,9 +392,7 @@ class TestScotInterdepartemental:
         scot_en_cours = groupement_avec_scot.procedure_set.create(
             doc_type=TypeDocument.SCOT
         )
-        scot_en_cours.event_set.create(
-            type="Prescription", date_evenement_string="2024-12-01"
-        )
+        scot_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
         scot_en_cours.perimetre.add(commune_a, commune_b)
 
         with django_assert_num_queries(6):
@@ -415,9 +413,7 @@ class TestScotInterdepartemental:
         scot_en_cours = groupement_avec_scot.procedure_set.create(
             doc_type=TypeDocument.SCOT
         )
-        scot_en_cours.event_set.create(
-            type="Prescription", date_evenement_string="2024-12-01"
-        )
+        scot_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
         scot_en_cours.perimetre.add(commune_a, commune_b)
 
         with django_assert_num_queries(6):
@@ -497,9 +493,7 @@ class TestProcedureDates:
             collectivite_porteuse=commune,
         )
         for date_string in ("2022-12-01", "2024-12-01", "2023-12-01"):
-            procedure.event_set.create(
-                type=event_type, date_evenement_string=date_string
-            )
+            procedure.event_set.create(type=event_type, date_evenement=date_string)
 
         with django_assert_num_queries(2):
             procedure_with_events = Procedure.objects.with_events().first()
@@ -528,7 +522,7 @@ class TestProcedureDates:
             doc_type=TypeDocument.SCOT, collectivite_porteuse=commune
         )
         procedure.event_set.create(
-            type=event_type, date_evenement_string="2024-12-01", is_valid=False
+            type=event_type, date_evenement="2024-12-01", is_valid=False
         )
 
         with django_assert_num_queries(2):
@@ -557,7 +551,7 @@ class TestProcedureDates:
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.SCOT, collectivite_porteuse=commune
         )
-        procedure.event_set.create(type=event_type, date_evenement_string="2022-12-01")
+        procedure.event_set.create(type=event_type, date_evenement="2022-12-01")
 
         with django_assert_num_queries(2):
             procedure_with_events = Procedure.objects.with_events(
@@ -768,11 +762,11 @@ class TestProcedureDelaiApprobation:
         if date_approbation:
             procedure.event_set.create(
                 type="Délibération d'approbation",
-                date_evenement_string=date_approbation,
+                date_evenement=date_approbation,
             )
         if date_prescription:
             procedure.event_set.create(
-                type="Prescription", date_evenement_string=date_prescription
+                type="Prescription", date_evenement=date_prescription
             )
 
         procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
@@ -784,11 +778,9 @@ class TestProcedureDelaiApprobation:
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
+        procedure.event_set.create(type="Prescription", date_evenement="2024-01-01")
         procedure.event_set.create(
-            type="Prescription", date_evenement_string="2024-01-01"
-        )
-        procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-02-01"
+            type="Délibération d'approbation", date_evenement="2024-02-01"
         )
 
         procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
@@ -803,14 +795,14 @@ class TestProcedureSort:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_recente.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         procedure_vieille = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_vieille.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2023-12-01"
+            type="Délibération d'approbation", date_evenement="2023-12-01"
         )
 
         procedure_recent_with_events = Procedure.objects.with_events().get(
@@ -828,14 +820,14 @@ class TestProcedureSort:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_recente.event_set.create(
-            type="Prescription", date_evenement_string="2024-12-01"
+            type="Prescription", date_evenement="2024-12-01"
         )
 
         procedure_vieille = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_vieille.event_set.create(
-            type="Prescription", date_evenement_string="2023-12-01"
+            type="Prescription", date_evenement="2023-12-01"
         )
 
         procedure_recent_with_events = Procedure.objects.with_events().get(
@@ -853,20 +845,20 @@ class TestProcedureSort:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_recente.event_set.create(
-            type="Prescription", date_evenement_string="1999-12-01"
+            type="Prescription", date_evenement="1999-12-01"
         )
         procedure_recente.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         procedure_vieille = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_vieille.event_set.create(
-            type="Prescription", date_evenement_string="2023-12-01"
+            type="Prescription", date_evenement="2023-12-01"
         )
         procedure_vieille.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2023-12-02"
+            type="Délibération d'approbation", date_evenement="2023-12-02"
         )
 
         procedure_recent_with_events = Procedure.objects.with_events().get(
@@ -908,7 +900,7 @@ class TestProcedureStatut:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         assert event.category == EventCategory.APPROUVE
@@ -940,10 +932,10 @@ class TestProcedureStatut:
         )
         event_prescription = procedure.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
-            date_evenement_string="2024-12-03",
+            date_evenement="2024-12-03",
         )
         event_approbation = procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-05"
+            type="Délibération d'approbation", date_evenement="2024-12-05"
         )
 
         assert event_prescription.category == EventCategory.PRESCRIPTION
@@ -979,7 +971,7 @@ class TestProcedureStatut:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(
-            type="Abrogation", date_evenement_string="2024-12-01"
+            type="Abrogation", date_evenement="2024-12-01"
         )
 
         assert event.category == EventCategory.ANNULE
@@ -999,7 +991,7 @@ class TestProcedureStatut:
         )
         event = procedure.event_set.create(
             type="Délibération d'approbation",
-            date_evenement_string="2024-12-01",
+            date_evenement="2024-12-01",
             is_valid=False,
         )
 
@@ -1019,7 +1011,7 @@ class TestProcedureStatut:
             doc_type=TypeDocument.CC, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         assert event.category is None
@@ -1043,7 +1035,7 @@ class TestProcedureStatut:
             collectivite_porteuse=commune,
         )
         procedure_secondaire.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         with django_assert_num_queries(2):
@@ -1063,13 +1055,13 @@ class TestProcedureStatut:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         prescription_inseree_avant = procedure.event_set.create(
-            type="Prescription", date_evenement_string="2023-04-26"
+            type="Prescription", date_evenement="2023-04-26"
         )
         approbation = procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2023-04-26"
+            type="Délibération d'approbation", date_evenement="2023-04-26"
         )
         prescription_inseree_apres = procedure.event_set.create(
-            type="Prescription", date_evenement_string="2023-04-26"
+            type="Prescription", date_evenement="2023-04-26"
         )
 
         assert approbation.category == EventCategory.APPROUVE
@@ -1091,13 +1083,13 @@ class TestProcedureStatut:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         prescription_insere_avant = procedure.event_set.create(
-            type="Prescription", date_evenement_string="2023-04-26"
+            type="Prescription", date_evenement="2023-04-26"
         )
         abandon = procedure.event_set.create(
-            type="Abandon", date_evenement_string="2023-04-26"
+            type="Abandon", date_evenement="2023-04-26"
         )
         prescription_insere_apres = procedure.event_set.create(
-            type="Prescription", date_evenement_string="2023-04-26"
+            type="Prescription", date_evenement="2023-04-26"
         )
 
         assert abandon.category == EventCategory.ABANDON
@@ -1154,7 +1146,7 @@ class TestEvent:
 
     def test_date_null(self) -> None:
         procedure = Procedure()
-        assert Event(procedure=procedure).date is None
+        assert Event(procedure=procedure).date_evenement is None
 
 
 class TestCommuneProceduresPrincipales:
@@ -1212,21 +1204,21 @@ class TestCommunePlanEnCours:
             doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
         procedure_saisie_avant.event_set.create(
-            type="Prescription", date_evenement_string="2022-12-01"
+            type="Prescription", date_evenement="2022-12-01"
         )
 
         procedure_en_cours = commune.procedures.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_en_cours.event_set.create(
-            type="Prescription", date_evenement_string="2024-12-01"
+            type="Prescription", date_evenement="2024-12-01"
         )
 
         procedure_saisie_apres = commune.procedures.create(
             doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
         procedure_saisie_apres.event_set.create(
-            type="Prescription", date_evenement_string="2023-12-01"
+            type="Prescription", date_evenement="2023-12-01"
         )
 
         with django_assert_num_queries(3):
@@ -1248,7 +1240,7 @@ class TestCommunePlanEnCours:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_principale.event_set.create(
-            type="Prescription", date_evenement_string="2024-12-01"
+            type="Prescription", date_evenement="2024-12-01"
         )
 
         procedure_abrogation = commune.procedures.create(
@@ -1257,7 +1249,7 @@ class TestCommunePlanEnCours:
             collectivite_porteuse=commune,
         )
         procedure_abrogation.event_set.create(
-            type="Prescription", date_evenement_string="2024-12-01"
+            type="Prescription", date_evenement="2024-12-01"
         )
 
         with django_assert_num_queries(3):
@@ -1277,15 +1269,13 @@ class TestCommunePlanEnCours:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_principale.event_set.create(
-            type="Prescription", date_evenement_string="2024-12-01"
+            type="Prescription", date_evenement="2024-12-01"
         )
 
         procedure_pos = commune.procedures.create(
             doc_type=TypeDocument.POS, collectivite_porteuse=commune
         )
-        procedure_pos.event_set.create(
-            type="Prescription", date_evenement_string="2024-12-01"
-        )
+        procedure_pos.event_set.create(type="Prescription", date_evenement="2024-12-01")
 
         with django_assert_num_queries(3):
             commune = Commune.objects.with_procedures_principales().get()
@@ -1327,9 +1317,7 @@ class TestCommune:
             procedure = commune.procedures.create(
                 doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
             )
-            procedure.event_set.create(
-                type="Prescription", date_evenement_string="2022-12-01"
-            )
+            procedure.event_set.create(type="Prescription", date_evenement="2022-12-01")
 
         if plan_opposable:
             groupement = create_groupement(code_insee="GROUPEMENT PLAN OPPOSABLE")
@@ -1337,7 +1325,7 @@ class TestCommune:
                 doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
             )
             procedure.event_set.create(
-                type="Délibération d'approbation", date_evenement_string="2022-12-01"
+                type="Délibération d'approbation", date_evenement="2022-12-01"
             )
 
         commune = Commune.objects.with_procedures_principales().first()
@@ -1354,21 +1342,21 @@ class TestCommuneOpposabilite:
             doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
         procedure_precedente_saisie_avant.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2022-12-01"
+            type="Délibération d'approbation", date_evenement="2022-12-01"
         )
 
         procedure_opposable = commune.procedures.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_opposable.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         procedure_precedente_saisie_apres = commune.procedures.create(
             doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
         procedure_precedente_saisie_apres.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2023-12-01"
+            type="Délibération d'approbation", date_evenement="2023-12-01"
         )
 
         with django_assert_num_queries(3):
@@ -1395,14 +1383,14 @@ class TestCommuneOpposabilite:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         plan_opposable.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-01-02"
+            type="Délibération d'approbation", date_evenement="2024-01-02"
         )
 
         schema_opposable = commune.procedures.create(
             doc_type=TypeDocument.SCOT, collectivite_porteuse=commune
         )
         schema_opposable.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-01-01"
+            type="Délibération d'approbation", date_evenement="2024-01-01"
         )
 
         with django_assert_num_queries(3):
@@ -1428,7 +1416,7 @@ class TestCommuneOpposabilite:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_opposable.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         with django_assert_num_queries(3):
@@ -1451,7 +1439,7 @@ class TestCommuneOpposabilite:
         )
         procedure_en_cours.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
-            date_evenement_string="2024-12-01",
+            date_evenement="2024-12-01",
         )
 
         with django_assert_num_queries(3):
@@ -1475,7 +1463,7 @@ class TestCommuneOpposabilite:
             collectivite_porteuse=commune,
         )
         procedure_approuvee.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         with django_assert_num_queries(3):
@@ -1502,7 +1490,7 @@ class TestCommuneOpposabilite:
             collectivite_porteuse=commune,
         )
         procedure_secondaire.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         with django_assert_num_queries(3):
@@ -1526,14 +1514,14 @@ class TestCommuneOpposabilite:
             soft_delete=True, collectivite_porteuse=commune
         )
         procedure_supprimee.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         procedure_doublon = commune.procedures.create(
             doublon_cache_de=procedure_reelle, collectivite_porteuse=commune
         )
         procedure_doublon.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         with django_assert_num_queries(3):
@@ -1557,14 +1545,14 @@ class TestCommuneOpposabilite:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_opposable_fevrier.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-02-01"
+            type="Délibération d'approbation", date_evenement="2024-02-01"
         )
 
         procedure_opposable_janvier = commune.procedures.create(
             doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
         procedure_opposable_janvier.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-01-01"
+            type="Délibération d'approbation", date_evenement="2024-01-01"
         )
 
         with django_assert_num_queries(2):
