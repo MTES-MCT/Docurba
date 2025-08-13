@@ -1,7 +1,6 @@
 <template>
   <v-container>
     <v-row>
-      <LayoutsBannerVacances />
       <v-col
         cols="12"
         class="d-flex align-center justify-space-between"
