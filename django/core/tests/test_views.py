@@ -112,7 +112,7 @@ class TestAPIPerimetres:
         )
 
         procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2023-01-01"
+            type="Délibération d'approbation", date_evenement="2023-01-01"
         )
 
         response = client.get("/api/perimetres", {"avant": avant})
@@ -134,7 +134,7 @@ class TestAPICommunes:
             doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
         )
         plan_opposable.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-12-01"
+            type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         with django_assert_num_queries(4):
@@ -222,7 +222,7 @@ class TestAPICommunes:
         )
 
         procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-01-01"
+            type="Délibération d'approbation", date_evenement="2024-01-01"
         )
 
         response = client.get("/api/communes", {"avant": avant})
@@ -345,7 +345,7 @@ class TestAPIScots:
         procedure.perimetre.add(commune)
 
         procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement_string="2024-01-01"
+            type="Délibération d'approbation", date_evenement="2024-01-01"
         )
 
         response = client.get("/api/scots", {"avant": avant})

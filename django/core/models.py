@@ -241,9 +241,9 @@ EVENT_CATEGORY_BY_DOC_TYPE |= dict.fromkeys(
 
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self, *, avant: date | None = None) -> Self:
-        events = Event.objects.exclude(date_evenement_string=None)
+        events = Event.objects.exclude(date_evenement=None)
         if avant:
-            events = events.filter(date_evenement_string__lt=str(avant))
+            events = events.filter(date_evenement__lt=avant)
 
         return self.prefetch_related(
             models.Prefetch("event_set", events, to_attr="events_prefetched")
@@ -384,7 +384,9 @@ class Procedure(models.Model):
             for event_category in EVENT_CATEGORY_PRIORISES
             if (event := getattr(self, event_category, None))
         )
-        return max(events_impactants_priorises, key=attrgetter("date"), default=None)
+        return max(
+            events_impactants_priorises, key=attrgetter("date_evenement"), default=None
+        )
 
     @property
     def statut(self) -> EventCategory | None:
@@ -397,7 +399,7 @@ class Procedure(models.Model):
         event = getattr(self, event_type, None)
         if not event:
             return None
-        return event.date
+        return event.date_evenement
 
     @property
     def date_approbation(self) -> date | None:
@@ -510,13 +512,13 @@ class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
-    date_evenement_string = models.CharField(db_column="date_iso", null=True)  # noqa: DJ001
+    date_evenement = models.DateField(db_column="date_iso", null=True)
     is_valid = models.BooleanField(db_default=True)
 
     class Meta:
         managed = False
         db_table = "doc_frise_events"
-        ordering = ("-date_evenement_string",)
+        ordering = ("-date_evenement",)
 
     def __str__(self) -> str:
         return f"{self.procedure}  - {self.type}"
@@ -527,13 +529,6 @@ class Event(models.Model):
             return None
 
         return EVENT_CATEGORY_BY_DOC_TYPE[self.procedure.doc_type].get(self.type)
-
-    @property
-    def date(self) -> date | None:
-        if not self.date_evenement_string:
-            return None
-
-        return date.fromisoformat(self.date_evenement_string)
 
 
 class Region(models.Model):
