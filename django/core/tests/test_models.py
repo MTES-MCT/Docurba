@@ -285,22 +285,6 @@ class TestCollectivitePortantScot:
             ]
 
     @pytest.mark.django_db
-    def test_scot_sans_prescription_considere_en_cours(
-        self,
-        django_assert_num_queries: DjangoAssertNumQueries,
-    ) -> None:
-        groupement_avec_scot = create_groupement()
-        scot_en_cours = groupement_avec_scot.procedure_set.create(
-            doc_type=TypeDocument.SCOT
-        )
-
-        with django_assert_num_queries(4):
-            groupements = list(Collectivite.objects.portant_scot())
-            assert groupements == [groupement_avec_scot]
-
-            assert groupements[0].scots_pour_csv == [(None, scot_en_cours)]
-
-    @pytest.mark.django_db
     def test_retourne_scot_opposables_des_qu_une_commune_considere_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -1120,6 +1104,80 @@ class TestProcedureStatut:
             assert not procedure_with_events.statut
 
 
+class TestProcedureEnCours:
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("event_type", "event_category", "expected_en_cours"),
+        [
+            ("Prescription", EventCategory.PRESCRIPTION, True),
+            ("Publication périmètre", EventCategory.PUBLICATION_PERIMETRE, True),
+            ("Délibération d'approbation", EventCategory.APPROUVE, False),
+        ],
+    )
+    def test_categories_considerees_en_cours(
+        self,
+        event_type: str,
+        event_category: EventCategory,
+        expected_en_cours: bool,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        event = procedure.event_set.create(type=event_type, date_evenement="2024-12-01")
+
+        assert event.category == event_category
+        with django_assert_num_queries(2):
+            procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
+
+            assert procedure_with_events.dernier_event_impactant == event
+            assert procedure_with_events.statut == event_category
+            assert procedure_with_events.is_en_cours == expected_en_cours
+
+    @pytest.mark.django_db
+    def test_abrogation_jamais_en_cours(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+
+        procedure = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI,
+            type="Abrogation",
+            collectivite_porteuse=commune,
+        )
+        event = procedure.event_set.create(
+            type="Prescription", date_evenement="2024-12-01"
+        )
+
+        with django_assert_num_queries(2):
+            procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
+
+            assert procedure_with_events.dernier_event_impactant == event
+            assert procedure_with_events.statut == EventCategory.PRESCRIPTION
+            assert not procedure_with_events.is_en_cours
+
+    @pytest.mark.django_db
+    def test_pos_jamais_en_cours(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+
+        procedure = Procedure.objects.create(
+            doc_type=TypeDocument.POS, collectivite_porteuse=commune
+        )
+        event = procedure.event_set.create(
+            type="Prescription", date_evenement="2024-12-01"
+        )
+
+        with django_assert_num_queries(2):
+            procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
+
+            assert procedure_with_events.dernier_event_impactant == event
+            assert procedure_with_events.statut == EventCategory.PRESCRIPTION
+            assert not procedure_with_events.is_en_cours
+
+
 class TestEvent:
     @pytest.mark.parametrize(
         ("doc_type", "type_event", "category"),
@@ -1192,8 +1250,6 @@ class TestCommuneProceduresPrincipales:
 
 
 class TestCommunePlanEnCours:
-    """Ces tests devront être revus avec https://github.com/MTES-MCT/Docurba/issues/1174."""
-
     @pytest.mark.django_db
     def test_plus_recent_en_cours(
         self, django_assert_num_queries: DjangoAssertNumQueries
@@ -1231,56 +1287,26 @@ class TestCommunePlanEnCours:
             assert commune.plan_en_cours == procedure_en_cours
 
     @pytest.mark.django_db
-    def test_exclut_abrogation(
+    def test_ignore_les_procedures_non_lancees(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = create_commune()
 
-        procedure_principale = commune.procedures.create(
+        procedure_en_cours = commune.procedures.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
-        procedure_principale.event_set.create(
+        procedure_en_cours.event_set.create(
             type="Prescription", date_evenement="2024-12-01"
         )
 
-        procedure_abrogation = commune.procedures.create(
-            doc_type=TypeDocument.PLUI,
-            type="Abrogation",
-            collectivite_porteuse=commune,
-        )
-        procedure_abrogation.event_set.create(
-            type="Prescription", date_evenement="2024-12-01"
+        _procedure_pas_commencee = commune.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
 
         with django_assert_num_queries(3):
             commune = Commune.objects.with_procedures_principales().get()
-            assert commune.procedures_principales_en_cours == [procedure_principale]
-            assert commune.plan_en_cours == procedure_principale
-
-    @pytest.mark.django_db
-    def test_exclut_pos(
-        self, django_assert_num_queries: DjangoAssertNumQueries
-    ) -> None:
-        # Ce test pourra être supprimé quand les POS ne seront pas considérés "lancés"/ en cours
-        # https://github.com/MTES-MCT/Docurba/issues/1174
-        commune = create_commune()
-
-        procedure_principale = commune.procedures.create(
-            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
-        )
-        procedure_principale.event_set.create(
-            type="Prescription", date_evenement="2024-12-01"
-        )
-
-        procedure_pos = commune.procedures.create(
-            doc_type=TypeDocument.POS, collectivite_porteuse=commune
-        )
-        procedure_pos.event_set.create(type="Prescription", date_evenement="2024-12-01")
-
-        with django_assert_num_queries(3):
-            commune = Commune.objects.with_procedures_principales().get()
-            assert commune.procedures_principales_en_cours == [procedure_principale]
-            assert commune.plan_en_cours == procedure_principale
+            assert commune.procedures_principales_en_cours == [procedure_en_cours]
+            assert commune.plan_en_cours == procedure_en_cours
 
 
 class TestCommune:
