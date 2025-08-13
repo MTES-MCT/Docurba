@@ -130,6 +130,7 @@ class TestAPICommunes:
         plan_en_cours = commune.procedures.create(
             doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
         )
+        plan_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
         plan_opposable = commune.procedures.create(
             doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
         )
@@ -221,6 +222,7 @@ class TestAPICommunes:
             doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
         )
 
+        procedure.event_set.create(type="Prescription", date_evenement="2021-12-01")
         procedure.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-01-01"
         )
@@ -239,8 +241,11 @@ class TestAPICommunes:
         for _ in range(2):
             groupement = create_groupement()
             commune = create_commune()
-            commune.procedures.create(
+            plan_en_cours = commune.procedures.create(
                 doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+            )
+            plan_en_cours.event_set.create(
+                type="Prescription", date_evenement="2024-12-01"
             )
 
             with django_assert_num_queries(4):
@@ -257,6 +262,9 @@ class TestAPIScots:
     ) -> None:
         groupement = create_groupement()
         scot_en_cours = groupement.procedure_set.create(doc_type=TypeDocument.SCOT)
+        scot_en_cours.event_set.create(
+            type="Publication périmètre", date_evenement="2024-12-01"
+        )
 
         with django_assert_num_queries(4):
             response = client.get("/api/scots")
@@ -295,7 +303,7 @@ class TestAPIScots:
                 "pc_noserie_procedure": "",
                 "pc_proc_elaboration_revision": "",
                 "pc_scot_interdepartement": "False",
-                "pc_date_publication_perimetre": "",
+                "pc_date_publication_perimetre": "2024-12-01",
                 "pc_date_prescription": "",
                 "pc_date_arret_projet": "",
                 "pc_nombre_communes": "0",
@@ -307,8 +315,15 @@ class TestAPIScots:
         groupement_a = create_groupement()
         groupement_b = create_groupement()
 
-        groupement_a.procedure_set.create(doc_type=TypeDocument.SCOT)
-        groupement_b.procedure_set.create(doc_type=TypeDocument.SCOT)
+        procedure_a = groupement_a.procedure_set.create(doc_type=TypeDocument.SCOT)
+        procedure_a.event_set.create(
+            type="Publication périmètre", date_evenement="2024-12-01"
+        )
+
+        procedure_b = groupement_b.procedure_set.create(doc_type=TypeDocument.SCOT)
+        procedure_b.event_set.create(
+            type="Publication périmètre", date_evenement="2024-12-01"
+        )
 
         response = client.get(
             "/api/scots", {"departement": groupement_a.departement.code_insee}
@@ -321,8 +336,15 @@ class TestAPIScots:
         groupement_a = create_groupement()
         groupement_b = create_groupement()
 
-        groupement_a.procedure_set.create(doc_type=TypeDocument.SCOT)
-        groupement_b.procedure_set.create(doc_type=TypeDocument.SCOT)
+        procedure_a = groupement_a.procedure_set.create(doc_type=TypeDocument.SCOT)
+        procedure_a.event_set.create(
+            type="Publication périmètre", date_evenement="2024-12-01"
+        )
+
+        procedure_b = groupement_b.procedure_set.create(doc_type=TypeDocument.SCOT)
+        procedure_b.event_set.create(
+            type="Publication périmètre", date_evenement="2024-12-01"
+        )
 
         response = client.get("/api/scots")
         reader = DictReader(response.content.decode().splitlines())
@@ -344,6 +366,9 @@ class TestAPIScots:
         procedure = groupement.procedure_set.create(doc_type=TypeDocument.SCOT)
         procedure.perimetre.add(commune)
 
+        procedure.event_set.create(
+            type="Publication périmètre", date_evenement="2022-12-01"
+        )
         procedure.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-01-01"
         )

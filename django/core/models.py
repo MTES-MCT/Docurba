@@ -139,6 +139,7 @@ EVENT_CATEGORY_PRIORISES = (
     EventCategory.ABANDON,
     EventCategory.APPROUVE,
     EventCategory.PRESCRIPTION,
+    EventCategory.PUBLICATION_PERIMETRE,
     EventCategory.ANNULE,
     EventCategory.CADUC,
 )
@@ -181,6 +182,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
         "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,
         "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Publication du périmètre par le préfet": EventCategory.PUBLICATION_PERIMETRE,
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
         "Fin d'échéance": EventCategory.FIN_ECHEANCE,
     },
@@ -507,6 +509,16 @@ class Procedure(models.Model):
         # TODO Ajouter la vérif de la colonne is_sectoriel  # noqa: FIX002
         return self.communes_adherentes__count > self.perimetre__count
 
+    @property
+    def is_en_cours(self) -> bool:
+        if self.type == "Abrogation" or self.type_document == TypeDocument.POS:
+            return False
+
+        return self.statut in (
+            EventCategory.PRESCRIPTION,
+            EventCategory.PUBLICATION_PERIMETRE,
+        )
+
 
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -625,11 +637,7 @@ class Collectivite(models.Model):
 
     @cached_property
     def _scot_en_cours(self) -> Procedure | None:
-        en_cours = [
-            procedure
-            for procedure in self.scots
-            if procedure.statut == EventCategory.PRESCRIPTION or not procedure.statut
-        ]
+        en_cours = [procedure for procedure in self.scots if procedure.is_en_cours]
 
         if not en_cours:
             return None
@@ -742,12 +750,7 @@ class Commune(Collectivite):
             (
                 procedure
                 for procedure in self.procedures_principales
-                if procedure.type != "Abrogation"
-                and procedure.type_document != TypeDocument.POS
-                and (
-                    procedure.statut == EventCategory.PRESCRIPTION
-                    or not procedure.statut
-                )
+                if procedure.is_en_cours
             ),
             reverse=True,
         )
