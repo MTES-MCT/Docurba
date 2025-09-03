@@ -1,6 +1,7 @@
 from debug_toolbar.toolbar import debug_toolbar_urls
 from django.conf import settings
 from django.contrib import admin
+from django.http import HttpResponseNotFound
 from django.urls import include, path, re_path
 from revproxy.views import ProxyView
 
@@ -19,5 +20,8 @@ urlpatterns = [
     path("api/scots", views.api_scots),
     path("__reload__/", include("django_browser_reload.urls")),
     *debug_toolbar_urls(),
+    path(  # Désactive le websocket hot reload Nuxt en dev
+        "_content/ws", lambda _: HttpResponseNotFound()
+    ),
     re_path(r"(?P<path>.*)", ProxyView.as_view(upstream=settings.UPSTREAM_NUXT)),
 ]
