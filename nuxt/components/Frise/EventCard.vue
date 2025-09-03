@@ -57,7 +57,7 @@
           </div>
         </v-card-title>
         <v-card-text>
-          <div v-if="$user.id && (event.commentaire || event.description)">
+          <div v-if="event.commentaire || event.description">
             {{ event.commentaire || event.description }}
           </div>
 
