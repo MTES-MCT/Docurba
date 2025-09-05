@@ -385,7 +385,7 @@ def collectivite(
     request: HttpRequest, collectivite_code: str, collectivite_type: str = "COM"
 ) -> HttpResponse:
     commune = (
-        Commune.objects.with_procedures_principales()
+        Commune.objects.with_procedures_principales(with_perimetre=True)
         .filter(id=f"{collectivite_code}_{collectivite_type}")
         .first()
     )

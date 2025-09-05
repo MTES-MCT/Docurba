@@ -253,6 +253,11 @@ class ProcedureQuerySet(models.QuerySet):
             models.Prefetch("event_set", events, to_attr="events_prefetched")
         )
 
+    def with_perimetre(self) -> Self:
+        return self.prefetch_related(
+            models.Prefetch("perimetre", to_attr="perimetre_prefetched")
+        )
+
     def with_communes_counts(self) -> Self:
         # On utilise une Subquery plutôt qu'une expression directe pour permettre
         # à Django d'ignorer la Subquery quand il fait des count(*) dans l'admin,
@@ -365,6 +370,25 @@ class Procedure(models.Model):
 
     def get_absolute_url(self) -> str:
         return f"/frise/{self.pk}"
+
+    @property
+    def nom(self) -> str:
+        if self.name:
+            return self.name
+
+        parts = [
+            self.type,
+            self.numero or "",
+            self.type_document,
+            self.collectivite_pour_nom.nom,
+        ]
+        return " ".join(part for part in parts if parts)
+
+    @property
+    def collectivite_pour_nom(self) -> "Collectivite":
+        if not self.is_intercommunal:
+            return self.perimetre_prefetched[0]
+        return self.collectivite_porteuse
 
     _events_processed = False
 
@@ -669,13 +693,19 @@ class Collectivite(models.Model):
 
 class CommuneQuerySet(models.QuerySet):
     def with_procedures_principales(
-        self, *, avant: date | None = None, with_adhesions_count: bool = True
+        self,
+        *,
+        avant: date | None = None,
+        with_adhesions_count: bool = True,
+        with_perimetre: bool = False,
     ) -> Self:
         procedures_principales = Procedure.objects.with_events(avant=avant).filter(
             parente=None, archived=False
         )
         if not with_adhesions_count:
             procedures_principales = procedures_principales.without_adhesions_count()
+        if with_perimetre:
+            procedures_principales = procedures_principales.with_perimetre()
 
         return self.prefetch_related(
             models.Prefetch(
