@@ -253,6 +253,11 @@ class ProcedureQuerySet(models.QuerySet):
             models.Prefetch("event_set", events, to_attr="events_prefetched")
         )
 
+    def with_perimetre(self) -> Self:
+        return self.prefetch_related(
+            models.Prefetch("perimetre", to_attr="perimetre_prefetched")
+        )
+
     def with_communes_counts(self) -> Self:
         # On utilise une Subquery plutôt qu'une expression directe pour permettre
         # à Django d'ignorer la Subquery quand il fait des count(*) dans l'admin,
@@ -351,10 +356,25 @@ class Procedure(models.Model):
         db_table = "procedures"
 
     def __str__(self) -> str:
-        return (
-            self.name
-            or f"🤖 {self.type} {self.numero or ''} {self.type_document} {self.collectivite_porteuse}"
+        if self.name:
+            return self.name
+
+        collectivite_concernee = self.collectivite_porteuse
+        if not self.is_intercommunal:
+            collectivite_concernee = self.perimetre_prefetched[0]
+
+        libelle_collectivite = (
+            collectivite_concernee.nom
+            if collectivite_concernee
+            else self.collectivite_porteuse_id
         )
+        parts = [
+            self.type,
+            self.numero or "",
+            self.type_document,
+            libelle_collectivite,
+        ]
+        return " ".join(part for part in parts if part)
 
     def __lt__(self, other: Self) -> bool:
         if self.date_approbation and other.date_approbation:
@@ -671,13 +691,19 @@ class Collectivite(models.Model):
 
 class CommuneQuerySet(models.QuerySet):
     def with_procedures_principales(
-        self, *, avant: date | None = None, with_adhesions_count: bool = True
+        self,
+        *,
+        avant: date | None = None,
+        with_adhesions_count: bool = True,
+        with_perimetre: bool = False,
     ) -> Self:
         procedures_principales = Procedure.objects.with_events(avant=avant).filter(
             parente=None, archived=False
         )
         if not with_adhesions_count:
             procedures_principales = procedures_principales.without_adhesions_count()
+        if with_perimetre:
+            procedures_principales = procedures_principales.with_perimetre()
 
         return self.prefetch_related(
             models.Prefetch(
