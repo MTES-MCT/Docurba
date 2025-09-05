@@ -135,7 +135,11 @@
             </div>
           </v-col>
         </v-row>
-        <DdtPerimeterCheckInput v-model="perimetre" :communes="communes" />
+        <DdtPerimeterCheckInput
+          v-if="procedureCategory === 'principale'"
+          v-model="perimetre"
+          :communes="communes"
+        />
         <v-row>
           <v-col cols="12" class="d-flex mt-8">
             <v-btn
@@ -221,6 +225,9 @@ export default {
         // This can create an anomaly with Banatic but is better than nothing.
         return this.collectivite.code
       }
+    },
+    procedureParentObj () {
+      return this.proceduresParents?.find(e => e.id === this.procedureParent)
     },
     procedureParentDocType () {
       return this.proceduresParents?.find(e => e.id === this.procedureParent)?.doc_type
@@ -324,7 +331,13 @@ export default {
       this.loadingSave = true
 
       try {
-        const detailedPerimetre = (await axios({ url: `/api/geo/communes?codes=${this.perimetre}`, method: 'get' })).data
+        let perimetre
+        if (this.procedureParent) {
+          perimetre = this.procedureParentObj.procedures_perimetres.map(perim => perim.collectivite_code)
+        } else {
+          perimetre = this.perimetre
+        }
+        const detailedPerimetre = (await axios({ url: `/api/geo/communes?codes=${perimetre}`, method: 'get' })).data
         const oldFomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
         const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
         let insertedProject = null
