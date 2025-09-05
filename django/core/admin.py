@@ -1,6 +1,7 @@
 # ruff: noqa: ARG002
 # ruff: noqa: ANN001
 from django.contrib import admin
+from django.db.models import QuerySet
 
 from core.models import Collectivite, Commune, Procedure
 
@@ -41,6 +42,9 @@ class ProcedureAdmin(admin.ModelAdmin):
         ("name", admin.EmptyFieldListFilter),
     )
     list_display = ("__str__", "statut")
+
+    def get_queryset(self, request: object) -> QuerySet:
+        return super().get_queryset(request).with_perimetre()
 
     def has_add_permission(self, request: object) -> bool:
         return False
