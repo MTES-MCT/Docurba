@@ -1,13 +1,9 @@
 import axios from 'axios'
 import departements from '@/assets/data/INSEE/departements_small.json'
 
-export default ({ $supabase, $isDev, app }, inject) => {
+export default ({ $supabase, $user, $isDev, app }, inject) => {
   async function sendEvent (event) {
     const route = app.router.currentRoute
-
-    const {
-      data: { user }
-    } = await $supabase.auth.getUser()
 
     let {
       collectiviteId
@@ -50,7 +46,7 @@ export default ({ $supabase, $isDev, app }, inject) => {
 
     if (!$isDev) {
       await $supabase.from('analytics_events').insert([Object.assign({
-        user_id: user.id,
+        user_id: $user.id,
         path: route.path,
         collectivite_id: collectiviteId,
         project_id: projectId,
