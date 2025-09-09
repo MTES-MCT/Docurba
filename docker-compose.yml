@@ -1,0 +1,25 @@
+services:
+  # https://registry.hub.docker.com/_/postgres/
+  postgres:
+    container_name: docurba_postgres
+    image: postgres:15.1
+    # Disable some safety switches for a faster postgres: https://www.postgresql.org/docs/current/non-durability.html
+    command: -c fsync=off -c full_page_writes=off -c synchronous_commit=off
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=${PGDATABASE:-postgres}
+      # Avoid a log error when starting the docurba_postgres container:
+      # > Role "root" does not exist.
+      # Without this variable, the default Unix account ('root')
+      # is used automatically when starting postgres.
+      # https://www.postgresql.org/docs/current/libpq-envars.html
+      - PGUSER=postgres
+      - PGPASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"
+
+volumes:
+  postgres_data:
