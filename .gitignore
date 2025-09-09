@@ -107,6 +107,7 @@ pg_secret_config.mjs
 ColPorteuse.csv
 
 __pycache__
+.coverage
 
 # Mise
 .mise.local.toml
