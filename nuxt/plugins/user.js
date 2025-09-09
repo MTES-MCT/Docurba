@@ -11,7 +11,7 @@ const defaultUser = {
   user_metadata: {}
 }
 
-function handleRedirect (event, user, router) {
+function handleRedirect ($supabase, event, user, router) {
   // console.log('handleRedirect: ', event, user)
   if (event === 'SIGNED_IN') {
     if (user.profile.poste === 'dreal') {
@@ -95,14 +95,14 @@ export default async ({ $supabase, app }, inject) => {
     let currentSession = null
 
     $supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('onAuthStateChange', event, session, currentSession)
+      // console.log('onAuthStateChange', event, session)
 
       if (session) {
         // console.log('update user with session')
         if (event === 'INITIAL_SESSION ' || !currentSession) {
           const user = await updateUser(session)
           // console.log('user updated')
-          handleRedirect(event, user, app.router)
+          handleRedirect($supabase, event, user, app.router)
         }
 
         currentSession = session
