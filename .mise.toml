@@ -1,2 +1,13 @@
 [tools]
 node = "20"
+
+[tasks."start:nuxt"]
+dir = "{{config_root}}/nuxt"
+run = "npm run dev"
+
+[tasks."start:django"]
+dir = "{{config_root}}/django"
+run = "./manage.py runserver"
+
+[tasks.start]
+depends = ["start:nuxt", "start:django"]
