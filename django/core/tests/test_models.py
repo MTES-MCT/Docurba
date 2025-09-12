@@ -903,6 +903,33 @@ class TestProcedureStatut:
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
+        ("annee_limite", "statut"),
+        [
+            (2029, EventCategory.APPROUVE),
+            (2030, EventCategory.CADUC),
+        ],
+    )
+    def test_fin_d_echeance_impacte_caducite(
+        self,
+        annee_limite: int,
+        statut: str,
+    ) -> None:
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        procedure.event_set.create(
+            type="Délibération d'approbation", date_evenement="2024-12-01"
+        )
+        procedure.event_set.create(type="Fin d'échéance", date_evenement="2030-12-01")
+        procedure_with_events = Procedure.objects.with_events(
+            avant=date(annee_limite, 12, 15)
+        ).get(id=procedure.id)
+
+        assert procedure_with_events.statut == statut
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
         ("jour_limite", "statut"),
         [
             (2, None),
