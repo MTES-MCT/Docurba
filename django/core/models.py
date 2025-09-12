@@ -399,6 +399,8 @@ class Procedure(models.Model):
     def statut(self) -> EventCategory | None:
         if not self.dernier_event_impactant:
             return None
+        if self.date_fin_echeance and self.date_fin_echeance < self.date_pivot:
+            return EventCategory.CADUC
         return self.dernier_event_impactant.category
 
     def _date(self, event_type: EventCategory) -> date | None:
