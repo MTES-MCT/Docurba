@@ -300,12 +300,20 @@ class ProcedureManager(models.Manager):
 
 class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001
-    vaut_SCoT = models.BooleanField(db_column="is_scot", blank=True, null=True)  # noqa: N815
+    doc_type = models.CharField(
+        choices=TypeDocument, blank=True, null=True
+    )  # noqa: DJ001
+    vaut_SCoT = models.BooleanField(
+        db_column="is_scot", blank=True, null=True
+    )  # noqa: N815
     # Programme Local de l'Habitat
-    vaut_PLH = models.BooleanField(db_column="is_pluih", blank=True, null=True)  # noqa: N815
+    vaut_PLH = models.BooleanField(
+        db_column="is_pluih", blank=True, null=True
+    )  # noqa: N815
     # Plan De Mobilité (anciennement Plan de Déplacements Urbains)
-    vaut_PDM = models.BooleanField(db_column="is_pdu", blank=True, null=True)  # noqa: N815
+    vaut_PDM = models.BooleanField(
+        db_column="is_pdu", blank=True, null=True
+    )  # noqa: N815
     obligation_PDU = models.BooleanField(  # noqa: N815
         db_column="mandatory_pdu", blank=True, null=True
     )
