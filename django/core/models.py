@@ -8,6 +8,7 @@ from typing import Self
 
 from django.db import connection, models
 from django.urls import reverse
+from django.utils import timezone
 
 
 class TypeCollectivite(models.TextChoices):
@@ -399,9 +400,17 @@ class Procedure(models.Model):
         )
 
     @property
+    def is_caduc(self) -> bool:
+        if not self.date_fin_echeance:
+            return False
+        return timezone.now() < self.date_fin_echeance
+
+    @property
     def statut(self) -> EventCategory | None:
         if not self.dernier_event_impactant:
             return None
+        if self.is_caduc:
+            return EventCategory.CADUC
         return self.dernier_event_impactant.category
 
     def _date(self, event_type: EventCategory) -> date | None:
@@ -429,6 +438,10 @@ class Procedure(models.Model):
 
     @property
     def date_fin_echeance(self) -> date | None:
+        """
+        Calculer la date de fin d'échéance automatique : date de fin d'échéance = date de délibération d'approbation + 6ans
+        OU lorsqu'il y a une "délibération de maintien" : date de fin d'échéance = date de délibération de maintien + 6ans
+        """
         return self._date(EventCategory.FIN_ECHEANCE)
 
     @property
