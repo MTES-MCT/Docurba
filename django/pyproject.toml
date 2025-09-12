@@ -28,7 +28,8 @@ dev = [
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "core.settings"
-addopts = "--reuse-db --cov=."
+# FIXME(cms)
+addopts = "--create-db --cov=."
 
 [tool.ruff.lint]
 select = ["ALL"]

@@ -2,6 +2,7 @@
 import logging
 from collections.abc import Callable
 from datetime import date
+from tkinter import EventType
 from unittest import mock
 
 import pytest
@@ -893,6 +894,46 @@ class TestProcedureStatut:
 
             assert procedure_with_events.dernier_event_impactant == event
             assert procedure_with_events.statut == EventCategory.APPROUVE
+
+    # TODO(cms): use freezegun
+    # @freeze_time("2025-09-12")
+    @pytest.mark.django_db
+    def test_is_caduc(self, django_assert_num_queries: DjangoAssertNumQueries) -> None:
+        # TODO(cms): parametrize
+
+        ############## Just to make sure I understood.
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        # TODO(cms): `type`` should be an enum.
+        event = procedure.event_set.create(
+            type="Délibération d'approbation", date_evenement="2024-12-01"
+        )
+        procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
+
+        # TODO(cms): return a ProcedureStatutEnum instead of an EventCategory.
+        assert procedure_with_events.statut == EventCategory.APPROUVE
+
+        ############# With date de fin d'échéance in the past.
+        procedure.event_set.create(type="Fin d'échéance", date_evenement="2024-12-01")
+        procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
+
+        # TODO(cms): return a ProcedureStatutEnum instead of an EventCategory.
+        assert procedure_with_events.statut == EventCategory.CADUC
+        event.remove()
+
+        ########### With date de fin d'échéance in the future.
+        procedure.event_set.create(type="Fin d'échéance", date_evenement="2028-12-01")
+        procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
+
+        # TODO(cms): return a ProcedureStatutEnum instead of an EventCategory.
+        assert procedure_with_events.statut == EventCategory.APPROUVE
+        event.remove()
+
+        ############ Without any `Fin d'échéance` event: date de fin d'échéance should be computed automatically
+        # from the last Délibération d'approbation` event`.
+        # => see test_date_fin_echeance probably.
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(

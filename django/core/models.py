@@ -8,6 +8,7 @@ from typing import Self
 
 from django.db import connection, models
 from django.urls import reverse
+from django.utils import timezone
 
 
 class TypeCollectivite(models.TextChoices):
@@ -300,12 +301,20 @@ class ProcedureManager(models.Manager):
 
 class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001
-    vaut_SCoT = models.BooleanField(db_column="is_scot", blank=True, null=True)  # noqa: N815
+    doc_type = models.CharField(
+        choices=TypeDocument, blank=True, null=True
+    )  # noqa: DJ001
+    vaut_SCoT = models.BooleanField(
+        db_column="is_scot", blank=True, null=True
+    )  # noqa: N815
     # Programme Local de l'Habitat
-    vaut_PLH = models.BooleanField(db_column="is_pluih", blank=True, null=True)  # noqa: N815
+    vaut_PLH = models.BooleanField(
+        db_column="is_pluih", blank=True, null=True
+    )  # noqa: N815
     # Plan De Mobilité (anciennement Plan de Déplacements Urbains)
-    vaut_PDM = models.BooleanField(db_column="is_pdu", blank=True, null=True)  # noqa: N815
+    vaut_PDM = models.BooleanField(
+        db_column="is_pdu", blank=True, null=True
+    )  # noqa: N815
     obligation_PDU = models.BooleanField(  # noqa: N815
         db_column="mandatory_pdu", blank=True, null=True
     )
@@ -391,9 +400,17 @@ class Procedure(models.Model):
         )
 
     @property
+    def is_caduc(self) -> bool:
+        if not self.date_fin_echeance:
+            return False
+        return timezone.now() < self.date_fin_echeance
+
+    @property
     def statut(self) -> EventCategory | None:
         if not self.dernier_event_impactant:
             return None
+        if self.is_caduc:
+            return EventCategory.CADUC
         return self.dernier_event_impactant.category
 
     def _date(self, event_type: EventCategory) -> date | None:
@@ -421,6 +438,10 @@ class Procedure(models.Model):
 
     @property
     def date_fin_echeance(self) -> date | None:
+        """
+        Calculer la date de fin d'échéance automatique : date de fin d'échéance = date de délibération d'approbation + 6ans
+        OU lorsqu'il y a une "délibération de maintien" : date de fin d'échéance = date de délibération de maintien + 6ans
+        """
         return self._date(EventCategory.FIN_ECHEANCE)
 
     @property
