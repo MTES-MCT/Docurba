@@ -242,7 +242,8 @@ export default {
       if (isClient) {
         config.devtool = 'source-map'
       }
-    }
+    },
+    transpile: ['@supabase']
     // filenames: {
     //   app: ({ isDev }) => '[name].js',
     //   chunk: ({ isDev }) => '[name].js',
