@@ -112,7 +112,7 @@ class TestAPIPerimetres:
         )
 
         procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement="2023-01-01"
+            type="Délibération d'approbation", date_evenement="2023-01-02"
         )
 
         response = client.get("/api/perimetres", {"avant": avant})

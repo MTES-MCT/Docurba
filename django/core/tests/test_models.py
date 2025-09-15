@@ -1,10 +1,11 @@
 # ruff: noqa: FBT001, N803
 import logging
 from collections.abc import Callable
-from datetime import date
+from datetime import date, timedelta
 from unittest import mock
 
 import pytest
+from django.utils import timezone
 from pytest_django import DjangoAssertNumQueries
 
 from core.models import (
@@ -522,7 +523,6 @@ class TestProcedureDates:
             ("Prescription", "date_prescription"),
             ("Publication périmètre", "date_publication_perimetre"),
             ("Arrêt de projet", "date_arret_projet"),
-            ("Fin d'échéance", "date_fin_echeance"),
         ],
     )
     def test_ignore_event_apres(
@@ -531,27 +531,34 @@ class TestProcedureDates:
         date_attribute: str,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
+        """Ignore les événements après la date fournie, sauf pour les dates de fin d'échéance qui doivent toujours être récupérées."""
         commune = create_commune()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.SCOT, collectivite_porteuse=commune
         )
         procedure.event_set.create(type=event_type, date_evenement="2022-12-01")
+        procedure.event_set.create(type="Fin d'échéance", date_evenement="2022-12-01")
+
+        with django_assert_num_queries(2):
+            procedure_with_events = Procedure.objects.with_events(
+                avant="2022-11-29"
+            ).first()
+            assert getattr(procedure_with_events, date_attribute) is None
+            assert procedure_with_events.date_fin_echeance == date(2022, 12, 1)
 
         with django_assert_num_queries(2):
             procedure_with_events = Procedure.objects.with_events(
                 avant="2022-11-30"
             ).first()
             assert getattr(procedure_with_events, date_attribute) is None
+            assert procedure_with_events.date_fin_echeance == date(2022, 12, 1)
+
         with django_assert_num_queries(2):
             procedure_with_events = Procedure.objects.with_events(
                 avant="2022-12-01"
             ).first()
-            assert getattr(procedure_with_events, date_attribute) is None
-        with django_assert_num_queries(2):
-            procedure_with_events = Procedure.objects.with_events(
-                avant="2022-12-02"
-            ).first()
             assert getattr(procedure_with_events, date_attribute) == date(2022, 12, 1)
+            assert procedure_with_events.date_fin_echeance == date(2022, 12, 1)
 
 
 class TestProcedureTypeDocument:
@@ -898,10 +905,10 @@ class TestProcedureStatut:
     @pytest.mark.parametrize(
         ("jour_limite", "statut"),
         [
-            (3, None),
+            (2, None),
+            (3, EventCategory.PRESCRIPTION),
             (4, EventCategory.PRESCRIPTION),
-            (5, EventCategory.PRESCRIPTION),
-            (6, EventCategory.APPROUVE),
+            (5, EventCategory.APPROUVE),
         ],
     )
     def test_ignore_event_apres(
@@ -928,6 +935,38 @@ class TestProcedureStatut:
             procedure_with_events = Procedure.objects.with_events(
                 avant=date(2024, 12, jour_limite)
             ).get(id=procedure.id)
+
+            assert procedure_with_events.statut == statut
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("delta_jour", "statut"),
+        [
+            (-1, EventCategory.APPROUVE),
+            (0, EventCategory.APPROUVE),
+            (1, None),
+        ],
+    )
+    def test_ignore_event_apres_aujourdhui_si_pas_de_date_fournie(
+        self,
+        django_assert_num_queries: DjangoAssertNumQueries,
+        delta_jour: int,
+        statut: EventCategory,
+    ) -> None:
+        today = timezone.now().date()
+
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        )
+        event_approbation = procedure.event_set.create(
+            type="Délibération d'approbation",
+            date_evenement=today + timedelta(days=delta_jour),
+        )
+
+        assert event_approbation.category == EventCategory.APPROUVE
+        with django_assert_num_queries(2):
+            procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
 
             assert procedure_with_events.statut == statut
 
@@ -1571,7 +1610,7 @@ class TestCommuneOpposabilite:
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_opposable_fevrier.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-02-01"
+            type="Délibération d'approbation", date_evenement="2024-02-02"
         )
 
         procedure_opposable_janvier = commune.procedures.create(

@@ -8,6 +8,7 @@ from typing import Self
 
 from django.db import connection, models
 from django.urls import reverse
+from django.utils import timezone
 
 
 class TypeCollectivite(models.TextChoices):
@@ -244,10 +245,11 @@ EVENT_CATEGORY_BY_DOC_TYPE |= dict.fromkeys(
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self, *, avant: date | None = None) -> Self:
         events = Event.objects.exclude(date_evenement=None)
-        if avant:
-            events = events.filter(date_evenement__lt=avant)
-
-        return self.prefetch_related(
+        return self.annotate(
+            date_pivot=models.Value(
+                avant or timezone.now().date(), output_field=models.DateField()
+            )
+        ).prefetch_related(
             models.Prefetch("event_set", events, to_attr="events_prefetched")
         )
 
@@ -371,7 +373,10 @@ class Procedure(models.Model):
             return
 
         for event in reversed(self.events_prefetched):
-            if event.category:
+            if event.category and (
+                event.category == EventCategory.FIN_ECHEANCE
+                or event.date_evenement <= self.date_pivot
+            ):
                 setattr(self, event.category, event)
         self._events_processed = True
 
