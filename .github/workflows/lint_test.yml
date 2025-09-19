@@ -38,7 +38,7 @@ jobs:
       - run: pytest --create-db
         env:
           SECRET_KEY: test_secret_key
-          DEBUG: "True"
+          DJANGO_DEBUG: "True"
           DATABASE_URL: postgres://postgres:docurba@localhost:5434/docurba
           UPSTREAM_NUXT: http://localhost:3000
       - run: ruff format --diff .
