@@ -314,6 +314,7 @@ def api_scots(request: HttpRequest) -> HttpResponse:
             "pa_annee_approbation",
             "pa_date_fin_echeance",
             "pa_nombre_communes",
+            "pa_nombre_communes_en_zone_blanche",
             # En cours
             "pc_id",
             "pc_nom_schema",
@@ -324,6 +325,7 @@ def api_scots(request: HttpRequest) -> HttpResponse:
             "pc_date_prescription",
             "pc_date_arret_projet",
             "pc_nombre_communes",
+            "pc_nombre_communes_en_zone_blanche",
         ],
     )
 
@@ -356,7 +358,10 @@ def api_scots(request: HttpRequest) -> HttpResponse:
                 "pa_date_approbation": scot_opposable.date_approbation,
                 "pa_annee_approbation": scot_opposable.date_approbation.year,
                 "pa_date_fin_echeance": scot_opposable.date_fin_echeance,
-                "pa_nombre_communes": len(scot_opposable.communes),
+                "pa_nombre_communes": len(
+                    scot_opposable.communes
+                ),  # Collectivite.portant_scot mandatory!
+                "pa_nombre_communes_en_zone_blanche": "",
             }
 
         champs_en_cours = {}
@@ -370,7 +375,10 @@ def api_scots(request: HttpRequest) -> HttpResponse:
                 "pc_date_publication_perimetre": scot_en_cours.date_publication_perimetre,
                 "pc_date_prescription": scot_en_cours.date_prescription,
                 "pc_date_arret_projet": scot_en_cours.date_arret_projet,
-                "pc_nombre_communes": len(scot_en_cours.communes),
+                "pc_nombre_communes": len(
+                    scot_en_cours.communes
+                ),  # Collectivite.portant_scot mandatory!
+                "pc_nombre_communes_en_zone_blanche": "",
             }
 
         return champs_groupement | champs_opposable | champs_en_cours

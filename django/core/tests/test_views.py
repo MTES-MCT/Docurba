@@ -1,12 +1,13 @@
 from csv import DictReader
 from itertools import product
+import random
 
 from django.urls import reverse
 import pytest
 from django.test import Client
 from pytest_django import DjangoAssertNumQueries
 
-from core.models import TypeDocument
+from core.models import Departement, TypeDocument
 from core.tests.factories import (
     create_commune,
     create_groupement,
@@ -298,6 +299,7 @@ class TestAPIScots:
                 "pa_annee_approbation": "",
                 "pa_date_fin_echeance": "",
                 "pa_nombre_communes": "",
+                "pa_nombre_communes_en_zone_blanche": "",
                 # En cours
                 "pc_id": str(scot_en_cours.id),
                 "pc_nom_schema": "",
@@ -308,8 +310,41 @@ class TestAPIScots:
                 "pc_date_prescription": "",
                 "pc_date_arret_projet": "",
                 "pc_nombre_communes": "0",
+                "pc_nombre_communes_en_zone_blanche": "",
             }
         ]
+
+    @pytest.mark.django_db
+    def test_perimetres(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        # TODO(cms): add perimetre groupement.
+        departement = Departement.objects.first()
+        initial_perimetre = [
+            create_commune(departement=departement)
+            for _ in range(random.randint(1, 10))  # noqa: S311
+        ]
+        collectivite = create_groupement()
+        scot = collectivite.procedure_set.create(doc_type=TypeDocument.SCOT)
+        scot.event_set.create(type="Publication périmètre", date_evenement="2024-12-01")
+
+        for commune in initial_perimetre:
+            scot.perimetre.add(commune)
+
+        # TODO(cms): move portant_scot implicit attributes to Collectivite attributes.
+        assert scot.perimetre.count() == len(initial_perimetre)
+
+        with django_assert_num_queries(4):
+            response = client.get(reverse("api_scots"))
+
+        assert response.status_code == 200
+        assert response["content-type"] == "text/csv;charset=utf-8"
+
+        result = list(DictReader(response.content.decode().splitlines()))
+        assert result[0]["pa_nombre_communes"] == "1"
+        assert result[0]["pc_nombre_communes"] == "0"
+        assert result[0]["pa_nombre_communes_en_zone_blanche"] == 0
+        assert result[0]["pc_nombre_communes_en_zone_blanche"] == 0
 
     @pytest.mark.django_db
     def test_filtre_par_department(self, client: Client) -> None:

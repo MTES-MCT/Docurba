@@ -16,6 +16,7 @@ class TypeCollectivite(models.TextChoices):
     COMD = "COMD", "Commune déléguée"
     COMA = "COMA", "Commune associée"
     CC = "CC", "Communauté de communes"
+    # La plupart des SCoT sont portés par des SMF ?
     SMF = "SMF", "Syndicat Mixte Fermé"
     SMO = "SMO", "Syndicat Mixte Ouvert"
     METRO = "METRO", "Métropole"
@@ -333,6 +334,8 @@ class Procedure(models.Model):
     name = models.TextField(blank=True, null=True)  # noqa: DJ001
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
+    # Le groupement est une Collectivite avec un périmètre.
+    # Le SCoT
     collectivite_porteuse = models.ForeignKey(
         "Collectivite",
         models.DO_NOTHING,

@@ -36,6 +36,8 @@ class TestProcedureCommunesCounts:
     def test_procedure_sectorielle_perimetre_inferieur_adhesions(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
+        # TODO(cms): How do we get the groupement's real perimetre?
+        # This case looks like zones blanches.
         groupement = create_groupement()
 
         groupement_enfant = create_groupement()
@@ -63,6 +65,7 @@ class TestProcedureCommunesCounts:
             procedure_sectorielle_with_counts = Procedure.objects.get(
                 id=procedure_sectorielle.id
             )
+            assert procedure_sectorielle_with_counts.perimetre.first() == commune_enfant
             assert procedure_sectorielle_with_counts.perimetre__count == 1
             assert procedure_sectorielle_with_counts.communes_adherentes__count == 3
             assert procedure_sectorielle_with_counts.is_sectoriel_consolide
