@@ -10,6 +10,7 @@ import pytest
 from django.conf import settings
 from django.db import connections
 from django.test import Client
+from django.urls import reverse
 from environ import Env
 from pytest_django import DjangoAssertNumQueries
 
@@ -403,7 +404,7 @@ class TestScots:
         nuxt = self._retrieve_nuxt("/api/urba/exports/scots")
 
         with django_assert_num_queries(4):
-            response = client.get("/api/scots")
+            response = client.get(reverse("api_scots"))
 
         django = pl.read_csv(
             response.content,
