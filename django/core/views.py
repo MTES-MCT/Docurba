@@ -177,12 +177,16 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "cp_code_departement": commune.collectivite_porteuse.departement.code_insee,
             "cp_nom_departement": commune.collectivite_porteuse.departement.nom,
             "cp_nom": commune.collectivite_porteuse.nom,
-            "cp_siren": commune.collectivite_porteuse.code_insee
-            if not commune.collectivite_porteuse.is_commune
-            else "",
-            "cp_code_insee": commune.collectivite_porteuse.code_insee
-            if commune.collectivite_porteuse.is_commune
-            else "",
+            "cp_siren": (
+                commune.collectivite_porteuse.code_insee
+                if not commune.collectivite_porteuse.is_commune
+                else ""
+            ),
+            "cp_code_insee": (
+                commune.collectivite_porteuse.code_insee
+                if commune.collectivite_porteuse.is_commune
+                else ""
+            ),
             "plan_code_etat_simplifie": commune.code_etat_simplifie,
             "plan_libelle_code_etat_simplifie": commune.libelle_code_etat_simplifie,
             "plan_code_etat_complet": commune.code_etat_complet,
