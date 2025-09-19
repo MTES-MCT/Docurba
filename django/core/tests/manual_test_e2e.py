@@ -4,6 +4,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from urllib.request import urlretrieve
 
+from django.urls import reverse
 import polars as pl
 import polars.testing
 import pytest
@@ -405,7 +406,7 @@ class TestScots:
         nuxt = self._retrieve_nuxt("/api/urba/exports/scots")
 
         with django_assert_num_queries(4):
-            response = client.get("/api/scots")
+            response = client.get(reverse("api_scots"))
 
         django = pl.read_csv(
             response.content,

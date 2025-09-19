@@ -17,7 +17,7 @@ urlpatterns = [
     ),
     path("api/perimetres", views.api_perimetres),
     path("api/communes", views.api_communes),
-    path("api/scots", views.api_scots),
+    path("api/scots", views.api_scots, name="api_scots"),
     path("__reload__/", include("django_browser_reload.urls")),
     *debug_toolbar_urls(),
     path(  # Désactive le websocket hot reload Nuxt en dev
