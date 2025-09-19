@@ -24,7 +24,9 @@ def django_db_setup(django_db_modify_db_settings: None) -> None:  # noqa: ARG001
     settings.DATABASES["default"] = Env().db("PRODUCTION_DATABASE_URL")
 
     # re-configure the settings given the changed database config
-    connections._settings = connections.configure_settings(settings.DATABASES)  # noqa: SLF001
+    connections._settings = connections.configure_settings(
+        settings.DATABASES
+    )  # noqa: SLF001
     # open a connection to the database with the new database config
     connections["default"] = connections.create_connection("default")
 
