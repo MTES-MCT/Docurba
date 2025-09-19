@@ -3,6 +3,7 @@ from itertools import product
 
 import pytest
 from django.test import Client
+from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 
 from core.models import TypeDocument
@@ -17,7 +18,7 @@ class TestAPI:
         ("invalid_avant", "path"),
         product(
             ("2023-1-01", "2023-02-30", "invalid-date", "2023/01/01"),
-            ("/api/perimetres", "/api/scots"),
+            ("/api/perimetres", reverse("api_scots")),
         ),
     )
     def test_parsing_avant(self, client: Client, invalid_avant: str, path: str) -> None:
@@ -267,7 +268,7 @@ class TestAPIScots:
         )
 
         with django_assert_num_queries(4):
-            response = client.get("/api/scots")
+            response = client.get(reverse("api_scots"))
 
         assert response.status_code == 200
         assert response["content-type"] == "text/csv;charset=utf-8"
@@ -326,7 +327,7 @@ class TestAPIScots:
         )
 
         response = client.get(
-            "/api/scots", {"departement": groupement_a.departement.code_insee}
+            reverse("api_scots"), {"departement": groupement_a.departement.code_insee}
         )
         reader = DictReader(response.content.decode().splitlines())
         assert len(list(reader)) == 1
@@ -346,7 +347,7 @@ class TestAPIScots:
             type="Publication périmètre", date_evenement="2024-12-01"
         )
 
-        response = client.get("/api/scots")
+        response = client.get(reverse("api_scots"))
         reader = DictReader(response.content.decode().splitlines())
         assert len(list(reader)) == 2
 
@@ -373,7 +374,7 @@ class TestAPIScots:
             type="Délibération d'approbation", date_evenement="2024-01-01"
         )
 
-        response = client.get("/api/scots", {"avant": avant})
+        response = client.get(reverse("api_scots"), {"avant": avant})
 
         reader = DictReader(response.content.decode().splitlines())
         assert [collectivite[champ_procedure_id] for collectivite in reader] == [
