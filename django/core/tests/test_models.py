@@ -1763,3 +1763,9 @@ class TestViewCommuneAdhesionDeep:
         assert ViewCommuneAdhesionsDeep.objects.count() == 0
         ViewCommuneAdhesionsDeep()._refresh_materialized_view()
         assert ViewCommuneAdhesionsDeep.objects.count() == 3
+
+        adhesion = ViewCommuneAdhesionsDeep.objects.first()
+        assert [
+            hasattr(adhesion, attribute)
+            for attribute in ["commune_id", "groupement_id", "pk"]
+        ]
