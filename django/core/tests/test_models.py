@@ -23,6 +23,7 @@ from core.tests.factories import (
     create_commune,
     create_departement,
     create_groupement,
+    create_procedure,
 )
 from core.views import TypeCollectivite
 
@@ -435,6 +436,85 @@ class TestProcedure:
         procedure.perimetre.through.objects.create(commune_id=12, procedure=procedure)
 
         assert procedure.perimetre.through.objects.count() == 1
+
+    @pytest.mark.django_db
+    def test_zones_blanches(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        # Cas simple : un groupement n'a qu'une seule procédure de chaque type (en cours ou opposable).
+        collectivite_communes_a = create_groupement(
+            groupement_type=TypeCollectivite.CC, with_collectivites_adherentes=True
+        )
+        syndicat_mixte_a = create_groupement(groupement_type=TypeCollectivite.SMF)
+        syndicat_mixte_a.collectivites_adherentes.add(collectivite_communes_a)
+        # Needed for syndicat_mixte_a.communes_adherentes_deep
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        scot = create_procedure(
+            collectivite_porteuse=syndicat_mixte_a,
+            doc_type=TypeDocument.SCOT,
+            statut=EventCategory.APPROUVE,
+        )
+        scot.perimetre.add(*syndicat_mixte_a.communes_adherentes_deep.all())
+
+        # A collectivite joins the SM. It forms a zone blanche.
+        collectivite_communes_b = create_groupement(
+            groupement_type=TypeCollectivite.CC, with_collectivites_adherentes=True
+        )
+        syndicat_mixte_a.collectivites_adherentes.add(collectivite_communes_b)
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        expected_zone_blanche = sorted(
+            collectivite_communes_b.collectivites_adherentes.values_list(
+                "pk", flat=True
+            )
+        )
+        with django_assert_num_queries(1):
+            scot = Procedure.objects.with_perimetre_pks_and_groupement_pks().first()
+            assert sorted(scot.communes_in_zone_blanche) == expected_zone_blanche
+
+        # Cas plus complexe : un groupement a plusieurs procédures de même type
+        # mais concernant des communes différentes.
+        collectivite_communes = create_groupement(
+            groupement_type=TypeCollectivite.CC,
+            with_collectivites_adherentes=True,
+            with_collectivites_adherentes__count=4,
+        )
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        procedures_en_cours = [
+            create_procedure(
+                collectivite_porteuse=collectivite_communes,
+                doc_type=TypeDocument.SCOT,
+                statut=EventCategory.PUBLICATION_PERIMETRE,
+            )
+            for i in range(2)
+        ]
+        communes = collectivite_communes.collectivites_adherentes.all()
+        procedure_en_cours_1, procedure_en_cours_2 = (
+            procedures_en_cours[0],
+            procedures_en_cours[1],
+        )
+        procedure_en_cours_1.perimetre.add(communes[0])
+        procedure_en_cours_1.save()
+        procedure_en_cours_2.perimetre.add(communes[1])
+        procedure_en_cours_2.save()
+
+        procedure_opposable = create_procedure(
+            collectivite_porteuse=collectivite_communes,
+            doc_type=TypeDocument.SCOT,
+            statut=EventCategory.APPROUVE,
+        )
+        procedure_opposable.perimetre.add(communes[2])
+
+        # Aucun SCoT opposable ou en cours.
+        assert collectivite_communes.communes_en_zone_blanche == [communes[3]]
+
+        # Aucun SCoT opposable mais fait partie d'un SCoT en cours.
+        assert collectivite_communes.communes_en_zone_blanche_avec_scots_en_cours == [
+            communes[0],
+            communes[1],
+        ]
 
 
 class TestProcedureDates:

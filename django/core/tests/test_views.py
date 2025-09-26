@@ -281,6 +281,7 @@ class TestAPIScots:
                     "pa_annee_approbation": "2024",
                     "pa_date_approbation": "2024-12-01",
                     "pa_scot_interdepartement": "False",
+                    "pa_nombre_communes_en_zone_blanche": "0",
                 },
                 id="scot_approuve_plusieurs_communes",
             ),
@@ -291,6 +292,7 @@ class TestAPIScots:
                     "pc_nombre_communes": "3",
                     "pc_date_publication_perimetre": "2024-12-01",
                     "pc_scot_interdepartement": "False",
+                    "pc_nombre_communes_en_zone_blanche": "0",
                 },
                 id="scot_en_cours_plusieurs_communes",
             ),
@@ -307,6 +309,7 @@ class TestAPIScots:
                     "pc_nombre_communes": "0",
                     "pc_date_publication_perimetre": "2024-12-01",
                     "pc_scot_interdepartement": "False",
+                    "pc_nombre_communes_en_zone_blanche": "0",
                 },
                 id="scot_en_cours_sans_commune",
             ),
@@ -335,14 +338,16 @@ class TestAPIScots:
         )
         scot = Procedure.objects.with_events().get(pk=scot.pk)
         scot.perimetre.add(*groupement.communes_adherentes_deep.all())
-        last_event = scot.event_set.last()
-        last_event.date_evenement = "2024-12-01"
-        last_event.save()
+        dernier_evenement = scot.event_set.last()
+        dernier_evenement.date_evenement = "2024-12-01"
+        dernier_evenement.save()
 
         with django_assert_num_queries(6 if nb_communes else 4):
             response = client.get(reverse("api_scots"))
 
-        result = list(DictReader(response.content.decode().splitlines()))
+        assert response.status_code == 200
+
+        resultat = list(DictReader(response.content.decode().splitlines()))
         resultat_par_defaut = {
             "annee_cog": "2024",
             # Collectivité
@@ -365,6 +370,7 @@ class TestAPIScots:
             "pa_annee_approbation": "",
             "pa_date_fin_echeance": "",
             "pa_nombre_communes": "",
+            "pa_nombre_communes_en_zone_blanche": "",
             # En cours
             "pc_id": str(scot.id)
             if scot.statut == EventCategory.PUBLICATION_PERIMETRE
@@ -377,9 +383,63 @@ class TestAPIScots:
             "pc_date_prescription": "",
             "pc_date_arret_projet": "",
             "pc_nombre_communes": "",
+            "pc_nombre_communes_en_zone_blanche": "",
         }
-        expected_result = resultat_par_defaut | dict_attendu_dans_resultat
-        assert result[0] == expected_result
+        if dict_attendu_dans_resultat:
+            resultat_attendu = resultat_par_defaut | dict_attendu_dans_resultat
+            assert resultat[0] == resultat_attendu
+
+    @pytest.mark.django_db
+    def test_zones_blanches(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        collectivite_communes_a = create_groupement(
+            groupement_type=TypeCollectivite.CC,
+            with_collectivites_adherentes=True,
+            with_collectivites_adherentes__count=3,
+        )
+        perimetre_1 = collectivite_communes_a.collectivites_adherentes.all()
+        syndicat_mixte_a = create_groupement(groupement_type=TypeCollectivite.SMF)
+        syndicat_mixte_a.collectivites_adherentes.add(collectivite_communes_a)
+
+        # Mandatory to query `syndicat_mixte_a.communes_adherentes_deep.all()` later.
+        # See ViewCommunesAdhesionsDeep
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        scot = create_procedure(
+            collectivite_porteuse=syndicat_mixte_a,
+            doc_type=TypeDocument.SCOT,
+            statut=EventCategory.APPROUVE,
+        )
+        scot.perimetre.add(*syndicat_mixte_a.communes_adherentes_deep.all())
+
+        ongoing_scot = create_procedure(
+            collectivite_porteuse=syndicat_mixte_a,
+            doc_type=TypeDocument.SCOT,
+            statut=EventCategory.PUBLICATION_PERIMETRE,
+        )
+        ongoing_scot.perimetre.add(*syndicat_mixte_a.communes_adherentes_deep.all())
+
+        # A collectivite joins the SM. It forms a zone blanche.
+        collectivite_communes_b = create_groupement(
+            groupement_type=TypeCollectivite.CC,
+            with_collectivites_adherentes=True,
+            with_collectivites_adherentes__count=6,
+        )
+        perimetre_2 = collectivite_communes_b.collectivites_adherentes.all()
+
+        syndicat_mixte_a.collectivites_adherentes.add(collectivite_communes_b)
+
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        with django_assert_num_queries(6):
+            response = client.get(reverse("api_scots"))
+
+        result = list(DictReader(response.content.decode().splitlines()))
+        assert result[0]["pc_nombre_communes"] == str(len(perimetre_1))
+        assert result[0]["pa_nombre_communes"] == str(len(perimetre_1))
+        assert result[0]["pc_nombre_communes_en_zone_blanche"] == str(len(perimetre_2))
+        assert result[0]["pa_nombre_communes_en_zone_blanche"] == str(len(perimetre_2))
 
     @pytest.mark.django_db
     def test_filtre_par_department(self, client: Client) -> None:
