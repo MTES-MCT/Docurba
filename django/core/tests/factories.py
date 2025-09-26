@@ -1,3 +1,4 @@
+import datetime
 import itertools
 import random
 from typing import Any
@@ -6,8 +7,12 @@ from core.models import (
     Collectivite,
     Commune,
     Departement,
+    Event,
+    EventCategory,
+    Procedure,
     Region,
     TypeCollectivite,
+    TypeDocument,
 )
 
 
@@ -85,3 +90,39 @@ def create_commune(
         intercommunalite=intercommunalite,
         nouvelle=nouvelle or None,
     )
+
+
+def create_evenement(
+    *,
+    evt_type: EventCategory = Auto,
+    date: datetime = Auto,
+    procedure: Procedure = Auto,
+) -> Event:
+    # En attendant l'enum.
+    procedure = procedure or create_procedure()
+    categories_evenements = {
+        EventCategory.PUBLICATION_PERIMETRE: "Publication de périmètre",
+        EventCategory.APPROUVE: "Délibération d'approbation"
+        if procedure.type != TypeDocument.CC
+        else "Approbation du préfet",
+    }
+    return Event.objects.create(
+        type=categories_evenements[evt_type], procedure=procedure, date_evenement=date
+    )
+
+
+def create_procedure(
+    *,
+    collectivite_porteuse: Collectivite = Auto,
+    doc_type: TypeDocument = Auto,
+    statut: EventCategory = Auto,
+) -> Procedure:
+    collectivite_porteuse = collectivite_porteuse or create_groupement()
+    doc_type = doc_type or TypeDocument.PLU
+    procedure = Procedure.objects.create(
+        collectivite_porteuse=collectivite_porteuse, doc_type=doc_type
+    )
+    if statut:
+        create_evenement(evt_type=statut, date="2024-12-01", procedure=procedure)
+
+    return procedure

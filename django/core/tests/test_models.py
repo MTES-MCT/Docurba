@@ -24,6 +24,7 @@ from core.tests.factories import (
     create_departement,
     create_groupement,
 )
+from core.views import TypeCollectivite
 
 
 class TestCollectivite:
