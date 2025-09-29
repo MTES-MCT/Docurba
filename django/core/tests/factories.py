@@ -1,6 +1,7 @@
 import datetime
 import itertools
 import random
+import secrets
 from typing import Any
 
 from core.models import (
@@ -57,15 +58,23 @@ def create_groupement(
     code_insee: str = Auto,
     groupement_type: TypeCollectivite = Auto,
     departement: Departement = Auto,
+    with_collectivites_adherentes: bool | None = None,
+    with_collectivites_adherentes__count: int | None = None,
 ) -> Collectivite:
     code_insee = code_insee or next(GROUPEMENT_CODE_INSEE_SEQUENCE)
     groupement_type = groupement_type or random.choice(TYPE_GROUPEMENTS)  # noqa: S311
-    return Collectivite.objects.create(
+    collectivite = Collectivite.objects.create(
         id=f"{code_insee}_{groupement_type}",
         code_insee_unique=code_insee,
         type=groupement_type,
         departement=departement or create_departement(),
     )
+    if with_collectivites_adherentes:
+        perimetre_1 = [
+            create_commune() for _ in range(with_collectivites_adherentes__count or 2)
+        ]
+        collectivite.collectivites_adherentes.add(*perimetre_1)
+    return collectivite
 
 
 def create_commune(
