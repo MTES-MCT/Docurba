@@ -24,6 +24,7 @@ dev = [
     "pytest-cov",
     "pytest-django",
     "ruff",
+    "pre-commit>=4.3.0", # https://github.com/pre-commit/pre-commit
 ]
 
 [tool.pytest.ini_options]

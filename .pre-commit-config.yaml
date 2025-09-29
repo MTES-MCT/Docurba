@@ -1,0 +1,27 @@
+repos:
+  - repo: local
+    hooks:
+    - id: ruff_check
+      name: Ruff check
+      entry: sh -c 'cd ~/sites/docurba/django && ruff check'
+      language: system
+      types: [python]
+      pass_filenames: false
+      stages: [pre-commit]
+      exclude: ".venv/"
+    - id: ruff_format
+      name: Ruff format
+      entry: sh -c 'cd ~/sites/docurba/django && ruff format'
+      language: system
+      types: [python]
+      pass_filenames: false
+      stages: [pre-commit]
+      exclude: ".venv/"
+    - id: pre-commit-django-migrations
+      name: Check django migrations
+      entry: sh -c 'cd ~/sites/docurba/django && python -m django makemigrations --dry-run'
+      language: system
+      types: [python]
+      pass_filenames: false
+
+
