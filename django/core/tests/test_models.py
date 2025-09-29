@@ -567,6 +567,11 @@ class TestProcedureTypeDocument:
         assert Procedure(doc_type=TypeDocument.SCOT).type_document == TypeDocument.SCOT
         assert Procedure(doc_type=TypeDocument.SD).type_document == TypeDocument.SD
 
+    def test_plu_like_but_same_name(self) -> None:
+        assert (
+            Procedure(doc_type=TypeDocument.PLUIS).type_document == TypeDocument.PLUIS
+        )
+
     @pytest.mark.django_db
     @pytest.mark.parametrize(
         "doc_type",
