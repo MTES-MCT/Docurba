@@ -390,6 +390,65 @@ class TestAPIScots:
             assert resultat[0] == resultat_attendu
 
     @pytest.mark.django_db
+    def test_plusieurs_scots_par_groupement_meme_statut(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        departement = create_departement()
+        perimetre_groupement = [
+            create_commune(departement=departement) for _ in range(2)
+        ]
+        groupement = create_groupement(groupement_type=TypeCollectivite.CC)
+        groupement.collectivites_adherentes.add(*perimetre_groupement)
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        # Plusieurs SCoT en cours pour un même groupement mais pas avec le même périmètre.
+        # TODO(cms) : à voir avec le métier car Collectivite._scot_en_cours dit l'inverse.
+        procedures = [
+            create_procedure(
+                collectivite_porteuse=groupement,
+                doc_type=TypeDocument.SCOT,
+                statut=EventCategory.PUBLICATION_PERIMETRE,
+            )
+            for _ in range(2)
+        ]
+        procedure_1, procedure_2 = procedures[0], procedures[1]
+        procedure_1.perimetre.add(perimetre_groupement[0])
+        procedure_1.save()
+        procedure_2.perimetre.add(perimetre_groupement[1])
+        procedure_2.save()
+
+        with django_assert_num_queries(6):
+            response = client.get(reverse("api_scots"))
+
+        assert response.status_code == 200
+
+        resultat = list(DictReader(response.content.decode().splitlines()))
+        assert resultat[0]["pc_id"] == str(procedure_1.id)
+
+        # Plusieurs SCoT approuvés pour un même groupement mais pas avec le même périmètre.
+        procedures = [
+            create_procedure(
+                collectivite_porteuse=groupement,
+                doc_type=TypeDocument.SCOT,
+                statut=EventCategory.APPROUVE,
+            )
+            for _ in range(2)
+        ]
+        procedure_1, procedure_2 = procedures[0], procedures[1]
+        procedure_1.perimetre.add(perimetre_groupement[0])
+        procedure_1.save()
+        procedure_2.perimetre.add(perimetre_groupement[1])
+        procedure_2.save()
+
+        with django_assert_num_queries(6):
+            response = client.get(reverse("api_scots"))
+
+        assert response.status_code == 200
+
+        resultat = list(DictReader(response.content.decode().splitlines()))
+        assert resultat[0]["pa_id"] == str(procedure_1.id)
+
+    @pytest.mark.django_db
     def test_zones_blanches(
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
