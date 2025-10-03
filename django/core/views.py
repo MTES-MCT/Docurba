@@ -56,6 +56,8 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
             "procedure_id": procedure.id,
             "type_document": procedure.type_document,
             "opposable": commune.is_opposable(procedure),
+            "est_en_zone_blanche": commune.est_en_zone_blanche(procedure),
+            # Ajouter éventuellement si la commune est en zone blanche ou non SI SCoT seulement ?
         }
         for commune in communes.iterator(chunk_size=1000)
         for procedure in commune.procedures_principales
@@ -310,6 +312,7 @@ def api_scots(request: HttpRequest) -> HttpResponse:
             "pa_annee_approbation",
             "pa_date_fin_echeance",
             "pa_nombre_communes",
+            "pa_nombre_communes_en_zone_blanche",
             # En cours
             "pc_id",
             "pc_nom_schema",
@@ -320,6 +323,7 @@ def api_scots(request: HttpRequest) -> HttpResponse:
             "pc_date_prescription",
             "pc_date_arret_projet",
             "pc_nombre_communes",
+            "pc_nombre_communes_en_zone_blanche",
         ],
     )
 
@@ -337,6 +341,12 @@ def api_scots(request: HttpRequest) -> HttpResponse:
             "scot_codecollectivite": collectivite.code_insee,
             "scot_code_type_collectivite": collectivite.type,
             "scot_nom_collectivite": collectivite.nom,
+            "scot_collectivite_communes_en_zones_blanches": str(
+                len(collectivite.communes_en_zone_blanche)
+            ),
+            "scot_collectivite_communes_en_zone_blanche_avec_scots_en_cours": str(
+                len(collectivite.communes_en_zone_blanche_avec_scots_en_cours)
+            ),
         }
 
         champs_opposable = {}

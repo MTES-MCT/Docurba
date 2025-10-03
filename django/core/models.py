@@ -6,6 +6,7 @@ from functools import cached_property
 from operator import attrgetter
 from typing import Self
 
+from django.contrib.postgres.aggregates import ArrayAgg
 from django.db import connection, models
 from django.urls import reverse
 from django.utils import timezone
@@ -289,6 +290,18 @@ class ProcedureQuerySet(models.QuerySet):
         self.query.annotations.pop("communes_adherentes__count")
         return self
 
+    def with_perimetre_pks_and_groupement_pks(
+        self,
+    ) -> Self:
+        return self.annotate(
+            perimetre_pks=ArrayAgg("perimetre__id", distinct=True),
+        ).annotate(
+            collectivite_porteuse_communes_adherentes_pks=ArrayAgg(
+                "collectivite_porteuse__communes_adherentes_deep",
+                distinct=True,
+            )
+        )
+
 
 class ProcedureManager(models.Manager):
     def get_queryset(self) -> ProcedureQuerySet:
@@ -526,6 +539,27 @@ class Procedure(models.Model):
             EventCategory.PUBLICATION_PERIMETRE,
         )
 
+    @property
+    def communes_en_zone_blanche(self) -> None:
+        # Attention car plusieurs CC ont plusieurs SCoT. Ils sont en train de les fusionner
+        # pour n'en faire qu'un mais plusieurs sont en cours de révision.
+        # Voir `ProcedureQueryset.with_perimetre_pks_and_groupement_pks`
+        # Deux types de zones blanches en fonction du statut (opposable ou non).
+        # Si SCoT en cours, la DDT choisit si elle met les zones blanches dans le périmètre de la procédure
+        # ou pas.
+        # Une commune qui rejoint un autre grouoement porteur de SCoT perd son SCoT d'origine.
+
+        # OK
+        # Commune en zone blanche : fait partie d'un groupement mais pas du périmètre des SCoTs approuvés par ce groupement.
+        # Commune en zone blanche SCoT en cours : fait partie d'un groupement mais pas du périmètre des SCoTs approuvés ou en cours par ce groupement.
+
+        # Regarder dans la BDD si is_zone_blanche est sur commune ou sur procedure.
+        # => Retirer les communes qui étaient marquées comme étant en zone blanche dans Sudokuh mais
+        # qui ont été intégrées au périmètre des procédures.
+        return set(self.collectivite_porteuse_communes_adherentes_pks).difference(
+            set(self.perimetre_pks)
+        )
+
 
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
@@ -581,6 +615,7 @@ class CollectiviteQuerySet(models.QuerySet):
                 models.Prefetch(
                     "procedure_set",
                     Procedure.objects.with_events(avant=avant)
+                    .with_perimetre_pks_and_groupement_pks()
                     .without_adhesions_count()
                     .filter(
                         doc_type="SCOT",
