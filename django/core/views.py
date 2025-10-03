@@ -56,6 +56,7 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
             "procedure_id": procedure.id,
             "type_document": procedure.type_document,
             "opposable": commune.is_opposable(procedure),
+            "est_en_zone_blanche": commune.est_en_zone_blanche(procedure),
             # Ajouter éventuellement si la commune est en zone blanche ou non SI SCoT seulement ?
         }
         for commune in communes.iterator(chunk_size=1000)

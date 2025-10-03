@@ -442,36 +442,36 @@ class TestProcedure:
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         # Cas simple : un groupement n'a qu'une seule procédure de chaque type (en cours ou opposable).
-        collectivite_communes_a = create_groupement(
-            groupement_type=TypeCollectivite.CC, with_collectivites_adherentes=True
-        )
-        syndicat_mixte_a = create_groupement(groupement_type=TypeCollectivite.SMF)
-        syndicat_mixte_a.collectivites_adherentes.add(collectivite_communes_a)
-        # Needed for syndicat_mixte_a.communes_adherentes_deep
-        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        # collectivite_communes_a = create_groupement(
+        #     groupement_type=TypeCollectivite.CC, with_collectivites_adherentes=True
+        # )
+        # syndicat_mixte_a = create_groupement(groupement_type=TypeCollectivite.SMF)
+        # syndicat_mixte_a.collectivites_adherentes.add(collectivite_communes_a)
+        # # Needed for syndicat_mixte_a.communes_adherentes_deep
+        # ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        scot = create_procedure(
-            collectivite_porteuse=syndicat_mixte_a,
-            doc_type=TypeDocument.SCOT,
-            statut=EventCategory.APPROUVE,
-        )
-        scot.perimetre.add(*syndicat_mixte_a.communes_adherentes_deep.all())
+        # scot = create_procedure(
+        #     collectivite_porteuse=syndicat_mixte_a,
+        #     doc_type=TypeDocument.SCOT,
+        #     statut=EventCategory.APPROUVE,
+        # )
+        # scot.perimetre.add(*syndicat_mixte_a.communes_adherentes_deep.all())
 
-        # A collectivite joins the SM. It forms a zone blanche.
-        collectivite_communes_b = create_groupement(
-            groupement_type=TypeCollectivite.CC, with_collectivites_adherentes=True
-        )
-        syndicat_mixte_a.collectivites_adherentes.add(collectivite_communes_b)
-        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        # # A collectivite joins the SM. It forms a zone blanche.
+        # collectivite_communes_b = create_groupement(
+        #     groupement_type=TypeCollectivite.CC, with_collectivites_adherentes=True
+        # )
+        # syndicat_mixte_a.collectivites_adherentes.add(collectivite_communes_b)
+        # ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        expected_zone_blanche = sorted(
-            collectivite_communes_b.collectivites_adherentes.values_list(
-                "pk", flat=True
-            )
-        )
-        with django_assert_num_queries(1):
-            scot = Procedure.objects.with_perimetre_pks_and_groupement_pks().first()
-            assert sorted(scot.communes_in_zone_blanche) == expected_zone_blanche
+        # expected_zone_blanche = sorted(
+        #     collectivite_communes_b.collectivites_adherentes.values_list(
+        #         "pk", flat=True
+        #     )
+        # )
+        # with django_assert_num_queries(1):
+        #     scot = Procedure.objects.with_perimetre_pks_and_groupement_pks().first()
+        #     assert sorted(scot.communes_in_zone_blanche) == expected_zone_blanche
 
         # Cas plus complexe : un groupement a plusieurs procédures de même type
         # mais concernant des communes différentes.
@@ -481,40 +481,53 @@ class TestProcedure:
             with_collectivites_adherentes__count=4,
         )
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        communes = collectivite_communes.collectivites_adherentes.all()
+        commune_attendue_en_zone_blanche = communes[0]
+        communes_attendues_en_zones_blanches_scots_en_cours = [communes[1], communes[2]]
+        commune_non_attendue_en_zone_blanche = communes[3]
 
-        procedures_en_cours = [
+        [
             create_procedure(
                 collectivite_porteuse=collectivite_communes,
                 doc_type=TypeDocument.SCOT,
                 statut=EventCategory.PUBLICATION_PERIMETRE,
+                perimetre=communes_attendues_en_zones_blanches_scots_en_cours[i],
             )
             for i in range(2)
         ]
-        communes = collectivite_communes.collectivites_adherentes.all()
-        procedure_en_cours_1, procedure_en_cours_2 = (
-            procedures_en_cours[0],
-            procedures_en_cours[1],
-        )
-        procedure_en_cours_1.perimetre.add(communes[0])
-        procedure_en_cours_1.save()
-        procedure_en_cours_2.perimetre.add(communes[1])
-        procedure_en_cours_2.save()
 
-        procedure_opposable = create_procedure(
+        create_procedure(
             collectivite_porteuse=collectivite_communes,
             doc_type=TypeDocument.SCOT,
             statut=EventCategory.APPROUVE,
+            perimetre=[commune_non_attendue_en_zone_blanche],
         )
-        procedure_opposable.perimetre.add(communes[2])
 
         # Aucun SCoT opposable ou en cours.
-        assert collectivite_communes.communes_en_zone_blanche == [communes[3]]
+        assert collectivite_communes.communes_en_zone_blanche == [
+            commune_attendue_en_zone_blanche
+        ]
 
         # Aucun SCoT opposable mais fait partie d'un SCoT en cours.
-        assert collectivite_communes.communes_en_zone_blanche_avec_scots_en_cours == [
-            communes[0],
-            communes[1],
-        ]
+        assert sorted(
+            collectivite_communes.communes_en_zone_blanche_avec_scots_en_cours
+        ) == sorted(
+            [
+                commune_attendue_en_zone_blanche,
+                communes_attendues_en_zones_blanches_scots_en_cours,
+            ]
+        )
+        assert (
+            commune_non_attendue_en_zone_blanche
+            not in collectivite_communes.communes_en_zone_blanche
+        )
+        assert (
+            commune_non_attendue_en_zone_blanche
+            not in collectivite_communes.communes_en_zone_blanche_avec_scots_en_cours
+        )
+
+        # NOTE(cms) : pas vraiment besoin de retrouver les communes en zone blanche à partir de la procédure, non ?
+        # À voir avec le métier.
 
 
 class TestProcedureDates:

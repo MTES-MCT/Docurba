@@ -125,12 +125,16 @@ def create_procedure(
     collectivite_porteuse: Collectivite = Auto,
     doc_type: TypeDocument = Auto,
     statut: EventCategory = Auto,
+    perimetre: list = Auto,
 ) -> Procedure:
     collectivite_porteuse = collectivite_porteuse or create_groupement()
     doc_type = doc_type or TypeDocument.PLU
     procedure = Procedure.objects.create(
         collectivite_porteuse=collectivite_porteuse, doc_type=doc_type
     )
+    if perimetre:
+        procedure.perimetre.add(*perimetre)
+        procedure.save()
     if statut:
         create_evenement(evt_type=statut, date="2024-12-01", procedure=procedure)
 

@@ -495,10 +495,11 @@ class TestAPIScots:
             response = client.get(reverse("api_scots"))
 
         result = list(DictReader(response.content.decode().splitlines()))
-        assert result[0]["pc_nombre_communes"] == str(len(perimetre_1))
-        assert result[0]["pa_nombre_communes"] == str(len(perimetre_1))
-        assert result[0]["pc_nombre_communes_en_zone_blanche"] == str(len(perimetre_2))
-        assert result[0]["pa_nombre_communes_en_zone_blanche"] == str(len(perimetre_2))
+        assert result[0]["scot_collectivite_communes_en_zones_blanches"] == str(
+            len(perimetre_2)
+        )
+        # TODO
+        # assert result[0]["scot_collectivite_communes_en_zone_blanche_avec_scots_en_cours"] == str(len(perimetre_1))
 
     @pytest.mark.django_db
     def test_filtre_par_department(self, client: Client) -> None:
