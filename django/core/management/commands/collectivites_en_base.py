@@ -56,7 +56,7 @@ class Command(BaseCommand):
             [
                 Collectivite(
                     id=f"{groupement['code']}_{groupement['type']}",
-                    code_insee=groupement["code"],
+                    code_insee_unique=groupement["code"],
                     type=groupement["type"],
                     nom=groupement["intitule"],
                     departement=departements_by_code[groupement["departementCode"]],
@@ -67,7 +67,7 @@ class Command(BaseCommand):
             ]
         )
         groupements_by_code = {
-            groupement.code_insee: groupement for groupement in groupements
+            groupement.code_insee_unique: groupement for groupement in groupements
         }
         self.stdout.write(f"{len(groupements)} groupements loaded.")
 
@@ -92,7 +92,7 @@ class Command(BaseCommand):
             if commune["type"] == "COM":
                 commune_instance = Commune.objects.create(
                     id=f"{commune['code']}_{commune['type']}",
-                    code_insee=commune["code"],
+                    code_insee_unique=commune["code"],
                     type=commune["type"],
                     nom=commune["intitule"],
                     departement=departements_by_code[commune["departementCode"]],
@@ -102,7 +102,7 @@ class Command(BaseCommand):
                         commune["intercommunaliteCode"]
                     ),
                 )
-                communes_by_code[commune_instance.code_insee] = commune_instance
+                communes_by_code[commune_instance.code_insee_unique] = commune_instance
         self.stdout.write(f"{len(communes_by_code)} communes of type 'COM' loaded.")
 
         Collectivite.adhesions.through.objects.bulk_create(
@@ -122,8 +122,8 @@ class Command(BaseCommand):
                 commune_parente = communes_by_code[commune["codeParent"]]
                 Commune.objects.create(
                     id=f"{commune['code']}_{commune['type']}",
-                    code_insee=commune["code"]
-                    if commune_parente.code_insee != commune["code"]
+                    code_insee_unique=commune["code"]
+                    if commune_parente.code_insee_unique != commune["code"]
                     else None,
                     type=commune["type"],
                     nom=commune["intitule"],
