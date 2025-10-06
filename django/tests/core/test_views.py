@@ -6,10 +6,11 @@ from django.test import Client
 from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 
-from core.models import TypeDocument
+from core.models import EventCategory, TypeDocument
 from tests.factories import (
     create_commune,
     create_groupement,
+    create_procedure,
 )
 
 
@@ -261,10 +262,11 @@ class TestAPIScots:
     def test_format_csv(
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        groupement = create_groupement()
-        scot_en_cours = groupement.procedure_set.create(doc_type=TypeDocument.SCOT)
-        scot_en_cours.event_set.create(
-            type="Publication périmètre", date_evenement="2024-12-01"
+        groupement = create_groupement(with_collectivites_adherentes=True)
+        scot_en_cours = create_procedure(
+            doc_type=TypeDocument.SCOT,
+            collectivite_porteuse=groupement,
+            statut=EventCategory.PUBLICATION_PERIMETRE,
         )
 
         with django_assert_num_queries(4):
@@ -315,15 +317,15 @@ class TestAPIScots:
     def test_filtre_par_department(self, client: Client) -> None:
         groupement_a = create_groupement()
         groupement_b = create_groupement()
-
-        procedure_a = groupement_a.procedure_set.create(doc_type=TypeDocument.SCOT)
-        procedure_a.event_set.create(
-            type="Publication périmètre", date_evenement="2024-12-01"
+        create_procedure(
+            doc_type=TypeDocument.SCOT,
+            statut=EventCategory.PUBLICATION_PERIMETRE,
+            collectivite_porteuse=groupement_a,
         )
-
-        procedure_b = groupement_b.procedure_set.create(doc_type=TypeDocument.SCOT)
-        procedure_b.event_set.create(
-            type="Publication périmètre", date_evenement="2024-12-01"
+        create_procedure(
+            doc_type=TypeDocument.SCOT,
+            statut=EventCategory.PUBLICATION_PERIMETRE,
+            collectivite_porteuse=groupement_b,
         )
 
         response = client.get(
@@ -336,15 +338,15 @@ class TestAPIScots:
     def test_retourne_tout_sans_filtre_departement(self, client: Client) -> None:
         groupement_a = create_groupement()
         groupement_b = create_groupement()
-
-        procedure_a = groupement_a.procedure_set.create(doc_type=TypeDocument.SCOT)
-        procedure_a.event_set.create(
-            type="Publication périmètre", date_evenement="2024-12-01"
+        create_procedure(
+            doc_type=TypeDocument.SCOT,
+            statut=EventCategory.PUBLICATION_PERIMETRE,
+            collectivite_porteuse=groupement_a,
         )
-
-        procedure_b = groupement_b.procedure_set.create(doc_type=TypeDocument.SCOT)
-        procedure_b.event_set.create(
-            type="Publication périmètre", date_evenement="2024-12-01"
+        create_procedure(
+            doc_type=TypeDocument.SCOT,
+            statut=EventCategory.PUBLICATION_PERIMETRE,
+            collectivite_porteuse=groupement_b,
         )
 
         response = client.get(reverse("api_scots"))
@@ -356,7 +358,7 @@ class TestAPIScots:
         ("avant", "champ_procedure_id"),
         [
             ("", "pa_id"),
-            ("2023-01-01", "pc_id"),
+            ("2025-09-01", "pc_id"),
         ],
     )
     def test_ignore_event_apres(
@@ -364,14 +366,14 @@ class TestAPIScots:
     ) -> None:
         groupement = create_groupement()
         commune = create_commune()
-        procedure = groupement.procedure_set.create(doc_type=TypeDocument.SCOT)
-        procedure.perimetre.add(commune)
-
-        procedure.event_set.create(
-            type="Publication périmètre", date_evenement="2022-12-01"
+        procedure = create_procedure(
+            doc_type=TypeDocument.SCOT,
+            statut=EventCategory.PUBLICATION_PERIMETRE,  # 01-12-2024
+            collectivite_porteuse=groupement,
+            perimetre=[commune],
         )
         procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-01-01"
+            type="Délibération d'approbation", date_evenement="2025-10-01"
         )
 
         response = client.get(reverse("api_scots"), {"avant": avant})
