@@ -726,7 +726,7 @@ class Commune(Collectivite):
             # perimetre__count utilise commune__nouvelle=None pour savoir si une commune est déléguée.
             # Cet index partiel permet un Index Only Scan (au lieu de Index Scan)
             models.Index(
-                fields=["code_type_copie"],
+                fields=["collectivite_ptr"],
                 condition=models.Q(nouvelle__isnull=True),
                 name="collectivite_nouvelle_null_idx",
             ),
@@ -865,7 +865,7 @@ class Commune(Collectivite):
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
     commune = models.ForeignKey(
-        Commune, models.DO_NOTHING, db_constraint=False, to_field="code_type_copie"
+        Commune, models.DO_NOTHING, db_constraint=False, db_column="commune_direct_id"
     )
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
 
