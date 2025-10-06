@@ -599,7 +599,7 @@ class CollectiviteQuerySet(models.QuerySet):
 
 
 class Collectivite(models.Model):
-    id = models.CharField(primary_key=True)  # Au format code_type
+    code_type = models.CharField(unique=True)  # Au format code_type
     code_insee_unique = models.CharField(  # noqa: DJ001
         unique=True,
         null=True,
@@ -623,7 +623,7 @@ class Collectivite(models.Model):
 
     @property
     def code_insee(self) -> str:
-        return self.id.split("_")[0]
+        return self.code_type.split("_")[0]
 
     @property
     def is_commune(self) -> bool:
@@ -701,6 +701,9 @@ class CommuneQuerySet(models.QuerySet):
 
 
 class Commune(Collectivite):
+    code_type_copie = models.CharField(
+        unique=True, db_comment="Copie du champ parent pendant la transition"
+    )
     intercommunalite = models.ForeignKey(
         Collectivite, models.DO_NOTHING, null=True, related_name="communes"
     )
@@ -723,10 +726,9 @@ class Commune(Collectivite):
             # perimetre__count utilise commune__nouvelle=None pour savoir si une commune est déléguée.
             # Cet index partiel permet un Index Only Scan (au lieu de Index Scan)
             models.Index(
-                fields=["collectivite_ptr"],
+                fields=["code_type_copie"],
                 condition=models.Q(nouvelle__isnull=True),
                 name="collectivite_nouvelle_null_idx",
-                opclasses=["varchar_pattern_ops"],
             ),
         )
 
@@ -862,7 +864,9 @@ class Commune(Collectivite):
 
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
-    commune = models.ForeignKey(Commune, models.DO_NOTHING, db_constraint=False)
+    commune = models.ForeignKey(
+        Commune, models.DO_NOTHING, db_constraint=False, to_field="code_type_copie"
+    )
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
 
     class Meta:

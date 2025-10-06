@@ -55,7 +55,7 @@ class Command(BaseCommand):
         groupements = Collectivite.objects.bulk_create(
             [
                 Collectivite(
-                    id=f"{groupement['code']}_{groupement['type']}",
+                    code_type=f"{groupement['code']}_{groupement['type']}",
                     code_insee_unique=groupement["code"],
                     type=groupement["type"],
                     nom=groupement["intitule"],
@@ -91,7 +91,8 @@ class Command(BaseCommand):
         for commune in communes_json:
             if commune["type"] == "COM":
                 commune_instance = Commune.objects.create(
-                    id=f"{commune['code']}_{commune['type']}",
+                    code_type=f"{commune['code']}_{commune['type']}",
+                    code_type_copie=f"{commune['code']}_{commune['type']}",
                     code_insee_unique=commune["code"],
                     type=commune["type"],
                     nom=commune["intitule"],
@@ -121,7 +122,8 @@ class Command(BaseCommand):
             if commune["type"] != "COM":
                 commune_parente = communes_by_code[commune["codeParent"]]
                 Commune.objects.create(
-                    id=f"{commune['code']}_{commune['type']}",
+                    code_type=f"{commune['code']}_{commune['type']}",
+                    code_type_copie=f"{commune['code']}_{commune['type']}",
                     code_insee_unique=commune["code"]
                     if commune_parente.code_insee_unique != commune["code"]
                     else None,

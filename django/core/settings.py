@@ -128,7 +128,7 @@ WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 INTERNAL_IPS = ["127.0.0.1"]
 
 CSRF_COOKIE_SECURE = True

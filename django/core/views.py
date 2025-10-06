@@ -386,7 +386,7 @@ def collectivite(
 ) -> HttpResponse:
     commune = (
         Commune.objects.with_procedures_principales()
-        .filter(id=f"{collectivite_code}_{collectivite_type}")
+        .filter(code_type=f"{collectivite_code}_{collectivite_type}")
         .first()
     )
     is_schema = attrgetter("is_schema")
