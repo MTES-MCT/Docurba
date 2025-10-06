@@ -22,8 +22,8 @@ const COLUMN_GAP = 12
 
 const NARROW_NOBREAK_SPACE = ' '
 
-export default ({ $md, $isDev, $supabase }, inject) => {
-  const baseUrl = $isDev ? 'http://localhost:3000' : location.origin
+export default ({ $md, $supabase }, inject) => {
+  const baseUrl = location.origin
 
   // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
   const IMAGES_TO_REPLACE = {
@@ -274,7 +274,7 @@ export default ({ $md, $isDev, $supabase }, inject) => {
             element.props.src = IMAGES_TO_REPLACE[element.props.src]
           }
 
-          if ($isDev && element.props.src.startsWith('https://docurba.beta.gouv.fr')) {
+          if (element.props.src.startsWith('https://docurba.beta.gouv.fr')) {
             element.props.src = element.props.src.replace('https://docurba.beta.gouv.fr', baseUrl)
           }
 
