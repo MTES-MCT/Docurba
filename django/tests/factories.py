@@ -1,3 +1,4 @@
+import datetime
 import itertools
 import random
 from typing import Any
@@ -6,8 +7,12 @@ from core.models import (
     Collectivite,
     Commune,
     Departement,
+    Event,
+    EventCategory,
+    Procedure,
     Region,
     TypeCollectivite,
+    TypeDocument,
 )
 
 
@@ -52,15 +57,23 @@ def create_groupement(
     code_insee: str = Auto,
     groupement_type: TypeCollectivite = Auto,
     departement: Departement = Auto,
+    with_collectivites_adherentes: bool | None = None,
+    with_collectivites_adherentes__count: int | None = None,
 ) -> Collectivite:
     code_insee = code_insee or next(GROUPEMENT_CODE_INSEE_SEQUENCE)
     groupement_type = groupement_type or random.choice(TYPE_GROUPEMENTS)  # noqa: S311
-    return Collectivite.objects.create(
+    collectivite = Collectivite.objects.create(
         id=f"{code_insee}_{groupement_type}",
         code_insee_unique=code_insee,
         type=groupement_type,
         departement=departement or create_departement(),
     )
+    if with_collectivites_adherentes:
+        perimetre = [
+            create_commune() for _ in range(with_collectivites_adherentes__count or 2)
+        ]
+        collectivite.collectivites_adherentes.add(*perimetre)
+    return collectivite
 
 
 def create_commune(
@@ -85,3 +98,42 @@ def create_commune(
         intercommunalite=intercommunalite,
         nouvelle=nouvelle or None,
     )
+
+
+def create_evenement(
+    *,
+    evt_type: EventCategory = Auto,
+    date: datetime = Auto,
+    procedure: Procedure = Auto,
+) -> Event:
+    # En attendant l'enum.
+    procedure = procedure or create_procedure()
+    categories_evenements = {
+        EventCategory.PUBLICATION_PERIMETRE: "Publication de périmètre",
+        EventCategory.APPROUVE: "Délibération d'approbation"
+        if procedure.type != TypeDocument.CC
+        else "Approbation du préfet",
+    }
+    return Event.objects.create(
+        type=categories_evenements[evt_type], procedure=procedure, date_evenement=date
+    )
+
+
+def create_procedure(
+    *,
+    collectivite_porteuse: Collectivite = Auto,
+    doc_type: TypeDocument = Auto,
+    statut: EventCategory = Auto,
+    perimetre: list = Auto,
+) -> Procedure:
+    collectivite_porteuse = collectivite_porteuse or create_groupement()
+    doc_type = doc_type or TypeDocument.PLU
+    procedure = Procedure.objects.create(
+        collectivite_porteuse=collectivite_porteuse, doc_type=doc_type
+    )
+    if perimetre:
+        procedure.perimetre.add(*perimetre)
+    if statut:
+        create_evenement(evt_type=statut, date="2024-12-01", procedure=procedure)
+
+    return procedure
