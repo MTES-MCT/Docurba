@@ -12,9 +12,15 @@ defaults:
 jobs:
   all:
     runs-on: ubuntu-latest
-
+    env:
+      DJANGO_SETTINGS_MODULE: core.settings
+      SECRET_KEY: test_secret_key
+      DJANGO_DEBUG: "True"
+      DATABASE_URL: postgres://postgres:docurba@localhost:5434/postgres
+      UPSTREAM_NUXT: http://localhost:3000
     services:
       postgres:
+        # Docker Hub image
         image: postgres:15.1
         env:
           POSTGRES_PASSWORD: docurba
@@ -36,10 +42,7 @@ jobs:
           activate-environment: true
       - run: uv sync --locked --all-extras --dev --active
       - run: pytest --create-db
-        env:
-          SECRET_KEY: test_secret_key
-          DJANGO_DEBUG: "True"
-          DATABASE_URL: postgres://postgres:docurba@localhost:5434/docurba
-          UPSTREAM_NUXT: http://localhost:3000
       - run: ruff format --diff .
       - run: ruff check --output-format=github .
+      - run: python -m django makemigrations --check --dry-run --noinput || (echo "⚠ Migration manquante ⚠"; exit 1)
+
