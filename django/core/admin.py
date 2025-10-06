@@ -4,7 +4,7 @@
 from django.contrib import admin
 from django.db import models
 
-from core.models import Collectivite, Commune, Procedure
+from core.models import Collectivite, Commune, EventCategory, Procedure
 
 
 @admin.register(Collectivite)
@@ -36,11 +36,25 @@ class CommuneAdmin(CollectiviteAdmin):
     pass
 
 
+# Not working
+class ProcedureStatutFilter(admin.SimpleListFilter):
+    title = "Statut"
+    parameter_name = "statut"
+
+    def lookups(self, request, model_admin) -> list:
+        return [(event.value, event.value) for event in EventCategory]
+
+    def queryset(self, request, queryset) -> models.QuerySet:
+        value = self.value()
+        return queryset.filter(event__type=value)
+
+
 @admin.register(Procedure)
 class ProcedureAdmin(admin.ModelAdmin):
     list_filter = (
         ("parente", admin.EmptyFieldListFilter),
         ("name", admin.EmptyFieldListFilter),
+        ProcedureStatutFilter,
         "doc_type",
     )
     list_display = ("__str__", "statut")
