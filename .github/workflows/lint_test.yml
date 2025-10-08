@@ -5,41 +5,23 @@ on:
   pull_request:
     branches: [main]
 
-defaults:
-  run:
-    working-directory: django
-
 jobs:
   all:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:15.1
-        env:
-          POSTGRES_PASSWORD: docurba
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 50
-        ports:
-          - 5434:5432
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.TEST_SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.TEST_SUPABASE_PROJECT_ID }}
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
         with:
-          python-version-file: django/.python-version
-      - uses: astral-sh/setup-uv@v6
-        with:
-          activate-environment: true
-      - run: uv sync --locked --all-extras --dev --active
-      - run: pytest --create-db
-        env:
-          SECRET_KEY: test_secret_key
-          DJANGO_DEBUG: "True"
-          DATABASE_URL: postgres://postgres:docurba@localhost:5434/docurba
-          UPSTREAM_NUXT: http://localhost:3000
-      - run: ruff format --diff .
-      - run: ruff check --output-format=github .
+          version: latest
+      - name: Create review app
+        run: supabase --project-ref ${SUPABASE_PROJECT_REF} branches create test_3 --with-data
+      - name:
+      - run: supabase --experimental branches get test_3 -o env >> $GITHUB_ENV
+      - name: Check connection
+        run: |
+          psql "$POSTGRES_URL" -c 'SELECT * FROM pg_catalog.pg_tables
+          WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';'
