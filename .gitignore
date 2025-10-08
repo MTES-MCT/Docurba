@@ -108,3 +108,6 @@ __pycache__
 
 # Mise
 .mise.local.toml
+
+# Database dump files
+exported_data/
