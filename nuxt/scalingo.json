@@ -1,7 +1,15 @@
 {
+  "name": "Nuxt review apps",
   "env": {
-    "APP_URL": {
+    "NUXT_URL": {
+      "description": "URL of the application",
       "generator": "url"
     }
-  }
+  },
+    "formation": {
+        "web": {
+            "amount": 1,
+            "size": "M"
+        }
+    }
 }
