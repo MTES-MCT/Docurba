@@ -84,11 +84,6 @@ psql \
   --file ${backup_file} \
   --dbname ${database_restoration_url}
 
-# https://supabase.com/docs/guides/troubleshooting/refresh-postgrest-schema
-psql \
-  --command "NOTIFY pgrst, 'reload schema';"\
-  --dbname ${database_restoration_url}
-
 if [[ ${BACKUPS_SUPABASE_GRANT_PRIVILEGES_TO_USERS} == "True" ]]; then
   echo "Définition des droits d'accès."
   psql \
@@ -97,12 +92,20 @@ if [[ ${BACKUPS_SUPABASE_GRANT_PRIVILEGES_TO_USERS} == "True" ]]; then
 fi
 
 if [[ ${BACKUPS_SUPABASE_MODIFY_TRIGGERS} == "True" ]]; then
-  echo "Suppression et modification des déclencheurs."
+  echo "Activation des extensions"
+  psql --dbname ${database_restoration_url} --file ${script_folder_path}/activate_extensions.sql
+
   if [[ ! -n ${NUXT3_API_URL} ]]; then
     echo "Impossible de modifier les déclencheurs car la variable NUXT3_API_URL n'est pas définie."
   fi
+  echo "Suppression et modification des déclencheurs."
   psql --dbname ${database_restoration_url} --file ${script_folder_path}/drop_update_triggers.sql
 fi
+
+# https://supabase.com/docs/guides/troubleshooting/refresh-postgrest-schema
+psql \
+  --command "NOTIFY pgrst, 'reload schema';"\
+  --dbname ${database_restoration_url}
 
 echo "La restauration est terminée !"
 

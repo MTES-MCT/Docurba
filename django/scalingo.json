@@ -1,7 +1,23 @@
 {
     "env": {
-        "ALLOWED_HOSTS": {
+        "APP_URL": {
+            "description": "URL of the application",
             "generator": "url"
+        },
+        "ALLOWED_HOSTS": {
+            "description": "Add app URL to Django's allowed hosts",
+            "generator": "template",
+            "template": "%APP%.osc-fr1.scalingo.io"
+        },
+        "BACKUPS_SUPABASE_MODIFY_TRIGGERS": {
+            "description": "Update PG triggers at the end of the restoration script",
+            "value": "True"
+        }
+    },
+    "formation": {
+        "web": {
+            "amount": 1,
+            "size": "S"
         }
     }
 }
