@@ -90,9 +90,6 @@ sw.*
 # Vim swap files
 *.swp
 
-# Manual scripts
-scripts/
-
 # Deploy file with env variables
 deploy.yaml
 deploy_dev.yaml
