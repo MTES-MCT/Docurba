@@ -1,7 +1,21 @@
 {
     "env": {
-        "ALLOWED_HOSTS": {
+        "APP_URL": {
             "generator": "url"
+        },
+        "ALLOWED_HOSTS": {
+            "generator": "template",
+            "template": "docurba-django-demo-pr%PR_NUMBER%.osc-fr1.scalingo.io"
+        },
+        "BACKUPS_SUPABASE_MODIFY_TRIGGERS": "True"
+    },
+    "formation": {
+        "web": {
+            "amount": 1,
+            "size": "S"
         }
+    },
+    "scripts": {
+        "first-deploy": "/usr/bin/bash scripts/restore_database.sh ${DATABASE_URL}"
     }
 }

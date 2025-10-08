@@ -1,7 +1,13 @@
 {
   "env": {
-    "APP_URL": {
+    "NUXT_URL": {
       "generator": "url"
     }
-  }
+  },
+    "formation": {
+        "web": {
+            "amount": 1,
+            "size": "M"
+        }
+    }
 }
