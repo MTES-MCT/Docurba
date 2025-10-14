@@ -40,7 +40,7 @@ const progressBar = new cliProgress.SingleBar({
   hideCursor: true
 })
 
-const supabase = createClient('https://ixxbyuandbmplfnqtxyw.supabase.co', process.env.PROD_SUPABASE_ADMIN_KEY, {
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ADMIN_KEY, {
   auth: { persistSession: false }
 })
 
