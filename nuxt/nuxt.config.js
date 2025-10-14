@@ -4,7 +4,15 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
 
   env: {
-    DDT_ENQUETE_ENABLED: process.env.DDT_ENQUETE_ENABLED?.split(',') ?? []
+    DDT_ENQUETE_ENABLED: process.env.DDT_ENQUETE_ENABLED?.split(',') ?? [],
+    PROD_SUPABASE_URL: process.env.PROD_SUPABASE_URL,
+    PROD_SUPABASE_ADMIN_KEY: process.env.PROD_SUPABASE_ADMIN_KEY,
+    PROD_SUPABASE_ANON_KEY: process.env.PROD_SUPABASE_ANON_KEY,
+    PROD_SUPABASE_HOST: process.env.PROD_SUPABASE_HOST,
+    PROD_SUPABASE_PORT:process.env.PROD_SUPABASE_PORT, // TODO: only useful for the daily import from Sudokuh?
+    PROD_SUPABASE_DATABASE: process.env.PROD_SUPABASE_DATABASE,
+    PROD_SUPABASE_USER:process.env.PROD_SUPABASE_USER,
+    PROD_SUPABASE_PASSWORD:process.env.PROD_SUPABASE_PASSWORD,
   },
   head: {
     titleTemplate: '%s - Docurba',
