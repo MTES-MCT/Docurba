@@ -66,6 +66,14 @@ jobs:
         done
         DATABASE_URL=$(echo ${POSTGRES_URL_NON_POOLING} | sed -r 's/POSTGRES_URL=//g')
 
+        # available keys:
+        # POSTGRES_URL=""
+        # POSTGRES_URL_NON_POOLING=""
+        # SUPABASE_ANON_KEY=""
+        # SUPABASE_JWT_SECRET=""
+        # SUPABASE_SERVICE_ROLE_KEY=""
+        # SUPABASE_URL=""
+
         # https://docs.github.com/fr/actions/reference/workflows-and-actions/workflow-commands#masking-a-value-in-a-log
         echo "::add-mask::$DATABASE_URL"
         echo "DATABASE_URL=${DATABASE_URL}" >> $GITHUB_ENV
