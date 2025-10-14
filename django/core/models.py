@@ -551,7 +551,7 @@ class Event(models.Model):
 
 
 class Region(models.Model):
-    code_insee = models.CharField(unique=True)
+    code_insee = models.CharField()
     nom = models.CharField()
 
     def __str__(self) -> str:
