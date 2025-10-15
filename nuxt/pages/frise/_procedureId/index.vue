@@ -511,7 +511,7 @@ export default
     },
     async syncProcedure () {
       this.syncLoading = true
-      await axios(`https://nuxt3.docurba.incubateur.net/api/urba/procedures/${this.$route.params.procedureId}/update`)
+      await axios(`${process.env.NUXT3_API_URL}/api/urba/procedures/${this.$route.params.procedureId}/update`)
       this.syncLoading = false
     }
   }

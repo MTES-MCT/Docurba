@@ -78,7 +78,7 @@ for (let index = 0; index < procedures.length; index++) {
 
   // If we have a PLUi not managed by a groupement we need to update it to the correct group.
   if (perim.length > 1 && procedure.collectivite_porteuse_id.length < 6) {
-    const res = await fetch(`https://nuxt3.docurba.incubateur.net/api/geo/communes?code=${perim[0].collectivite_code}`)
+    const res = await fetch(`${process.env.NUXT3_API_URL}/api/geo/communes?code=${perim[0].collectivite_code}`)
     const communes = await res.json()
     const commune = communes[0]
 
@@ -92,7 +92,7 @@ for (let index = 0; index < procedures.length; index++) {
   }
 
   if (perim.length === 1) {
-    const res = await fetch(`https://nuxt3.docurba.incubateur.net/api/geo/communes?code=${perim[0].collectivite_code}`)
+    const res = await fetch(`${process.env.NUXT3_API_URL}/api/geo/communes?code=${perim[0].collectivite_code}`)
     const communes = await res.json()
     const commune = communes[0]
 

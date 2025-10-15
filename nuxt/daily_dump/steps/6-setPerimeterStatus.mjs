@@ -6,6 +6,8 @@ async function updatePerimeterStatus(config) {
     console.log(`Updating ${departement.code} ${departement.intitule}`)
     console.time(departement.code)
     const response = await fetch(
+      // Domaine hardcodé car action effectuée uniquement vers la production par Github Action
+      // https://github.com/MTES-MCT/Docurba/pull/1539/commits/d687eb2fa9f9e5fc09106693f906b5f4fb6fc40e#r2436142963
       `https://nuxt3.docurba.incubateur.net/api/urba/procedures/perimetres/update?departementCode=${departement.code}`
     )
     if (!response.ok) {
