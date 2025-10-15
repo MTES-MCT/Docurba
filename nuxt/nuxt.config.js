@@ -5,6 +5,7 @@ export default {
 
   env: {
     DDT_ENQUETE_ENABLED: process.env.DDT_ENQUETE_ENABLED?.split(',') ?? [],
+    NUXT3_API_URL: process.env.NUXT3_API_URL,
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
   },
@@ -111,7 +112,7 @@ export default {
           'http://docurba-metabase.osc-fr1.scalingo.io/'
         ]
         // 'connect-src': [
-        //   'nuxt3.docurba.incubateur.net'
+        //   process.env.NUXT3_API_URL
         // ]
       }
       // addMeta: true
