@@ -6,7 +6,7 @@ async function updatePerimeterStatus(config) {
     console.log(`Updating ${departement.code} ${departement.intitule}`)
     console.time(departement.code)
     const response = await fetch(
-      `https://nuxt3.docurba.incubateur.net/api/urba/procedures/perimetres/update?departementCode=${departement.code}`
+      `${process.env.NUXT3_API_URL}/api/urba/procedures/perimetres/update?departementCode=${departement.code}`
     )
     if (!response.ok) {
       console.error(await response.text())

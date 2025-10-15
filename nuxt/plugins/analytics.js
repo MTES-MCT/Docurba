@@ -30,7 +30,7 @@ export default ({ $supabase, $user, $isDev, app }, inject) => {
 
     if (collectiviteId) {
       try {
-        const { data: collectivite } = await axios(`https://nuxt3.docurba.incubateur.net/api/geo/search/collectivites?code=${collectiviteId}`)
+        const { data: collectivite } = await axios(`${process.env.NUXT3_API_URL}/api/geo/search/collectivites?code=${collectiviteId}`)
         dept = collectivite.departementCode
       } catch (err) {
         // eslint-disable-next-line no-console
