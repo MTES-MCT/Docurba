@@ -1,0 +1,7 @@
+{
+  "jobs": [
+    {
+      "command": "0 0 * * * /usr/bin/bash /scripts/backup_database.sh ${DATABASE_URL}"
+    }
+  ]
+}
