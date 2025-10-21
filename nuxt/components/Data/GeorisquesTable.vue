@@ -99,7 +99,10 @@ export default {
       return this.communes.map((e) => {
         const enriched = {
           ...e,
-          urlGeoRisque: `https://www.georisques.gouv.fr/mes-risques/connaitre-les-risques-pres-de-chez-moi/rapport2?form-commune=true&codeInsee=${e.code}&city=${e.intitule}&typeForm=commune`
+          // Postcode 00000 : https://github.com/MTES-MCT/Docurba/issues/754
+          // Ceci est un hack pour refaire fonctionner rapidement ce lien.
+          // Idéalement, on préférerait passer le bon code postal mais cela demande trop de changements dans la manière de récupérer `this.communes`.
+          urlGeoRisque: `https://www.georisques.gouv.fr/mes-risques/connaitre-les-risques-pres-de-chez-moi/rapport2?form-commune=true&codeInsee=${e.code}&city=${e.intitule}&typeForm=commune&postCode=00000`
         }
         return enriched
       })
