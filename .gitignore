@@ -90,9 +90,6 @@ sw.*
 # Vim swap files
 *.swp
 
-# Manual scripts
-scripts/
-
 # Deploy file with env variables
 deploy.yaml
 deploy_dev.yaml
@@ -111,3 +108,6 @@ __pycache__
 
 # Mise
 .mise.local.toml
+
+# Database dump files
+exported_data/

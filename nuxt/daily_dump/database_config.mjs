@@ -1,3 +1,4 @@
+// Values are left hardcoded because this script is supposed to be removed in the coming weeks.
 export default {
   PG_DEV_CONFIG: {
     env: 'dev',
