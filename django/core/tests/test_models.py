@@ -902,6 +902,27 @@ class TestProcedureStatut:
             assert procedure_with_events.statut == EventCategory.APPROUVE
 
     @pytest.mark.django_db
+    @pytest.mark.parametrize("is_approuve", [True, False])
+    def test_sd_est_toujours_caduc(
+        self, is_approuve: bool, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        """https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000028809968/2015-08-09."""
+        commune = create_commune()
+        procedure = Procedure.objects.create(
+            doc_type=TypeDocument.SD, collectivite_porteuse=commune
+        )
+        if is_approuve:
+            event = procedure.event_set.create(
+                type="Délibération d'approbation", date_evenement="2004-12-01"
+            )
+            assert event.category == EventCategory.APPROUVE
+
+        with django_assert_num_queries(2):
+            procedure_with_events = Procedure.objects.with_events().get(id=procedure.id)
+
+            assert procedure_with_events.statut == EventCategory.CADUC
+
+    @pytest.mark.django_db
     @pytest.mark.parametrize(
         ("annee_limite", "statut"),
         [

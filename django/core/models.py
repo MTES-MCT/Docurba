@@ -397,6 +397,8 @@ class Procedure(models.Model):
 
     @property
     def statut(self) -> EventCategory | None:
+        if self.type_document == TypeDocument.SD:
+            return EventCategory.CADUC
         if not self.dernier_event_impactant:
             return None
         if self.date_fin_echeance and self.date_fin_echeance < self.date_pivot:
