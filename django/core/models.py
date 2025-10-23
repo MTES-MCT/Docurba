@@ -4,7 +4,7 @@ from datetime import date
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
 from operator import attrgetter
-from typing import Self
+from typing import Literal, Self
 
 from django.db import connection, models
 from django.urls import reverse
@@ -253,6 +253,11 @@ class ProcedureQuerySet(models.QuerySet):
             models.Prefetch("event_set", events, to_attr="events_prefetched")
         )
 
+    def with_perimetre(self) -> Self:
+        return self.prefetch_related(
+            models.Prefetch("perimetre", to_attr="perimetre_prefetched")
+        )
+
     def with_communes_counts(self) -> Self:
         # On utilise une Subquery plutôt qu'une expression directe pour permettre
         # à Django d'ignorer la Subquery quand il fait des count(*) dans l'admin,
@@ -325,6 +330,7 @@ class Procedure(models.Model):
     name = models.TextField(blank=True, null=True)  # noqa: DJ001
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
+    commentaire = models.CharField(blank=True, null=True)  # noqa: DJ001
     collectivite_porteuse = models.ForeignKey(
         "Collectivite",
         models.DO_NOTHING,
@@ -351,10 +357,21 @@ class Procedure(models.Model):
         db_table = "procedures"
 
     def __str__(self) -> str:
-        return (
-            self.name
-            or f"🤖 {self.type} {self.numero or ''} {self.type_document} {self.collectivite_porteuse}"
+        if self.name:
+            return self.name
+
+        libelle_collectivite = (
+            self.collectivite_concernee.nom
+            if self.collectivite_concernee
+            else self.collectivite_porteuse_id
         )
+        parts = [
+            self.type,
+            self.numero or "",
+            self.type_document,
+            libelle_collectivite,
+        ]
+        return " ".join(part for part in parts if part)
 
     def __lt__(self, other: Self) -> bool:
         if self.date_approbation and other.date_approbation:
@@ -365,6 +382,12 @@ class Procedure(models.Model):
 
     def get_absolute_url(self) -> str:
         return f"/frise/{self.pk}"
+
+    @property
+    def collectivite_concernee(self) -> "Collectivite | None":
+        if not self.is_intercommunal:
+            return self.perimetre_prefetched[0]
+        return self.collectivite_porteuse
 
     _events_processed = False
 
@@ -402,6 +425,20 @@ class Procedure(models.Model):
         if self.date_fin_echeance and self.date_fin_echeance < self.date_pivot:
             return EventCategory.CADUC
         return self.dernier_event_impactant.category
+
+    @property
+    def statut_libelle(
+        self,
+    ) -> Literal["opposable", "precedent", "en cours", "abandon", "annule"]:
+        if self.statut == EventCategory.APPROUVE:
+            if any(commune.is_opposable(self) for commune in self.perimetre_prefetched):
+                return "opposable"
+            return "precedent"
+
+        if self.is_en_cours or not self.statut:
+            return "en cours"
+
+        return str(self.statut)
 
     def _date(self, event_type: EventCategory) -> date | None:
         self._process_events()
@@ -669,13 +706,19 @@ class Collectivite(models.Model):
 
 class CommuneQuerySet(models.QuerySet):
     def with_procedures_principales(
-        self, *, avant: date | None = None, with_adhesions_count: bool = True
+        self,
+        *,
+        avant: date | None = None,
+        with_adhesions_count: bool = True,
+        with_perimetre: bool = False,
     ) -> Self:
         procedures_principales = Procedure.objects.with_events(avant=avant).filter(
             parente=None, archived=False
         )
         if not with_adhesions_count:
             procedures_principales = procedures_principales.without_adhesions_count()
+        if with_perimetre:
+            procedures_principales = procedures_principales.with_perimetre()
 
         return self.prefetch_related(
             models.Prefetch(

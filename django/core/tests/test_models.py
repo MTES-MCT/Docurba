@@ -436,6 +436,63 @@ class TestProcedure:
         assert procedure.perimetre.through.objects.count() == 1
 
 
+class TestProcedureNom:
+    @pytest.mark.django_db
+    def test_nom_en_base(self) -> None:
+        procedure = Procedure.objects.create(name="Procédure nommée à sa création")
+        assert str(procedure) == "Procédure nommée à sa création"
+
+    @pytest.mark.django_db
+    def test_communale_utilise_nom_commune(self) -> None:
+        groupement = create_groupement(nom="Super-Groupement")
+        commune = create_commune(nom="Super-Commune")
+        procedure = groupement.procedure_set.create(type="Élaboration", doc_type="PLU")
+        procedure.perimetre.add(commune)
+
+        procedure = Procedure.objects.with_perimetre().get()
+        assert str(procedure) == "Élaboration PLU Super-Commune"
+
+    @pytest.mark.django_db
+    def test_intercommunale_utilise_nom_groupement(self) -> None:
+        groupement = create_groupement(nom="Super-Groupement")
+        commune_a = create_commune()
+        commune_b = create_commune()
+
+        procedure = groupement.procedure_set.create(type="Élaboration", doc_type="PLU")
+        procedure.perimetre.add(commune_a, commune_b)
+
+        procedure = Procedure.objects.with_perimetre().get()
+        assert str(procedure) == "Élaboration PLUi Super-Groupement"
+
+    @pytest.mark.django_db
+    def test_avec_numero_procedure(self) -> None:
+        commune = create_commune(nom="Super-Commune")
+
+        procedure = commune.procedure_set.create(
+            type="Modification simplifiée", doc_type="PLU", numero=12
+        )
+        procedure.perimetre.add(commune)
+
+        procedure = Procedure.objects.with_perimetre().get()
+        assert str(procedure) == "Modification simplifiée 12 PLU Super-Commune"
+
+    @pytest.mark.django_db
+    def test_collectivite_inexistante(self) -> None:
+        commune_a = create_commune()
+        commune_b = create_commune()
+
+        siren_inexistant = 9999999999
+        procedure = Procedure.objects.create(
+            type="Élaboration",
+            doc_type="PLU",
+            collectivite_porteuse_id=siren_inexistant,
+        )
+        procedure.perimetre.add(commune_a, commune_b)
+
+        procedure = Procedure.objects.with_perimetre().get()
+        assert str(procedure) == "Élaboration PLUi 9999999999"
+
+
 class TestProcedureDates:
     @pytest.mark.django_db
     def test_none_quand_inexistantes(
