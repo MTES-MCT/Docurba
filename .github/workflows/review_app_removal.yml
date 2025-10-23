@@ -1,0 +1,59 @@
+name: 🔪 Review app removal # TODO
+
+# Run this pipeline when a pull request having the label "review-app" is closed.
+on:
+  pull_request:
+    types: [ unlabeled, closed ]
+
+env:
+  # CLEVER_TOOLS_DOWNLOAD_URL: https://clever-tools.clever-cloud.com/releases/latest/clever-tools-latest_linux.tar.gz
+  # CLEVER_TAR_FILE: clever-tools-latest_linux.tar.gz
+  # CLEVER_CLI: clever-tools-latest_linux/clever
+  # CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+  # CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+  BRANCH: ${{ github.head_ref }}
+
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    if: github.event.label.name == 'recette-jetable' || contains( github.event.pull_request.labels.*.name, 'recette-jetable')
+    permissions: {}
+
+    steps:
+    - name: 📥 Checkout to the PR branch
+      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+    - name: 🏷 Set review app name
+      run:
+        echo "REVIEW_APP_NAME=`echo \"c1-review-$BRANCH\" | sed -r 's/[^[:alnum:]-]+/-/g' | head -c 63`" >> $GITHUB_ENV
+
+    - name: 🏷 Set database addon name
+      run:
+        echo "REVIEW_APP_DB_NAME=`echo $REVIEW_APP_NAME | sed -r 's/-/_/g'`" >> $GITHUB_ENV
+
+    - name: 🤝 Find the application on Clever Cloud
+      run: |
+        curl $CLEVER_TOOLS_DOWNLOAD_URL > $CLEVER_TAR_FILE
+        tar -xvf $CLEVER_TAR_FILE
+        echo "Clever CLI version: $($CLEVER_CLI version)"
+        $CLEVER_CLI login --token $CLEVER_TOKEN --secret $CLEVER_SECRET
+        $CLEVER_CLI link $REVIEW_APP_NAME --org itou_review_apps
+
+    - name: 💂 Install Python
+      uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v5
+      with:
+        python-version: "3.13"
+
+    - name: 🗑 Delete S3 bucket
+      run: |
+        pip install boto3
+        scripts/delete-bucket
+
+    - name: 🗑 Delete the review app
+      run: |
+        $CLEVER_CLI delete --yes
+
+    - name: 🗑 Delete the review app database
+      run: |
+        $CLEVER_CLI addon delete $REVIEW_APP_DB_NAME --org itou_review_apps --yes

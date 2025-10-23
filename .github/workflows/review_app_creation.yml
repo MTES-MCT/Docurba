@@ -1,0 +1,85 @@
+# See https://developer.github.com/v3/
+# and https://help.github.com/en/actions
+name: 🕵 Review app
+
+# Run this pipeline when a label is added and when a push is made on this PR.
+# `types: [ synchronize ]` targets a push event made on a PR.
+on:
+  pull_request:
+    types: [ labeled, synchronize ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || github.sha }}
+
+env:
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.TEST_SUPABASE_ACCESS_TOKEN }}
+  SUPABASE_PROJECT_ID: ${{ secrets.TEST_SUPABASE_PROJECT_ID }}
+  BRANCH: ${{ github.head_ref }}
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    if: github.event.action == 'labeled' && github.event.label.name == 'recette-jetable'
+
+    steps:
+    - name: 📥 Checkout to the PR branch
+      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: 📥 Fetch git branches
+      run: git fetch --prune --unshallow
+
+    # Environment variables
+    - name: 🏷 Set review app name
+      run:
+        # The review name can be used as a subdomain for some service (URL, S3, etc)
+        # so we limit to the first 63 characters as it's the maximum length of a
+        # domain label (part of domain name separated by dot).
+        # https://datatracker.ietf.org/doc/html/rfc1035#section-2.3.4
+        echo "REVIEW_APP_NAME=`echo \"review-$BRANCH\" | sed -r 's/[^[:alnum:]-]+/-/g' | head -c 63`" >> $GITHUB_ENV
+
+    - name: Initialize Supabase
+      uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
+      with:
+        version: latest
+
+    - name: Create review app on Supabase
+      run: supabase branches --experimental --project-ref ${SUPABASE_PROJECT_ID} create ${REVIEW_APP_NAME}
+
+    - name: Set DATABASE_URL
+      shell: bash
+      run: |
+
+        RETVAL=0
+        RETRIES=0
+        POSTGRES_URL=$(supabase branches --project-ref ${SUPABASE_PROJECT_ID} get ${REVIEW_APP_NAME} -o env | grep -w "POSTGRES_URL_NON_POOLING") || RETVAL=${PIPESTATUS[0]}
+
+        until [[ ${RETVAL} == 0 || ${RETRIES} == 20 ]]
+        do
+          echo "❌ Attempt ${RETRIES} failed. Retrying..."
+          sleep 20
+          RETRIES=$((${RETRIES}+1))
+          POSTGRES_URL=$(supabase branches --project-ref ${SUPABASE_PROJECT_ID} get ${REVIEW_APP_NAME} -o env | grep -w "POSTGRES_URL_NON_POOLING") && RETVAL=${PIPESTATUS[0]} || RETVAL=${PIPESTATUS[0]}
+        done
+        DATABASE_URL=$(echo ${POSTGRES_URL_NON_POOLING} | sed -r 's/POSTGRES_URL=//g')
+
+        # available keys:
+        # POSTGRES_URL=""
+        # POSTGRES_URL_NON_POOLING=""
+        # SUPABASE_ANON_KEY=""
+        # SUPABASE_JWT_SECRET=""
+        # SUPABASE_SERVICE_ROLE_KEY=""
+        # SUPABASE_URL=""
+
+        # https://docs.github.com/fr/actions/reference/workflows-and-actions/workflow-commands#masking-a-value-in-a-log
+        echo "::add-mask::$DATABASE_URL"
+        echo "DATABASE_URL=${DATABASE_URL}" >> $GITHUB_ENV
+
+    - name: Check connection
+      run: |
+        # Connection is not working even if it's working locally. Check on Scalingo's servers.
+        echo $(psql -d "${DATABASE_URL}" -c 'SELECT * FROM core_communes;')
+

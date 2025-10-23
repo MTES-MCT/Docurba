@@ -1,16 +1,16 @@
 export default {
   PG_DEV_CONFIG: {
     env: 'dev',
-    url: 'https://drncrjteathtblggsgxi.supabase.co',
-    host: 'aws-0-eu-west-2.pooler.supabase.com',
-    port: 5432,
-    database: 'postgres'
+    url: process.env.DEV_SUPABASE_URL,
+    host: process.env.DEV_SUPABASE_HOST,
+    port: process.env.DEV_SUPABASE_PORT,
+    database: process.env.DEV_SUPABASE_DATABASE
   },
   PG_PROD_CONFIG: {
     env: 'prod',
-    url: 'https://ixxbyuandbmplfnqtxyw.supabase.co',
-    host: 'aws-0-eu-central-1.pooler.supabase.com',
-    port: 5432,
-    database: 'postgres'
+    url: process.env.PROD_SUPABASE_URL,
+    host: process.env.PROD_SUPABASE_HOST,
+    port: process.env.PROD_SUPABASE_PORT,
+    database: process.env.PROD_SUPABASE_DATABASE
   }
 }
