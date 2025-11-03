@@ -20,4 +20,6 @@ Ex : "cela me fera gagner X temps dans mes rituels", "c'est un fort levier pour 
 
 **Si exploration tech : questions auxquelles on cherche une réponse**
 
+**Lien vers la ligne Grist**
+
 **PR**
