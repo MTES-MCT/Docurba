@@ -16,5 +16,7 @@ Description de chaque étape jusqu'au comportement observé.
 
 **Screenshots ou vidéo**
 
+**Lien vers la ligne Grist**
+
 **Autres infos**
 Toute autre info pouvant être utile.
