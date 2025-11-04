@@ -3,12 +3,18 @@
     <template #default="{openFiles}">
       <v-row>
         <v-col cols="12">
-          <h3 class="text-6 black--text">
-            Ajouter un fichier
+          <h3 class="text-h4 black--text">
+            Fichiers à joindre
           </h3>
         </v-col>
+        <v-col cols="12">
+          <p class="text-body-2">
+            <b>Chaque</b> fichier peut peser jusqu’à 250 Mo.
+            Si votre fichier est plus volumineux, contactez-nous : <a href="mailto:contact@docurba.beta.gouv.fr">contact@docurba.beta.gouv.fr</a>.
+          </p>
+        </v-col>
         <v-col cols="6">
-          <p class="text-caption">
+          <p class="text-body-2">
             Vous pouvez déposer plusieurs fichiers.
           </p>
           <v-btn depressed tile @click="openFiles">
@@ -16,7 +22,7 @@
           </v-btn>
         </v-col>
         <v-col cols="6">
-          <p v-if="!displayedFiles.length" class="text-caption">
+          <p v-if="!displayedFiles.length" class="text-body-2">
             Vous n’avez pas encore ajouté de fichier
           </p>
           <v-list v-else>
@@ -61,6 +67,12 @@
               </v-list-item-action>
             </v-list-item>
           </v-list>
+        </v-col>
+        <v-col v-if="displayedFiles.length">
+          <v-alert type="warning" outlined dense>
+            Le dépôt sur Docurba ne vaut pas dépôt légal.<br>
+            Le cas échéant, pensez à déposer vos documents sur @ctes et le Géoportail de l’Urbanisme.
+          </v-alert>
         </v-col>
       </v-row>
     </template>
