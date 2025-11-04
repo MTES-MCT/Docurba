@@ -4,8 +4,13 @@
       <v-row>
         <v-col cols="12">
           <h3 class="text-6 black--text">
-            Ajouter un fichier
+            Fichiers à joindre
           </h3>
+        </v-col>
+        <v-col cols="12">
+          <p class="text-caption">
+            <b>Chaque</b> fichier peut peser jusqu’à 250 Mo. Si votre fichier est plus volumineux, contactez-nous : <a href="mailto:contact@docurba.beta.gouv.fr">contact@docurba.beta.gouv.fr</a>.
+          </p>
         </v-col>
         <v-col cols="6">
           <p class="text-caption">
