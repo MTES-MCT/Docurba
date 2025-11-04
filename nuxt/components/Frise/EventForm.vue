@@ -5,6 +5,12 @@
         <validation-observer ref="observerEventForm" v-slot="{ handleSubmit }">
           <form @submit.prevent="handleSubmit(saveEvent)">
             <v-container>
+              <v-col cols="12">
+                <p class="text-caption mention-grey--text">
+                  ⚠️ <i>Le dépôt sur Docurba ne vaut pas dépôt légal.</i><br>
+                  <i>Pensez, le cas échéant, à déposer vos documents sur @ctes et le Géoportail de l’Urbanisme.</i>
+                </p>
+              </v-col>
               <v-row>
                 <v-col cols="12">
                   <FriseEventSelector v-model="event.type" :procedure="procedure" />
