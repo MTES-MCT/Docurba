@@ -2,3 +2,6 @@ web: gunicorn core.wsgi --worker-class=gevent --limit-request-line=0 --log-file=
 # limit-request-line désactivé à cause de https://github.com/MTES-MCT/Docurba/issues/1237
 
 postdeploy: bin/post_deploy
+
+# https://doc.scalingo.com/platform/app/task-scheduling/custom-clock-processes#defining-custom-clock-processes
+clock: bin/clock.sh
