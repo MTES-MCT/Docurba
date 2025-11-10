@@ -33,13 +33,10 @@
             />
           </template>
           <div v-else class="d-flex align-center justify-center pa-8 text--disabled flex-column g200  rounded">
-            <p class="text-h1 mb-7">
-              :'(
+            <p>
+              Il n'y a pas de DU intercommunaux
             </p>
-            <p class="font-weight-bold">
-              Pas de documents d'urbanisme Intercommunaux
-            </p>
-            <span class="font-italic">Astuce: Si vous ne voyez pas le document d'urbanisme recherché, vérifiez sur la commune ou l'EPCI qui à la compétence.</span>
+            <p class="font-weight-bold">Cliquez sur l'onglet suivant pour afficher les DU communaux.</p>
           </div>
         </v-tab-item>
         <v-tab-item>
