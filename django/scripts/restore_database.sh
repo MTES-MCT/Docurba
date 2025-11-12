@@ -94,6 +94,15 @@ if [[ ${BACKUPS_SUPABASE_GRANT_PRIVILEGES_TO_USERS} == "True" ]]; then
     --file "${HOME}/scripts/grant_usage_and_privileges.sql" \
     --dbname ${database_restoration_url}
 fi
+
+if [[ ${BACKUPS_SUPABASE_MODIFY_TRIGGERS} == "True" ]]; then
+  echo "Suppression et modification des déclencheurs."
+  if [[ ! -n ${NUXT3_API_URL} ]]; then
+    echo "Impossible de modifier les déclencheurs car la variable NUXT3_API_URL n'est pas définie."
+  fi
+  envsubst < ${HOME}/scripts/drop_update_triggers.sql | psql --dbname ${database_restoration_url}
+fi
+
 echo "La restauration est terminée !"
 
 # Ne conservons pas une copie locale trop longtemps.
