@@ -57,7 +57,7 @@
             <p class="font-weight-bold">
               Pas de documents en compétence communal
             </p>
-            <span class="font-italic">Astuce: Si vous ne voyez pas le document d'urbanisme recherché, vérifiez sur la commune ou l'EPCI qui à la compétence.</span>
+            <span class="font-italic">Astuce: Si vous ne voyez pas le document d'urbanisme recherché, vérifiez sur la commune ou l'EPCI qui a la compétence.</span>
           </div>
         </v-tab-item>
         <v-tab-item>
