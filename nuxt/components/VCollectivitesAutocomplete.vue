@@ -129,7 +129,7 @@ export default {
           const epcis = collectivites.groupements.filter(e => BANATIC_EPCI_TYPES.includes(e.type))
           const autres = collectivites.groupements.filter(e => !BANATIC_EPCI_TYPES.includes(e.type))
           this.collectivites = [{ header: 'Groupements' }, ...autres, { divider: true },
-            { header: 'ECPI' }, ...epcis, { divider: true },
+            { header: 'EPCI' }, ...epcis, { divider: true },
             { header: 'Communes' }, ...collectivites.communes]
           this.loading = false
         } catch (error) {

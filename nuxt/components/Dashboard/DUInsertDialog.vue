@@ -170,7 +170,7 @@ export default {
         const { data: communes } = await axios(`/api/geo/communes?departementCode=${departement}`)
         const { data: intercomunalites } = await axios(`/api/geo/intercommunalites?departementCode=${departement}`)
 
-        this.collectivites = [{ header: 'ECPI' }, ...intercomunalites, { divider: true }, { header: 'Communes' }, ...communes]
+        this.collectivites = [{ header: 'EPCI' }, ...intercomunalites, { divider: true }, { header: 'Communes' }, ...communes]
       }
     },
     close () {
