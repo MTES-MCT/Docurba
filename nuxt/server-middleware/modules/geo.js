@@ -1,4 +1,5 @@
 
+const supabase = require('./supabase.js')
 const _ = require('lodash')
 const { topology } = require('topojson-server')
 const { center } = require('@turf/turf')
@@ -15,11 +16,46 @@ const geojsonIntercommunalites = require('../Data/geojson/epci-geo.json')
 const geojsonDepartements = require('../Data/geojson/departements-geo.json')
 const geojsonRegions = require('../Data/geojson/regions-geo.json')
 const topojsonFrance = require('../Data/geojson/france-topo.json')
+const { mdiConsoleLine } = require('@mdi/js')
 
 const cache = {
   groupements: {},
   communes: {}
 }
+
+// communes.json
+  // {
+  //   "code": "10002",
+  //   "siren": "211000013",
+  //   "type": "COM",
+  //   "intitule": "Ailleville",
+  //   "regionCode": "44",
+  //   "departementCode": "10",
+  //   "groupements": [
+  //     {
+  //       "type": "SMF",
+  //       "intitule": "Syndicat de l'Arlette",
+  //       "siren": "200077006",
+  //       "code": "200077006"
+  //     },
+  //     {
+  //       "type": "SMF",
+  //       "intitule": "Syndicat départemental d'énergie de l'Aube (SDEA)",
+  //       "siren": "200093391",
+  //       "code": "200093391"
+  //     },
+  //     {
+  //       "type": "CC",
+  //       "intitule": "CC de la Région de Bar sur Aube",
+  //       "siren": "241000405",
+  //       "code": "241000405"
+  //     }
+  //   ],
+  //   "membres": [],
+  //   "intercommunaliteCode": "241000405",
+  //   "competencePLU": true,
+  //   "competenceSCOT": false
+  // },
 
 module.exports = {
   // TODO: Should also work with multiple departement code
@@ -36,7 +72,6 @@ module.exports = {
     return code.length > 5 ? this.getIntercommunalite(code) : this.getCommune(code)
   },
   getCollectivites ({ codes, departements }) {
-    // console.log('getCollectivites: ')
     if (codes) {
       const communes = this.getCommunes({ codes })
       const intercommunalites = this.getIntercommunalites({ codes })
@@ -53,6 +88,7 @@ module.exports = {
     if (query.codes) {
       const communesCodes = query.codes
 
+      // TODO: supabase call
       const filterredCommunes = communes.filter((commune) => {
         return communesCodes.includes(commune.code)
       })
@@ -68,6 +104,7 @@ module.exports = {
     }
   },
   getCommune (codeInsee) {
+    // TODO: Supabase call.
     const commune = communes.find((c) => {
       return c.code === codeInsee
     })
@@ -89,6 +126,7 @@ module.exports = {
   getIntercommunalites (query) {
     const queryKeys = Object.keys(query)
 
+    // TODO: Supabase call
     if (query.codes) {
       const intercommunalitesCodes = query.codes
 
@@ -124,6 +162,7 @@ module.exports = {
     if (intercommunalite) {
       this.getMembersOfMembers(intercommunalite)
 
+      // Supabase call
       const departement = Object.assign({}, departements.find(d => d.code === intercommunalite.departementCode))
       delete departement.communes
       delete departement.region
@@ -175,6 +214,7 @@ module.exports = {
       }
     }
 
+    // TODO(cms): priorize me.
     if (format === 'topojson') {
       return topology({
         communes: { type: 'FeatureCollection', features: comFeatures },
