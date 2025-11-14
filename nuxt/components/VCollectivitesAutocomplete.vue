@@ -37,7 +37,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { ValidationProvider } from 'vee-validate'
 import FormInput from '@/mixins/FormInput.js'
 import departements from '@/assets/data/departements-france.json'
@@ -108,6 +107,7 @@ export default {
   async mounted () {
     await this.fetchCollectivites()
     if (this.value) {
+      console.log(this.value)
       this.selectedCollectivite = this.collectivites.find(e => e.code === this.value.code)
     }
   },
@@ -123,14 +123,35 @@ export default {
       if (this.selectedDepartement) {
         this.loading = true
         try {
-          const collectivites = (await axios.get(`/api/geo/collectivites?departements=${this.selectedDepartement.code_departement}`)).data
+          // groupements:
+          // membres:
+          // regionCode:
+          // siren:
+          // if (!cache[code]) {
+          //   cache[code] = {}
+          //   cache[code].communes = communes.filter(c => c.departementCode === code)
+          //   cache[code].groupements = intercommunalites.filter(c => c.departementCode === code)
+          // }
+          // const { data, error } = this.$supabase.from('core_collectivite').select('code:code_insee_unique, type, intitule:nom, departement_id, core_departement!departement_id(code_insee)').eq('core_departement.code_insee', this.selectedDepartement.code_departement).range(0, 1)
+          // const { data, error } = await this.$supabase.from('core_departement').select('*').eq('code_insee', '02').range(0, 2)
+          const { data: groupements } = await this.$supabase.from('core_collectivite')
+            .select('code:code_insee_unique, type, intitule:nom, departement_id, departementCode:core_departement!inner(code_insee)')
+            .eq('core_departement.code_insee', this.selectedDepartement.code_departement)
+            .not('type', 'in', '("COM", "COMD", "COMA")')
 
+          const { data: communesRaw } = await this.$supabase.from('core_commune')
+            .select('core_collectivite!collectivite_ptr_id(code:code_insee_unique, type, intitule:nom, departement_id, core_departement!inner(code_insee))')
+            .eq('core_collectivite.core_departement.code_insee', this.selectedDepartement.code_departement)
+
+          console.log(communesRaw)
+          const communes = communesRaw.map((e) => { return e.core_collectivite })
           const BANATIC_EPCI_TYPES = ['CA', 'CC', 'CU', 'METRO', 'MET69']
-          const epcis = collectivites.groupements.filter(e => BANATIC_EPCI_TYPES.includes(e.type))
-          const autres = collectivites.groupements.filter(e => !BANATIC_EPCI_TYPES.includes(e.type))
+          const epcis = groupements.filter(e => BANATIC_EPCI_TYPES.includes(e.type))
+          const autres = groupements.filter(e => !BANATIC_EPCI_TYPES.includes(e.type))
           this.collectivites = [{ header: 'Groupements' }, ...autres, { divider: true },
             { header: 'EPCI' }, ...epcis, { divider: true },
-            { header: 'Communes' }, ...collectivites.communes]
+            { header: 'Communes' }, ...communes
+          ]
           this.loading = false
         } catch (error) {
           console.log(error)

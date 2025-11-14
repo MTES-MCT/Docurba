@@ -22,6 +22,14 @@ export default ({ $supabase, $dayjs }, inject) => {
       return collectiviteId.length > 5
     },
     async getProceduresForDept (departementCode) {
+      // # TODO(cms) Reprendre ici
+      // console.log(departementCode)
+
+      //       select *, p.*, dfe.*
+      // from procedures_perimetres pp
+      // inner join "procedures" p on pp.procedure_id = p.id
+      // join doc_frise_events dfe on dfe.procedure_id = p.id
+      // where pp.departement = '36' and p.archived is false and p.id = 'b6786eb5-fbb2-42d5-b9c0-2b6dff055d63';
       const { data } = await $supabase.from('procedures_perimetres')
         .select('*, procedures!inner(*, doc_frise_events(*))')
         .eq('departement', departementCode)
@@ -76,6 +84,9 @@ export default ({ $supabase, $dayjs }, inject) => {
           return Object.assign({}, collectivite, p)
         })
 
+        // Same as in the DB. Are the columns used?
+        // current_perimetre is. See InsertForm.vue
+        // initial_perimetre is not but is still referenced.
         procedure.current_perimetre = procedure.procedures_perimetres.filter(c => c.collectivite_type === 'COM').map((p) => {
           const commune = collectivites.find(com => com.code === p.collectivite_code)
 
@@ -118,6 +129,18 @@ export default ({ $supabase, $dayjs }, inject) => {
       const collectivites = [collectivite]
       if (collectivite.membres) { collectivites.push(...collectivite.membres) }
 
+      // SELECT p.*, array_agg(pp.*) AS procedures_perimetres
+      //   FROM procedures p
+      //   JOIN procedures_perimetres pp ON p.id = pp.procedure_id
+      //   WHERE p.id IN (
+      //       SELECT procedure_id
+      //       FROM procedures_perimetres
+      //       WHERE collectivite_code IN (
+      //           SELECT json_array_elements_text(codes)
+      //       )
+      //   ) GROUP BY p.id;
+      // perimetre.*, procedures_perimetres[{id, created_at, added_at, collectivite_code, collectivite_type, procedure_id, opposable, departement, commune_id}]
+      // commune_id == f"{collectivite_code}_{collectivite_type}"
       const { data: procedures } = await $supabase.rpc('procedures_by_collectivites', {
         codes: collectivites.filter(c => c.type === 'COM').map(c => c.code)
       })
