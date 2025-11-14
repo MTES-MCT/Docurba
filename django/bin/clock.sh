@@ -17,7 +17,7 @@ while true; do
   # UTC
   if [[ "$current_time" == "00:43" ]]; then
     echo "☕ Il est ${current_time}! C'est l'heure de la sauvegarde !"
-    /usr/bin/bash scripts/backup_database.sh "${DATABASE_URL}"
+    /usr/bin/bash scripts/backup_database.sh "${PROD_DATABASE}"
   fi
   sleep 1m
 done
