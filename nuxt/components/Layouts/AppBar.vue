@@ -100,7 +100,20 @@
 
         <template v-if="$user.id">
           <v-btn
-            v-if="$user.profile.side === 'etat'"
+            v-if="$user.profile.side === 'ppa'"
+            depressed
+            color="primary"
+            :to="{
+              name: 'ddt-departement-collectivites',
+              params: {
+                departement: $user.profile.departement,
+              }
+            }"
+          >
+            Tableau de bord
+          </v-btn>
+          <v-btn
+            v-else-if="$user.profile.side === 'etat'"
             depressed
             color="primary"
             :to="{
