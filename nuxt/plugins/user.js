@@ -12,18 +12,23 @@ const defaultUser = {
 }
 
 function handleRedirect ($supabase, event, user, router) {
-  // console.log('handleRedirect: ', event, user)
   if (event === 'SIGNED_IN') {
-    if (user.profile.poste === 'dreal') {
-      function trameRef (user) {
-        const scopes = { ddt: 'dept', dreal: 'region' }
-        const poste = user.profile.poste
-        const code = poste === 'ddt' ? user.profile.departement : user.profile.region
+    if (user.profile.side === 'etat') {
+      if (user.profile.poste === 'dreal') {
+        function trameRef (user) {
+          const scopes = { ddt: 'dept', dreal: 'region' }
+          const { poste } = user.profile
+          const code = poste === 'ddt' ? user.profile.departement : user.profile.region
+          return `${scopes[poste]}-${code}`
+        }
 
-        return `${scopes[poste]}-${code}`
+        router.push({ name: 'trames-githubRef', params: { githubRef: trameRef(user) } })
+      } else if (user.profile.poste === 'ddt') {
+        router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
       }
-      router.push({ name: 'trames-githubRef', params: { githubRef: trameRef(user) } })
-    } else if (user.profile.poste === 'ddt') {
+    }
+
+    if (user.profile.side === 'ppa') {
       router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
     }
 
@@ -37,8 +42,9 @@ function handleRedirect ($supabase, event, user, router) {
   }
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export, unicorn/no-anonymous-default-export
 export default async ({ $supabase, app }, inject) => {
-  const user = Vue.observable(Object.assign({}, defaultUser))
+  let user = Vue.observable({ ...defaultUser })
 
   async function updateUser (session, retry = true) {
     // console.log('updateUser', session)
@@ -112,6 +118,39 @@ export default async ({ $supabase, app }, inject) => {
       }
     })
   }
+
+  // Rights management
+  const userRights = {
+    canViewSectionCollectivites (options) {
+      const { departement } = options
+      if (this.profile.is_admin) {
+        return true
+      }
+
+      if (this.profile.poste === 'ddt') {
+        return this.profile.departement === departement
+      } else if (this.profile.side === 'ppa') {
+        return this.profile.departements.includes(departement)
+      }
+    },
+    canViewSectionProcedures (options) {
+      const { departement } = options
+      if (this.profile.is_admin) {
+        return true
+      }
+
+      if (this.profile.poste === 'ddt') {
+        return this.profile.departement === departement
+      } else if (this.profile.side === 'ppa') {
+        return this.profile.departements.includes(departement)
+      }
+    },
+    canViewSectionPAC () {
+      return this.profile.side === 'etat'
+    }
+  }
+
+  user = Object.assign(user, userRights)
 
   inject('user', user)
 }
