@@ -213,6 +213,10 @@ export default {
 
         return { ...e, procedureName }
       })
+      if (!this.$user.canViewSectionProcedures()) {
+        console.warn('User is not allowed to view this page.')
+        this.$router.push('/')
+      }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log('ERROR: ', error)
