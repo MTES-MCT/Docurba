@@ -100,7 +100,7 @@
 
         <template v-if="$user.id">
           <v-btn
-            v-if="$user.profile.side === 'etat'"
+            v-if="$user.profile.side === 'etat' || $user.profile.side === 'ppa'"
             depressed
             color="primary"
             :to="{
