@@ -6,7 +6,7 @@ from django.test import Client
 from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 
-from core.models import TypeDocument
+from core.models import TypeDocument, ViewCommuneAdhesionsDeep
 from core.tests.factories import (
     create_commune,
     create_groupement,
@@ -285,7 +285,7 @@ class TestAPIScots:
                 "scot_lib_departement": "",
                 "scot_codecollectivite": groupement.code_insee,
                 "scot_code_type_collectivite": groupement.type,
-                "scot_nom_collectivite": "",
+                "scot_nom_collectivite": groupement.nom,
                 # Approuvée
                 "pa_id": "",
                 "pa_nom_schema": "",
@@ -380,3 +380,30 @@ class TestAPIScots:
         assert [collectivite[champ_procedure_id] for collectivite in reader] == [
             str(procedure.id)
         ]
+
+
+class TestPourNuxtCollectivite:
+    @pytest.mark.django_db
+    def test_lol(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        groupement = create_groupement()
+        groupement.collectivites_adherentes.add(create_commune())
+        groupement.collectivites_adherentes.add(create_commune())
+
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        with django_assert_num_queries(3):
+            response = client.get(
+                reverse("pour_nuxt_collectivite", args=[groupement.code_insee_unique])
+            )
+        assert response.json() == {
+            "collectivite": {
+                "intitule": groupement.nom,
+                "code": groupement.code_insee,
+                "departementCode": groupement.departement.code_insee,
+                "membres": [],
+            },
+            "plans": [],
+            "schemas": [],
+        }

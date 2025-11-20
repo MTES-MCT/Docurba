@@ -1,12 +1,12 @@
 <template>
-  <VGlobalLoader v-if="$fetchState.pending" />
-  <div v-else class="mb-4">
+  <div class="mb-4">
     <v-card outlined class="no-border-radius-bottom">
       <v-card-text>
         <DashboardDUProcedureItem
           :procedure="procedure"
           :censored="censored"
           :collectivite="collectivite"
+          :code-insee-si-communal="codeInseeSiCommunal"
           @delete="$emit('delete', arguments[0])"
         />
       </v-card-text>
@@ -26,7 +26,6 @@
                   class="grey-border mb-8"
                   :procedure="procSec"
                   :censored="censored"
-                  :collectivite="collectivite"
                   @delete="$emit('delete', arguments[0])"
                 />
               </v-expansion-panel-content>
@@ -38,7 +37,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import dayjs from 'dayjs'
 
 export default {
@@ -63,22 +61,12 @@ export default {
       collectivite: null
     }
   },
-  fetchDelay: 0,
-  async fetch () {
-    if (this.isCommunal) {
-      this.collectivite = this.procedure.procedures_perimetres[0]
-    } else {
-      try {
-        const { data: collectiviteData } = await axios(`/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}`)
-        this.collectivite = collectiviteData
-      } catch (err) {
-        console.log('no coll', this.procedure, this.collectivite)
-      }
-    }
-  },
   computed: {
-    isCommunal () {
-      return this.procedure.procedures_perimetres.length === 1
+    codeInseeSiCommunal () {
+      if (this.procedure.procedures_perimetres.length === 1) {
+        return this.procedure.procedures_perimetres[0].code
+      }
+      return null
     }
   }
 }
