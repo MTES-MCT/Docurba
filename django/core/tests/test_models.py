@@ -24,6 +24,7 @@ from core.tests.factories import (
     create_departement,
     create_groupement,
 )
+from core.views import TypeCollectivite
 
 
 class TestCollectivite:
@@ -1770,3 +1771,22 @@ class TestCommuneCodeEtat:
             procedure.competence_intercommunalite_code(collectivite_porteuse)
             == expected_code
         )
+
+
+@pytest.mark.django_db
+class TestViewCommuneAdhesionDeep:
+    def test_refresh_materialized_view(self) -> None:
+        collectivite_porteuse = create_groupement()
+        for _ in range(3):
+            commune = create_commune()
+            commune.adhesions.add(collectivite_porteuse)
+
+        assert ViewCommuneAdhesionsDeep.objects.count() == 0
+        ViewCommuneAdhesionsDeep()._refresh_materialized_view()
+        assert ViewCommuneAdhesionsDeep.objects.count() == 3
+
+        adhesion = ViewCommuneAdhesionsDeep.objects.first()
+        assert [
+            hasattr(adhesion, attribute)
+            for attribute in ["commune_id", "groupement_id", "pk"]
+        ]
