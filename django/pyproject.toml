@@ -10,6 +10,7 @@ dependencies = [
     "django-environ",
     "django-extensions",
     "django-revproxy",
+    "djangorestframework",
     "gunicorn[gevent]",
     "psycopg[binary,pool]",
     "sentry-sdk[django]",
