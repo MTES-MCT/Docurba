@@ -15,3 +15,9 @@ class CollectiviteSerializer(serializers.ModelSerializer):
         model = Collectivite
         fields = ["code", "type", "intitule", "departementCode", "regionCode"]
         read_only_fields = fields
+
+    # groupements
+    # membres
+    # intercommunaliteCode
+    # competencePLU: bool
+    # competenceSCOT: bool

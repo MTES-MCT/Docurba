@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertNumQueries
@@ -52,6 +54,77 @@ class TestCollectivitesAPI:
                 "departementCode": "29",
             },
         ]
+
+    @pytest.mark.parametrize(
+        ("query_params", "expected"),
+        [
+            # pytest.param(
+            #     {"departementCode": 30},
+            #     [
+            #         {
+            #             "code": "123456789",
+            #             "type": "CC",
+            #             "intitule": "Groupement 2",
+            #             "regionCode": "76",
+            #             "departementCode": "30",
+            #         },
+            #     ],
+            #     id="one_department",
+            # ),
+            pytest.param(
+                {"departementCode": "30,29"},
+                [
+                    {
+                        "code": "123456789",
+                        "type": "CC",
+                        "intitule": "Groupement 2",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                    },
+                    {
+                        "code": "987654321",
+                        "type": "CC",
+                        "intitule": "Groupement 1",
+                        "regionCode": "53",
+                        "departementCode": "29",
+                    },
+                ],
+                id="many_departments",
+            ),
+        ],
+    )
+    def test_list_filters_departements(
+        self, api_client: APIClient, query_params: str, expected: list
+    ) -> None:
+        region_bretagne = create_region(code_insee="53")
+        region_occitanie = create_region(code_insee="76")
+        region_hauts_de_france = create_region(code_insee="32")
+        finistere = create_departement(
+            code_insee="29", nom="Finistère", region=region_bretagne
+        )
+        gard = create_departement(code_insee="30", nom="Gard", region=region_occitanie)
+        nord = create_departement(
+            code_insee="59", nom="Nord", region=region_hauts_de_france
+        )
+        create_groupement(
+            code_insee="987654321",
+            groupement_type=TypeCollectivite.CC,
+            departement=finistere,
+            nom="Groupement 1",
+        )
+        create_groupement(
+            code_insee="123456789",
+            groupement_type=TypeCollectivite.CC,
+            departement=gard,
+            nom="Groupement 2",
+        )
+        create_groupement(departement=nord)
+        url = f"{reverse('api_internes:collectivites-list')}?{urlencode(query_params, True)}"
+        with assertNumQueries(1):
+            response = api_client.get(url, format="json")
+
+        assert response.status_code == 200
+        assert response.json() == expected
 
     def test_detail(self, api_client: APIClient) -> None:
         region = create_region(code_insee="53")  # Bretagne
