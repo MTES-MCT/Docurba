@@ -9,6 +9,7 @@ dependencies = [
     "django-debug-toolbar",
     "django-environ",
     "django-extensions",
+    "django-filter",
     "django-revproxy",
     "djangorestframework",
     "gunicorn[gevent]",
