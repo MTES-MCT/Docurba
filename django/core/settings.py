@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "django_filters",
     "revproxy.apps.RevProxyConfig",
     "django_browser_reload",
     "django_extensions",
