@@ -52,6 +52,9 @@ export default {
     }
   },
   async mounted () {
+    // This endpoint does not exist.
+    // It's `/geojson/:locality` or `/topojson/:locality` in geo.js
+    // Is it dead code?
     const { data: topojson } = await axios({
       url: '/api/geo/topojson/communes'
       // params: { codes: ['01001', '01002'] }

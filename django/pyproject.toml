@@ -9,7 +9,9 @@ dependencies = [
     "django-debug-toolbar",
     "django-environ",
     "django-extensions",
+    "django-filter",
     "django-revproxy",
+    "djangorestframework",
     "gunicorn[gevent]",
     "psycopg[binary,pool]",
     "sentry-sdk[django]",
@@ -41,7 +43,7 @@ ignore = [
     # "ERA001", # Commented out code
 ]
 [tool.ruff.lint.per-file-ignores]
-"**/tests/**.py" = [
+"*test_*.py" = [
     "S101",    # asserts allowed in tests...
     "PLR2004", # Magic value used in comparison
 ]

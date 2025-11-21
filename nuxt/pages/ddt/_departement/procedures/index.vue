@@ -195,6 +195,7 @@ export default {
       const [rawProcedures, referentiel] = await Promise.all([promProcedures, rawReferentiel])
       const { communes, groupements } = await referentiel.json()
       this.rawProcedures = rawProcedures.map((e) => {
+        console.log(e.perimetre.length)
         let collectivitePorteuse
         if (e.perimetre.length > 1) {
           collectivitePorteuse = groupements.find(grp => grp.code === e.procedures.collectivite_porteuse_id)
