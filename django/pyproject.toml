@@ -6,6 +6,7 @@ requires-python = ">=3.13"
 dependencies = [
     "django",
     "django-environ",
+    "django-filter",
     "django-revproxy",
     "gunicorn[gevent]",
     "psycopg[binary,pool]",
