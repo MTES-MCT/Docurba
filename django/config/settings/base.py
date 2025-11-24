@@ -184,4 +184,6 @@ UPSTREAM_NUXT = env.str("UPSTREAM_NUXT", default="http://localhost:3000")
 CREATE_UNMANAGED_TABLES = False
 REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    "DEFAULT_PAGINATION_CLASS": "docurba.internal_api.paginators.DocurbaPagination",
+    "PAGE_SIZE": 200,
 }
