@@ -13,6 +13,8 @@ from core.tests.factories import (
     create_region,
 )
 
+BASE_QUERIES_COUNT = 1  # Count made by DRF for the pagination.
+
 
 @pytest.mark.django_db
 class TestCollectivitesAPI:
@@ -165,11 +167,11 @@ class TestCollectivitesAPI:
             nom="Groupement 2",
         )
         url = f"{reverse('api_internes:collectivites-list')}?{urlencode(query_params)}"
-        with assertNumQueries(1):
+        with assertNumQueries(BASE_QUERIES_COUNT + 1):
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200
-        assert response.json() == expected
+        assert response.json()["results"] == expected
 
     @pytest.mark.parametrize(
         ("query_params", "expected"),
@@ -249,11 +251,11 @@ class TestCollectivitesAPI:
             code_insee="123456778",
         )
         url = f"{reverse('api_internes:collectivites-list')}?{urlencode(query_params)}"
-        with assertNumQueries(1):
+        with assertNumQueries(BASE_QUERIES_COUNT + 1):
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200
-        assert response.json() == expected
+        assert response.json()["results"] == expected
 
     def test_detail(self, api_client: APIClient) -> None:
         region = create_region(code_insee="53")  # Bretagne
@@ -413,13 +415,13 @@ class TestCommunesAPI:
         )
         url = f"{reverse('api_internes:communes-list')}?{urlencode(query_params)}"
 
-        with assertNumQueries(1):
+        with assertNumQueries(BASE_QUERIES_COUNT + 1):
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200
-        assert response.json() == expected
+        assert response.json()["results"] == expected
 
-    def test_details(self, api_client: APIClient) -> None:
+    def test_detail(self, api_client: APIClient) -> None:
         region = create_region(code_insee="53")  # Bretagne
         departement = create_departement(
             code_insee="29", nom="Finistère", region=region
