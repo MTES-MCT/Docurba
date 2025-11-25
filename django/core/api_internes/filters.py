@@ -36,9 +36,13 @@ COMPETENCES_CHOICES = (
 
 class CollectiviteFilter(DepartementRegionFilterSet):
     type = CharInFilter(field_name="type")
-    exclude_communes = filters.BooleanFilter(method="_exclude_communes")
+    exclude_communes = filters.BooleanFilter(
+        label="Exclure les communes", method="_exclude_communes"
+    )
     competence = filters.MultipleChoiceFilter(
-        method="_filter_competences", choices=COMPETENCES_CHOICES
+        label="Compétence",
+        method="_filter_competences",
+        choices=COMPETENCES_CHOICES,
     )
 
     class Meta:
