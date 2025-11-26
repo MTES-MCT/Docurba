@@ -1,0 +1,16 @@
+[api]
+max_rows = 500000
+schemas = ["public", "storage"]
+
+[auth]
+site_url = "http://localhost:3000"
+additional_redirect_urls = []
+email.enable_confirmations = false
+email.max_frequency = "1m0s"
+
+[db]
+pooler.default_pool_size = 25
+major_version = 15
+
+[storage]
+file_size_limit = "250MB"
