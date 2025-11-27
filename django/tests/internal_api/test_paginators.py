@@ -4,15 +4,14 @@ import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from core.api_internes.paginators import DocurbaPagination
-from core.tests.factories import create_groupement
+from docurba.internal_api.paginators import DocurbaPagination
+from tests.core.factories import CollectiviteFactory
 
 
 @pytest.mark.django_db
 def test_docurba_paginator(api_client: APIClient) -> None:
-    for _ in range(5):
-        create_groupement()
-    url = reverse("api_internes:collectivites-list")
+    CollectiviteFactory.create_batch(5)
+    url = reverse("internal_api:collectivites-list")
 
     # https://github.com/encode/django-rest-framework/issues/2466
     # https://github.com/encode/django-rest-framework/issues/6030
