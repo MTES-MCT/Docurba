@@ -20,6 +20,7 @@ urlpatterns = [
     path("api/perimetres", views.api_perimetres),
     path("api/communes", views.api_communes),
     path("api/scots", views.api_scots, name="api_scots"),
+    path("api-internes/", include("core.api_internes.urls")),
     path("__reload__/", include("django_browser_reload.urls")),
     *debug_toolbar_urls(),
     # URLs Nuxt globales
