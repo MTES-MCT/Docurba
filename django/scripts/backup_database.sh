@@ -76,6 +76,8 @@ sed --expression '1s/^/SET session_replication_role = replica;\n/' --in-place ${
 # La compression supprime le fichier d'origine.
 gzip --verbose --best ${backup_file_name}
 
+# La condition suivante ne fonctionne pas systématiquement.
+# voir https://github.com/MTES-MCT/Docurba/issues/1632
 if type rclone 2>/dev/null; then
   echo "Rclone est déjà installé."
 else
@@ -86,7 +88,8 @@ else
       echo '🙈 Le hash de rclone est différent de celui qui est attendu. Fin du script.'
       exit 0
   fi
-  unzip rclone-v${rclone_version}-linux-amd64.zip
+  # -u met à jour le paquet dézippé s'il existe déjà.
+  unzip -u rclone-v${rclone_version}-linux-amd64.zip
   mv "rclone-v${rclone_version}-linux-amd64/rclone" rclone
   chmod +x rclone
   export PATH="${PWD}:${PATH}"
