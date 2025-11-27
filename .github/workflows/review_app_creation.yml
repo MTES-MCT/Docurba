@@ -52,10 +52,12 @@ jobs:
         version: 2.60.0
 
     - name: 🪆 Creation de la branche Supabase
+      continue-on-error: true
       run: |
        supabase branches --experimental --project-ref ${SUPABASE_PROJECT_ID} create ${SUPABASE_REVIEW_APP_NAME}
 
     - name: 🤹‍♀️ Export des variables d'environment à partir de Supabase
+      continue-on-error: true
       shell: bash
       run: |
         until supabase branches --project-ref ${SUPABASE_PROJECT_ID} get ${SUPABASE_REVIEW_APP_NAME} -o env | grep --quiet "SUPABASE_URL" &> /dev/null
