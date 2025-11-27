@@ -10,7 +10,7 @@ email.max_frequency = "1m0s"
 
 [db]
 pooler.default_pool_size = 25
-major_version = 15
+major_version = 17
 
 [storage]
 file_size_limit = "250MB"
