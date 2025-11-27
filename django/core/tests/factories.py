@@ -1,3 +1,4 @@
+# ruff: noqa: PLR0913
 import itertools
 import random
 from typing import Any
@@ -32,10 +33,13 @@ def create_region(*, code_insee: str = Auto) -> Region:
     )
 
 
-def create_departement(*, code_insee: str = Auto, region: Region = Auto) -> Departement:
+def create_departement(
+    *, code_insee: str = Auto, region: Region = Auto, nom: str = Auto
+) -> Departement:
     return Departement.objects.create(
         code_insee=code_insee or next(DEPARTEMENT_CODE_INSEE_SEQUENCE),
         region=region or create_region(),
+        nom=nom or "",
     )
 
 
@@ -52,6 +56,7 @@ def create_groupement(
     code_insee: str = Auto,
     groupement_type: TypeCollectivite = Auto,
     departement: Departement = Auto,
+    nom: str = Auto,
 ) -> Collectivite:
     code_insee = code_insee or next(GROUPEMENT_CODE_INSEE_SEQUENCE)
     groupement_type = groupement_type or random.choice(TYPE_GROUPEMENTS)  # noqa: S311
@@ -60,6 +65,7 @@ def create_groupement(
         code_insee_unique=code_insee,
         type=groupement_type,
         departement=departement or create_departement(),
+        nom=nom or "",
     )
 
 
@@ -70,6 +76,7 @@ def create_commune(
     departement: Departement = Auto,
     intercommunalite: Collectivite | None = Auto,
     nouvelle: Commune = Auto,
+    nom: str = Auto,
 ) -> Commune:
     code_insee = code_insee or next(GROUPEMENT_CODE_INSEE_SEQUENCE)
     commune_type = commune_type or TypeCollectivite.COM
@@ -84,4 +91,5 @@ def create_commune(
         departement=departement or create_departement(),
         intercommunalite=intercommunalite,
         nouvelle=nouvelle or None,
+        nom=nom or "",
     )
