@@ -57,6 +57,8 @@ def create_groupement(
     groupement_type: TypeCollectivite = Auto,
     departement: Departement = Auto,
     nom: str = Auto,
+    competence_plan: bool = Auto,
+    competence_schema: bool = Auto,
 ) -> Collectivite:
     code_insee = code_insee or next(GROUPEMENT_CODE_INSEE_SEQUENCE)
     groupement_type = groupement_type or random.choice(TYPE_GROUPEMENTS)  # noqa: S311
@@ -66,6 +68,8 @@ def create_groupement(
         type=groupement_type,
         departement=departement or create_departement(),
         nom=nom or "",
+        competence_plan=competence_plan or False,
+        competence_schema=competence_schema or False,
     )
 
 

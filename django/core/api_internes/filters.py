@@ -1,5 +1,7 @@
 # ruff: noqa: ARG002, RUF012, N815
 
+import functools
+
 from django.db.models import Q, QuerySet
 from django_filters import rest_framework as filters
 
@@ -26,13 +28,36 @@ class DepartementRegionFilterSet(filters.FilterSet):
     )
 
 
+COMPETENCES_CHOICES = (
+    ("plan", "Plan"),
+    ("schema", "Schéma"),
+)
+
+
 class CollectiviteFilter(DepartementRegionFilterSet):
     type = CharInFilter(field_name="type")
     exclude_communes = filters.BooleanFilter(method="_exclude_communes")
+    competence = filters.MultipleChoiceFilter(
+        method="_filter_competences", choices=COMPETENCES_CHOICES
+    )
 
     class Meta:
         model = Collectivite
-        fields = ("type", *DepartementRegionFilterSet.fields)
+        fields = ("type", "competence", *DepartementRegionFilterSet.fields)
+
+    def _filter_competences(
+        self, queryset: QuerySet, name: str, values: str
+    ) -> QuerySet:
+        if not values:
+            return queryset
+        queries = []
+        for value in values:
+            if value == "plan":
+                queries.append(Q(competence_plan=True))
+            if value == "schema":
+                queries.append(Q(competence_schema=True))
+
+        return queryset.filter(functools.reduce(Q.__or__, queries))
 
     def _exclude_communes(self, queryset: QuerySet, name: str, value: str) -> QuerySet:
         if not value:

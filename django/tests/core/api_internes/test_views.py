@@ -257,6 +257,141 @@ class TestCollectivitesAPI:
         assert response.status_code == 200
         assert response.json()["results"] == expected
 
+    @pytest.mark.parametrize(
+        ("query_params", "expected"),
+        [
+            pytest.param(
+                {"competence": "schema"},
+                [
+                    {
+                        "code": "123456789",
+                        "type": "CC",
+                        "intitule": "Groupement 1",
+                        "regionCode": "53",
+                        "departementCode": "29",
+                    },
+                    {
+                        "code": "987654321",
+                        "type": "CC",
+                        "intitule": "Groupement 3",
+                        "regionCode": "53",
+                        "departementCode": "29",
+                    },
+                ],
+                id="competence_schema",
+            ),
+            pytest.param(
+                {"competence": "plan"},
+                [
+                    {
+                        "code": "123456778",
+                        "type": "CC",
+                        "intitule": "Groupement 2",
+                        "regionCode": "53",
+                        "departementCode": "29",
+                    },
+                    {
+                        "code": "987654321",
+                        "type": "CC",
+                        "intitule": "Groupement 3",
+                        "regionCode": "53",
+                        "departementCode": "29",
+                    },
+                ],
+                id="competence_plan",
+            ),
+            pytest.param(
+                {},
+                [
+                    {
+                        "code": "123456778",
+                        "type": "CC",
+                        "intitule": "Groupement 2",
+                        "regionCode": "53",
+                        "departementCode": "29",
+                    },
+                    {
+                        "code": "123456789",
+                        "type": "CC",
+                        "intitule": "Groupement 1",
+                        "regionCode": "53",
+                        "departementCode": "29",
+                    },
+                    {
+                        "code": "987654321",
+                        "type": "CC",
+                        "intitule": "Groupement 3",
+                        "regionCode": "53",
+                        "departementCode": "29",
+                    },
+                ],
+                id="sans_competence",
+            ),
+            pytest.param(
+                {},
+                [
+                    {
+                        "code": "123456778",
+                        "type": "CC",
+                        "intitule": "Groupement 2",
+                        "regionCode": "53",
+                        "departementCode": "29",
+                    },
+                    {
+                        "code": "123456789",
+                        "type": "CC",
+                        "intitule": "Groupement 1",
+                        "regionCode": "53",
+                        "departementCode": "29",
+                    },
+                    {
+                        "code": "987654321",
+                        "type": "CC",
+                        "intitule": "Groupement 3",
+                        "regionCode": "53",
+                        "departementCode": "29",
+                    },
+                ],
+                id="competence_schema_ou_plan",
+            ),
+        ],
+    )
+    def test_competences_list(
+        self, api_client: APIClient, query_params: dict, expected: list
+    ) -> None:
+        region_bretagne = create_region(code_insee="53")
+        finistere = create_departement(
+            code_insee="29", nom="Finistère", region=region_bretagne
+        )
+        create_groupement(
+            groupement_type=TypeCollectivite.CC,
+            departement=finistere,
+            nom="Groupement 1",
+            code_insee="123456789",
+            competence_schema=True,
+        )
+        create_groupement(
+            groupement_type=TypeCollectivite.CC,
+            departement=finistere,
+            nom="Groupement 2",
+            code_insee="123456778",
+            competence_plan=True,
+        )
+        create_groupement(
+            groupement_type=TypeCollectivite.CC,
+            departement=finistere,
+            nom="Groupement 3",
+            code_insee="987654321",
+            competence_plan=True,
+            competence_schema=True,
+        )
+        url = f"{reverse('api_internes:collectivites-list')}?{urlencode(query_params)}"
+        with assertNumQueries(BASE_QUERIES_COUNT + 1):
+            response = api_client.get(url, format="json")
+
+        assert response.status_code == 200
+        assert response.json()["results"] == expected
+
     def test_detail(self, api_client: APIClient) -> None:
         region = create_region(code_insee="53")  # Bretagne
         departement = create_departement(
