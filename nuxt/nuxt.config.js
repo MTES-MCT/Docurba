@@ -6,6 +6,7 @@ export default {
   env: {
     DDT_ENQUETE_ENABLED: process.env.DDT_ENQUETE_ENABLED?.split(',') ?? [],
     NUXT3_API_URL: process.env.NUXT3_API_URL,
+    DJANGO_API_BASE_URL: process.env.DJANGO_API_BASE_URL,
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
   },
@@ -54,7 +55,8 @@ export default {
     { src: '~/plugins/githubRefRoles.js', mode: 'client' },
     { src: '~/plugins/sharing.js' },
     { src: '~/plugins/enquete.js' },
-    { src: '~/plugins/nuxt3api.js', mode: 'client' }
+    { src: '~/plugins/nuxt3api.js', mode: 'client' },
+    { src: '~/plugins/django-api.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

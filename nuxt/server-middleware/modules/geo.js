@@ -16,22 +16,8 @@ const geojsonDepartements = require('../Data/geojson/departements-geo.json')
 const geojsonRegions = require('../Data/geojson/regions-geo.json')
 const topojsonFrance = require('../Data/geojson/france-topo.json')
 
-const cache = {
-  groupements: {},
-  communes: {}
-}
 
 module.exports = {
-  // TODO: Should also work with multiple departement code
-  getCollectivitesByDepartements (code) {
-    if (!cache[code]) {
-      cache[code] = {}
-      cache[code].communes = communes.filter(c => c.departementCode === code)
-      cache[code].groupements = intercommunalites.filter(c => c.departementCode === code)
-    }
-    // console.log('cache: ', cache)
-    return cache[code]
-  },
   getCollectivite (code) {
     return code.length > 5 ? this.getIntercommunalite(code) : this.getCommune(code)
   },
@@ -41,10 +27,6 @@ module.exports = {
       const communes = this.getCommunes({ codes })
       const intercommunalites = this.getIntercommunalites({ codes })
       return [...communes, ...intercommunalites]
-    }
-    if (departements) {
-      // console.log('DEP: ', departements)
-      return this.getCollectivitesByDepartements(departements)
     }
   },
   getCommunes (query) {
