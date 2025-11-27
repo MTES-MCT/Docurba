@@ -49,7 +49,7 @@ jobs:
     - name: 🛠️ Installation de la CLI Supabase
       uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
       with:
-        version: latest
+        version: 2.60.0
 
     - name: 🪆 Creation de la branche Supabase
       run: |
