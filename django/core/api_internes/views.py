@@ -2,6 +2,7 @@
 from rest_framework import viewsets
 
 from core.admin import Commune
+from core.api_internes import filters as custom_filters
 from core.api_internes.serializers import CollectiviteSerializer, CommuneSerializer
 from core.models import Collectivite
 
@@ -15,6 +16,7 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
         .all()
     )
     serializer_class = CollectiviteSerializer
+    filterset_class = custom_filters.CollectiviteFilter
 
 
 class CommuneViewSet(viewsets.ReadOnlyModelViewSet):
@@ -29,3 +31,4 @@ class CommuneViewSet(viewsets.ReadOnlyModelViewSet):
         .all()
     )
     serializer_class = CommuneSerializer
+    filterset_class = custom_filters.CommuneFilter
