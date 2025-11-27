@@ -108,7 +108,7 @@ jobs:
       uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
       with:
         version: latest
-  
+
     - name: 🛠️ Récupération des informations de BDD
       id: db
       env:
@@ -116,7 +116,7 @@ jobs:
         SUPABASE_PROJECT_ID: ${{ secrets.TEST_SUPABASE_PROJECT_ID }}
       run: |
         DB_SECRETS=$(supabase branches get ${{ needs.prepare.outputs.SUPABASE_REVIEW_APP_NAME }} -o json)
-        
+
         SUPABASE_URL=$(echo $DB_SECRETS | jq -r '.SUPABASE_URL')
         echo "::add-mask::$SUPABASE_URL"
         echo "SUPABASE_URL=$SUPABASE_URL" >> "$GITHUB_OUTPUT"
@@ -174,7 +174,7 @@ jobs:
       uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
       with:
         version: latest
-  
+
     - name: 🛠️ Récupération des informations de BDD
       id: db
       env:
@@ -221,7 +221,8 @@ jobs:
         SUPABASE_ADMIN_KEY="${{ steps.db.outputs.SUPABASE_SERVICE_ROLE_KEY }}" \
         SUPABASE_ANON_KEY="${{ steps.db.outputs.SUPABASE_ANON_KEY }}" \
         NUXT3_API_URL="${{ needs.prepare.outputs.NUXT_3_URL }}" \
-        APP_URL="${{ needs.prepare.outputs.DJANGO_URL }}"
+        APP_URL="${{ needs.prepare.outputs.DJANGO_URL }}" \
+        DJANGO_API_BASE_URL="${{ needs.prepare.outputs.DJANGO_URL }}/api-internes"
 
     - name: Déploiement de l'application
       run: scalingo --app "${{ needs.prepare.outputs.NUXT_2_REVIEW_APP_NAME }}" integration-link-manual-deploy "${{ env.BRANCH }}"  &> /dev/null
@@ -266,7 +267,7 @@ jobs:
       uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
       with:
         version: latest
-  
+
     - name: 🛠️ Récupération des informations de BDD
       id: db
       env:
