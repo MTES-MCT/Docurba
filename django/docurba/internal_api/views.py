@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 
 from docurba.core.models import Collectivite, Commune
+from docurba.internal_api import filters as custom_filters
 from docurba.internal_api.serializers import CollectiviteSerializer, CommuneSerializer
 
 
@@ -13,6 +14,7 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
         .all()
     )
     serializer_class = CollectiviteSerializer
+    filterset_class = custom_filters.CollectiviteFilter
 
 
 class CommuneViewSet(viewsets.ReadOnlyModelViewSet):
@@ -27,3 +29,4 @@ class CommuneViewSet(viewsets.ReadOnlyModelViewSet):
         .all()
     )
     serializer_class = CommuneSerializer
+    filterset_class = custom_filters.CommuneFilter
