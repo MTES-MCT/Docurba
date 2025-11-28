@@ -144,6 +144,6 @@ UPSTREAM_NUXT = env.str("UPSTREAM_NUXT")
 
 REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "DEFAULT_PAGINATION_CLASS": "core.api_internes.paginators.DocurbaPagination",
     "PAGE_SIZE": 200,
 }
