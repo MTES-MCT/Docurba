@@ -5,6 +5,8 @@ name: 🕵 Création d'une recette jetable
 on:
   pull_request:
     types: [ labeled, synchronize ]
+  # https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || github.sha }}
