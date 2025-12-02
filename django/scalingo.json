@@ -1,13 +1,10 @@
 {
     "env": {
-        "APP_URL": {
-            "generator": "url"
-        },
         "ALLOWED_HOSTS": {
             "generator": "template",
-            "template": "docurba-django-demo-pr%PR_NUMBER%.osc-fr1.scalingo.io"
+            "template": "%APP%.osc-fr1.scalingo.io"
         },
-        "BACKUPS_SUPABASE_MODIFY_TRIGGERS": "False"
+        "BACKUPS_SUPABASE_MODIFY_TRIGGERS": "True"
     },
     "formation": {
         "web": {

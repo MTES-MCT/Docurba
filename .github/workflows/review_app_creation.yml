@@ -1,12 +1,9 @@
 name: 🕵 Création d'une recette jetable
 
-# L'action est lancée quand une étiquette est ajoutée à la PR ou qu'un push est effectué sur la branche.
-# `types: [ synchronize ]` cible les événements `push`.
+# L'action est lancée quand une étiquette est ajoutée à la PR
 on:
   pull_request:
-    types: [ labeled, synchronize ]
-  # https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow
-  workflow_dispatch:
+    types: [ labeled ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || github.sha }}
@@ -18,7 +15,6 @@ env:
   PR_ID: ${{ github.event.number }}
   SCALINGO_DJANGO_APP_NAME: docurba-django-demo
   SCALINGO_NUXT_APP_NAME: docurba-nuxt-demo
-  NUXT3_REPO: git@github.com:betagouv/docurba-nuxt3.git
   NUXT3_REPO_HTTPS: https://github.com/betagouv/docurba-nuxt3/
   NUXT3_BRANCH: main
 
@@ -27,16 +23,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-    if: github.event.action == 'labeled' && github.event.label.name == 'recette-jetable'
+    if: github.event.label.name == 'recette-jetable'
 
     steps:
-    - name: 🚶‍♂️‍➡️ Déplacement vers la branche principale
+    - name: 🚶‍♂️‍➡️ Récupération du code
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-      with:
-        ref: ${{ github.head_ref }}
-
-    - name: 📥 Récupération des branches Git
-      run: git fetch --prune --unshallow
 
     - name: 🏷️ Définition des noms de la recette jetable
       run: |
@@ -44,9 +35,15 @@ jobs:
         # car ce sont des recettes jetables.
         # Suivons le même modèle pour Supabase et Nuxt3.
         echo "SUPABASE_REVIEW_APP_NAME=supabase-pr${PR_ID}" >> $GITHUB_ENV
-        echo "NUXT_3_REVIEW_APP_NAME=nuxt3-pr${PR_ID}" >> $GITHUB_ENV
+        echo "NUXT_3_REVIEW_APP_NAME=docurba-nuxt3-pr${PR_ID}" >> $GITHUB_ENV
         echo "NUXT_2_REVIEW_APP_NAME=${SCALINGO_NUXT_APP_NAME}-pr${PR_ID}" >> $GITHUB_ENV
         echo "DJANGO_REVIEW_APP_NAME=${SCALINGO_DJANGO_APP_NAME}-pr${PR_ID}" >> $GITHUB_ENV
+
+    - name: 🏷️ Définition des URLs de la recette jetable
+      run: |
+        echo "NUXT_3_REVIEW_APP_URL=https://${NUXT_3_REVIEW_APP_NAME}.osc-fr1.scalingo.io" >> $GITHUB_ENV
+        echo "NUXT_2_REVIEW_APP_URL=https://${NUXT_2_REVIEW_APP_NAME}.osc-fr1.scalingo.io" >> $GITHUB_ENV
+        echo "DJANGO_REVIEW_APP_URL=https://${DJANGO_REVIEW_APP_NAME}.osc-fr1.scalingo.io" >> $GITHUB_ENV
 
     - name: 🛠️ Installation de la CLI Supabase
       uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
@@ -56,7 +53,7 @@ jobs:
     - name: 🪆 Creation de la branche Supabase
       continue-on-error: true
       run: |
-       supabase branches --experimental --project-ref ${SUPABASE_PROJECT_ID} create ${SUPABASE_REVIEW_APP_NAME}
+       supabase branches --project-ref ${SUPABASE_PROJECT_ID} create ${SUPABASE_REVIEW_APP_NAME}
 
     - name: 🤹‍♀️ Export des variables d'environment à partir de Supabase
       continue-on-error: true
@@ -92,21 +89,28 @@ jobs:
         api_token: ${{ secrets.SCALINGO_API_TOKEN }}
         region: 'osc-fr1'
 
+
+    - name: 🪆 Création de la recette jetable Django
+      run: |
+        scalingo --app ${SCALINGO_DJANGO_APP_NAME} integration-link-manual-review-app "${PR_ID}"
+        scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-set \
+         UPSTREAM_NUXT="${NUXT_2_REVIEW_APP_URL}" \
+         DATABASE_URL="${DATABASE_URL}"
+        scalingo --app "${DJANGO_REVIEW_APP_NAME}" integration-link-update --auto-deploy --branch "${BRANCH}" --destroy-on-close
+        scalingo --app "${DJANGO_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}"
+
     - name: 🪆 Création de l'application Nuxt 3
       run: |
         # Il n'est pas possible de créer une recette jetable pour Nuxt3 car chaque recette jetable
         # s'appuie sur une branche Git différente de celle utilisée pour le dépôt parent.
-        git clone https://github.com/betagouv/docurba-nuxt3.git
-        cd docurba-nuxt3/
         scalingo create "${NUXT_3_REVIEW_APP_NAME}"
-        app_url="https://${NUXT_3_REVIEW_APP_NAME}.osc-fr1.scalingo.io"
         scalingo --app ${NUXT_3_REVIEW_APP_NAME} env-set \
          SUPABASE_URL="${SUPABASE_URL}" \
-         SUPABASE_ADMIN_KEY="${SUPABASE_ADMIN_KEY}"
-         APP_URL="${app_url}"
+         SUPABASE_ADMIN_KEY="${SUPABASE_ADMIN_KEY}" \
+         NODE_OPTIONS="--max-old-space-size=4096"
+
         scalingo --app "${NUXT_3_REVIEW_APP_NAME}" integration-link-create --branch "${NUXT3_BRANCH}" "${NUXT3_REPO_HTTPS}"
         scalingo --app "${NUXT_3_REVIEW_APP_NAME}" integration-link-manual-deploy main
-        echo "NUXT3_URL=${app_url}" >> $GITHUB_ENV
         echo "Utilisation de la branche ${NUXT3_BRANCH}."
         echo "Pour déployer une autre branche, vous pouvez modifier ce script ou utiliser l'interface graphique."
 
@@ -114,61 +118,20 @@ jobs:
       run: |
         # Le nom est créé par Scalingo.
         # Création d'une recette jetable.
-        scalingo --app ${SCALINGO_NUXT_APP_NAME} integration-link-manual-review-app ${{ github.event.number }}
+        scalingo --app ${SCALINGO_NUXT_APP_NAME} integration-link-manual-review-app "${PR_ID}"
         # Mise à jour de la configuration.
-        scalingo --app "${NUXT_2_REVIEW_APP_NAME}" integration-link-update --auto-deploy --branch "${BRANCH}" --destroy-on-close
         scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-set \
          SUPABASE_URL="${SUPABASE_URL}" \
          SUPABASE_ADMIN_KEY="${SUPABASE_ADMIN_KEY}" \
-         SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY}"\
-         NUXT3_API_URL="${NUXT3_URL}"
-        # Déploiement manuel.
+         SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY}" \
+         NUXT3_API_URL="${NUXT_3_REVIEW_APP_URL}" \
+         APP_URL="${DJANGO_REVIEW_APP_URL}"
+        scalingo --app "${NUXT_2_REVIEW_APP_NAME}" integration-link-update --auto-deploy --branch "${BRANCH}" --destroy-on-close
         scalingo --app "${NUXT_2_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}"
-        # Récupération de NUXT_URL pour Django.
-        until scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-get APP_URL &> /dev/null
-        do
-          echo "En attente de l'application Nuxt."
-          sleep 1m
-        done
-        nuxt_url=$(scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-get APP_URL)
-        echo "NUXT_URL=${nuxt_url}" >> $GITHUB_ENV
-
-    - name: 🛠️ Installation de Python
-      uses: actions/setup-python@v5
-      with:
-        python-version-file: django/.python-version
-
-    - name: 🪆 Création de la recette jetable Django
-      run: |
-        # La longueur de la clé secrète doit être supérieure à 50 caractères,
-        # or le générateur de secret de Scalingo génère une clé de 32 caractères.
-        # Selon le support, il n'est pas possible d'en spécifier la longueur dans scalingo.json.
-        django_secret_key=$(python -c "import secrets; print(secrets.token_hex(60))")
-        echo "::add-mask::${django_secret_key}";
-        scalingo --app ${SCALINGO_DJANGO_APP_NAME} integration-link-manual-review-app ${{ github.event.number }}
-        scalingo --app "${DJANGO_REVIEW_APP_NAME}" integration-link-update --auto-deploy --branch "${BRANCH}" --destroy-on-close
-        scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-set \
-         UPSTREAM_NUXT="${NUXT_URL}" \
-         DATABASE_URL="${DATABASE_URL}" \
-         NUXT3_API_URL="${NUXT3_URL}" \
-         SECRET_KEY="${django_secret_key}"
-        until scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-get APP_URL &> /dev/null
-        do
-          echo "En attente de l'application Django pendant 1 minute."
-          sleep 1m
-        done
-        django_url=$(scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-get APP_URL)
-        echo "DJANGO_URL=${django_url}" >> $GITHUB_ENV
-        # Les données de la base sont restaurées pendant le déploiement.
-        # Le script est trop long pour la CLI de Scalingo qui renvoie une erreur.
-        scalingo --app "${DJANGO_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}" &> /dev/null
-
-    - name: 🤹‍♀️ Intégration de l'URL de Django dans Nuxt2
-      run: scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-set DJANGO_API_BASE_URL="${DJANGO_URL}"
 
     - name: 🍻 Ajout du lien en commentaire de la PR
       uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
       with:
         message: |-
-          🥁 La recette jetable est prête ! [👉 Je veux tester cette PR !](${{ env.DJANGO_URL }})
+          🥁 La recette jetable est prête ! [👉 Je veux tester cette PR !](${{ env.DJANGO_REVIEW_APP_URL }})
           Attention, les données ne sont pas encore importées. Essayez dans un quart d'heure environ.
