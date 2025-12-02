@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 const axios = require('axios')
+const _ = require('lodash')
 const geo = require('./geo.js')
 const supabase = require('./supabase.js')
-const _ = require('lodash')
+const preposition = process.env.NODE_ENV === 'development' ? '[Test] ' : ''
 
 module.exports = {
   shareProcedure ({ from, to, type, procedure, pac }) {
@@ -16,7 +17,7 @@ module.exports = {
             type: 'header',
             text: {
               type: 'plain_text',
-              text: `Partage d'${type === 'frp' ? 'une FRP' : 'un PaC'}: ${procedure.name}`
+              text: preposition + `Partage d'${type === 'frp' ? 'une FRP' : 'un PaC'}: ${procedure.name}`
             }
           },
           {
@@ -30,7 +31,7 @@ module.exports = {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `Lien: ${process.env.APP_URL}${procedure.url}`
+              text: preposition + `Lien: ${process.env.APP_URL}${procedure.url}`
             }
           }
         ]
@@ -55,7 +56,7 @@ module.exports = {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `https://docurba.beta.gouv.fr/collectivites/${userData.collectivite.code}/prescriptions`
+              text: preposition + `https://docurba.beta.gouv.fr/collectivites/${userData.collectivite.code}/prescriptions`
             }
           }
         ]
@@ -75,7 +76,7 @@ module.exports = {
             type: 'header',
             text: {
               type: 'plain_text',
-              text: `Demande d'accès Collectivité de ${userData.firstname} ${userData.lastname} ayant pour poste ${userData.poste}`
+              text: preposition + `Demande d'accès Collectivité de ${userData.firstname} ${userData.lastname} ayant pour poste ${userData.poste}`
             }
           },
           {
@@ -128,7 +129,7 @@ module.exports = {
             type: 'header',
             text: {
               type: 'plain_text',
-              text: `Demande d'accès ${userData.poste === 'dreal' ? 'DREAL' : 'DDT'} de ${userData.firstname} ${userData.lastname}`
+              text: preposition + `Demande d'accès ${userData.poste === 'dreal' ? 'DREAL' : 'DDT'} de ${userData.firstname} ${userData.lastname}`
             }
           },
           {
@@ -174,7 +175,7 @@ module.exports = {
             type: 'header',
             text: {
               type: 'plain_text',
-              text: `Demande de PAC de ${user_metadata.firstname} ${user_metadata.lastname}`
+              text: preposition + `Demande de PAC de ${user_metadata.firstname} ${user_metadata.lastname}`
             }
           },
           {
@@ -229,7 +230,7 @@ module.exports = {
           type: 'header',
           text: {
             type: 'plain_text',
-            text: `Nouvel event ${eventData.type}`
+            text: preposition + `Nouvel event ${eventData.type}`
           }
         },
         {
