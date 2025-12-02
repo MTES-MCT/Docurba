@@ -1,5 +1,7 @@
 const sgMail = require('@sendgrid/mail')
+const preposition = process.env.NODE_ENV === 'development' ? '[Test] ' : ''
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
 
 module.exports = {
   sendEmail (message) {
@@ -13,6 +15,6 @@ module.exports = {
         email: 'contact@docurba.beta.gouv.fr',
         name: 'Equipe Docurba'
       }
-    }, message))
+    }, preposition + message))
   }
 }
