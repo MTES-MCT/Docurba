@@ -52,6 +52,17 @@ class Profile(models.Model):
     # Ce devrait être une clé étrangère pointant vers la table departements
     # mais ce n'est actuellement pas le cas en base et dans Nuxt.
     departement = models.CharField(verbose_name="Département", blank=True)
+    # PPA sides have rights depending on their departments. This is an ugly and quick fix
+    # to link users to several departments (and not only one).
+    # It should be refactored!
+    departements = ArrayField(
+        verbose_name="Départements",
+        # CharField to allow departments starting with a zero. Otherwise, zero is erased.
+        base_field=models.CharField(max_length=3, blank=True),
+        size=50,
+        blank=True,
+        null=True,
+    )
     collectivite = models.ForeignKey(
         Collectivite,
         on_delete=models.SET_NULL,
