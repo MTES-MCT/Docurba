@@ -107,7 +107,11 @@ class Migration(migrations.Migration):
                     "side",
                     models.CharField(
                         blank=True,
-                        choices=[("etat", "État"), ("collectivite", "Collectivité")],
+                        choices=[
+                            ("etat", "État"),
+                            ("collectivite", "Collectivité"),
+                            ("ppa", "PPA"),
+                        ],
                         verbose_name="Type",
                     ),
                 ),
