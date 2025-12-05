@@ -15,7 +15,7 @@
           SCoT
         </v-tab>
         <v-spacer />
-        <v-btn v-if="!isPublic" depressed color="primary" class="align-self-center" :to="`/ddt/${collectivite.departementCode}/collectivites/${collectivite.code}/procedure/add`">
+        <v-btn v-if="!isPublic && $user.canCreateProcedure({ collectivite: collectivite })" depressed color="primary" class="align-self-center" :to="`/ddt/${collectivite.departementCode}/collectivites/${collectivite.code}/procedure/add`">
           Ajouter une procédure
         </v-btn>
       </v-tabs>
@@ -78,7 +78,7 @@
           Cette collectivité n'a pas de documents d'urbanisme sous sa compétence.
         </div>
 
-        <v-btn v-if="!isPublic" color="primary" :to="`/ddt/${collectivite.departementCode}/collectivites/${collectivite.code}/procedure/add`">
+        <v-btn v-if="!isPublic && $user.canCreateProcedure({ collectivite: collectivite })" color="primary" :to="`/ddt/${collectivite.departementCode}/collectivites/${collectivite.code}/procedure/add`">
           Ajouter une procédure
         </v-btn>
       </div>
