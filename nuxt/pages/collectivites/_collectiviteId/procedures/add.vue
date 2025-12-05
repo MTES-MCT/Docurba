@@ -34,20 +34,9 @@ export default {
     const collectivites = await this.$nuxt3api(`/api/geo/search/collectivites?code=${this.$route.params.collectiviteId}&populate=true`)
     this.collectivite = collectivites[0]
 
-    const isSideEtatWithMatchingDepartement = this.$user.profile.side === 'etat' &&
-      this.$user.profile.departement === this.collectivite.departementCode
-    const isSideCollectiviteWithMatchingCollectivite = this.$user.profile.side === 'collectivite' &&
-      (this.$user.profile.collectivite_id === this.collectivite.code ||
-      this.$user.profile.collectivite_id === this.collectivite.intercommunaliteCode)
-
-    const canCreateProcedure =
-      this.$user.profile.is_admin ||
-      isSideEtatWithMatchingDepartement ||
-      isSideCollectiviteWithMatchingCollectivite
-
-    if (!canCreateProcedure) {
+    if (!this.$user.canCreateProcedure({ collectivite: this.collectivite })) {
       console.warn('Pas assez de droits pour créer une procédure sur ce périmètre')
-      this.$router.push(`/collectivites/${this.$route.params.collectiviteId}`)
+      this.$nuxt.context.redirect(302, `/collectivites/${this.$route.params.collectiviteId}`)
     }
   }
 }
