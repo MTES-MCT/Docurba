@@ -42,6 +42,7 @@ function handleRedirect ($supabase, event, user, router) {
   }
 }
 
+// Mandatory for SonarQube
 // eslint-disable-next-line import/no-anonymous-default-export, unicorn/no-anonymous-default-export
 export default async ({ $supabase, app }, inject) => {
   let user = Vue.observable({ ...defaultUser })
@@ -147,6 +148,29 @@ export default async ({ $supabase, app }, inject) => {
     },
     canViewSectionPAC () {
       return this.profile.side === 'etat'
+    },
+    canCreateProcedure (options) {
+      if (this.profile.is_admin) {
+        return true
+      }
+
+      const { collectivite, departement } = options
+      switch (this.profile.side) {
+        case 'etat': {
+          return this.profile.departement === (collectivite?.departementCode || departement)
+        }
+
+        case 'collectivite': {
+          return (
+            this.profile.collectivite_id === collectivite?.code ||
+            this.profile.collectivite_id === collectivite?.intercommunaliteCode
+          )
+        }
+
+        default: {
+          return false
+        }
+      }
     }
   }
 
