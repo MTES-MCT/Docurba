@@ -9,5 +9,21 @@ run = "npm run dev"
 dir = "{{config_root}}/django"
 run = "./manage.py runserver"
 
+[tasks."start:supabase"]
+description="""
+Serveur local Supabase.
+"""
+dir = "{{config_root}}"
+run = "supabase start"
+
 [tasks.start]
-depends = ["start:nuxt", "start:django"]
+depends = ["start:nuxt", "start:django", "start:supabase"]
+
+[tasks."database:restore"]
+description="""
+Restauration locale de la dernière sauvegarde.
+L'URL de la base de données n'est pas passée en paramètre pour éviter tout risque.
+"""
+depends = ["start:supabase"]
+dir = "{{config_root}}/django"
+run = "/usr/bin/bash scripts/restore_database.sh postgresql://postgres:postgres@127.0.0.1:54322/postgres"
