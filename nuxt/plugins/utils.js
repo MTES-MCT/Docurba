@@ -1,4 +1,6 @@
-export default ({ app }, inject) => { // eslint-disable-line unicorn/no-anonymous-default-export
+import regions from '@/assets/data/Regions.json'
+
+export default ({ app }, inject) => {
   const utils = {
     formatProcedureName (procedure, collectivite) {
       if (procedure.name) {
@@ -52,6 +54,7 @@ export default ({ app }, inject) => { // eslint-disable-line unicorn/no-anonymou
       creator.id = profile.user_id
       creator.initiator = !!profile.initiator
       creator.profile = profile
+      creator.region = profile.region
       return creator
     },
     // ⚠️ Les clefs sont a minima aussi utilisées pour Pipedrive et Brevo
@@ -72,11 +75,17 @@ export default ({ app }, inject) => { // eslint-disable-line unicorn/no-anonymou
       agence_urba: 'Agence d\'urbanisme',
       autre: 'Autre'
     },
+    POSTES_PPA: {
+      region: 'Région'
+    },
     formatPostes (profile) {
       const postes = []
 
-      const POSTES = { ...this.POSTES_ETAT, ...this.POSTES_COLLECTIVITE }
-      if (profile.poste !== 'autre') {
+      const POSTES = { ...this.POSTES_ETAT, ...this.POSTES_COLLECTIVITE, ...this.POSTES_PPA }
+      if (profile.poste === 'region') {
+        const region = regions.find(r => r.code === profile.region)
+        postes.push(`${POSTES[profile.poste]} ${region.name}`)
+      } else if (profile.poste !== 'autre') {
         postes.push(POSTES[profile.poste])
       }
 
