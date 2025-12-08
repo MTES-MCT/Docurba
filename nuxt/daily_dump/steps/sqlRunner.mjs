@@ -66,23 +66,19 @@ async function setAllStatus (config) {
     // 'rpc_events_by_procedures_ids.sql',
     // 'rpc_procedures_by_insee_codes.sql'
   ]
-  try {
-    const client = new Client(config)
-    await client.connect()
+  const client = new Client(config)
+  await client.connect()
 
-    console.log('Starting procedure status update.')
-    for (const sqlFilename of SQLS) {
-      console.log(`Processing ${sqlFilename}...`)
-      const sql = fs.readFileSync(`./daily_dump/steps/sql/status_handler/${sqlFilename}`)
-        .toString().replace(/(\r\n|\n|\r)/gm, ' ')
-        .replace(/\s+/g, ' ')
-      await client.query(sql)
-    }
-    await client.end()
-    console.log('Procedures status updated.')
-  } catch (error) {
-    console.log(error)
+  console.log('Starting procedure status update.')
+  for (const sqlFilename of SQLS) {
+    console.log(`Processing ${sqlFilename}...`)
+    const sql = fs.readFileSync(`./daily_dump/steps/sql/status_handler/${sqlFilename}`)
+      .toString().replace(/(\r\n|\n|\r)/gm, ' ')
+      .replace(/\s+/g, ' ')
+    await client.query(sql)
   }
+  await client.end()
+  console.log('Procedures status updated.')
 }
 
 async function createOriginalSchema (config) {

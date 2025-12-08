@@ -15,7 +15,7 @@ BEGIN
   WHERE id = event_processed.procedure_id;
 
   PERFORM set_procedure_status(procedure);
-  -- NUXT3_API_URL is hardcoded here because this dump will disappear soon and I don't know how to change it quickly in SQL.
+  /* NUXT3_API_URL is hardcoded here because this dump will disappear soon and I don't know how to change it quickly in SQL. */
   PERFORM net.http_get('https://nuxt3.docurba.incubateur.net/api/urba/procedures/' || event_processed.procedure_id || '/update');
   return event_processed;
 END;
