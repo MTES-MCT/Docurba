@@ -95,7 +95,7 @@
               </v-list-item-title>
             </v-list-item> -->
 
-            <v-dialog v-model="dialog" width="500">
+            <v-dialog v-model="dialog" v-if="$user.canDeleteProcedure()" width="500">
               <template #activator="{ on, attrs }">
                 <v-list-item link v-bind="attrs" v-on="on">
                   <v-list-item-title class="error--text">
