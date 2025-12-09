@@ -38,6 +38,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+-- Mise à jour de la colonne `updated_at` lors de chaque modification.
+create extension if not exists moddatetime schema extensions;
+create trigger handle_updated_at before update on doc_frise_events
+  for each row execute procedure moddatetime (updated_at);
+
 -- Pipedrive n'est pas configuré dans les recettes jetables.
 DROP TRIGGER IF EXISTS "Pipedrive Sharing Update" ON "projects_sharing";
 DROP TRIGGER IF EXISTS "Pipedrive Update" ON "profiles";
