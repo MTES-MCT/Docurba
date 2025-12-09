@@ -171,6 +171,9 @@ export default async ({ $supabase, app }, inject) => {
           return false
         }
       }
+    },
+    canDeleteProcedure () {
+      return this.profile.side !== 'ppa'
     }
   }
 
