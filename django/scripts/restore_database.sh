@@ -9,6 +9,7 @@ set -euo pipefail
 IFS=$'\n\t'
 
 mkdir -p ${BACKUPS_FOLDER_PATH}
+script_folder_path=$(dirname "$0")
 database_restoration_url=$1
 
 if [[ ! -n ${database_restoration_url} ]]; then
@@ -91,7 +92,7 @@ psql \
 if [[ ${BACKUPS_SUPABASE_GRANT_PRIVILEGES_TO_USERS} == "True" ]]; then
   echo "Définition des droits d'accès."
   psql \
-    --file "${HOME}/scripts/grant_usage_and_privileges.sql" \
+    --file "${script_folder_path}/grant_usage_and_privileges.sql" \
     --dbname ${database_restoration_url}
 fi
 
@@ -100,7 +101,7 @@ if [[ ${BACKUPS_SUPABASE_MODIFY_TRIGGERS} == "True" ]]; then
   if [[ ! -n ${NUXT3_API_URL} ]]; then
     echo "Impossible de modifier les déclencheurs car la variable NUXT3_API_URL n'est pas définie."
   fi
-  psql --dbname ${database_restoration_url} --file ${HOME}/scripts/drop_update_triggers.sql
+  psql --dbname ${database_restoration_url} --file ${script_folder_path}/drop_update_triggers.sql
 fi
 
 echo "La restauration est terminée !"
