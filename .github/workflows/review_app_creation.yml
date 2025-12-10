@@ -109,21 +109,24 @@ jobs:
         # Création d'une recette jetable.
         scalingo --app ${SCALINGO_NUXT_APP_NAME} integration-link-manual-review-app ${{ github.event.number }}
         # Mise à jour de la configuration.
-        scalingo --app "${NUXT_2_REVIEW_APP_NAME}" integration-link-update --auto-deploy --branch "${BRANCH}" --destroy-on-close
         scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-set \
          SUPABASE_URL="${SUPABASE_URL}" \
          SUPABASE_ADMIN_KEY="${SUPABASE_ADMIN_KEY}" \
          SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY}"\
          NUXT3_API_URL="${NUXT3_URL}"
+        scalingo --app "${NUXT_2_REVIEW_APP_NAME}" integration-link-update --auto-deploy --branch "${BRANCH}" --destroy-on-close
+
+    - name: 🪆 Déploiement de la recette jetable Nuxt2
+      run: |
         # Déploiement manuel.
-        scalingo --app "${NUXT_2_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}"
+        scalingo --app "${NUXT_2_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}"  &> /dev/null
         # Récupération de NUXT_URL pour Django.
-        until scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-get NUXT_URL &> /dev/null
+        until scalingo apps | grep "${NUXT_2_REVIEW_APP_NAME}" | grep --quiet 'running' &> /dev/null
         do
           echo "En attente de l'application Nuxt."
           sleep 1m
         done
-        nuxt_url=$(scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-get NUXT_APP_URL)
+        nuxt_url=$(scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-get NUXT_URL)
         echo "NUXT_URL=${nuxt_url}" >> $GITHUB_ENV
 
     - name: 🛠️ Installation de Python
@@ -139,22 +142,24 @@ jobs:
         django_secret_key=$(python -c "import secrets; print(secrets.token_hex(60))")
         echo "::add-mask::${django_secret_key}";
         scalingo --app ${SCALINGO_DJANGO_APP_NAME} integration-link-manual-review-app ${{ github.event.number }}
-        scalingo --app "${DJANGO_REVIEW_APP_NAME}" integration-link-update --auto-deploy --branch "${BRANCH}" --destroy-on-close
         scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-set \
          UPSTREAM_NUXT="${NUXT_URL}" \
          DATABASE_URL="${DATABASE_URL}" \
          NUXT3_API_URL="${NUXT3_URL}" \
          SECRET_KEY="${django_secret_key}"
-        until scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-get APP_URL &> /dev/null
+        scalingo --app "${DJANGO_REVIEW_APP_NAME}" integration-link-update --auto-deploy --branch "${BRANCH}" --destroy-on-close
+
+
+    - name: 🪆 Déploiement de la recette jetable Django
+      run: |
+        scalingo --app "${DJANGO_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}" &> /dev/null
+        until scalingo apps | grep "${DJANGO_REVIEW_APP_NAME}" | grep --quiet 'running' &> /dev/null
         do
           echo "En attente de l'application Django pendant 1 minute."
           sleep 1m
         done
         django_url=$(scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-get APP_URL)
         echo "DJANGO_URL=${django_url}" >> $GITHUB_ENV
-        # Les données de la base sont restaurées pendant le déploiement.
-        # Le script est trop long pour la CLI de Scalingo qui renvoie une erreur.
-        scalingo --app "${DJANGO_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}" &> /dev/null
 
     - name: 🤹‍♀️ Intégration de l'URL de Django dans Nuxt2
       run: scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-set APP_URL="${DJANGO_URL}"
