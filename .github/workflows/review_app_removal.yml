@@ -1,6 +1,6 @@
 name: 🔪 Suppression d'une recette jetable
 
-# L'action est lancée lorsqu'une PR étiquetée « recette-jetable » est fermée ou que son étiquette est retirée.
+# L'action est lancée lorsqu'une PR étiquetée « recette-jetable » est fermée.
 # Les applications Nuxt2 et Django sont supprimées automatiquement par Scalingo
 # lorque la PR est fermée ou fusionnée car il s'agit de recettes jetables.
 # https://doc.scalingo.com/platform/app/review-apps
