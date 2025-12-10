@@ -47,12 +47,9 @@ jobs:
         version: latest
 
     - name: 🪆 Creation de la branche Supabase
+      continue-on-error: true
       run: |
-       branch_exists=$(supabase branches --project-ref ${SUPABASE_PROJECT_ID} get ${SUPABASE_REVIEW_APP_NAME} -o env | grep --quiet "SUPABASE_URL" &> /dev/null)
-       if [[ ! -n ${branch_exists} ]]; then
-         echo "Création de la branche Supabase."
-         supabase branches --project-ref ${SUPABASE_PROJECT_ID} create ${SUPABASE_REVIEW_APP_NAME}
-       fi
+       supabase branches --project-ref ${SUPABASE_PROJECT_ID} create ${SUPABASE_REVIEW_APP_NAME}
 
     - name: 🤹‍♀️ Export des variables d'environment à partir de Supabase
       shell: bash
