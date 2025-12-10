@@ -20,9 +20,6 @@ jobs:
     if: github.event.label.name == 'recette-jetable' || contains( github.event.pull_request.labels.*.name, 'recette-jetable')
 
     steps:
-    - name: 🚶‍♂️‍➡️ Déplacement vers la branche principale
-      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-
     - name: 🏷️ Définition des noms de la recette jetable
       run: |
         # Le nom est déterminé automatiquement par Scalingo pour les applications Nuxt2 et Django
