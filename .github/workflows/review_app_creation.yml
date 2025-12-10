@@ -1,10 +1,9 @@
 name: 🕵 Création d'une recette jetable
 
 # L'action est lancée quand une étiquette est ajoutée à la PR ou qu'un push est effectué sur la branche.
-# `types: [ synchronize ]` cible les événements `push`.
 on:
   pull_request:
-    types: [ labeled, synchronize ]
+    types: [ labeled ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || github.sha }}
