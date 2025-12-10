@@ -90,8 +90,6 @@ jobs:
       run: |
         # Il n'est pas possible de créer une recette jetable pour Nuxt3 car chaque recette jetable
         # s'appuie sur une branche Git différente de celle utilisée pour le dépôt parent.
-        git clone https://github.com/betagouv/docurba-nuxt3.git
-        cd docurba-nuxt3/
         scalingo create "${NUXT_3_REVIEW_APP_NAME}"
         app_url="https://${NUXT_3_REVIEW_APP_NAME}.osc-fr1.scalingo.io"
         scalingo --app ${NUXT_3_REVIEW_APP_NAME} env-set \
