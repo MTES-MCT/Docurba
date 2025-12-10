@@ -47,4 +47,4 @@ jobs:
         version: latest
 
     - name: 🚮 Suppression de la branche Supabase
-      run: supabase branches --experimental --project-ref "${SUPABASE_PROJECT_ID}" delete "${SUPABASE_REVIEW_APP_NAME}"
+      run: supabase branches --project-ref "${SUPABASE_PROJECT_ID}" delete "${SUPABASE_REVIEW_APP_NAME}"
