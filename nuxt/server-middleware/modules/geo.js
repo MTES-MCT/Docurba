@@ -175,6 +175,7 @@ module.exports = {
       }
     }
 
+    // TODO(cms): priorize me.
     if (format === 'topojson') {
       return topology({
         communes: { type: 'FeatureCollection', features: comFeatures },

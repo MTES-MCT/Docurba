@@ -190,6 +190,12 @@ export default {
   async mounted () {
     try {
       const promProcedures = await this.$urbanisator.getProceduresForDept(this.$route.params.departement)
+      // const { data: groupements } = await axios.get(`${process.env.DJANGO_API_BASE_URL}/collectivites/`, {
+      //   params: {
+      //     departementCode: this.selectedDepartement.code_departement,
+      //     exclude_communes: true
+      //   }
+      // })
       const rawReferentiel = fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
 
       const [rawProcedures, referentiel] = await Promise.all([promProcedures, rawReferentiel])

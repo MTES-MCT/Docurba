@@ -420,6 +420,12 @@ export default {
     }
   },
   async mounted () {
+    // const { data: groupements } = await axios.get(`${process.env.DJANGO_API_BASE_URL}/collectivites/`, {
+    //   params: {
+    //     departementCode: this.selectedDepartement.code_departement,
+    //     exclude_communes: true
+    //   }
+    // })
     const collectivites = await this.$nuxt3api(`/api/geo/collectivites?departementCode=${this.$route.params.departement}`)
     const communes = []
     const groupements = []
