@@ -26,7 +26,7 @@ jobs:
         # car ce sont des recettes jetables.
         # Suivons le même modèle pour Supabase et Nuxt3.
         echo "SUPABASE_REVIEW_APP_NAME=supabase-pr${PR_ID}" >> $GITHUB_ENV
-        echo "NUXT_3_REVIEW_APP_NAME=nuxt3-pr${PR_ID}" >> $GITHUB_ENV
+        echo "NUXT_3_REVIEW_APP_NAME=docurba-nuxt3-pr${PR_ID}" >> $GITHUB_ENV
 
     - name: 🛠️ Installation de Scalingo CLI
       uses: scalingo-community/setup-scalingo@87fe86eedc708ffb9d232c756b21f6a5784f6c8a # v0.1.1

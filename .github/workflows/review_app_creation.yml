@@ -37,7 +37,7 @@ jobs:
         # car ce sont des recettes jetables.
         # Suivons le même modèle pour Supabase et Nuxt3.
         echo "SUPABASE_REVIEW_APP_NAME=supabase-pr${PR_ID}" >> $GITHUB_ENV
-        echo "NUXT_3_REVIEW_APP_NAME=nuxt3-pr${PR_ID}" >> $GITHUB_ENV
+        echo "NUXT_3_REVIEW_APP_NAME=docurba-nuxt3-pr${PR_ID}" >> $GITHUB_ENV
         echo "NUXT_2_REVIEW_APP_NAME=${SCALINGO_NUXT_APP_NAME}-pr${PR_ID}" >> $GITHUB_ENV
         echo "DJANGO_REVIEW_APP_NAME=${SCALINGO_DJANGO_APP_NAME}-pr${PR_ID}" >> $GITHUB_ENV
 
