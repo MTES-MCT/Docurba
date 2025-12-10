@@ -15,7 +15,6 @@ env:
   PR_ID: ${{ github.event.number }}
   SCALINGO_DJANGO_APP_NAME: docurba-django-demo
   SCALINGO_NUXT_APP_NAME: docurba-nuxt-demo
-  NUXT3_REPO: git@github.com:betagouv/docurba-nuxt3.git
   NUXT3_REPO_HTTPS: https://github.com/betagouv/docurba-nuxt3/
   NUXT3_BRANCH: main
 
