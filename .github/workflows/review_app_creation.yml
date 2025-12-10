@@ -117,7 +117,7 @@ jobs:
          SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY}"\
          NUXT3_API_URL="${NUXT3_URL}"
         # Déploiement manuel.
-        scalingo --app "${NUXT_2_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}"
+        scalingo --app "${NUXT_2_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}"  &> /dev/null
         # Récupération de NUXT_URL pour Django.
         until scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-get NUXT_URL &> /dev/null
         do
