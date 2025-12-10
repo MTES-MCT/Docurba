@@ -5,6 +5,7 @@
   "engines": {
     "node": "20"
   },
+  "type": "module",
   "scripts": {
     "daily_dump": "node --experimental-json-modules daily_dump/index.mjs",
     "dev": "nuxt",
@@ -22,7 +23,8 @@
     "sanitize_pp": "node --experimental-json-modules daily_dump/checkWrongPrincipalesAsSecondaries.mjs",
     "add_dgd": "node --experimental-json-modules daily_dump/addDgdHistory.mjs",
     "lint:js": "eslint --ext \".js,.vue\" --ignore-path .gitignore .",
-    "lint": "npm run lint:js"
+    "lint": "npm run lint:js",
+    "test": "xo"
   },
   "dependencies": {
     "@getvim/execute": "^1.0.0",
@@ -60,7 +62,7 @@
     "fast-xml-parser": "^4.2.7",
     "js-base64": "^3.7.5",
     "lodash": "^4.17.21",
-    "nuxt": "^2.16",
+    "nuxt": "2.17.3",
     "octokit": "^3.1",
     "pdfmake": "^0.2.7",
     "pg": "^8.11.3",
@@ -86,6 +88,7 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^7.22.0",
     "eslint-plugin-nuxt": "^2.0.0",
-    "eslint-plugin-vue": "^7.7.0"
+    "eslint-plugin-vue": "^7.7.0",
+    "xo": "^1.2.3"
   }
 }
