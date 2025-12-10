@@ -1,6 +1,6 @@
 name: 🕵 Création d'une recette jetable
 
-# L'action est lancée quand une étiquette est ajoutée à la PR ou qu'un push est effectué sur la branche.
+# L'action est lancée lorsque l'étiquette « recette-jetable » est ajoutée à la PR.
 on:
   pull_request:
     types: [ labeled ]
