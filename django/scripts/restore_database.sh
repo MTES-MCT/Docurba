@@ -100,7 +100,7 @@ if [[ ${BACKUPS_SUPABASE_MODIFY_TRIGGERS} == "True" ]]; then
   if [[ ! -n ${NUXT3_API_URL} ]]; then
     echo "Impossible de modifier les déclencheurs car la variable NUXT3_API_URL n'est pas définie."
   fi
-  envsubst < ${HOME}/scripts/drop_update_triggers.sql | psql --dbname ${database_restoration_url}
+  psql --dbname ${database_restoration_url} --file ${HOME}/scripts/drop_update_triggers.sql
 fi
 
 echo "La restauration est terminée !"
