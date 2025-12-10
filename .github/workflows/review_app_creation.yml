@@ -96,8 +96,8 @@ jobs:
         app_url="https://${NUXT_3_REVIEW_APP_NAME}.osc-fr1.scalingo.io"
         scalingo --app ${NUXT_3_REVIEW_APP_NAME} env-set \
          SUPABASE_URL="${SUPABASE_URL}" \
-         SUPABASE_ADMIN_KEY="${SUPABASE_ADMIN_KEY}"
-         APP_URL="${app_url}"
+         SUPABASE_ADMIN_KEY="${SUPABASE_ADMIN_KEY}"\
+         NODE_OPTIONS="--max-old-space-size=4096"
         scalingo --app "${NUXT_3_REVIEW_APP_NAME}" integration-link-create --branch "${NUXT3_BRANCH}" "${NUXT3_REPO_HTTPS}"
         scalingo --app "${NUXT_3_REVIEW_APP_NAME}" integration-link-manual-deploy main
         echo "NUXT3_URL=${app_url}" >> $GITHUB_ENV
