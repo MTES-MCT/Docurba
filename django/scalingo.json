@@ -5,7 +5,7 @@
         },
         "ALLOWED_HOSTS": {
             "generator": "template",
-            "template": "docurba-django-demo-pr%PR_NUMBER%.osc-fr1.scalingo.io"
+            "template": "%APP%.osc-fr1.scalingo.io"
         },
         "BACKUPS_SUPABASE_MODIFY_TRIGGERS": "True"
     },
