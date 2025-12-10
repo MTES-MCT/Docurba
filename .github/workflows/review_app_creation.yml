@@ -122,7 +122,7 @@ jobs:
         # Déploiement manuel.
         scalingo --app "${NUXT_2_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}"
         # Récupération de NUXT_URL pour Django.
-        until scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-get NUXT_APP_URL &> /dev/null
+        until scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-get NUXT_URL &> /dev/null
         do
           echo "En attente de l'application Nuxt."
           sleep 1m
