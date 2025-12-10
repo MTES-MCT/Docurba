@@ -17,7 +17,7 @@ env:
 jobs:
   delete:
     runs-on: ubuntu-latest
-    if: github.event.label.name == 'recette-jetable' || contains( github.event.pull_request.labels.*.name, 'recette-jetable')
+    if: contains( github.event.pull_request.labels.*.name, 'recette-jetable')
 
     steps:
     - name: 🏷️ Définition des noms de la recette jetable
