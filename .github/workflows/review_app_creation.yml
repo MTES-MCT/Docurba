@@ -164,7 +164,7 @@ jobs:
         scalingo --app "${DJANGO_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}" &> /dev/null
 
     - name: 🤹‍♀️ Intégration de l'URL de Django dans Nuxt2
-      run: scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-set DJANGO_API_BASE_URL="${DJANGO_URL}"
+      run: scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-set DJANGO_API_BASE_URL="${DJANGO_URL}/api-internes"
 
     - name: 🍻 Ajout du lien en commentaire de la PR
       uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1

@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "django_filters",
     "revproxy.apps.RevProxyConfig",
     "django_browser_reload",
     "django_extensions",
@@ -139,3 +141,9 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 UPSTREAM_NUXT = env.str("UPSTREAM_NUXT")
+
+REST_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    "DEFAULT_PAGINATION_CLASS": "core.api_internes.paginators.DocurbaPagination",
+    "PAGE_SIZE": 200,
+}

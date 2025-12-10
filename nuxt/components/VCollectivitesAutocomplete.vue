@@ -37,7 +37,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { ValidationProvider } from 'vee-validate'
 import FormInput from '@/mixins/FormInput.js'
 import departements from '@/assets/data/departements-france.json'
@@ -91,7 +90,6 @@ export default {
         return d.code_departement.toString() === this.defaultDepartementCode
       })
     }
-
     return {
       selectedDepartement: defaultDepartement,
       selectedCollectivite: { ...this.value },
@@ -123,14 +121,23 @@ export default {
       if (this.selectedDepartement) {
         this.loading = true
         try {
-          const collectivites = (await axios.get(`/api/geo/collectivites?departements=${this.selectedDepartement.code_departement}`)).data
-
+          const groupements = await this.$djangoApi.get('/collectivites/', {
+            departement: this.selectedDepartement.code_departement,
+            exclude_communes: true,
+            competence: 'plan',
+            // eslint-disable-next-line no-dupe-keys
+            competence: 'schema'
+          })
+          const communes = await this.$djangoApi.get('/communes/', {
+            departement: this.selectedDepartement.code_departement,
+            type: 'COM'
+          })
           const BANATIC_EPCI_TYPES = ['CA', 'CC', 'CU', 'METRO', 'MET69']
-          const epcis = collectivites.groupements.filter(e => BANATIC_EPCI_TYPES.includes(e.type))
-          const autres = collectivites.groupements.filter(e => !BANATIC_EPCI_TYPES.includes(e.type))
+          const epcis = groupements.filter(e => BANATIC_EPCI_TYPES.includes(e.type))
+          const autres = groupements.filter(e => !BANATIC_EPCI_TYPES.includes(e.type))
           this.collectivites = [{ header: 'Groupements' }, ...autres, { divider: true },
             { header: 'EPCI' }, ...epcis, { divider: true },
-            { header: 'Communes' }, ...collectivites.communes]
+            { header: 'Communes' }, ...communes]
           this.loading = false
         } catch (error) {
           console.log(error)
