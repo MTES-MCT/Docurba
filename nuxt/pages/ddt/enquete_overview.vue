@@ -77,7 +77,10 @@ export default {
     const response = await fetch('/json/nb_collectivites_par_departement.json')
     const nbCollectivitesParDepartement = await response.json()
 
-    const { data: nbValidationByDepts } = await this.$supabase.rpc('validated_collectivites_by_depts_2024').throwOnError()
+    const { data: nbValidationByDepts } = await this.$supabase
+      .rpc('validated_collectivites_by_depts', {
+        since: this.$enquete.VALIDATED_SINCE
+      }).throwOnError()
 
     const nbValidationByDeptsMap = new Map(
       nbValidationByDepts?.map(item => [item.departement, item.unique_collectivites_count]) || []

@@ -1,5 +1,6 @@
 export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inject) => {
   const enquete = {
+    VALIDATED_SINCE: '2025-06-01',
     async deleteValidationForCollectivite (code) {
       try {
         if (!code) {
@@ -42,8 +43,9 @@ export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inj
     },
     async getValidatedCollectivitesForDepartement (departement) {
       const { data, error } = await $supabase
-        .rpc('validated_collectivites_2024', {
-          department_param: departement
+        .rpc('validated_collectivites', {
+          since: this.VALIDATED_SINCE,
+          departement
         })
       return {
         success: !error,

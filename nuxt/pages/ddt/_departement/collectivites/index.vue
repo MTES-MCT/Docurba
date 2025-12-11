@@ -56,7 +56,7 @@
                 Enquête annuelle
               </div>
               <div>
-                L’enquête annuelle sur l’état d’avancement des documents d’urbanisme est disponible sur Docurba jusqu’au <span style="font-weight: bold;">31 Janvier 2025</span>. <a href="https://docurba.crisp.help/fr/article/conditions-de-lenquete-annuelle-2024-tout-ce-quil-faut-savoir-agents-ddtmdeal-1mxhu8a/?bust=1735549774570">Consignes et astuces dans notre FAQ</a>.
+                L’enquête annuelle sur l’état d’avancement des documents d’urbanisme est disponible sur Docurba jusqu’au <span style="font-weight: bold;">31 Janvier 2026</span>. <a href="https://docurba.crisp.help/fr/article/a-venir-conditions-de-lenquete-annuelle-2025-tout-ce-quil-faut-savoir-agents-de-ddtmdeal-13m8qu9/">Consignes et astuces dans notre FAQ</a>.
               </div>
               <div>
                 <v-switch
