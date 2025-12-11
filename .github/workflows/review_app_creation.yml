@@ -53,7 +53,6 @@ jobs:
        supabase branches --project-ref ${SUPABASE_PROJECT_ID} create ${SUPABASE_REVIEW_APP_NAME}
 
     - name: 🤹‍♀️ Export des variables d'environment à partir de Supabase
-      continue-on-error: true
       shell: bash
       run: |
         until supabase branches --project-ref ${SUPABASE_PROJECT_ID} get ${SUPABASE_REVIEW_APP_NAME} -o env | grep --quiet "SUPABASE_URL" &> /dev/null
@@ -78,7 +77,11 @@ jobs:
           echo "::add-mask::${value}";
           echo "${key}=${value}" >> $GITHUB_ENV
         done
-        supabase --project-ref "${supabase_branch_id}" --yes config push
+
+    - name: 🤹‍♀️ Mise à jour de la configuration de Supabase
+      continue-on-error: true
+      shell: bash
+      run: supabase --project-ref "${supabase_branch_id}" --yes config push
 
     - name: 🛠️ Installation de la CLI Scalingo
       uses: scalingo-community/setup-scalingo@87fe86eedc708ffb9d232c756b21f6a5784f6c8a # v0.1.1
