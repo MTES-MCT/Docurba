@@ -80,7 +80,6 @@ jobs:
 
     - name: 🤹‍♀️ Mise à jour de la configuration de Supabase
       continue-on-error: true
-      shell: bash
       run: supabase --project-ref "${supabase_branch_id}" --yes config push
 
     - name: 🛠️ Installation de la CLI Scalingo
@@ -152,7 +151,6 @@ jobs:
          SECRET_KEY="${django_secret_key}"
         scalingo --app "${DJANGO_REVIEW_APP_NAME}" integration-link-update --auto-deploy --branch "${BRANCH}" --destroy-on-close
 
-
     - name: 🪆 Déploiement de la recette jetable Django
       run: |
         scalingo --app "${DJANGO_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}" &> /dev/null
@@ -166,6 +164,9 @@ jobs:
 
     - name: 🤹‍♀️ Intégration de l'URL de Django dans Nuxt2
       run: scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-set APP_URL="${DJANGO_URL}"
+
+    - name: 🤹‍♀️ Affichage de l'URL de Nuxt3 pour la modification du déclencheur
+      run: echo "${NUXT3_URL}"
 
     - name: 🍻 Ajout du lien en commentaire de la PR
       uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
