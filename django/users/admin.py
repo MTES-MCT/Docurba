@@ -8,9 +8,8 @@ from users.models import Profile, User
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    readonly_fields = ("user",)
+    readonly_fields = ("user", "collectivite_id")
     search_fields = ("email",)
-    raw_id_fields = ("collectivite",)
     list_filter = ("poste", "side")
 
     def has_add_permission(self, request) -> Literal[False]:
