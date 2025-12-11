@@ -45,4 +45,3 @@ jobs:
       - run: ruff format --diff .
       - run: ruff check --output-format=github .
       - run: python -m django makemigrations --check --dry-run --noinput || (echo "⚠ Migration manquante ⚠"; exit 1)
-

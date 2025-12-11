@@ -84,11 +84,6 @@ psql \
   --file ${backup_file} \
   --dbname ${database_restoration_url}
 
-# https://supabase.com/docs/guides/troubleshooting/refresh-postgrest-schema
-psql \
-  --command "NOTIFY pgrst, 'reload schema';"\
-  --dbname ${database_restoration_url}
-
 if [[ ${BACKUPS_SUPABASE_GRANT_PRIVILEGES_TO_USERS} == "True" ]]; then
   echo "Définition des droits d'accès."
   psql \
@@ -103,6 +98,11 @@ if [[ ${BACKUPS_SUPABASE_MODIFY_TRIGGERS} == "True" ]]; then
   fi
   psql --dbname ${database_restoration_url} --file ${script_folder_path}/drop_update_triggers.sql
 fi
+
+# https://supabase.com/docs/guides/troubleshooting/refresh-postgrest-schema
+psql \
+  --command "NOTIFY pgrst, 'reload schema';"\
+  --dbname ${database_restoration_url}
 
 echo "La restauration est terminée !"
 
