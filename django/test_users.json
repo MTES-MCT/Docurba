@@ -1,0 +1,16 @@
+[
+  {
+    "model": "users.profile",
+    "fields": {
+      "first_name": "John",
+      "last_name": "Lennon"
+    }
+  },
+  {
+    "model": "users.profile",
+    "fields": {
+      "first_name": "Paul",
+      "last_name": "McCartney"
+    }
+  }
+]

@@ -27,3 +27,8 @@ L'URL de la base de données n'est pas passée en paramètre pour éviter tout r
 depends = ["start:supabase"]
 dir = "{{config_root}}/django"
 run = "/usr/bin/bash scripts/restore_database.sh postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+
+[tasks."database:add_test_data"]
+depends = ["start:supabase"]
+dir = "{{config_root}}/django"
+run = "./manage.py loaddata fixtures/*.json"
