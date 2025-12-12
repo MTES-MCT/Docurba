@@ -4,7 +4,7 @@
       <v-col cols="12" class="d-flex align-center justify-space-between pb-0 pt-4">
         <h1>Mes Procédures</h1>
         <div>
-          <v-btn depressed color="primary" :to="`/ddt/${$route.params.departement}/procedures/choix-collectivite`">
+          <v-btn v-if="$user.canCreateProcedure({ departement: $route.params.departement })" depressed color="primary" :to="`/ddt/${$route.params.departement}/procedures/choix-collectivite`">
             Nouvelle procédure
           </v-btn>
         </div>
@@ -213,6 +213,10 @@ export default {
 
         return { ...e, procedureName }
       })
+      if (!this.$user.canViewSectionProcedures()) {
+        console.warn('User is not allowed to view this page.')
+        this.$router.push('/')
+      }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log('ERROR: ', error)

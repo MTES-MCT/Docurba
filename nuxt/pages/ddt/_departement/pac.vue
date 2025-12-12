@@ -185,6 +185,11 @@ export default {
     }
   },
   async mounted () {
+    if (!this.$user.canViewSectionPAC()) {
+      console.warn('User is not allowed to view this page.')
+      this.$router.push('/')
+    }
+
     await this.fetchProjects()
     this.loading = false
   },

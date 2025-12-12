@@ -1,23 +1,6 @@
 <template>
   <v-container>
-    <!-- <v-row v-if="collectivite">
-      <v-col cols="12" class="pb-0 mt-6">
-        <nuxt-link :to="backToCollectivite" class="text-decoration-none d-flex align-center">
-          <v-icon color="primary" small class="mr-2">
-            {{ icons.mdiChevronLeft }}
-          </v-icon>
-          {{ collectivite.intitule }}
-        </nuxt-link>
-      </v-col>
-    </v-row> -->
     <v-row v-if="collectivite && procedure">
-      <!-- <v-col cols="12">
-        <div class="d-flex align-center">
-          <h1 class="text-h1">
-            Nouvelle procédure
-          </h1>
-        </div>
-      </v-col> -->
     </v-row>
     <v-row v-if="loaded">
       <v-col cols="12">
