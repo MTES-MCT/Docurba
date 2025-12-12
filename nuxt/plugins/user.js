@@ -122,8 +122,19 @@ export default async ({ $supabase, app }, inject) => {
 
   // Rights management
   const userRights = {
-    canViewSectionCollectivites () {
-      return this.profile.poste === 'ddt' || this.profile.side === 'ppa'
+    canViewSectionCollectivites (options) {
+      const {departement} = options
+      if (this.profile.is_admin) {
+        return true
+      }
+
+      if (this.profile.poste === 'ddt') {
+        return this.profile.departement == departement
+      }
+      else if (this.profile.side === 'ppa') {
+        return this.profile.departements.includes(departement)
+      }
+
     },
     canViewSectionProcedures () {
       return this.profile.poste === 'ddt' || this.profile.side === 'ppa'

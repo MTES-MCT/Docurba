@@ -18,7 +18,7 @@
     <LayoutsAppBar flat extended>
       <v-tabs v-if="$user.profile.verified" align-with-title class="header-tabs">
         <v-tab
-          v-if="$user.canViewSectionCollectivites()"
+          v-if="$user.canViewSectionCollectivites({departement: $user.profile.departement})"
           :to="{
             name: 'ddt-departement-collectivites',
             params: {departement: $user.profile.departement}

@@ -73,6 +73,21 @@
                 </v-switch>
               </div>
             </v-alert>
+            <div>
+              <v-col v-if="$user.profile.side === 'ppa'" cols="12">
+                <!-- Make it a component.  -->
+                <!-- <v-autocomplete
+                  v-model="selectedDepartement"
+                  :items="userDepartements"
+                  label="Departement"
+                  filled
+                  :error-messages="errorMessages"
+                  return-object
+                  :clearable="clearable"
+                /> -->
+                <VDeptAutocomplete :defaultDepartementCode="$route.params.departement" dense @input="refreshPage" :filterDepartements=$user.profile.departements />
+              </v-col>
+            </div>
             <div class="d-flex align-center justify-space-between mb-6">
               <v-select
                 v-model="selectedCollectiviteTypesFilter"
@@ -327,6 +342,7 @@
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { partition } from 'lodash'
+import departements from '@/assets/data/departements-france.json'
 
 const docVersion = '1.0'
 
@@ -386,6 +402,21 @@ export default {
         return normalizedGroupementIntitule.includes(normalizedSearch)
       })
     },
+    // VDepartementAutocomplete
+    // userDepartements () {
+      // console.log(this.$user.profile.departements)
+      // const depts = this.$user.profile.departements.map(departement_code => departements.filter(departement => departement.code_departement == parseInt(departement_code)))
+      // console.log(depts)
+      // const enrichedDepartements = depts.map(d => Object.assign({
+      //   text: `${d.nom_departement} - ${d.code_departement}`
+      // }, d))
+      // console.log(enrichedDepartements)
+
+      // return {
+      //   departements: enrichedDepartements
+      // }
+
+    // },
     headers () {
       const headers = [
         { text: 'Nom', align: 'start', value: 'code', filterable: true, width: '30%', sort (a, b) { return b.localeCompare(a) } },
@@ -619,6 +650,13 @@ export default {
       a.click()
 
       this.exportingSCoTs = false
+    },
+    refreshPage(departementObject) {
+      let departement = departementObject.code_departement.toString()
+      if (departement.length == 1) {
+        departement = departement.padStart('2', "0")
+      }
+      this.$router.push({ params: { departement } })
     }
 
   }
