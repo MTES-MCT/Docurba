@@ -31,4 +31,4 @@ run = "/usr/bin/bash scripts/restore_database.sh postgresql://postgres:postgres@
 [tasks."database:add_test_data"]
 depends = ["start:supabase"]
 dir = "{{config_root}}/django"
-run = "./manage.py loaddata fixtures/*.json"
+run = "psql --dbname=$DATABASE_URL --file=../supabase/seed.sql && django-admin shell"
