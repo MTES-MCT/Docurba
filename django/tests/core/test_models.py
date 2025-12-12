@@ -19,7 +19,7 @@ from core.models import (
     TypeDocument,
     ViewCommuneAdhesionsDeep,
 )
-from core.tests.factories import (
+from tests.factories import (
     create_commune,
     create_departement,
     create_groupement,

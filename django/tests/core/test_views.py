@@ -7,7 +7,7 @@ from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 
 from core.models import TypeDocument
-from core.tests.factories import (
+from tests.factories import (
     create_commune,
     create_groupement,
 )
