@@ -26,13 +26,26 @@ export default {
     clearable: {
       type: Boolean,
       default: false
+    },
+    defaultDepartementCode: {
+      type: String,
+      default: null
+    },
+    departementsFilter: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
-    const enrichedDepartements = departements.map(d => Object.assign({
-      text: `${d.nom_departement} - ${d.code_departement}`
-    }, d))
-
+    let filteredDepartements = departements
+    if (this.departementsFilter.length > 0) {
+      filteredDepartements = departements.filter(departement =>
+        this.departementsFilter.includes(
+          departement.code_departement.toString().padStart(2, '0')
+        )
+      )
+    }
+    const enrichedDepartements = filteredDepartements.map(dept => ({ ...dept, text: `${dept.nom_departement} - ${dept.code_departement}` }))
     return {
       departements: enrichedDepartements
     }
