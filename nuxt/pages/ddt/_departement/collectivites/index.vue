@@ -349,9 +349,7 @@ export default {
       searchEpcis: '',
       groupements: [],
       filterEpci: null,
-      hasValidationEnabled: process.env.DDT_ENQUETE_ENABLED.includes(
-        this.$route.params.departement
-      ),
+      hasValidationEnabled: true,
       hideValidatedCollectives: false,
       snackbar: false,
       snackVal: { text: '', type: 'success' },
