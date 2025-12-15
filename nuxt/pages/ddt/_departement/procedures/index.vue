@@ -26,6 +26,16 @@
           loading-text="Chargement des collectivités..."
         >
           <template #top>
+            <div>
+              <v-col v-if="$user.profile.side === 'ppa'" cols="8">
+                <VDeptAutocomplete
+                  :default-departement-code="$route.params.departement"
+                  :departements-filter="$user.profile.departements"
+                  dense
+                  @input="updatePageDepartement"
+                />
+              </v-col>
+            </div>
             <div class="d-flex  align-center justify-space-between mb-6">
               <v-select
                 v-model="selectedTypesFilter"
@@ -230,6 +240,11 @@ export default {
       const normalizedSearch = search.toLocaleLowerCase().normalize('NFKD').replace(/\p{Diacritic}/gu, '')
 
       return normalizedValue.includes(normalizedSearch)
+    },
+    navigateToDepartement (departementObject) {
+      let departement = departementObject.code_departement.toString()
+      departement = departement.padStart('2', '0')
+      this.$router.push({ params: { departement } })
     }
   }
 }
