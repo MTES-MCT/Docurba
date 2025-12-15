@@ -27,3 +27,26 @@ L'URL de la base de données n'est pas passée en paramètre pour éviter tout r
 depends = ["start:supabase"]
 dir = "{{config_root}}/django"
 run = "/usr/bin/bash scripts/restore_database.sh postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+
+[tasks."database:add_test_data"]
+usage = '''
+arg "[database_url]" help="Database URL" env="DATABASE_URL"
+'''
+depends = ["start:supabase"]
+dir = "{{config_root}}/django"
+run = "psql --dbname=${usage_database_url} --file=../supabase/seed.sql && django-admin shell"
+
+[tasks."database:update_user_password"]
+usage = '''
+arg "<email>" help="User's email"
+arg "[password]" help="User's password" env="TEST_USERS_PASSWORD"
+arg "[database_url]" help="Database URL" env="DATABASE_URL"
+'''
+depends = ["start:supabase"]
+dir = "{{config_root}}/django"
+run = """
+echo "UPDATE auth.users
+SET encrypted_password = crypt('""${usage_password}""', gen_salt('bf'))
+WHERE email = '${usage_email}';
+" |psql --dbname=${usage_database_url}
+"""
