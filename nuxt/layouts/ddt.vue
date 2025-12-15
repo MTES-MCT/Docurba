@@ -70,7 +70,7 @@
         </v-row>
       </v-container>
       <template v-else>
-        <nuxt v-if="isAllowed" />
+        <nuxt v-if="isVerified" />
         <v-container v-else class="fill-height">
           <v-row justify="center" align="center">
             <v-col cols="12" class="mb-4">
@@ -103,8 +103,8 @@ export default {
     }
   },
   computed: {
-    isAllowed () {
-      return (this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified) || this.$user.profile.is_admin || this.$isDev
+    isVerified () {
+      return this.$user?.profile?.verified || this.$user.profile.is_admin
     },
     trameRef () {
       if (this.$user.canViewSectionTramesPAC()) {
