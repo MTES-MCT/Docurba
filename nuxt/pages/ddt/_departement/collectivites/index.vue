@@ -56,7 +56,7 @@
                 Enquête annuelle
               </div>
               <div>
-                L’enquête annuelle sur l’état d’avancement des documents d’urbanisme est disponible sur Docurba jusqu’au <span style="font-weight: bold;">31 Janvier 2026</span>. <a href="https://docurba.crisp.help/fr/article/a-venir-conditions-de-lenquete-annuelle-2025-tout-ce-quil-faut-savoir-agents-de-ddtmdeal-13m8qu9/">Consignes et astuces dans notre FAQ</a>.
+                L’enquête annuelle sur l’état d’avancement des documents d’urbanisme est disponible sur Docurba jusqu’au <span style="font-weight: bold;">13 février 2026</span>. <a href="https://docurba.crisp.help/fr/article/a-venir-conditions-de-lenquete-annuelle-2025-tout-ce-quil-faut-savoir-agents-de-ddtmdeal-13m8qu9/">Consignes et astuces dans notre FAQ</a>.
               </div>
               <div>
                 <v-switch
@@ -361,7 +361,8 @@ export default {
       searchEpcis: '',
       groupements: [],
       filterEpci: null,
-      hasValidationEnabled: process.env.DDT_ENQUETE_ENABLED.includes(
+      // env.DDT_ENQUETE_ENABLED permet de ne garder l'enquête ouverte que pour des DDT retardataires
+      hasValidationEnabled: true || process.env.DDT_ENQUETE_ENABLED.includes(
         this.$route.params.departement
       ),
       hideValidatedCollectives: false,
