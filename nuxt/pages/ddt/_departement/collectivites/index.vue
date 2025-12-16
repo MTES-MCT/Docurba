@@ -73,6 +73,16 @@
                 </v-switch>
               </div>
             </v-alert>
+            <div>
+              <v-col v-if="$user.profile.side === 'ppa'" cols="8">
+                <VDeptAutocomplete
+                  :default-departement-code="$route.params.departement"
+                  :departements-filter="$user.profile.departements"
+                  dense
+                  @input="updatePageDepartement"
+                />
+              </v-col>
+            </div>
             <div class="d-flex align-center justify-space-between mb-6">
               <v-select
                 v-model="selectedCollectiviteTypesFilter"
@@ -619,8 +629,14 @@ export default {
       a.click()
 
       this.exportingSCoTs = false
+    },
+    updatePageDepartement (departementObject) {
+      let departement = departementObject.code_departement.toString()
+      if (departement.length === 1) {
+        departement = departement.padStart('2', '0')
+      }
+      this.$router.push({ params: { departement } })
     }
-
   }
 }
 </script>
