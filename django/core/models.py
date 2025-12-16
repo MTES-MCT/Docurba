@@ -873,6 +873,12 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
 
 
 class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008
+    id = models.CharField(
+        primary_key=True,
+        serialize=False,
+        verbose_name="ID",
+        db_column="id",
+    )
     commune = models.ForeignKey(Commune, models.DO_NOTHING, related_name="+")
     groupement = models.ForeignKey(Collectivite, models.DO_NOTHING, related_name="+")
 
