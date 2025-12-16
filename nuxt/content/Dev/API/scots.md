@@ -27,7 +27,7 @@ Ici la préposition `scot_` fait en faire référence à la collectivité porteu
 #### Paramètres de requête disponibles
 
 - `departement` : Filtrer par le code INSEE du département.
-- `avant` : Ne prend en compte que les événements avant ce jour, au format `YYYY-MM-DD`.
+- `avant` : Ne prend en compte que les événements jusqu'à ce jour, au format `YYYY-MM-DD`.
 
 ### Réponse
 
