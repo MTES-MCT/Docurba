@@ -43,6 +43,8 @@ jobs:
         echo "NUXT_2_REVIEW_APP_NAME=${SCALINGO_NUXT_APP_NAME}-pr${PR_ID}" >> $GITHUB_ENV
         echo "DJANGO_REVIEW_APP_NAME=${SCALINGO_DJANGO_APP_NAME}-pr${PR_ID}" >> $GITHUB_ENV
 
+    # La version est figée car la dernière version casse lors de l'envoi de la configuration.
+    # L'erreur est cryptique.
     - name: 🛠️ Installation de la CLI Supabase
       uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
       with:
@@ -77,6 +79,11 @@ jobs:
           echo "${key}=${value}" >> $GITHUB_ENV
         done
 
+    # La configuration de chaque nouvelle branche reprend celle par défaut et non celle du projet parent.
+    # Le fichier supabase/config.toml est le seul moyen documenté par Supabase
+    # pour mettre à jour la configuration d'un projet.
+    # https://github.com/orgs/supabase/discussions/3765
+    # https://supabase.com/docs/reference/cli/supabase-config-push
     - name: 🤹‍♀️ Mise à jour de la configuration de Supabase
       continue-on-error: true
       run: |
