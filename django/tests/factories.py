@@ -3,6 +3,8 @@ import itertools
 import random
 from typing import Any
 
+from django.utils import timezone
+
 from core.models import (
     Collectivite,
     Commune,
@@ -115,7 +117,9 @@ def create_evenement(
         else "Approbation du préfet",
     }
     return Event.objects.create(
-        type=categories_evenements[evt_type], procedure=procedure, date_evenement=date
+        type=categories_evenements[evt_type],
+        procedure=procedure,
+        date_evenement=date or timezone.date(2025, 10, 10),
     )
 
 
