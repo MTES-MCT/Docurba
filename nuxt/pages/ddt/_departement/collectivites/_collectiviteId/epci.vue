@@ -50,7 +50,8 @@
       <v-row>
         <v-col cols="12">
           <v-alert type="info">
-            Les nouvelles procédures et événements saisis dans Sudocuh sont visibles dans Docurba dès le lendemain matin.
+            Le dernier import dans Docurba des événements en provenance de Sudocuh a été réalisé le 16 décembre.
+            Si vous n'êtes pas d'accord avec les informations présentes, utilisez le bouton « Signaler un problème ».
           </v-alert>
         </v-col>
         <v-col cols="12" class="d-flex justify-space-between">
