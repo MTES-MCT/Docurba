@@ -6,7 +6,7 @@ from django.test import Client
 from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 
-from core.models import TypeDocument
+from core.models import TypeDocument, ViewCommuneAdhesionsDeep
 from tests.factories import (
     create_commune,
     create_groupement,
@@ -285,7 +285,7 @@ class TestAPIScots:
                 "scot_lib_departement": "",
                 "scot_codecollectivite": groupement.code_insee,
                 "scot_code_type_collectivite": groupement.type,
-                "scot_nom_collectivite": "",
+                "scot_nom_collectivite": groupement.nom,
                 # Approuvée
                 "pa_id": "",
                 "pa_nom_schema": "",
@@ -380,3 +380,420 @@ class TestAPIScots:
         assert [collectivite[champ_procedure_id] for collectivite in reader] == [
             str(procedure.id)
         ]
+
+
+class TestPourNuxtCollectivite:
+    @pytest.mark.django_db
+    def test_commune_vide(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        with django_assert_num_queries(3):
+            response = client.get(
+                reverse("pour_nuxt_collectivite", args=[commune.code_insee_unique])
+            )
+        assert response.json() == {
+            "collectivite": {
+                "intitule": commune.nom,
+                "code": commune.code_insee,
+                "departementCode": commune.departement.code_insee,
+                "departement": {
+                    "code": commune.departement.code_insee,
+                    "intitule": commune.departement.nom,
+                },
+                "region": {
+                    "code": commune.departement.region.code_insee,
+                    "intitule": commune.departement.region.nom,
+                },
+                "intercommunalite": {
+                    "departementCode": commune.intercommunalite.departement.code_insee,
+                    "intitule": commune.intercommunalite.nom,
+                },
+                "intercommunaliteCode": commune.intercommunalite.code_insee,
+                "membres": [
+                    {
+                        "code": commune.code_insee,
+                        "intitule": commune.nom,
+                        "type": commune.type,
+                    }
+                ],
+                "warn_commune_nouvelle": False,
+            },
+            "plans": [],
+            "schemas": [],
+        }
+
+    @pytest.mark.django_db
+    def test_404_collectivite_inconnue(self, client: Client) -> None:
+        response = client.get(reverse("pour_nuxt_collectivite", args=["00000000"]))
+        assert response.status_code == 404
+
+    @pytest.mark.django_db
+    def test_commune_sans_intercommunalite_ne_crashe_pas(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        """
+        4 îles n'ont pas d'intercommunalité.
+
+        https://fr.wikipedia.org/wiki/Catégorie:Commune_hors_intercommunalité_à_fiscalité_propre_en_France
+        """
+        commune = create_commune(intercommunalite=None)
+
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        with django_assert_num_queries(3):
+            response = client.get(
+                reverse("pour_nuxt_collectivite", args=[commune.code_insee_unique])
+            )
+        assert response.json() == {
+            "collectivite": {
+                "intitule": commune.nom,
+                "code": commune.code_insee,
+                "departementCode": commune.departement.code_insee,
+                "departement": {
+                    "code": commune.departement.code_insee,
+                    "intitule": commune.departement.nom,
+                },
+                "region": {
+                    "code": commune.departement.region.code_insee,
+                    "intitule": commune.departement.region.nom,
+                },
+                "membres": [
+                    {
+                        "code": commune.code_insee,
+                        "intitule": commune.nom,
+                        "type": commune.type,
+                    }
+                ],
+                "warn_commune_nouvelle": False,
+            },
+            "plans": [],
+            "schemas": [],
+        }
+
+    @pytest.mark.django_db
+    def test_groupement_vide(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        groupement = create_groupement()
+
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        with django_assert_num_queries(2):
+            response = client.get(
+                reverse("pour_nuxt_collectivite", args=[groupement.code_insee_unique])
+            )
+        assert response.json() == {
+            "collectivite": {
+                "intitule": groupement.nom,
+                "code": groupement.code_insee,
+                "departementCode": groupement.departement.code_insee,
+                "departement": {
+                    "code": groupement.departement.code_insee,
+                    "intitule": groupement.departement.nom,
+                },
+                "region": {
+                    "code": groupement.departement.region.code_insee,
+                    "intitule": groupement.departement.region.nom,
+                },
+                "membres": [],
+            },
+            "plans": [],
+            "schemas": [],
+        }
+
+    @pytest.mark.django_db
+    def test_groupement_avec_membres(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        groupement = create_groupement()
+        commune_a = create_commune()
+        commune_b = create_commune()
+        groupement.collectivites_adherentes.add(commune_a, commune_b)
+
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        with django_assert_num_queries(3):
+            response = client.get(
+                reverse("pour_nuxt_collectivite", args=[groupement.code_insee_unique])
+            )
+        assert response.json() == {
+            "collectivite": {
+                "intitule": groupement.nom,
+                "code": groupement.code_insee,
+                "departementCode": groupement.departement.code_insee,
+                "departement": {
+                    "code": groupement.departement.code_insee,
+                    "intitule": groupement.departement.nom,
+                },
+                "region": {
+                    "code": groupement.departement.region.code_insee,
+                    "intitule": groupement.departement.region.nom,
+                },
+                "membres": [
+                    {
+                        "code": commune_a.code_insee,
+                        "intitule": commune_a.nom,
+                        "type": commune_a.type,
+                    },
+                    {
+                        "code": commune_b.code_insee,
+                        "intitule": commune_b.nom,
+                        "type": commune_b.type,
+                    },
+                ],
+            },
+            "plans": [],
+            "schemas": [],
+        }
+
+    @pytest.mark.django_db
+    def test_avec_principales(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+        plan = commune.procedures.create(
+            collectivite_porteuse=commune, doc_type=TypeDocument.PLU, type="Elaboration"
+        )
+        scot = commune.procedures.create(
+            collectivite_porteuse=commune, doc_type=TypeDocument.SCOT, type="Révision"
+        )
+
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        with django_assert_num_queries(8):
+            response = client.get(
+                reverse("pour_nuxt_collectivite", args=[commune.code_insee_unique])
+            )
+        assert response.json()["plans"] == [
+            {
+                "id": str(plan.id),
+                "from_sudocuh": None,
+                "name": "Elaboration PLU " + commune.nom,
+                "status": "en cours",
+                "type": plan.type,
+                "commentaire": None,
+                "procedures_perimetres": [
+                    {
+                        "intitule": commune.nom,
+                        "code": commune.code_insee,
+                        "collectivite_type": commune.type,
+                    }
+                ],
+                "procSecs": [],
+            }
+        ]
+        assert response.json()["schemas"] == [
+            {
+                "id": str(scot.id),
+                "from_sudocuh": None,
+                "name": "Révision SCOT " + commune.nom,
+                "status": "en cours",
+                "type": scot.type,
+                "commentaire": None,
+                "procedures_perimetres": [
+                    {
+                        "intitule": commune.nom,
+                        "code": commune.code_insee,
+                        "collectivite_type": commune.type,
+                    }
+                ],
+                "procSecs": [],
+            }
+        ]
+
+    @pytest.mark.django_db
+    def test_avec_secondaires(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+
+        plan_principal = commune.procedures.create(
+            collectivite_porteuse=commune, doc_type=TypeDocument.PLU, type="Elaboration"
+        )
+        plan_secondaire = commune.procedures.create(
+            collectivite_porteuse=commune,
+            doc_type=TypeDocument.PLU,
+            type="Modification",
+            parente=plan_principal,
+        )
+
+        scot_principal = commune.procedures.create(
+            collectivite_porteuse=commune, doc_type=TypeDocument.SCOT, type="Révision"
+        )
+        scot_secondaire = commune.procedures.create(
+            collectivite_porteuse=commune,
+            doc_type=TypeDocument.SCOT,
+            type="Modification",
+            parente=scot_principal,
+        )
+
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        with django_assert_num_queries(9):
+            response = client.get(
+                reverse("pour_nuxt_collectivite", args=[commune.code_insee_unique])
+            )
+        assert response.json()["plans"] == [
+            {
+                "id": str(plan_principal.id),
+                "from_sudocuh": None,
+                "name": "Elaboration PLU " + commune.nom,
+                "status": "en cours",
+                "type": plan_principal.type,
+                "commentaire": None,
+                "procedures_perimetres": [
+                    {
+                        "intitule": commune.nom,
+                        "code": commune.code_insee,
+                        "collectivite_type": commune.type,
+                    }
+                ],
+                "procSecs": [
+                    {
+                        "id": str(plan_secondaire.id),
+                        "from_sudocuh": None,
+                        "name": "Modification PLU " + commune.nom,
+                        "status": "en cours",
+                        "type": plan_secondaire.type,
+                        "commentaire": None,
+                        "procedures_perimetres": [
+                            {
+                                "intitule": commune.nom,
+                                "code": commune.code_insee,
+                                "collectivite_type": commune.type,
+                            }
+                        ],
+                    }
+                ],
+            }
+        ]
+        assert response.json()["schemas"] == [
+            {
+                "id": str(scot_principal.id),
+                "from_sudocuh": None,
+                "name": "Révision SCOT " + commune.nom,
+                "status": "en cours",
+                "type": scot_principal.type,
+                "commentaire": None,
+                "procedures_perimetres": [
+                    {
+                        "intitule": commune.nom,
+                        "code": commune.code_insee,
+                        "collectivite_type": commune.type,
+                    }
+                ],
+                "procSecs": [
+                    {
+                        "id": str(scot_secondaire.id),
+                        "from_sudocuh": None,
+                        "name": "Modification SCOT " + commune.nom,
+                        "status": "en cours",
+                        "type": scot_secondaire.type,
+                        "commentaire": None,
+                        "procedures_perimetres": [
+                            {
+                                "intitule": commune.nom,
+                                "code": commune.code_insee,
+                                "collectivite_type": commune.type,
+                            }
+                        ],
+                    }
+                ],
+            }
+        ]
+
+    @pytest.mark.django_db
+    def test_nb_queries_commune(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        commune = create_commune()
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        for _ in range(2):
+            plan_principal = commune.procedures.create(
+                collectivite_porteuse=commune,
+                doc_type=TypeDocument.PLU,
+                type="Elaboration",
+            )
+            _plan_secondaire = commune.procedures.create(
+                collectivite_porteuse=commune,
+                doc_type=TypeDocument.PLU,
+                type="Modification",
+                parente=plan_principal,
+            )
+
+            scot_principal = commune.procedures.create(
+                collectivite_porteuse=commune,
+                doc_type=TypeDocument.SCOT,
+                type="Révision",
+            )
+            _scot_secondaire = commune.procedures.create(
+                collectivite_porteuse=commune,
+                doc_type=TypeDocument.SCOT,
+                type="Modification",
+                parente=scot_principal,
+            )
+
+            with django_assert_num_queries(9):
+                response = client.get(
+                    reverse("pour_nuxt_collectivite", args=[commune.code_insee_unique])
+                )
+
+        assert len(response.json()["plans"]) == 2
+        assert len(response.json()["schemas"]) == 2
+
+    @pytest.mark.django_db
+    def test_nb_queries_groupement(
+        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        groupement = create_groupement()
+        commune_a = create_commune()
+        commune_b = create_commune()
+        groupement.collectivites_adherentes.add(commune_a, commune_b)
+
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        for _ in range(2):
+            plan_principal = groupement.procedure_set.create(
+                doc_type=TypeDocument.PLU,
+                type="Elaboration",
+            )
+            plan_principal.perimetre.add(commune_a, commune_b)
+            plan_principal.event_set.create(
+                type="Délibération d'approbation", date_evenement="2023-01-02"
+            )
+            plan_secondaire = groupement.procedure_set.create(
+                doc_type=TypeDocument.PLU,
+                type="Modification",
+                parente=plan_principal,
+            )
+            plan_secondaire.perimetre.add(commune_a, commune_b)
+
+            scot_principal = groupement.procedure_set.create(
+                doc_type=TypeDocument.SCOT,
+                type="Révision",
+            )
+            scot_principal.perimetre.add(commune_a, commune_b)
+            scot_principal.event_set.create(
+                type="Délibération d'approbation", date_evenement="2023-01-02"
+            )
+            scot_secondaire = groupement.procedure_set.create(
+                doc_type=TypeDocument.SCOT,
+                type="Modification",
+                parente=scot_principal,
+            )
+            scot_secondaire.perimetre.add(commune_a, commune_b)
+
+            with django_assert_num_queries(9):
+                response = client.get(
+                    reverse(
+                        "pour_nuxt_collectivite", args=[groupement.code_insee_unique]
+                    )
+                )
+
+        assert len(response.json()["plans"]) == 2
+        assert len(response.json()["schemas"]) == 2

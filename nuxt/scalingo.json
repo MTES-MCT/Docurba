@@ -3,5 +3,11 @@
     "APP_URL": {
       "generator": "url"
     }
-  }
+  },
+    "formation": {
+        "web": {
+            "amount": 1,
+            "size": "M"
+        }
+    }
 }
