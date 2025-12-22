@@ -18,7 +18,7 @@
     <LayoutsAppBar flat extended>
       <v-tabs v-if="$user.profile.verified" align-with-title class="header-tabs">
         <v-tab
-          v-if="$user.profile.poste === 'ddt'"
+          v-if="$user.canViewSectionCollectivites({ departement: $user.profile.departement })"
           :to="{
             name: 'ddt-departement-collectivites',
             params: {departement: $user.profile.departement}
@@ -27,12 +27,13 @@
           Mes collectivités
         </v-tab>
         <v-tab
-          v-if="$user.profile.poste === 'ddt'"
+          v-if="$user.canViewSectionProcedures({ departement: $user.profile.departement })"
           :to="`/ddt/${$user.profile.departement}/procedures`"
         >
           Mes procédures
         </v-tab>
         <v-tab
+          v-if="$user.canViewSectionPAC()"
           :to="{
             name: 'trames-githubRef',
             params: {githubRef: trameRef}
@@ -41,7 +42,7 @@
           Trame de PAC {{ trameRef.includes('region') ? 'régionale' : 'départementale' }}
         </v-tab>
         <v-tab
-          v-if="$user.profile.poste === 'ddt'"
+          v-if="$user.canViewSectionPAC() && $user.profile.poste === 'ddt'"
           :to="{
             name: 'ddt-departement-pac',
             params: {departement: $user.profile.departement}
@@ -69,7 +70,7 @@
         </v-row>
       </v-container>
       <template v-else>
-        <nuxt v-if="isAllowed" />
+        <nuxt v-if="isVerified" />
         <v-container v-else class="fill-height">
           <v-row justify="center" align="center">
             <v-col cols="12" class="mb-4">
@@ -102,16 +103,18 @@ export default {
     }
   },
   computed: {
-    isAllowed () {
-      // console.log('this.$user?.profile: ', this.$user.profile)
-      return (this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified) || this.$user.profile.is_admin || this.$isDev
+    isVerified () {
+      return this.$user?.profile?.verified || this.$user.profile.is_admin
     },
     trameRef () {
-      const scopes = { ddt: 'dept', dreal: 'region' }
-      const poste = this.$user.profile.poste
-      const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
+      if (this.$user.canViewSectionPAC()) {
+        const scopes = { ddt: 'dept', dreal: 'region' }
+        const poste = this.$user.profile.poste
+        const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
 
-      return `${scopes[poste]}-${this.$options.filters.deptToRef(code)}`
+        return `${scopes[poste]}-${this.$options.filters.deptToRef(code)}`
+      }
+      return ''
     },
     ddtBetaTest () {
       return validationBetaDDT.includes(this.$route.params.departement)
@@ -121,9 +124,9 @@ export default {
     await this.$user.isReady
     this.isLoading = false
 
-    if (this.$user.profile.side !== 'etat') {
-      console.warn('Page réservée au side État')
-      this.$router.push('/')
+    if (!['etat', 'ppa'].includes(this.$user.profile.side)) {
+      console.warn('Page réservée aux sides État ou PPA.')
+      this.$nuxt.context.redirect(403, '/')
     }
 
     // const displayedKey = 'tally-displayed-m6kNJP'

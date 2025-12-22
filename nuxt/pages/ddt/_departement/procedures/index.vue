@@ -4,7 +4,7 @@
       <v-col cols="12" class="d-flex align-center justify-space-between pb-0 pt-4">
         <h1>Mes Procédures</h1>
         <div>
-          <v-btn depressed color="primary" :to="`/ddt/${$route.params.departement}/procedures/choix-collectivite`">
+          <v-btn v-if="$user.canCreateProcedure({ departement: $route.params.departement })" depressed color="primary" :to="`/ddt/${$route.params.departement}/procedures/choix-collectivite`">
             Nouvelle procédure
           </v-btn>
         </div>
@@ -189,6 +189,10 @@ export default {
   },
   async mounted () {
     try {
+      if (!this.$user.canViewSectionProcedures({ departement: this.$route.params.departement })) {
+        console.warn('User is not allowed to view this page.')
+        this.$nuxt.context.redirect(403, '/')
+      }
       const promProcedures = await this.$urbanisator.getProceduresForDept(this.$route.params.departement)
       const rawReferentiel = fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
 
