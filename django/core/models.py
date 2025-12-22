@@ -40,6 +40,7 @@ class TypeDocument(models.TextChoices):
     PLUIH = "PLUiH"
     PLUIHM = "PLUiHM"
     PLUIM = "PLUiM"
+    PLUIS = "PLUiS"
 
 
 PLU_LIKE = (
@@ -47,6 +48,7 @@ PLU_LIKE = (
     TypeDocument.PLUIH,
     TypeDocument.PLUIHM,
     TypeDocument.PLUIM,
+    TypeDocument.PLUIS,
 )
 
 
@@ -468,7 +470,10 @@ class Procedure(models.Model):
 
     @property
     def type_document(self) -> TypeDocument:
-        if self.doc_type in (TypeDocument.PLU, *PLU_LIKE):
+        if (
+            self.doc_type in (TypeDocument.PLU, *PLU_LIKE)
+            and self.doc_type != TypeDocument.PLUIS
+        ):
             if not self.is_intercommunal:
                 return TypeDocument.PLU
             if self.vaut_PLH_consolide and self.vaut_PDM_consolide:
