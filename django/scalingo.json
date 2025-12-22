@@ -1,7 +1,18 @@
 {
     "env": {
         "ALLOWED_HOSTS": {
-            "generator": "url"
+            "generator": "template",
+            "template": "%APP%.osc-fr1.scalingo.io"
+        },
+        "BACKUPS_SUPABASE_MODIFY_TRIGGERS": "True"
+    },
+    "formation": {
+        "web": {
+            "amount": 1,
+            "size": "S"
         }
+    },
+    "scripts": {
+        "first-deploy": "/usr/bin/bash scripts/restore_database.sh ${DATABASE_URL}"
     }
 }
