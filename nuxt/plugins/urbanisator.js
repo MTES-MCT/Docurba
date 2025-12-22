@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { groupBy, uniqBy, uniq, orderBy, maxBy } from 'lodash'
+import { groupBy, uniqBy, orderBy, maxBy } from 'lodash'
 import axios from 'axios'
 
 export default ({ $supabase, $dayjs }, inject) => {
@@ -60,14 +60,14 @@ export default ({ $supabase, $dayjs }, inject) => {
       return procedures
     },
     async getProceduresPerimetre (procedures, collectiviteId) {
-      const collectivitesCodes = [collectiviteId]
-      procedures.forEach((p) => {
-        collectivitesCodes.push(...p.procedures_perimetres.map(c => c.collectivite_code))
-      })
+      const collectivitesCodes = new Set(procedures.flatMap(p =>
+        p.procedures_perimetres.map(c => c.collectivite_code)
+      ))
+      collectivitesCodes.add(collectiviteId)
 
       const { data: collectivites } = await axios({
         url: '/api/geo/collectivites',
-        params: { codes: uniq(collectivitesCodes) }
+        params: new URLSearchParams(collectivitesCodes.map(code => ['codes', code]))
       })
 
       procedures.forEach((procedure) => {

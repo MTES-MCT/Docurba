@@ -286,17 +286,14 @@ export default {
         console.log('error getProcedures', error)
       }
 
-      const collectiviteCodes = procedures.map(p => p.collectivite_porteuse_id)
-
-      procedures.forEach((p) => {
-        collectiviteCodes.push(...p.procedures_perimetres.map(c => c.collectivite_code))
-      })
+      const collectiviteCodes = new Set(procedures.flatMap(p => [
+        p.collectivite_porteuse_id,
+        ...p.procedures_perimetres.map(c => c.collectivite_code)
+      ]))
 
       const { data: collectivites } = await axios({
         url: '/api/geo/collectivites',
-        params: {
-          codes: collectiviteCodes
-        }
+        params: new URLSearchParams(collectiviteCodes.map(code => ['codes', code]))
       })
 
       const enrichedProcedures = procedures.map((p) => {
