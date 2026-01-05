@@ -27,15 +27,19 @@
                   />
                 </v-col>
                 <v-col cols="12">
-                  <v-select
-                    v-model="event.visibility"
-                    label="Visibilité de l'évènement"
-                    filled
-                    :items="[
-                      {value: 'public', text: 'Publique - Visible par le grand public'},
-                      {value: 'private', text: 'Privé - Visible uniquement par les collaborateur·ices de la procédure'},
-                    ]"
-                  />
+                  <validation-provider v-slot="{ errors }" name="Visibilité de l'évènement" rules="required">
+                    <v-select
+                      v-model="event.visibility"
+                      label="Visibilité de l'évènement"
+                      filled
+                      :error-messages="errors"
+                      hide-details="auto"
+                      :items="[
+                        {value: 'public', text: 'Publique - Visible par le grand public'},
+                        {value: 'private', text: 'Privé - Visible uniquement par les collaborateur·ices de la procédure'},
+                      ]"
+                    />
+                  </validation-provider>
                 </v-col>
                 <v-col cols="12">
                   <FriseEventAttachementsCard v-model="attachements" />
@@ -126,7 +130,7 @@ export default {
       date_iso: null,
       description: '',
       attachements: [],
-      visibility: 'private'
+      visibility: null
     }
 
     return {
