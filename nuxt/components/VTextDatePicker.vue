@@ -7,7 +7,7 @@
           filled
           :label="label"
           :value="desplayedDate"
-          hide-details
+          hide-details="auto"
           :error-messages="errors"
           v-on="on"
         >

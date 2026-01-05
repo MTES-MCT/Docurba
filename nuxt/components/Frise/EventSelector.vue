@@ -8,7 +8,7 @@
           :error-messages="errors"
           style="max-width:50%;"
           :items="filteredEvents"
-          hide-details
+          hide-details="auto"
           filled
           label="Type"
         />
