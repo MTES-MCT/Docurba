@@ -187,7 +187,7 @@ export default {
   async mounted () {
     if (!this.$user.canViewSectionPAC()) {
       console.warn('User is not allowed to view this page.')
-      this.$nuxt.context.redirect(403, '/')
+      this.$nuxt.context.redirect(302, '/')
     }
 
     await this.fetchProjects()
