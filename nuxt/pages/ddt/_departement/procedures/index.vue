@@ -26,90 +26,86 @@
           loading-text="Chargement des collectivités..."
         >
           <template #top>
-            <div>
-              <v-col v-if="$user.profile.side === 'ppa'" cols="8">
+            <v-row>
+              <v-col v-if="$user.canViewMultipleDepartements()" cols="8" class="p-0" order="first">
                 <VDeptAutocomplete
                   :default-departement-code="$route.params.departement"
                   :departements-filter="$user.profile.departements"
-                  dense
-                  @input="updatePageDepartement"
+                  :hide-details="true"
+                  @input="navigateToDepartement"
                 />
               </v-col>
-            </div>
-            <div class="d-flex  align-center justify-space-between mb-6">
-              <v-select
-                v-model="selectedTypesFilter"
-                flat
-                background-color="alt-beige"
-                hide-details
-                solo
-                multiple
-                dense
-                :items="typeFilterItems"
-                style="max-width:250px"
-              >
-                <template #selection="{item, index}">
-                  <div v-if="selectedTypesFilter.length === typeFilterItems.length && index === 0">
-                    Tout type de procédures
-                  </div>
-                  <span v-else-if="selectedTypesFilter.length !== typeFilterItems.length">{{ item.text }}</span>
-                </template>
-              </v-select>
+              <v-col cols="8" class="p-0 mb-6 d-flex justify-space-between" :order="$user.canViewMultipleDepartements() ? 'last' : 'first'">
+                <v-select
+                  v-model="selectedTypesFilter"
+                  flat
+                  background-color="alt-beige"
+                  hide-details
+                  solo
+                  dense
+                  multiple
+                  :items="typeFilterItems"
+                >
+                  <template #selection="{item, index}">
+                    <div v-if="selectedTypesFilter.length === typeFilterItems.length && index === 0">
+                      Tout type de procédures
+                    </div>
+                    <span v-else-if="selectedTypesFilter.length !== typeFilterItems.length">{{ item.text }}</span>
+                  </template>
+                </v-select>
 
-              <v-select
-                v-model="selectedDocumentsFilter"
-                class="ml-2"
-                flat
-                multiple
-                background-color="alt-beige"
-                hide-details
-                solo
-                dense
-                :items="documentFilterItems"
-                style="max-width:260px"
-              >
-                <template #selection="{item, index}">
-                  <div v-if="documentFilterItems.length === selectedDocumentsFilter.length && index === 0">
-                    Tout type de document
-                  </div>
-                  <span v-else-if="documentFilterItems.length !== selectedDocumentsFilter.length">
-                    {{ item.text }}<span v-if="index !== selectedDocumentsFilter.length - 1">,&nbsp;</span>
-                  </span>
-                </template>
-              </v-select>
+                <v-select
+                  v-model="selectedDocumentsFilter"
+                  class="ml-2"
+                  flat
+                  multiple
+                  background-color="alt-beige"
+                  hide-details
+                  solo
+                  dense
+                  :items="documentFilterItems"
+                >
+                  <template #selection="{item, index}">
+                    <div v-if="documentFilterItems.length === selectedDocumentsFilter.length && index === 0">
+                      Tout type de document
+                    </div>
+                    <span v-else-if="documentFilterItems.length !== selectedDocumentsFilter.length">
+                      {{ item.text }}<span v-if="index !== selectedDocumentsFilter.length - 1">,&nbsp;</span>
+                    </span>
+                  </template>
+                </v-select>
 
-              <v-select
-                v-model="selectedStatusFilter"
-                class="ml-2"
-                flat
-                multiple
-                background-color="alt-beige"
-                hide-details
-                solo
-                dense
-                :items="statusFilterItems"
-                style="max-width:180px"
-              >
-                <template #selection="{item, index}">
-                  <div v-if="statusFilterItems.length === selectedStatusFilter.length && index === 0">
-                    Tous les statuts
-                  </div>
-                  <span v-else-if="statusFilterItems.length !== selectedStatusFilter.length">
-                    {{ item.text }}<span v-if="index !== selectedStatusFilter.length - 1">,&nbsp;</span>
-                  </span>
-                </template>
-              </v-select>
-
-              <v-spacer />
-              <v-text-field
-                v-model="search"
-                outlined
-                hide-details
-                dense
-                style="max-width:400px"
-                label="Rechercher une procédure..."
-              />
-            </div>
+                <v-select
+                  v-model="selectedStatusFilter"
+                  class="ml-2"
+                  flat
+                  multiple
+                  background-color="alt-beige"
+                  hide-details
+                  solo
+                  dense
+                  :items="statusFilterItems"
+                >
+                  <template #selection="{item, index}">
+                    <div v-if="statusFilterItems.length === selectedStatusFilter.length && index === 0">
+                      Tous les statuts
+                    </div>
+                    <span v-else-if="statusFilterItems.length !== selectedStatusFilter.length">
+                      {{ item.text }}<span v-if="index !== selectedStatusFilter.length - 1">,&nbsp;</span>
+                    </span>
+                  </template>
+                </v-select>
+              </v-col>
+              <v-col cols="3" offset="1" align-self="start">
+                <v-text-field
+                  v-model="search"
+                  outlined
+                  hide-details
+                  dense
+                  label="Rechercher une procédure..."
+                />
+              </v-col>
+            </v-row>
           </template>
 
           <!-- eslint-disable-next-line -->

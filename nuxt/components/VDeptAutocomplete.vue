@@ -4,6 +4,7 @@
     :items="departements"
     label="Département"
     filled
+    :hide-details="hideDetails"
     :error-messages="errorMessages"
     return-object
     :clearable="clearable"
@@ -34,6 +35,10 @@ export default {
     departementsFilter: {
       type: Array,
       default: () => []
+    },
+    hideDetails: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
