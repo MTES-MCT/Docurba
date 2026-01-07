@@ -2,7 +2,7 @@
   <v-autocomplete
     v-model="selectedDepartement"
     :items="departements"
-    label="Departement"
+    label="Département"
     filled
     :error-messages="errorMessages"
     return-object
