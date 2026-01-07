@@ -73,73 +73,73 @@
                 </v-switch>
               </div>
             </v-alert>
-            <div>
-              <v-col v-if="$user.profile.side === 'ppa'" cols="8">
+            <v-row>
+              <v-col v-if="$user.canViewMultipleDepartements()" cols="6" class="p-0">
                 <VDeptAutocomplete
                   :default-departement-code="$route.params.departement"
                   :departements-filter="$user.profile.departements"
-                  dense
-                  @input="updatePageDepartement"
+                  :hide-details="true"
+                  @input="navigateToDepartement"
                 />
               </v-col>
-            </div>
-            <div class="d-flex align-center justify-space-between mb-6">
-              <v-select
-                v-model="selectedCollectiviteTypesFilter"
-                flat
-                background-color="alt-beige"
-                hide-details
-                solo
-                multiple
-                dense
-                :items="collectiviteTypeFilterItems"
-                style="max-width:350px"
-              >
-                <template #selection="{item, index}">
-                  <div v-if="collectiviteTypeFilterItems.length === selectedCollectiviteTypesFilter.length && index === 0">
-                    Tout type de collectivité
-                  </div>
-                  <span v-else-if="collectiviteTypeFilterItems.length !== selectedCollectiviteTypesFilter.length">
-                    {{ item.text }}<span v-if="index !== selectedCollectiviteTypesFilter.length - 1">,&nbsp;</span>
-                  </span>
-                </template>
-              </v-select>
-              <v-select
-                v-model="filterEpci"
-                class="ml-2"
-                style="max-width:350px"
-                :items="searchEpcisItems"
-                placeholder="Tous les EPCIs"
-                item-value="code"
-                item-text="intitule"
-                flat
-                background-color="alt-beige"
-                hide-details
-                solo
-                dense
-                clearable
-              >
-                <template #prepend-item>
-                  <v-list-item>
-                    <v-text-field
-                      v-model="searchEpcis"
-                      dense
-                      outlined
-                      label="Rechercher un EPCI..."
-                    />
-                  </v-list-item>
-                </template>
-              </v-select>
-              <v-spacer />
-              <v-text-field
-                v-model="search"
-                outlined
-                hide-details
-                dense
-                style="max-width:400px"
-                label="Rechercher une collectivité..."
-              />
-            </div>
+
+              <v-col cols="6" class="p-0 mb-6 d-flex justify-space-between" :order="$user.canViewMultipleDepartements() ? 'last' : 'first'">
+                <v-select
+                  v-model="selectedCollectiviteTypesFilter"
+                  flat
+                  background-color="alt-beige"
+                  hide-details
+                  dense
+                  solo
+                  multiple
+                  :items="collectiviteTypeFilterItems"
+                  class="col-6"
+                >
+                  <template #selection="{item, index}">
+                    <div v-if="collectiviteTypeFilterItems.length === selectedCollectiviteTypesFilter.length && index === 0">
+                      Tout type de collectivité
+                    </div>
+                    <span v-else-if="collectiviteTypeFilterItems.length !== selectedCollectiviteTypesFilter.length">
+                      {{ item.text }}<span v-if="index !== selectedCollectiviteTypesFilter.length - 1">,&nbsp;</span>
+                    </span>
+                  </template>
+                </v-select>
+                <v-select
+                  v-model="filterEpci"
+                  class="ml-2 col-6"
+                  :items="searchEpcisItems"
+                  placeholder="Tous les EPCIs"
+                  item-value="code"
+                  item-text="intitule"
+                  flat
+                  dense
+                  background-color="alt-beige"
+                  hide-details
+                  solo
+                  clearable
+                >
+                  <template #prepend-item>
+                    <v-list-item>
+                      <v-text-field
+                        v-model="searchEpcis"
+                        dense
+                        outlined
+                        label="Rechercher un EPCI..."
+                      />
+                    </v-list-item>
+                  </template>
+                </v-select>
+              </v-col>
+              <v-col cols="3" align-self="start" offset="3">
+                <v-text-field
+                  v-model="search"
+                  outlined
+                  hide-details
+                  dense
+                  label="Rechercher une collectivité..."
+                />
+              </v-col>
+            </v-row>
           </template>
 
           <!-- eslint-disable-next-line -->

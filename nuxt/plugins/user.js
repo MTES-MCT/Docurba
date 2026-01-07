@@ -181,6 +181,9 @@ export default async ({ $supabase, app }, inject) => {
     },
     canDeleteProcedure () {
       return this.profile.side !== 'ppa'
+    },
+    canViewMultipleDepartements () {
+      return this.profile.side === 'ppa'
     }
   }
 
