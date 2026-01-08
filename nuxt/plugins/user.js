@@ -47,7 +47,7 @@ function handleRedirect ($supabase, event, user, router) {
 }
 
 // Mandatory for SonarQube
-// eslint-disable-next-line import/no-anonymous-default-export, unicorn/no-anonymous-default-export
+// eslint-disable-next-line import/no-anonymous-default-export
 export default async ({ $supabase, app }, inject) => {
   let user = Vue.observable({ ...defaultUser })
 
