@@ -124,7 +124,7 @@ export default {
     await this.$user.isReady
     this.isLoading = false
 
-    if (!['etat', 'ppa'].includes(this.$user.profile.side)) {
+    if (!this.$user.canViewDDTLayout()) {
       console.warn('Page réservée aux sides État ou PPA.')
       this.$nuxt.context.redirect(302, '/')
     }
