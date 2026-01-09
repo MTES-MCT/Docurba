@@ -2,7 +2,8 @@
   <v-autocomplete
     v-model="selectedDepartement"
     :items="departements"
-    label="Département"
+    :label="withLabel ? 'Département' : ''"
+    :dense="dense"
     filled
     :hide-details="hideDetails"
     :error-messages="errorMessages"
@@ -39,6 +40,14 @@ export default {
     hideDetails: {
       type: Boolean,
       default: false
+    },
+    dense: {
+      type: Boolean,
+      default: false
+    },
+    withLabel: {
+      type: Boolean,
+      default: true
     }
   },
   data () {

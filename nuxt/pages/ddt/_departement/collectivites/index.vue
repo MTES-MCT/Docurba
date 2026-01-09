@@ -79,6 +79,8 @@
                   :default-departement-code="$route.params.departement"
                   :departements-filter="$user.profile.departements"
                   :hide-details="true"
+                  :dense="true"
+                  :with-label="false"
                   @input="navigateToDepartement"
                 />
               </v-col>
