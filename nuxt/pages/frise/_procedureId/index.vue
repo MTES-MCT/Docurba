@@ -355,7 +355,7 @@ export default
       return this.enrichedEvents.map(e => e.attachements).flat().filter(e => e)
     },
     backToCollectivite () {
-      if (this.$user.id && this.$user.profile && this.$user.profile.side === 'etat') {
+      if (this.$user.id && this.$user.profile && this.$user.canViewDDTLayout()) {
         return `/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`
       } else {
         return `/collectivites/${this.collectivite.code}`
