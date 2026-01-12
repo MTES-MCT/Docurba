@@ -7,9 +7,12 @@ export default {
   layout: 'ddt',
   async mounted () {
     await this.$user.isReady
-    if (!this.$user.canViewSectionCollectivites({ departement: this.$route.params.departement })) {
-      console.warn('User is not allowed to view this page.')
-      this.$nuxt.context.redirect(403, '/')
+
+    const routerDept = this.$route.params.departement
+    const userDept = this.$user.profile.departement
+
+    if (routerDept !== userDept && !this.$user.profile?.is_admin) {
+      this.$router.push({ params: { departement: userDept } })
     }
   }
 }

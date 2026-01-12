@@ -1,4 +1,4 @@
-export default ({ app }, inject) => { // eslint-disable-line unicorn/no-anonymous-default-export
+export default ({ app }, inject) => {
   const utils = {
     formatProcedureName (procedure, collectivite) {
       if (procedure.name) {

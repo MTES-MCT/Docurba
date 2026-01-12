@@ -18,7 +18,7 @@
     <LayoutsAppBar flat extended>
       <v-tabs v-if="$user.profile.verified" align-with-title class="header-tabs">
         <v-tab
-          v-if="$user.canViewSectionCollectivites({ departement: $user.profile.departement })"
+          v-if="$user.profile.poste === 'ddt'"
           :to="{
             name: 'ddt-departement-collectivites',
             params: {departement: $user.profile.departement}
@@ -27,13 +27,12 @@
           Mes collectivités
         </v-tab>
         <v-tab
-          v-if="$user.canViewSectionProcedures({ departement: $user.profile.departement })"
+          v-if="$user.profile.poste === 'ddt'"
           :to="`/ddt/${$user.profile.departement}/procedures`"
         >
           Mes procédures
         </v-tab>
         <v-tab
-          v-if="$user.canViewSectionTramesPAC()"
           :to="{
             name: 'trames-githubRef',
             params: {githubRef: trameRef}
@@ -42,7 +41,7 @@
           Trame de PAC {{ trameRef.includes('region') ? 'régionale' : 'départementale' }}
         </v-tab>
         <v-tab
-          v-if="$user.canViewSectionPAC()"
+          v-if="$user.profile.poste === 'ddt'"
           :to="{
             name: 'ddt-departement-pac',
             params: {departement: $user.profile.departement}
@@ -104,17 +103,15 @@ export default {
   },
   computed: {
     isAllowed () {
+      // console.log('this.$user?.profile: ', this.$user.profile)
       return (this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified) || this.$user.profile.is_admin || this.$isDev
     },
     trameRef () {
-      if (this.$user.canViewSectionTramesPAC()) {
-        const scopes = { ddt: 'dept', dreal: 'region' }
-        const poste = this.$user.profile.poste
-        const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
+      const scopes = { ddt: 'dept', dreal: 'region' }
+      const poste = this.$user.profile.poste
+      const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
 
-        return `${scopes[poste]}-${this.$options.filters.deptToRef(code)}`
-      }
-      return ''
+      return `${scopes[poste]}-${this.$options.filters.deptToRef(code)}`
     },
     ddtBetaTest () {
       return validationBetaDDT.includes(this.$route.params.departement)
@@ -124,9 +121,9 @@ export default {
     await this.$user.isReady
     this.isLoading = false
 
-    if (!['etat', 'ppa'].includes(this.$user.profile.side)) {
-      console.warn('Page réservée aux sides État ou PPA.')
-      this.$nuxt.context.redirect(403, '/')
+    if (this.$user.profile.side !== 'etat') {
+      console.warn('Page réservée au side État')
+      this.$router.push('/')
     }
 
     // const displayedKey = 'tally-displayed-m6kNJP'
