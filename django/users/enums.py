@@ -4,7 +4,6 @@ from django.db import models
 class ProfileSideType(models.TextChoices):
     ETAT = "etat", "État"
     COLLECTIVITE = "collectivite", "Collectivité"
-    PPA = "ppa", "PPA"
 
 
 class PosteType(models.TextChoices):
