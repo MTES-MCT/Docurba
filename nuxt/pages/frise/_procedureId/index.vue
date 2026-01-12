@@ -316,9 +316,6 @@ export default
       }
     },
     canCreateSecondaryProcedure () {
-      if (this.$user.profile.side === 'ppa') {
-        return false
-      }
       return this.isAdmin && !this.procedure.secondary_procedure_of
     },
     internalDocType () {
