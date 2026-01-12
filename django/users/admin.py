@@ -10,6 +10,7 @@ from users.models import Profile, User
 class ProfileAdmin(admin.ModelAdmin):
     readonly_fields = ("user",)
     search_fields = ("email",)
+    raw_id_fields = ("collectivite",)
     list_filter = ("poste", "side")
 
     def has_add_permission(self, request) -> Literal[False]:

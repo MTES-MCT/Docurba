@@ -4,6 +4,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.functions import Now
 
+from core.models import Collectivite
 from users import enums as users_enums
 
 
@@ -65,13 +66,13 @@ class Profile(models.Model):
         blank=True,
         null=True,
     )
-    # Ce devrait être une clé étrangère pointant vers Collectivite mais la colonne collectivite_id
-    # ne conserve pas la clé primaire déclarée pour le modèle (i.e. au format f"{code_insee}_{type}")
-    # mais seulement le "code_insee".
-    collectivite_id = models.CharField(
-        verbose_name="Code Collectivité", blank=True, null=True
+    collectivite = models.ForeignKey(
+        Collectivite,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
-    tel = models.CharField(verbose_name="Téléphone", blank=True, null=True)
+    tel = models.CharField(verbose_name="Téléphone", blank=True)
     verified = models.BooleanField(verbose_name="Vérifié", default=False)
     # La valeur `blank` ne devrait pas être autorisée car un utilisateur devrait toujours
     # avoir un `side` mais c'est le cas aujourd'hui en base.
