@@ -96,10 +96,6 @@ export default {
   },
   async mounted () {
     this.collectivites = await this.$nuxt3api(`/api/geo/search/collectivites?departementCode=${this.$route.params.departement}`)
-    if (!this.$user.canCreateProcedure({ departement: this.$route.params.departement })) {
-      console.warn('Pas assez de droits pour créer une procédure sur ce périmètre')
-      this.$nuxt.context.redirect(403, '/')
-    }
   },
   methods: {
     customFilter (value, search, item) {

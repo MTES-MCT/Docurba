@@ -4,7 +4,7 @@
       <v-col cols="12" class="d-flex align-center justify-space-between pb-0 pt-4">
         <h1>Mes Procédures</h1>
         <div>
-          <v-btn v-if="$user.canCreateProcedure({ departement: $route.params.departement })" depressed color="primary" :to="`/ddt/${$route.params.departement}/procedures/choix-collectivite`">
+          <v-btn depressed color="primary" :to="`/ddt/${$route.params.departement}/procedures/choix-collectivite`">
             Nouvelle procédure
           </v-btn>
         </div>
