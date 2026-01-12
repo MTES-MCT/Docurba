@@ -126,9 +126,6 @@ export default async ({ $supabase, app }, inject) => {
 
   // Rights management
   const userRights = {
-    canViewDDTLayout () {
-      return ['etat', 'ppa'].includes(this.profile.side)
-    },
     canViewSectionCollectivites ({ departement = null }) {
       if (this.profile.is_admin) {
         return true
