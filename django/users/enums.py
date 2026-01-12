@@ -13,9 +13,6 @@ class PosteType(models.TextChoices):
     DDT = "ddt", "DDT(M)/DEAL"
     DREAL = "dreal", "DREAL"
 
-    # Postes PPA
-    REGION = "region", "Région"
-
     # Postes Collectivités
     BE = "be", "Bureau d'études"
     ELU = "elu", "Collectivité, Élu·e"

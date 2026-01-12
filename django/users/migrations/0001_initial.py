@@ -66,7 +66,6 @@ class Migration(migrations.Migration):
                                 "Collectivité, Technicien·ne ou employé·e",
                             ),
                             ("agence_urba", "Agence d'urbanisme"),
-                            ("region", "Région"),
                             ("autre", "Autre"),
                         ],
                         verbose_name="Poste",
