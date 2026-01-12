@@ -1,5 +1,3 @@
-# ruff: noqa: DJ001
-
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.functions import Now
@@ -37,10 +35,10 @@ class Profile(models.Model):
     # La plupart des CharField peuvent avoir une valeur nulle ou "" en base car
     # il n'y a pas de restriction. Il faudrait changer ce comportement.
     # Pour l'instant, documentons.
-    firstname = models.CharField(verbose_name="Prénom", blank=True, null=True)
-    lastname = models.CharField(verbose_name="Nom", blank=True, null=True)
-    email = models.EmailField(verbose_name="Email", blank=True, null=True)
-    poste = models.CharField(
+    firstname = models.CharField(verbose_name="Prénom", blank=True, null=True)  # noqa: DJ001
+    lastname = models.CharField(verbose_name="Nom", blank=True, null=True)  # noqa: DJ001
+    email = models.EmailField(verbose_name="Email", blank=True, null=True)  # noqa: DJ001
+    poste = models.CharField(  # noqa: DJ001
         verbose_name="Poste",
         choices=users_enums.PosteType,
         blank=True,
@@ -54,7 +52,7 @@ class Profile(models.Model):
     )
     # Ce devrait être une clé étrangère pointant vers la table departements
     # mais ce n'est actuellement pas le cas en base et dans Nuxt.
-    departement = models.CharField(verbose_name="Département", blank=True, null=True)
+    departement = models.CharField(verbose_name="Département", blank=True, null=True)  # noqa: DJ001
     # Les utilisateurs side PPA peuvent voir les départements listés dans cette colonne.
     # Il s'agit d'une rustine temportaire pour relier les utilisateurs à plusieurs départements
     # (et non un seul comme c'est le cas actuellement avec la colonne `departement`).
@@ -68,19 +66,19 @@ class Profile(models.Model):
     # Ce devrait être une clé étrangère pointant vers Collectivite mais la colonne collectivite_id
     # ne conserve pas la clé primaire déclarée pour le modèle (i.e. au format f"{code_insee}_{type}")
     # mais seulement le "code_insee".
-    collectivite_id = models.CharField(
+    collectivite_id = models.CharField(  # noqa: DJ001
         verbose_name="Code Collectivité", blank=True, null=True
     )
-    tel = models.CharField(verbose_name="Téléphone", blank=True, null=True)
+    tel = models.CharField(verbose_name="Téléphone", blank=True, null=True)  # noqa: DJ001
     verified = models.BooleanField(verbose_name="Vérifié", default=False)
     # La valeur `blank` ne devrait pas être autorisée car un utilisateur devrait toujours
     # avoir un `side` mais c'est le cas aujourd'hui en base.
-    side = models.CharField(
+    side = models.CharField(  # noqa: DJ001
         verbose_name="Side", choices=users_enums.ProfileSideType, blank=True, null=True
     )
     # Ce devrait être une clé étrangère pointant vers la table regions
     # mais ce n'est actuellement pas le cas en base et dans Nuxt.
-    region = models.CharField(
+    region = models.CharField(  # noqa: DJ001
         verbose_name="Région",
         blank=True,
         null=True,
