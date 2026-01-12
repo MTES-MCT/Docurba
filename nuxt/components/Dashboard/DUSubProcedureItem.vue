@@ -59,7 +59,7 @@
         <!-- <span class="primary--text text-decoration-underline text--disabled">
           Note d'enjeux
         </span> -->
-        <v-dialog v-if="$user.canDeleteProcedure()" v-model="dialog" width="500">
+        <v-dialog v-model="dialog" width="500">
           <template #activator="{ on, attrs }">
             <span class="error--text text-decoration-underline ml-auto align-center" v-bind="attrs" v-on="on">
               Supprimer
