@@ -126,7 +126,7 @@ export default {
 
     if (!['etat', 'ppa'].includes(this.$user.profile.side)) {
       console.warn('Page réservée aux sides État ou PPA.')
-      this.$nuxt.context.redirect(302, '/')
+      this.$nuxt.context.redirect(403, '/')
     }
 
     // const displayedKey = 'tally-displayed-m6kNJP'

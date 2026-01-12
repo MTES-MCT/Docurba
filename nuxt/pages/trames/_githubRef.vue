@@ -229,7 +229,7 @@ export default {
   async mounted () {
     if (!this.$user.canViewSectionTramesPAC()) {
       console.warn('User is not allowed to view this page.')
-      this.$nuxt.context.redirect(302, '/')
+      this.$nuxt.context.redirect(403, '/')
     }
 
     // Role verification

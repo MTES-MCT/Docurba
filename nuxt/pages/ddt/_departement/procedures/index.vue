@@ -191,7 +191,7 @@ export default {
     try {
       if (!this.$user.canViewSectionProcedures({ departement: this.$route.params.departement })) {
         console.warn('User is not allowed to view this page.')
-        this.$nuxt.context.redirect(302, '/')
+        this.$nuxt.context.redirect(403, '/')
       }
       const promProcedures = await this.$urbanisator.getProceduresForDept(this.$route.params.departement)
       const rawReferentiel = fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
