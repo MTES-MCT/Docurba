@@ -59,6 +59,7 @@
           </span>
         </nuxt-link>
         <nuxt-link
+          v-if="$user.canViewSectionPAC()"
           class="primary--text text-decoration-underline mr-4"
           :to="`/ddt/${$route.params.departement}/pac?search=${$route.params.collectiviteId}`"
         >
