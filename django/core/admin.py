@@ -10,11 +10,13 @@ from core.models import Collectivite, Commune, Event, Procedure
 @admin.register(Collectivite)
 class CollectiviteAdmin(admin.ModelAdmin):
     list_display = (
+        "code_insee_unique",
         "__str__",
         "type",
         "competence_plan",
         "competence_schema",
     )
+    list_display_links = ("code_insee_unique", "__str__")
     list_filter = ("type", "competence_plan", "competence_schema", "departement")
     search_fields = ("nom", "code_insee_unique")
     readonly_fields = ("commune",)
