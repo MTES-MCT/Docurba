@@ -79,7 +79,7 @@ export default ({ app }, inject) => {
       region: 'Région'
     },
     formatPostes (profile) {
-      const postes = []
+      let postes = []
 
       const POSTES = { ...this.POSTES_ETAT, ...this.POSTES_COLLECTIVITE, ...this.POSTES_PPA }
       if (profile.poste === 'region') {
@@ -92,8 +92,12 @@ export default ({ app }, inject) => {
       for (const poste of profile.detailsPoste ?? []) {
         postes.push(this.ROLES_ETAT[poste] ?? poste)
       }
+      postes = postes.join(', ')
+      if (profile.side == 'ppa') {
+        postes = `${postes} (PPA)`
+      }
 
-      return postes.join(', ')
+      return postes
     }
   }
   inject('utils', utils)
