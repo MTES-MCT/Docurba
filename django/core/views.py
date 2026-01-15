@@ -4,7 +4,7 @@ from itertools import groupby
 from operator import attrgetter
 
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_safe
 
 from core.models import Collectivite, Commune, Procedure, TypeCollectivite
@@ -384,10 +384,9 @@ def api_scots(request: HttpRequest) -> HttpResponse:
 def collectivite(
     request: HttpRequest, collectivite_code: str, collectivite_type: str = "COM"
 ) -> HttpResponse:
-    commune = (
-        Commune.objects.with_procedures_principales()
-        .filter(id=f"{collectivite_code}_{collectivite_type}")
-        .first()
+    commune_qs = Commune.objects.with_procedures_principales()
+    commune = get_object_or_404(
+        commune_qs, id=f"{collectivite_code}_{collectivite_type}"
     )
     is_schema = attrgetter("is_schema")
     procedures_principales_by_schema = {
