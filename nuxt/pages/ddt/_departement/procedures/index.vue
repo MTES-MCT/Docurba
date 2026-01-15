@@ -240,6 +240,9 @@ export default {
       return normalizedValue.includes(normalizedSearch)
     },
     navigateToDepartement (departementObject) {
+      if (!departementObject) {
+        return
+      }
       let departement = departementObject.code_departement.toString()
       departement = departement.padStart('2', '0')
       this.$router.push({ params: { departement } })
