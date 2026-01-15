@@ -52,7 +52,7 @@ export default {
   },
   data () {
     let filteredDepartements = departements
-    if (this.departementsFilter.length > 0) {
+    if (this.departementsFilter?.length > 0) {
       filteredDepartements = departements.filter(departement =>
         this.departementsFilter.includes(
           departement.code_departement.toString().padStart(2, '0')
