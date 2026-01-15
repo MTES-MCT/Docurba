@@ -4,7 +4,7 @@ from itertools import groupby
 from operator import attrgetter
 
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_safe
 
 from core.models import Collectivite, Commune, Procedure, TypeCollectivite
@@ -390,11 +390,9 @@ def collectivite(
         return HttpResponseBadRequest(
             "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
         )
-
-    commune = (
-        Commune.objects.with_procedures_principales(avant=avant)
-        .filter(id=f"{collectivite_code}_{collectivite_type}")
-        .first()
+    commune_qs = Commune.objects.with_procedures_principales(avant=avant)
+    commune = get_object_or_404(
+        commune_qs, id=f"{collectivite_code}_{collectivite_type}"
     )
     is_schema = attrgetter("is_schema")
     procedures_principales_by_schema = {
