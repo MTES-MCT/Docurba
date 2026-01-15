@@ -183,7 +183,7 @@ export default async ({ $supabase, app }, inject) => {
       return this.profile.side !== 'ppa'
     },
     canViewMultipleDepartements () {
-      return this.profile.side === 'ppa'
+      return this.profile.side === 'ppa' || this.profile.is_admin
     }
   }
 
