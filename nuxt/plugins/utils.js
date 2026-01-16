@@ -78,7 +78,7 @@ export default ({ app }, inject) => {
     POSTES_PPA: {
       region: 'Région'
     },
-    formatPostes (profile) {
+    formatPostesAndSide (profile) {
       let postes = []
 
       const POSTES = { ...this.POSTES_ETAT, ...this.POSTES_COLLECTIVITE, ...this.POSTES_PPA }
