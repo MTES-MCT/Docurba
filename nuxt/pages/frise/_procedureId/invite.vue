@@ -34,7 +34,7 @@
                                 {{ collaborator.label }}
                               </v-list-item-title>
                               <v-list-item-subtitle>
-                                {{ $utils.formatPostes(collaborator) }}
+                                {{ $utils.formatPostesAndSide(collaborator) }}
                               </v-list-item-subtitle>
                             </v-list-item-content>
                             <v-list-item-action>

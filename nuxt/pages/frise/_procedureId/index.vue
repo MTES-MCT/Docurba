@@ -183,7 +183,7 @@
                           <div>
                             {{ collaborator.label }}
                             <div class="mention-grey--text">
-                              {{ $utils.formatPostes(collaborator) }}
+                              {{ $utils.formatPostesAndSide(collaborator) }}
                             </div>
                           </div>
                         </li>
