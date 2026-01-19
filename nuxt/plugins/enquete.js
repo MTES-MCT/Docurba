@@ -16,7 +16,7 @@ export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inj
           .from('procedures_validations')
           .delete()
           .eq('collectivite_code', code)
-          .gte('created_at', '2024-06-01')
+          .gte('created_at', this.VALIDATED_SINCE)
           .select()
         console.log('DELETED:', data)
         if (error) {
