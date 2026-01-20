@@ -557,7 +557,7 @@ class Region(models.Model):
     nom = models.CharField()
 
     def __str__(self) -> str:
-        return self.nom
+        return f"{self.nom} ({self.code_insee})"
 
 
 class Departement(models.Model):
@@ -621,7 +621,7 @@ class Collectivite(models.Model):
     objects = CollectiviteQuerySet.as_manager()
 
     def __str__(self) -> str:
-        return self.nom
+        return f"{self.nom} ({self.code_insee_unique})"
 
     @property
     def code_insee(self) -> str:

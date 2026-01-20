@@ -31,7 +31,9 @@ class Profile(models.Model):
     user = models.OneToOneField(
         User, verbose_name="Utilisateur", on_delete=models.CASCADE, primary_key=True
     )
-    created_at = models.DateTimeField(verbose_name="Date de création", db_default=Now())
+    created_at = models.DateTimeField(
+        verbose_name="Date de création", db_default=Now(), editable=False
+    )
     # La plupart des CharField peuvent avoir une valeur nulle ou "" en base car
     # il n'y a pas de restriction. Il faudrait changer ce comportement.
     # Pour l'instant, documentons.
@@ -49,10 +51,17 @@ class Profile(models.Model):
         base_field=models.CharField(choices=users_enums.RoleType, blank=True),
         blank=True,
         null=True,
+        help_text="<br>".join(users_enums.RoleType.values),
     )
-    # Ce devrait être une clé étrangère pointant vers la table departements
-    # mais ce n'est actuellement pas le cas en base et dans Nuxt.
-    departement = models.CharField(verbose_name="Département", blank=True, null=True)  # noqa: DJ001
+    departement = models.ForeignKey(
+        "core.Departement",
+        models.DO_NOTHING,
+        db_column="departement",
+        db_constraint=False,
+        null=True,
+        blank=True,
+        to_field="code_insee",
+    )
     # Les utilisateurs side PPA peuvent voir les départements listés dans cette colonne.
     # Il s'agit d'une rustine temportaire pour relier les utilisateurs à plusieurs départements
     # (et non un seul comme c'est le cas actuellement avec la colonne `departement`).
@@ -63,25 +72,29 @@ class Profile(models.Model):
         blank=True,
         null=True,
     )
-    # Ce devrait être une clé étrangère pointant vers Collectivite mais la colonne collectivite_id
-    # ne conserve pas la clé primaire déclarée pour le modèle (i.e. au format f"{code_insee}_{type}")
-    # mais seulement le "code_insee".
-    collectivite_id = models.CharField(  # noqa: DJ001
-        verbose_name="Code Collectivité", blank=True, null=True
+    collectivite = models.ForeignKey(
+        "core.Collectivite",
+        models.DO_NOTHING,
+        db_constraint=False,
+        null=True,
+        blank=True,
+        to_field="code_insee_unique",
     )
     tel = models.CharField(verbose_name="Téléphone", blank=True, null=True)  # noqa: DJ001
     verified = models.BooleanField(verbose_name="Vérifié", default=False)
     # La valeur `blank` ne devrait pas être autorisée car un utilisateur devrait toujours
     # avoir un `side` mais c'est le cas aujourd'hui en base.
     side = models.CharField(  # noqa: DJ001
-        verbose_name="Side", choices=users_enums.ProfileSideType, blank=True, null=True
+        verbose_name="Side", choices=users_enums.ProfileSideType, null=True
     )
-    # Ce devrait être une clé étrangère pointant vers la table regions
-    # mais ce n'est actuellement pas le cas en base et dans Nuxt.
-    region = models.CharField(  # noqa: DJ001
-        verbose_name="Région",
-        blank=True,
+    region = models.ForeignKey(
+        "core.region",
+        models.DO_NOTHING,
+        db_column="region",
+        db_constraint=False,
         null=True,
+        blank=True,
+        to_field="code_insee",
         db_comment="Si l'utilisateur est une DREAL ou une PPA : région de son périmètre. La colonne peut être remplie pour les autres types.",
     )
     no_signup = models.BooleanField(
@@ -100,11 +113,14 @@ class Profile(models.Model):
         default=False,
     )
     is_admin = models.BooleanField(
-        verbose_name="Est admin (is_admin)",
+        verbose_name="Super Admin",
         default=False,
+        help_text="Donne tous les droits",
         db_comment="super admin bypass",
     )
-    is_staff = models.BooleanField(verbose_name="Est membre (is_staff)", default=False)
+    is_staff = models.BooleanField(
+        verbose_name="Staff", default=False, help_text="Cache le compte"
+    )
 
     class Meta:
         managed = False
