@@ -83,7 +83,7 @@ export default ({ app }, inject) => {
 
       const POSTES = { ...this.POSTES_ETAT, ...this.POSTES_COLLECTIVITE, ...this.POSTES_PPA }
       if (profile.poste === 'region') {
-        const region = regions.find(r => r.code === profile.region)
+        const region = regions.find(r => r.code.padStart(2, '0') === profile.region)
         postes.push(`${POSTES[profile.poste]} ${region.name}`)
       } else if (profile.poste !== 'autre') {
         postes.push(POSTES[profile.poste])
