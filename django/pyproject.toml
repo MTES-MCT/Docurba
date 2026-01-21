@@ -18,7 +18,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "honcho",
     "polars",
     "ptpython",
     "pytest-cov",
