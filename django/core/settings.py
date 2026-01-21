@@ -1,3 +1,4 @@
+from contextlib import suppress
 from pathlib import Path
 
 import sentry_sdk
@@ -140,3 +141,10 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 UPSTREAM_NUXT = env.str("UPSTREAM_NUXT")
+
+with suppress(ModuleNotFoundError):
+    from debug_toolbar.settings import CONFIG_DEFAULTS
+
+    DEBUG_TOOLBAR_CONFIG = {
+        "HIDE_IN_STACKTRACES": CONFIG_DEFAULTS["HIDE_IN_STACKTRACES"] + ("sentry_sdk",),
+    }
