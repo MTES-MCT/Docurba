@@ -11,6 +11,7 @@
   },
   {
     "name": "Délibération de l'établissement public qui prescrit",
+    "lib EV (sur l'outil Sudocuh)": "Prescription",
     "order": 2,
     "law": "",
     "phases": "Définition des modalités",
@@ -211,6 +212,7 @@
   },
   {
     "name": "Débat sur les orientations du PAS",
+    "lib EV (sur l'outil Sudocuh)": "Arrêté d'abrogation",
     "order": 22,
     "law": "L. 153-12 du CU",
     "phases": "PAS",
@@ -311,6 +313,7 @@
   },
   {
     "name": "Délibération qui arrête le projet de SCoT",
+    "lib EV (sur l'outil Sudocuh)": "Arrêt de projet",
     "order": 32,
     "law": "L. 153-14",
     "phases": "Arrêt du projet",
@@ -401,6 +404,7 @@
   },
   {
     "name": "Réception de l'avis de l'État",
+    "lib EV (sur l'outil Sudocuh)": "Avis de l'État",
     "order": 41,
     "law": "",
     "phases": "Arrêt du projet",
