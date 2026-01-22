@@ -362,7 +362,7 @@ export default {
       groupements: [],
       filterEpci: null,
       // env.DDT_ENQUETE_ENABLED permet de ne garder l'enquête ouverte que pour des DDT retardataires
-      hasValidationEnabled: true || process.env.DDT_ENQUETE_ENABLED.includes(
+      hasValidationEnabled: this.$user.canViewEnquete() || process.env.DDT_ENQUETE_ENABLED.includes(
         this.$route.params.departement
       ),
       hideValidatedCollectives: false,
