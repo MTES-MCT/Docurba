@@ -186,7 +186,7 @@ export default async ({ $supabase, app }, inject) => {
       return this.profile.side === 'ppa' || this.profile.is_admin
     },
     canViewEnquete () {
-      return this.profile.side === 'etat' && this.profile.poste === 'ddt'
+      return (this.profile.side === 'etat' && this.profile.poste === 'ddt') || this.profile.is_admin
     }
   }
 
