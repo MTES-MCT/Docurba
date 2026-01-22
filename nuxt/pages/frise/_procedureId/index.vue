@@ -345,7 +345,10 @@ export default
     enrichedEvents () {
       console.log('this.isAdmin: ', this.isAdmin)
       return this.events.map((event) => {
-        const ev = this.documentEvents.find(x => x.name === event.type)
+        const ev = this.documentEvents.find(x =>
+          // Matche le type d'événement en regardant le libellé Docurba ET le libellé Sudocuh
+          [x.name, x["lib EV (sur l'outil Sudocuh)"]].includes(event.type)
+        )
         return { ...event, structurant: !!ev?.structurant }
       }).filter((event) => {
         return event.visibility === 'public' || this.isAdmin || (event.from_sudocuh && event.structurant)

@@ -1,6 +1,7 @@
 [
   {
     "name": "Délibération de prescription du conseil municipal ou communautaire",
+    "lib EV (sur l'outil Sudocuh)": "Prescription",
     "order": 1,
     "law": "Elaboration : art. L. 153-11 du CU\nRevision : art. L. 153-32 du CU",
     "phases": "Définition des modalités",
@@ -391,6 +392,7 @@
   },
   {
     "name": "Débat sur le PADD en conseil municipal",
+    "lib EV (sur l'outil Sudocuh)": "Débat sur le PADD ou PAS",
     "order": 25,
     "law": "L. 153-12 du CU",
     "phases": "PADD",
@@ -863,6 +865,7 @@
   },
   {
     "name": "Réception de l'avis de l'État",
+    "lib EV (sur l'outil Sudocuh)": "Avis de l'État",
     "order": 54,
     "law": "",
     "phases": "Arrêt du projet",
@@ -1115,6 +1118,7 @@
   },
   {
     "name": "Délibération d'approbation du conseil municipal ou communautaire",
+    "lib EV (sur l'outil Sudocuh)": "Délibération d'approbation",
     "order": 69,
     "law": "L. 153-21 (2°)",
     "phases": "Approbation",
@@ -1444,6 +1448,7 @@
   },
   {
     "name": "Abrogation",
+    "lib EV (sur l'outil Sudocuh)": "Arrêté d'abrogation",
     "order": 87,
     "law": "R153-19",
     "phases": "",
