@@ -184,6 +184,9 @@ export default async ({ $supabase, app }, inject) => {
     },
     canViewMultipleDepartements () {
       return this.profile.side === 'ppa' || this.profile.is_admin
+    },
+    canViewEnquete () {
+      return this.profile.side === 'etat' && this.profile.poste === 'ddt'
     }
   }
 
