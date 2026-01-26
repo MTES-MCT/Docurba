@@ -1,4 +1,5 @@
 import pytest
+from django.apps import apps
 from django.db import connection
 
 from users.models import User
@@ -18,8 +19,6 @@ def django_db_setup(django_db_setup, django_db_blocker, django_db_createdb):  # 
         return
 
     with django_db_blocker.unblock():
-        from django.apps import apps
-
         unmanaged_models_except_views = [
             model
             for model in apps.get_models()
