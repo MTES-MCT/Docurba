@@ -10,6 +10,8 @@ from django.db import connection, models
 from django.urls import reverse
 from django.utils import timezone
 
+logger = logging.getLogger(__name__)
+
 
 class TypeCollectivite(models.TextChoices):
     COM = "COM", "Commune"
@@ -652,7 +654,7 @@ class Collectivite(models.Model):
             return None
 
         if len(en_cours) > 1:
-            logging.error(
+            logger.error(
                 "Plusieurs SCoT en cours pour la collectivité %s", self.code_insee
             )
         return en_cours[0]
@@ -855,7 +857,7 @@ class Commune(Collectivite):
         try:
             return CODE_ETAT_COMPLET_TO_LIBELLE[self.code_etat_complet]
         except KeyError:
-            logging.exception(
+            logger.exception(
                 "Code état (%s) incohérent pour %s",
                 self.code_etat_complet,
                 self.code_insee,

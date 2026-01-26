@@ -1,5 +1,4 @@
 # ruff: noqa: FBT001, N803
-import logging
 from collections.abc import Callable
 from datetime import date, timedelta
 from unittest import mock
@@ -277,13 +276,10 @@ class TestCollectivitePortantScot:
 
             assert groupements[0].scots_pour_csv == [(None, scots_en_cours[0])]
 
-            assert caplog.record_tuples == [
-                (
-                    "root",
-                    logging.ERROR,
-                    f"Plusieurs SCoT en cours pour la collectivité {groupement_avec_scot.code_insee}",
-                )
-            ]
+            assert (
+                f"Plusieurs SCoT en cours pour la collectivité {groupement_avec_scot.code_insee}"
+                in caplog.messages
+            )
 
     @pytest.mark.django_db
     def test_retourne_scot_opposables_des_qu_une_commune_considere_opposable(
@@ -1715,13 +1711,10 @@ class TestCommuneCodeEtat:
         ) as mock_code_etat_complet:
             mock_code_etat_complet.return_value = "8888"
             assert commune.libelle_code_etat_complet == ""
-            assert caplog.record_tuples == [
-                (
-                    "root",
-                    logging.ERROR,
-                    f"Code état (8888) incohérent pour {commune.code_insee}",
-                )
-            ]
+            assert (
+                f"Code état (8888) incohérent pour {commune.code_insee}"
+                in caplog.messages
+            )
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
