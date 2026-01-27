@@ -19,6 +19,7 @@
           :headers="headers"
           :items="procedures"
           :items-per-page="10"
+          multi-sort
           class="elevation-1 pa-8 procedures-dt"
           :custom-filter="customFilter"
           :search="search"
@@ -111,7 +112,7 @@
           </template>
 
           <!-- eslint-disable-next-line -->
-          <template #item.name="{ item }">
+          <template #item.procedureName="{ item }">
             <div class="d-flex align-center my-5">
               <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${item.procedure_id}`">
                 {{ item.procedureName }}
@@ -137,7 +138,6 @@
 
           <!-- eslint-disable-next-line -->
           <template #item.prescription="{ item }">
-
             <span class="mention-grey--text">{{ item.prescription?.date_iso_formattee ?? '-' }}</span>
           </template>
 
@@ -176,10 +176,10 @@ export default {
   computed: {
     headers () {
       return [
-        { text: 'Nom', align: 'start', value: 'name', filterable: true, width: '45%' },
+        { text: 'Nom', align: 'start', value: 'procedureName', filterable: true, width: '45%' },
         { text: 'Périmètre', align: 'start', value: 'perimetre', filterable: false, width: '150px' },
-        { text: 'Prescription', value: 'prescription', filterable: false, width: '135px' },
-        { text: 'Dernier évènement', value: 'last_event', filterable: false }
+        { text: 'Prescription', value: 'prescription', filterable: false, width: '135px', sort: this.sortByDateIso },
+        { text: 'Dernier évènement', value: 'last_event', filterable: false, sort: this.sortByDateIso }
       ]
     },
     procedures () {
@@ -215,7 +215,6 @@ export default {
         }
 
         const procedureName = this.$utils.formatProcedureName({ ...e.procedures, procedures_perimetres: e.perimetre }, collectivitePorteuse)
-
         if (e.prescription?.date_iso) {
           e.prescription.date_iso_formattee = dayjs(e.prescription.date_iso).format('DD/MM/YYYY')
         }
@@ -246,6 +245,9 @@ export default {
       let departement = departementObject.code_departement.toString()
       departement = departement.padStart('2', '0')
       this.$router.push({ params: { departement } })
+    },
+    sortByDateIso (a, b) {
+      return dayjs(a?.date_iso || 0) - dayjs(b?.date_iso || 0)
     }
   }
 }
