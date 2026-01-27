@@ -30,8 +30,8 @@ export default ({ $supabase, $dayjs }, inject) => {
       const groupedProceduresPerim = groupBy(data, e => e.procedure_id)
       const procedures = data.map((e) => {
         const lastEvent = maxBy(e.procedures.doc_frise_events, 'date_iso')
-        const prescriptionDate = e.procedures.doc_frise_events.find(y => y.code === 'PRES')
-        return { ...e, perimetre: groupedProceduresPerim[e.procedure_id], last_event: lastEvent, prescription: prescriptionDate }
+        const prescription = e.procedures.doc_frise_events.find(y => y.code === 'PRES')
+        return { ...e, perimetre: groupedProceduresPerim[e.procedure_id], last_event: lastEvent, prescription }
       })
       const uniqProcedures = uniqBy(procedures, e => e.procedure_id)
       const orderedProcedures = orderBy(uniqProcedures, e => e.last_event?.date_iso, ['desc'])
