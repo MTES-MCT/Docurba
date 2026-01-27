@@ -19,7 +19,7 @@ repos:
       exclude: ".venv/"
     - id: pre-commit-django-migrations
       name: Check django migrations
-      entry: sh -c 'cd ~/sites/docurba/django && python -m django makemigrations --dry-run'
+      entry: sh -c 'cd ~/sites/docurba/django && django-admin makemigrations --dry-run'
       language: system
       types: [python]
       pass_filenames: false
