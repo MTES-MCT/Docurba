@@ -93,7 +93,7 @@ export default ({ app }, inject) => {
         postes.push(this.ROLES_ETAT[poste] ?? poste)
       }
       postes = postes.join(', ')
-      if (profile.side == 'ppa') {
+      if (profile.side === 'ppa') {
         postes = `${postes} (PPA)`
       }
 
