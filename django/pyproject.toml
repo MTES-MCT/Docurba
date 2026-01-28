@@ -43,6 +43,9 @@ ignore = [
     "S101",    # asserts allowed in tests...
     "PLR2004", # Magic value used in comparison
 ]
+"**/migrations/**.py" = [
+    "RUF012", # Mutable default values in class attributes
+]
 [tool.ruff.lint.pydocstyle]
 # Use Google-style docstrings.
 convention = "pep257"
