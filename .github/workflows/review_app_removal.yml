@@ -1,0 +1,46 @@
+name: 🔪 Suppression d'une recette jetable
+
+# L'action est lancée lorsqu'une PR étiquetée « recette-jetable » est fermée.
+# Les applications Nuxt2 et Django sont supprimées automatiquement par Scalingo
+# lorque la PR est fermée ou fusionnée car il s'agit de recettes jetables.
+# https://doc.scalingo.com/platform/app/review-apps
+on:
+  pull_request:
+    types: [ closed ]
+
+env:
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.TEST_SUPABASE_ACCESS_TOKEN }}
+  SUPABASE_PROJECT_ID: ${{ secrets.TEST_SUPABASE_PROJECT_ID }}
+  PR_ID: ${{ github.event.number }}
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    if: contains( github.event.pull_request.labels.*.name, 'recette-jetable')
+
+    steps:
+    - name: 🏷️ Définition des noms de la recette jetable
+      run: |
+        # Le nom est déterminé automatiquement par Scalingo pour les applications Nuxt2 et Django
+        # car ce sont des recettes jetables.
+        # Suivons le même modèle pour Supabase et Nuxt3.
+        echo "SUPABASE_REVIEW_APP_NAME=supabase-pr${PR_ID}" >> $GITHUB_ENV
+        echo "NUXT_3_REVIEW_APP_NAME=docurba-nuxt3-pr${PR_ID}" >> $GITHUB_ENV
+
+    - name: 🛠️ Installation de Scalingo CLI
+      uses: scalingo-community/setup-scalingo@87fe86eedc708ffb9d232c756b21f6a5784f6c8a # v0.1.1
+      with:
+        api_token: ${{ secrets.SCALINGO_API_TOKEN }}
+        region: 'osc-fr1'
+
+    - name: 🚮 Suppression de l'application Nuxt3
+      run: scalingo destroy --app "${NUXT_3_REVIEW_APP_NAME}" --force
+
+
+    - name: 🛠️ Installation de la CLI Supabase
+      uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
+      with:
+        version: latest
+
+    - name: 🚮 Suppression de la branche Supabase
+      run: supabase branches --project-ref "${SUPABASE_PROJECT_ID}" delete "${SUPABASE_REVIEW_APP_NAME}"

@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import { groupBy, uniqBy, orderBy, maxBy } from 'lodash'
-import axios from 'axios'
 
-export default ({ $supabase, $dayjs }, inject) => {
+export default ({ $supabase }, inject) => {
   Vue.filter('docType', function (procedure) {
     if (procedure.doc_type === 'PLU') {
       let docType = procedure.doc_type
@@ -36,97 +35,6 @@ export default ({ $supabase, $dayjs }, inject) => {
       const uniqProcedures = uniqBy(procedures, e => e.procedure_id)
       const orderedProcedures = orderBy(uniqProcedures, e => e.last_event?.date_iso, ['desc'])
       return orderedProcedures
-    },
-    async getCommuneProcedures (inseeCode) {
-      const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*').eq('collectivite_code', inseeCode)
-      const { data: procedures } = await $supabase.from('procedures')
-        .select('*').eq('archived', false)
-        .in('id', perimetre.map(p => p.procedure_id))
-
-      procedures.forEach((procedure) => {
-        const perim = perimetre.find(p => p.procedure_id === procedure.id)
-        if (procedure.status === 'opposable' && !perim.opposable) {
-          procedure.status = 'precedent'
-        }
-      })
-
-      return procedures
-    },
-    async getIntercoProcedures (collectiviteId) {
-      const { data: procedures } = await $supabase.from('procedures')
-        .select('*').eq('archived', false)
-        .eq('collectivite_porteuse_id', collectiviteId)
-
-      return procedures
-    },
-    async getProceduresPerimetre (procedures, collectiviteId) {
-      const collectivitesCodes = new Set(procedures.flatMap(p =>
-        p.procedures_perimetres.map(c => c.collectivite_code)
-      ))
-      collectivitesCodes.add(collectiviteId)
-
-      const { data: collectivites } = await axios({
-        url: '/api/geo/collectivites',
-        params: new URLSearchParams(collectivitesCodes.map(code => ['codes', code]))
-      })
-
-      procedures.forEach((procedure) => {
-        procedure.procedures_perimetres = procedure.procedures_perimetres.map((p) => {
-          const collectivite = collectivites.find(c => c.code === p.collectivite_code && c.type === p.collectivite_type)
-          return Object.assign({}, collectivite, p)
-        })
-
-        procedure.current_perimetre = procedure.procedures_perimetres.filter(c => c.collectivite_type === 'COM').map((p) => {
-          const commune = collectivites.find(com => com.code === p.collectivite_code)
-
-          return Object.assign({
-            inseeCode: p.collectivite_code,
-            name: commune?.intitule || ''
-          }, p, commune)
-        })
-
-        const comd = procedure.procedures_perimetres.find(p => p.collectivite_type === 'COMD')
-
-        // COMD specifique
-        if (procedure.procedures_perimetres.length === 2 && comd) {
-          procedure.procedures_perimetres = procedure.procedures_perimetres.filter((p) => {
-            return p.collectivite_type === 'COMD'
-          })
-        }
-
-        if (procedure.status === 'opposable') {
-          let isOpposable = false
-
-          if (collectiviteId.length > 5) {
-            isOpposable = !!procedure.procedures_perimetres.find(p => p.opposable)
-          } else {
-            isOpposable = !!procedure.procedures_perimetres.find((p) => {
-              return p.opposable && (p.collectivite_code === collectiviteId || p.collectivite_type === 'COMD')
-            })
-          }
-
-          if (!isOpposable) {
-            procedure.status = 'precedent'
-          }
-        }
-      })
-
-      return procedures
-    },
-    async getCollectiviteProcedures (collectiviteId) {
-      const { data: collectivite } = await axios(`/api/geo/collectivites/${collectiviteId}`)
-      const collectivites = [collectivite]
-      if (collectivite.membres) { collectivites.push(...collectivite.membres) }
-
-      const { data: procedures } = await $supabase.rpc('procedures_by_collectivites', {
-        codes: collectivites.filter(c => c.type === 'COM').map(c => c.code)
-      })
-
-      const filteredProcedures = procedures.filter((procedure) => {
-        return !procedure.archived && procedure.type !== 'Abrogation'
-      })
-
-      return await this.getProceduresPerimetre(filteredProcedures, collectiviteId)
     },
     parseProceduresStatus (procedures) {
       procedures.forEach((procedure) => {
@@ -164,33 +72,6 @@ export default ({ $supabase, $dayjs }, inject) => {
       })
 
       return this.parseProceduresStatus(filteredProcedures)
-    },
-    async getProjects (collectiviteId) {
-      try {
-        const procedures = await this.getCollectiviteProcedures(collectiviteId)
-        const groupedSubProcedures = groupBy(procedures, 'secondary_procedure_of')
-
-        const proceduresPrincipales = procedures.filter(p => p.is_principale)
-          .map((p) => {
-            const { projects, ...rest } = p
-            return { ...rest, project: projects, procSecs: groupedSubProcedures[p.id] }
-          })
-
-        proceduresPrincipales.sort((a, b) => {
-          return +$dayjs(b.created_at) - +$dayjs(a.created_at)
-        })
-
-        const schemas = proceduresPrincipales.filter(e => e.doc_type === 'SCOT' || e.doc_type === 'SD')
-        // The specific ID here is to prevent a duplicated created by sudocuh. This is suposed to be temporary for a demo.
-        const plans = proceduresPrincipales.filter(e => e.doc_type !== 'SCOT' && e.doc_type !== 'SD' && e.id !== '760d88f0-008d-4505-98f6-a7a9a2ebaf61')
-
-        // eslint-disable-next-line no-console
-        // console.log('urbanisator get projects', { schemas, plans })
-        return { schemas, plans }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('urbanisator error', error)
-      }
     }
   })
 }
