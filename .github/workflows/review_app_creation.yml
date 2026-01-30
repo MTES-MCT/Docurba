@@ -69,6 +69,7 @@ jobs:
         env_dict["SUPABASE_ANON_KEY"]=$(echo "${env_vars}" | grep -w "SUPABASE_ANON_KEY" | sed -r 's/SUPABASE_ANON_KEY=//g' | sed -r 's/\"//g')
         env_dict["SUPABASE_ADMIN_KEY"]=$(echo "${env_vars}" | grep -w "SUPABASE_SERVICE_ROLE_KEY" | sed -r 's/SUPABASE_SERVICE_ROLE_KEY=//g' | sed -r 's/\"//g')
         env_dict["SUPABASE_URL"]=$(echo "${env_vars}" | grep -w "SUPABASE_URL" | sed -r 's/SUPABASE_URL=//g' | sed -r 's/\"//g')
+        env_dict["SUPABASE_BRANCH_ID"]=$(echo "${env_dict["SUPABASE_URL"]}" | sed --expression 's/\(https:\/\/\|\.supabase\.co\)//g')
 
         # https://www.chunyangwen.com/blog/shell/bash-array-dict.html
         for key in "${!env_dict[@]}"
@@ -84,11 +85,12 @@ jobs:
     # pour mettre à jour la configuration d'un projet.
     # https://github.com/orgs/supabase/discussions/3765
     # https://supabase.com/docs/reference/cli/supabase-config-push
+    # Une erreur est levée car la variable APP_URL n'est pas encore définie.
+    # Elle l'est plus tard, lors du second envoi.
     - name: 🤹‍♀️ Mise à jour de la configuration de Supabase
       continue-on-error: true
-      run: |
-        supabase_branch_id=$(echo "${SUPABASE_URL}" | sed --expression 's/\(https:\/\/\|\.supabase\.co\)//g')
-        supabase --project-ref "${supabase_branch_id}" --yes config push
+      run: supabase --project-ref "${SUPABASE_BRANCH_ID}" --yes config push
+
 
     - name: 🛠️ Installation de la CLI Scalingo
       uses: scalingo-community/setup-scalingo@87fe86eedc708ffb9d232c756b21f6a5784f6c8a # v0.1.1
@@ -172,6 +174,12 @@ jobs:
 
     - name: 🤹‍♀️ Intégration de l'URL de Django dans Nuxt2
       run: scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-set APP_URL="${DJANGO_URL}"
+
+    # APP_URL : Supabase est le SSO de Nuxt2. APP_URL est l'URL de redirection après la connexion par lien magique.
+    # Configurée dans supabase/config.toml et dans l'interface : Supabase > Authorization > URL configuration.
+    - name: 🤹‍♀️ Mise à jour de la configuration de Supabase
+      continue-on-error: true
+      run: APP_URL="${DJANGO_URL}" supabase --project-ref "${SUPABASE_BRANCH_ID}" --yes config push
 
     - name: 🍻 Ajout du lien en commentaire de la PR
       uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
