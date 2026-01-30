@@ -91,7 +91,7 @@ export default {
         mdiEye,
         mdiEyeOff
       },
-      userData: Object.assign(this.defaultUserData(), this.$isDev ? {} : this.value)
+      userData: this.value
     }
   },
   watch: {
@@ -102,20 +102,5 @@ export default {
       }
     }
   },
-  methods: {
-    defaultUserData () {
-      return {
-        email: this.$isDev ? `fabien+${this.$dayjs().format('DD-MM-YY-hhmm')}@quantedsquare.com` : '',
-        firstname: this.$isDev ? 'Test' : '',
-        lastname: this.$isDev ? 'Test' : '',
-        password: this.$isDev ? 'docurba12345' : '',
-        poste: null,
-        other_poste: null,
-        departement: null,
-        region: null,
-        optin: false
-      }
-    }
-  }
 }
 </script>
