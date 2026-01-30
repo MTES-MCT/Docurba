@@ -136,7 +136,7 @@ export default {
     return {
       defaultEvent,
       event: Object.assign({}, defaultEvent, {
-        description: this.$isDev ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' : '',
+        description: '',
         project_id: this.procedure.project_id,
         procedure_id: this.procedure.id,
         test: !!this.$isDev
