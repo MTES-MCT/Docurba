@@ -1,12 +1,11 @@
-/* eslint-disable no-console */
+const userEnvironment = require('./userEnvironment.js')
 const axios = require('axios')
 const geo = require('./geo.js')
 const supabase = require('./supabase.js')
-const preposition = process.env.NODE_ENV === 'development' ? '[Test] ' : ''
+const preposition = userEnvironment.messageProposition() + ' '
 
 module.exports = {
   shareProcedure ({ from, to, type, procedure, pac }) {
-    console.log('from: ', from.poste)
     return axios({
       url: process.env.SLACK_WEBHOOK,
       method: 'post',
@@ -106,8 +105,6 @@ module.exports = {
     })
   },
   requestStateAgentAccess (userData) {
-    console.log('requestStateAgentAccess userData: ', userData)
-
     let textContent = ''
     if (userData.poste === 'ddt') {
       textContent = `- departement: ${userData.departement.nom_departement} - ${userData.departement.code_departement} \n - email: ${userData.email}`
