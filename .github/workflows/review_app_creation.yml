@@ -222,7 +222,8 @@ jobs:
         SUPABASE_ANON_KEY="${{ steps.db.outputs.SUPABASE_ANON_KEY }}" \
         NUXT3_API_URL="${{ needs.prepare.outputs.NUXT_3_URL }}" \
         APP_URL="${{ needs.prepare.outputs.DJANGO_URL }}" \
-        DJANGO_API_BASE_URL="${{ needs.prepare.outputs.DJANGO_URL }}/api-internes"
+        DJANGO_API_BASE_URL="${{ needs.prepare.outputs.DJANGO_URL }}/api-internes" \
+        USER_ENVIRONMENT="review_app"
 
     - name: Déploiement de l'application
       run: scalingo --app "${{ needs.prepare.outputs.NUXT_2_REVIEW_APP_NAME }}" integration-link-manual-deploy "${{ env.BRANCH }}"  &> /dev/null

@@ -147,13 +147,13 @@ export default {
       selectedCollectivite: {},
       loading: false,
       userData: {
-        email: this.$isDev ? `fabien+${this.$dayjs().format('DDMMYYhhmm')}@quantedsquare.com` : '',
-        firstname: this.$isDev ? 'Test' : '',
-        lastname: this.$isDev ? 'Test' : '',
-        poste: '', // 'elu',
-        other_poste: '', // 'test',
-        tel: this.$isDev ? '0669487499' : '', // '0669487499',
-        collectivite_id: '', // '45678'
+        email: '',
+        firstname: '',
+        lastname: '',
+        poste: '',
+        other_poste: '',
+        tel: '',
+        collectivite_id: '',
         optin: false
       },
       snackbar: {
@@ -165,8 +165,6 @@ export default {
   },
   methods: {
     async signUp () {
-      // console.log('signup')
-
       try {
         this.loading = true
         this.userData.other_poste = this.userData.other_poste ? [this.userData.other_poste] : null
@@ -184,7 +182,6 @@ export default {
             redirectTo: window.location.origin
           }
         })
-        // console.log('ret: ', ret)
         this.$router.push({
           name: 'login-collectivites-explain',
           query: { collectivite_id: this.selectedCollectivite.code }

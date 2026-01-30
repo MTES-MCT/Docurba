@@ -10,6 +10,8 @@ export default {
     DJANGO_API_BASE_URL: process.env.DJANGO_API_BASE_URL,
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+    APP_URL: process.env.APP_URL,
+    USER_ENVIRONMENT: process.env.USER_ENVIRONMENT,
   },
   head: {
     titleTemplate: '%s - Docurba',
@@ -252,22 +254,6 @@ export default {
         config.devtool = 'source-map'
       }
     }
-    // filenames: {
-    //   app: ({ isDev }) => '[name].js',
-    //   chunk: ({ isDev }) => '[name].js',
-    //   css: ({ isDev }) => '[name].css',
-    //   img: ({ isDev }) => 'img/[name].[ext]',
-    //   font: ({ isDev }) => 'fonts/[name].[ext]',
-    //   video: ({ isDev }) => 'videos/[name].[ext]'
-    // }
-    // filenames: {
-    //   app: ({ isDev }) => isDev ? '[name].js' : '[contenthash].js',
-    //   chunk: ({ isDev }) => isDev ? '[name].js' : '[contenthash].js',
-    //   css: ({ isDev }) => isDev ? '[name].css' : '[contenthash].css',
-    //   img: ({ isDev }) => isDev ? '[path][name].[ext]' : 'img/[contenthash:7].[ext]',
-    //   font: ({ isDev }) => isDev ? '[path][name].[ext]' : 'fonts/[contenthash:7].[ext]',
-    //   video: ({ isDev }) => isDev ? '[path][name].[ext]' : 'videos/[contenthash:7].[ext]'
-    // }
     // transpile: ['d3', 'd3-geo', 'internmap']
   }
 }
