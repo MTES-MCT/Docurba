@@ -6,8 +6,6 @@ app.use(express.json())
 const axios = require('axios')
 const FormData = require('form-data')
 
-// const isDev = process.env.NODE_ENV === 'development'
-
 const gotenbergUrl = 'https://gotenberg-5hkjqo623a-od.a.run.app'
 // const gotenbergUrl = isDev ? 'http://localhost:8080' : 'https://gotenberg-5hkjqo623a-od.a.run.app'
 const printUrl = 'https://docurba.beta.gouv.fr'
