@@ -9,6 +9,16 @@
     </head>
     <body>
         <h1>{{ collectivite.code_insee }} {{ collectivite.nom }}</h1>
+        <p>
+            Code état Simplifié :
+            {{ collectivite.code_etat_simplifie }} -
+            {{ collectivite.libelle_code_etat_simplifie }}
+        </p>
+        <p>
+            Code état Complet :
+            {{ collectivite.code_etat_complet }} -
+            {{ collectivite.libelle_code_etat_complet }}
+        </p>
         {% for is_schema, procedures in procedures_principales_by_schema.items %}
 
 

@@ -384,8 +384,15 @@ def api_scots(request: HttpRequest) -> HttpResponse:
 def collectivite(
     request: HttpRequest, collectivite_code: str, collectivite_type: str = "COM"
 ) -> HttpResponse:
+    try:
+        avant = _avant(request)
+    except ValueError:
+        return HttpResponseBadRequest(
+            "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
+        )
+
     commune = (
-        Commune.objects.with_procedures_principales()
+        Commune.objects.with_procedures_principales(avant=avant)
         .filter(id=f"{collectivite_code}_{collectivite_type}")
         .first()
     )
