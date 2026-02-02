@@ -7,6 +7,9 @@ name: 🔪 Suppression d'une recette jetable
 on:
   pull_request:
     types: [ closed ]
+  # https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow
+  workflow_dispatch:
+
 
 env:
   SUPABASE_ACCESS_TOKEN: ${{ secrets.TEST_SUPABASE_ACCESS_TOKEN }}
