@@ -16,7 +16,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <!-- <ProceduresUpdateForm :procedure="procedure" /> -->
+    <ProceduresUpdateForm :procedure="procedure" />
   </div>
   <VGlobalLoader v-else />
 </template>
@@ -33,9 +33,9 @@ export default {
   },
   async mounted () {
     this.$user.isReady.then(() => {
-      // if (this.$user?.profile?.poste === 'ddt' || this.$user?.profile?.poste === 'dreal') {
-      //   this.$nuxt.setLayout('ddt')
-      // }
+      if (this.$user?.profile?.poste === 'ddt' || this.$user?.profile?.poste === 'dreal') {
+        this.$nuxt.setLayout('ddt')
+      }
     })
     const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('id', 'owner_id').eq('id', this.$route.params.procedureId)
     if (errorProcedure) { throw errorProcedure }

@@ -1,6 +1,6 @@
 <template>
   <VGlobalLoader v-if="!isLoaded" />
-  <validation-observer v-else-if="(procedureCategory === 'principale' || (procedureCategory === 'secondaire' && proceduresParents && proceduresParents.length > 0))" :ref="`observerAddProcedure-${procedureCategory}`" v-slot="{ handleSubmit, invalid }">
+  <!-- <validation-observer v-else-if="(procedure.is_principale || (!procedure.is_principale && proceduresParents && proceduresParents.length > 0))" :ref="`observerUpdateProcedure-${procedureCategory}`" v-slot="{ handleSubmit, invalid }"> -->
     <form @submit.prevent="handleSubmit(createProcedure)">
       <v-container class="pa-0">
         <v-row>
@@ -136,7 +136,7 @@
           </v-col>
         </v-row>
         <DdtPerimeterCheckInput
-          v-if="procedureCategory === 'principale'"
+          v-if="procedure.is_principale"
           v-model="perimetre"
           :communes="communes"
         />
@@ -149,24 +149,14 @@
               :loading="loadingSave"
               :disabled="invalid"
             >
-              Créer la procédure
+              Modifier la procédure
             </v-btn>
           </v-col>
         </v-row>
       </v-container>
     </form>
-  </validation-observer>
+  <!-- </validation-observer> -->
 
-  <v-container v-else>
-    <v-row>
-      <v-col cols="12" class="py-12">
-        <p class="text-h6">
-          Pas de procédure principale
-        </p>
-        Aucune procédure principale n’a été trouvée pour la collectivité. Une procédure secondaire doit être attachée à une procédure principale.
-      </v-col>
-    </v-row>
-  </v-container>
 </template>
 
 <script>
@@ -176,17 +166,13 @@ import { uniqBy } from 'lodash'
 import FormInput from '@/mixins/FormInput.js'
 
 export default {
-  name: 'AddProcedureForm',
+  name: 'UpdateProcedureForm',
   mixins: [FormInput],
   props: {
-    procedureCategory: {
+    procedure: {
       type: String,
       required: true
     },
-    collectivite: {
-      type: Object,
-      required: true
-    }
   },
   data () {
     return {
@@ -212,19 +198,6 @@ export default {
   computed: {
     typeCompetence () {
       return this.typeDu === 'SCOT' ? 'competenceSCOT' : 'competencePLU'
-    },
-    collectivitePorteuseCode () {
-      if (this.collectivite[this.typeCompetence]) {
-        // return the collectivite if it has the competence
-        return this.collectivite.code
-      } else if (this.collectivite.intercommunalite) {
-        // return the interco if it exist.
-        return this.collectivite.intercommunalite.code
-      } else {
-        // Return the collectivite code if there is no groupement available.
-        // This can create an anomaly with Banatic but is better than nothing.
-        return this.collectivite.code
-      }
     },
     procedureParentObj () {
       return this.proceduresParents?.find(e => e.id === this.procedureParent)
@@ -345,7 +318,6 @@ export default {
             doc_type: this.typeDu,
             region: this.collectivite.regionCode,
             current_perimetre: oldFomattedPerimetre,
-            initial_perimetre: oldFomattedPerimetre,
             collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
             collectivite_porteuse_id: this.collectivitePorteuseCode,
             test: true,
@@ -369,7 +341,6 @@ export default {
           is_pluih: this.typeDu === 'PLUiH',
           is_pdu: null,
           current_perimetre: oldFomattedPerimetre,
-          initial_perimetre: oldFomattedPerimetre,
           doc_type: this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType,
           departements,
           numero: this.procedureCategory === 'principale' ? '1' : this.numberProcedure,
