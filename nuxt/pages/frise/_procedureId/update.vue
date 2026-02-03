@@ -16,7 +16,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <ProceduresUpdateForm :procedure="procedure" />
+    <!-- <ProceduresUpdateForm :procedure="procedure" /> -->
   </div>
   <VGlobalLoader v-else />
 </template>
@@ -27,23 +27,25 @@ export default {
   data () {
     return {
       procedure: null,
-      icons: { mdiChevronLeft }
+      icons: { mdiChevronLeft },
+      snackbar: { text: '', val: false }
     }
   },
   async mounted () {
     this.$user.isReady.then(() => {
-      if (this.$user?.profile?.poste === 'ddt' || this.$user?.profile?.poste === 'dreal') {
-        this.$nuxt.setLayout('ddt')
-      }
+      // if (this.$user?.profile?.poste === 'ddt' || this.$user?.profile?.poste === 'dreal') {
+      //   this.$nuxt.setLayout('ddt')
+      // }
     })
-    const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('project_id, id, type, doc_type, current_perimetre, collectivite_porteuse_id').eq('id', this.$route.params.procedureId)
+    const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('id', 'owner_id').eq('id', this.$route.params.procedureId)
     if (errorProcedure) { throw errorProcedure }
     this.procedure = procedure[0]
 
-    // if (!this.$user.canCreateProcedure({ collectivite: this.collectivite })) {
-    //   console.warn('Pas assez de droits pour créer une procédure sur ce périmètre')
-    //   this.$nuxt.context.redirect(302, `/collectivites/${this.$route.params.collectiviteId}`)
-    // }
+    if (!this.$user.canUpdateProcedure({ procedure: this.procedure })) {
+      // eslint-disable-next-line no-console
+      console.log('Vous ne pouvez pas modifier cette procédure.')
+      this.$router.back()
+    }
   }
 }
 </script>

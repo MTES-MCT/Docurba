@@ -179,6 +179,9 @@ export default async ({ $supabase, app }, inject) => {
         }
       }
     },
+    canUpdateProcedure (procedure) {
+      return procedure.owner_id === this.id || this.profile.poste === 'ddt'
+    },
     canDeleteProcedure () {
       return this.profile.side !== 'ppa'
     },
