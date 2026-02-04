@@ -6,6 +6,7 @@
         color="primary"
         class="mr-4"
         outlined
+        :disabled="disabled"
         @click="selectAllPerimetre"
       >
         Sélectionner toutes
@@ -13,6 +14,7 @@
       <v-btn
         color="primary"
         outlined
+        :disabled="disabled"
         @click="perimetre = []"
       >
         Déselectionner toutes
@@ -23,6 +25,7 @@
         v-model="perimetre"
         hide-details
         class="mt-0"
+        :disabled="disabled"
         :label="`${commune.intitule} (${commune.code})`"
         :value="commune.code"
       />
@@ -40,6 +43,10 @@ export default {
     value: {
       type: Array,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
