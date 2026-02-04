@@ -1,18 +1,18 @@
 <template>
   <VGlobalLoader v-if="!isLoaded" />
-  <!-- <validation-observer v-else-if="(procedure.is_principale || (!procedure.is_principale && proceduresParents && proceduresParents.length > 0))" :ref="`observerUpdateProcedure-${procedureCategory}`" v-slot="{ handleSubmit, invalid }"> -->
-    <form @submit.prevent="handleSubmit(createProcedure)">
+  <validation-observer v-else :ref="`observerUpdateProcedure`" v-slot="{ handleSubmit, invalid }">
+    <form @submit.prevent="handleSubmit(updateProcedure)">
       <v-container class="pa-0">
         <v-row>
           <v-col cols="6">
             <validation-provider v-slot="{ errors }" name="Type de la procédure" rules="required">
               <v-select
-                v-model="typeProcedure"
+                v-model="procedureType"
                 :error-messages="errors"
                 filled
                 placeholder="Selectionner une option"
                 label="Type de procédure"
-                :items="typesProcedure[procedureCategory]"
+                :items="typeProcedureSelectValues"
               />
             </validation-provider>
           </v-col>
@@ -35,63 +35,39 @@
         <v-row>
           <v-col cols="6" class="pt-0 pb-2">
             <v-select
-              v-model="objetProcedure"
-              :hide-details="objetProcedure.includes('Autre')"
+              v-model="procedureCommentaire"
+              :hide-details="procedureCommentaire.includes('Autre')"
               filled
               multiple
               label="Objet de la procédure"
-              :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']"
+              :items="procedureCommentaireSelectValues"
             />
           </v-col>
         </v-row>
         <v-row>
-          <v-col v-if="objetProcedure.includes('Autre')" cols="6" class="pt-0 pb-2">
+          <v-col v-if="procedureCommentaire.includes('Autre')" cols="6" class="pt-0 pb-2">
             <validation-provider v-slot="{ errors }" name="Details de la procédure" rules="required">
-              <v-text-field v-model="otherObjetProcedure" :error-messages="errors" filled label="Description de l’objet de la procédure" />
+              <v-text-field v-model="procedureCommentaireAutre" :error-messages="errors" filled label="Description de l’objet de la procédure" />
             </validation-provider>
           </v-col>
         </v-row>
         <v-row>
-          <v-col v-if="procedureCategory === 'principale'" cols="6">
+          <v-col v-if="procedure.is_principale" cols="6">
             <validation-provider v-slot="{ errors }" name="Type de document d'urbanisme" rules="required">
               <v-select
-                v-model="typeDu"
+                v-model="procedureDocType"
                 :error-messages="errors"
                 filled
                 placeholder="Selectionner une option"
                 label="Type de document d'urbanisme"
-                :items="typesDu"
+                :items="procedureTypeDocSelectValues"
               />
             </validation-provider>
           </v-col>
         </v-row>
-        <v-row>
-          <template v-if="procedureCategory === 'secondaire'">
-            <v-col cols="6">
-              <validation-provider v-slot="{ errors }" name="Procédure parente" rules="required">
-                <v-select
-                  v-model="procedureParent"
-                  :error-messages="errors"
-                  filled
-                  placeholder="Selectionner une option"
-                  label="Procédure parente"
-                  item-value="id"
-                  :items="proceduresParents"
-                >
-                  <template #selection="{item}">
-                    {{ $utils.formatProcedureName(item, item.porteuse) }}
-                  </template>
-                  <template #item="{item}">
-                    {{ $utils.formatProcedureName(item, item.porteuse) }}
-                  </template>
-                </v-select>
-              </validation-provider>
-            </v-col>
-          </template>
-        </v-row>
-        <v-row v-if="procedureCategory === 'secondaire' || typeProcedure === 'Révision'">
+        <v-row v-if="procedure.secondary_procedure_of || procedureType === 'Révision'">
           <v-col cols="6" class="d-flex align-start">
-            <v-text-field v-model="numberProcedure" filled placeholder="Ex. 4" label="Numéro de procédure" />
+            <v-text-field v-model="procedureNumero" filled placeholder="Ex. 4" label="Numéro de procédure" />
           </v-col>
           <v-col cols="6">
             <p>
@@ -106,23 +82,20 @@
         </v-row>
         <v-row>
           <v-col cols="12">
-            <div class="mb-2">
-              Nom de la procédure
-            </div>
             <v-alert v-show="postfixSectoriel" outlined type="info">
               Précisez le titre de votre document sectoriel afin de l’identifier plus facilement dans Docurba.
             </v-alert>
             <div class="d-flex">
               <v-text-field
-                :value="baseName"
-                background-color="white"
-                outlined
-                class="rounded-r-0 "
+                v-model="procedureName"
                 hide-details
-                readonly
+                label="Nom"
+                class="rounded-r-0"
+                filled
+                disabled
               />
               <v-text-field
-                v-model="nameComplement"
+                v-model="procedureNameComplement"
                 hide-details
                 label="Complément (optionnel)"
                 class="rounded-l-0 smaller-input-slot"
@@ -135,13 +108,28 @@
             </div>
           </v-col>
         </v-row>
-        <DdtPerimeterCheckInput
-          v-if="procedure.is_principale"
-          v-model="perimetre"
-          :communes="communes"
-        />
         <v-row>
-          <v-col cols="12" class="d-flex mt-8">
+          <v-col cols="12">
+            <h3 class="mb-2">
+              Périmètre de la procédure
+            </h3>
+          </v-col>
+          <v-col cols="12">
+            <div class="d-flex">
+              <ul>
+                <li v-for="commune in communes" :key="commune.code">
+                  {{ commune.intitule }} ({{ commune.code }})
+                </li>
+              </ul>
+            </div>
+            <v-alert outlined type="info" class="d-flex mt-4">
+              Pour modifier le périmètre, cliquez le bouton « Signaler un problème ».
+            </v-alert>
+            <SignalementProbleme />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" class="d-flex">
             <v-btn
               type="submit"
               color="primary"
@@ -155,237 +143,168 @@
         </v-row>
       </v-container>
     </form>
-  <!-- </validation-observer> -->
-
+  </validation-observer>
 </template>
 
 <script>
 import { mdiInformationOutline, mdiOpenInNew } from '@mdi/js'
 import axios from 'axios'
-import { uniqBy } from 'lodash'
 import FormInput from '@/mixins/FormInput.js'
 
 export default {
   name: 'UpdateProcedureForm',
   mixins: [FormInput],
   props: {
-    procedure: {
+    procedureId: {
       type: String,
       required: true
-    },
+    }
   },
   data () {
     return {
-      loaded: false,
-      loadingSave: false,
-      typeProcedure: '',
-      typesProcedure: {
-        principale: ['Elaboration', 'Révision'],
-        secondaire: ['Révision à modalité simplifiée ou Révision allégée', 'Modification', 'Modification simplifiée', 'Mise en compatibilité', 'Mise à jour']
-      },
+      // Form data
+      procedureCommentaire: '',
+      procedureCommentaireAutre: '',
+      procedureNameComplement: '',
+      procedureNumero: '',
+      procedureType: '',
+      procedureDocType: '',
       procedureParent: null,
-      proceduresParents: null,
-      numberProcedure: '',
-      objetProcedure: [],
-      otherObjetProcedure: '',
-      typeDu: '',
-      nameComplement: '',
-      typesDu: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM', 'SCOT'],
-      perimetre: null,
-      icons: { mdiInformationOutline, mdiOpenInNew }
+
+      // Other
+      collectivite: '',
+      codesCommune: null,
+      communes: null,
+      procedureCommentaireSelectValues: ['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre'],
+      procedureTypeDocSelectValues: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM', 'SCOT'],
+      icons: { mdiInformationOutline, mdiOpenInNew },
+      loaded: false,
+      loadingSave: false
     }
   },
   computed: {
+    procedureName () {
+      return this.baseName()
+    },
+    // Form data
+    computedProcedureName () {
+      return `${this.procedureName} ${this.procedureNameComplement}`
+    },
+
+    // Other
+    postfixSectoriel () {
+      return (this.collectivite.type === 'COM' && this.codesCommune.length > 1) || (this.collectivite.type !== 'COM' && this.codesCommune.length < this.communes.length) ? 'S' : ''
+    },
+    typeProcedureSelectValues () {
+      if (this.procedure.is_principale) {
+        return ['Elaboration', 'Révision']
+      } else {
+        return ['Révision à modalité simplifiée ou Révision allégée', 'Modification', 'Modification simplifiée', 'Mise en compatibilité', 'Mise à jour']
+      }
+    },
     typeCompetence () {
       return this.typeDu === 'SCOT' ? 'competenceSCOT' : 'competencePLU'
     },
-    procedureParentObj () {
-      return this.proceduresParents?.find(e => e.id === this.procedureParent)
-    },
-    procedureParentDocType () {
-      return this.proceduresParents?.find(e => e.id === this.procedureParent)?.doc_type
-    },
     isLoaded () {
-      return this.loaded && (this.procedureCategory === 'principale' || (this.procedureCategory === 'secondaire' && this.proceduresParents !== null))
-    },
-    postfixSectoriel () {
-      return (this.collectivite.type === 'COM' && this.perimetre.length > 1) || (this.collectivite.type !== 'COM' && this.perimetre.length < this.communes.length) ? 'S' : ''
-    },
-    baseName () {
-      return `${this.typeProcedure} ${this.numberProcedure} de ${(this.procedureParent ? this.procedureParentDocType : this.typeDu) + this.postfixSectoriel} ${this.collectivite.intitule}`.replace(/\s+/g, ' ').trim()
-    },
-    communes () {
-      const coms = this.collectivite.membres || this.collectivite.intercommunalite.membres
-      const uniqComs = uniqBy(coms, 'code').filter(e => e.type === 'COM')
-
-      if (this.collectivite.code.length < 6) {
-        uniqComs.push(this.collectivite)
-      }
-
-      return uniqComs
+      return this.loaded && (this.procedure.is_principale || this.procedureParent !== null)
     }
   },
   async mounted () {
     try {
-      if (this.procedureCategory === 'secondaire') {
-        const proceduresParents = await this.getProcedures()
-        this.proceduresParents = proceduresParents
-        if (this.$route.query.secondary_id) {
-          this.procedureParent = this.$route.query.secondary_id
+      const { data: resultProcedure } = await this.$supabase.from('procedures')
+        .select('id, commentaire, owner_id, secondary_procedure_of, doc_type, type, numero, name, is_principale, collectivite_porteuse_id, secondary_procedure_of(name, doc_type), procedures_perimetres(collectivite_code)')
+        .eq('id', this.procedureId)
+      const procedure = resultProcedure[0]
+
+      const { data: collectivite } = await axios(`/api/geo/collectivites/${procedure.collectivite_porteuse_id}`)
+
+      const codes = procedure.procedures_perimetres?.map(commune => commune.collectivite_code)
+      const communes = (await axios({ url: `/api/geo/communes?codes=${codes}`, method: 'get' })).data
+
+      this.loaded = true
+      this.procedure = procedure
+      this.communes = communes
+      this.collectivite = collectivite
+      this.codesCommune = communes.map(e => e.code)
+      this.procedureParent = this.procedure.secondary_procedure_of
+      this.procedureType = this.procedure.type
+      this.procedureDocType = this.procedure.doc_type
+      this.procedureNumero = this.procedure.numero
+      if (this.procedure.commentaire) {
+        const procedureObjects = this.procedure.commentaire.split(',')
+        const selectedObjects = []
+        for (let index = 0; index < procedureObjects.length; index++) {
+          const element = procedureObjects[index]
+          if (this.procedureCommentaireSelectValues.includes(element)) {
+            selectedObjects.push(element)
+            procedureObjects.splice(index, 1)
+          }
+        }
+        this.procedureCommentaire = selectedObjects
+        this.procedureCommentaireAutre = procedureObjects
+        if (this.procedure.name) {
+          // Try to strip name
+          // TODO: what if the original name does not match the new this.baseName?
+          const complement = this.procedure.name.replace(new RegExp(`^.*${this.collectivite.intitule} `, 'g'), '')
+          this.procedureNameComplement = complement
         }
       }
-
-      this.perimetre = this.collectivite.type === 'COM' ? [this.collectivite.code] : this.communes.map(e => e.code)
-      this.loaded = true
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error)
     }
   },
   methods: {
-    async getProcedures () {
-      let query = this.$supabase.from('procedures').select('*, procedures_perimetres(*)').eq('is_principale', true).eq('status', 'opposable')
-
-      if (this.collectivite.type !== 'COM') {
-        query = query.eq('collectivite_porteuse_id', this.collectivite.code)
-      } else {
-        query = query.contains('current_perimetre', `[{ "inseeCode": "${this.collectivite.code}" }]`)
-      }
-
-      const { data: procedures, error } = await query
-
-      if (error) {
-        // eslint-disable-next-line no-console
-        console.log('error getProcedures', error)
-      }
-
-      const collectiviteCodes = new Set(procedures.flatMap(p => [
-        p.collectivite_porteuse_id,
-        ...p.procedures_perimetres.map(c => c.collectivite_code)
-      ]))
-
-      const { data: collectivites } = await axios({
-        url: '/api/geo/collectivites',
-        params: new URLSearchParams(collectiviteCodes.map(code => ['codes', code]))
-      })
-
-      const enrichedProcedures = procedures.map((p) => {
-        const comd = p.procedures_perimetres.find(c => c.collectivite_type === 'COMD')
-
-        const collectivite = collectivites.find((c) => {
-          if (comd) {
-            return c.code === comd.collectivite_code && c.type === 'COMD'
-          } else if (p.procedures_perimetres.length === 1) {
-            return c.code === p.procedures_perimetres[0].collectivite_code
-          } else { return c.code === p.collectivite_porteuse_id }
-        })
-
-        if (comd) {
-          collectivite.intitule += ' COMD'
-        }
-
-        return {
-          porteuse: collectivites.find(c => c.code === p.collectivite_porteuse_id),
-          collectivite,
-          ...p
-        }
-      })
-
-      if (this.collectivite.type !== 'COM') {
-        return enrichedProcedures.filter(e => e.current_perimetre.length > 1)
-      } else {
-        return enrichedProcedures
-      }
+    baseName () {
+      // We could use $utils.formatProcedureName but it does not accept single arguments.
+      // It would break the reactivity.
+      return `${this.procedureType} ${this.procedureNumero} de ${(this.procedureParent ? this.procedureParent.doc_type : this.procedureDocType) + this.postfixSectoriel} ${this.collectivite.intitule}`.replace(/\s+/g, ' ').trim()
     },
-    async createProcedure () {
+    async updateProcedure () {
       this.loadingSave = true
 
       try {
-        let perimetre
-        if (this.procedureParent) {
-          perimetre = this.procedureParentObj.procedures_perimetres.map(perim => perim.collectivite_code)
-        } else {
-          perimetre = this.perimetre
-        }
-        const detailedPerimetre = (await axios({ url: `/api/geo/communes?codes=${perimetre}`, method: 'get' })).data
-        const oldFomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
-        const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
-        let insertedProject = null
+        if (this.procedure.is_principale === 'principale') {
+          const { error } = await this.$supabase.from('projects').update({
+            name: `${this.procedureType} ${this.procedureDocType}`,
+            doc_type: this.procedureDocType
+          }).eq('id', this.procedure.project_id).select()
 
-        if (this.procedureCategory === 'principale') {
-          const insertRet = await this.$supabase.from('projects').insert({
-            name: `${this.typeProcedure} ${this.typeDu}`,
-            doc_type: this.typeDu,
-            region: this.collectivite.regionCode,
-            current_perimetre: oldFomattedPerimetre,
-            collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
-            collectivite_porteuse_id: this.collectivitePorteuseCode,
-            test: true,
-            owner: this.$user.id
-          }).select()
-
-          insertedProject = insertRet.data && insertRet.data[0] ? insertRet.data[0].id : null
-          if (insertRet.error) { throw insertRet.error }
+          if (error) {
+            // eslint-disable-next-line no-console
+            console.log('Error updating the project')
+            throw error
+          }
         }
 
-        const { data: insertedProcedure, error: errorInsertedProcedure } = await this.$supabase.from('procedures').insert({
-          shareable: true,
-          secondary_procedure_of: this.procedureParent,
-          type: this.typeProcedure,
-          commentaire: this.objetProcedure && this.objetProcedure.includes('Autre') ? this.objetProcedure?.join(', ') + ' - ' + this.otherObjetProcedure : this.objetProcedure?.join(', '),
-          collectivite_porteuse_id: this.collectivitePorteuseCode,
-          is_principale: this.procedureCategory === 'principale',
-          status: 'en cours',
-          is_sectoriel: null,
-          is_scot: this.typeDu === 'SCOT',
-          is_pluih: this.typeDu === 'PLUiH',
-          is_pdu: null,
-          current_perimetre: oldFomattedPerimetre,
-          doc_type: this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType,
-          departements,
-          numero: this.procedureCategory === 'principale' ? '1' : this.numberProcedure,
-          project_id: insertedProject,
-          name: (this.baseName + ' ' + this.nameComplement).trim(),
-          owner_id: this.$user.id,
-          testing: true
-        }).select()
+        // This will be replaced anyway.
+        let commentaire = this.procedureCommentaire?.join(', ')
+        if (commentaire && commentaire.includes('Autre')) {
+          commentaire = commentaire + ' - ' + this.procedureCommentaireAutre
+        }
+        const { error } = await this.$supabase.from('procedures').update({
+          // current_perimetre: oldFomattedPerimetre,
+          type: this.procedureType,
+          is_scot: this.procedureType === 'SCOT',
+          is_pluih: this.procedureType === 'PLUiH',
+          doc_type: this.procedureDocType,
+          numero: this.procedureNumero ? this.procedureNumero : '',
+          name: this.computedProcedureName,
+          commentaire
+        }).eq('id', this.procedure.id).select()
 
-        if (errorInsertedProcedure) {
+        if (error) {
           // eslint-disable-next-line no-console
-          console.log('errorInsertedProcedure: ', errorInsertedProcedure)
-        }
-
-        const fomattedPerimetre = detailedPerimetre.map(e => ({ collectivite_code: e.code, collectivite_type: e.type, procedure_id: insertedProcedure[0].id, opposable: false, departement: e.departementCode }))
-        await this.$supabase.from('procedures_perimetres').insert(fomattedPerimetre)
-
-        const sender = {
-          user_email: this.$user.email,
-          project_id: insertedProject ?? this.proceduresParents?.find(e => e.id === this.procedureParent)?.project_id,
-          shared_by: this.$user.id,
-          notified: false,
-          role: 'write_frise',
-          archived: false,
-          dev_test: true
-        }
-
-        // console.log('this.proceduresParents?.find(e => e.id === this.procedureParent): ', this.proceduresParents?.find(e => e.id === this.procedureParent))
-        // console.log('sender SHARING: ', sender)
-
-        const { error: errorInsertedCollabs } = await this.$supabase.from('projects_sharing').insert(sender)
-
-        if (errorInsertedCollabs) {
-          // eslint-disable-next-line no-console
-          console.log('errorInsertedCollabs: ', errorInsertedCollabs)
+          console.log('errorInsertedProcedure: ', error)
         }
 
         this.$analytics({
           category: 'procedures',
-          name: 'create_procedure',
-          value: (this.baseName + ' ' + this.nameComplement).trim()
+          name: 'update_procedure',
+          value: (this.procedure.name)
         })
 
-        this.$router.push(`/frise/${insertedProcedure[0].id}/invite`)
-        // this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`)
+        this.$router.back()
       } catch (error) {
         this.error = error
         // eslint-disable-next-line no-console

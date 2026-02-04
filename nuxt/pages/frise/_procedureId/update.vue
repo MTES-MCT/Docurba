@@ -3,7 +3,7 @@
     <v-container class="px-0 mt-8">
       <v-row align="end" class="mb-1">
         <v-col cols="auto">
-          <button
+          <a
             class="text-decoration-none d-flex align-center"
             @click="$router.back()"
           >
@@ -11,12 +11,14 @@
               {{ icons.mdiChevronLeft }}
             </v-icon>
             Retour
-          </button>
+          </a>
           <h1>Modification de procédure</h1>
         </v-col>
       </v-row>
     </v-container>
-    <ProceduresUpdateForm :procedure="procedure" />
+    <v-container class="border-grey py-8 px-8 mb-16">
+      <ProceduresUpdateForm :procedure-id="procedure.id" />
+    </v-container>
   </div>
   <VGlobalLoader v-else />
 </template>
@@ -37,7 +39,7 @@ export default {
         this.$nuxt.setLayout('ddt')
       }
     })
-    const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('id', 'owner_id').eq('id', this.$route.params.procedureId)
+    const { data: procedure, error: errorProcedure } = await this.$supabase.from('procedures').select('id, owner_id').eq('id', this.$route.params.procedureId)
     if (errorProcedure) { throw errorProcedure }
     this.procedure = procedure[0]
 

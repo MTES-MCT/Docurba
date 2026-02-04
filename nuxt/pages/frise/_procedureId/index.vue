@@ -88,17 +88,16 @@
             <!-- TODO(cms): remove me later -->
             <!-- <FriseInfosDialog /> -->
             <!-- <FriseVoletQualiDialog /> -->
+            <FriseDgdDialog />
 
             <v-list-item
               v-if="$user?.canUpdateProcedure(procedure)"
               :to="{ name: 'frise-procedureId-update', params: { procedureId: $route.params.procedureId } }"
             >
               <v-list-item-title>
-                Éditer la procédure
+                Modifier la procédure
               </v-list-item-title>
             </v-list-item>
-
-            <FriseDgdDialog />
 
             <v-dialog v-if="$user.canDeleteProcedure()" v-model="dialog" width="500">
               <template #activator="{ on, attrs }">
