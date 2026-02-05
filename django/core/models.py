@@ -274,6 +274,10 @@ class ProcedureQuerySet(models.QuerySet):
                 ),
                 0,
             ),
+        )
+
+    def with_perimetre_counts(self) -> Self:
+        return self.annotate(
             perimetre__count=models.functions.Coalesce(
                 models.Subquery(
                     CommuneProcedure.objects.filter(
@@ -297,6 +301,7 @@ class ProcedureManager(models.Manager):
         return (
             super()
             .get_queryset()
+            .with_perimetre_counts()
             .with_communes_counts()
             .select_related("collectivite_porteuse__departement__region")
         )
