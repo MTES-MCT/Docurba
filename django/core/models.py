@@ -476,6 +476,17 @@ class Procedure(models.Model):
     @property
     def type_document(self) -> TypeDocument:
         if self.doc_type in (TypeDocument.PLU, *PLU_LIKE):
+            # self.perimetre_count is set when calling Procedure.objects.with_perimetre_counts
+            # which is always called on the manager (see ProcedureManager.get_queryset).
+            # For the moment, it is mandatory to know if the procedure is_intercommunal.
+            # The type_document is used to generate the self representation, thus on the Django admin.
+            # For an unknown reason, the ProcedureManager is used on the "list" view but not on the "change" one.
+            # This should be refactored some day as this hack is quite ugly.
+            try:
+                getattr(self, "perimetre__count")  # noqa: B009
+            except AttributeError:
+                self.perimetre__count = self.perimetre.count()
+
             if not self.is_intercommunal:
                 return TypeDocument.PLU
             if self.vaut_PLH_consolide and self.vaut_PDM_consolide:
