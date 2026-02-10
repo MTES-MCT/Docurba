@@ -488,8 +488,24 @@ class Procedure(models.Model):
             return self.date_prescription < other.date_prescription
         return self.created_at < other.created_at
 
+    def save(self, **kwargs: dict) -> None:
+        self.clean()
+        super().save(**kwargs)
+
     def get_absolute_url(self) -> str:
         return f"/frise/{self.pk}"
+
+    def clean(self) -> None:
+        match self.doc_type:
+            case TypeDocument.SCOT:
+                self.vaut_SCoT = True
+            case TypeDocument.PLUIHM:
+                self.vaut_PLH = True
+                self.vaut_PDM = True
+            case TypeDocument.PLUIH:
+                self.vaut_PLH = True
+            case TypeDocument.PLUIM:
+                self.vaut_PDM = True
 
     _events_processed = False
 
