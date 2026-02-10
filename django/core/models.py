@@ -295,7 +295,9 @@ class Project(models.Model):
     from_sudocuh = models.IntegerField(unique=True, blank=True, null=True)
     from_sudocuh_procedure_id = models.IntegerField(unique=True, blank=True, null=True)
     sudocuh_procedure_id = models.IntegerField(blank=True, null=True)
-    is_sudocuh_scot = models.BooleanField(blank=True, null=True)
+    is_sudocuh_scot = models.BooleanField(
+        blank=True, null=True
+    )  # No reference in Nuxt's side but column is filled with different values.
 
     pac = models.JSONField(db_column="PAC", blank=True, null=True)
     trame = models.CharField(blank=True, null=True)  # noqa: DJ001
@@ -396,7 +398,9 @@ class Procedure(models.Model):
     vaut_PDM = models.BooleanField(db_column="is_pdu", blank=True, null=True)  # noqa: N815
     is_principale = models.BooleanField(blank=True, null=True)
     is_sectoriel = models.BooleanField(blank=True, null=True)
-    is_sudocuh_scot = models.BooleanField(blank=True, null=True)
+    is_sudocuh_scot = models.BooleanField(
+        blank=True, null=True
+    )  # No reference in Nuxt's side but column is filled with different values.
     obligation_PDU = models.BooleanField(  # noqa: N815
         db_column="mandatory_pdu", blank=True, null=True
     )
