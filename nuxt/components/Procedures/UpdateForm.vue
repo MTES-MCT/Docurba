@@ -116,6 +116,7 @@
             <h3 class="mb-2">
               Périmètre de la procédure
             </h3>
+        <v-row>
           </v-col>
           <v-col cols="12">
             <div class="d-flex">
