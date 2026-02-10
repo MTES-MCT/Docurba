@@ -113,22 +113,7 @@
         </v-row>
         <v-row>
           <v-col cols="12">
-            <h3 class="mb-2">
-              Périmètre de la procédure
-            </h3>
-        <v-row>
-          </v-col>
-          <v-col cols="12">
-            <div class="d-flex">
-              <ul>
-                <li v-for="commune in communes" :key="commune.code">
-                  {{ commune.intitule }} ({{ commune.code }})
-                </li>
-              </ul>
-            </div>
-            <v-alert outlined type="info" class="d-flex mt-4">
-              Pour modifier le périmètre, cliquez le bouton « Signaler un problème ».
-            </v-alert>
+            <DashboardDUModalPerimetre :perimetres="communes" info-banner-message="Pour modifier le périmètre, contactez-nous en cliquant sur « Signaler un problème »." show-help="true" />
             <SignalementProbleme />
           </v-col>
         </v-row>
