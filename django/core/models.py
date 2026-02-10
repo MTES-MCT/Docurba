@@ -255,7 +255,11 @@ class ProcedureStatusChoices(models.TextChoices):
 
 class Project(models.Model):
     id = models.UUIDField(primary_key=True)
+    created_at = models.DateTimeField(db_default=models.functions.Now())
     archived = models.BooleanField(db_default=False)
+    name = models.CharField(blank=True, null=True)  # noqa: DJ001
+    test = models.BooleanField(blank=True, null=True)
+
     collectivite = models.ForeignKey(
         "core.Collectivite",
         blank=True,
@@ -272,6 +276,7 @@ class Project(models.Model):
         related_name="owned_projects",
         to_field="code_insee_unique",
     )
+    epci = models.JSONField(blank=True, null=True)
     current_perimetre = ArrayField(
         base_field=models.JSONField(blank=True, null=True),
         blank=True,
@@ -282,21 +287,21 @@ class Project(models.Model):
         blank=True,
         null=True,
     )  # Seems unused
-    created_at = models.DateTimeField(db_default=models.functions.Now())
     current_perimetre_new = models.JSONField(blank=True, null=True)  # Seems usused
+
     doc_type = models.CharField()
     doc_type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
-    epci = models.JSONField(blank=True, null=True)
+
     from_sudocuh = models.IntegerField(unique=True, blank=True, null=True)
     from_sudocuh_procedure_id = models.IntegerField(unique=True, blank=True, null=True)
-    is_sudocuh_scot = models.BooleanField(blank=True, null=True)
-    name = models.CharField(blank=True, null=True)  # noqa: DJ001
-    pac = models.JSONField(db_column="PAC", blank=True, null=True)
-    region = models.CharField(blank=True, null=True)  # noqa: DJ001
     sudocuh_procedure_id = models.IntegerField(blank=True, null=True)
-    test = models.BooleanField(blank=True, null=True)
-    towns = models.JSONField(blank=True, null=True)
+    is_sudocuh_scot = models.BooleanField(blank=True, null=True)
+
+    pac = models.JSONField(db_column="PAC", blank=True, null=True)
     trame = models.CharField(blank=True, null=True)  # noqa: DJ001
+
+    region = models.CharField(blank=True, null=True)  # noqa: DJ001
+    towns = models.JSONField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -372,8 +377,18 @@ class ProcedureManager(models.Manager):
 
 class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    created_at = models.DateTimeField(db_default=models.functions.Now())
+    last_updated_at = models.DateTimeField(db_default=models.functions.Now())
+    name = models.TextField(blank=True, null=True)  # noqa: DJ001
+    numero = models.CharField(blank=True, null=True)  # noqa: DJ001
+    test = models.BooleanField(db_default=False)
+    testing = models.BooleanField(blank=True, null=True)
+    # Denormalized information used only by Nuxt. See self.statut for the Django logic.
+    status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001
+
     doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001
-    doc_type_code = models.CharField(blank=True, null=True)  # noqa: DJ001 -- Seems unused
+    doc_type_code = models.TextField(blank=True, null=True)  # noqa: DJ001 -- Seems unused
+
     vaut_SCoT = models.BooleanField(db_column="is_scot", blank=True, null=True)  # noqa: N815
     # Programme Local de l'Habitat
     vaut_PLH = models.BooleanField(db_column="is_pluih", blank=True, null=True)  # noqa: N815
@@ -385,6 +400,8 @@ class Procedure(models.Model):
     obligation_PDU = models.BooleanField(  # noqa: N815
         db_column="mandatory_pdu", blank=True, null=True
     )
+    shareable = models.BooleanField(db_default=False)
+
     maitrise_d_oeuvre = models.JSONField(db_column="moe", null=True)
 
     from_sudocuh = models.IntegerField(unique=True, blank=True, null=True)
@@ -399,17 +416,18 @@ class Procedure(models.Model):
     )
     # This columns seems completely obsolete and will be deleted in a migration.
     # The related name is here to prevent a conflict with the `doublon_cache_de_id` column.
-    previous_opposable_procedures = models.ForeignKey(
+    previous_opposable_procedures_ids = models.ForeignKey(
         "self",
+        blank=True,
         null=True,
-        db_column="previous_opposable_procedures_",  # With an underscore
+        db_column="previous_opposable_procedures_ids",
         on_delete=models.SET_NULL,
-        related_name="previously_opposable",
+        related_name="procedures_previous_opposable_procedures_ids_set",
     )  # Seems unused
-    name = models.TextField(blank=True, null=True)  # noqa: DJ001
+
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
-    type_code = models.CharField(blank=True, null=True)  # noqa: DJ001 -- Seems unused
-    numero = models.CharField(blank=True, null=True)  # noqa: DJ001
+    type_code = models.TextField(blank=True, null=True)  # noqa: DJ001 -- Seems unused
+
     collectivite_porteuse = models.ForeignKey(
         "Collectivite",
         models.DO_NOTHING,
@@ -417,10 +435,13 @@ class Procedure(models.Model):
         null=True,
         to_field="code_insee_unique",
     )
-    created_at = models.DateTimeField(db_default=models.functions.Now())
-    last_updated_at = models.DateTimeField(db_default=models.functions.Now())
+
     doublon_cache_de = models.OneToOneField(
-        "self", on_delete=models.DO_NOTHING, blank=True, null=True, unique=True
+        "self",
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+        unique=True,
     )
     soft_delete = models.BooleanField(db_default=False)
     archived = models.GeneratedField(
@@ -429,8 +450,10 @@ class Procedure(models.Model):
         output_field=models.BooleanField(),
         db_persist=True,
     )
-    comment_dgd = models.CharField(blank=True, null=True)  # noqa: DJ001
-    commentaire = models.CharField(blank=True, null=True)  # noqa: DJ001
+
+    comment_dgd = models.TextField(blank=True, null=True)  # noqa: DJ001
+    commentaire = models.TextField(blank=True, null=True)  # noqa: DJ001
+
     current_perimetre = models.JSONField(blank=True, null=True)
     initial_perimetre = models.JSONField(blank=True, null=True)  # Seems unused
     departements = ArrayField(
@@ -440,12 +463,10 @@ class Procedure(models.Model):
         blank=True,
         null=True,
     )
-    project = models.ForeignKey("core.Project", null=True, on_delete=models.SET_NULL)
-    shareable = models.BooleanField(db_default=False)
-    # Denormalized information used only by Nuxt. See self.statut for the Django logic.
-    status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001
-    test = models.BooleanField(db_default=False)
-    testing = models.BooleanField(blank=True, null=True)
+
+    project = models.ForeignKey(
+        "core.Project", blank=True, null=True, on_delete=models.SET_NULL
+    )
     volet_qualitatif = models.JSONField(blank=True, null=True)
 
     objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
