@@ -3,6 +3,9 @@
   <validation-observer v-else :ref="`observerUpdateProcedure`" v-slot="{ handleSubmit, invalid }">
     <form @submit.prevent="handleSubmit(updateProcedure)">
       <v-container class="pa-0">
+        <div class="d-flex justify-end pb-4">
+          <SignalementProbleme />
+        </div>
         <v-row>
           <v-col cols="6">
             <validation-provider v-slot="{ errors }" name="Type de la procédure" rules="required">
@@ -16,7 +19,7 @@
               />
             </validation-provider>
           </v-col>
-          <v-col cols="6">
+          <v-col cols="4">
             <p class="pt-3">
               <v-icon color="primary">
                 {{ icons.mdiInformationOutline }}
