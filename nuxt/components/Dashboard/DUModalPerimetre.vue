@@ -20,6 +20,16 @@
 
       <v-card-text class="pb-0">
         <v-container class="py-8">
+          <v-row v-if="infoBannerMessage || showHelp" class="align-center">
+            <v-col v-if="infoBannerMessage" cols="8">
+              <v-alert dense text type="info" class="mb-0">
+                {{ infoBannerMessage }}
+              </v-alert>
+            </v-col>
+            <v-col v-if="showHelp" cols="4">
+              <SignalementProbleme />
+            </v-col>
+          </v-row>
           <v-row>
             <v-col
               v-for="collectivite in sortedCollectivites"
@@ -57,6 +67,15 @@ export default {
     perimetres: {
       type: Array,
       required: true
+    },
+    infoBannerMessage: {
+      type: String,
+      default: '',
+      required: false
+    },
+    showHelp: {
+      type: Boolean,
+      required: false
     }
   },
   data () {

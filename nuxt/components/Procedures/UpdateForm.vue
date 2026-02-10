@@ -113,10 +113,11 @@
         </v-row>
         <v-row>
           <v-col cols="12">
+            <!-- eslint-disable-next-line no-irregular-whitespace -->
             <DashboardDUModalPerimetre :perimetres="communes" info-banner-message="Pour modifier le périmètre, contactez-nous en cliquant sur « Signaler un problème »." show-help="true" />
-            <SignalementProbleme />
           </v-col>
         </v-row>
+        <v-row>
           <v-col cols="12" class="d-flex">
             <v-btn
               type="submit"
