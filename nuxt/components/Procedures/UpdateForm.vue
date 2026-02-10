@@ -128,7 +128,6 @@
             <SignalementProbleme />
           </v-col>
         </v-row>
-        <v-row>
           <v-col cols="12" class="d-flex">
             <v-btn
               type="submit"
