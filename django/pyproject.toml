@@ -14,6 +14,7 @@ dependencies = [
     "psycopg[binary,pool]",
     "sentry-sdk[django]",
     "whitenoise[brotli]",
+    "django-datadog-logger", # https://github.com/namespace-ee/django-datadog-logger
 ]
 
 [dependency-groups]

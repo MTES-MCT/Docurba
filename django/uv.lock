@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.13"
 
 [[package]]
@@ -186,6 +186,20 @@ wheels = [
 ]
 
 [[package]]
+name = "django-datadog-logger"
+version = "0.7.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "djangorestframework" },
+    { name = "json-log-formatter" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7f/ec/d36154ea51a4a7ad9bcff4a02ccb5f1db47e1ef52d52c870f2c0dfdfa787/django_datadog_logger-0.7.3.tar.gz", hash = "sha256:4361bb068a4b188fa14135398f9b747728464a291757e6adf8c95c9215dcd602", size = 19894, upload-time = "2024-11-21T13:36:11.482Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/54/10/57e7b9f6cc605a7046206e52aadf8e44776f7ac312640a548683fbd91258/django_datadog_logger-0.7.3-py2.py3-none-any.whl", hash = "sha256:87838cd868f407e050831c536413de6b2ece31433b28c952c0fd90be1d66486a", size = 14004, upload-time = "2024-11-21T13:36:10.183Z" },
+]
+
+[[package]]
 name = "django-debug-toolbar"
 version = "6.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -232,12 +246,25 @@ wheels = [
 ]
 
 [[package]]
+name = "djangorestframework"
+version = "3.16.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8a/95/5376fe618646fde6899b3cdc85fd959716bb67542e273a76a80d9f326f27/djangorestframework-3.16.1.tar.gz", hash = "sha256:166809528b1aced0a17dc66c24492af18049f2c9420dbd0be29422029cfc3ff7", size = 1089735, upload-time = "2025-08-06T17:50:53.251Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b0/ce/bf8b9d3f415be4ac5588545b5fcdbbb841977db1c1d923f7568eeabe1689/djangorestframework-3.16.1-py3-none-any.whl", hash = "sha256:33a59f47fb9c85ede792cbf88bde71893bcda0667bc573f784649521f1102cec", size = 1080442, upload-time = "2025-08-06T17:50:50.667Z" },
+]
+
+[[package]]
 name = "docurba"
 version = "1"
 source = { virtual = "." }
 dependencies = [
     { name = "django" },
     { name = "django-browser-reload" },
+    { name = "django-datadog-logger" },
     { name = "django-debug-toolbar" },
     { name = "django-environ" },
     { name = "django-extensions" },
@@ -261,6 +288,7 @@ dev = [
 requires-dist = [
     { name = "django" },
     { name = "django-browser-reload" },
+    { name = "django-datadog-logger" },
     { name = "django-debug-toolbar" },
     { name = "django-environ" },
     { name = "django-extensions" },
@@ -381,6 +409,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/72/3a/79a912fbd4d8dd6fb
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c0/5a/9cac0c82afec3d09ccd97c8b6502d48f165f9124db81b4bcb90b4af974ee/jedi-0.19.2-py2.py3-none-any.whl", hash = "sha256:a8ef22bde8490f57fe5c7681a3c83cb58874daf72b4784de3cce5b6ef6edb5b9", size = 1572278, upload-time = "2024-11-11T01:41:40.175Z" },
 ]
+
+[[package]]
+name = "json-log-formatter"
+version = "1.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/e8/ef/324f4a28ed0152a32b80685b26316b604218e4ac77487ea82719c3c28bc6/json_log_formatter-1.1.1.tar.gz", hash = "sha256:0815e3b4469e5c79cf3f6dc8a0613ba6601f4a7464f85ba03655cfa6e3e17d10", size = 5896, upload-time = "2025-02-27T22:56:15.643Z" }
 
 [[package]]
 name = "nodeenv"
