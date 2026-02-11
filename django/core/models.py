@@ -497,9 +497,7 @@ class Procedure(models.Model):
             # The type_document is used to generate the self representation, thus on the Django admin.
             # For an unknown reason, the ProcedureManager is used on the "list" view but not on the "change" one.
             # This should be refactored some day as this hack is quite ugly.
-            try:
-                getattr(self, "perimetre__count")  # noqa: B009
-            except AttributeError:
+            if not hasattr(self, "perimetre__count"):
                 self.perimetre__count = self.perimetre.count()
 
             if not self.is_intercommunal:

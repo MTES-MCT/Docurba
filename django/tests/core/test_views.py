@@ -106,18 +106,22 @@ class TestAPIPerimetres:
         ],
     )
     def test_ignore_event_apres(
-        self, client: Client, avant: str, opposable: str
+        self,
+        client: Client,
+        avant: str,
+        opposable: str,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         commune = create_commune()
         procedure = commune.procedures.create(
             doc_type=TypeDocument.PLU, collectivite_porteuse=commune
         )
-
         procedure.event_set.create(
             type="Délibération d'approbation", date_evenement="2023-01-02"
         )
 
-        response = client.get("/api/perimetres", {"avant": avant})
+        with django_assert_num_queries(3):
+            response = client.get("/api/perimetres", {"avant": avant})
         reader = DictReader(response.content.decode().splitlines())
         assert [cp["opposable"] for cp in reader] == [opposable]
 
