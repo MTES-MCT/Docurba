@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "django_datadog_logger.middleware.request_id.RequestIdMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -53,6 +54,9 @@ MIDDLEWARE = [
     "django.middleware.gzip.GZipMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    # Final logger
+    "django_datadog_logger.middleware.error_log.ErrorLoggingMiddleware",
+    "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -141,6 +145,25 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 UPSTREAM_NUXT = env.str("UPSTREAM_NUXT")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {"()": "django_datadog_logger.formatters.datadog.DataDogJSONFormatter"},
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+        "null": {"class": "logging.NullHandler"},
+    },
+    "loggers": {
+        "": {"handlers": ["console"], "level": "INFO"},
+    },
+}
+
+
+if env.str("FORMAT_CONSOLE_LOGS_IN_JSON", "False") == "True":
+    LOGGING["handlers"]["console"]["formatter"] = "json"
 
 with suppress(ModuleNotFoundError):
     from debug_toolbar.settings import CONFIG_DEFAULTS
