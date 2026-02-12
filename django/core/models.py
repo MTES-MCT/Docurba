@@ -274,7 +274,6 @@ class ProcedureQuerySet(models.QuerySet):
                 ),
                 0,
             ),
-        ).annotate(
             perimetre__count=models.functions.Coalesce(
                 models.Subquery(
                     CommuneProcedure.objects.filter(
