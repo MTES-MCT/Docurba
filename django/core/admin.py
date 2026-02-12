@@ -34,10 +34,6 @@ class CommuneAdmin(CollectiviteAdmin):
     pass
 
 
-class ProcedurePerimetreInline(admin.TabularInline):
-    model = Procedure.perimetre.through
-
-
 @admin.register(Procedure)
 class ProcedureAdmin(admin.ModelAdmin):
     list_filter = (
@@ -45,7 +41,6 @@ class ProcedureAdmin(admin.ModelAdmin):
         ("name", admin.EmptyFieldListFilter),
         "doc_type",
     )
-    inlines = [ProcedurePerimetreInline]
     list_display = ("__str__", "statut")
     fields = [
         "doc_type",
