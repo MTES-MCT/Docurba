@@ -48,7 +48,7 @@
     </v-row>
     <v-row>
       <v-col>
-        Documents d’urbanismes disponibles pour la commune recherchée :
+        Documents d’urbanisme disponibles pour la collectivité recherchée :
       </v-col>
     </v-row>
     <DashboardDUItemsList
