@@ -542,7 +542,6 @@ class Event(models.Model):
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
     date_evenement = models.DateField(db_column="date_iso", null=True)
     is_valid = models.BooleanField(db_default=True)
-    visibility = models.TextField(db_default="public")
 
     class Meta:
         managed = False
