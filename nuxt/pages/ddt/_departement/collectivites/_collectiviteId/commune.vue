@@ -36,7 +36,7 @@
         </v-col>
         <v-col cols="12">
           <p class="text-h6">
-            Documents d’urbanisme disponibles pour la commune recherchée :
+            Documents d’urbanisme disponibles pour la collectivité recherchée :
           </p>
         </v-col>
       </v-row>

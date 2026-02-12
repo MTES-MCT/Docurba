@@ -64,7 +64,7 @@
       <v-row>
         <v-col>
           <p class="text-h6">
-            Documents d’urbanisme sous la compétence de {{ collectivite.intitule }} :
+            Documents d’urbanisme disponibles pour la collectivité recherchée :
           </p>
         </v-col>
       </v-row>
