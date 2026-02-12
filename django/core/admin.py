@@ -4,7 +4,7 @@
 from django.contrib import admin
 from django.db import models
 
-from core.models import Collectivite, Commune, Event, Procedure
+from core.models import Collectivite, Commune, Procedure
 
 
 @admin.register(Collectivite)
@@ -38,10 +38,6 @@ class ProcedurePerimetreInline(admin.TabularInline):
     model = Procedure.perimetre.through
 
 
-class EventsInline(admin.TabularInline):
-    model = Event
-
-
 @admin.register(Procedure)
 class ProcedureAdmin(admin.ModelAdmin):
     list_filter = (
@@ -49,7 +45,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         ("name", admin.EmptyFieldListFilter),
         "doc_type",
     )
-    inlines = [ProcedurePerimetreInline, EventsInline]
+    inlines = [ProcedurePerimetreInline]
     list_display = ("__str__", "statut")
     search_fields = ("pk",)
     fields = [
