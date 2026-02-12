@@ -244,6 +244,14 @@ EVENT_CATEGORY_BY_DOC_TYPE |= dict.fromkeys(
 )
 
 
+class ProcedureStatusChoices(models.TextChoices):
+    ANNULE = "annule", "Annulé"
+    EN_COURS = "en cours", "En cours"
+    CADUC = "caduc", "Caduc"
+    ABANDON = "abandon", "Abandon"
+    OPPOSABLE = "opposable", "Opposable"
+
+
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self, *, avant: date | None = None) -> Self:
         events = Event.objects.exclude(date_evenement=None)
@@ -351,6 +359,9 @@ class Procedure(models.Model):
     # See the commit message.
     # initial_perimetre = models.JSONField(null=True)  # noqa: ERA001
     # current_perimetre = models.JSONField(null=True)  # noqa: ERA001
+
+    # Denormalized information used only by Nuxt. See self.statut for the Django logic.
+    status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001
 
     objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
