@@ -22,6 +22,7 @@ from tests.factories import (
     create_commune,
     create_departement,
     create_groupement,
+    create_procedure,
 )
 
 
@@ -405,6 +406,23 @@ class TestScotInterdepartemental:
 
 
 class TestProcedure:
+    @pytest.mark.django_db
+    def test_save(self) -> None:
+        procedure = create_procedure(doc_type=TypeDocument.SCOT)
+        assert procedure.vaut_SCoT
+
+        # Same as Procedure.vaut_plh_consolide
+        for doc_type in [TypeDocument.PLUIH, TypeDocument.PLUIHM]:
+            perimetre = [create_commune() for _ in range(2)]
+            procedure = create_procedure(doc_type=doc_type, perimetre=perimetre)
+            assert procedure.vaut_PLH
+
+        # Same as Procedure.vaut_pdm_consolide
+        for doc_type in [TypeDocument.PLUIM, TypeDocument.PLUIHM]:
+            perimetre = [create_commune() for _ in range(2)]
+            procedure = create_procedure(doc_type=doc_type, perimetre=perimetre)
+            assert procedure.vaut_PDM
+
     def test_is_schema(self) -> None:
         assert not Procedure(doc_type=TypeDocument.CC).is_schema
         assert not Procedure(doc_type=TypeDocument.PLU).is_schema
