@@ -325,6 +325,7 @@ class Procedure(models.Model):
         null=True,
     )
     name = models.TextField(blank=True, null=True)  # noqa: DJ001
+    commentaire = models.TextField(blank=True, null=True)  # noqa: DJ001
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
     collectivite_porteuse = models.ForeignKey(
