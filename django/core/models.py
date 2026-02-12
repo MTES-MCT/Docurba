@@ -274,6 +274,10 @@ class ProcedureQuerySet(models.QuerySet):
                 ),
                 0,
             ),
+        )
+
+    def with_perimetre_counts(self) -> Self:
+        return self.annotate(
             perimetre__count=models.functions.Coalesce(
                 models.Subquery(
                     CommuneProcedure.objects.filter(
@@ -297,6 +301,7 @@ class ProcedureManager(models.Manager):
         return (
             super()
             .get_queryset()
+            .with_perimetre_counts()
             .with_communes_counts()
             .select_related("collectivite_porteuse__departement__region")
         )
@@ -325,6 +330,8 @@ class Procedure(models.Model):
         null=True,
     )
     name = models.TextField(blank=True, null=True)  # noqa: DJ001
+    commentaire = models.TextField(blank=True, null=True)  # noqa: DJ001
+    is_principale = models.BooleanField(blank=True, null=True)
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
     collectivite_porteuse = models.ForeignKey(
@@ -345,6 +352,8 @@ class Procedure(models.Model):
         output_field=models.BooleanField(),
         db_persist=True,
     )
+    current_perimetre = models.JSONField(null=True)
+    initial_perimetre = models.JSONField(null=True)
 
     objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
@@ -471,6 +480,17 @@ class Procedure(models.Model):
     @property
     def type_document(self) -> TypeDocument:
         if self.doc_type in (TypeDocument.PLU, *PLU_LIKE):
+            # self.perimetre_count is set when calling Procedure.objects.with_perimetre_counts
+            # which is always called on the manager (see ProcedureManager.get_queryset).
+            # For the moment, it is mandatory to know if the procedure is_intercommunal.
+            # The type_document is used to generate the self representation, thus on the Django admin.
+            # For an unknown reason, the ProcedureManager is used on the "list" view but not on the "change" one.
+            # This should be refactored some day as this hack is quite ugly.
+            try:
+                getattr(self, "perimetre__count")  # noqa: B009
+            except AttributeError:
+                self.perimetre__count = self.perimetre.count()
+
             if not self.is_intercommunal:
                 return TypeDocument.PLU
             if self.vaut_PLH_consolide and self.vaut_PDM_consolide:
@@ -537,6 +557,7 @@ class Event(models.Model):
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
     date_evenement = models.DateField(db_column="date_iso", null=True)
     is_valid = models.BooleanField(db_default=True)
+    visibility = models.TextField(db_default="public")
 
     class Meta:
         managed = False
@@ -872,6 +893,7 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     class Meta:
         managed = False
         db_table = "procedures_perimetres"
+        verbose_name = "Périmètre"
 
 
 class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008

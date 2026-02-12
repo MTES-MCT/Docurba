@@ -1,8 +1,10 @@
 # ruff: noqa: ARG002
 # ruff: noqa: ANN001
+# ruff: noqa: RUF012
 from django.contrib import admin
+from django.db import models
 
-from core.models import Collectivite, Commune, Procedure
+from core.models import Collectivite, Commune, Event, Procedure
 
 
 @admin.register(Collectivite)
@@ -32,13 +34,36 @@ class CommuneAdmin(CollectiviteAdmin):
     pass
 
 
+class ProcedurePerimetreInline(admin.TabularInline):
+    model = Procedure.perimetre.through
+
+
+class EventsInline(admin.TabularInline):
+    model = Event
+
+
 @admin.register(Procedure)
 class ProcedureAdmin(admin.ModelAdmin):
     list_filter = (
         ("parente", admin.EmptyFieldListFilter),
         ("name", admin.EmptyFieldListFilter),
+        "doc_type",
     )
+    inlines = [ProcedurePerimetreInline, EventsInline]
     list_display = ("__str__", "statut")
+    search_fields = ("pk",)
+    fields = [
+        "doc_type",
+        "type",
+        "numero",
+        "parente",
+        "name",
+        "collectivite_porteuse",
+        "statut",
+        "commentaire",
+        "current_perimetre",
+        "is_principale",
+    ]
 
     def has_add_permission(self, request: object) -> bool:
         return False
@@ -48,3 +73,7 @@ class ProcedureAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None) -> bool:
         return False
+
+    def get_queryset(self, request) -> models.QuerySet:
+        queryset = super().get_queryset(request)
+        return queryset.with_events()  # mandatory to set the status.
