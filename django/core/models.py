@@ -347,6 +347,10 @@ class Procedure(models.Model):
         output_field=models.BooleanField(),
         db_persist=True,
     )
+    # Enabling these two columns led to a big performance trouble on our API.
+    # See the commit message.
+    # initial_perimetre = models.JSONField(null=True)  # noqa: ERA001
+    # current_perimetre = models.JSONField(null=True)  # noqa: ERA001
 
     objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
