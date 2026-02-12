@@ -47,7 +47,6 @@ class ProcedureAdmin(admin.ModelAdmin):
     )
     inlines = [ProcedurePerimetreInline]
     list_display = ("__str__", "statut")
-    search_fields = ("pk",)
     fields = [
         "doc_type",
         "type",
