@@ -873,7 +873,6 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     class Meta:
         managed = False
         db_table = "procedures_perimetres"
-        verbose_name = "Périmètre"
 
 
 class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008
