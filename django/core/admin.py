@@ -50,7 +50,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         "doc_type",
     )
     inlines = [ProcedurePerimetreInline, EventsInline]
-    list_display = ("__str__", "django_status")
+    list_display = ("__str__", "statut")
     search_fields = ("pk",)
     fields = [
         "doc_type",
@@ -58,9 +58,8 @@ class ProcedureAdmin(admin.ModelAdmin):
         "numero",
         "parente",
         "name",
-        "nuxt_status",
-        "django_status",
         "collectivite_porteuse",
+        "statut",
         "commentaire",
         "current_perimetre",
         "is_principale",
@@ -78,11 +77,3 @@ class ProcedureAdmin(admin.ModelAdmin):
     def get_queryset(self, request) -> models.QuerySet:
         queryset = super().get_queryset(request)
         return queryset.with_events()  # mandatory to set the status.
-
-    @admin.display(description="Statut selon Nuxt")
-    def nuxt_status(self, obj) -> str:
-        return obj.get_status_display() or "-"
-
-    @admin.display(description="Statut selon Django")
-    def django_status(self, obj) -> str:
-        return obj.statut or "-"
