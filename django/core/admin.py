@@ -60,6 +60,8 @@ class ProcedureAdmin(admin.ModelAdmin):
         "name",
         "collectivite_porteuse",
         "statut",
+        "commentaire",
+        "is_principale",
     ]
 
     def has_add_permission(self, request: object) -> bool:
