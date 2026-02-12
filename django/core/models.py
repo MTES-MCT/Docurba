@@ -4,8 +4,10 @@ from datetime import date
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
 from operator import attrgetter
+from pyexpat import model
 from typing import Self
 
+from django.contrib.postgres.fields import ArrayField
 from django.db import connection, models
 from django.urls import reverse
 from django.utils import timezone
@@ -244,6 +246,67 @@ EVENT_CATEGORY_BY_DOC_TYPE |= dict.fromkeys(
 )
 
 
+class Project(models.Model):
+    id = models.UUIDField(primary_key=True)
+    archived = models.BooleanField(db_default=False)
+    collectivite = models.ForeignKey(
+        "core.Collectivite",
+        blank=True,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="projects",
+        to_field="code_insee_unique",
+    )
+    collectivite_porteuse = models.ForeignKey(
+        "core.Collectivite",
+        blank=True,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="owned_projects",
+        to_field="code_insee_unique",
+    )
+    current_perimetre = ArrayField(
+        base_field=models.JSONField(blank=True, null=True),
+        blank=True,
+        null=True,
+    )
+    initial_perimetre = ArrayField(
+        base_field=models.JSONField(blank=True, null=True),
+        blank=True,
+        null=True,
+    )  # Seems unused
+    created_at = models.DateTimeField(db_default=models.functions.Now())
+    current_perimetre_new = models.JSONField(blank=True, null=True)  # Seems usused
+    doc_type = models.CharField()
+    doc_type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
+    epci = models.JSONField(blank=True, null=True)
+    from_sudocuh = models.IntegerField(unique=True, blank=True, null=True)
+    from_sudocuh_procedure_id = models.IntegerField(unique=True, blank=True, null=True)
+    is_sudocuh_scot = models.BooleanField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True)  # noqa: DJ001
+    # Uncomment this line when the model is ready to be managed.
+    # owner = models.ForeignKey(
+    #     "users.Profile",
+    #     db_column="owner",
+    #     blank=True,
+    #     null=True,
+    #     on_delete=models.SET_NULL,
+    #     related_name="projects",
+    # )
+
+    pac = models.JSONField(db_column="PAC", blank=True, null=True)
+    region = models.CharField(blank=True, null=True)  # noqa: DJ001
+    sudocuh_procedure_id = models.IntegerField(blank=True, null=True)
+    test = models.BooleanField(blank=True, null=True)
+    towns = models.JSONField(blank=True, null=True)
+    trame = models.CharField(blank=True, null=True)  # noqa: DJ001
+
+    class Meta:
+        verbose_name = "projet"
+        db_table = "projects"
+        managed = False
+
+
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self, *, avant: date | None = None) -> Self:
         events = Event.objects.exclude(date_evenement=None)
@@ -305,17 +368,22 @@ class ProcedureManager(models.Manager):
 class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001
+    doc_type_code = models.CharField(blank=True, null=True)  # noqa: DJ001 -- Seems unused
     vaut_SCoT = models.BooleanField(db_column="is_scot", blank=True, null=True)  # noqa: N815
     # Programme Local de l'Habitat
     vaut_PLH = models.BooleanField(db_column="is_pluih", blank=True, null=True)  # noqa: N815
     # Plan De Mobilité (anciennement Plan de Déplacements Urbains)
     vaut_PDM = models.BooleanField(db_column="is_pdu", blank=True, null=True)  # noqa: N815
+    is_principale = models.BooleanField(blank=True, null=True)
+    is_sectoriel = models.BooleanField(blank=True, null=True)
+    is_sudocuh_scot = models.BooleanField(blank=True, null=True)
     obligation_PDU = models.BooleanField(  # noqa: N815
         db_column="mandatory_pdu", blank=True, null=True
     )
     maitrise_d_oeuvre = models.JSONField(db_column="moe", null=True)
 
     from_sudocuh = models.IntegerField(unique=True, blank=True, null=True)
+    sudocu_secondary_procedure_of = models.IntegerField(blank=True, null=True)
 
     parente = models.ForeignKey(
         "self",
@@ -324,8 +392,18 @@ class Procedure(models.Model):
         related_name="secondaires",
         null=True,
     )
+    # This columns seems completely obsolete and will be deleted in a migration.
+    # The related name is here to prevent a conflict with the `doublon_cache_de_id` column.
+    previous_opposable_procedures = models.ForeignKey(
+        "self",
+        null=True,
+        db_column="previous_opposable_procedures_",  # With an underscore
+        on_delete=models.SET_NULL,
+        related_name="previously_opposable",
+    )  # Seems unused
     name = models.TextField(blank=True, null=True)  # noqa: DJ001
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
+    type_code = models.CharField(blank=True, null=True)  # noqa: DJ001 -- Seems unused
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
     collectivite_porteuse = models.ForeignKey(
         "Collectivite",
@@ -335,6 +413,7 @@ class Procedure(models.Model):
         to_field="code_insee_unique",
     )
     created_at = models.DateTimeField(db_default=models.functions.Now())
+    last_updated_at = models.DateTimeField(db_default=models.functions.Now())
     doublon_cache_de = models.OneToOneField(
         "self", on_delete=models.DO_NOTHING, blank=True, null=True, unique=True
     )
@@ -345,12 +424,37 @@ class Procedure(models.Model):
         output_field=models.BooleanField(),
         db_persist=True,
     )
+    comment_dgd = models.CharField(blank=True, null=True)  # noqa: DJ001
+    commentaire = models.CharField(blank=True, null=True)  # noqa: DJ001
+    current_perimetre = models.JSONField(blank=True, null=True)
+    initial_perimetre = models.JSONField(blank=True, null=True)  # Seems unused
+    departements = ArrayField(
+        verbose_name="Départements",
+        # Charfield pour permettre aux départements ne contenant qu'un chiffre de commencer par un zéro.
+        base_field=models.CharField(max_length=3, blank=True),
+        blank=True,
+        null=True,
+    )
+    # Uncomment this line when the model is ready to be managed.
+    # owner = models.ForeignKey(
+    #     "users.Profile",
+    #     on_delete=models.SET_NULL,
+    #     blank=True,
+    #     null=True,
+    #     related_name="procedures",
+    # )
+    project = models.ForeignKey("core.Project", null=True, on_delete=models.SET_NULL)
+    shareable = models.BooleanField(db_default=False)
+    status = models.CharField(blank=True, null=True)  # noqa: DJ001
+    test = models.BooleanField(db_default=False)
+    testing = models.BooleanField(blank=True, null=True)
+    volet_qualitatif = models.JSONField(blank=True, null=True)
 
     objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
     class Meta:
-        managed = False
         db_table = "procedures"
+        managed = False
 
     def __str__(self) -> str:
         return (
