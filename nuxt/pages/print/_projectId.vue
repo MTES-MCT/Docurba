@@ -82,7 +82,7 @@ import orderSections from '@/mixins/orderSections.js'
 
 export default {
   layout: 'print',
-  async asyncData ({ $supAdmin, $md, route, $isDev }) {
+  async asyncData ({ $supAdmin, $md, route }) {
     const projectId = route.params.projectId
 
     if (process.server) {
@@ -90,11 +90,9 @@ export default {
         const { data: projects } = await $supAdmin.from('projects').select('*').eq('id', projectId)
         const project = projects[0]
 
-        const baseUrl = $isDev ? 'http://localhost:3000' : 'https://docurba.beta.gouv.fr'
-
         const { data: sections } = await axios({
           method: 'get',
-          url: `${baseUrl}/api/trames/tree/projet-${projectId}?content=all`
+          url: `${process.env.APP_URL}/api/trames/tree/projet-${projectId}?content=all`
         })
 
         function deptToRef (deptCode) {

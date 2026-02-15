@@ -13,6 +13,7 @@
       <nuxt-link to="/" title="Accueil - Docurba" class="app-bar-title__link">
         Docurba
       </nuxt-link>
+      <p>Test</p>
     </div>
 
     <div class="app-bar__page-title">
@@ -188,10 +189,13 @@ export default {
       icons: {
         mdiDotsVertical,
         mdiChevronDown
-      }
+      },
+      environment: ''
     }
   },
   computed: {
+    // https://v2.nuxt.com/docs/directory-structure/middleware/
+    // https://stackoverflow.com/questions/73293352/nuxt-3-how-to-use-route-middleware-in-a-layout-can-i
     trameRef () {
       const scopes = { ddt: 'dept', dreal: 'region' }
       const poste = this.$user.profile.poste
