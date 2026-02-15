@@ -604,6 +604,7 @@ class CollectiviteQuerySet(models.QuerySet):
                     "procedure_set",
                     Procedure.objects.with_events(avant=avant)
                     .without_adhesions_count()
+                    .order_by("created_at")
                     .filter(
                         doc_type="SCOT",
                         parente=None,
