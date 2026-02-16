@@ -185,8 +185,14 @@ export default async ({ $supabase, app }, inject) => {
     canViewMultipleDepartements () {
       return this.profile.side === 'ppa' || this.profile.is_admin
     },
-    canViewEnquete () {
-      return (this.profile.side === 'etat' && this.profile.poste === 'ddt') || this.profile.is_admin
+    // env.DDT_ENQUETE_ENABLED permet de ne garder l'enquête ouverte que pour des DDT retardataires
+    canViewEnquete ({ departement }) {
+      const isDDT = this.profile.side === 'etat' && this.profile.poste === 'ddt'
+      if (!isDDT && !this.profile.is_admin) {
+        return false
+      }
+
+      return process.env.DDT_ENQUETE_ENABLED.includes(departement)
     }
   }
 
