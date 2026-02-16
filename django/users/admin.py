@@ -10,7 +10,10 @@ from users.models import Profile, User
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    readonly_fields = ("user",)
+    readonly_fields = (
+        "user",
+        "email",  # email doit correspondre à celui connu par Supabase Auth donc on désactive l'édition
+    )
     list_display = (
         "__str__",
         "side",
