@@ -358,6 +358,44 @@ class TestCollectivitePortantScot:
                 (scots_opposables[1], scot_en_cours),
             ]
 
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("avant", "has_scot_opposable"),
+        [
+            ("", False),
+            ("2025-12-13", True),
+            ("2025-12-10", False),
+        ],
+    )
+    def test_scot_caduc_est_opposable_si_interroge_avant_fin_d_echeance(
+        self,
+        avant: str,
+        has_scot_opposable: bool,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        groupement_avec_scot = create_groupement()
+        commune = create_commune()
+
+        scot_opposable = groupement_avec_scot.procedure_set.create(
+            doc_type=TypeDocument.SCOT
+        )
+        scot_opposable.event_set.create(
+            type="Délibération d'approbation", date_evenement="2025-12-11"
+        )
+        scot_opposable.event_set.create(
+            type="Fin d'échéance", date_evenement="2025-12-14"
+        )
+        scot_opposable.perimetre.add(commune)
+
+        with django_assert_num_queries(6):
+            groupements = list(Collectivite.objects.portant_scot(avant=avant))
+        assert groupements == [groupement_avec_scot]
+
+        if has_scot_opposable:
+            assert groupements[0].scots_pour_csv == [(scot_opposable, None)]
+        else:
+            assert groupements[0].scots_pour_csv == []
+
 
 class TestScotInterdepartemental:
     @pytest.mark.django_db
