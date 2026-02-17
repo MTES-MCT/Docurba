@@ -7,7 +7,7 @@ visible: true
 
 https://docurba.beta.gouv.fr/api/perimetres?departement=01
 
-https://docurba.beta.gouv.fr/api/perimetres?departement=01&avant=2025-01-01
+https://docurba.beta.gouv.fr/api/perimetres?departement=01&avant=2026-01-01
 
 ### Description
 
