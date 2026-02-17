@@ -613,7 +613,9 @@ class CollectiviteQuerySet(models.QuerySet):
                 ),
                 models.Prefetch(
                     "scots__perimetre",
-                    Commune.objects.with_scots().select_related("departement__region"),
+                    Commune.objects.with_scots(avant=avant).select_related(
+                        "departement__region",
+                    ),
                     to_attr="communes",
                 ),
             )
