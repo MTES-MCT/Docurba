@@ -352,6 +352,8 @@ const SCOT_LIKE = ['SCOT', 'SD']
 export default {
   name: 'CollectiviteDU',
   layout: 'ddt',
+  // https://v2.nuxt.com/docs/components-glossary/watchquery/#the-watchquery-property
+  // watchQuery: ['search'],
   data () {
     return {
       exportingCommunes: false,
@@ -381,6 +383,11 @@ export default {
       search: this.$route.query.search || '',
       referentiel: null,
       clickedOnDocLink: true
+    }
+  },
+  watch: {
+    search (new_val, old_val) {
+      this.$utils.UpdateQueryParams({ search: new_val })
     }
   },
   computed: {

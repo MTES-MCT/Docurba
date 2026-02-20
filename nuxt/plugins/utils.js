@@ -98,7 +98,12 @@ export default ({ app }, inject) => {
       }
 
       return postes
-    }
+    },
+    UpdateQueryParams (key, value) {
+      // Problem is it replaces totally the content.
+      // https://stackoverflow.com/questions/72076482/vue-js-append-params-to-url
+      app.router.push({path: window.location.pathname, query: {key: value}})
+    },
   }
   inject('utils', utils)
 }
