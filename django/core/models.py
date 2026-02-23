@@ -355,10 +355,8 @@ class Procedure(models.Model):
         output_field=models.BooleanField(),
         db_persist=True,
     )
-    # Enabling these two columns led to a big performance trouble on our API.
-    # See the commit message.
-    # initial_perimetre = models.JSONField(null=True)  # noqa: ERA001
-    # current_perimetre = models.JSONField(null=True)  # noqa: ERA001
+    initial_perimetre = models.JSONField(null=True)
+    current_perimetre = models.JSONField(null=True)
 
     # Denormalized information used only by Nuxt. See self.statut for the Django logic.
     status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001
@@ -602,7 +600,8 @@ class CollectiviteQuerySet(models.QuerySet):
             .prefetch_related(
                 models.Prefetch(
                     "procedure_set",
-                    Procedure.objects.with_events(avant=avant)
+                    Procedure.objects.defer("current_perimetre", "initial_perimetre")
+                    .with_events(avant=avant)
                     .without_adhesions_count()
                     .filter(
                         doc_type="SCOT",
@@ -695,8 +694,10 @@ class CommuneQuerySet(models.QuerySet):
     def with_procedures_principales(
         self, *, avant: date | None = None, with_adhesions_count: bool = True
     ) -> Self:
-        procedures_principales = Procedure.objects.with_events(avant=avant).filter(
-            parente=None, archived=False
+        procedures_principales = (
+            Procedure.objects.defer("current_perimetre", "initial_perimetre")
+            .with_events(avant=avant)
+            .filter(parente=None, archived=False)
         )
         if not with_adhesions_count:
             procedures_principales = procedures_principales.without_adhesions_count()
@@ -716,9 +717,9 @@ class CommuneQuerySet(models.QuerySet):
         return self.prefetch_related(
             models.Prefetch(
                 "procedures",
-                Procedure.objects.with_events(avant=avant).filter(
-                    doc_type="SCOT", parente=None, archived=False
-                ),
+                Procedure.objects.defer("current_perimetre", "initial_perimetre")
+                .with_events(avant=avant)
+                .filter(doc_type="SCOT", parente=None, archived=False),
                 to_attr="procedures_principales",
             )
         )
