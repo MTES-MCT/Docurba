@@ -64,6 +64,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         "django_status",
         "collectivite_porteuse",
         "commentaire",
+        "current_perimetre",
         "is_principale",
     ]
 
