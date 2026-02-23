@@ -154,10 +154,9 @@ export default {
             redirectTo: window.location.origin
           }
         })
-
         this.snackbar = {
           val: true,
-          text: `Un email de changement de mot de passe à été envoyé à ${this.userData.email}`
+          text: `Un email de changement de mot de passe à été envoyé à ${this.email}`
         }
         this.forgotPassword = false
       } catch (error) {

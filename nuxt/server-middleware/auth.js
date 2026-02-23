@@ -35,8 +35,8 @@ app.post('/password', async (req, res) => {
       template_id: 'd-06e865fdc30d42a398fdc6bc532deb82',
       dynamic_template_data: {
         redirectURL: properties.action_link,
-        firstname: profile.firstname,
-        lastname: profile.lastname
+        firstname: profile?.firstname,
+        lastname: profile?.lastname
       }
     })
 
