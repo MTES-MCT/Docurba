@@ -39,6 +39,7 @@ function handleRedirect ($supabase, event, user, router) {
           method: 'post',
           data: { userData: { email: user.email } }
         })
+        router.push({ name: 'collectivites-collectiviteId', params: { collectiviteId: user.profile.collectivite_id } })
         break
       default:
         break
