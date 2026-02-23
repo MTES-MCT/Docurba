@@ -140,28 +140,28 @@ export default {
         })
         if (error) { throw error }
       } catch (error) {
-        console.log('error: ', error)
         this.error = 'Email ou mot de passe incorrect.'
       }
     },
     async sendResetPassword () {
-      try {
-        await axios({
-          method: 'post',
-          url: '/api/auth/password',
-          data: {
-            email: this.email,
-            redirectTo: window.location.origin
-          }
-        })
-        this.snackbar = {
-          val: true,
-          text: `Un email de changement de mot de passe à été envoyé à ${this.email}`
+      const response = await axios({
+        method: 'post',
+        url: '/api/auth/password',
+        validateStatus: () => true,
+        data: {
+          email: this.email,
+          redirectTo: window.location.origin
         }
-        this.forgotPassword = false
-      } catch (error) {
-        console.log(error)
+      })
+      let snackbarMessage = `Un email de changement de mot de passe à été envoyé à ${this.email}`
+      if (response.status !== 200) {
+        snackbarMessage = 'Une erreur est survenue.'
       }
+      this.snackbar = {
+        val: true,
+        text: snackbarMessage
+      }
+      this.forgotPassword = false
     }
   }
 }
