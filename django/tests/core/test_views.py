@@ -38,8 +38,10 @@ class TestAPIPerimetres:
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = create_commune(code_insee="12345", commune_type="COM")
-        commune.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        create_procedure(
+            collectivite_porteuse=commune,
+            doc_type=TypeDocument.PLU,
+            perimetre=[commune],
         )
 
         with django_assert_num_queries(3):
@@ -63,39 +65,36 @@ class TestAPIPerimetres:
             }
         ]
 
+    @pytest.mark.parametrize(
+        ("is_filtering", "expected_lignes"), [(False, 2), (True, 1)]
+    )
     @pytest.mark.django_db
-    def test_filtre_par_department(self, client: Client) -> None:
+    def test_filtre_par_department(
+        self,
+        is_filtering: bool,  # noqa: FBT001
+        expected_lignes: int,
+        client: Client,
+    ) -> None:
         commune_a = create_commune()
         commune_b = create_commune()
 
-        commune_a.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune_a
+        create_procedure(
+            collectivite_porteuse=commune_a,
+            doc_type=TypeDocument.PLU,
+            perimetre=[commune_a],
         )
-        commune_b.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune_b
+        create_procedure(
+            collectivite_porteuse=commune_b,
+            doc_type=TypeDocument.PLU,
+            perimetre=[commune_b],
         )
 
-        response = client.get(
-            "/api/perimetres", {"departement": commune_a.departement.code_insee}
-        )
+        filtre = {}
+        if is_filtering:
+            filtre = {"departement": commune_a.departement.code_insee}
+        response = client.get("/api/perimetres", filtre)
         reader = DictReader(response.content.decode().splitlines())
-        assert len(list(reader)) == 1
-
-    @pytest.mark.django_db
-    def test_retourne_tout_sans_filtre_departement(self, client: Client) -> None:
-        commune_a = create_commune()
-        commune_b = create_commune()
-
-        commune_a.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune_a
-        )
-        commune_b.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune_b
-        )
-
-        response = client.get("/api/perimetres")
-        reader = DictReader(response.content.decode().splitlines())
-        assert len(list(reader)) == 2
+        assert len(list(reader)) == expected_lignes
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
@@ -113,8 +112,10 @@ class TestAPIPerimetres:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         commune = create_commune()
-        procedure = commune.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        procedure = create_procedure(
+            collectivite_porteuse=commune,
+            doc_type=TypeDocument.PLU,
+            perimetre=[commune],
         )
         procedure.event_set.create(
             type="Délibération d'approbation", date_evenement="2023-01-02"
@@ -133,13 +134,18 @@ class TestAPICommunes:
     ) -> None:
         groupement = create_groupement()
         commune = create_commune()
-        plan_en_cours = commune.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+        plan_en_cours = create_procedure(
+            collectivite_porteuse=groupement,
+            doc_type=TypeDocument.PLU,
+            perimetre=[commune],
         )
         plan_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
-        plan_opposable = commune.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+        plan_opposable = create_procedure(
+            collectivite_porteuse=groupement,
+            doc_type=TypeDocument.PLU,
+            perimetre=[commune],
         )
+
         plan_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
         )
@@ -174,42 +180,27 @@ class TestAPICommunes:
 
         assert len(list(reader)) == 1
 
+    @pytest.mark.parametrize(
+        ("is_filtering", "expected_lignes"), [(False, 2), (True, 1)]
+    )
     @pytest.mark.django_db
-    def test_filtre_par_department(self, client: Client) -> None:
-        groupement = create_groupement()
-
+    def test_filtre_par_department(
+        self,
+        is_filtering: bool,  # noqa: FBT001
+        expected_lignes: int,
+        client: Client,
+    ) -> None:
         commune_a = create_commune()
-        commune_b = create_commune()
+        create_commune()
 
-        commune_a.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
-        )
-        commune_b.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
-        )
+        filtre = {}
+        if is_filtering:
+            filtre = {"departement": commune_a.departement.code_insee}
 
-        response = client.get(
-            "/api/communes", {"departement": commune_a.departement.code_insee}
-        )
+        response = client.get("/api/communes", filtre)
         reader = DictReader(response.content.decode().splitlines())
-        assert len(list(reader)) == 1
 
-    @pytest.mark.django_db
-    def test_retourne_tout_sans_filtre_departement(self, client: Client) -> None:
-        groupement = create_groupement()
-        commune_a = create_commune()
-        commune_b = create_commune()
-
-        commune_a.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
-        )
-        commune_b.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
-        )
-
-        response = client.get("/api/communes")
-        reader = DictReader(response.content.decode().splitlines())
-        assert len(list(reader)) == 2
+        assert len(list(reader)) == expected_lignes
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
@@ -224,8 +215,10 @@ class TestAPICommunes:
     ) -> None:
         groupement = create_groupement()
         commune = create_commune()
-        procedure = commune.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+        procedure = create_procedure(
+            collectivite_porteuse=groupement,
+            doc_type=TypeDocument.PLU,
+            perimetre=[commune],
         )
 
         procedure.event_set.create(type="Prescription", date_evenement="2021-12-01")
@@ -247,8 +240,10 @@ class TestAPICommunes:
         for _ in range(2):
             groupement = create_groupement()
             commune = create_commune()
-            plan_en_cours = commune.procedures.create(
-                doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+            plan_en_cours = create_procedure(
+                collectivite_porteuse=groupement,
+                doc_type=TypeDocument.PLU,
+                perimetre=[commune],
             )
             plan_en_cours.event_set.create(
                 type="Prescription", date_evenement="2024-12-01"
@@ -308,7 +303,7 @@ class TestAPIScots:
                 "pc_id": str(scot_en_cours.id),
                 "pc_nom_schema": "",
                 "pc_noserie_procedure": "",
-                "pc_proc_elaboration_revision": "",
+                "pc_proc_elaboration_revision": "Élaboration",
                 "pc_scot_interdepartement": "False",
                 "pc_date_publication_perimetre": "2024-12-01",
                 "pc_date_prescription": "",
@@ -317,8 +312,16 @@ class TestAPIScots:
             }
         ]
 
+    @pytest.mark.parametrize(
+        ("is_filtering", "expected_lignes"), [(False, 2), (True, 1)]
+    )
     @pytest.mark.django_db
-    def test_filtre_par_department(self, client: Client) -> None:
+    def test_filtre_par_department(
+        self,
+        is_filtering: bool,  # noqa: FBT001
+        expected_lignes: int,
+        client: Client,
+    ) -> None:
         groupement_a = create_groupement()
         groupement_b = create_groupement()
         create_procedure(
@@ -332,30 +335,12 @@ class TestAPIScots:
             collectivite_porteuse=groupement_b,
         )
 
-        response = client.get(
-            reverse("api_scots"), {"departement": groupement_a.departement.code_insee}
-        )
+        filtre = {}
+        if is_filtering:
+            filtre = {"departement": groupement_a.departement.code_insee}
+        response = client.get(reverse("api_scots"), filtre)
         reader = DictReader(response.content.decode().splitlines())
-        assert len(list(reader)) == 1
-
-    @pytest.mark.django_db
-    def test_retourne_tout_sans_filtre_departement(self, client: Client) -> None:
-        groupement_a = create_groupement()
-        groupement_b = create_groupement()
-        create_procedure(
-            doc_type=TypeDocument.SCOT,
-            statut=EventCategory.PUBLICATION_PERIMETRE,
-            collectivite_porteuse=groupement_a,
-        )
-        create_procedure(
-            doc_type=TypeDocument.SCOT,
-            statut=EventCategory.PUBLICATION_PERIMETRE,
-            collectivite_porteuse=groupement_b,
-        )
-
-        response = client.get(reverse("api_scots"))
-        reader = DictReader(response.content.decode().splitlines())
-        assert len(list(reader)) == 2
+        assert len(list(reader)) == expected_lignes
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
