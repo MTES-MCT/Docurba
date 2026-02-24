@@ -1,4 +1,3 @@
-from contextlib import suppress
 from pathlib import Path
 
 import sentry_sdk
@@ -7,20 +6,18 @@ from environ import Env
 env = Env()
 env.smart_cast = False
 
-sentry_sdk.init(
-    dsn=env.str("SENTRY_DSN", default=""),
-    traces_sample_rate=1,
-)
+#########################################
+############ Django settings ############
+#########################################
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 SECRET_KEY = env.str("SECRET_KEY")
 
-DEBUG = env.str("DJANGO_DEBUG", False)
+DEBUG = False
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
@@ -35,9 +32,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "revproxy.apps.RevProxyConfig",
-    "django_browser_reload",
-    "django_extensions",
-    "debug_toolbar",
     "core",
     "users",
 ]
@@ -53,8 +47,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.gzip.GZipMiddleware",
-    "django_browser_reload.middleware.BrowserReloadMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     # Final logger
     "django_datadog_logger.middleware.error_log.ErrorLoggingMiddleware",
     "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware",
@@ -82,7 +74,6 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
-                "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -139,13 +130,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 INTERNAL_IPS = ["127.0.0.1"]
 
 CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = not DEBUG
-SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
-
-UPSTREAM_NUXT = env.str("UPSTREAM_NUXT")
 
 LOGGING = {
     "version": 1,
@@ -154,7 +143,7 @@ LOGGING = {
         "json": {"()": "django_datadog_logger.formatters.datadog.DataDogJSONFormatter"},
     },
     "handlers": {
-        "console": {"class": "logging.StreamHandler"},
+        "console": {"class": "logging.StreamHandler", "formatter": "json"},
         "null": {"class": "logging.NullHandler"},
     },
     "loggers": {
@@ -162,13 +151,16 @@ LOGGING = {
     },
 }
 
+#####################################################
+############ External libraries settings ############
+#####################################################
+sentry_sdk.init(
+    dsn=env.str("SENTRY_DSN", default=""),
+    traces_sample_rate=1,
+)
 
-if env.str("FORMAT_CONSOLE_LOGS_IN_JSON", "False") == "True":
-    LOGGING["handlers"]["console"]["formatter"] = "json"
+##########################################
+############ Docurba settings ############
+##########################################
 
-with suppress(ModuleNotFoundError):
-    from debug_toolbar.settings import CONFIG_DEFAULTS
-
-    DEBUG_TOOLBAR_CONFIG = {
-        "HIDE_IN_STACKTRACES": CONFIG_DEFAULTS["HIDE_IN_STACKTRACES"] + ("sentry_sdk",),
-    }
+UPSTREAM_NUXT = env.str("UPSTREAM_NUXT")

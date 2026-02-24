@@ -1,4 +1,3 @@
-from debug_toolbar.toolbar import debug_toolbar_urls
 from django.conf import settings
 from django.contrib import admin
 from django.http import HttpResponseNotFound
@@ -20,13 +19,8 @@ urlpatterns = [
     path("api/perimetres", views.api_perimetres),
     path("api/communes", views.api_communes),
     path("api/scots", views.api_scots, name="api_scots"),
-    path("__reload__/", include("django_browser_reload.urls")),
-    *debug_toolbar_urls(),
     # URLs Nuxt globales
     path("", nuxt_proxy, {"path": ""}),
-    path(  # Désactive le websocket hot reload Nuxt en dev
-        "_content/ws", lambda _: HttpResponseNotFound()
-    ),
     re_path(r"(?P<path>^_content.*)", nuxt_proxy),
     re_path(r"(?P<path>^_nuxt.*)", nuxt_proxy),
     re_path(r"(?P<path>^api.*)", nuxt_proxy),
@@ -57,3 +51,19 @@ urlpatterns = [
     re_path(r"(?P<path>^trames.*)", nuxt_proxy),
     re_path(r"(?P<path>^validation.*)", nuxt_proxy),
 ]
+
+if settings.DEBUG:
+    urls = [
+        path(  # Désactive le websocket hot reload Nuxt en dev
+            "_content/ws", lambda _: HttpResponseNotFound()
+        ),
+    ]
+    if "debug_toolbar" in settings.INSTALLED_APPS:
+        from debug_toolbar.toolbar import debug_toolbar_urls
+
+        urls += debug_toolbar_urls()
+
+    if "django_browser_reload" in settings.INSTALLED_APPS:
+        urls.append(path("__reload__/", include("django_browser_reload.urls")))
+
+    urlpatterns = [*urls, *urlpatterns]
