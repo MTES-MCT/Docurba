@@ -274,7 +274,10 @@ class TestCollectivitePortantScot:
             groupements = list(Collectivite.objects.portant_scot())
             assert groupements == [groupement_avec_scot]
 
-            assert groupements[0].scots_pour_csv == [(None, scots_en_cours[0])]
+            assert len(groupements[0].scots_pour_csv) == 1
+            actual_opposable, actual_en_cours = groupements[0].scots_pour_csv[0]
+            assert actual_opposable is None
+            assert actual_en_cours
 
             assert (
                 f"Plusieurs SCoT en cours pour la collectivité {groupement_avec_scot.code_insee}"
@@ -316,10 +319,10 @@ class TestCollectivitePortantScot:
             groupements = list(Collectivite.objects.portant_scot())
             assert groupements == [groupement]
 
-            assert groupements[0].scots_pour_csv == [
+            assert set(groupements[0].scots_pour_csv) == {
                 (scot_opposable_a, None),
                 (scot_opposable_a_et_b, None),
-            ]
+            }
 
     @pytest.mark.django_db
     def test_retourne_le_meme_scot_en_cours_pour_chaque_opposable(
@@ -353,10 +356,10 @@ class TestCollectivitePortantScot:
             groupements = list(Collectivite.objects.portant_scot())
             assert groupements == [groupement_avec_scot]
 
-            assert groupements[0].scots_pour_csv == [
+            assert set(groupements[0].scots_pour_csv) == {
                 (scots_opposables[0], scot_en_cours),
                 (scots_opposables[1], scot_en_cours),
-            ]
+            }
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(

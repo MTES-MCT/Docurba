@@ -8,6 +8,7 @@ from typing import Self
 
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
 from django.db import connection, models
+from django.db.models.constraints import UniqueConstraint
 from django.urls import reverse
 from django.utils import timezone
 
@@ -372,6 +373,13 @@ class Procedure(models.Model):
     class Meta:
         managed = False
         db_table = "procedures"
+        constraints = (
+            UniqueConstraint(
+                "id",
+                condition=models.Q(parente=None, archived=False),
+                name="procedures_pkey_secondary_null_not_archived",
+            ),
+        )
 
     def __str__(self) -> str:
         return (
