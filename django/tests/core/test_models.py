@@ -22,6 +22,7 @@ from tests.factories import (
     create_commune,
     create_departement,
     create_groupement,
+    create_procedure,
 )
 
 
@@ -56,7 +57,11 @@ class TestProcedureCommunesCounts:
         procedure_sectorielle = groupement.procedure_set.create(
             doc_type=TypeDocument.PLU
         )
-        procedure_sectorielle.perimetre.add(commune_enfant)
+        procedure_sectorielle = create_procedure(
+            collectivite_porteuse=groupement,
+            doc_type=TypeDocument.PLU,
+            perimetre=[commune_enfant],
+        )
 
         with django_assert_num_queries(1):
             procedure_sectorielle_with_counts = Procedure.objects.get(
@@ -88,11 +93,14 @@ class TestProcedureCommunesCounts:
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        procedure_non_sectorielle = groupement.procedure_set.create(
-            doc_type=TypeDocument.PLU
-        )
-        procedure_non_sectorielle.perimetre.add(
-            commune_enfant, commune_grand_enfant, commune_grand_grand_enfant
+        procedure_non_sectorielle = create_procedure(
+            collectivite_porteuse=groupement,
+            doc_type=TypeDocument.PLU,
+            perimetre=[
+                commune_enfant,
+                commune_grand_enfant,
+                commune_grand_grand_enfant,
+            ],
         )
 
         with django_assert_num_queries(1):
@@ -121,8 +129,11 @@ class TestProcedureCommunesCounts:
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        procedure = groupement.procedure_set.create(doc_type=TypeDocument.PLU)
-        procedure.perimetre.add(commune_enfant, commune_double_adherente)
+        procedure = create_procedure(
+            collectivite_porteuse=groupement,
+            doc_type=TypeDocument.PLU,
+            perimetre=[commune_enfant, commune_double_adherente],
+        )
 
         with django_assert_num_queries(1):
             procedure_with_counts = Procedure.objects.get(id=procedure.id)
@@ -142,8 +153,11 @@ class TestProcedureCommunesCounts:
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        procedure = groupement.procedure_set.create(doc_type=TypeDocument.PLU)
-        procedure.perimetre.add(commune_enfant, commune_deleguee)
+        procedure = create_procedure(
+            collectivite_porteuse=groupement,
+            doc_type=TypeDocument.PLU,
+            perimetre=[commune_enfant, commune_deleguee],
+        )
 
         with django_assert_num_queries(1):
             procedure_with_counts = Procedure.objects.get(id=procedure.id)
@@ -236,13 +250,14 @@ class TestCollectivitePortantScot:
 
         scots_opposables = []
         for date_string in ("2024-02-01", "2024-02-02"):
-            scot_opposable = groupement_avec_scot.procedure_set.create(
-                doc_type=TypeDocument.SCOT
+            scot_opposable = create_procedure(
+                collectivite_porteuse=groupement_avec_scot,
+                doc_type=TypeDocument.SCOT,
+                perimetre=[commune],
             )
             scot_opposable.event_set.create(
                 type="Délibération d'approbation", date_evenement=date_string
             )
-            scot_opposable.perimetre.add(commune)
             scots_opposables.append(scot_opposable)
 
         with django_assert_num_queries(6):
@@ -292,28 +307,35 @@ class TestCollectivitePortantScot:
         commune_a = create_commune()
         commune_b = create_commune()
 
-        scot_opposable_a = groupement.procedure_set.create(
-            doc_type=TypeDocument.SCOT, type="A"
+        scot_opposable_a = create_procedure(
+            collectivite_porteuse=groupement,
+            doc_type=TypeDocument.SCOT,
+            type="A",
+            perimetre=[commune_a],
         )
         scot_opposable_a.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-01-01"
         )
 
-        scot_precedent_a = groupement.procedure_set.create(
-            doc_type=TypeDocument.SCOT, type="B"
+        scot_precedent_a = create_procedure(
+            collectivite_porteuse=groupement,
+            doc_type=TypeDocument.SCOT,
+            type="B",
+            perimetre=[commune_a],
         )
         scot_precedent_a.event_set.create(
             type="Délibération d'approbation", date_evenement="1999-01-01"
         )
-        commune_a.procedures.add(scot_opposable_a, scot_precedent_a)
 
-        scot_opposable_a_et_b = groupement.procedure_set.create(
-            doc_type=TypeDocument.SCOT, type="C"
+        scot_opposable_a_et_b = create_procedure(
+            collectivite_porteuse=groupement,
+            doc_type=TypeDocument.SCOT,
+            type="C",
+            perimetre=[commune_a, commune_b],
         )
         scot_opposable_a_et_b.event_set.create(
             type="Délibération d'approbation", date_evenement="2023-01-01"
         )
-        scot_opposable_a_et_b.perimetre.add(commune_a, commune_b)
 
         with django_assert_num_queries(6):
             groupements = list(Collectivite.objects.portant_scot())
@@ -343,13 +365,14 @@ class TestCollectivitePortantScot:
 
         scots_opposables = []
         for commune in [commune_a, commune_b]:
-            scot_opposable = groupement_avec_scot.procedure_set.create(
-                doc_type=TypeDocument.SCOT
+            scot_opposable = create_procedure(
+                collectivite_porteuse=groupement_avec_scot,
+                doc_type=TypeDocument.SCOT,
+                perimetre=[commune],
             )
             scot_opposable.event_set.create(
                 type="Délibération d'approbation", date_evenement="2024-12-01"
             )
-            scot_opposable.perimetre.add(commune)
             scots_opposables.append(scot_opposable)
 
         with django_assert_num_queries(6):
@@ -379,8 +402,10 @@ class TestCollectivitePortantScot:
         groupement_avec_scot = create_groupement()
         commune = create_commune()
 
-        scot_opposable = groupement_avec_scot.procedure_set.create(
-            doc_type=TypeDocument.SCOT
+        scot_opposable = create_procedure(
+            collectivite_porteuse=groupement_avec_scot,
+            doc_type=TypeDocument.SCOT,
+            perimetre=[commune],
         )
         scot_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement="2025-12-11"
@@ -388,7 +413,6 @@ class TestCollectivitePortantScot:
         scot_opposable.event_set.create(
             type="Fin d'échéance", date_evenement="2025-12-14"
         )
-        scot_opposable.perimetre.add(commune)
 
         with django_assert_num_queries(6):
             groupements = list(Collectivite.objects.portant_scot(avant=avant))
@@ -411,11 +435,12 @@ class TestScotInterdepartemental:
         commune_a = create_commune(departement=departement)
         commune_b = create_commune(departement=departement)
 
-        scot_en_cours = groupement_avec_scot.procedure_set.create(
-            doc_type=TypeDocument.SCOT
+        scot_en_cours = create_procedure(
+            collectivite_porteuse=groupement_avec_scot,
+            doc_type=TypeDocument.SCOT,
+            perimetre=[commune_a, commune_b],
         )
         scot_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
-        scot_en_cours.perimetre.add(commune_a, commune_b)
 
         with django_assert_num_queries(6):
             groupements = list(Collectivite.objects.portant_scot())
@@ -432,11 +457,12 @@ class TestScotInterdepartemental:
         commune_a = create_commune()
         commune_b = create_commune()
 
-        scot_en_cours = groupement_avec_scot.procedure_set.create(
-            doc_type=TypeDocument.SCOT
+        scot_en_cours = create_procedure(
+            collectivite_porteuse=groupement_avec_scot,
+            doc_type=TypeDocument.SCOT,
+            perimetre=[commune_a, commune_b],
         )
         scot_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
-        scot_en_cours.perimetre.add(commune_a, commune_b)
 
         with django_assert_num_queries(6):
             groupements = list(Collectivite.objects.portant_scot())
@@ -468,7 +494,11 @@ class TestProcedure:
     def test_liable_a_commune_inexistante(self) -> None:
         """Tant que l'on ne gère pas bien les communes des anciens COG."""
         procedure = Procedure.objects.create()
-        procedure.perimetre.through.objects.create(commune_id=12, procedure=procedure)
+        procedure.perimetre.through.objects.create(
+            deprecated_nuxt_collectivite_code=12,
+            deprecated_nuxt_collectivite_type="COM",
+            procedure=procedure,
+        )
 
         assert procedure.perimetre.through.objects.count() == 1
 
@@ -619,10 +649,9 @@ class TestProcedureTypeDocument:
         self, doc_type: TypeDocument, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = create_commune()
-        procedure = Procedure.objects.create(
-            doc_type=doc_type, collectivite_porteuse=commune
+        procedure = create_procedure(
+            doc_type=doc_type, collectivite_porteuse=commune, perimetre=[commune]
         )
-        procedure.perimetre.add(commune)
 
         with django_assert_num_queries(1):
             procedure = Procedure.objects.get(id=procedure.id)
@@ -641,16 +670,13 @@ class TestProcedureTypeDocument:
     def test_plui(
         self, doc_type: TypeDocument, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
-        procedure = Procedure.objects.create(
-            doc_type=doc_type, collectivite_porteuse=commune
-        )
-        procedure.perimetre.add(commune)
-        procedure.perimetre.create(
-            id="12346_COM",
-            code_insee_unique="12346",
-            type="COM",
-            departement=commune.departement,
+        commune_a = create_commune()
+        commune_b = create_commune()
+
+        procedure = create_procedure(
+            collectivite_porteuse=commune_a,
+            doc_type=doc_type,
+            perimetre=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
@@ -675,16 +701,14 @@ class TestProcedureTypeDocument:
         vaut_PLH: bool,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        commune = create_commune()
-        procedure = Procedure.objects.create(
-            doc_type=doc_type, collectivite_porteuse=commune, vaut_PLH=vaut_PLH
-        )
-        procedure.perimetre.add(commune)
-        procedure.perimetre.create(
-            id="12346_COM",
-            code_insee_unique="12346",
-            type="COM",
-            departement=commune.departement,
+        commune_a = create_commune()
+        commune_b = create_commune()
+
+        procedure = create_procedure(
+            collectivite_porteuse=commune_a,
+            doc_type=doc_type,
+            vaut_PLH=vaut_PLH,
+            perimetre=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
@@ -709,16 +733,14 @@ class TestProcedureTypeDocument:
         vaut_PDM: bool,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        commune = create_commune()
-        procedure = Procedure.objects.create(
-            doc_type=doc_type, collectivite_porteuse=commune, vaut_PDM=vaut_PDM
-        )
-        procedure.perimetre.add(commune)
-        procedure.perimetre.create(
-            id="12346_COM",
-            code_insee_unique="12346",
-            type="COM",
-            departement=commune.departement,
+        commune_a = create_commune()
+        commune_b = create_commune()
+
+        procedure = create_procedure(
+            collectivite_porteuse=commune_a,
+            doc_type=doc_type,
+            vaut_PDM=vaut_PDM,
+            perimetre=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
@@ -748,19 +770,15 @@ class TestProcedureTypeDocument:
         vaut_PDM: bool,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        commune = create_commune()
-        procedure = Procedure.objects.create(
+        commune_a = create_commune()
+        commune_b = create_commune()
+
+        procedure = create_procedure(
+            collectivite_porteuse=commune_a,
             doc_type=doc_type,
-            collectivite_porteuse=commune,
             vaut_PLH=vaut_PLH,
             vaut_PDM=vaut_PDM,
-        )
-        procedure.perimetre.add(commune)
-        procedure.perimetre.create(
-            id="12346_COM",
-            code_insee_unique="12346",
-            type="COM",
-            departement=commune.departement,
+            perimetre=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
@@ -1341,13 +1359,16 @@ class TestCommuneProceduresPrincipales:
     ) -> None:
         commune = create_commune()
 
-        procedure_principale = commune.procedures.create(
-            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        procedure_principale = create_procedure(
+            doc_type=TypeDocument.PLUI,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
-        _procedure_secondaire = commune.procedures.create(
+        _procedure_secondaire = create_procedure(
             parente=procedure_principale,
             doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
+            perimetre=[commune],
         )
 
         with django_assert_num_queries(3):
@@ -1359,16 +1380,20 @@ class TestCommuneProceduresPrincipales:
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = create_commune()
-        procedure_reelle = commune.procedures.create(
-            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        procedure_reelle = create_procedure(
+            doc_type=TypeDocument.PLUI,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
 
-        _procedure_supprimee = commune.procedures.create(
-            soft_delete=True, collectivite_porteuse=commune
+        _procedure_supprimee = create_procedure(
+            soft_delete=True, collectivite_porteuse=commune, perimetre=[commune]
         )
 
-        _procedure_doublon = commune.procedures.create(
-            doublon_cache_de=procedure_reelle, collectivite_porteuse=commune
+        _procedure_doublon = create_procedure(
+            doublon_cache_de=procedure_reelle,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
 
         with django_assert_num_queries(3):
@@ -1383,22 +1408,28 @@ class TestCommunePlanEnCours:
     ) -> None:
         commune = create_commune()
 
-        procedure_saisie_avant = commune.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        procedure_saisie_avant = create_procedure(
+            doc_type=TypeDocument.PLU,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
         procedure_saisie_avant.event_set.create(
             type="Prescription", date_evenement="2022-12-01"
         )
 
-        procedure_en_cours = commune.procedures.create(
-            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        procedure_en_cours = create_procedure(
+            doc_type=TypeDocument.PLUI,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
         procedure_en_cours.event_set.create(
             type="Prescription", date_evenement="2024-12-01"
         )
 
-        procedure_saisie_apres = commune.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        procedure_saisie_apres = create_procedure(
+            doc_type=TypeDocument.PLU,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
         procedure_saisie_apres.event_set.create(
             type="Prescription", date_evenement="2023-12-01"
@@ -1419,15 +1450,19 @@ class TestCommunePlanEnCours:
     ) -> None:
         commune = create_commune()
 
-        procedure_en_cours = commune.procedures.create(
-            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        procedure_en_cours = create_procedure(
+            doc_type=TypeDocument.PLUI,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
         procedure_en_cours.event_set.create(
             type="Prescription", date_evenement="2024-12-01"
         )
 
-        _procedure_pas_commencee = commune.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        _procedure_pas_commencee = create_procedure(
+            doc_type=TypeDocument.PLU,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
 
         with django_assert_num_queries(3):
@@ -1467,15 +1502,19 @@ class TestCommune:
 
         if plan_en_cours:
             groupement = create_groupement(code_insee="GROUPEMENT PLAN EN COURS")
-            procedure = commune.procedures.create(
-                doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+            procedure = create_procedure(
+                doc_type=TypeDocument.PLU,
+                collectivite_porteuse=groupement,
+                perimetre=[commune],
             )
             procedure.event_set.create(type="Prescription", date_evenement="2022-12-01")
 
         if plan_opposable:
             groupement = create_groupement(code_insee="GROUPEMENT PLAN OPPOSABLE")
-            procedure = commune.procedures.create(
-                doc_type=TypeDocument.PLU, collectivite_porteuse=groupement
+            procedure = create_procedure(
+                doc_type=TypeDocument.PLU,
+                collectivite_porteuse=groupement,
+                perimetre=[commune],
             )
             procedure.event_set.create(
                 type="Délibération d'approbation", date_evenement="2022-12-01"
@@ -1491,22 +1530,28 @@ class TestCommuneOpposabilite:
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = create_commune()
-        procedure_precedente_saisie_avant = commune.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        procedure_precedente_saisie_avant = create_procedure(
+            doc_type=TypeDocument.PLU,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
         procedure_precedente_saisie_avant.event_set.create(
             type="Délibération d'approbation", date_evenement="2022-12-01"
         )
 
-        procedure_opposable = commune.procedures.create(
-            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        procedure_opposable = create_procedure(
+            doc_type=TypeDocument.PLUI,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
         procedure_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
-        procedure_precedente_saisie_apres = commune.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        procedure_precedente_saisie_apres = create_procedure(
+            doc_type=TypeDocument.PLU,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
         procedure_precedente_saisie_apres.event_set.create(
             type="Délibération d'approbation", date_evenement="2023-12-01"
@@ -1532,15 +1577,19 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = create_commune()
 
-        plan_opposable = commune.procedures.create(
-            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        plan_opposable = create_procedure(
+            doc_type=TypeDocument.PLUI,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
         plan_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-01-02"
         )
 
-        schema_opposable = commune.procedures.create(
-            doc_type=TypeDocument.SCOT, collectivite_porteuse=commune
+        schema_opposable = create_procedure(
+            doc_type=TypeDocument.SCOT,
+            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
         schema_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-01-01"
@@ -1565,8 +1614,10 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = create_commune()
 
-        procedure_opposable = commune.procedures.create(
-            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        procedure_opposable = create_procedure(
+            collectivite_porteuse=commune,
+            doc_type=TypeDocument.PLUI,
+            perimetre=[commune],
         )
         procedure_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
@@ -1587,8 +1638,10 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = create_commune()
 
-        procedure_en_cours = commune.procedures.create(
-            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        procedure_en_cours = create_procedure(
+            collectivite_porteuse=commune,
+            doc_type=TypeDocument.PLUI,
+            perimetre=[commune],
         )
         procedure_en_cours.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
@@ -1610,10 +1663,11 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = create_commune()
 
-        procedure_approuvee = commune.procedures.create(
+        procedure_approuvee = create_procedure(
+            collectivite_porteuse=commune,
             doc_type=TypeDocument.PLUI,
             type="Abrogation",
-            collectivite_porteuse=commune,
+            perimetre=[commune],
         )
         procedure_approuvee.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
@@ -1634,13 +1688,16 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = create_commune()
 
-        procedure_principale = commune.procedures.create(
-            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
-        )
-        procedure_secondaire = commune.procedures.create(
-            parente=procedure_principale,
-            doc_type=TypeDocument.PLUI,
+        procedure_principale = create_procedure(
             collectivite_porteuse=commune,
+            doc_type=TypeDocument.PLUI,
+            perimetre=[commune],
+        )
+        procedure_secondaire = create_procedure(
+            collectivite_porteuse=commune,
+            doc_type=TypeDocument.PLUI,
+            parente=procedure_principale,
+            perimetre=[commune],
         )
         procedure_secondaire.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
@@ -1661,17 +1718,21 @@ class TestCommuneOpposabilite:
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = create_commune()
-        procedure_reelle = commune.procedures.create(collectivite_porteuse=commune)
+        procedure_reelle = create_procedure(
+            collectivite_porteuse=commune, perimetre=[commune]
+        )
 
-        procedure_supprimee = commune.procedures.create(
-            soft_delete=True, collectivite_porteuse=commune
+        procedure_supprimee = create_procedure(
+            collectivite_porteuse=commune, soft_delete=True, perimetre=[commune]
         )
         procedure_supprimee.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
-        procedure_doublon = commune.procedures.create(
-            doublon_cache_de=procedure_reelle, collectivite_porteuse=commune
+        procedure_doublon = create_procedure(
+            collectivite_porteuse=commune,
+            doublon_cache_de=procedure_reelle,
+            perimetre=[commune],
         )
         procedure_doublon.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
@@ -1694,15 +1755,19 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = create_commune()
 
-        procedure_opposable_fevrier = commune.procedures.create(
-            doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
+        procedure_opposable_fevrier = create_procedure(
+            collectivite_porteuse=commune,
+            doc_type=TypeDocument.PLUI,
+            perimetre=[commune],
         )
         procedure_opposable_fevrier.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-02-02"
         )
 
-        procedure_opposable_janvier = commune.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        procedure_opposable_janvier = create_procedure(
+            collectivite_porteuse=commune,
+            doc_type=TypeDocument.PLU,
+            perimetre=[commune],
         )
         procedure_opposable_janvier.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-01-01"
@@ -1797,10 +1862,10 @@ class TestCommuneCodeEtat:
 
             ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        procedure = collectivite_porteuse.procedure_set.create()
-        for _ in range(perimetre_count):
-            commune = create_commune()
-            procedure.perimetre.add(commune)
+        procedure = create_procedure(
+            collectivite_porteuse=collectivite_porteuse,
+            perimetre=[create_commune() for _ in range(perimetre_count)],
+        )
 
         procedure = Procedure.objects.get(id=procedure.id)
         assert (

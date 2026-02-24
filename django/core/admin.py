@@ -38,6 +38,8 @@ class CommuneAdmin(CollectiviteAdmin):
 
 class ProcedurePerimetreInline(admin.TabularInline):
     model = Procedure.perimetre.through
+    readonly_fields = ("commune",)
+    fields = ("commune",)
 
 
 class EventsInline(admin.TabularInline):
