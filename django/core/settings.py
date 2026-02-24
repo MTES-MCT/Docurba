@@ -27,6 +27,7 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 # Application definition
 
 INSTALLED_APPS = [
+    "pghistory.admin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -37,6 +38,8 @@ INSTALLED_APPS = [
     "django_browser_reload",
     "django_extensions",
     "debug_toolbar",
+    "pgtrigger",
+    "pghistory",
     "core",
     "users",
 ]
