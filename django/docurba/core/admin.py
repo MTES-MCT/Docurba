@@ -5,12 +5,14 @@ from typing import Any
 
 from django.contrib import admin
 from django.db import models
+from pghistory.admin import EventModelAdmin
 
 from docurba.core.enums import TypeCollectivite
 from docurba.core.models import (
     Collectivite,
     Commune,
     Event,
+    EventsSnapshot,
     Procedure,
     Project,
     Topic,
@@ -230,6 +232,26 @@ class TopicAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None) -> bool:
         return False
+
+
+@admin.register(EventsSnapshot)
+class EventSnapshotAdmin(EventModelAdmin):
+    list_display = (
+        "pgh_obj",
+        "pgh_label",
+        "pgh_created_at",
+        "procedure",
+        "profile",
+        "date_evenement",
+        "is_valid",
+    )
+
+    def get_queryset(self, request) -> models.QuerySet:
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related(models.Prefetch("procedure", Procedure.objects.all()))
+        )
 
 
 @admin.register(Event)
