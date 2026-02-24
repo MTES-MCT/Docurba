@@ -31,10 +31,11 @@ def django_db_setup(django_db_setup, django_db_blocker, django_db_createdb):  # 
         with connection.schema_editor() as schema_editor:
             schema_editor.execute("CREATE SCHEMA auth;")
             schema_editor.create_model(User)
-        unmanaged_models_except_views = [
-            model for model in unmanaged_models_except_views if model is not User
-        ]
-
+        unmanaged_models_except_views = sorted(
+            [model for model in unmanaged_models_except_views if model is not User],
+            key=lambda x: x._meta.app_label,  # noqa: SLF001
+            reverse=True,  # Permet de créer les modèles `users` avant ceux de `core`. Hack temporaire.
+        )
         for model in unmanaged_models_except_views:
             with connection.schema_editor() as schema_editor:
                 schema_editor.create_model(model)
