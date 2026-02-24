@@ -1,6 +1,8 @@
 # ruff: noqa: ARG002
 # ruff: noqa: ANN001
 # ruff: noqa: RUF012
+from typing import ClassVar
+
 from django.contrib import admin
 from django.db import models
 
@@ -42,6 +44,53 @@ class ProcedurePerimetreInline(admin.TabularInline):
 
 class EventsInline(admin.TabularInline):
     model = Event
+    show_change_link = True
+    view_on_site = False
+
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = "__str__", "procedure", "profile", "date_evenement", "is_valid"
+    list_select_related = ("profile",)
+    search_fields = ("procedure__exact",)
+    autocomplete_fields = ("profile",)
+    radio_fields: ClassVar = {"visibility": admin.VERTICAL}
+
+    readonly_fields = (
+        "id",
+        "procedure",
+        "from_sudocuh",
+        "created_at",
+        "updated_at",
+        "attachements",
+    )
+    fields = (
+        "id",
+        ("procedure", "from_sudocuh"),
+        "type",
+        "date_evenement",
+        ("visibility", "is_valid"),
+        "description",
+        "profile",
+        ("created_at", "updated_at"),
+        "attachements",
+    )
+
+    def has_add_permission(self, request: object) -> bool:
+        return False
+
+    def has_change_permission(self, request: object, obj=None) -> bool:
+        return False
+
+    def has_delete_permission(self, request, obj=None) -> bool:
+        return False
+
+    def get_queryset(self, request) -> models.QuerySet:
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related(models.Prefetch("procedure", Procedure.objects.all()))
+        )
 
 
 @admin.register(Procedure)
