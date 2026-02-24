@@ -6,6 +6,7 @@ from functools import cached_property
 from operator import attrgetter
 from typing import Self
 
+from django.contrib.postgres.functions import RandomUUID, TransactionNow
 from django.db import connection, models
 from django.urls import reverse
 from django.utils import timezone
@@ -316,7 +317,7 @@ class ProcedureManager(models.Manager):
 
 
 class Procedure(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID())
     doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001
     vaut_SCoT = models.BooleanField(db_column="is_scot", blank=True, null=True)  # noqa: N815
     # Programme Local de l'Habitat
@@ -349,7 +350,7 @@ class Procedure(models.Model):
         null=True,
         to_field="code_insee_unique",
     )
-    created_at = models.DateTimeField(db_default=models.functions.Now())
+    created_at = models.DateTimeField(db_default=TransactionNow(), null=True)
     doublon_cache_de = models.OneToOneField(
         "self", on_delete=models.DO_NOTHING, blank=True, null=True, unique=True
     )
