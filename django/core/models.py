@@ -369,7 +369,6 @@ class Procedure(models.Model):
     objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
     class Meta:
-        managed = False
         db_table = "procedures"
         constraints = (
             UniqueConstraint(
@@ -592,7 +591,6 @@ class Event(models.Model):
     profile = models.ForeignKey(Profile, models.DO_NOTHING, null=True)
 
     class Meta:
-        managed = False
         db_table = "doc_frise_events"
         ordering = ("-date_evenement",)
 
@@ -947,7 +945,6 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
 
     class Meta:
-        managed = False
         db_table = "procedures_perimetres"
         verbose_name = "Périmètre"
         constraints = (
