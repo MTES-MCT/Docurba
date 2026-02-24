@@ -136,7 +136,7 @@ jobs:
         until scalingo apps | grep "${NUXT_2_REVIEW_APP_NAME}" | grep --quiet 'running' &> /dev/null
         do
           echo "En attente de l'application Nuxt."
-          sleep 1m
+          sleep 10s
         done
         nuxt_url=$(scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-get NUXT_URL)
         echo "NUXT_URL=${nuxt_url}" >> $GITHUB_ENV
@@ -166,8 +166,8 @@ jobs:
         scalingo --app "${DJANGO_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}" &> /dev/null
         until scalingo apps | grep "${DJANGO_REVIEW_APP_NAME}" | grep --quiet 'running' &> /dev/null
         do
-          echo "En attente de l'application Django pendant 1 minute."
-          sleep 1m
+          echo "En attente de l'application Django pendant 10 secondes."
+          sleep 10s
         done
         django_url=$(scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-get APP_URL)
         echo "DJANGO_URL=${django_url}" >> $GITHUB_ENV
