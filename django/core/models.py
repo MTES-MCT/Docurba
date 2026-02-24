@@ -595,7 +595,10 @@ class Event(models.Model):
         ordering = ("-date_evenement",)
 
     def __str__(self) -> str:
-        return f"{self.procedure}  - {self.type}"
+        return self.type
+
+    def get_absolute_url(self) -> str:
+        return self.procedure.get_absolute_url()
 
     @property
     def category(self) -> EventCategory | None:
