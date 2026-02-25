@@ -63,6 +63,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         "nuxt_status",
         "django_status",
         "collectivite_porteuse",
+        "collectivite_porteuse_id",
         "commentaire",
         "current_perimetre",
         "is_principale",
