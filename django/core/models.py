@@ -229,7 +229,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Abandon": EventCategory.ABANDON,
         "Annulation TA": EventCategory.ANNULE,
         "Annulation TA totale": EventCategory.ANNULE,
-        "Caducité": EventCategory.ANNULE,
+        "Caducité": EventCategory.CADUC,
         "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
         "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,
         "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
