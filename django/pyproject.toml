@@ -12,14 +12,15 @@ dependencies = [
     "sentry-sdk[django]",
     "whitenoise[brotli]",
     "django-datadog-logger", # https://github.com/namespace-ee/django-datadog-logger
+    # Move me later.
+    "django-browser-reload",
+    "django-debug-toolbar",
+    "django-extensions",
 ]
 
 # Scalingo command: `uv sync --locked --no-default-groups`
 [dependency-groups]
 dev = [
-    "django-browser-reload",
-    "django-debug-toolbar",
-    "django-extensions",
     "ptpython",
     "pytest-cov",
     "pytest-django",
