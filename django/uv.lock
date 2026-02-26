@@ -263,11 +263,8 @@ version = "1"
 source = { virtual = "." }
 dependencies = [
     { name = "django" },
-    { name = "django-browser-reload" },
     { name = "django-datadog-logger" },
-    { name = "django-debug-toolbar" },
     { name = "django-environ" },
-    { name = "django-extensions" },
     { name = "django-revproxy" },
     { name = "gunicorn", extra = ["gevent"] },
     { name = "psycopg", extra = ["binary", "pool"] },
@@ -277,6 +274,9 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "django-browser-reload" },
+    { name = "django-debug-toolbar" },
+    { name = "django-extensions" },
     { name = "pre-commit" },
     { name = "ptpython" },
     { name = "pytest-cov" },
@@ -287,11 +287,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "django" },
-    { name = "django-browser-reload" },
     { name = "django-datadog-logger" },
-    { name = "django-debug-toolbar" },
     { name = "django-environ" },
-    { name = "django-extensions" },
     { name = "django-revproxy" },
     { name = "gunicorn", extras = ["gevent"] },
     { name = "psycopg", extras = ["binary", "pool"] },
@@ -301,6 +298,9 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "django-browser-reload" },
+    { name = "django-debug-toolbar" },
+    { name = "django-extensions" },
     { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "ptpython" },
     { name = "pytest-cov" },
