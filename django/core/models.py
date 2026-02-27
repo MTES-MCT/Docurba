@@ -332,10 +332,15 @@ class Project(models.Model):
     region = models.CharField(blank=True, null=True)  # noqa: DJ001
     towns = models.JSONField(blank=True, null=True)
 
+    owner = models.ForeignKey(
+        "users.Profile", models.DO_NOTHING, db_column="owner", blank=True, null=True
+    )
+
     objects = FastLoadingProjectManager()
     full_objects = ProjectManager()
 
     class Meta:
+        # This model is fully represented now and could be managed.
         managed = False
         verbose_name = "projet"
         db_table = "projects"
@@ -518,6 +523,7 @@ class Procedure(models.Model):
         null=True,
     )
 
+    owner = models.ForeignKey("users.Profile", models.DO_NOTHING, blank=True, null=True)
     project = models.ForeignKey(
         "core.Project", blank=True, null=True, on_delete=models.SET_NULL
     )
@@ -527,6 +533,7 @@ class Procedure(models.Model):
     full_objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
     class Meta:
+        # This model is fully represented now and could be managed.
         base_manager_name = "objects"
         managed = False
         db_table = "procedures"
@@ -791,11 +798,15 @@ class Event(models.Model):
     test = models.BooleanField(blank=True, null=True)
     code = models.TextField(blank=True, null=True)  # noqa: DJ001
     from_sudocuh_procedure_id = models.IntegerField(blank=True, null=True)
+    project = models.ForeignKey(
+        "core.Project", blank=True, null=True, on_delete=models.SET_NULL
+    )
 
     objects = FastLoadingEventManager()
     full_objects = EventManager()
 
     class Meta:
+        # This model is fully represented now and could be managed.
         managed = False
         db_table = "doc_frise_events"
         ordering = ("-date_evenement",)
