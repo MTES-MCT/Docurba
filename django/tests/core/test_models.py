@@ -1341,13 +1341,19 @@ class TestEventManagers:
         create_evenement(
             evt_type=EventCategory.PUBLICATION_PERIMETRE, date="2024-12-01"
         )
+        to_be_removed_fields = [
+            "is_sudocuh_scot",
+            "test",  # Still set in Nuxt code but not read.
+            "code",
+            "from_sudocuh_procedure_id",
+        ]
         heavy_fields = [
             "description",
             "attachements",
+            "actors",
         ]
-
         event = Event.objects.earliest("id")
-        for item in heavy_fields:
+        for item in [*to_be_removed_fields, *heavy_fields]:
             with subtests.test(item, item=item):
                 assert item not in event.__dict__
 
@@ -1356,13 +1362,19 @@ class TestEventManagers:
         create_evenement(
             evt_type=EventCategory.PUBLICATION_PERIMETRE, date="2024-12-01"
         )
+        to_be_removed_fields = [
+            "is_sudocuh_scot",
+            "test",
+            "code",
+            "from_sudocuh_procedure_id",
+        ]
         heavy_fields = [
             "description",
             "attachements",
+            "actors",
         ]
-
         event = Event.full_objects.earliest("id")
-        for item in heavy_fields:
+        for item in [*to_be_removed_fields, *heavy_fields]:
             with subtests.test(item, item=item):
                 assert item in event.__dict__
 
