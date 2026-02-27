@@ -1757,6 +1757,59 @@ class TestCommuneCodeEtat:
         assert commune.code_etat_complet == "9999"
 
     @pytest.mark.django_db
+    def test_libelle_simplifie_affiche_plui_sectoriel(self) -> None:
+        commune = create_commune()
+        groupement = commune.intercommunalite
+
+        # 3 communes adhérentes, 2 dans le périmètre → intercommunal + sectoriel
+        commune2 = create_commune(intercommunalite=None)
+        commune3 = create_commune(intercommunalite=None)
+        commune.adhesions.add(groupement)
+        commune2.adhesions.add(groupement)
+        commune3.adhesions.add(groupement)
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        procedure = groupement.procedure_set.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=groupement
+        )
+        procedure.perimetre.add(commune, commune2)
+        procedure.event_set.create(
+            type="Délibération d'approbation", date_evenement="2024-01-01"
+        )
+
+        commune = Commune.objects.with_procedures_principales().get(pk=commune.pk)
+        assert "PLUi" in commune.libelle_code_etat_simplifie
+
+    @pytest.mark.django_db
+    def test_libelle_simplifie_deux_procedures_en_cours(self) -> None:
+        commune = create_commune()
+
+        # CC en élaboration
+        proc_cc = commune.procedures.create(
+            doc_type=TypeDocument.CC, collectivite_porteuse=commune
+        )
+        proc_cc.perimetre.add(commune)
+        proc_cc.event_set.create(
+            type="Délibération de prescription du conseil municipal",
+            date_evenement="2024-01-01",
+        )
+
+        # PLU en élaboration
+        proc_plu = commune.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        )
+        proc_plu.perimetre.add(commune)
+        proc_plu.event_set.create(
+            type="Délibération de prescription du conseil municipal ou communautaire",
+            date_evenement="2024-06-01",
+        )
+
+        commune = Commune.objects.with_procedures_principales().get(pk=commune.pk)
+        libelle = commune.libelle_code_etat_simplifie
+        assert "PLU en élaboration" in libelle
+        assert "CC en élaboration" in libelle
+
+    @pytest.mark.django_db
     def test_fonctionne_et_log_erreur_quand_code_etat_incoherent(
         self, caplog: pytest.LogCaptureFixture
     ) -> None:

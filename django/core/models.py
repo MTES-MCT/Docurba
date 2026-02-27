@@ -891,9 +891,32 @@ class Commune(Collectivite):
         )
         return f"{code_type_opposable}{code_competence_opposable}{code_type_en_cours}{code_competence_en_cours}"
 
+    @cached_property
+    def _plans_en_cours(self) -> list[Procedure]:
+        return [p for p in self.procedures_principales_en_cours if not p.is_schema]
+
     @property
     def libelle_code_etat_simplifie(self) -> str:
-        return CODE_ETAT_SIMPLIFIE_TO_LIBELLE[self.code_etat_simplifie]
+        opposable = self.plan_opposable
+        en_cours = self._plans_en_cours
+
+        if not opposable and not en_cours:
+            return "RNU"
+
+        # Même famille de document → "en révision"
+        if opposable and len(en_cours) == 1:
+            op = opposable.type_document_code
+            ec = en_cours[0].type_document_code
+            if op == ec or (op >= 2 and ec >= 2):
+                return f"{en_cours[0].type_document} en révision"
+
+        parts = []
+        if opposable:
+            td = opposable.type_document
+            parts.append(f"{td} approuvée" if td == TypeDocument.CC else f"{td} approuvé")
+        for proc in en_cours:
+            parts.append(f"{proc.type_document} en élaboration")
+        return " - ".join(parts)
 
     @property
     def libelle_code_etat_complet(self) -> str:
