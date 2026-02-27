@@ -1,4 +1,5 @@
 import logging
+import uuid
 from datetime import date
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
@@ -10,8 +11,6 @@ from django.db import connection, models
 from django.db.models.constraints import UniqueConstraint
 from django.urls import reverse
 from django.utils import timezone
-
-from users.models import Profile
 
 logger = logging.getLogger(__name__)
 
@@ -577,38 +576,13 @@ class Procedure(models.Model):
         )
 
 
-class VisibilityChoices(models.TextChoices):
-    PUBLIC = "public", "Publique - Visible par le grand public"
-    PRIVATE = (
-        "private",
-        "Privé - Visible uniquement par les collaborateur·ices de la procédure",
-    )
-
-
 class Event(models.Model):
-    id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
-    procedure = models.ForeignKey(
-        Procedure, models.DO_NOTHING, editable=False, null=True
-    )
-    type = models.CharField(blank=True, null=True)  # noqa: DJ001
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
+    type = models.TextField(blank=True, null=True)  # noqa: DJ001
     date_evenement = models.DateField(db_column="date_iso", null=True)
     is_valid = models.BooleanField(db_default=True)
-    visibility = models.CharField(  # noqa: DJ001
-        blank=True, null=True, db_default="public", choices=VisibilityChoices
-    )
-    description = models.TextField(blank=True, null=True)  # noqa: DJ001
-
-    created_at = models.DateTimeField(
-        blank=True, null=True, db_default=TransactionNow(), editable=False
-    )
-    updated_at = models.DateTimeField(
-        blank=True, null=True, db_default=TransactionNow(), editable=False
-    )
-    attachements = models.JSONField(blank=True, null=True, editable=False)
-    from_sudocuh = models.IntegerField(
-        unique=True, blank=True, null=True, editable=False
-    )
-    profile = models.ForeignKey(Profile, models.DO_NOTHING, null=True)
+    visibility = models.TextField(db_default="public")
 
     class Meta:
         managed = False
