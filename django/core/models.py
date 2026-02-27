@@ -5,6 +5,7 @@ from functools import cached_property
 from operator import attrgetter
 from typing import Self
 
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
 from django.db import connection, models
 from django.db.models.constraints import UniqueConstraint
@@ -255,9 +256,104 @@ class ProcedureStatusChoices(models.TextChoices):
     OPPOSABLE = "opposable", "Opposable"
 
 
+class ProjectManager(models.Manager):
+    pass
+
+
+class FastLoadingProjectManager(ProjectManager):
+    pass
+    # def get_queryset(self) -> Self:
+    #     # There is no mention of these fields on Nuxt side.
+    #     to_be_removed_fields = [
+    #         "test",
+    #         "is_sudocuh_scot",
+    #         "initial_perimetre",
+    #         "current_perimetre_new",
+    #     ]
+    #     # Text, Array or JSON fields.
+    #     heavy_fields = [
+    #         "epci",
+    #         "current_perimetre",
+    #         "doc_type_code",
+    #         "pac",
+    #         "towns",
+    #     ]
+    #     return super().get_queryset().defer(*to_be_removed_fields, *heavy_fields)
+
+
+class Project(models.Model):
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID())
+    created_at = models.DateTimeField(db_default=models.functions.Now())
+    archived = models.BooleanField(db_default=False)
+    name = models.CharField(blank=True, null=True)  # noqa: DJ001
+    # test = models.BooleanField(blank=True, null=True)
+
+    collectivite = models.ForeignKey(
+        "core.Collectivite",
+        blank=True,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="projects",
+        to_field="code_insee_unique",
+    )
+    collectivite_porteuse = models.ForeignKey(
+        "core.Collectivite",
+        blank=True,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="owned_projects",
+        to_field="code_insee_unique",
+    )
+    # epci = models.JSONField(blank=True, null=True)
+    # current_perimetre = ArrayField(
+    #     base_field=models.JSONField(blank=True, null=True),
+    #     blank=True,
+    #     null=True,
+    # )
+    # initial_perimetre = ArrayField(
+    #     base_field=models.JSONField(blank=True, null=True),
+    #     blank=True,
+    #     null=True,
+    # )
+    # current_perimetre_new = models.JSONField(blank=True, null=True)
+
+    doc_type = models.CharField()
+    # doc_type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
+
+    from_sudocuh = models.IntegerField(unique=True, blank=True, null=True)
+    from_sudocuh_procedure_id = models.IntegerField(unique=True, blank=True, null=True)
+    sudocuh_procedure_id = models.IntegerField(blank=True, null=True)
+    # is_sudocuh_scot = models.BooleanField(
+    #     blank=True, null=True
+    # )  # No reference in Nuxt's side but column is filled with different values.
+
+    # pac = models.JSONField(db_column="PAC", blank=True, null=True)
+    trame = models.CharField(blank=True, null=True)  # noqa: DJ001
+
+    region = models.CharField(blank=True, null=True)  # noqa: DJ001
+    # towns = models.JSONField(blank=True, null=True)
+
+    owner = models.ForeignKey(
+        "users.Profile", models.DO_NOTHING, db_column="owner", blank=True, null=True
+    )
+
+    objects = FastLoadingProjectManager()
+    full_objects = ProjectManager()
+
+    class Meta:
+        # This model is fully represented now and could be managed.
+        managed = False
+        verbose_name = "projet"
+        db_table = "projects"
+        base_manager_name = "objects"
+
+    def __str__(self) -> str:
+        return f"{self.pk} - {self.name}"
+
+
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self, *, avant: date | None = None) -> Self:
-        events = Event.objects.exclude(date_evenement=None)
+        events = Event.objects.exclude(date_evenement=None).defer("attachements")
         return self.annotate(
             date_pivot=models.Value(
                 avant or timezone.now().date(), output_field=models.DateField()
@@ -318,20 +414,61 @@ class ProcedureManager(models.Manager):
         )
 
 
+class FastLoadingProcedureManager(ProcedureManager):
+    pass
+    # def get_queryset(self) -> Self:
+    #     # There is no mention of these fields on Nuxt side.
+    #     to_be_removed_fields = [
+    #         "test",
+    #         "testing",
+    #         "doc_type_code",
+    #         "is_sudocuh_scot",
+    #         "previous_opposable_procedures_ids",
+    #         "type_code",
+    #         "initial_perimetre",
+    #     ]
+    #     # Text or JSON fields.
+    #     heavy_fields = [
+    #         "current_perimetre",
+    #         "comment_dgd",
+    #         "volet_qualitatif",
+    #     ]
+    #     return super().get_queryset().defer(*to_be_removed_fields, *heavy_fields)
+
+
 class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
+    created_at = models.DateTimeField(db_default=TransactionNow(), null=True)
+    last_updated_at = models.DateTimeField(db_default=models.functions.Now())
+    name = models.TextField(blank=True, null=True)  # noqa: DJ001
+    numero = models.CharField(blank=True, null=True)  # noqa: DJ001
+    # test = models.BooleanField(db_default=False)
+    # testing = models.BooleanField(blank=True, null=True)
+    # Denormalized information used only by Nuxt. See self.statut for the Django logic.
+    status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001
+
     doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001
+    # doc_type_code = models.TextField(blank=True, null=True)  # noqa: DJ001 -- Seems unused
+
     vaut_SCoT = models.BooleanField(db_column="is_scot", blank=True, null=True)  # noqa: N815
     # Programme Local de l'Habitat
     vaut_PLH = models.BooleanField(db_column="is_pluih", blank=True, null=True)  # noqa: N815
     # Plan De Mobilité (anciennement Plan de Déplacements Urbains)
     vaut_PDM = models.BooleanField(db_column="is_pdu", blank=True, null=True)  # noqa: N815
+    is_principale = models.BooleanField(blank=True, null=True)
+    is_sectoriel = models.BooleanField(blank=True, null=True)
+    # is_sudocuh_scot = models.BooleanField(
+    #     blank=True, null=True
+    # )  # No reference in Nuxt's side but column is filled with different values.
     obligation_PDU = models.BooleanField(  # noqa: N815
         db_column="mandatory_pdu", blank=True, null=True
     )
+    shareable = models.BooleanField(db_default=False)
+
     maitrise_d_oeuvre = models.JSONField(db_column="moe", null=True)
 
     from_sudocuh = models.IntegerField(unique=True, blank=True, null=True)
+    sudocu_secondary_procedure_of = models.IntegerField(blank=True, null=True)
 
     parente = models.ForeignKey(
         "self",
@@ -340,11 +477,20 @@ class Procedure(models.Model):
         related_name="secondaires",
         null=True,
     )
-    name = models.TextField(blank=True, null=True)  # noqa: DJ001
-    commentaire = models.TextField(blank=True, null=True)  # noqa: DJ001
-    is_principale = models.BooleanField(blank=True, null=True)
+    # This columns seems completely obsolete and will be deleted in a migration.
+    # The related name is here to prevent a conflict with the `doublon_cache_de_id` column.
+    # previous_opposable_procedures_ids = models.ForeignKey(
+    #     "self",
+    #     blank=True,
+    #     null=True,
+    #     db_column="previous_opposable_procedures_ids",
+    #     on_delete=models.SET_NULL,
+    #     related_name="procedures_previous_opposable_procedures_ids_set",
+    # )  # Seems unused
+
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
-    numero = models.CharField(blank=True, null=True)  # noqa: DJ001
+    # type_code = models.TextField(blank=True, null=True)  # noqa: DJ001 -- Seems unused
+
     collectivite_porteuse = models.ForeignKey(
         "Collectivite",
         models.DO_NOTHING,
@@ -352,9 +498,12 @@ class Procedure(models.Model):
         null=True,
         to_field="code_insee_unique",
     )
-    created_at = models.DateTimeField(db_default=TransactionNow(), null=True)
     doublon_cache_de = models.OneToOneField(
-        "self", on_delete=models.DO_NOTHING, blank=True, null=True, unique=True
+        "self",
+        on_delete=models.DO_NOTHING,
+        blank=True,
+        null=True,
+        unique=True,
     )
     soft_delete = models.BooleanField(db_default=False)
     archived = models.GeneratedField(
@@ -363,15 +512,31 @@ class Procedure(models.Model):
         output_field=models.BooleanField(),
         db_persist=True,
     )
-    initial_perimetre = models.JSONField(null=True)
-    current_perimetre = models.JSONField(null=True)
+    # initial_perimetre = models.JSONField(null=True)  # Seems unused
+    # current_perimetre = models.JSONField(null=True)
 
-    # Denormalized information used only by Nuxt. See self.statut for the Django logic.
-    status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001
+    # comment_dgd = models.CharField(blank=True, null=True)  # noqa: DJ001
+    commentaire = models.CharField(blank=True, null=True)  # noqa: DJ001
+    departements = ArrayField(
+        verbose_name="Départements",
+        # Charfield pour permettre aux départements ne contenant qu'un chiffre de commencer par un zéro.
+        base_field=models.CharField(max_length=3, blank=True),
+        blank=True,
+        null=True,
+    )
 
-    objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
+    owner = models.ForeignKey("users.Profile", models.DO_NOTHING, blank=True, null=True)
+    # project = models.ForeignKey(
+    #     "core.Project", blank=True, null=True, on_delete=models.SET_NULL
+    # )
+    # volet_qualitatif = models.JSONField(blank=True, null=True)
+
+    objects = FastLoadingProcedureManager.from_queryset(ProcedureQuerySet)()
+    full_objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
     class Meta:
+        # This model is fully represented now and could be managed.
+        base_manager_name = "objects"
         managed = False
         db_table = "procedures"
         constraints = (
@@ -592,16 +757,16 @@ class EventManager(models.Manager):
 class FastLoadingEventManager(EventManager):
     def get_queryset(self) -> Self:
         to_be_removed_fields = [
-            "is_sudocuh_scot",
-            "test",
-            "code",
-            "from_sudocuh_procedure_id",
+            # "is_sudocuh_scot",
+            # "test",
+            # "code",
+            # "from_sudocuh_procedure_id",
         ]
         # Text, Array or JSON fields.
         heavy_fields = [
-            "description",
+            # "description",
             "attachements",
-            "actors",
+            # "actors",
         ]
         return super().get_queryset().defer(*to_be_removed_fields, *heavy_fields)
 
@@ -617,7 +782,7 @@ class Event(models.Model):
     visibility = models.CharField(  # noqa: DJ001
         blank=True, null=True, db_default="public", choices=VisibilityChoices
     )
-    description = models.TextField(blank=True, null=True)  # noqa: DJ001
+    # description = models.TextField(blank=True, null=True)  # noqa: DJ001
 
     created_at = models.DateTimeField(
         blank=True, null=True, db_default=TransactionNow(), editable=False
@@ -630,16 +795,20 @@ class Event(models.Model):
         unique=True, blank=True, null=True, editable=False
     )
     profile = models.ForeignKey(Profile, models.DO_NOTHING, null=True)
-    actors = models.JSONField(blank=True, null=True)
-    is_sudocuh_scot = models.BooleanField(blank=True, null=True)
-    test = models.BooleanField(blank=True, null=True)
-    code = models.TextField(blank=True, null=True)  # noqa: DJ001
-    from_sudocuh_procedure_id = models.IntegerField(blank=True, null=True)
+    # actors = models.JSONField(blank=True, null=True)
+    # is_sudocuh_scot = models.BooleanField(blank=True, null=True)
+    # test = models.BooleanField(blank=True, null=True)
+    # code = models.TextField(blank=True, null=True)  # noqa: DJ001
+    # from_sudocuh_procedure_id = models.IntegerField(blank=True, null=True)
+    # project = models.ForeignKey(
+    #     "core.Project", blank=True, null=True, on_delete=models.SET_NULL
+    # )
 
     objects = FastLoadingEventManager()
     full_objects = EventManager()
 
     class Meta:
+        # This model is fully represented now and could be managed.
         managed = False
         db_table = "doc_frise_events"
         ordering = ("-date_evenement",)
@@ -686,8 +855,7 @@ class CollectiviteQuerySet(models.QuerySet):
             .prefetch_related(
                 models.Prefetch(
                     "procedure_set",
-                    Procedure.objects.defer("current_perimetre", "initial_perimetre")
-                    .with_events(avant=avant)
+                    Procedure.objects.with_events(avant=avant)
                     .without_adhesions_count()
                     .order_by("created_at")
                     .filter(
@@ -781,10 +949,8 @@ class CommuneQuerySet(models.QuerySet):
     def with_procedures_principales(
         self, *, avant: date | None = None, with_adhesions_count: bool = True
     ) -> Self:
-        procedures_principales = (
-            Procedure.objects.defer("current_perimetre", "initial_perimetre")
-            .with_events(avant=avant)
-            .filter(parente=None, archived=False)
+        procedures_principales = Procedure.objects.with_events(avant=avant).filter(
+            parente=None, archived=False
         )
         if not with_adhesions_count:
             procedures_principales = procedures_principales.without_adhesions_count()
@@ -801,12 +967,13 @@ class CommuneQuerySet(models.QuerySet):
         ).prefetch_related("deleguee")
 
     def with_scots(self, avant: date | None = None) -> Self:
+        qs = Procedure.objects.with_events(avant=avant).filter(
+            doc_type="SCOT", parente=None, archived=False
+        )
         return self.prefetch_related(
             models.Prefetch(
                 "procedures",
-                Procedure.objects.defer("current_perimetre", "initial_perimetre")
-                .with_events(avant=avant)
-                .filter(doc_type="SCOT", parente=None, archived=False),
+                queryset=qs,
                 to_attr="procedures_principales",
             )
         )
