@@ -540,7 +540,7 @@ class Procedure(models.Model):
         # For an unknown reason, the ProcedureManager is used on the "list" view but not on the "change" one.
         # This should be refactored some day as this hack is quite ugly.
         if not hasattr(self, "perimetre__count"):
-            self.perimetre__count = self.perimetre.count()
+            self.perimetre__count = self.perimetre.filter(nouvelle=None).count()
 
         return self.perimetre__count > 1
 
@@ -551,7 +551,7 @@ class Procedure(models.Model):
         # For the moment, it is mandatory to know if the procedure is_sectoriel_consolide.
         # This should be refactored some day as this hack is quite ugly.
         if not hasattr(self, "perimetre__count"):
-            self.perimetre__count = self.perimetre.count()
+            self.perimetre__count = self.perimetre.filter(nouvelle=None).count()
 
         # TODO Ajouter la vérif de la colonne is_sectoriel  # noqa: FIX002
         return self.communes_adherentes__count > self.perimetre__count

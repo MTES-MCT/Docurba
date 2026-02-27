@@ -15,6 +15,7 @@ from core.models import (
     Event,
     EventCategory,
     Procedure,
+    TypeCollectivite,
     TypeDocument,
     ViewCommuneAdhesionsDeep,
 )
@@ -149,6 +150,23 @@ class TestProcedureCommunesCounts:
             procedure_with_counts = Procedure.objects.get(id=procedure.id)
             assert procedure_with_counts.perimetre__count == 1
             assert procedure_with_counts.communes_adherentes__count == 1
+
+    @pytest.mark.django_db
+    def test_exclut_commune_deleguee_du_fallback_count(self) -> None:
+        commune = create_commune()
+        commune_deleguee = create_commune(
+            commune_type=TypeCollectivite.COMD, nouvelle=commune
+        )
+        procedure = Procedure.objects.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        )
+        procedure.perimetre.add(commune, commune_deleguee)
+
+        # Sans annotation (fallback), la COMD ne doit pas compter
+        raw = Procedure.objects.without_adhesions_count().get(id=procedure.id)
+        del raw.perimetre__count
+        assert not raw.is_intercommunal
+        assert raw.type_document == TypeDocument.PLU
 
     @pytest.mark.django_db
     def test_retourne_zero_quand_pas_de_commune(
