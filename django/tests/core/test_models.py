@@ -21,6 +21,7 @@ from core.models import (
 from tests.factories import (
     create_commune,
     create_departement,
+    create_evenement,
     create_groupement,
 )
 
@@ -1332,6 +1333,38 @@ class TestEvent:
     def test_date_null(self) -> None:
         procedure = Procedure()
         assert Event(procedure=procedure).date_evenement is None
+
+
+@pytest.mark.django_db
+class TestEventManagers:
+    def test_base_manager(self, subtests: pytest.Subtests) -> None:
+        create_evenement(
+            evt_type=EventCategory.PUBLICATION_PERIMETRE, date="2024-12-01"
+        )
+        heavy_fields = [
+            "description",
+            "attachements",
+        ]
+
+        event = Event.objects.earliest("id")
+        for item in heavy_fields:
+            with subtests.test(item, item=item):
+                assert item not in event.__dict__
+
+    @pytest.mark.django_db
+    def test_full_objects_manager(self, subtests: pytest.Subtests) -> None:
+        create_evenement(
+            evt_type=EventCategory.PUBLICATION_PERIMETRE, date="2024-12-01"
+        )
+        heavy_fields = [
+            "description",
+            "attachements",
+        ]
+
+        event = Event.full_objects.earliest("id")
+        for item in heavy_fields:
+            with subtests.test(item, item=item):
+                assert item in event.__dict__
 
 
 class TestCommuneProceduresPrincipales:
