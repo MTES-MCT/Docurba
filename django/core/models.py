@@ -604,7 +604,7 @@ class Event(models.Model):
     procedure = models.ForeignKey(
         Procedure, models.DO_NOTHING, editable=False, null=True
     )
-    type = models.CharField(blank=True, null=True)  # noqa: DJ001
+    type = models.TextField(blank=True, null=True)  # noqa: DJ001
     date_evenement = models.DateField(db_column="date_iso", null=True)
     is_valid = models.BooleanField(db_default=True)
     visibility = models.CharField(  # noqa: DJ001
