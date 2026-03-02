@@ -26,6 +26,7 @@ dev = [
     "pytest-django",
     "ruff",
     "pre-commit>=4.3.0", # https://github.com/pre-commit/pre-commit
+    "django-silk>=5.4.3",
 ]
 
 [tool.pytest.ini_options]
