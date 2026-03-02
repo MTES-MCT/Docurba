@@ -577,6 +577,47 @@ class Procedure(models.Model):
         )
 
 
+class ProcedureTopic(models.Model):
+    procedure = models.ForeignKey(
+        "core.Procedure", on_delete=models.CASCADE, related_name="topics_through"
+    )
+    topics = models.ForeignKey(
+        "core.Topic", on_delete=models.RESTRICT, related_name="procedures_through"
+    )
+    created_at = models.DateTimeField("créé le", auto_now_add=True)
+    updated_at = models.DateTimeField("mis à jour le", auto_now=True)
+
+    class Meta:
+        ordering = ["topics"]  # noqa: RUF012
+        verbose_name = "objet sélectionné"
+        verbose_name_plural = "objets sélectionnés"
+        unique_together = ("procedure", "topics")
+
+    def __str__(self) -> str:
+        return f"{self.pk}"
+
+
+class Topic(models.Model):
+    name = models.CharField(verbose_name="Nom système")
+    display_name = models.CharField(verbose_name="Nom d'affichage")
+    procedures = models.ManyToManyField(
+        "core.Procedure",
+        through="ProcedureTopic",
+        related_name="topics",
+        verbose_name="procédures",
+    )
+    ui_rank = models.SmallIntegerField(verbose_name="Position dans le menu déroulant")
+
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:  # noqa: DJ012
+        verbose_name = "objet"
+        ordering = [  # noqa: RUF012
+            "ui_rank",
+        ]
+
+
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)

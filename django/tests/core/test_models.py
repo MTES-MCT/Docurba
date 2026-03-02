@@ -15,6 +15,7 @@ from docurba.core.models import (
     Event,
     EventCategory,
     Procedure,
+    Topic,
     TypeDocument,
     ViewCommuneAdhesionsDeep,
 )
@@ -1807,3 +1808,9 @@ class TestCommuneCodeEtat:
             procedure.competence_intercommunalite_code(collectivite_porteuse)
             == expected_code
         )
+
+
+@pytest.mark.django_db
+class TestTopic:
+    def test_fixtures(self) -> None:
+        assert Topic.objects.count() == 5
