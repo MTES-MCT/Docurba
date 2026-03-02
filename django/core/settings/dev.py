@@ -28,6 +28,15 @@ TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "django.template.context_processors.debug"
 )
 
+SILKY_ENABLED = env.str("SILK_PROFILE_ENABLED", default="False")
+
+if SILKY_ENABLED == "True":
+    SILKY_PYTHON_PROFILER = True
+    SILKY_PYTHON_PROFILER_BINARY = True
+    INSTALLED_APPS.append("silk")
+    MIDDLEWARE.append("silk.middleware.SilkyMiddleware")
+
+
 # Don't use json formatter in dev
 del LOGGING["handlers"]["console"]["formatter"]
 
