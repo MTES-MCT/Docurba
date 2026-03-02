@@ -6,6 +6,7 @@ from typing import Any
 from core.models import (
     Collectivite,
     Commune,
+    CommuneProcedure,
     Departement,
     Event,
     EventCategory,
@@ -119,20 +120,40 @@ def create_evenement(
     )
 
 
-def create_procedure(
+def create_procedure(  # noqa: PLR0913
     *,
     collectivite_porteuse: Collectivite = Auto,
     doc_type: TypeDocument = Auto,
+    type: str = Auto,  # noqa: A002
     statut: EventCategory = Auto,
-    perimetre: list = Auto,
+    vaut_PLH: bool = Auto,  # noqa: N803
+    vaut_PDM: bool = Auto,  # noqa: N803
+    soft_delete: bool = Auto,
+    parente: Procedure | None = None,
+    doublon_cache_de: Procedure | None = None,
+    perimetre: list[Commune] = Auto,
 ) -> Procedure:
     collectivite_porteuse = collectivite_porteuse or create_groupement()
     doc_type = doc_type or TypeDocument.PLU
     procedure = Procedure.objects.create(
-        collectivite_porteuse=collectivite_porteuse, doc_type=doc_type
+        collectivite_porteuse=collectivite_porteuse,
+        doc_type=doc_type,
+        type=type or "Élaboration",
+        vaut_PLH=vaut_PLH or False,
+        vaut_PDM=vaut_PDM or False,
+        soft_delete=soft_delete or False,
+        parente=parente,
+        doublon_cache_de=doublon_cache_de,
     )
     if perimetre:
-        procedure.perimetre.add(*perimetre)
+        CommuneProcedure.objects.bulk_create(
+            CommuneProcedure(
+                procedure=procedure,
+                deprecated_nuxt_collectivite_code=commune.code_insee,
+                deprecated_nuxt_collectivite_type=commune.type,
+            )
+            for commune in perimetre
+        )
     if statut:
         create_evenement(evt_type=statut, date="2024-12-01", procedure=procedure)
 

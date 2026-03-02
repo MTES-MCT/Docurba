@@ -918,13 +918,43 @@ class Commune(Collectivite):
 
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
-    commune = models.ForeignKey(Commune, models.DO_NOTHING, db_constraint=False)
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID())
+    deprecated_nuxt_collectivite_code = models.CharField(db_column="collectivite_code")
+    deprecated_nuxt_collectivite_type = models.CharField(db_column="collectivite_type")
+    deprecated_nuxt_opposable = models.BooleanField(
+        db_column="opposable", default=False
+    )
+
+    commune_id = models.GeneratedField(
+        expression=models.functions.Concat(
+            "deprecated_nuxt_collectivite_code",
+            models.Value("_"),
+            "deprecated_nuxt_collectivite_type",
+        ),
+        output_field=models.CharField(),
+        db_persist=True,
+    )
+    commune = models.ForeignObject(
+        Commune,
+        from_fields=["commune_id"],
+        to_fields=["collectivite_ptr_id"],
+        on_delete=models.DO_NOTHING,
+    )
+
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
 
     class Meta:
         managed = False
         db_table = "procedures_perimetres"
         verbose_name = "Périmètre"
+        constraints = (
+            models.UniqueConstraint(
+                "deprecated_nuxt_collectivite_code",
+                "procedure",
+                "deprecated_nuxt_collectivite_type",
+                name="uniq_perimeters_collectivite_procedure_type_couple_ids",
+            ),
+        )
 
 
 class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008
