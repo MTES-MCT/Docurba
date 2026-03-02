@@ -11,7 +11,7 @@ env.smart_cast = False
 #########################################
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
+APPS_DIR = BASE_DIR / "docurba"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -32,8 +32,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "revproxy.apps.RevProxyConfig",
-    "core",
-    "users",
+    "docurba.core",
+    "docurba.users",
 ]
 
 MIDDLEWARE = [
@@ -52,7 +52,7 @@ MIDDLEWARE = [
     "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware",
 ]
 
-ROOT_URLCONF = "core.urls"
+ROOT_URLCONF = "config.urls"
 STORAGES = {
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
@@ -82,7 +82,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "core.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Password validation

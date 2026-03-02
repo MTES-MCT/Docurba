@@ -1,5 +1,5 @@
 # ruff: noqa: F405 F403
-from core.settings.base import *  # NOSONAR (S2208)
+from config.settings.base import *  # NOSONAR (S2208)
 
 # Django settings
 # ---------------

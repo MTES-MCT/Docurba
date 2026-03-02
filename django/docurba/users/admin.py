@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.contrib.postgres.fields import ArrayField
 from django.forms.widgets import TextInput
 
-from users.models import Profile, User
+from docurba.users.models import Profile, User
 
 
 @admin.register(Profile)

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand
 
-from core.models import Collectivite, Commune, Departement, Region
+from docurba.core.models import Collectivite, Commune, Departement, Region
 
 NUXT_DATA = (
     Path(__file__).parent.parent.parent.parent.parent

@@ -4,21 +4,21 @@ from django.http import HttpResponseNotFound
 from django.urls import include, path, re_path
 from revproxy.views import ProxyView
 
-from core import views
+from docurba.core import views as core_views
 
 nuxt_proxy = ProxyView.as_view(upstream=settings.UPSTREAM_NUXT)
 
 urlpatterns = [
     path("_admin/", admin.site.urls),
-    path("collectivite/<collectivite_code>/", views.collectivite),
+    path("collectivite/<collectivite_code>/", core_views.collectivite),
     path(
         "collectivite/<collectivite_code>/<collectivite_type>/",
-        views.collectivite,
+        core_views.collectivite,
         name="collectivite-detail",
     ),
-    path("api/perimetres", views.api_perimetres),
-    path("api/communes", views.api_communes),
-    path("api/scots", views.api_scots, name="api_scots"),
+    path("api/perimetres", core_views.api_perimetres),
+    path("api/communes", core_views.api_communes),
+    path("api/scots", core_views.api_scots, name="api_scots"),
     # URLs Nuxt globales
     path("", nuxt_proxy, {"path": ""}),
     re_path(r"(?P<path>^_content.*)", nuxt_proxy),

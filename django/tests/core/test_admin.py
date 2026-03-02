@@ -2,7 +2,7 @@ import pytest
 from django.test import Client
 from django.urls import reverse
 
-from core.models import TypeDocument
+from docurba.core.models import TypeDocument
 from tests.factories import create_procedure
 
 

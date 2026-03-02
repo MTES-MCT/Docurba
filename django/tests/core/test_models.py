@@ -7,7 +7,7 @@ import pytest
 from django.utils import timezone
 from pytest_django import DjangoAssertNumQueries
 
-from core.models import (
+from docurba.core.models import (
     EVENT_CATEGORY_BY_DOC_TYPE,
     CodeCompetencePerimetre,
     Collectivite,
