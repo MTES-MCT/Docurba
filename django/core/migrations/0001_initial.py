@@ -4,6 +4,8 @@ import uuid
 
 import django.db.models.deletion
 import django.db.models.functions.datetime
+from django.conf import settings
+from django.contrib.postgres.operations import CreateExtension
 from django.db import migrations, models
 
 
@@ -13,6 +15,13 @@ class Migration(migrations.Migration):
     dependencies = []
 
     operations = [
+        CreateExtension("uuid-ossp"),
+        CreateExtension("moddatetime"),
+        migrations.RunSQL(
+            (settings.BASE_DIR / "core" / "migrations" / "structure_prod.sql")
+            .resolve()
+            .read_text()
+        ),
         migrations.CreateModel(
             name="CommuneProcedure",
             fields=[

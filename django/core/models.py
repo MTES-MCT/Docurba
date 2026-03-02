@@ -1,5 +1,4 @@
 import logging
-import uuid
 from datetime import date
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
@@ -11,6 +10,8 @@ from django.db import connection, models
 from django.db.models.constraints import UniqueConstraint
 from django.urls import reverse
 from django.utils import timezone
+
+from users.models import Profile
 
 logger = logging.getLogger(__name__)
 
@@ -371,7 +372,6 @@ class Procedure(models.Model):
     objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
     class Meta:
-        managed = False
         db_table = "procedures"
         constraints = (
             UniqueConstraint(
@@ -576,16 +576,40 @@ class Procedure(models.Model):
         )
 
 
+class VisibilityChoices(models.TextChoices):
+    PUBLIC = "public", "Publique - Visible par le grand public"
+    PRIVATE = (
+        "private",
+        "Privé - Visible uniquement par les collaborateur·ices de la procédure",
+    )
+
+
 class Event(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
-    type = models.TextField(blank=True, null=True)  # noqa: DJ001
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
+    procedure = models.ForeignKey(
+        Procedure, models.DO_NOTHING, editable=False, null=True
+    )
+    type = models.CharField(blank=True, null=True)  # noqa: DJ001
     date_evenement = models.DateField(db_column="date_iso", null=True)
     is_valid = models.BooleanField(db_default=True)
-    visibility = models.TextField(db_default="public")
+    visibility = models.CharField(  # noqa: DJ001
+        blank=True, null=True, db_default="public", choices=VisibilityChoices
+    )
+    description = models.TextField(blank=True, null=True)  # noqa: DJ001
+
+    created_at = models.DateTimeField(
+        blank=True, null=True, db_default=TransactionNow(), editable=False
+    )
+    updated_at = models.DateTimeField(
+        blank=True, null=True, db_default=TransactionNow(), editable=False
+    )
+    attachements = models.JSONField(blank=True, null=True, editable=False)
+    from_sudocuh = models.IntegerField(
+        unique=True, blank=True, null=True, editable=False
+    )
+    profile = models.ForeignKey(Profile, models.DO_NOTHING, null=True)
 
     class Meta:
-        managed = False
         db_table = "doc_frise_events"
         ordering = ("-date_evenement",)
 
@@ -918,13 +942,42 @@ class Commune(Collectivite):
 
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
-    commune = models.ForeignKey(Commune, models.DO_NOTHING, db_constraint=False)
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID())
+    deprecated_nuxt_collectivite_code = models.CharField(db_column="collectivite_code")
+    deprecated_nuxt_collectivite_type = models.CharField(db_column="collectivite_type")
+    deprecated_nuxt_opposable = models.BooleanField(
+        db_column="opposable", default=False
+    )
+
+    commune_id = models.GeneratedField(
+        expression=models.functions.Concat(
+            "deprecated_nuxt_collectivite_code",
+            models.Value("_"),
+            "deprecated_nuxt_collectivite_type",
+        ),
+        output_field=models.CharField(),
+        db_persist=True,
+    )
+    commune = models.ForeignObject(
+        Commune,
+        from_fields=["commune_id"],
+        to_fields=["collectivite_ptr_id"],
+        on_delete=models.DO_NOTHING,
+    )
+
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
 
     class Meta:
-        managed = False
         db_table = "procedures_perimetres"
         verbose_name = "Périmètre"
+        constraints = (
+            models.UniqueConstraint(
+                "deprecated_nuxt_collectivite_code",
+                "procedure",
+                "deprecated_nuxt_collectivite_type",
+                name="uniq_perimeters_collectivite_procedure_type_couple_ids",
+            ),
+        )
 
 
 class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008
