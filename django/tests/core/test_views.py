@@ -6,7 +6,7 @@ from django.test import Client
 from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 
-from core.models import EventCategory, TypeDocument
+from docurba.core.models import EventCategory, TypeDocument
 from tests.factories import (
     create_commune,
     create_groupement,

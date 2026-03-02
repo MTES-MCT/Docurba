@@ -3,7 +3,7 @@ import itertools
 import random
 from typing import Any
 
-from core.models import (
+from docurba.core.models import (
     Collectivite,
     Commune,
     Departement,

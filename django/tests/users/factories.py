@@ -1,8 +1,8 @@
 import uuid
 from typing import Any
 
+from docurba.users.models import Profile, User
 from tests.factories import _Auto
-from users.models import Profile, User
 
 Auto: Any = _Auto()
 

@@ -12,7 +12,7 @@ jobs:
   all:
     runs-on: ubuntu-latest
     env:
-      DJANGO_SETTINGS_MODULE: core.settings.test
+      DJANGO_SETTINGS_MODULE: config.settings.test
       SECRET_KEY: test_secret_key
       DATABASE_URL: postgres://postgres:docurba@localhost:5434/postgres
       UPSTREAM_NUXT: http://localhost:3000

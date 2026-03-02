@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from users.models import Profile, User
+from docurba.users.models import Profile, User
 
 from .factories import create_user_and_profile
 

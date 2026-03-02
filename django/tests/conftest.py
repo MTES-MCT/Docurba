@@ -2,7 +2,7 @@ import pytest
 from django.apps import apps
 from django.db import connection
 
-from users.models import User
+from docurba.users.models import User
 
 
 @pytest.fixture(scope="session")

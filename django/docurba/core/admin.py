@@ -4,7 +4,7 @@
 from django.contrib import admin
 from django.db import models
 
-from core.models import Collectivite, Commune, Event, Procedure
+from docurba.core.models import Collectivite, Commune, Event, Procedure
 
 
 @admin.register(Collectivite)

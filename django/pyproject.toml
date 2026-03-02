@@ -29,7 +29,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "core.settings.test"
+DJANGO_SETTINGS_MODULE = "config.settings.test"
 addopts = "--reuse-db --cov=."
 xfail_strict = true
 
