@@ -15,6 +15,7 @@ from core.models import (
     Event,
     EventCategory,
     Procedure,
+    TypeCollectivite,
     TypeDocument,
     ViewCommuneAdhesionsDeep,
 )
@@ -149,6 +150,23 @@ class TestProcedureCommunesCounts:
             procedure_with_counts = Procedure.objects.get(id=procedure.id)
             assert procedure_with_counts.perimetre__count == 1
             assert procedure_with_counts.communes_adherentes__count == 1
+
+    @pytest.mark.django_db
+    def test_exclut_commune_deleguee_du_fallback_count(self) -> None:
+        commune = create_commune()
+        commune_deleguee = create_commune(
+            commune_type=TypeCollectivite.COMD, nouvelle=commune
+        )
+        procedure = Procedure.objects.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        )
+        procedure.perimetre.add(commune, commune_deleguee)
+
+        # Sans annotation (fallback), la COMD ne doit pas compter
+        raw = Procedure.objects.without_adhesions_count().get(id=procedure.id)
+        del raw.perimetre__count
+        assert not raw.is_intercommunal
+        assert raw.type_document == TypeDocument.PLU
 
     @pytest.mark.django_db
     def test_retourne_zero_quand_pas_de_commune(
@@ -1743,6 +1761,59 @@ class TestCommuneCodeEtat:
         commune = Commune.objects.with_procedures_principales().first()
         assert commune.code_etat_simplifie == "99"
         assert commune.code_etat_complet == "9999"
+
+    @pytest.mark.django_db
+    def test_libelle_simplifie_affiche_plui_sectoriel(self) -> None:
+        commune = create_commune()
+        groupement = commune.intercommunalite
+
+        # 3 communes adhérentes, 2 dans le périmètre → intercommunal + sectoriel
+        commune2 = create_commune(intercommunalite=None)
+        commune3 = create_commune(intercommunalite=None)
+        commune.adhesions.add(groupement)
+        commune2.adhesions.add(groupement)
+        commune3.adhesions.add(groupement)
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        procedure = groupement.procedure_set.create(
+            doc_type=TypeDocument.PLUI, collectivite_porteuse=groupement
+        )
+        procedure.perimetre.add(commune, commune2)
+        procedure.event_set.create(
+            type="Délibération d'approbation", date_evenement="2024-01-01"
+        )
+
+        commune = Commune.objects.with_procedures_principales().get(pk=commune.pk)
+        assert "PLUi" in commune.libelle_code_etat_simplifie
+
+    @pytest.mark.django_db
+    def test_libelle_simplifie_deux_procedures_en_cours(self) -> None:
+        commune = create_commune()
+
+        # CC en élaboration
+        proc_cc = commune.procedures.create(
+            doc_type=TypeDocument.CC, collectivite_porteuse=commune
+        )
+        proc_cc.perimetre.add(commune)
+        proc_cc.event_set.create(
+            type="Délibération de prescription du conseil municipal",
+            date_evenement="2024-01-01",
+        )
+
+        # PLU en élaboration
+        proc_plu = commune.procedures.create(
+            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        )
+        proc_plu.perimetre.add(commune)
+        proc_plu.event_set.create(
+            type="Délibération de prescription du conseil municipal ou communautaire",
+            date_evenement="2024-06-01",
+        )
+
+        commune = Commune.objects.with_procedures_principales().get(pk=commune.pk)
+        libelle = commune.libelle_code_etat_simplifie
+        assert "PLU en élaboration" in libelle
+        assert "CC en élaboration" in libelle
 
     @pytest.mark.django_db
     def test_fonctionne_et_log_erreur_quand_code_etat_incoherent(

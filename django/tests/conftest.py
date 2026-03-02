@@ -5,6 +5,15 @@ from django.db import connection
 from users.models import User
 
 
+@pytest.fixture(autouse=True)
+def _force_simple_staticfiles(settings):  # noqa: ANN001, ANN201
+    settings.STORAGES = {
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+
+
 @pytest.fixture(scope="session")
 def django_db_setup(django_db_setup, django_db_blocker, django_db_createdb):  # noqa: ANN001, ANN201, ARG001
     """
