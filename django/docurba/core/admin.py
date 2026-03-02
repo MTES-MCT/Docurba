@@ -1,10 +1,12 @@
 # ruff: noqa: ARG002
 # ruff: noqa: ANN001
 # ruff: noqa: RUF012
+from typing import Any
+
 from django.contrib import admin
 from django.db import models
 
-from docurba.core.models import Collectivite, Commune, Event, Procedure
+from docurba.core.models import Collectivite, Commune, Event, Procedure, Topic
 
 
 @admin.register(Collectivite)
@@ -44,12 +46,26 @@ class EventsInline(admin.TabularInline):
     model = Event
 
 
+class TopicsFilter(admin.SimpleListFilter):
+    title = "objet"
+    parameter_name = "topic"
+
+    def lookups(self, request, model_admin) -> list[tuple[str, Any]]:
+        return [(topic.name, topic.display_name) for topic in Topic.objects.all()]
+
+    def queryset(self, request, queryset) -> models.QuerySet[Any]:
+        if not self.value():
+            return queryset
+        return queryset.filter(topics__name=self.value())
+
+
 @admin.register(Procedure)
 class ProcedureAdmin(admin.ModelAdmin):
     list_filter = (
         ("parente", admin.EmptyFieldListFilter),
         ("name", admin.EmptyFieldListFilter),
         "doc_type",
+        TopicsFilter,
     )
     inlines = [ProcedurePerimetreInline, EventsInline]
     list_display = ("__str__", "django_status")
@@ -89,3 +105,18 @@ class ProcedureAdmin(admin.ModelAdmin):
     @admin.display(description="Statut selon Django")
     def django_status(self, obj) -> str:
         return obj.statut or "-"
+
+
+@admin.register(Topic)
+class TopicAdmin(admin.ModelAdmin):
+    list_display = ("display_name", "ui_rank")
+    fields = ["display_name", "ui_rank"]
+
+    def has_add_permission(self, request: object) -> bool:
+        return False
+
+    def has_delete_permission(self, request, obj=None) -> bool:
+        return False
+
+    def has_change_permission(self, request, obj=None) -> bool:
+        return False
