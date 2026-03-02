@@ -9,6 +9,7 @@ from typing import Self
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
 from django.db import connection, models
 from django.db.models.constraints import UniqueConstraint
+from django.db.models.functions import Now
 from django.urls import reverse
 from django.utils import timezone
 
@@ -575,6 +576,48 @@ class Procedure(models.Model):
             EventCategory.PRESCRIPTION,
             EventCategory.PUBLICATION_PERIMETRE,
         )
+
+
+class ProcedureTopic(models.Model):
+    procedure = models.ForeignKey(
+        "core.Procedure", on_delete=models.CASCADE, related_name="topics_through"
+    )
+    topic = models.ForeignKey(
+        "core.Topic", on_delete=models.RESTRICT, related_name="procedures_through"
+    )
+    comment = models.TextField(verbose_name="Commentaire", blank=True)
+    created_at = models.DateTimeField("créé le", auto_now_add=True, db_default=Now())
+    updated_at = models.DateTimeField("mis à jour le", auto_now=True, null=True)
+
+    class Meta:
+        ordering = ["topic"]  # noqa: RUF012
+        verbose_name = "objet sélectionné"
+        verbose_name_plural = "objets sélectionnés"
+        unique_together = ("procedure", "topic")
+
+    def __str__(self) -> str:
+        return f"{self.pk}"
+
+
+class Topic(models.Model):
+    name = models.CharField(verbose_name="Nom système")
+    display_name = models.CharField(verbose_name="Nom d'affichage")
+    procedures = models.ManyToManyField(
+        "core.Procedure",
+        through="ProcedureTopic",
+        related_name="topics",
+        verbose_name="procédures",
+    )
+    ui_rank = models.SmallIntegerField(verbose_name="Position dans le menu déroulant")
+
+    class Meta:
+        verbose_name = "objet"
+        ordering = [  # noqa: RUF012
+            "ui_rank",
+        ]
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Event(models.Model):
