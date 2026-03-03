@@ -341,6 +341,7 @@ class Procedure(models.Model):
     )
     name = models.TextField(blank=True, null=True)  # noqa: DJ001
     commentaire = models.TextField(blank=True, null=True)  # noqa: DJ001
+    comment_from_sudocuh = models.TextField(blank=True)
     is_principale = models.BooleanField(blank=True, null=True)
     type = models.CharField(blank=True, null=True)  # noqa: DJ001
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001
