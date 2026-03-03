@@ -171,3 +171,4 @@ sentry_sdk.init(
 ##########################################
 
 UPSTREAM_NUXT = env.str("UPSTREAM_NUXT")
+CREATE_UNMANAGED_TABLES = False

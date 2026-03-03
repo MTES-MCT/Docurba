@@ -17,6 +17,7 @@ class User(models.Model):
     email = models.EmailField(verbose_name="Email", blank=True)
 
     class Meta:
+        # Table created by a pre_migrate signal in apps.py.
         managed = False
         db_table = '"auth"."users"'
         verbose_name = "utilisateur"
@@ -123,6 +124,7 @@ class Profile(models.Model):
     )
 
     class Meta:
+        # Table created by a pre_migrate signal in apps.py.
         managed = False
         db_table = "profiles"
         verbose_name = "profil"
