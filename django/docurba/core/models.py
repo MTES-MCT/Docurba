@@ -581,17 +581,17 @@ class ProcedureTopic(models.Model):
     procedure = models.ForeignKey(
         "core.Procedure", on_delete=models.CASCADE, related_name="topics_through"
     )
-    topics = models.ForeignKey(
+    topic = models.ForeignKey(
         "core.Topic", on_delete=models.RESTRICT, related_name="procedures_through"
     )
     created_at = models.DateTimeField("créé le", auto_now_add=True)
     updated_at = models.DateTimeField("mis à jour le", auto_now=True)
 
     class Meta:
-        ordering = ["topics"]  # noqa: RUF012
+        ordering = ["topic"]  # noqa: RUF012
         verbose_name = "objet sélectionné"
         verbose_name_plural = "objets sélectionnés"
-        unique_together = ("procedure", "topics")
+        unique_together = ("procedure", "topic")
 
     def __str__(self) -> str:
         return f"{self.pk}"

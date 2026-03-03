@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             options={
                 "verbose_name": "objet sélectionné",
                 "verbose_name_plural": "objets sélectionnés",
-                "ordering": ["topics"],
+                "ordering": ["topic"],
             },
         ),
         migrations.CreateModel(
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name="proceduretopic",
-            name="topics",
+            name="topic",
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.RESTRICT,
                 related_name="procedures_through",
@@ -87,6 +87,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name="proceduretopic",
-            unique_together={("procedure", "topics")},
+            unique_together={("procedure", "topic")},
         ),
     ]
