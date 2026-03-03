@@ -12,13 +12,10 @@ env.smart_cast = False
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 APPS_DIR = BASE_DIR / "docurba"
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+EXPORTS_DIR = env.str("SCRIPT_EXPORT_PATH", default=f"{BASE_DIR}/exports")
 
 SECRET_KEY = env.str("SECRET_KEY")
-
 DEBUG = False
-
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
 # Application definition

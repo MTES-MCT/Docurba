@@ -111,3 +111,6 @@ __pycache__
 
 # Database dump files
 exported_data/
+
+# Exports files
+*/exports/*
