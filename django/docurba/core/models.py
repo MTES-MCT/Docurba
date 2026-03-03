@@ -371,6 +371,7 @@ class Procedure(models.Model):
     objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
     class Meta:
+        # Table created by a pre_migrate signal in apps.py.
         managed = False
         db_table = "procedures"
         constraints = (
@@ -585,6 +586,7 @@ class Event(models.Model):
     visibility = models.TextField(db_default="public")
 
     class Meta:
+        # Table created by a pre_migrate signal in apps.py.
         managed = False
         db_table = "doc_frise_events"
         ordering = ("-date_evenement",)
@@ -922,6 +924,7 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
 
     class Meta:
+        # Table created by a pre_migrate signal in apps.py.
         managed = False
         db_table = "procedures_perimetres"
         verbose_name = "Périmètre"
