@@ -3,25 +3,34 @@
     <div
       v-if="visible"
       role="status"
-      :class="['login-banner', isFrisePage ? 'login-banner--warning' : 'login-banner--info']"
+      :class="['d-flex align-center justify-center py-3 px-4 text-body-2', isFrisePage ? 'warning-bg warning-text--text' : 'bf200 primary--text text--lighten-2']"
     >
-      <v-icon class="login-banner__icon" size="20">
+      <v-icon class="mr-2" style="color: inherit" size="20">
         {{ isFrisePage ? icons.mdiAlert : icons.mdiInformation }}
       </v-icon>
-      <span class="login-banner__text">
-        <span v-if="content.bold" class="login-banner__bold">{{ content.bold }}</span>
-        <nuxt-link :to="{ name: 'login' }" class="login-banner__link">{{ content.link }}</nuxt-link>
+      <span class="text-center">
+        <span v-if="content.bold" class="font-weight-bold">{{ content.bold }}</span>
+        <nuxt-link :to="{ name: 'login' }" style="color: inherit; text-decoration: underline;">{{ content.link }}</nuxt-link>
         <template v-if="content.text">{{ content.text }}</template>
       </span>
-      <button class="login-banner__close" aria-label="Fermer la bannière" @click="dismiss">
-        &times;
-      </button>
+      <v-btn
+        icon
+        small
+        class="ml-4"
+        aria-label="Fermer la bannière"
+        color="inherit"
+        @click="dismiss"
+      >
+        <v-icon size="18" class="mt-1">
+          {{ icons.mdiClose }}
+        </v-icon>
+      </v-btn>
     </div>
   </div>
 </template>
 
 <script>
-import { mdiAlert, mdiInformation } from '@mdi/js'
+import { mdiAlert, mdiInformation, mdiClose } from '@mdi/js'
 const SESSION_KEY = 'login-banner-dismissed'
 const BANNER_CONTENT = {
   frise: {
@@ -42,7 +51,7 @@ export default {
     return {
       dismissed: false,
       ready: false,
-      icons: { mdiInformation, mdiAlert }
+      icons: { mdiInformation, mdiAlert, mdiClose }
     }
   },
   computed: {
@@ -71,51 +80,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.login-banner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 16px;
-  font-size: 16px;
-}
-
-.login-banner--info {
-  background-color: #E8EDFF;
-  color: #0566CC;
-}
-
-.login-banner--warning {
-  background-color: #FFE9E6;
-  color: #B34103;
-}
-
-.login-banner__icon {
-  color: inherit;
-  margin-right: 8px;
-}
-
-.login-banner__text {
-  text-align: center;
-}
-
-.login-banner__bold {
-  font-weight: 800;
-}
-
-.login-banner__link {
-  color: inherit;
-  text-decoration: underline;
-}
-
-.login-banner__close {
-  margin-left: 16px;
-  margin-bottom: 2px;
-  font-size: 20px;
-  cursor: pointer;
-  height: 12px;
-  display: flex;
-  align-items: center;
-}
-</style>
