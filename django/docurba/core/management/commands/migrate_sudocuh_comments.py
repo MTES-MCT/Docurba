@@ -52,15 +52,13 @@ class Command(BaseCommand):
             )
 
         if wet_run:
-            for batch in batched(procedures_to_update, 1000, strict=False):
-                Procedure.objects.bulk_update(
-                    batch,
-                    fields=["commentaire", "comment_from_sudocuh"],
-                )
+            Procedure.objects.bulk_update(
+                procedures_to_update,
+                batch_size=1000,
+                fields=["commentaire", "comment_from_sudocuh"],
+            )
 
-                # try with batch_size
-
-        with filename.open(mode="w", newline="") as file:
+        with filename.open(mode="w+", newline="") as file:
             writer = csv.DictWriter(
                 file,
                 fieldnames=procedures_to_update_as_dict[0].keys(),
