@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import { groupBy, uniqBy, orderBy, maxBy } from 'lodash'
 
 export default ({ $supabase }, inject) => {
   Vue.filter('docType', function (procedure) {
@@ -19,22 +18,6 @@ export default ({ $supabase }, inject) => {
   inject('urbanisator', {
     isEpci (collectiviteId) {
       return collectiviteId.length > 5
-    },
-    async getProceduresForDept (departementCode) {
-      const { data } = await $supabase.from('procedures_perimetres')
-        .select('*, procedures!inner(*, doc_frise_events(*))')
-        .eq('departement', departementCode)
-        .is('procedures.archived', false)
-        .throwOnError()
-      const groupedProceduresPerim = groupBy(data, e => e.procedure_id)
-      const procedures = data.map((e) => {
-        const lastEvent = maxBy(e.procedures.doc_frise_events, 'date_iso')
-        const prescription = e.procedures.doc_frise_events.find(y => y.code === 'PRES')
-        return { ...e, perimetre: groupedProceduresPerim[e.procedure_id], last_event: lastEvent, prescription }
-      })
-      const uniqProcedures = uniqBy(procedures, e => e.procedure_id)
-      const orderedProcedures = orderBy(uniqProcedures, e => e.last_event?.date_iso, ['desc'])
-      return orderedProcedures
     },
     parseProceduresStatus (procedures) {
       procedures.forEach((procedure) => {

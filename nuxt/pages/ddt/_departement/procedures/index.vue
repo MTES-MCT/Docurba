@@ -22,8 +22,8 @@
           class="elevation-1 pa-8 procedures-dt"
           :custom-filter="customFilter"
           :search="search"
-          :loading="!procedures"
-          loading-text="Chargement des collectivités..."
+          sort-by="last_event.date_iso"
+          sort-desc="true"
         >
           <template #top>
             <v-row>
@@ -117,11 +117,10 @@
                 {{ item.procedureName }}
               </nuxt-link>
 
-              <div v-if="item.procedures.status === null" />
-              <v-chip v-else-if="item.opposable" class="ml-2 flex-shrink-0 success--text font-weight-bold" small label color="success-light">
+              <v-chip v-if="item.statut_libelle === 'opposable'" class="ml-2 flex-shrink-0 success--text font-weight-bold" small label color="success-light">
                 OPPOSABLE
               </v-chip>
-              <v-chip v-else-if="!item.opposable && item.procedures.status === 'opposable'" class="ml-2 flex-shrink-0 font-weight-bold" small label>
+              <v-chip v-else-if="item.statut_libelle === 'archive'" class="ml-2 flex-shrink-0 font-weight-bold" small label>
                 ARCHIVÉ
               </v-chip>
               <v-chip v-else class="ml-2 flex-shrink-0 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
@@ -136,13 +135,14 @@
           </template>
 
           <!-- eslint-disable-next-line -->
-          <template #item.prescription="{ item }">
-            <span class="mention-grey--text">{{ item.prescription?.date_iso_formattee ?? '-' }}</span>
+          <template #item.date_prescription="{ item }">
+
+            <span class="mention-grey--text">{{ item.date_prescription ?? '-' }}</span>
           </template>
 
           <!-- eslint-disable-next-line -->
-          <template #item.last_event="{ item }">
-            <span class="mention-grey--text">{{ item.last_event?.date_iso_formattee }} - {{ item.last_event?.type }}</span>
+          <template #item.last_event.date_iso="{ item }">
+            <span class="mention-grey--text">{{ item.last_event?.date_iso }} - {{ item.last_event?.type }}</span>
           </template>
         </v-data-table>
       </v-col>
@@ -151,9 +151,6 @@
 </template>
 
 <script>
-import dayjs from 'dayjs'
-// import { AsyncParser } from '@json2csv/node'
-
 export default {
   name: 'ProceduresDepartement',
   layout: 'ddt',
@@ -165,8 +162,8 @@ export default {
       typeFilterItems: [{ text: 'Procédures principales', value: 'pp' }, { text: 'Procédures secondaires', value: 'ps' }],
       selectedDocumentsFilter: documentTypes,
       documentFilterItems: documentTypes.map(documentType => ({ text: documentType, value: documentType })),
-      selectedStatusFilter: ['en_cours', 'opposable', 'archived'],
-      statusFilterItems: [{ text: 'En cours', value: 'en_cours' }, { text: 'Opposable', value: 'opposable' }, { text: 'Archivée', value: 'archived' }],
+      selectedStatusFilter: ['en cours', 'opposable', 'archive'],
+      statusFilterItems: [{ text: 'En cours', value: 'en cours' }, { text: 'Opposable', value: 'opposable' }, { text: 'Archivée', value: 'archive' }],
       rawProcedures: null,
       search: this.$route.query.search || ''
 
@@ -177,56 +174,33 @@ export default {
       return [
         { text: 'Nom', align: 'start', value: 'procedureName', filterable: true, width: '45%' },
         { text: 'Périmètre', align: 'start', value: 'perimetre', filterable: false, width: '150px' },
-        { text: 'Prescription', value: 'prescription', filterable: false, width: '135px', sort: this.sortByDateIso },
-        { text: 'Dernier évènement', value: 'last_event', filterable: false, sort: this.sortByDateIso }
+        { text: 'Prescription', value: 'date_prescription', filterable: false, width: '135px' },
+        { text: 'Dernier évènement', value: 'last_event.date_iso', filterable: false }
       ]
     },
     procedures () {
       const proceduresAndFilters = this.rawProcedures?.filter((e) => {
-        return e.procedures.created_at &&
-        this.selectedDocumentsFilter.includes(e.procedures.doc_type) &&
-          ((this.selectedTypesFilter.includes('pp') && e.procedures.is_principale) ||
-          (this.selectedTypesFilter.includes('ps') && !e.procedures.is_principale)) &&
-          (((this.selectedStatusFilter.includes('opposable') && e.opposable) ||
-          (this.selectedStatusFilter.includes('en_cours') && (!e.opposable && !(e.procedures.status === 'opposable'))) ||
-          (this.selectedStatusFilter.includes('archived') && (!e.opposable && e.procedures.status === 'opposable'))))
+        return (
+          this.selectedDocumentsFilter.includes(e.type_document) &&
+          ((this.selectedTypesFilter.includes('pp') && e.is_principale) ||
+            (this.selectedTypesFilter.includes('ps') && !e.is_principale)) &&
+          ((this.selectedStatusFilter.includes('opposable') && e.statut_libelle === 'opposable') ||
+            (this.selectedStatusFilter.includes('en cours') && e.statut_libelle === 'en cours') ||
+            (this.selectedStatusFilter.includes('archive') && e.statut_libelle === 'archive'))
+        )
       })
       return proceduresAndFilters
     }
   },
   async mounted () {
-    try {
-      if (!this.$user.canViewSectionProcedures({ departement: this.$route.params.departement })) {
-        console.warn('User is not allowed to view this page.')
-        this.$nuxt.context.redirect(302, '/')
-      }
-      const promProcedures = await this.$urbanisator.getProceduresForDept(this.$route.params.departement)
-      const rawReferentiel = fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
-
-      const [rawProcedures, referentiel] = await Promise.all([promProcedures, rawReferentiel])
-      const { communes, groupements } = await referentiel.json()
-      this.rawProcedures = rawProcedures.map((e) => {
-        let collectivitePorteuse
-        if (e.perimetre.length > 1) {
-          collectivitePorteuse = groupements.find(grp => grp.code === e.procedures.collectivite_porteuse_id)
-        } else {
-          collectivitePorteuse = communes.find(com => com.code === e.perimetre[0].collectivite_code)
-        }
-
-        const procedureName = this.$utils.formatProcedureName({ ...e.procedures, procedures_perimetres: e.perimetre }, collectivitePorteuse)
-        if (e.prescription?.date_iso) {
-          e.prescription.date_iso_formattee = dayjs(e.prescription.date_iso).format('DD/MM/YYYY')
-        }
-        if (e.last_event?.date_iso) {
-          e.last_event.date_iso_formattee = dayjs(e.last_event.date_iso).format('DD/MM/YYYY')
-        }
-
-        return { ...e, procedureName }
-      })
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('ERROR: ', error)
+    if (!this.$user.canViewSectionProcedures({ departement: this.$route.params.departement })) {
+      console.warn('User is not allowed to view this page.')
+      this.$nuxt.context.redirect(302, '/')
     }
+
+    const response = await fetch(`/pour_nuxt/procedures/${this.$route.params.departement}/`)
+    const json = await response.json()
+    this.rawProcedures = json.results
   },
   methods: {
     customFilter (value, search, item) {

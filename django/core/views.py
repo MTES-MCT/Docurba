@@ -5,6 +5,7 @@ from functools import wraps
 from itertools import groupby
 from operator import attrgetter
 
+from django.db import models
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_safe
@@ -541,3 +542,63 @@ def pour_nuxt_collectivite(
             }
 
     return JsonResponse(collectivite_json)
+
+
+@debug_toolbar_json
+@require_safe
+def pour_nuxt_procedures(_request: HttpRequest, departement: str) -> HttpResponse:
+    procedures = (
+        Procedure.objects.with_events()
+        .without_perimetre_count()
+        .without_adhesions_count()
+        .distinct("pk")
+        .prefetch_related(
+            models.Prefetch(
+                "perimetre",
+                Commune.objects.select_related(
+                    "departement"
+                ).with_procedures_principales(
+                    with_adhesions_count=False,
+                    with_perimetre=True,
+                ),
+                to_attr="perimetre_prefetched",
+            )
+        )
+        .filter(perimetre__departement__code_insee=departement, archived=False)
+        .exclude(doc_type="")
+        .exclude(created_at=None)
+    )
+
+    def format_row(procedure: Procedure) -> dict:
+        a = {
+            "procedure_id": procedure.pk,
+            "procedureName": str(procedure),
+            "statut_libelle": procedure.statut_libelle,
+            "type_document": procedure.type_document,
+            "is_principale": procedure.parente_id is None,
+            "date_prescription": procedure.date_prescription,
+            "perimetre": [
+                {
+                    "code": commune.code_insee,
+                    "departementCode": commune.departement.code_insee,
+                    "intitule": commune.nom,
+                }
+                for commune in procedure.perimetre_prefetched
+            ],
+        }
+        last_event = {}
+        if procedure.events_prefetched and (
+            last_event_obj := procedure.events_prefetched[0]
+        ):
+            last_event = {
+                "last_event": {
+                    "type": last_event_obj.type,
+                    "date_iso": last_event_obj.date_evenement,
+                }
+            }
+
+        return a | last_event
+
+    return JsonResponse(
+        {"results": [format_row(procedure) for procedure in procedures]}
+    )
