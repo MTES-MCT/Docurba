@@ -12,8 +12,9 @@ from django.views.decorators.http import require_safe
 from core.models import Collectivite, Commune, Procedure, TypeCollectivite
 
 
-def debug_toolbar_json(view_func):
-    def _view_wrapper(request: HttpRequest, *args, **kwargs):
+# Remove me
+def debug_toolbar_json(view_func):  # noqa: ANN001, ANN201
+    def _view_wrapper(request: HttpRequest, *args, **kwargs):  # noqa: ANN002, ANN003, ANN202
         response: HttpResponse = view_func(request, *args, **kwargs)
         if "debug" not in request.GET:
             return response
@@ -52,9 +53,13 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
             "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
         )
 
+    with_perimetre = "with_perimetre" in request.GET
     communes = Commune.objects.only(
         "id", "type", "departement"
-    ).with_procedures_principales(avant=avant, with_adhesions_count=False)
+    ).with_procedures_principales(
+        avant=avant, with_adhesions_count=False, with_perimetre=with_perimetre
+    )
+
     if departement := request.GET.get("departement"):
         communes = communes.filter(departement__code_insee=departement)
 
@@ -98,9 +103,10 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
         )
 
+    with_perimetre = "with_perimetre" in request.GET
     communes = (
         Commune.objects.filter(type=TypeCollectivite.COM)
-        .with_procedures_principales(avant=avant)
+        .with_procedures_principales(avant=avant, with_perimetre=with_perimetre)
         .csv_prefetch()
     )
     if departement := request.GET.get("departement"):
@@ -307,7 +313,10 @@ def api_scots(request: HttpRequest) -> HttpResponse:
             "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
         )
 
-    collectivites = Collectivite.objects.portant_scot(avant=avant)
+    with_perimetre = "with_perimetre" in request.GET
+    collectivites = Collectivite.objects.portant_scot(
+        avant=avant, with_perimetre=with_perimetre
+    )
     if departement := request.GET.get("departement"):
         collectivites = collectivites.filter(departement__code_insee=departement)
 

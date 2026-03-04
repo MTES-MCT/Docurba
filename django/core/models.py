@@ -603,7 +603,11 @@ class Procedure(models.Model):
             self.perimetre__count = self.perimetre.count()
 
         # TODO Ajouter la vérif de la colonne is_sectoriel  # noqa: FIX002
-        return self.communes_adherentes__count > self.perimetre__count
+        try:
+            count = self.perimetre__count
+        except AttributeError:
+            count = len(self.perimetre_prefetched)
+        return self.communes_adherentes__count > count
 
     @property
     def is_en_cours(self) -> bool:
@@ -658,7 +662,9 @@ class Departement(models.Model):
 
 
 class CollectiviteQuerySet(models.QuerySet):
-    def portant_scot(self, avant: date | None = None) -> Self:
+    def portant_scot(
+        self, avant: date | None = None, *, with_perimetre: bool = False
+    ) -> Self:
         return (
             self.distinct()
             .filter(
@@ -683,9 +689,9 @@ class CollectiviteQuerySet(models.QuerySet):
                 ),
                 models.Prefetch(
                     "scots__perimetre",
-                    Commune.objects.with_scots(avant=avant).select_related(
-                        "departement__region",
-                    ),
+                    Commune.objects.with_scots(
+                        avant=avant, with_perimetre=with_perimetre
+                    ).select_related("departement__region"),
                     to_attr="communes",
                 ),
             )
@@ -827,13 +833,21 @@ class CommuneQuerySet(models.QuerySet):
             "departement__region", "intercommunalite__departement__region"
         ).prefetch_related("deleguee")
 
-    def with_scots(self, avant: date | None = None) -> Self:
+    def with_scots(
+        self, avant: date | None = None, *, with_perimetre: bool = False
+    ) -> Self:
+        a = (
+            Procedure.objects.defer("current_perimetre", "initial_perimetre")
+            .with_events(avant=avant)
+            .filter(doc_type="SCOT", parente=None, archived=False)
+        )
+        if with_perimetre:
+            a = a.without_adhesions_count().without_perimetre_count()
+
         return self.prefetch_related(
             models.Prefetch(
                 "procedures",
-                Procedure.objects.defer("current_perimetre", "initial_perimetre")
-                .with_events(avant=avant)
-                .filter(doc_type="SCOT", parente=None, archived=False),
+                a,
                 to_attr="procedures_principales",
             )
         )
