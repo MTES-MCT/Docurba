@@ -390,7 +390,9 @@ def collectivite(
         return HttpResponseBadRequest(
             "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
         )
-    commune_qs = Commune.objects.with_procedures_principales(avant=avant)
+    commune_qs = Commune.objects.with_procedures_principales(
+        avant=avant, with_perimetre=True
+    )
     commune = get_object_or_404(
         commune_qs, id=f"{collectivite_code}_{collectivite_type}"
     )

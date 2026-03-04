@@ -29,6 +29,8 @@ Auto: Any = _Auto()
 REGION_CODE_INSEE_SEQUENCE = (f"R{n}" for n in itertools.count())
 DEPARTEMENT_CODE_INSEE_SEQUENCE = (f"D{n}" for n in itertools.count())
 GROUPEMENT_CODE_INSEE_SEQUENCE = (f"G{n}" for n in itertools.count())
+GROUPEMENT_NOM_SEQUENCE = (f"Groupement {n}" for n in itertools.count())
+COMMUNE_NOM_SEQUENCE = (f"Commune {n}" for n in itertools.count())
 
 
 def create_region(*, code_insee: str = Auto) -> Region:
@@ -52,10 +54,11 @@ TYPE_GROUPEMENTS = [
 ]
 
 
-def create_groupement(
+def create_groupement(  # noqa: PLR0913
     *,
     code_insee: str = Auto,
     groupement_type: TypeCollectivite = Auto,
+    nom: str = Auto,
     departement: Departement = Auto,
     with_collectivites_adherentes: bool | None = None,
     with_collectivites_adherentes__count: int | None = None,
@@ -66,6 +69,7 @@ def create_groupement(
         id=f"{code_insee}_{groupement_type}",
         code_insee_unique=code_insee,
         type=groupement_type,
+        nom=nom or next(GROUPEMENT_NOM_SEQUENCE),
         departement=departement or create_departement(),
     )
     if with_collectivites_adherentes:
@@ -76,10 +80,11 @@ def create_groupement(
     return collectivite
 
 
-def create_commune(
+def create_commune(  # noqa: PLR0913
     *,
     code_insee: str = Auto,
     commune_type: TypeCollectivite = Auto,
+    nom: str = Auto,
     departement: Departement = Auto,
     intercommunalite: Collectivite | None = Auto,
     nouvelle: Commune = Auto,
@@ -94,6 +99,7 @@ def create_commune(
         id=f"{code_insee}_{commune_type}",
         code_insee_unique=code_insee,
         type=commune_type,
+        nom=nom or next(COMMUNE_NOM_SEQUENCE),
         departement=departement or create_departement(),
         intercommunalite=intercommunalite,
         nouvelle=nouvelle or None,
