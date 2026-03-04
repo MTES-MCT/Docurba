@@ -1,5 +1,7 @@
+import json
 from csv import DictWriter
 from datetime import date
+from functools import wraps
 from itertools import groupby
 from operator import attrgetter
 
@@ -10,6 +12,28 @@ from django.views.decorators.http import require_safe
 from core.models import Collectivite, Commune, Procedure, TypeCollectivite
 
 
+def debug_toolbar_json(view_func):
+    def _view_wrapper(request: HttpRequest, *args, **kwargs):
+        response: HttpResponse = view_func(request, *args, **kwargs)
+        if "debug" not in request.GET:
+            return response
+        try:
+            reformatted_content = json.dumps(json.loads(response.content), indent=2)
+        except json.JSONDecodeError:
+            reformatted_content = response.content.decode()
+
+        return HttpResponse(
+            f"""
+            <!doctype html>
+            <meta name="color-scheme" content="light dark">
+            <pre>{reformatted_content}
+            </pre>
+            </body>"""
+        )
+
+    return wraps(view_func)(_view_wrapper)
+
+
 def _avant(request: HttpRequest) -> date | None:
     return (
         date.fromisoformat(request.GET.get("avant"))
@@ -18,6 +42,7 @@ def _avant(request: HttpRequest) -> date | None:
     )
 
 
+@debug_toolbar_json
 @require_safe
 def api_perimetres(request: HttpRequest) -> HttpResponse:
     try:
@@ -63,6 +88,7 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
     return response
 
 
+@debug_toolbar_json
 @require_safe
 def api_communes(request: HttpRequest) -> HttpResponse:
     try:
@@ -271,6 +297,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
     return response
 
 
+@debug_toolbar_json
 @require_safe
 def api_scots(request: HttpRequest) -> HttpResponse:
     try:
@@ -417,6 +444,7 @@ def collectivite(
     )
 
 
+@debug_toolbar_json
 @require_safe
 def pour_nuxt_collectivite(
     _request: HttpRequest, collectivite_code: str

@@ -319,6 +319,10 @@ class ProcedureQuerySet(models.QuerySet):
         self.query.annotations.pop("communes_adherentes__count")
         return self
 
+    def without_perimetre_count(self) -> Self:
+        self.query.annotations.pop("perimetre__count")
+        return self
+
 
 class ProcedureManager(models.Manager):
     def get_queryset(self) -> ProcedureQuerySet:
@@ -583,16 +587,11 @@ class Procedure(models.Model):
 
     @property
     def is_intercommunal(self) -> bool:
-        # self.perimetre_count is set when calling Procedure.objects.with_perimetre_counts
-        # which is always called on the manager (see ProcedureManager.get_queryset).
-        # For the moment, it is mandatory to know if the procedure is_intercommunal.
-        # The self.type_document, using self.is_intercommunal, is used to generate the self representation, thus on the Django admin.
-        # For an unknown reason, the ProcedureManager is used on the "list" view but not on the "change" one.
-        # This should be refactored some day as this hack is quite ugly.
-        if not hasattr(self, "perimetre__count"):
-            self.perimetre__count = self.perimetre.count()
-
-        return self.perimetre__count > 1
+        try:
+            count = self.perimetre__count
+        except AttributeError:
+            count = len(self.perimetre_prefetched)
+        return count > 1
 
     @property
     def is_sectoriel_consolide(self) -> bool:
@@ -778,13 +777,17 @@ class Collectivite(models.Model):
             )
             .exclude(type="Abrogation")
             .with_events()
+            .without_adhesions_count()
+            .without_perimetre_count()
             .prefetch_related(
                 models.Prefetch("secondaires", Procedure.objects.with_perimetre()),
                 models.Prefetch(
                     "perimetre",
                     Commune.objects.filter(nouvelle=None)
                     .select_related("departement")
-                    .with_procedures_principales(with_adhesions_count=False),
+                    .with_procedures_principales(
+                        with_adhesions_count=False, with_perimetre=True
+                    ),
                     to_attr="perimetre_prefetched",
                 ),
             )
@@ -809,7 +812,9 @@ class CommuneQuerySet(models.QuerySet):
         if not with_adhesions_count:
             procedures_principales = procedures_principales.without_adhesions_count()
         if with_perimetre:
-            procedures_principales = procedures_principales.with_perimetre()
+            procedures_principales = (
+                procedures_principales.without_perimetre_count().with_perimetre()
+            )
 
         return self.prefetch_related(
             models.Prefetch(

@@ -570,7 +570,7 @@ class TestPourNuxtCollectivite:
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        with django_assert_num_queries(8):
+        with django_assert_num_queries(9):
             response = client.get(
                 reverse("pour_nuxt_collectivite", args=[commune.code_insee_unique])
             )
@@ -639,7 +639,7 @@ class TestPourNuxtCollectivite:
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        with django_assert_num_queries(9):
+        with django_assert_num_queries(10):
             response = client.get(
                 reverse("pour_nuxt_collectivite", args=[commune.code_insee_unique])
             )
@@ -744,7 +744,7 @@ class TestPourNuxtCollectivite:
                 parente=scot_principal,
             )
 
-            with django_assert_num_queries(9):
+            with django_assert_num_queries(10):
                 response = client.get(
                     reverse("pour_nuxt_collectivite", args=[commune.code_insee_unique])
                 )
@@ -794,7 +794,7 @@ class TestPourNuxtCollectivite:
             )
             scot_secondaire.perimetre.add(commune_a, commune_b)
 
-            with django_assert_num_queries(9):
+            with django_assert_num_queries(10):
                 response = client.get(
                     reverse(
                         "pour_nuxt_collectivite", args=[groupement.code_insee_unique]
