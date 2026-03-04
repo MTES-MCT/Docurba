@@ -106,7 +106,7 @@
             :to="{
               name: 'ddt-departement-collectivites',
               params: {
-                departement: $user.profile.departement,
+                departement: $user.departementPrincipal(),
               }
             }"
           >

@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import axios from 'axios'
 
+import departements from '@/assets/data/departements-france.json'
+
 const defaultUser = {
   id: null,
   email: null,
@@ -30,7 +32,7 @@ function handleRedirect ($supabase, event, user, router) {
         break
 
       case 'ppa':
-        router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
+        router.push({ name: 'ddt-departement-collectivites', params: { departement: user.departementPrincipal() } })
         break
 
       case 'collectivite':
@@ -125,6 +127,24 @@ export default async ({ $supabase, app }, inject) => {
     })
   }
 
+  function departementPrincipal () {
+    return this.departementsVisitables()[0]
+  }
+
+  function departementsVisitables () {
+    if (!this.canViewMultipleDepartements()) {
+      return [this.profile.departement]
+    }
+
+    let filtered = departements
+    if (!this.profile.is_admin) {
+      filtered = departements.filter((d) => {
+        return d.code_region.toString().padStart(2, '0') === this.profile.region
+      })
+    }
+    return filtered.map(d => d.code_departement.toString().padStart(2, '0'))
+  }
+
   // Rights management
   const userRights = {
     canViewDDTLayout () {
@@ -138,7 +158,7 @@ export default async ({ $supabase, app }, inject) => {
       if (this.profile.poste === 'ddt') {
         return this.profile.departement === departement
       } else if (this.profile.side === 'ppa') {
-        return this.profile.departements.includes(departement)
+        return this.departementsVisitables().includes(departement)
       }
     },
     canViewSectionProcedures ({ departement = null }) {
@@ -149,7 +169,7 @@ export default async ({ $supabase, app }, inject) => {
       if (this.profile.poste === 'ddt') {
         return this.profile.departement === departement
       } else if (this.profile.side === 'ppa') {
-        return this.profile.departements.includes(departement)
+        return this.departementsVisitables().includes(departement)
       }
     },
     canViewSectionTramesPAC () {
@@ -197,7 +217,7 @@ export default async ({ $supabase, app }, inject) => {
     }
   }
 
-  user = Object.assign(user, userRights)
+  user = Object.assign(user, userRights, { departementPrincipal, departementsVisitables })
 
   inject('user', user)
 }
