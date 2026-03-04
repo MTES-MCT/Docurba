@@ -40,8 +40,8 @@ else
   export PATH="${PWD}:${PATH}"
 fi
 
-rclone_last_backup="$(rclone lsf --files-only --max-age 48h docurba:/docurba-backups | sort --reverse --key 1 | head -n 1)"
-rclone copy --max-age 48h "docurba:/docurba-backups/${rclone_last_backup}" "${BACKUPS_FOLDER_PATH}"
+rclone_last_backup="$(rclone lsf --files-only --max-age 48h docurba_backups:/docurba-backups | sort --reverse --key 1 | head -n 1)"
+rclone copy --max-age 48h "docurba_backups:/docurba-backups/${rclone_last_backup}" "${BACKUPS_FOLDER_PATH}"
 
 # Le fichier compressé est supprimé lors de la décompression.
 gzip --decompress "${BACKUPS_FOLDER_PATH}/${rclone_last_backup}"

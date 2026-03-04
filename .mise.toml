@@ -27,3 +27,20 @@ L'URL de la base de données n'est pas passée en paramètre pour éviter tout r
 depends = ["start:supabase"]
 dir = "{{config_root}}/django"
 run = "/usr/bin/bash scripts/restore_database.sh postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+
+[tasks."rclone:move_exports_to_outscale"]
+description ="""
+Copy files located in the /exports directory to the remote S3 directory and delete them locally.
+To only copy files without deleting them, use `rclone copy`.
+"""
+dir = "{{config_root}}/django"
+run = "rclone --config scripts/rclone.conf move --s3-chunk-size=20M exports/ docurba_exports:/docurba-exports"
+
+[tasks."rclone:copy_exports_from_outscale"]
+dir = "{{config_root}}/django"
+run = "rclone --config scripts/rclone.conf copy --s3-chunk-size=20M docurba_exports:/docurba-exports exports/"
+
+[tasks."rclone:move_exports_from_outscale"]
+dir = "{{config_root}}/django"
+run = "rclone --config scripts/rclone.conf copy --s3-chunk-size=20M docurba_exports:/docurba-exports exports/"
+

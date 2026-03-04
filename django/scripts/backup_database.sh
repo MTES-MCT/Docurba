@@ -100,7 +100,7 @@ fi
 # les fichiers du dossier source.
 # J'ai supprimé `--progress` car cela semble casser quand la commande est lancée par un cron.
 echo "Envoi de la sauvegarde vers le compartiment S3."
-rclone move --s3-chunk-size=20M ${BACKUPS_FOLDER_PATH} docurba:/docurba-backups
+rclone move --s3-chunk-size=20M ${BACKUPS_FOLDER_PATH} docurba_backups:/docurba-backups
 echo "Sauvegarde envoyée vers le compartiment S3."
 
 if [[ ! -n ${BACKUPS_SLACK_WEBHOOK} ]]; then
