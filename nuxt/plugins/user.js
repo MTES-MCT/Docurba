@@ -133,6 +133,10 @@ export default async ({ $supabase, app }, inject) => {
 
   function departementsVisitables () {
     if (!this.canViewMultipleDepartements()) {
+      if (!this.profile.departement) {
+        console.error('Profil mono-département sans département.')
+        // throw new Error('Profil mono-département sans département.')
+      }
       return [this.profile.departement]
     }
 
@@ -155,22 +159,14 @@ export default async ({ $supabase, app }, inject) => {
         return true
       }
 
-      if (this.profile.poste === 'ddt') {
-        return this.profile.departement === departement
-      } else if (this.profile.side === 'ppa') {
-        return this.departementsVisitables().includes(departement)
-      }
+      return this.departementsVisitables().includes(departement)
     },
     canViewSectionProcedures ({ departement = null }) {
       if (this.profile.is_admin) {
         return true
       }
 
-      if (this.profile.poste === 'ddt') {
-        return this.profile.departement === departement
-      } else if (this.profile.side === 'ppa') {
-        return this.departementsVisitables().includes(departement)
-      }
+      return this.departementsVisitables().includes(departement)
     },
     canViewSectionTramesPAC () {
       return this.profile.side === 'etat'
@@ -204,7 +200,9 @@ export default async ({ $supabase, app }, inject) => {
       return this.profile.side !== 'ppa'
     },
     canViewMultipleDepartements () {
-      return this.profile.side === 'ppa' || this.profile.is_admin
+      return this.profile.side === 'ppa' ||
+        this.profile.poste === 'dreal' ||
+        this.profile.is_admin
     },
     // env.DDT_ENQUETE_ENABLED permet de ne garder l'enquête ouverte que pour des DDT retardataires
     canViewEnquete ({ departement }) {

@@ -18,17 +18,20 @@
     <LayoutsAppBar flat extended>
       <v-tabs v-if="$user.profile.verified" align-with-title class="header-tabs">
         <v-tab
-          v-if="$user.canViewSectionCollectivites({ departement: $user.profile.departement })"
+          v-if="$user.canViewSectionCollectivites({ departement: $route.params.departement || $user.departementPrincipal() })"
           :to="{
             name: 'ddt-departement-collectivites',
-            params: {departement: $user.profile.departement}
+            params: {departement: $route.params.departement || $user.departementPrincipal()}
           }"
         >
           Mes collectivités
         </v-tab>
         <v-tab
-          v-if="$user.canViewSectionProcedures({ departement: $user.profile.departement })"
-          :to="`/ddt/${$user.profile.departement}/procedures`"
+          v-if="$user.canViewSectionProcedures({ departement: $user.departementPrincipal() })"
+          :to="{
+            name: 'ddt-departement-procedures',
+            params: {departement: $route.params.departement || $user.departementPrincipal()}
+          }"
         >
           Mes procédures
         </v-tab>
