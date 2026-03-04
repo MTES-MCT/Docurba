@@ -2,8 +2,8 @@
   <v-container>
     <v-row>
       <v-col cols="12" class="text-subtitle-1 font-weight-bold">
-        {{ $utils.formatProcedureName(procedure, collectivite) }}
-        {{ isCommunal ? `(${collectivite?.code})` : '' }}
+        {{ $utils.formatProcedureName(procedure) }}
+        {{ codeInseeSiCommunal ? `(${codeInseeSiCommunal})` : '' }}
         <br>
         <span class="text-caption">{{ procedure.id }} - (sudocu: {{ procedure.from_sudocuh }}) parent: {{ procedure.procedure_id }}</span>
       </v-col>
@@ -125,9 +125,9 @@ export default {
       type: Object,
       required: true
     },
-    collectivite: {
-      type: Object,
-      required: true
+    codeInseeSiCommunal: {
+      type: String,
+      default: null
     },
     censored: {
       type: Boolean,
@@ -140,11 +140,6 @@ export default {
         mdiArrowRight
       },
       dialog: false
-    }
-  },
-  computed: {
-    isCommunal () {
-      return this.procedure.procedures_perimetres.length === 1
     }
   },
   methods: {

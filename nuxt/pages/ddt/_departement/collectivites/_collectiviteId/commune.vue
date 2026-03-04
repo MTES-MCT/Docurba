@@ -58,7 +58,6 @@
 <script>
 
 import { mdiArrowLeft } from '@mdi/js'
-import axios from 'axios'
 
 export default {
   name: 'Collectivite',
@@ -79,11 +78,11 @@ export default {
   },
   methods: {
     async getProcedures () {
-      this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
-      const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
-      this.schemas = schemas
-      this.plans = plans
-      console.log('schemas: ', schemas, ' plans: ', plans)
+      const response = await fetch(`/pour_nuxt/collectivite/${this.$route.params.collectiviteId}/`)
+      const json = await response.json()
+      this.collectivite = json.collectivite
+      this.schemas = json.schemas
+      this.plans = json.plans
     }
   }
 }

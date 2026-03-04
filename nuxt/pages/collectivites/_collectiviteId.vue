@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import regions from '@/assets/data/Regions.json'
 
 export default {
   name: 'Collectivite',
@@ -53,19 +53,20 @@ export default {
   },
   methods: {
     async getProcedures () {
-      // console.log('this.$route.params.collectiviteId: ', this.$route.params.collectiviteId)
-      const { data: collectivite } = await axios({
-        url: `/api/geo/collectivites/${this.$route.params.collectiviteId}`
-      })
+      const response = await fetch(`/pour_nuxt/collectivite/${this.$route.params.collectiviteId}/`)
+      const json = await response.json()
+      this.collectivite = json.collectivite
 
-      this.collectivite = collectivite
-      this.communes = this.isEpci ? this.collectivite.membres.filter(m => m.type.startsWith('COM')) : [this.collectivite]
+      // Django ne connait pas encore le code ISO des régions
+      const region = regions.find(r =>
+        r.code.padStart(2, '0') === this.collectivite.region.code.padStart(2, '0')
+      )
+      this.collectivite.region.iso = region.iso
 
-      const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
-      this.schemas = schemas
-      this.plans = plans
+      this.schemas = json.schemas
+      this.plans = json.plans
 
-      // console.log('schemas: ', schemas, ' plans: ', plans)
+      this.communes = this.collectivite.membres
     }
   }
 }

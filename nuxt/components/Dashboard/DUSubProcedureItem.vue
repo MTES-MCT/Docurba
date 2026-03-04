@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12">
         <div class="text-subtitle-1 font-weight-bold">
-          {{ $utils.formatProcedureName(procedure, collectivite) }}
+          {{ $utils.formatProcedureName(procedure) }}
         </div>
         <span class="text-caption">{{ procedure.id }} - parent: {{ procedure.procedure_id }}</span>
       </v-col>
@@ -115,10 +115,6 @@ export default {
   mixins: [BaseDUProcedureItem],
   props: {
     procedure: {
-      type: Object,
-      required: true
-    },
-    collectivite: {
       type: Object,
       required: true
     },
