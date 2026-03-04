@@ -153,13 +153,13 @@
             </div>
           </template>
           <!-- eslint-disable-next-line -->
-                 <template #item.type="{ item }">
+          <template #item.type="{ item }">
             <div class="my-5">
               {{ item.type }}
             </div>
           </template>
           <!-- eslint-disable-next-line -->
-            <template #item.procedures="{ item }">
+          <template #item.procedures="{ item }">
             <div class="my-5">
               <div v-if="!item.plans || item.plans.length === 0">
                 <v-chip v-if="item.type === 'COM'" class="ml-2 error--text font-weight-bold" small label color="error-light">
@@ -430,6 +430,15 @@ export default {
     }
   },
   async mounted () {
+    const response = await fetch(`/pour_nuxt/collectivites/${this.$route.params.departement}/`)
+    const json = await response.json()
+    this.referentiel = json.collectivites
+    this.groupements = this.referentiel.filter(c => c.code.length > 5)
+
+    // await this.Zmounted()
+    await this.fetchValidation()
+  },
+  async Zmounted () {
     const collectivites = await this.$nuxt3api(`/api/geo/collectivites?departementCode=${this.$route.params.departement}`)
     const communes = []
     const groupements = []
@@ -443,14 +452,17 @@ export default {
         groupements.push(c)
       }
     })
-    this.groupements = groupements
+    this.groupementsOrig = groupements
 
     const procedures = await this.$urbanisator.getCollectivitesProcedures(communes.map(c => c.code))
 
     const enrichedCommunes = this.parseCommunes(communes, procedures)
     const enrichedGroups = this.parseGroupements(groupements, procedures)
 
-    this.referentiel = [...enrichedGroups, ...enrichedCommunes]
+    console.log(enrichedCommunes[0])
+    console.log(enrichedGroups[0])
+
+    this.referentielOrig = [...enrichedGroups, ...enrichedCommunes]
     await this.fetchValidation()
   },
   methods: {

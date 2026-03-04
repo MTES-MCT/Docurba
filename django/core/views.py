@@ -6,6 +6,7 @@ from itertools import groupby
 from operator import attrgetter
 
 from django.db import models
+from django.db.models import Q
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_safe
@@ -542,6 +543,69 @@ def pour_nuxt_collectivite(
             }
 
     return JsonResponse(collectivite_json)
+
+
+@debug_toolbar_json
+@require_safe
+def pour_nuxt_collectivites(_request: HttpRequest, departement: str) -> HttpResponse:
+    types_systematiquement_inclus = Q(
+        type__in=[
+            TypeCollectivite.COM,
+            TypeCollectivite.CC,
+            TypeCollectivite.CA,
+            TypeCollectivite.CU,
+            TypeCollectivite.METRO,
+            TypeCollectivite.MET69,
+        ]
+    )
+
+    collectivites = (
+        Collectivite.objects.select_related(
+            "commune__intercommunalite", "departement__region"
+        )
+        .filter(departement__code_insee=departement)
+        .filter(
+            types_systematiquement_inclus
+            | (
+                ~types_systematiquement_inclus & Q(competence_plan=True)
+                | Q(competence_schema=True)
+            )
+        )
+    )
+
+    def format_row(collectivite: Collectivite) -> dict:
+        collectivite_json = {
+            "code": collectivite.code_insee,
+            "competencePLU": collectivite.competence_plan,
+            "competenceSCOT": collectivite.competence_schema,
+            "departementCode": collectivite.departement.code_insee,
+            "groupements": [],
+            "intitule": collectivite.nom,
+            "isNotValidated": False,
+            "plans": [],
+            "regionCode": collectivite.departement.region.code_insee,
+            "siren": "",
+            "type": collectivite.type,
+            "scots": [],
+            "membres": [],
+        }
+
+        if collectivite.is_commune and (
+            intercommunalite := collectivite.commune.intercommunalite
+        ):
+            collectivite_json["intercommunaliteCode"] = (
+                intercommunalite.code_insee_unique
+            )
+
+        return collectivite_json
+
+    return JsonResponse(
+        {
+            "collectivites": [
+                format_row(collecitivite) for collecitivite in collectivites
+            ]
+        }
+    )
 
 
 @debug_toolbar_json

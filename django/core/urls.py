@@ -21,6 +21,7 @@ urlpatterns = [
         views.pour_nuxt_collectivite,
         name="pour_nuxt_collectivite",
     ),
+    path("pour_nuxt/collectivites/<departement>/", views.pour_nuxt_collectivites),
     path("pour_nuxt/procedures/<departement>/", views.pour_nuxt_procedures),
     path("api/perimetres", views.api_perimetres),
     path("api/communes", views.api_communes),

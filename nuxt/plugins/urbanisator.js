@@ -1,6 +1,7 @@
 import Vue from 'vue'
 
 export default ({ $supabase }, inject) => {
+  // FIXME : À supprimer ?
   Vue.filter('docType', function (procedure) {
     if (procedure.doc_type === 'PLU') {
       let docType = procedure.doc_type
@@ -16,6 +17,7 @@ export default ({ $supabase }, inject) => {
   })
 
   inject('urbanisator', {
+    // FIXME : À supprimer ?
     isEpci (collectiviteId) {
       return collectiviteId.length > 5
     },
