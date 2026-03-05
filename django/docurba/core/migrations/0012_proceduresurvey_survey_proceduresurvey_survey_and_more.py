@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0010_alter_topic_options"),
+        ("core", "0011_topics_rls"),
         ("users", "0002_add_column_departements"),
     ]
 
