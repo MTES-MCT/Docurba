@@ -608,14 +608,14 @@ class Topic(models.Model):
     )
     ui_rank = models.SmallIntegerField(verbose_name="Position dans le menu déroulant")
 
-    def __str__(self) -> str:
-        return self.name
-
-    class Meta:  # noqa: DJ012
+    class Meta:
         verbose_name = "objet"
         ordering = [  # noqa: RUF012
             "ui_rank",
         ]
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Event(models.Model):
