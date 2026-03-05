@@ -5,27 +5,7 @@
         cols="12"
         class="d-flex align-center justify-space-between"
       >
-        <h1>Mes collectivités - {{ $route.params.departement }}</h1>
-        <div>
-          <v-btn
-            outlined
-            color="primary"
-            class="mr-2"
-            :loading="exportingCommunes"
-            @click="exportCommunes"
-          >
-            Exporter les communes
-          </v-btn>
-          <v-btn
-            outlined
-            color="primary"
-            class="mr-2"
-            :loading="exportingSCoTs"
-            @click="exportSCoTs"
-          >
-            Exporter les SCoTs
-          </v-btn>
-        </div>
+        <h1>Enquête ZAN</h1>
       </v-col>
       <v-col v-if="!collectivites" cols="12">
         <v-skeleton-loader
@@ -52,27 +32,60 @@
         >
           <template #top>
             <v-alert v-if="hasValidationEnabled" type="info" color="primary" text>
-              <div class="text-h5 text-weight-bold">
-                Enquête annuelle
-              </div>
               <div>
-                L’enquête annuelle sur l’état d’avancement des documents d’urbanisme est disponible sur Docurba jusqu’au <span style="font-weight: bold;">13 février 2026</span>. <a href="https://docurba.crisp.help/fr/article/a-venir-conditions-de-lenquete-annuelle-2025-tout-ce-quil-faut-savoir-agents-de-ddtmdeal-13m8qu9/">Consignes et astuces dans notre FAQ</a>.
-              </div>
-              <div>
-                <v-switch
-                  v-model="hideValidatedCollectives"
-                  color="primary"
-                  dark
-                  inset
-                >
-                  <template #label>
-                    <span class="primary--text">
-                      Voir seulement les collectivités à valider ({{ notValidatedCollectivites.length }} restantes)
-                    </span>
-                  </template>
-                </v-switch>
+                <p>
+                  L’enquête nationale sur l'intégration du ZAN dans les documents d'urbanisme (SCoT, PLU(i), carte communale) est disponible sur Docurba jusqu’au 24 avril 2026.
+                  <a
+                    href="https://docs.numerique.gouv.fr/docs/bb198862-0573-453c-8eba-90569f3d7de9/"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    Attendus de la DGALN et notice d’utilisation
+                  </a>.
+                </p>
+                <p>
+                  <!-- eslint-disable-next-line no-irregular-whitespace -->
+                  ℹ️ Les règles d’affichage des procédures dans l’onglet « Enquête ZAN » diffèrent de votre onglet habituel « Mes collectivités », les procédures y sont affichées uniquement sur la ligne de la collectivité porteuse de la procédure.
+                </p>
+                <v-expansion-panels flat light>
+                  <v-expansion-panel focusable>
+                    <v-expansion-panel-header color="primary lighten-4" class="font-weight-bold">
+                      Quelles sont les procédures affichées dans cet onglet ?
+                    </v-expansion-panel-header>
+                    <v-expansion-panel-content color="primary lighten-4">
+                      <ul>
+                        <li>
+                          Toutes les procédures principales en cours ou opposables, exceptées celles où la date d'approbation ou d'arrêt est antérieure au 22 août 2021,
+                        </li>
+                        <li>
+                          Les modifications simplifiées dont le 1er événement a eu lieu après le 22 août 2020,
+                        </li>
+                        <li>
+                          Les modifications simplifiées n’ayant aucun événement, si elles ont été créées après le 22 août 2020.
+                        </li>
+                        <li>
+                          Les procédures contenant déjà l'objet « trajectoire ZAN », qu'elles répondent aux conditions précédentes, ou non.
+                        </li>
+                      </ul>
+                    </v-expansion-panel-content>
+                  </v-expansion-panel>
+                </v-expansion-panels>
               </div>
             </v-alert>
+            <div>
+              <v-switch
+                v-model="hideValidatedCollectives"
+                color="primary"
+                light
+                inset
+              >
+                <template #label>
+                  <span class="primary--text">
+                    Voir seulement les collectivités à valider ({{ notValidatedCollectivites.length }} restantes)
+                  </span>
+                </template>
+              </v-switch>
+            </div>
             <v-row>
               <v-col v-if="$user.canViewMultipleDepartements()" cols="6" class="p-0">
                 <VDeptAutocomplete
@@ -167,41 +180,34 @@
                 </v-chip>
                 <span v-else>-</span>
               </div>
-              <div v-for="(plan, index) in item.plans" :key="plan.id" class="mb-4">
-                <template v-if="index < 2">
-                  <div class="d-flex align-center">
-                    <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${plan.id}`">
-                      {{ $utils.formatProcedureName(plan, item) }}
-                    </nuxt-link>
-                    <div class="d-flex align-middle">
-                      <v-chip-group column>
-                        <v-chip
-                          :class="{
-                            'success-light': plan.inContextStatus === 'OPPOSABLE',
-                            'success--text': plan.inContextStatus === 'OPPOSABLE',
-                            'bf200': plan.inContextStatus === 'EN COURS',
-                            'primary--text': plan.inContextStatus === 'EN COURS',
-                            'text--lighten-2': plan.inContextStatus === 'EN COURS',
-
-                          }"
-                          class="font-weight-bold flex-shrink-0 ml-2"
-                          small
-                          label
-                        >
-                          {{ plan.inContextStatus }}
-                        </v-chip>
-                      </v-chip-group>
-                      <v-chip-group column>
-                        <span v-if="plan.topics">
-                          <ProceduresTopicChips :topics="plan.topics" :small="true" />
-                        </span>
-                      </v-chip-group>
-                    </div>
-                  </div>
-                </template>
-                <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
-                  + {{ item.plans.length - 2 }} procédure{{ item.plans.length - 2 > 1 ? 's' : '' }}
-                </nuxt-link>
+              <div v-for="plan in item.plans" :key="plan.procedure_id" class="mb-4">
+                <div class="d-flex align-center">
+                  <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${plan.procedure_id}`">
+                    {{ $utils.formatProcedureName(plan, plan.collectiviteForProcedureName) }}
+                  </nuxt-link>
+                  <v-chip-group
+                    v-if="plan.status"
+                    column
+                  >
+                    <v-chip
+                      :class="{
+                        'success-light success--text': plan.status === 'opposable',
+                        'bf200': plan.status === 'en cours',
+                        'primary--text text--lighten-2': plan.status === 'en cours',
+                      }"
+                      class="font-weight-bold flex-shrink-0 ml-2"
+                      small
+                      label
+                    >
+                      {{ ['en cours', 'opposable'].includes(plan.status) ? plan.status.toUpperCase() : 'ARCHIVÉ' }}
+                    </v-chip>
+                  </v-chip-group>
+                  <v-chip-group column>
+                    <span v-if="plan.topics">
+                      <ProceduresTopicChips :topics="plan.topics" :small="true" />
+                    </span>
+                  </v-chip-group>
+                </div>
               </div>
             </div>
           </template>
@@ -216,41 +222,34 @@
                 -
               </div>
               <div v-else>
-                <div v-for="(scot, index) in item.scots" :key="scot.id" class="mb-4">
-                  <template v-if="index < 2">
-                    <div class="d-flex align-center">
-                      <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.id}`">
-                        {{ $utils.formatProcedureName(scot, item) }}
-                      </nuxt-link>
-                      <div class="d-flex align-middle">
-                        <v-chip-group column>
-                          <v-chip
-                            :class="{
-                              'success-light': scot.inContextStatus === 'OPPOSABLE',
-                              'success--text': scot.inContextStatus === 'OPPOSABLE',
-                              'bf200': scot.inContextStatus === 'EN COURS',
-                              'primary--text': scot.inContextStatus === 'EN COURS',
-                              'text--lighten-2': scot.inContextStatus === 'EN COURS',
-
-                            }"
-                            class="font-weight-bold flex-shrink-0 ml-2"
-                            small
-                            label
-                          >
-                            {{ scot.inContextStatus }}
-                          </v-chip>
-                        </v-chip-group>
-                        <v-chip-group column>
-                          <span v-if="scot.topics">
-                            <ProceduresTopicChips :topics="scot.topics" :small="true" />
-                          </span>
-                        </v-chip-group>
-                      </div>
-                    </div>
-                  </template>
-                  <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
-                    + {{ item.scots.length - 2 }} procédure{{ item.scots.length - 2 > 1 ? 's' : '' }}
-                  </nuxt-link>
+                <div v-for="scot in item.scots" :key="scot.procedure_id" class="mb-4">
+                  <div class="d-flex align-center">
+                    <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.procedure_id}`">
+                      {{ $utils.formatProcedureName(scot, scot.collectiviteForProcedureName) }}
+                    </nuxt-link>
+                    <v-chip-group
+                      v-if="scot.status"
+                      column
+                    >
+                      <v-chip
+                        :class="{
+                          'success-light success--text': scot.status === 'opposable',
+                          'bf200': scot.status === 'en cours',
+                          'primary--text text--lighten-2': scot.status === 'en cours',
+                        }"
+                        class="font-weight-bold flex-shrink-0 ml-2"
+                        small
+                        label
+                      >
+                        {{ ['en cours', 'opposable'].includes(scot.status) ? scot.status.toUpperCase() : 'ARCHIVÉ' }}
+                      </v-chip>
+                    </v-chip-group>
+                    <v-chip-group column>
+                      <span v-if="scot.topics">
+                        <ProceduresTopicChips :topics="scot.topics" :small="true" />
+                      </span>
+                    </v-chip-group>
+                  </div>
                 </div>
               </div>
             </div>
@@ -305,11 +304,11 @@
                   <v-card class="pa-2">
                     <div class="text-center">
                       <div class="mb-2">
-                        Collectivité validée le {{ formatDate(getValidatedInfosForCollectivite(item.code).created_at) }}
-                        par {{ getValidatedInfosForCollectivite(item.code).email }}
+                        Collectivité validée le {{ item.respondedAt }}
+                        par {{ item.respondantEmail }}
                       </div>
                       <v-btn
-                        v-if="getValidatedInfosForCollectivite(item.code).profile_id === $user.id || $user.profile.is_admin"
+                        v-if="item.respondantEmail === $user.email || $user.profile.is_admin"
                         small
                         color="error"
                         text
@@ -334,7 +333,7 @@
               Tout déselectionner
             </v-btn>
             <v-btn class="ml-2" color="primary" depressed @click="validateSelectedCollectivites">
-              Valider {{ selected.length }} collectivités
+              Valider {{ selected.length }} {{ selected.length === 1 ? 'collectivité': 'collectivités' }}
             </v-btn>
           </div>
         </div>
@@ -354,16 +353,10 @@
 </template>
 
 <script>
-import axios from 'axios'
 import dayjs from 'dayjs'
 import { partition } from 'lodash'
 
 const docVersion = '1.0'
-
-const statusMap = {
-  opposable: 'OPPOSABLE',
-  'en cours': 'EN COURS'
-}
 
 const SCOT_LIKE = ['SCOT', 'SD']
 
@@ -372,14 +365,11 @@ export default {
   layout: 'ddt',
   data () {
     return {
-      exportingCommunes: false,
-      exportingSCoTs: false,
-
       selected: [],
       searchEpcis: '',
       groupements: [],
       filterEpci: null,
-      hasValidationEnabled: this.$user.canViewEnquete({ departement: this.$route.params.departement }),
+      hasValidationEnabled: this.$user.canViewProcedureSurvey({ departement: this.$route.params.departement }),
       hideValidatedCollectives: false,
       snackbar: false,
       snackVal: { text: '', type: 'success' },
@@ -427,13 +417,14 @@ export default {
       return headers
     },
     collectivites () {
+      const selectedCode = this.filterEpci
       return this.referentiel?.filter((collectivite) => {
         return !!this.selectedCollectiviteTypesFilter.find(type => collectivite.type.includes(type))
       }).filter((collectivite) => {
         return (
-          !this.filterEpci ||
-          this.filterEpci === collectivite.code ||
-          collectivite.groupements.some(c => c.code === this.filterEpci)
+          !selectedCode ||
+          selectedCode === collectivite.code ||
+          collectivite.groupements.some(c => c.code === selectedCode)
         )
       })
     },
@@ -448,6 +439,12 @@ export default {
     }
   },
   async mounted () {
+    if (!this.$user.canViewProcedureSurvey({ departement: this.$route.params.departement })) {
+      // eslint-disable-next-line no-console
+      console.warn('User is not allowed to view this page.')
+      this.$nuxt.context.redirect(302, '/')
+    }
+
     const collectivites = await this.$nuxt3api(`/api/geo/collectivites?departementCode=${this.$route.params.departement}`)
     const communes = []
     const groupements = []
@@ -463,84 +460,75 @@ export default {
     })
     this.groupements = groupements
 
-    const procedures = await this.$urbanisator.getCollectivitesProcedures(communes.map(c => c.code))
+    const { data: surveyProcedures } = await this.$zanSurvey.getProcedures(this.$route.params.departement)
+    for (const surveyProcedure of surveyProcedures) {
+      const perimetre = surveyProcedure.procedures_perimetres.filter(c => c.collectivite_type === 'COM')
+      if (perimetre.length === 1) {
+        surveyProcedure.collectiviteForProcedureName = communes.find(e => e.code === perimetre[0].collectivite_code)
+      } else {
+        surveyProcedure.collectiviteForProcedureName = groupements.find(e => e.code === surveyProcedure.collectivite_code)
+      }
+    }
+    const enrichedCommunes = this.parseCommunes(communes, surveyProcedures)
+    const enrichedGroups = this.parseGroupements(groupements, surveyProcedures)
 
-    const enrichedCommunes = this.parseCommunes(communes, procedures)
-    const enrichedGroups = this.parseGroupements(groupements, procedures)
-
-    this.referentiel = [...enrichedGroups, ...enrichedCommunes]
-    await this.fetchValidation()
+    this.referentiel = [...enrichedGroups, ...enrichedCommunes].map((e) => {
+      const procedures = [...e.plans, ...e.scots]
+      const isNotValidated = procedures.some(e => e.is_validated === false)
+      const respondantEmail = procedures.find(e => e.respondant_email !== null)?.respondant_email
+      const respondedAt = procedures.find(e => e.responded_at !== null)?.responded_at
+      return {
+        isNotValidated,
+        respondantEmail,
+        respondedAt: this.formatDate(respondedAt),
+        ...e
+      }
+    })
   },
   methods: {
     formatDate (date) {
       return dayjs(date).format('DD/MM/YYYY')
     },
-    async fetchValidation () {
-      const { success, error, data } = await this.$enquete.getValidatedCollectivitesForDepartement(this.$route.params.departement)
-      this.validatedCollectivites = data
-      const validatedCodes = this.validatedCollectivites.map(c => c.collectivite_code)
+    async cancelValidation (collectiviteCode) {
+      const { success, error } = await this.$zanSurvey.cancelCollectiviteValidation(collectiviteCode)
+      if (!success) {
+        this.snackbar = true
+        this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
+      }
       for (const collectivite of this.referentiel) {
-        collectivite.isNotValidated = !validatedCodes.includes(collectivite.code)
+        if (collectivite.code === collectiviteCode) {
+          collectivite.isNotValidated = true
+          collectivite.respondantEmail = null
+          collectivite.respondedAt = null
+        }
       }
-      if (!success) {
-        this.snackbar = true
-
-        this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
-      }
-    },
-    async cancelValidation (codeCollec) {
-      const { success, error, data } = await this.$enquete.deleteValidationForCollectivite(codeCollec)
-      if (!success) {
-        this.snackbar = true
-        this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
-      }
-      await this.fetchValidation()
-    },
-    getValidatedInfosForCollectivite (collectiviteCode) {
-      return this.validatedCollectivites.find(e => e.collectivite_code === collectiviteCode)
     },
     async validateSelectedCollectivites () {
-      const { success, error } = await this.$enquete.validateCollectivites(this.selected)
+      const collectivitesCodes = this.selected.map(e => e.code)
+      const { success, error } = await this.$zanSurvey.validateCollectivites(collectivitesCodes)
       if (!success) {
         this.snackbar = true
         this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
       }
-      await this.fetchValidation()
+      const today = new Date().toISOString()
+      for (const collectivite of this.referentiel) {
+        if (collectivite.isNotValidated === true) {
+          collectivite.isNotValidated = !collectivitesCodes.includes(collectivite.code)
+          collectivite.respondantEmail = this.$user.email
+          collectivite.respondedAt = this.formatDate(today)
+        }
+      }
       this.selected = []
     },
-    parseCommunes (communes, procedures) {
-      return communes.map((commune) => {
-        const communeProcedures = procedures.filter((procedure) => {
-          return !!procedure.procedures_perimetres.find((p) => {
-            return p.collectivite_code === commune.code
-          })
+    parseCommunes (communes, surveyProcedures) {
+      const communeCodes = surveyProcedures.filter(e => e.collectivite_code.length <= 5).map(e => e.collectivite_code)
+      return communes.filter(e => communeCodes.includes(e.code)).map((commune) => {
+        const communeProcedures = surveyProcedures.filter((surveyProcedure) => {
+          return surveyProcedure.collectivite_code === commune.code
         })
-
-        const inContextProcedures = communeProcedures.map((procedure) => {
-          const isOpposableInContext = procedure.procedures_perimetres.find((p) => {
-            return p.collectivite_code === commune.code && p.opposable
-          })
-
-          let status = procedure.status
-
-          if (status === 'opposable' && !isOpposableInContext) {
-            status = 'precedent'
-          }
-
-          return Object.assign({}, procedure, {
-            status,
-            inContextStatus: statusMap[status] || 'ARCHIVÉ'
-          })
-        }).sort((a, b) => {
-          if (a.inContextStatus < b.inContextStatus) { return -1 }
-          if (a.inContextStatus > b.inContextStatus) { return 1 }
-          return 0
-        }).reverse()
-
-        const [scots, plans] = partition(inContextProcedures, p => SCOT_LIKE.includes(p.doc_type))
+        const [scots, plans] = partition(communeProcedures, p => SCOT_LIKE.includes(p.doc_type))
         return {
           ...commune,
-          isNotValidated: true,
           plans,
           scots
         }
@@ -562,33 +550,18 @@ export default {
 
       return communes
     },
-    parseGroupements (groupements, procedures) {
-      return groupements.map((groupement) => {
-        const communesCodes = this.findCommunes(groupement.membres, groupements).map(m => m.code)
-
-        const collectivitesSet = new Set(communesCodes)
-        const groupementProcedures = procedures.filter((procedure) => {
-          return procedure.procedures_perimetres.map(p => p.collectivite_code).some((code) => {
-            return collectivitesSet.has(code)
-          })
+    parseGroupements (groupements, surveyProcedures) {
+      const groupementsCodes = surveyProcedures.filter(e => e.collectivite_code.length > 5).map(e => e.collectivite_code)
+      return groupements.filter(e => groupementsCodes.includes(e.code)).map((groupement) => {
+      // return groupements.map((groupement) => {
+        const groupementProcedures = surveyProcedures.filter((surveyProcedure) => {
+          return surveyProcedure.collectivite_code === groupement.code ||
+          groupement.membres.some(c => c.code === surveyProcedure.collectivite_code && c.type === 'COM')
         })
-
-        const inContextProcedures = groupementProcedures.map((procedure) => {
-          return Object.assign({}, procedure, {
-            inContextStatus: statusMap[procedure.status] || 'ARCHIVÉ'
-          })
-        }).sort((a, b) => {
-          if (a.inContextStatus < b.inContextStatus) { return -1 }
-          if (a.inContextStatus > b.inContextStatus) { return 1 }
-          return 0
-        }).reverse()
-
-        const [scots, plans] = partition(inContextProcedures, p => SCOT_LIKE.includes(p.doc_type))
-
+        const [scots, plans] = partition(groupementProcedures, p => SCOT_LIKE.includes(p.doc_type))
         return {
           ...groupement,
-          isNotValidated: true,
-          plans: plans.filter(p => p.procedures_perimetres.length > 1),
+          plans: plans.filter(p => p.collectivite_code.length > 5),
           scots
         }
       })
@@ -604,46 +577,6 @@ export default {
     showClose () {
       this.clickedOnDocLink = true
       localStorage.setItem('docVersion', docVersion)
-    },
-    async exportCommunes () {
-      const departementCode = this.$route.params.departement
-
-      this.$analytics({
-        category: 'exports dashboard',
-        name: 'exports communes',
-        value: 'departementCode'
-      })
-
-      this.exportingCommunes = true
-      const { data } = await axios(`/api/communes?departement=${departementCode}`)
-
-      const a = document.createElement('a')
-      const blob = new Blob([data], { type: 'text/csv' })
-      a.href = window.URL.createObjectURL(blob)
-      a.download = `docurba_communes_${departementCode}.csv`
-      a.click()
-
-      this.exportingCommunes = false
-    },
-    async exportSCoTs () {
-      const departementCode = this.$route.params.departement
-
-      this.$analytics({
-        category: 'exports dashboard',
-        name: 'exports scots',
-        value: 'departementCode'
-      })
-
-      this.exportingSCoTs = true
-      const { data } = await axios(`/api/scots?departement=${departementCode}`)
-
-      const a = document.createElement('a')
-      const blob = new Blob([data], { type: 'text/csv' })
-      a.href = window.URL.createObjectURL(blob)
-      a.download = `docurba_scots_${departementCode}.csv`
-      a.click()
-
-      this.exportingSCoTs = false
     },
     navigateToDepartement (departementObject) {
       if (!departementObject) {
@@ -681,5 +614,9 @@ export default {
   background:var(--v-primary-lighten4);
   border: 1px solid  var(--v-primary-base) !important;
   border-radius: 4px;
+}
+
+.v-item-group.v-expansion-panels, .v-item-group.v-expansion-panels .v-expansion-panel, .v-item-group.v-expansion-panels .v-expansion-panel-header, .v-item-group.v-expansion-panels .v-expansion-panel-content {
+  transition: 0.3s min-height cubic-bezier(0.25, 0.8, 0.5, 1) !important;
 }
 </style>

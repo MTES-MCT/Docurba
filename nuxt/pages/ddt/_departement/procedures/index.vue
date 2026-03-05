@@ -117,7 +117,7 @@
                 {{ item.procedureName }}
               </nuxt-link>
 
-              <div v-if="item.procedures.status === null" />
+              <div v-if="item.procedures.status === null"></div>
               <v-chip v-else-if="item.opposable" class="ml-2 flex-shrink-0 success--text font-weight-bold" small label color="success-light">
                 OPPOSABLE
               </v-chip>

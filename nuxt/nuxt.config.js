@@ -5,6 +5,7 @@ export default {
 
   env: {
     DDT_ENQUETE_ENABLED: process.env.DDT_ENQUETE_ENABLED?.split(',') ?? [],
+    DDT_PROCEDURE_SURVEY_ENABLED_DEPTS: process.env.DDT_PROCEDURE_SURVEY_ENABLED_DEPTS?.split(',') ?? [],
     NUXT3_API_URL: process.env.NUXT3_API_URL,
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
@@ -54,6 +55,7 @@ export default {
     { src: '~/plugins/githubRefRoles.js', mode: 'client' },
     { src: '~/plugins/sharing.js' },
     { src: '~/plugins/enquete.js' },
+    { src: '~/plugins/zanSurvey.js' },
     { src: '~/plugins/nuxt3api.js', mode: 'client' }
   ],
 
