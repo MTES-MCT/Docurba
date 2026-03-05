@@ -15,6 +15,7 @@ class CoreAppConfig(AppConfig):
         super().ready()
         models.signals.pre_migrate.connect(create_unmanaged_tables, sender=self)
         models.signals.post_migrate.connect(create_topics, sender=self)
+        models.signals.post_migrate.connect(create_surveys, sender=self)
 
 
 def create_unmanaged_tables(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # noqa: ARG001
@@ -46,3 +47,19 @@ def create_topics(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # n
                 pk=spec["pk"],
                 defaults=spec["fields"],
             )
+
+
+def create_surveys(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # noqa: ARG001
+    """Survey creation.
+
+    For the moment, surveys have not been exposed in the Django admin
+    because we don"t know yet how this feature will evolve.
+    As of today, we only need one survey.
+    """
+    from docurba.core.models import Survey  # noqa: PLC0415
+
+    with transaction.atomic():
+        Survey.objects.update_or_create(
+            pk=1,
+            defaults={"name": "zan_03_2026"},
+        )
