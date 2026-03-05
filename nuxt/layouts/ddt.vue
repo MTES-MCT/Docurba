@@ -51,13 +51,13 @@
           Mes PAC
         </v-tab>
         <v-tab
-          v-if="ddtBetaTest"
+          v-if="$user.canViewProcedureSurvey({ departement: this.$route.params.departement })"
           :to="{
-            name:'ddt-departement-collectivites-enquete',
+            name:'ddt-departement-enquete',
             params: {departement: $route.params.departement}
           }"
         >
-          Validation des procédures
+          Enquête ZAN
         </v-tab>
       </v-tabs>
     </LayoutsAppBar>
@@ -92,8 +92,6 @@
 <script>
 import axios from 'axios'
 
-const validationBetaDDT = []
-
 export default {
   name: 'DdtLayout',
   data () {
@@ -116,9 +114,6 @@ export default {
       }
       return ''
     },
-    ddtBetaTest () {
-      return validationBetaDDT.includes(this.$route.params.departement)
-    }
   },
   async mounted () {
     await this.$user.isReady
