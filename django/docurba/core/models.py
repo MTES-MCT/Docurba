@@ -584,6 +584,8 @@ class ProcedureTopic(models.Model):
     topics = models.ForeignKey(
         "core.Topic", on_delete=models.RESTRICT, related_name="procedures_through"
     )
+    created_at = models.DateTimeField("créé le", auto_now_add=True)
+    updated_at = models.DateTimeField("mis à jour le", auto_now=True)
 
     class Meta:
         ordering = ["topics"]  # noqa: RUF012
