@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "revproxy.apps.RevProxyConfig",
     "docurba.core",
+    "docurba.surveys",
     "docurba.users",
 ]
 
