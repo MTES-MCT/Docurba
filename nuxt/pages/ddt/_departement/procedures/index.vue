@@ -151,6 +151,7 @@
 </template>
 
 <script>
+import { mdiWifiArrowDown } from '@mdi/js';
 import dayjs from 'dayjs'
 // import { AsyncParser } from '@json2csv/node'
 
@@ -227,6 +228,7 @@ export default {
       // eslint-disable-next-line no-console
       console.log('ERROR: ', error)
     }
+    await this.getNotValidatedProcedures()
   },
   methods: {
     customFilter (value, search, item) {
@@ -247,7 +249,53 @@ export default {
     },
     sortByDateIso (a, b) {
       return dayjs(a?.date_iso || 0) - dayjs(b?.date_iso || 0)
-    }
+    },
+    async getNotValidatedProcedures () {
+      console.log("before")
+      const { success, error, data } = await this.$zanSurvey.getProceduresToValidate(this.$route.params.departement)
+      window.data = data
+      window.procedures = this.procedures
+      const filteredProcedures = this.procedures.filter((e) => {
+        return data.map(d => d.procedures.id).includes(e.id)
+      })
+      // OK:
+      // window.procedures.filter(e =>
+      //   window.data.map(d => d.procedures.id).includes('4630c7d0-6626-4aae-a57d-9666311f617a')
+      // )
+      console.log("procedures", filteredProcedures)
+
+      // const validatedCodes = this.validatedCollectivites.map(c => c.collectivite_code)
+      // for (const collectivite of this.referentiel) {
+      //   collectivite.isNotValidated = !validatedCodes.includes(collectivite.code)
+      // }
+      // if (!success) {
+      //   this.snackbar = true
+
+      //   this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
+      // }
+    },
+    // cancelValidation: where procedureId in selectedIds and profile_id==user.id
+    // async cancelValidation (codeCollec) {
+    //   const { success, error, data } = await this.$enquete.deleteValidationForCollectivite(codeCollec)
+    //   console.log('data valid 2024: ', data)
+    //   if (!success) {
+    //     this.snackbar = true
+    //     this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
+    //   }
+    //   await this.fetchValidation()
+    // },
+    // getValidatedInfosForCollectivite (collectiviteCode) {
+    //   return this.validatedCollectivites.find(e => e.collectivite_code === collectiviteCode)
+    // },
+    // async validateSelectedCollectivites () {
+    //   const { success, error } = await this.$enquete.validateCollectivites(this.selected)
+    //   if (!success) {
+    //     this.snackbar = true
+    //     this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
+    //   }
+    //   await this.fetchValidation()
+    //   this.selected = []
+    // },
   }
 }
 </script>

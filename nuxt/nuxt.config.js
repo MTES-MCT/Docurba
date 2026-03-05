@@ -54,6 +54,7 @@ export default {
     { src: '~/plugins/githubRefRoles.js', mode: 'client' },
     { src: '~/plugins/sharing.js' },
     { src: '~/plugins/enquete.js' },
+    { src: '~/plugins/zanSurvey.js' },
     { src: '~/plugins/nuxt3api.js', mode: 'client' }
   ],
 
