@@ -997,8 +997,22 @@ class ProcedureSurvey(models.Model):
         "users.Profile",
         on_delete=models.RESTRICT,
         related_name="surveys_answers",
+        null=True,
     )
     created_at = models.DateTimeField("créé le", auto_now_add=True)
+    responded_at = models.DateTimeField("répondu le le", auto_now=True)
+
+    # Joining tables with Supabase is not really practical.
+    # Store the insee code for the moment.
+    departement_code = models.ForeignKey(
+        "core.departement",
+        db_column="departement_code",
+        verbose_name="code du département",
+        to_field="code_insee",
+        on_delete=models.DO_NOTHING,
+        null=True,
+    )
+    is_validated = models.BooleanField("est validée", null=True)
 
     class Meta:
         verbose_name = "validation"

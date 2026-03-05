@@ -56,7 +56,9 @@ def create_surveys(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # 
     because we don"t know yet how this feature will evolve.
     As of today, we only need one survey.
     """
-    from docurba.core.models import Survey  # noqa: PLC0415
+    from docurba.core.models import (  # noqa: PLC0415
+        Survey,
+    )
 
     with transaction.atomic():
         Survey.objects.update_or_create(
