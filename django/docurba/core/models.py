@@ -963,6 +963,15 @@ class Commune(Collectivite):
 class CommuneProcedure(models.Model):  # noqa: DJ008
     commune = models.ForeignKey(Commune, models.DO_NOTHING, db_constraint=False)
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
+    # Denormalized version of commune.departement.code_insee already existing in production.
+    # Real type is TextField but I used a Charfiel here for performance reasons.
+    # This column is used in Nuxt side to retrieve procedures by departement.
+    # See urbanizator.getProceduresForDept.
+    # Unfortunately, there is a mismatch between commune.departement.code_insee and self.departement
+    # in some records.
+    # This should be treated globally when refactoring departements usage as well in Django and in Nuxt.
+    # In the meantine, add it in the model so we can use it with the ORM.
+    departement = models.CharField(null=True, blank=True)  # noqa: DJ001
 
     class Meta:
         # Table created by a pre_migrate signal in apps.py.
