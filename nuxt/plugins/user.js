@@ -200,6 +200,13 @@ export default async ({ $supabase, app }, inject) => {
     },
     canViewProcedureCommentFromSudocuh () {
       return (this.profile.side === 'etat' && this.profile.poste === 'ddt') || this.profile.is_admin
+    },
+    canViewProcedureSurvey ({ departement }) {
+      const isDDT = this.profile.side === 'etat' && this.profile.poste === 'ddt'
+      if (!isDDT && !this.profile.is_admin) {
+        return false
+      }
+      return process.env.DDT_PROCEDURE_SURVEY_ENABLED_DEPTS.includes(departement)
     }
   }
 

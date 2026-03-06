@@ -42,7 +42,6 @@ export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inj
     // },
 
     async getProceduresToValidate (departement) {
-      console.log("BEFORE", departement)
       const { data, error } = await $supabase
       .from('core_proceduresurvey')
       .select('id,procedures!inner(id),departement_code,is_validated')
