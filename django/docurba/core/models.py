@@ -584,6 +584,7 @@ class ProcedureTopic(models.Model):
     topic = models.ForeignKey(
         "core.Topic", on_delete=models.RESTRICT, related_name="procedures_through"
     )
+    comment = models.TextField(verbose_name="Commentaire", blank=True)
     created_at = models.DateTimeField("créé le", auto_now_add=True)
     updated_at = models.DateTimeField("mis à jour le", auto_now=True)
 
