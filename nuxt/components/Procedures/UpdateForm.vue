@@ -86,7 +86,7 @@
         </v-row>
         <v-row>
           <v-col cols="6" class="pb-0">
-            <v-alert dense text type="info" class="mb-2" >
+            <v-alert dense text type="info" class="mb-2"  >
               Pour modifier le nom de la procédure, contactez-nous en cliquant sur « Signaler un problème ».
             </v-alert>
           </v-col>
@@ -107,6 +107,7 @@
                 class="rounded-l-0 smaller-input-slot"
                 placeholder="Précisez le titre de la procédure (optionnel)"
                 filled
+                disabled
               />
             </div>
             <div class="caption mt-1">
