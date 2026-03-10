@@ -27,19 +27,36 @@
       </v-col>
     </v-row>
     <v-row v-if="!censored">
-      <v-col cols="12" class="pb-0">
+      <v-col v-if="procedure.topics" cols="12" class="pb-0">
+        <p class="font-weight-bold">
+          Objet de la procédure
+        </p>
+
+        <p v-if="procedure.topics">
+          <v-chip
+            v-for="topic in procedure.topics"
+            :key="topic"
+            color="blue"
+            outlined
+            class="mr-2"
+          >
+            {{ topic }}
+          </v-chip>
+        </p>
+        <p v-if="procedure.topics__other__comment">
+          {{ procedure.topics__other__comment }}
+        </p>
+      </v-col>
+      <v-col v-if="procedure.comment_from_sudocuh && $user.canViewProcedureCommentFromSudocuh()" cols="12" class="pb-0">
         <v-divider />
       </v-col>
-      <v-col cols="12" class="pb-0">
+      <v-col v-if="procedure.comment_from_sudocuh && $user.canViewProcedureCommentFromSudocuh()" cols="12" class="pb-0">
         <p class="font-weight-bold">
-          Commentaire / Note
+          Notes visibles uniquement par la DDT
         </p>
-        <div v-if="procedure.commentaire">
-          <p>{{ procedure.commentaire }} </p>
-        </div>
-        <div v-else class="text--disabled">
-          Pas de commentaire
-        </div>
+        <p>
+            {{ procedure.comment_from_sudocuh }}
+        </p>
       </v-col>
       <v-col cols="12" class="pb-0">
         <v-divider />
