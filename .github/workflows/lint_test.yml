@@ -14,24 +14,20 @@ jobs:
     env:
       DJANGO_SETTINGS_MODULE: config.settings.test
       SECRET_KEY: test_secret_key
-      DATABASE_URL: postgres://postgres:docurba@localhost:5434/postgres
+      # Default supabase URL: https://supabase.com/docs/guides/local-development/cli/getting-started?queryGroups=access-method&access-method=postgres
+      DATABASE_URL: postgresql://postgres:postgres@localhost:54322/postgres
       UPSTREAM_NUXT: http://localhost:3000
-    services:
-      postgres:
-        # Docker Hub image
-        image: postgres:15.1
-        env:
-          POSTGRES_PASSWORD: docurba
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 1s
-          --health-timeout 1s
-          --health-retries 50
-        ports:
-          - 5434:5432
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: 🛠️ Installation de la CLI Supabase
+        uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
+        with:
+          version: 2.60.0
+
+      - run: supabase db start
+
       - uses: actions/setup-python@v5
         with:
           python-version-file: django/.python-version
