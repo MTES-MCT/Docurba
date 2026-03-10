@@ -577,6 +577,47 @@ class Procedure(models.Model):
         )
 
 
+class ProcedureTopic(models.Model):
+    procedure = models.ForeignKey(
+        "core.Procedure", on_delete=models.CASCADE, related_name="topics_through"
+    )
+    topic = models.ForeignKey(
+        "core.Topic", on_delete=models.RESTRICT, related_name="procedures_through"
+    )
+    created_at = models.DateTimeField("créé le", auto_now_add=True)
+    updated_at = models.DateTimeField("mis à jour le", auto_now=True)
+
+    class Meta:
+        ordering = ["topic"]  # noqa: RUF012
+        verbose_name = "objet sélectionné"
+        verbose_name_plural = "objets sélectionnés"
+        unique_together = ("procedure", "topic")
+
+    def __str__(self) -> str:
+        return f"{self.pk}"
+
+
+class Topic(models.Model):
+    name = models.CharField(verbose_name="Nom système")
+    display_name = models.CharField(verbose_name="Nom d'affichage")
+    procedures = models.ManyToManyField(
+        "core.Procedure",
+        through="ProcedureTopic",
+        related_name="topics",
+        verbose_name="procédures",
+    )
+    ui_rank = models.SmallIntegerField(verbose_name="Position dans le menu déroulant")
+
+    class Meta:
+        verbose_name = "objet"
+        ordering = [  # noqa: RUF012
+            "ui_rank",
+        ]
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
@@ -922,6 +963,15 @@ class Commune(Collectivite):
 class CommuneProcedure(models.Model):  # noqa: DJ008
     commune = models.ForeignKey(Commune, models.DO_NOTHING, db_constraint=False)
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
+    # Denormalized version of commune.departement.code_insee already existing in production.
+    # Real type is TextField but I used a Charfiel here for performance reasons.
+    # This column is used in Nuxt side to retrieve procedures by departement.
+    # See urbanizator.getProceduresForDept.
+    # Unfortunately, there is a mismatch between commune.departement.code_insee and self.departement
+    # in some records.
+    # This should be treated globally when refactoring departements usage as well in Django and in Nuxt.
+    # In the meantine, add it in the model so we can use it with the ORM.
+    departement = models.CharField(null=True, blank=True)  # noqa: DJ001
 
     class Meta:
         # Table created by a pre_migrate signal in apps.py.
@@ -943,3 +993,56 @@ class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008
         """Uniquement pour les tests."""
         with connection.cursor() as cursor:
             cursor.execute(f"REFRESH MATERIALIZED VIEW {cls._meta.db_table}")
+
+
+class ProcedureSurvey(models.Model):
+    procedure = models.ForeignKey(
+        "core.Procedure", on_delete=models.CASCADE, related_name="surveys_answers"
+    )
+    survey = models.ForeignKey(
+        "core.Survey", on_delete=models.RESTRICT, related_name="procedures_through"
+    )
+    respondant = models.ForeignKey(
+        "users.Profile",
+        on_delete=models.RESTRICT,
+        related_name="surveys_answers",
+        null=True,
+    )
+    created_at = models.DateTimeField("créé le", auto_now_add=True)
+    responded_at = models.DateTimeField("répondu le le", auto_now=True)
+
+    # Joining tables with Supabase is not really practical.
+    # Store the insee code for the moment.
+    departement_code = models.ForeignKey(
+        "core.departement",
+        db_column="departement_code",
+        verbose_name="code du département",
+        to_field="code_insee",
+        on_delete=models.DO_NOTHING,
+        null=True,
+    )
+    is_validated = models.BooleanField("est validée", null=True)
+
+    class Meta:
+        verbose_name = "validation"
+        unique_together = ("procedure", "survey")
+
+    def __str__(self) -> str:
+        return f"{self.pk}"
+
+
+class Survey(models.Model):
+    name = models.CharField(verbose_name="nom unique", unique=True)
+    procedures = models.ManyToManyField(
+        "core.Procedure",
+        through="ProcedureSurvey",
+        related_name="surveys",
+        verbose_name="procédures",
+    )
+    created_at = models.DateTimeField("créée le", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "enquête"
+
+    def __str__(self) -> str:
+        return self.name
