@@ -38,18 +38,26 @@
     </v-row>
     <v-row v-if="!censored">
       <v-col cols="12" class="pb-0">
-        <v-divider />
-      </v-col>
-      <v-col cols="12" class="pb-0">
         <p class="font-weight-bold">
-          Commentaire / Note
+          Objet de la procédure
         </p>
         <p v-if="procedure.commentaire">
           {{ procedure.commentaire }}
         </p>
       </v-col>
-      <v-col cols="12" class="pb-0">
+      <v-col v-if="procedure.comment_from_sudocuh && $user.canViewProcedureCommentFromSudocuh()" cols="12" class="pb-0">
         <v-divider />
+      </v-col>
+      <v-col v-if="procedure.comment_from_sudocuh && $user.canViewProcedureCommentFromSudocuh()" cols="12" class="pb-0">
+        <p class="font-weight-bold">
+          Notes visibles uniquement par la DDT
+        </p>
+        <p>
+            {{ procedure.comment_from_sudocuh }}
+        </p>
+      </v-col>
+      <v-col cols="12" class="pb-0">
+          {{ procedure.comment_from_sudocuh }}
       </v-col>
       <v-col cols="12" class="pb-0 d-flex">
         <DashboardDUModalPerimetre :perimetres="procedure.procedures_perimetres" />
