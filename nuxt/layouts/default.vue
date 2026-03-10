@@ -11,14 +11,17 @@
       app
       multi-line
       vertical
-      color="error"
+      :color="snackbar.color"
       :timeout="10000"
     >
       <div>
         {{ snackbar.text }}
       </div>
 
-      <template #action="{ attrs }">
+      <template
+        v-if="snackbar.useActionsTemplate"
+        #action="{ attrs }"
+      >
         <v-btn
           color="white"
           outlined
@@ -51,7 +54,7 @@ export default {
   name: 'DefaultLayout',
   data () {
     return {
-      snackbar: { text: '', val: false }
+      snackbar: { text: '', val: false, color: '', useActionsTemplate: false }
     }
   },
   async mounted () {
@@ -73,7 +76,9 @@ export default {
         }
         this.snackbar = {
           val: true,
-          text: errorMessage
+          text: errorMessage,
+          color: 'error',
+          useActionsTemplate: true
         }
       }
     }
@@ -86,6 +91,11 @@ export default {
           email: this.$route.query.contact
         }
       })
+    }
+    const snackbarDict = localStorage.getItem('snackbarDict')
+    if (snackbarDict) {
+      this.snackbar = { val: true, ...JSON.parse(snackbarDict) }
+      localStorage.removeItem('snackbarDict')
     }
   }
 }
