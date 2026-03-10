@@ -81,12 +81,6 @@ export default {
       type: Object,
       default () { return {} }
     }
-    // test: {
-    //   type: Object,
-    //   default () {
-    //     return process.env.NODE_ENV === 'development' ? test : {}
-    //   }
-    // }
   },
   methods: {
     input (data) {
