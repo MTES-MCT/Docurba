@@ -37,9 +37,20 @@
       </v-col>
     </v-row>
     <v-row v-if="!censored">
-      <v-col cols="12" class="pb-0">
+      <v-col v-if="procedure.commentaire || procedure.topics" cols="12" class="pb-0">
         <p class="font-weight-bold">
           Objet de la procédure
+        </p>
+        <p v-if="procedure.topics">
+          <v-for topic in procedure.topics>
+            <v-chip
+              color="blue"
+              outlined
+            >{{ topic }}</v-chip>
+          </v-for>
+        </p>
+        <p v-if="procedure.topics__other__comment">
+          {{ procedure.topics__other__comment }}
         </p>
         <p v-if="procedure.commentaire">
           {{ procedure.commentaire }}
