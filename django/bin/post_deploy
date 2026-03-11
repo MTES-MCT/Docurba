@@ -1,3 +1,9 @@
 #!/bin/sh
 
-./manage.py migrate
+if ./manage.py showmigrations core | grep -q "\[X\] 0001_initial"; then
+    ./manage.py migrate
+else
+    echo "Migration core.0001_initial pas encore appliquée."
+    echo "Cela indique que nous sommes en train de créer une recette jetable."
+    echo "Exécution des migrations ignorée, en attente de la restauration de la sauvegarde."
+fi
