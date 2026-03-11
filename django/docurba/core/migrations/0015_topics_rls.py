@@ -60,7 +60,7 @@ def create_policy_auth_users_can_update_table(table_name: str) -> str:
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0013_procedure_by_collectivites_function"),
+        ("core", "0014_procedure_by_collectivites_function"),
     ]
 
     operations = [

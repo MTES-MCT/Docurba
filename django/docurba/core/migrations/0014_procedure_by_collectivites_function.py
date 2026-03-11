@@ -59,7 +59,7 @@ SECURITY INVOKER;
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0012_proceduretopic_comment"),
+        ("core", "0013_add_sudocuh_comment"),
     ]
 
     operations = [
