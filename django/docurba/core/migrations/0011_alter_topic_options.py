@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0009_proceduretopic_topic_proceduretopic_topics_and_more"),
+        ("core", "0010_proceduretopic_created_at"),
     ]
 
     operations = [

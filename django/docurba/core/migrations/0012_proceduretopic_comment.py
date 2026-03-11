@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0011_topics_rls"),
+        ("core", "0011_alter_topic_options"),
     ]
 
     operations = [

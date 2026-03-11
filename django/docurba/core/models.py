@@ -9,6 +9,7 @@ from typing import Self
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
 from django.db import connection, models
 from django.db.models.constraints import UniqueConstraint
+from django.db.models.functions import Now
 from django.urls import reverse
 from django.utils import timezone
 
@@ -586,8 +587,8 @@ class ProcedureTopic(models.Model):
         "core.Topic", on_delete=models.RESTRICT, related_name="procedures_through"
     )
     comment = models.TextField(verbose_name="Commentaire", blank=True)
-    created_at = models.DateTimeField("créé le", auto_now_add=True)
-    updated_at = models.DateTimeField("mis à jour le", auto_now=True)
+    created_at = models.DateTimeField("créé le", auto_now_add=True, db_default=Now())
+    updated_at = models.DateTimeField("mis à jour le", auto_now=True, null=True)
 
     class Meta:
         ordering = ["topic"]  # noqa: RUF012
