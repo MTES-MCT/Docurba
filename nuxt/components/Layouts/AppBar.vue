@@ -99,57 +99,55 @@
         </v-menu>
 
         <template v-if="$user.id">
-          <v-btn
-            v-if="$user.profile.side === 'ppa'"
-            depressed
-            color="primary"
-            :to="{
-              name: 'ddt-departement-collectivites',
-              params: {
-                departement: $user.profile.departement,
-              }
-            }"
-          >
-            Tableau de bord
-          </v-btn>
-          <v-btn
-            v-else-if="$user.profile.side === 'etat'"
-            depressed
-            color="primary"
-            :to="{
-              name: $user.profile.poste === 'ddt' ? 'ddt-departement-collectivites' : 'trames-githubRef',
-              params: {
-                departement: $user.profile.departement,
-                githubRef: trameRef
-              }
-            }"
-          >
-            {{ $user.profile.poste === 'ddt' ? 'Tableau de bord' : 'Trame regionale' }}
-          </v-btn>
-          <v-btn
-            v-else-if="$user.profile.side === 'collectivite'"
-            depressed
-            color="primary"
-            :to="`/collectivites/${$user.profile.collectivite_id}`"
-          >
-            Ma collectivité
-          </v-btn>
-
           <v-menu offset-y>
-            <template #activator="{ on }">
+            <template #activator="{ on, attrs }">
               <v-btn
-                depressed
-                icon
-                small
+                outlined
+                color="primary"
+                class="no-text-transform"
+                v-bind="attrs"
                 v-on="on"
               >
-                <v-icon>{{ icons.mdiDotsVertical }}</v-icon>
+                <v-icon
+                  left
+                  size="20"
+                >
+                  {{ icons.mdiAccountCircleOutline }}
+                </v-icon>
+                <span style="line-height: 1;">{{ $user.profile.firstname || 'Mon compte' }}</span>
+                <v-icon
+                  right
+                  size="18"
+                >
+                  {{ icons.mdiChevronDown }}
+                </v-icon>
               </v-btn>
             </template>
             <v-list>
-              <v-list-item link @click="signOut">
-                <v-list-item-title>
-                  Déconnexion
+              <v-list-item
+                v-if="dashboardRoute"
+                :to="dashboardRoute"
+              >
+                <v-icon
+                  size="18"
+                  class="mr-3"
+                >
+                  {{ icons.mdiViewDashboardOutline }}
+                </v-icon>
+                <v-list-item-title class="text-body-2">
+                  {{ dashboardLabel }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="signOut">
+                <v-icon
+                  size="18"
+                  color="error"
+                  class="mr-3"
+                >
+                  {{ icons.mdiLogout }}
+                </v-icon>
+                <v-list-item-title class="error--text text-body-2">
+                  Se déconnecter
                 </v-list-item-title>
               </v-list-item>
             </v-list>
@@ -158,8 +156,17 @@
           <AuthResetPasswordDialog />
         </template>
 
-        <v-btn v-else depressed color="primary" :to="{ name: 'login' }">
-          Connexion
+        <v-btn
+          v-else
+          outlined
+          color="primary"
+          class="no-text-transform"
+          :to="{ name: 'login' }"
+        >
+          <v-icon left>
+            {{ icons.mdiAccountCircleOutline }}
+          </v-icon>
+          Me connecter
         </v-btn>
       </div>
     </client-only>
@@ -170,7 +177,7 @@
 </template>
 
 <script>
-import { mdiDotsVertical, mdiChevronDown } from '@mdi/js'
+import { mdiChevronDown, mdiAccountCircleOutline, mdiViewDashboardOutline, mdiLogout } from '@mdi/js'
 
 export default {
   props: {
@@ -186,18 +193,45 @@ export default {
   data () {
     return {
       icons: {
-        mdiDotsVertical,
-        mdiChevronDown
+        mdiChevronDown,
+        mdiAccountCircleOutline,
+        mdiViewDashboardOutline,
+        mdiLogout
       }
     }
   },
   computed: {
     trameRef () {
-      const scopes = { ddt: 'dept', dreal: 'region' }
       const poste = this.$user.profile.poste
+      if (!poste) { return null }
+      const scopes = { ddt: 'dept', dreal: 'region' }
       const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
+      if (!code) { return null }
 
       return `${scopes[poste]}-${this.$options.filters.deptToRef(code)}`
+    },
+    dashboardRoute () {
+      if (!this.$user.id) { return null }
+      const { side, poste, departement, collectivite_id: collectiviteId } = this.$user.profile
+      if (side === 'ppa') {
+        return { name: 'ddt-departement-collectivites', params: { departement } }
+      }
+      if (side === 'etat') {
+        return {
+          name: poste === 'ddt' ? 'ddt-departement-collectivites' : 'trames-githubRef',
+          params: { departement, githubRef: this.trameRef }
+        }
+      }
+      if (side === 'collectivite') {
+        return `/collectivites/${collectiviteId}`
+      }
+      return null
+    },
+    dashboardLabel () {
+      const { side, poste } = this.$user.profile
+      if (side === 'collectivite') { return 'Ma collectivité' }
+      if (side === 'etat' && poste !== 'ddt') { return 'Trame régionale' }
+      return 'Tableau de bord'
     }
   },
   async mounted () {
@@ -205,7 +239,10 @@ export default {
   },
   methods: {
     async signOut () {
-      await this.$supabase.auth.signOut()
+      const { error } = await this.$supabase.auth.signOut()
+      if (error) {
+        return console.error('signOut error:', error)
+      }
       this.$router.push('/')
     }
   }
