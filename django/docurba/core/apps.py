@@ -37,6 +37,9 @@ def create_unmanaged_tables(*args: list[str, Any], **kwargs: dict[str, Any]) -> 
 def create_topics(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # noqa: ARG001
     from docurba.core.models import Topic  # noqa: PLC0415
 
+    if Topic._meta.db_table not in connection.introspection.table_names():  # noqa: SLF001
+        return
+
     json_path = pathlib.Path(settings.APPS_DIR) / "core/data/create_topics.json"
     with json_path.open("rb") as fp:
         admin_crits_spec = json.load(fp)

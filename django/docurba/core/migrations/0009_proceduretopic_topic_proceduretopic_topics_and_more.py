@@ -24,11 +24,17 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "created_at",
-                    models.DateTimeField(auto_now_add=True, verbose_name="créé le"),
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        verbose_name="créé le",
+                        db_default=django.db.models.functions.datetime.Now(),
+                    ),
                 ),
                 (
                     "updated_at",
-                    models.DateTimeField(auto_now=True, verbose_name="mis à jour le"),
+                    models.DateTimeField(
+                        auto_now=True, verbose_name="mis à jour le", null=True
+                    ),
                 ),
                 (
                     "procedure",
