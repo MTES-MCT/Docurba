@@ -43,7 +43,7 @@ export default {
     if (errorProcedure) { throw errorProcedure }
     this.procedure = procedure[0]
 
-    if (!this.$user.canUpdateProcedure({ procedure: this.procedure })) {
+    if (!this.$user.canUpdateProcedure()) {
       // eslint-disable-next-line no-console
       console.log('Vous ne pouvez pas modifier cette procédure.')
       this.$router.back()
