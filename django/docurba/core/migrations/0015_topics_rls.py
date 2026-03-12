@@ -33,31 +33,6 @@ def create_policy_auth_users_can_insert_into_table(table_name: str) -> str:
     """
 
 
-# https://supabase.com/docs/guides/getting-started/ai-prompts/database-rls-policies
-def create_policy_auth_users_can_update_table(table_name: str) -> str:
-    return f"""
-        create policy "auth_users_insert_into_table_{table_name}"
-        on "public"."{table_name}"
-        as PERMISSIVE
-        for UPDATE
-        to authenticated
-        using (
-        owner_id in (
-            select owner_id
-            from procedures
-            where owner_id = (select auth.uid()) and id = procedure.id
-        )
-
-        # or
-        # (select auth.uid()) in (
-        #     select owner_id
-        #     from procedures
-        #     where procedures.id = procedure_id
-        # )
-        );
-    """  # noqa: S608
-
-
 class Migration(migrations.Migration):
     dependencies = [
         ("core", "0014_procedure_by_collectivites_function"),
