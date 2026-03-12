@@ -367,6 +367,8 @@ class Procedure(models.Model):
     initial_perimetre = models.JSONField(null=True)
     current_perimetre = models.JSONField(null=True)
 
+    last_updated_by = models.ForeignKey("users.Profile", models.DO_NOTHING, null=True)
+
     # Denormalized information used only by Nuxt. See self.statut for the Django logic.
     status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001
 

@@ -107,7 +107,8 @@ export default {
 
       try {
         const { error } = await this.$supabase.from('procedures').update({
-          last_updated_at: new Date().toISOString()
+          last_updated_at: new Date().toISOString(),
+          last_updated_by_id: this.$user.id
         }).eq('id', this.procedure.id).select()
 
         let topicsToInsert = this.topics.filter(e => !this.topicsIdsOnMounted.includes(e.value))
