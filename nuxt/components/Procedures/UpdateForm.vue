@@ -271,6 +271,7 @@ export default {
           doc_type: this.procedureDocType,
           numero: this.procedureNumero ? this.procedureNumero : '',
           name: this.computedProcedureName,
+          last_updated_by_id: this.$user.id,
         }).eq('id', this.procedure.id).select()
 
         let topicsToInsert = this.topics.filter(e => !this.topicsIdsOnMounted.includes(e.value))
