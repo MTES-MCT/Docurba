@@ -91,7 +91,7 @@
             <FriseDgdDialog />
 
             <v-list-item
-              v-if="$user?.canUpdateProcedure(procedure)"
+              v-if="$user?.canUpdateProcedure()"
               :to="{ name: 'frise-procedureId-update', params: { procedureId: $route.params.procedureId } }"
             >
               <v-list-item-title>
