@@ -173,21 +173,30 @@
                     <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${plan.id}`">
                       {{ $utils.formatProcedureName(plan, item) }}
                     </nuxt-link>
-                    <v-chip
-                      :class="{
-                        'success-light': plan.inContextStatus === 'OPPOSABLE',
-                        'success--text': plan.inContextStatus === 'OPPOSABLE',
-                        'bf200': plan.inContextStatus === 'EN COURS',
-                        'primary--text': plan.inContextStatus === 'EN COURS',
-                        'text--lighten-2': plan.inContextStatus === 'EN COURS',
+                    <div class="d-flex align-middle">
+                      <v-chip-group column>
+                        <v-chip
+                          :class="{
+                            'success-light': plan.inContextStatus === 'OPPOSABLE',
+                            'success--text': plan.inContextStatus === 'OPPOSABLE',
+                            'bf200': plan.inContextStatus === 'EN COURS',
+                            'primary--text': plan.inContextStatus === 'EN COURS',
+                            'text--lighten-2': plan.inContextStatus === 'EN COURS',
 
-                      }"
-                      class="font-weight-bold flex-shrink-0 ml-2"
-                      small
-                      label
-                    >
-                      {{ plan.inContextStatus }}
-                    </v-chip>
+                          }"
+                          class="font-weight-bold flex-shrink-0 ml-2"
+                          small
+                          label
+                        >
+                          {{ plan.inContextStatus }}
+                        </v-chip>
+                      </v-chip-group>
+                      <v-chip-group column>
+                        <span v-if="plan.topics">
+                          <ProceduresTopicChips :topics="plan.topics" :small="true" />
+                        </span>
+                      </v-chip-group>
+                    </div>
                   </div>
                 </template>
                 <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
@@ -213,21 +222,30 @@
                       <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${scot.id}`">
                         {{ $utils.formatProcedureName(scot, item) }}
                       </nuxt-link>
-                      <v-chip
-                        :class="{
-                          'success-light': scot.inContextStatus === 'OPPOSABLE',
-                          'success--text': scot.inContextStatus === 'OPPOSABLE',
-                          'bf200': scot.inContextStatus === 'EN COURS',
-                          'primary--text': scot.inContextStatus === 'EN COURS',
-                          'text--lighten-2': scot.inContextStatus === 'EN COURS',
+                      <div class="d-flex align-middle">
+                        <v-chip-group column>
+                          <v-chip
+                            :class="{
+                              'success-light': scot.inContextStatus === 'OPPOSABLE',
+                              'success--text': scot.inContextStatus === 'OPPOSABLE',
+                              'bf200': scot.inContextStatus === 'EN COURS',
+                              'primary--text': scot.inContextStatus === 'EN COURS',
+                              'text--lighten-2': scot.inContextStatus === 'EN COURS',
 
-                        }"
-                        class="font-weight-bold flex-shrink-0 ml-2"
-                        small
-                        label
-                      >
-                        {{ scot.inContextStatus }}
-                      </v-chip>
+                            }"
+                            class="font-weight-bold flex-shrink-0 ml-2"
+                            small
+                            label
+                          >
+                            {{ scot.inContextStatus }}
+                          </v-chip>
+                        </v-chip-group>
+                        <v-chip-group column>
+                          <span v-if="scot.topics">
+                            <ProceduresTopicChips :topics="scot.topics" />
+                          </span>
+                        </v-chip-group>
+                      </div>
                     </div>
                   </template>
                   <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">

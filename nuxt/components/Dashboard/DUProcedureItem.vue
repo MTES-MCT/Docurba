@@ -41,13 +41,8 @@
         <p class="font-weight-bold">
           Objet de la procédure
         </p>
-
         <p v-if="procedure.topics">
-            <v-chip v-for="topic in procedure.topics" :key="topic"
-              color="blue"
-              outlined
-              class="mr-2"
-            >{{ topic }}</v-chip>
+          <ProceduresTopicChips :topics="procedure.topics" />
         </p>
         <p v-if="procedure.topics__other__comment">
           {{ procedure.topics__other__comment }}
