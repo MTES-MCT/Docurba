@@ -1,0 +1,47 @@
+[
+  {
+    "model": "core.topic",
+    "pk": 1,
+    "fields": {
+        "name": "other",
+        "display_name": "Autre",
+        "ui_rank": -1
+    }
+  },
+  {
+    "model": "core.topic",
+    "pk": 2,
+    "fields": {
+        "name": "coastline",
+        "display_name": "Trait de côte",
+        "ui_rank": 1
+    }
+  },
+  {
+    "model": "core.topic",
+    "pk": 3,
+    "fields": {
+        "name": "enr",
+        "display_name": "Zones d'accélération ENR",
+        "ui_rank": 2
+    }
+  },
+  {
+    "model": "core.topic",
+    "pk": 4,
+    "fields": {
+        "name": "zan",
+        "display_name": "Trajectoire ZAN",
+        "ui_rank": 3
+    }
+  },
+  {
+    "model": "core.topic",
+    "pk": 5,
+    "fields": {
+        "name": "forest_fire",
+        "display_name": "Feu de forêt",
+        "ui_rank": 4
+    }
+  }
+]

@@ -35,19 +35,20 @@
         <v-row>
           <v-col cols="6" class="pt-0 pb-2">
             <v-select
-              v-model="objetProcedure"
-              :hide-details="objetProcedure.includes('Autre')"
+              v-model="topics"
+              :hide-details="topicOtherCommentSelected"
               filled
               multiple
               label="Objet de la procédure"
-              :items="['Trajectoire ZAN', 'Zones d\'accélération ENR', 'Trait de côte', 'Feu de forêt', 'Autre']"
+              return-object
+              :items="topicsItems"
             />
           </v-col>
         </v-row>
         <v-row>
-          <v-col v-if="objetProcedure.includes('Autre')" cols="6" class="pt-0 pb-2">
+          <v-col v-if="topicOtherCommentSelected" cols="6" class="pt-0 pb-2">
             <validation-provider v-slot="{ errors }" name="Details de la procédure" rules="required">
-              <v-text-field v-model="otherObjetProcedure" :error-messages="errors" filled label="Description de l’objet de la procédure" />
+              <v-text-field v-model="topicOtherComment" :error-messages="errors" filled label="Description de l’objet de la procédure" />
             </validation-provider>
           </v-col>
         </v-row>
@@ -200,8 +201,9 @@ export default {
       procedureParent: null,
       proceduresParents: null,
       numberProcedure: '',
-      objetProcedure: [],
-      otherObjetProcedure: '',
+      topics: [],
+      topicsItems: [],
+      topicOtherComment: '',
       typeDu: '',
       nameComplement: '',
       typesDu: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM', 'SCOT'],
@@ -250,6 +252,9 @@ export default {
       }
 
       return uniqComs
+    },
+    topicOtherCommentSelected() {
+      return this.topics.some(e => e.text === "Autre")
     }
   },
   async mounted () {
@@ -268,6 +273,7 @@ export default {
       // eslint-disable-next-line no-console
       console.log(error)
     }
+    this.topicsItems = await this.getTopicItems()
   },
   methods: {
     async getProcedures () {
@@ -345,7 +351,6 @@ export default {
             doc_type: this.typeDu,
             region: this.collectivite.regionCode,
             current_perimetre: oldFomattedPerimetre,
-            initial_perimetre: oldFomattedPerimetre,
             collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
             collectivite_porteuse_id: this.collectivitePorteuseCode,
             test: true,
@@ -360,7 +365,6 @@ export default {
           shareable: true,
           secondary_procedure_of: this.procedureParent,
           type: this.typeProcedure,
-          commentaire: this.objetProcedure && this.objetProcedure.includes('Autre') ? this.objetProcedure?.join(', ') + ' - ' + this.otherObjetProcedure : this.objetProcedure?.join(', '),
           collectivite_porteuse_id: this.collectivitePorteuseCode,
           is_principale: this.procedureCategory === 'principale',
           status: 'en cours',
@@ -369,7 +373,6 @@ export default {
           is_pluih: this.typeDu === 'PLUiH',
           is_pdu: null,
           current_perimetre: oldFomattedPerimetre,
-          initial_perimetre: oldFomattedPerimetre,
           doc_type: this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType,
           departements,
           numero: this.procedureCategory === 'principale' ? '1' : this.numberProcedure,
@@ -383,6 +386,15 @@ export default {
           // eslint-disable-next-line no-console
           console.log('errorInsertedProcedure: ', errorInsertedProcedure)
         }
+
+        const topicsToInsert = this.topics.map(e => {
+          return {
+            topic_id: e.value,
+            procedure_id: insertedProcedure[0].id,
+            comment: e.text === 'Autre' ? this.topicOtherComment : '',
+          }
+        })
+        const { data: insertedTopics, error: errorInsertedTopic } = await this.$supabase.from('core_proceduretopic').insert(topicsToInsert).select()
 
         const fomattedPerimetre = detailedPerimetre.map(e => ({ collectivite_code: e.code, collectivite_type: e.type, procedure_id: insertedProcedure[0].id, opposable: false, departement: e.departementCode }))
         await this.$supabase.from('procedures_perimetres').insert(fomattedPerimetre)
@@ -422,6 +434,18 @@ export default {
       } finally {
         this.loadingSave = false
       }
+    },
+    async getTopicItems() {
+      // TODO; move me elsewhere to use it in the UpdateForm.
+      let { data: topics, error: errorTopic } = await this.$supabase.from('core_topic').select("id,display_name,ui_rank")
+      topics = topics.sort((a,b) => {
+        return a.ui_rank > b.ui_rank
+      })
+      // Push first item to the end.
+      topics.push(topics.shift())
+      return topics.map((e) => {
+        return {value: e.id, text: e.display_name}}
+      )
     }
   }
 

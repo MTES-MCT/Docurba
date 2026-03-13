@@ -180,6 +180,9 @@ export default async ({ $supabase, app }, inject) => {
         }
       }
     },
+    canUpdateProcedure () {
+      return this.profile.poste === 'ddt'
+    },
     canDeleteProcedure () {
       return this.profile.side !== 'ppa'
     },
@@ -194,6 +197,9 @@ export default async ({ $supabase, app }, inject) => {
       }
 
       return process.env.DDT_ENQUETE_ENABLED.includes(departement)
+    },
+    canViewProcedureCommentFromSudocuh () {
+      return (this.profile.side === 'etat' && this.profile.poste === 'ddt') || this.profile.is_admin
     }
   }
 
