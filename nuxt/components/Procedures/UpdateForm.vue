@@ -245,7 +245,17 @@ export default {
     baseName () {
       // We could use $utils.formatProcedureName but it does not accept single arguments.
       // It would break the reactivity.
-      return `${this.procedureType} ${this.procedureNumero} de ${(this.procedureParent ? this.procedureParent.doc_type : this.procedureDocType) + this.postfixSectoriel} ${this.collectivite.intitule}`.replace(/\s+/g, ' ').trim()
+      const docType = this.procedureParent ? this.procedureParent.doc_type : this.procedureDocType
+      const shouldBeInter = this.procedure.procedures_perimetres?.length > 1 && this.procedureType === 'PLU'
+      const parts = [
+        this.procedureType,
+        this.procedureNumero,
+        'de',
+        docType,
+        this.postfixSectoriel,
+        this.collectivite?.intitule ?? ''
+      ].filter(Boolean)
+      return parts.join(' ')
     },
     async updateProcedure () {
       this.loadingSave = true
