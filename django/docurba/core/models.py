@@ -966,6 +966,9 @@ class Commune(Collectivite):
 class CommuneProcedure(models.Model):  # noqa: DJ008
     commune = models.ForeignKey(Commune, models.DO_NOTHING, db_constraint=False)
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
+    collectivite_code = models.CharField(
+        verbose_name="Code collectivité"
+    )  # TextField in DB.
 
     class Meta:
         # Table created by a pre_migrate signal in apps.py.
