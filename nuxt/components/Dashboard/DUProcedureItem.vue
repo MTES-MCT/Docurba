@@ -65,11 +65,11 @@
           Notes visibles uniquement par la DDT
         </p>
         <p>
-            {{ procedure.comment_from_sudocuh }}
+          {{ procedure.comment_from_sudocuh }}
         </p>
       </v-col>
       <v-col cols="12" class="pb-0">
-          {{ procedure.comment_from_sudocuh }}
+        <v-divider />
       </v-col>
       <v-col cols="12" class="pb-0 d-flex">
         <DashboardDUModalPerimetre :perimetres="procedure.procedures_perimetres" />

@@ -55,7 +55,7 @@
           Notes visibles uniquement par la DDT
         </p>
         <p>
-            {{ procedure.comment_from_sudocuh }}
+          {{ procedure.comment_from_sudocuh }}
         </p>
       </v-col>
       <v-col cols="12" class="pb-0">
