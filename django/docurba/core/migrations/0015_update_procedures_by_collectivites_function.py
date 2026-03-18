@@ -15,7 +15,7 @@ ELSE
   Null
 END as topics,
 CASE
-  WHEN count(topics) >= 1 THEN any_value(topics.comment) filter(where topics.topic_id = 1)
+  WHEN count(topics) >= 1 THEN (array_agg(topics.comment) filter(where topics.topic_id = 1))[1]
 ELSE
   Null
 END as topics__other__comment
