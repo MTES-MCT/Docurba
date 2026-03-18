@@ -106,7 +106,7 @@
             :to="{
               name: 'ddt-departement-collectivites',
               params: {
-                departement: $user.profile.departement,
+                departement: $user.departementPrincipal(),
               }
             }"
           >
@@ -119,7 +119,7 @@
             :to="{
               name: $user.profile.poste === 'ddt' ? 'ddt-departement-collectivites' : 'trames-githubRef',
               params: {
-                departement: $user.profile.departement,
+                departement: $user.departementPrincipal(),
                 githubRef: trameRef
               }
             }"
