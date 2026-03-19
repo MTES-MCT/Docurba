@@ -50,7 +50,6 @@ export default {
     }
   },
   data () {
-    console.log('perimetre', this.communes)
     return {
       perimetre: this.value
     }
