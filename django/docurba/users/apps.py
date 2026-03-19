@@ -16,6 +16,7 @@ class UsersConfig(AppConfig):
 
 
 def create_unmanaged_tables(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # noqa: ARG001
+    print("####################### USERS")
     if not settings.CREATE_UNMANAGED_TABLES:
         return
 
@@ -24,8 +25,9 @@ def create_unmanaged_tables(*args: list[str, Any], **kwargs: dict[str, Any]) -> 
     unmanaged_user_models = [User, Profile]
 
     with connection.schema_editor() as schema_editor:
-        schema_editor.execute("CREATE SCHEMA auth;")
+        schema_editor.execute("CREATE SCHEMA IF NOT EXISTS auth;")
 
     for model in unmanaged_user_models:
-        with connection.schema_editor() as schema_editor:
-            schema_editor.create_model(model)
+        if Profile._meta.db_table not in connection.introspection.table_names():
+            with connection.schema_editor() as schema_editor:
+                schema_editor.create_model(model)
