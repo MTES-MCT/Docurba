@@ -971,6 +971,15 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     collectivite_code = models.CharField(
         verbose_name="Code collectivité"
     )  # TextField in DB.
+    # Denormalized version of commune.departement.code_insee already existing in production.
+    # Real type is TextField but I used a Charfiel here for performance reasons.
+    # This column is used in Nuxt side to retrieve procedures by departement.
+    # See urbanizator.getProceduresForDept.
+    # Unfortunately, there is a mismatch between commune.departement.code_insee and self.departement
+    # in some records.
+    # This should be treated globally when refactoring departements usage as well in Django and in Nuxt.
+    # In the meantine, add it in the model so we can use it with the ORM.
+    departement = models.CharField(null=True, blank=True)  # noqa: DJ001
 
     class Meta:
         # Table created by a pre_migrate signal in apps.py.
@@ -992,3 +1001,54 @@ class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008
         """Uniquement pour les tests."""
         with connection.cursor() as cursor:
             cursor.execute(f"REFRESH MATERIALIZED VIEW {cls._meta.db_table}")
+
+
+class ProcedureSurvey(models.Model):
+    procedure = models.ForeignKey(
+        "core.Procedure", on_delete=models.CASCADE, related_name="surveys_answers"
+    )
+    survey = models.ForeignKey(
+        "core.Survey", on_delete=models.RESTRICT, related_name="procedures_through"
+    )
+    respondant = models.ForeignKey(
+        "users.Profile",
+        on_delete=models.RESTRICT,
+        related_name="surveys_answers",
+        null=True,
+    )
+    created_at = models.DateTimeField("créé le", auto_now_add=True)
+    responded_at = models.DateTimeField("répondu le", auto_now=True)
+
+    # Despite its name, it's a SIREN or an INSEE.
+    collectivite_code = models.ForeignKey(
+        "core.Collectivite",
+        models.DO_NOTHING,
+        verbose_name="Code collectivité",
+        to_field="code_insee_unique",
+    )
+
+    is_validated = models.BooleanField("est validée", null=True)
+
+    class Meta:
+        verbose_name = "validation"
+        unique_together = ("procedure", "survey")
+
+    def __str__(self) -> str:
+        return f"{self.pk}"
+
+
+class Survey(models.Model):
+    name = models.CharField(verbose_name="nom unique", unique=True)
+    procedures = models.ManyToManyField(
+        "core.Procedure",
+        through="ProcedureSurvey",
+        related_name="surveys",
+        verbose_name="procédures",
+    )
+    created_at = models.DateTimeField("créée le", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "enquête"
+
+    def __str__(self) -> str:
+        return self.name

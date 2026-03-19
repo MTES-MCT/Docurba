@@ -16,16 +16,41 @@
       </v-col>
       <v-col v-else cols="12">
         <v-data-table
+          v-model="selected"
           :headers="headers"
-          :items="procedures"
+          :items="proceduresToDisplay"
           :items-per-page="10"
           class="elevation-1 pa-8 procedures-dt"
           :custom-filter="customFilter"
           :search="search"
           :loading="!procedures"
-          loading-text="Chargement des collectivités..."
+          :show-select="hasValidationEnabled"
+          selectable-key="validationNeededForSurvey"
+          loading-text="Chargement des procédures..."
         >
           <template #top>
+            <v-alert v-if="hasValidationEnabled" type="info" color="primary" text>
+              <div class="text-h5 text-weight-bold">
+                Enquête annuelle
+              </div>
+              <div>
+                L’enquête annuelle sur l’état d’avancement des documents d’urbanisme est disponible sur Docurba jusqu’au <span style="font-weight: bold;">13 février 2026</span>. <a href="https://docurba.crisp.help/fr/article/a-venir-conditions-de-lenquete-annuelle-2025-tout-ce-quil-faut-savoir-agents-de-ddtmdeal-13m8qu9/">Consignes et astuces dans notre FAQ</a>.
+              </div>
+              <div>
+                <v-switch
+                  v-model="hideValidatedProceduresForSurvey"
+                  color="primary"
+                  dark
+                  inset
+                >
+                  <template #label>
+                    <span class="primary--text">
+                      Voir seulement les collectivités à valider ({{ notValidatedProceduresForSurvey.length }} restantes)
+                    </span>
+                  </template>
+                </v-switch>
+              </div>
+            </v-alert>
             <v-row>
               <v-col v-if="$user.canViewMultipleDepartements()" cols="8" class="p-0" order="first">
                 <VDeptAutocomplete
@@ -144,13 +169,85 @@
           <template #item.last_event="{ item }">
             <span class="mention-grey--text">{{ item.last_event?.date_iso_formattee }} - {{ item.last_event?.type }}</span>
           </template>
+
+                    <!-- eslint-disable-next-line -->
+          <template #item.data-table-select="{ item, isSelected, select}">
+            <div class="d-flex align-end justify-end my-5">
+              <v-tooltip v-if="item.validationNeededForSurvey" top>
+                <template #activator="{ on, attrs }">
+                  <div
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-checkbox
+                      :input-value="isSelected"
+                      @change="select"
+                    />
+                    <div />
+                  </div>
+                </template>
+                <span>Valider</span>
+              </v-tooltip>
+              <div v-else>
+                <v-menu
+                  top
+                  offset-y
+                  :close-on-content-click="false"
+                >
+                  <template #activator="{ on, attrs }">
+                    <v-chip
+                      v-bind="attrs"
+                      class="bf200 primary--text text--lighten-2 ml-2 font-weight-bold"
+                      small
+                      label
+                      v-on="on"
+                    >
+                      VALIDÉE
+                    </v-chip>
+                  </template>
+                  <v-card class="pa-2">
+                    <div class="text-center">
+                      <!-- <div class="mb-2">
+                        Collectivité validée le {{ formatDate(getValidatedInfosForCollectivite(item.code).created_at) }}
+                        par {{ getValidatedInfosForCollectivite(item.code).email }}
+                      </div>
+                      <v-btn
+                        v-if="getValidatedInfosForCollectivite(item.code).profile_id === $user.id || $user.profile.is_admin"
+                        small
+                        color="error"
+                        text
+                        @click="cancelValidation(item.code)"
+                      >
+                        Annuler la validation
+                      </v-btn> -->
+                    </div>
+                  </v-card>
+                </v-menu>
+              </div>
+            </div>
+          </template>
         </v-data-table>
+        <div
+          v-if="selected.length > 0 "
+          class="pa-6 elevation-4 validation-toolbar"
+        >
+          <div class="d-flex">
+            <v-spacer />
+            <v-btn color="primary" outlined @click="selected = []">
+              Tout déselectionner
+            </v-btn>
+            <v-btn class="ml-2" color="primary" depressed @click="validateSelectedProcedures">
+              Valider {{ selected.length }} procédures
+            </v-btn>
+          </div>
+        </div>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
+import { mdiWifiArrowDown } from '@mdi/js';
 import dayjs from 'dayjs'
 // import { AsyncParser } from '@json2csv/node'
 
@@ -160,6 +257,9 @@ export default {
   data () {
     const documentTypes = ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiHM', 'PLUiM', 'SCOT']
     return {
+      selected: [],
+      hideValidatedProceduresForSurvey: false,
+      hasValidationEnabled: this.$user.canViewProcedureSurvey({ departement: this.$route.params.departement }),
       referentiel: null,
       selectedTypesFilter: ['pp', 'ps'],
       typeFilterItems: [{ text: 'Procédures principales', value: 'pp' }, { text: 'Procédures secondaires', value: 'ps' }],
@@ -174,25 +274,39 @@ export default {
   },
   computed: {
     headers () {
-      return [
+    const headers = [
         { text: 'Nom', align: 'start', value: 'procedureName', filterable: true, width: '45%' },
         { text: 'Périmètre', align: 'start', value: 'perimetre', filterable: false, width: '150px' },
         { text: 'Prescription', value: 'prescription', filterable: false, width: '135px', sort: this.sortByDateIso },
         { text: 'Dernier évènement', value: 'last_event', filterable: false, sort: this.sortByDateIso }
       ]
+      if (this.hasValidationEnabled) {
+        headers.push({ text: 'Valider', value: 'data-table-select' })
+      }
+      return headers
     },
     procedures () {
       const proceduresAndFilters = this.rawProcedures?.filter((e) => {
         return e.procedures.created_at &&
         this.selectedDocumentsFilter.includes(e.procedures.doc_type) &&
-          ((this.selectedTypesFilter.includes('pp') && e.procedures.is_principale) ||
-          (this.selectedTypesFilter.includes('ps') && !e.procedures.is_principale)) &&
-          (((this.selectedStatusFilter.includes('opposable') && e.opposable) ||
-          (this.selectedStatusFilter.includes('en_cours') && (!e.opposable && !(e.procedures.status === 'opposable'))) ||
-          (this.selectedStatusFilter.includes('archived') && (!e.opposable && e.procedures.status === 'opposable'))))
+        ((this.selectedTypesFilter.includes('pp') && e.procedures.is_principale) ||
+        (this.selectedTypesFilter.includes('ps') && !e.procedures.is_principale)) &&
+        (((this.selectedStatusFilter.includes('opposable') && e.opposable) ||
+        (this.selectedStatusFilter.includes('en_cours') && (!e.opposable && !(e.procedures.status === 'opposable'))) ||
+        (this.selectedStatusFilter.includes('archived') && (!e.opposable && e.procedures.status === 'opposable'))))
       })
       return proceduresAndFilters
+    },
+    notValidatedProceduresForSurvey () {
+      return this.procedures.filter(procedure => procedure.validationNeededForSurvey)
+    },
+    proceduresToDisplay () {
+      if (this.hideValidatedProceduresForSurvey) {
+        return this.notValidatedProceduresForSurvey
+      }
+      return this.procedures
     }
+
   },
   async mounted () {
     try {
@@ -227,6 +341,9 @@ export default {
       // eslint-disable-next-line no-console
       console.log('ERROR: ', error)
     }
+    if (this.hasValidationEnabled) {
+      this.rawProcedures = await this.addValidationNeededToProcedure(this.rawProcedures)
+    }
   },
   methods: {
     customFilter (value, search, item) {
@@ -247,7 +364,54 @@ export default {
     },
     sortByDateIso (a, b) {
       return dayjs(a?.date_iso || 0) - dayjs(b?.date_iso || 0)
-    }
+    },
+    async addValidationNeededToProcedure (procedures) {
+      console.log("before")
+      const { success, error, data } = await this.$zanSurvey.getProceduresToValidate(this.$route.params.departement)
+      // const filteredProcedures = this.procedures.filter(e => data.map(d => d.procedures.id).includes(e.procedures.id))
+      return procedures.map(e => ({...e,
+        validationNeededForSurvey: data.map(d => d.procedures.id).includes(e.procedures.id)
+      }))
+      // this.rawProcedures = procedures
+      // window.procedures = rawProcedures
+      // console.log("procedures", this.procedures)
+      // OK:
+      // window.procedures.filter(e =>
+      //   window.data.map(d => d.procedures.id).includes('4630c7d0-6626-4aae-a57d-9666311f617a')
+      // )
+
+      // const validatedCodes = this.validatedCollectivites.map(c => c.collectivite_code)
+      // for (const collectivite of this.referentiel) {
+      //   collectivite.isNotValidated = !validatedCodes.includes(collectivite.code)
+      // }
+      // if (!success) {
+      //   this.snackbar = true
+
+      //   this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
+      // }
+    },
+    // cancelValidation: where procedureId in selectedIds and profile_id==user.id
+    // async cancelValidation (codeCollec) {
+    //   const { success, error, data } = await this.$enquete.deleteValidationForCollectivite(codeCollec)
+    //   console.log('data valid 2024: ', data)
+    //   if (!success) {
+    //     this.snackbar = true
+    //     this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
+    //   }
+    //   await this.fetchValidation()
+    // },
+    // getValidatedInfosForCollectivite (collectiviteCode) {
+    //   return this.validatedCollectivites.find(e => e.collectivite_code === collectiviteCode)
+    // },
+    // async validateSelectedCollectivites () {
+    //   const { success, error } = await this.$enquete.validateCollectivites(this.selected)
+    //   if (!success) {
+    //     this.snackbar = true
+    //     this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
+    //   }
+    //   await this.fetchValidation()
+    //   this.selected = []
+    // },
   }
 }
 </script>
