@@ -32,3 +32,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.v-chip:hover:before {
+    opacity: 0;
+}
+</style>
