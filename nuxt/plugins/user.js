@@ -180,6 +180,9 @@ export default async ({ $supabase, app }, inject) => {
         }
       }
     },
+    canUpdateProcedure () {
+      return this.profile.poste === 'ddt'
+    },
     canDeleteProcedure () {
       return this.profile.side !== 'ppa'
     },

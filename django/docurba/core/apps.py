@@ -18,8 +18,13 @@ class CoreAppConfig(AppConfig):
 
 
 def create_unmanaged_tables(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # noqa: ARG001
+    print("####################### CORE")
     if not settings.CREATE_UNMANAGED_TABLES:
         return
+
+    from docurba.users.apps import create_unmanaged_tables
+
+    create_unmanaged_tables()
 
     from docurba.core.models import (  # noqa: PLC0415
         CommuneProcedure,
@@ -30,8 +35,9 @@ def create_unmanaged_tables(*args: list[str, Any], **kwargs: dict[str, Any]) -> 
     unmanaged_core_models = [Procedure, CommuneProcedure, Event]
 
     for model in unmanaged_core_models:
-        with connection.schema_editor() as schema_editor:
-            schema_editor.create_model(model)
+        if model._meta.db_table not in connection.introspection.table_names():
+            with connection.schema_editor() as schema_editor:
+                schema_editor.create_model(model)
 
 
 def create_topics(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # noqa: ARG001
