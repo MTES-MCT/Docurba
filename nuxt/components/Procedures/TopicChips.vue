@@ -1,7 +1,7 @@
 <template>
-  <span v-if="topics">
+  <span v-if="topicsToDisplay">
     <v-chip
-      v-for="topic in topics"
+      v-for="topic in topicsToDisplay"
       :key="topic"
       color="blue"
       outlined
@@ -23,6 +23,11 @@ export default {
     small: {
       type: Boolean,
       required: false
+    }
+  },
+  computed: {
+    topicsToDisplay () {
+      return this.topics.filter(e => e !== 'Autre')
     }
   }
 }
