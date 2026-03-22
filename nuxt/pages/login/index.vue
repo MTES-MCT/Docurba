@@ -14,6 +14,18 @@
         <div class="text-h1">
           Inscription et connexion
         </div>
+
+        <p class="mt-4 text-body-1 g600--text">
+          Les données publiques de Docurba sont accessibles librement, sans compte, en naviguant
+          sur le site ou en consultant nos
+          <nuxt-link to="/exports" class="text-decoration-underline">
+            API.
+          </nuxt-link>
+        </p>
+        <p class="text-body-1 g600--text">
+          La création de compte Docurba est réservée aux acteurs de la planification pour
+          contribuer notamment au suivi de leurs documents d'urbanisme en cours d'élaboration.
+        </p>
       </v-col>
     </v-row>
     <v-row class="d-flex align-self-start">
