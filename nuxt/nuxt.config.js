@@ -227,7 +227,9 @@ export default {
           error: '#e10600',
           rm300: '#f7bfc3',
           rm500: '#e1000f',
-          'c-green-warm': '#169B62'
+          'c-green-warm': '#169B62',
+          'warning-text': '#B34103',
+          'warning-bg': '#FFE9E6'
         }
       }
     },
