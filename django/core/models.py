@@ -5,6 +5,7 @@ from functools import cached_property
 from operator import attrgetter
 from typing import Self
 
+import pghistory
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
 from django.db import connection, models
 from django.db.models.constraints import UniqueConstraint
@@ -565,6 +566,7 @@ class VisibilityChoices(models.TextChoices):
     )
 
 
+@pghistory.track(model_name="EventsSnapshot")
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
     procedure = models.ForeignKey(

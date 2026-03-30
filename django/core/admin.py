@@ -5,8 +5,9 @@ from typing import ClassVar
 
 from django.contrib import admin
 from django.db import models
+from pghistory.admin import EventModelAdmin
 
-from core.models import Collectivite, Commune, Event, Procedure
+from core.models import Collectivite, Commune, Event, EventsSnapshot, Procedure
 
 
 @admin.register(Collectivite)
@@ -79,11 +80,28 @@ class EventAdmin(admin.ModelAdmin):
     def has_add_permission(self, request: object) -> bool:
         return False
 
-    def has_change_permission(self, request: object, obj=None) -> bool:
-        return False
-
     def has_delete_permission(self, request, obj=None) -> bool:
         return False
+
+    def get_queryset(self, request) -> models.QuerySet:
+        return (
+            super()
+            .get_queryset(request)
+            .prefetch_related(models.Prefetch("procedure", Procedure.objects.all()))
+        )
+
+
+@admin.register(EventsSnapshot)
+class EventSnapshotAdmin(EventModelAdmin):
+    list_display = (
+        "pgh_obj",
+        "pgh_label",
+        "pgh_created_at",
+        "procedure",
+        "profile",
+        "date_evenement",
+        "is_valid",
+    )
 
     def get_queryset(self, request) -> models.QuerySet:
         return (

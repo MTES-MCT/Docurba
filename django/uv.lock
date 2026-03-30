@@ -234,6 +234,31 @@ wheels = [
 ]
 
 [[package]]
+name = "django-pghistory"
+version = "3.9.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "django-pgtrigger" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9e/7e/594930ce9cc8ddd9a586ef126f745d9516e307ef48a35a8566da54ca53e8/django_pghistory-3.9.2.tar.gz", hash = "sha256:1d07b75b61501a209330e7fb43fad2b2482f7f0399a36fa91aa7600a03025921", size = 31401, upload-time = "2026-02-17T16:08:21.304Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e9/5f/58a0551e951e4b67063e35d3393aeaab2f77bca24b0706ffcd977474e34c/django_pghistory-3.9.2-py3-none-any.whl", hash = "sha256:1623633af429837567dd11469823b9bb3c3f908cc117d60f097d23f3f0622fa2", size = 39929, upload-time = "2026-02-17T16:08:19.894Z" },
+]
+
+[[package]]
+name = "django-pgtrigger"
+version = "4.17.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/45/3d/ea55015e2e2a8e2230c6a056768512a9660573f8926f87671f166d455936/django_pgtrigger-4.17.0.tar.gz", hash = "sha256:55d297a756b5b6a8e0c533d3323fda1589c699e7d14aa3fff7fa7d774c46363c", size = 32200, upload-time = "2025-12-04T15:46:06.587Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/91/47/13c0c23c134cd0f0b0addfbc3ef1477f90d891184d21689f9074b794b00c/django_pgtrigger-4.17.0-py3-none-any.whl", hash = "sha256:06048cdeb57e20987fd0bf7dd673512a1413a08868eea248d70dbb970e967175", size = 36326, upload-time = "2025-12-04T15:46:05.427Z" },
+]
+
+[[package]]
 name = "django-revproxy"
 version = "0.13.0"
 source = { registry = "https://pypi.org/simple" }
@@ -268,6 +293,7 @@ dependencies = [
     { name = "django-debug-toolbar" },
     { name = "django-environ" },
     { name = "django-extensions" },
+    { name = "django-pghistory" },
     { name = "django-revproxy" },
     { name = "gunicorn", extra = ["gevent"] },
     { name = "psycopg", extra = ["binary", "pool"] },
@@ -292,6 +318,7 @@ requires-dist = [
     { name = "django-debug-toolbar" },
     { name = "django-environ" },
     { name = "django-extensions" },
+    { name = "django-pghistory" },
     { name = "django-revproxy" },
     { name = "gunicorn", extras = ["gevent"] },
     { name = "psycopg", extras = ["binary", "pool"] },
