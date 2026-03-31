@@ -314,6 +314,46 @@ SCOTS_ONGOING_OR_ENFORCEABLE = r"""
         from results;
 """
 
+# 348 records
+MISSING_ZAN_PROCEDURES = r"""
+with results as (
+  select
+    p.collectivite_porteuse_id 	as "collectivite_code_id",
+    p.id as "procedure_id",
+    departements_agreges.departements ,
+    surveys.id as "survey_id"
+  from procedures p
+  LEFT JOIN (
+    SELECT
+    procedures_perimetres.procedure_id,
+    array_agg(DISTINCT procedures_perimetres.departement) AS departements
+    FROM
+        procedures_perimetres
+    WHERE
+        procedures_perimetres.departement != '' and procedures_perimetres.departement != 'UNKWN'
+    GROUP BY
+        procedure_id
+  ) AS departements_agreges ON p.id = departements_agreges.procedure_id
+  left join core_proceduretopic cp on cp.procedure_id = p.id
+  inner join core_topic topic on topic.id = cp.topic_id
+  left join surveys_proceduresurvey sp on sp.procedure_id = p.id,
+  surveys_survey as surveys
+where
+  topic.name = 'zan'
+  and
+  sp.id is null
+  and
+  surveys.name = 'zan_03_2026'
+  and
+  exists(
+	select 1 from core_collectivite where core_collectivite.code_insee_unique = p.collectivite_porteuse_id
+  )
+)
+insert into surveys_proceduresurvey (collectivite_code_id, procedure_id, survey_id, created_at, departements)
+select collectivite_code_id, procedure_id, survey_id, current_timestamp, departements
+from results;
+"""
+
 
 class Migration(migrations.Migration):
     dependencies = [
@@ -340,6 +380,10 @@ class Migration(migrations.Migration):
         ),
         migrations.RunSQL(
             sql=SCOTS_ONGOING_OR_ENFORCEABLE,
+            reverse_sql="truncate surveys_proceduresurvey",
+        ),
+        migrations.RunSQL(
+            sql=MISSING_ZAN_PROCEDURES,
             reverse_sql="truncate surveys_proceduresurvey",
         ),
     ]
