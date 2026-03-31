@@ -6,7 +6,14 @@ from typing import Any
 from django.contrib import admin
 from django.db import models
 
-from docurba.core.models import Collectivite, Commune, Event, Procedure, Topic
+from docurba.core.models import (
+    Collectivite,
+    Commune,
+    Event,
+    Procedure,
+    Topic,
+    TypeCollectivite,
+)
 
 
 @admin.register(Collectivite)
@@ -77,6 +84,19 @@ class TopicsFilter(admin.SimpleListFilter):
         return queryset.filter(topics__name=self.value())
 
 
+class CollectiviteTypeFilter(admin.SimpleListFilter):
+    title = "type de la collectivité porteuse"
+    parameter_name = "collectivite_type"
+
+    def lookups(self, request, model_admin) -> list[tuple[str, Any]]:
+        return TypeCollectivite.choices
+
+    def queryset(self, request, queryset) -> models.QuerySet[Any]:
+        if not self.value():
+            return queryset
+        return queryset.filter(collectivite_porteuse__type=self.value())
+
+
 @admin.register(Procedure)
 class ProcedureAdmin(admin.ModelAdmin):
     readonly_fields = (
@@ -97,6 +117,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         ("parente", admin.EmptyFieldListFilter),
         ("name", admin.EmptyFieldListFilter),
         "doc_type",
+        CollectiviteTypeFilter,
         TopicsFilter,
     )
     inlines = [ProcedurePerimetreInline, EventsInline]
