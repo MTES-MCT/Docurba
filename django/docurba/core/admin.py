@@ -41,9 +41,27 @@ class CommuneAdmin(CollectiviteAdmin):
 class ProcedurePerimetreInline(admin.TabularInline):
     model = Procedure.perimetre.through
 
+    def has_add_permission(self, *args: list, **kwargs: dict) -> bool:
+        return False
+
+    def has_delete_permission(self, *args: list, **kwargs: dict) -> bool:
+        return False
+
+    def has_change_permission(self, *args: list, **kwargs: dict) -> bool:
+        return False
+
 
 class EventsInline(admin.TabularInline):
     model = Event
+
+    def has_add_permission(self, *args: list, **kwargs: dict) -> bool:
+        return False
+
+    def has_delete_permission(self, *args: list, **kwargs: dict) -> bool:
+        return False
+
+    def has_change_permission(self, *args: list, **kwargs: dict) -> bool:
+        return False
 
 
 class TopicsFilter(admin.SimpleListFilter):
@@ -61,6 +79,20 @@ class TopicsFilter(admin.SimpleListFilter):
 
 @admin.register(Procedure)
 class ProcedureAdmin(admin.ModelAdmin):
+    readonly_fields = (
+        "collectivite_porteuse_id",
+        "doc_type",
+        "type",
+        "numero",
+        "parente",
+        "name",
+        "nuxt_status",
+        "django_status",
+        "commentaire",
+        "current_perimetre",
+        "is_principale",
+    )
+    autocomplete_fields = ("collectivite_porteuse",)
     list_filter = (
         ("parente", admin.EmptyFieldListFilter),
         ("name", admin.EmptyFieldListFilter),
@@ -71,27 +103,14 @@ class ProcedureAdmin(admin.ModelAdmin):
     list_display = ("__str__", "django_status")
     search_fields = ("pk",)
     fields = [
-        "doc_type",
-        "type",
-        "numero",
-        "parente",
-        "name",
-        "nuxt_status",
-        "django_status",
-        "collectivite_porteuse",
-        "collectivite_porteuse_id",
-        "commentaire",
-        "current_perimetre",
-        "is_principale",
+        *autocomplete_fields,
+        *readonly_fields,
     ]
 
     def has_add_permission(self, request: object) -> bool:
         return False
 
     def has_delete_permission(self, request, obj=None) -> bool:
-        return False
-
-    def has_change_permission(self, request, obj=None) -> bool:
         return False
 
     def get_queryset(self, request) -> models.QuerySet:
