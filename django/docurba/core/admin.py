@@ -48,6 +48,10 @@ class CommuneAdmin(CollectiviteAdmin):
 class ProcedurePerimetreInline(admin.TabularInline):
     model = Procedure.perimetre.through
 
+    def get_queryset(self, request) -> models.QuerySet:
+        queryset = super().get_queryset(request)
+        return queryset.select_related("commune", "procedure")
+
     def has_add_permission(self, *args: list, **kwargs: dict) -> bool:
         return False
 
@@ -60,6 +64,12 @@ class ProcedurePerimetreInline(admin.TabularInline):
 
 class EventsInline(admin.TabularInline):
     model = Event
+
+    def get_queryset(self, request) -> models.QuerySet:
+        queryset = super().get_queryset(request)
+        return queryset.select_related(
+            "procedure", "procedure__collectivite_porteuse"
+        ).prefetch_related("procedure__perimetre")
 
     def has_add_permission(self, *args: list, **kwargs: dict) -> bool:
         return False
@@ -136,7 +146,11 @@ class ProcedureAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request) -> models.QuerySet:
         queryset = super().get_queryset(request)
-        return queryset.with_events()  # mandatory to set the status.
+        return (
+            queryset.with_events()  # mandatory to set the status.
+            .select_related("collectivite_porteuse")
+            .prefetch_related("perimetre")
+        )
 
     @admin.display(description="Statut selon Nuxt")
     def nuxt_status(self, obj) -> str:
