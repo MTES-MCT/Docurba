@@ -5,7 +5,7 @@ name: 🔪 Suppression d'une recette jetable
 # lorque la PR est fermée ou fusionnée car il s'agit de recettes jetables.
 # https://doc.scalingo.com/platform/app/review-apps
 on:
-  pull_request:
+  pull_request_target:
     types: [ closed ]
   # https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow
   workflow_dispatch:

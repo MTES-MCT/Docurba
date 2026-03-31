@@ -2,7 +2,7 @@ name: 🕵 Création d'une recette jetable
 
 # L'action est lancée lorsque l'étiquette « recette-jetable » est ajoutée à la PR.
 on:
-  pull_request:
+  pull_request_target:
     types: [ labeled ]
   # https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow
   workflow_dispatch:
