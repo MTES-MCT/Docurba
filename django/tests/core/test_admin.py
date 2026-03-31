@@ -3,8 +3,8 @@ from django.test import Client
 from django.urls import reverse
 from pytest_django.asserts import assertContains, assertNotContains
 
-from docurba.core.models import Procedure, Topic, TypeDocument
-from tests.factories import create_procedure
+from docurba.core.models import Procedure, Topic, TypeCollectivite, TypeDocument
+from tests.factories import create_groupement, create_procedure
 
 
 @pytest.mark.parametrize("doc_type", TypeDocument.values)
@@ -34,3 +34,19 @@ class TestProcedureList:
         response = admin_client.get(reverse("admin:core_procedure_changelist"))
         assertContains(response, procedure_without_topics.pk)
         assertContains(response, procedure_with_topic.pk)
+
+    def test_collectivite_porteuse_type_filter(self, admin_client: Client) -> None:
+        polem = create_groupement(type=TypeCollectivite.POLEM)
+        cc = create_groupement(type=TypeCollectivite.CC)
+        procedure_polem = create_procedure(collectivite_porteuse=polem)
+        procedure_cc = create_procedure(collectivite_porteuse=cc)
+
+        response = admin_client.get(
+            f"{reverse('admin:core_procedure_changelist')}?collectivite_type={polem.type}"
+        )
+        assertNotContains(response, procedure_cc.pk)
+        assertContains(response, procedure_polem.pk)
+
+        response = admin_client.get(reverse("admin:core_procedure_changelist"))
+        assertContains(response, procedure_polem.pk)
+        assertContains(response, procedure_cc.pk)
