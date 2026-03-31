@@ -35,7 +35,7 @@ class DepartementsFilter(admin.SimpleListFilter):
     parameter_name = "departement"
 
     def lookups(self, request, model_admin) -> list[tuple[str, Any]]:
-        return [
+        return [("None", "Sans département")] + [
             (departement.code_insee, departement.nom)
             for departement in Departement.objects.all()
         ]
@@ -43,6 +43,8 @@ class DepartementsFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset) -> models.QuerySet[Any]:
         if not self.value():
             return queryset
+        if self.value() == "None":
+            return queryset.filter(departements__isnull=True)
         return queryset.filter(departements__contains=[self.value()])
 
 
