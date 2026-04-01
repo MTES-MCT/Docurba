@@ -84,4 +84,9 @@ class ProcedureSurveyAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request) -> models.QuerySet:
         queryset = super().get_queryset(request)
-        return queryset.select_related("procedure", "survey", "collectivite_code")
+        return queryset.select_related(
+            "procedure",
+            "survey",
+            "collectivite_code",
+            "procedure__collectivite_porteuse",
+        ).prefetch_related("procedure__perimetre")
