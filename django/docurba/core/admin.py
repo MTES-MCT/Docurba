@@ -121,6 +121,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         "commentaire",
         "current_perimetre",
         "is_principale",
+        "archived",
     )
     autocomplete_fields = ("collectivite_porteuse",)
     list_filter = (
