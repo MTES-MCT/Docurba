@@ -1,0 +1,33 @@
+name: docurba
+
+services:
+  # Supabase PostgreSQL service used only in tests.
+  # Supabase's CLI only allows one database but we need two: one for dev and another one for tests.
+  # See mise.toml
+  # Highly inspired by https://github.com/supabase/supabase/blob/f128106801e474e685a384333f57d866421d655f/docker/docker-compose.yml.
+  # Documentation: https://supabase.com/docs/guides/self-hosting/docker
+  test_db:
+    container_name: supabase-db
+    # https://github.com/supabase/postgres
+    image: supabase/postgres:15.1.1.13
+    restart: unless-stopped
+    volumes:
+      - ./docker/test_db/supabase_seeds/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:Z
+      - ./docker/test_db/supabase_seeds/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:Z
+      # Changes required for internal supabase data such as _analytics
+      - ./docker/test_db/supabase_seeds/_supabase.sql:/docker-entrypoint-initdb.d/migrations/97-_supabase.sql:Z
+      # Changes required for Analytics support
+      - ./docker/test_db/supabase_seeds/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql:Z
+      # Seed data containing our own schema.
+      - ./docker/test_db/prod_schema_before_django_migrations.sql:/docker-entrypoint-initdb.d/seed.sql
+    ports:
+      - "${TEST_PGPORT}:5432"
+    environment:
+      PGUSER: ${TEST_PGUSER}
+      PGPASSWORD: ${TEST_PGPASSWORD}
+      PGPHOST: ${TEST_PGHOST}
+      PGDATABASE: ${TEST_PGDATABASE}
+      # Used by supabase seeds.
+      POSTGRES_USER: ${TEST_PGUSER}
+      POSTGRES_PASSWORD: ${TEST_PGPASSWORD}
+      POSTGRES_DB: ${TEST_PGDATABASE}
