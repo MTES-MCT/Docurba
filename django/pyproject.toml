@@ -30,7 +30,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--create-db --cov=. -x"
+addopts = "--reuse-db --cov=. -x"
 xfail_strict = true
 env = [
     "DJANGO_SETTINGS_MODULE=config.settings.test",
