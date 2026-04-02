@@ -57,9 +57,18 @@ STORAGES = {
     },
 }
 
+# Both Supabase and Scalingo expose database configuration as a single environment variable:
+# its connection URL.
+# See https://doc.scalingo.com/databases/postgresql/shared-resources/getting-started/connecting
+# In test, the `DATABASE_URL` is not set because we create another database to mirror the production schema.
+# But DATABASE_URL still needs a defaut value because base settings are imported first before being overriden.
+
 DATABASES = {
     "default": {
-        **env.db("DATABASE_URL"),
+        **env.db(
+            "DATABASE_URL",
+            default="postgresql://user:password@localhost:5132/postgres",
+        ),
         "CONN_MAX_AGE": env.int("CONN_MAX_AGE", 0),
         "CONN_HEALTH_CHECK": True,
     }
