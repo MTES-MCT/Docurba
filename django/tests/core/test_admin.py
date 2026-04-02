@@ -36,8 +36,8 @@ class TestProcedureList:
         assertContains(response, procedure_with_topic.pk)
 
     def test_collectivite_porteuse_type_filter(self, admin_client: Client) -> None:
-        polem = create_groupement(type=TypeCollectivite.POLEM)
-        cc = create_groupement(type=TypeCollectivite.CC)
+        polem = create_groupement(groupement_type=TypeCollectivite.POLEM)
+        cc = create_groupement(groupement_type=TypeCollectivite.CC)
         procedure_polem = create_procedure(collectivite_porteuse=polem)
         procedure_cc = create_procedure(collectivite_porteuse=cc)
 
