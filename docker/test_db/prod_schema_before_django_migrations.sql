@@ -2564,7 +2564,7 @@ CREATE TRIGGER handle_updated_at BEFORE UPDATE ON public.doc_frise_events FOR EA
 
 
 --- TODO(cms)
---- DISABLED
+--- Triggers disabled because they run HTTP queries we can't manage locally or in tests for the moment.
 
 -- Performs an HTTP query on Nuxt3.
 --

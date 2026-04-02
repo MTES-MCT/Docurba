@@ -4,38 +4,48 @@ on:
     branches: [main]
   pull_request:
 
-defaults:
-  run:
-    working-directory: django
-
 jobs:
   all:
     runs-on: ubuntu-latest
     env:
+      PYTHONPATH: ${{ github.workspace }}/django/
       DJANGO_SETTINGS_MODULE: config.settings.test
+      TEST_PGUSER: postgres
+      TEST_PGPASSWORD: postgres
+      TEST_PGHOST: 127.0.0.1
+      TEST_PGPORT: 5432
+      TEST_PGDATABASE: test_docurba
       SECRET_KEY: test_secret_key
-      # Default supabase URL: https://supabase.com/docs/guides/local-development/cli/getting-started?queryGroups=access-method&access-method=postgres
-      DATABASE_URL: postgresql://postgres:postgres@localhost:54322/postgres
       UPSTREAM_NUXT: http://localhost:3000
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Set DATABASE_URL
+        run: |
+          echo "TEST_DATABASE_URL=postgres://${TEST_PGUSER}:${TEST_PGPASSWORD}@${TEST_PGHOST}:${TEST_PGPORT}/${TEST_PGDATABASE}" >> $GITHUB_ENV
 
-      - name: 🛠️ Installation de la CLI Supabase
-        uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
-        with:
-          version: 2.60.0
+      - uses: actions/checkout@v4 # TODO use sha
 
-      - run: supabase db start
-
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5 # TODO usa sha
         with:
           python-version-file: django/.python-version
-      - uses: astral-sh/setup-uv@v6
+
+      - uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57 # v8.0.0
         with:
           activate-environment: true
-      - run: uv sync --locked --all-extras --dev --active
-      - run: pytest --create-db
-      - run: ruff format --diff .
-      - run: ruff check --output-format=github .
-      - run: python -m django makemigrations --check --dry-run --noinput || (echo "⚠ Migration manquante ⚠"; exit 1)
+
+      - run: uv sync --locked --all-extras --dev --active --project=django/
+
+      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        with:
+          version: 2025.11.4 # [default: latest] mise version to install
+          install: true # [default: true] run `mise install`
+          cache: true # [default: true] cache mise using GitHub's cache
+          experimental: true # [default: false] enable experimental features
+
+      - name: 🛠️ Initialize the test database
+        run: mise start:tests
+
+      - run: pytest django/tests/
+      - run: ruff format --diff django/
+      - run: ruff check --output-format=github django/
+      - run: django-admin makemigrations --check --dry-run --noinput || (echo "⚠ Migration manquante ⚠"; exit 1)
