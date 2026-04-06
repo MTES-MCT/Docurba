@@ -23,9 +23,9 @@ jobs:
         run: |
           echo "TEST_DATABASE_URL=postgres://${TEST_PGUSER}:${TEST_PGPASSWORD}@${TEST_PGHOST}:${TEST_PGPORT}/${TEST_PGDATABASE}" >> $GITHUB_ENV
 
-      - uses: actions/checkout@v4 # TODO use sha
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - uses: actions/setup-python@v5 # TODO usa sha
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version-file: django/.python-version
 
