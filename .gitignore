@@ -114,3 +114,6 @@ exported_data/
 
 # Exports files
 */exports/*
+
+# Django's collected statics
+django/static/*
