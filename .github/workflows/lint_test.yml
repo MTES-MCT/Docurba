@@ -45,6 +45,7 @@ jobs:
       - name: 🛠️ Initialize the test database
         run: mise start:tests
 
+      - run: django-admin collectstatic
       - run: pytest --cov django/tests/ django/tests/
       - run: ruff format --diff django/
       - run: ruff check --output-format=github django/
