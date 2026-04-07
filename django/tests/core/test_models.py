@@ -58,7 +58,6 @@ class TestProcedureCommunesCounts:
             doc_type=TypeDocument.PLU
         )
         procedure_sectorielle.perimetre.add(commune_enfant)
-
         with django_assert_num_queries(1):
             procedure_sectorielle_with_counts = Procedure.objects.get(
                 id=procedure_sectorielle.id

@@ -67,16 +67,12 @@ CREATE TABLE public.procedures_perimetres (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     added_at timestamp with time zone DEFAULT now(),
-    -- collectivite_code text NOT NULL,
-    collectivite_code text,
-    -- collectivite_type text NOT NULL,
-    collectivite_type text,
+    collectivite_code text NOT NULL,
+    collectivite_type text NOT NULL,
     procedure_id uuid NOT NULL,
-    -- opposable boolean NOT NULL,
-    opposable boolean,
+    opposable boolean NOT NULL,
     departement text,
-    -- commune_id text GENERATED ALWAYS AS (((collectivite_code || '_'::text) || collectivite_type)) STORED NOT NULL
-    commune_id text
+    commune_id text GENERATED ALWAYS AS (((collectivite_code || '_'::text) || collectivite_type)) STORED NOT NULL
 );
 
 --
