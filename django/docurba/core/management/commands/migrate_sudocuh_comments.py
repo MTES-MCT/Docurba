@@ -28,6 +28,7 @@ class Command(BaseCommand):
                 "from_sudocuh",
                 "collectivite_porteuse",  # Mandatory because of procedureManager.get_queryset
             )
+            .order_by("from_sudocuh")
         )
         if limit:
             procedures_qs = procedures_qs[:limit]
