@@ -13,9 +13,12 @@ from django.db.models.functions import Now
 from django.urls import reverse
 from django.utils import timezone
 
+from docurba.core.enums import CommuneType
+
 logger = logging.getLogger(__name__)
 
 
+# NOTE(cms): These TextChoices should be moved to enums.py
 class TypeCollectivite(models.TextChoices):
     COM = "COM", "Commune"
     COMD = "COMD", "Commune déléguée"
@@ -966,11 +969,34 @@ class Commune(Collectivite):
 
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
-    commune = models.ForeignKey(Commune, models.DO_NOTHING, db_constraint=False)
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID())
+
+    # Created for Nuxt before Django models were here.
+    # It should be refactored when working on the COG.
+    commune_id = models.GeneratedField(
+        expression=models.functions.Concat(
+            "collectivite_code",
+            models.Value("_"),
+            "collectivite_type",
+        ),
+        output_field=models.CharField(),
+        db_persist=True,
+    )  # TextField in DB.
+    # Use the commune_id (GeneratedField) as a foreign key.
+    commune = models.ForeignObject(
+        Commune,
+        from_fields=["commune_id"],
+        to_fields=["collectivite_ptr_id"],
+        on_delete=models.DO_NOTHING,
+    )
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
     collectivite_code = models.CharField(
         verbose_name="Code collectivité"
     )  # TextField in DB.
+    collectivite_type = models.CharField(
+        verbose_name="Type de collectivité", choices=CommuneType
+    )  # TextField in DB.
+    opposable = models.BooleanField(verbose_name="Est opposable", default=False)
     # Denormalized version of commune.departement.code_insee already existing in production.
     # Real type is TextField but I used a Charfiel here for performance reasons.
     # This column is used in Nuxt side to retrieve procedures by departement.
