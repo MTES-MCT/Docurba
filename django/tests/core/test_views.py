@@ -7,6 +7,7 @@ from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 
 from docurba.core.models import EventCategory, TypeDocument
+from tests.core.factories import CommuneFactory, ProcedureFactory
 from tests.factories import (
     create_commune,
     create_groupement,
@@ -37,9 +38,11 @@ class TestAPIPerimetres:
     def test_format_csv(
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune(code_insee="12345", commune_type="COM")
-        commune.procedures.create(
-            doc_type=TypeDocument.PLU, collectivite_porteuse=commune
+        commune = CommuneFactory()
+        ProcedureFactory(
+            with_perimetre=[commune],
+            doc_type=TypeDocument.PLU,
+            collectivite_porteuse=commune,
         )
 
         with django_assert_num_queries(3):
