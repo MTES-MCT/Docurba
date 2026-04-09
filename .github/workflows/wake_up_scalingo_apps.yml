@@ -1,0 +1,23 @@
+name: ⏰ Réveil des apps de prod
+on:
+  schedule:
+    - cron: "30 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  all:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🛠️ Installation de la CLI Scalingo
+      uses: scalingo-community/setup-scalingo@87fe86eedc708ffb9d232c756b21f6a5784f6c8a # v0.1.1
+      with:
+        #  Jeton personnel de Céline Martinet Sanchez.
+        api_token: ${{ secrets.SCALINGO_API_TOKEN }}
+        region: 'osc-fr1'
+
+    - name: ⏰ Réveil des apps de prod
+      run: |
+        scalingo --app docurba integration-link-manual-deploy main
+        scalingo --app docurba-nuxt3 integration-link-manual-deploy main
+        scalingo --app docurba-django integration-link-manual-deploy main
