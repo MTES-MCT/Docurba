@@ -10,8 +10,8 @@
       </v-icon>
       <span class="text-center">
         <span v-if="content.bold" class="font-weight-bold">{{ content.bold }}</span>
-        <nuxt-link :to="{ name: 'login' }" style="color: inherit; text-decoration: underline;">{{ content.link }}</nuxt-link>
         <template v-if="content.text">{{ content.text }}</template>
+        <nuxt-link :to="{ name: 'login' }" style="color: inherit; text-decoration: underline;">{{ content.link }}</nuxt-link>.
       </span>
       <v-btn
         icon
@@ -40,8 +40,8 @@ const BANNER_CONTENT = {
   },
   default: {
     bold: 'Vous représentez un territoire ou l\'État ?',
-    link: 'Identifiez-vous',
-    text: ' pour accéder à plus d\'informations et suivre vos documents d\'urbanisme'
+    text: 'Pour accéder à plus d\'informations et suivre vos documents d\'urbanisme,',
+    link: 'identifiez-vous',
   }
 }
 
