@@ -58,24 +58,6 @@ CREATE TABLE public.procedures (
 );
 
 --
--- Name: procedures_perimetres; Type: TABLE; Schema: public; Owner: -
---
-
--- TODO(cms): restore the original schema.
--- https://github.com/MTES-MCT/Docurba/pull/1879/changes#diff-13feb63c76ec6cb79ead0ec4ccd6576acd3c40f321bdd438c5886269a72845f0R922-R944
-CREATE TABLE public.procedures_perimetres (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    added_at timestamp with time zone DEFAULT now(),
-    collectivite_code text NOT NULL,
-    collectivite_type text NOT NULL,
-    procedure_id uuid NOT NULL,
-    opposable boolean NOT NULL,
-    departement text,
-    commune_id text GENERATED ALWAYS AS (((collectivite_code || '_'::text) || collectivite_type)) STORED NOT NULL
-);
-
---
 -- Name: pac_sections_dept; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -511,38 +493,6 @@ CREATE FUNCTION public.one_shot_events() RETURNS void
     LANGUAGE plpgsql
     AS $$ DECLARE procedure procedures; start_time timestamp := clock_timestamp(); end_time timestamp; execution_time interval; i INT := 0; BEGIN RAISE LOG 'Processing One shot events'; UPDATE procedures SET status = null; FOR procedure IN SELECT * FROM procedures WHERE is_principale IS TRUE LOOP i := i + 1; RAISE LOG 'Processing procedure events N: %', i; PERFORM set_procedure_status(procedure); END LOOP; end_time := clock_timestamp(); execution_time := end_time - start_time; RAISE LOG 'FUNCTION ONE SHOT execution time: %', execution_time; END; $$;
 
-
---
--- Name: perimetre_by_procedures_ids_and_insee_codes(json, json); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.perimetre_by_procedures_ids_and_insee_codes(procedures_ids json, insee_codes json) RETURNS void
-    LANGUAGE sql
-    AS $$
-UPDATE procedures_perimetres
-  SET opposable = true
-WHERE procedure_id::text IN (SELECT value FROM jsonb_array_elements_text(procedures_ids::jsonb))
-  AND collectivite_code::text IN (SELECT value FROM jsonb_array_elements_text(insee_codes::jsonb))
-$$;
-
---
--- Name: procedures_by_collectivites(json); Type: FUNCTION; Schema: public; Owner: -
---
-CREATE FUNCTION procedures_by_collectivites(codes json)
-RETURNS SETOF record
-AS $$
-SELECT p.id, array_agg(pp.*) AS procedures_perimetres
-    FROM procedures p
-    JOIN procedures_perimetres pp ON p.id = pp.procedure_id
-    WHERE p.id IN (
-        SELECT procedure_id
-        FROM procedures_perimetres
-        WHERE collectivite_code IN (
-            SELECT json_array_elements_text(codes)
-        )
-    ) GROUP BY p.id;
-$$ LANGUAGE sql
-SECURITY INVOKER;
 
 --
 -- Name: procedures_by_insee_codes(json); Type: FUNCTION; Schema: public; Owner: -
@@ -1062,13 +1012,6 @@ ALTER TABLE ONLY public.procedures
     ADD CONSTRAINT procedures_from_sudocuh_key UNIQUE (from_sudocuh);
 
 
---
--- Name: procedures_perimetres procedures_perimetres_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.procedures_perimetres
-    ADD CONSTRAINT procedures_perimetres_pkey PRIMARY KEY (id);
-
 
 --
 -- Name: procedures procedures_pkey; Type: CONSTRAINT; Schema: public; Owner: -
@@ -1134,14 +1077,6 @@ ALTER TABLE ONLY public.regions
     ADD CONSTRAINT regions_pkey PRIMARY KEY (code);
 
 --
--- Name: procedures_perimetres uniq_perimeters_collectivite_procedure_type_couple_ids; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.procedures_perimetres
-    ADD CONSTRAINT uniq_perimeters_collectivite_procedure_type_couple_ids UNIQUE (collectivite_code, procedure_id, collectivite_type);
-
-
---
 -- Name: projects_sharing unique_project_sharing; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1184,13 +1119,6 @@ CREATE INDEX category_idx ON public.analytics_events USING btree (category);
 --
 
 CREATE INDEX created_at_brin ON public.analytics_events USING brin (created_at);
-
-
---
--- Name: departement_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX departement_idx ON public.procedures_perimetres USING btree (departement);
 
 
 --
@@ -1285,38 +1213,12 @@ CREATE INDEX procedure_id_idx ON public.analytics_events USING btree (procedure_
 
 
 --
--- Name: procedure_including_commune_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX procedure_including_commune_idx ON public.procedures_perimetres USING btree (procedure_id) INCLUDE (commune_id);
-
-
---
--- Name: procedures_perimetres_commune_id_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX procedures_perimetres_commune_id_idx ON public.procedures_perimetres USING btree (commune_id);
-
-
---
--- Name: procedures_perimetres_commune_id_including_procedure; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX procedures_perimetres_commune_id_including_procedure ON public.procedures_perimetres USING btree (commune_id) INCLUDE (procedure_id);
-
-
---
 -- Name: procedures_pkey_secondary_null_not_archived; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX procedures_pkey_secondary_null_not_archived ON public.procedures USING btree (id) WHERE ((secondary_procedure_of IS NULL) AND (NOT archived));
 
 
---
--- Name: test_idx; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX test_idx ON public.procedures_perimetres USING btree (procedure_id, collectivite_code);
 
 
 --
@@ -1462,13 +1364,6 @@ ALTER TABLE ONLY public.procedures
     ADD CONSTRAINT public_procedures_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES public.profiles(user_id) ON DELETE SET NULL;
 
 
---
--- Name: procedures_perimetres public_procedures_perimetres_procedure_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.procedures_perimetres
-    ADD CONSTRAINT public_procedures_perimetres_procedure_id_fkey FOREIGN KEY (procedure_id) REFERENCES public.procedures(id) ON DELETE CASCADE;
-
 
 --
 -- Name: profiles public_profiles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
@@ -1540,12 +1435,6 @@ CREATE POLICY "Enable insert for users based on role" ON public.procedures_valid
 
 CREATE POLICY "Enable insert to all users" ON public.news_letter_emails FOR INSERT WITH CHECK (true);
 
-
---
--- Name: procedures_perimetres Enable read access for all users; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Enable read access for all users" ON public.procedures_perimetres FOR SELECT USING (true);
 
 
 --
@@ -1710,15 +1599,6 @@ CREATE POLICY "Verified Can Delete" ON public.procedures FOR DELETE USING (( SEL
 
 
 --
--- Name: procedures_perimetres Verified Can Delete; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Verified Can Delete" ON public.procedures_perimetres FOR DELETE USING (( SELECT profiles.verified
-   FROM public.profiles
-  WHERE (auth.uid() = profiles.user_id)));
-
-
---
 -- Name: github_ref_roles Verified Can Insert; Type: POLICY; Schema: public; Owner: -
 --
 
@@ -1755,15 +1635,6 @@ CREATE POLICY "Verified Can Insert" ON public.procedures FOR INSERT WITH CHECK (
 
 
 --
--- Name: procedures_perimetres Verified Can Insert; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Verified Can Insert" ON public.procedures_perimetres FOR INSERT WITH CHECK (( SELECT profiles.verified
-   FROM public.profiles
-  WHERE (auth.uid() = profiles.user_id)));
-
-
---
 -- Name: pac_sections Verified Can Update; Type: POLICY; Schema: public; Owner: -
 --
 
@@ -1786,15 +1657,6 @@ CREATE POLICY "Verified Can Update" ON public.pac_sections_data FOR UPDATE USING
 --
 
 CREATE POLICY "Verified Can Update" ON public.procedures FOR UPDATE USING (( SELECT profiles.verified
-   FROM public.profiles
-  WHERE (auth.uid() = profiles.user_id)));
-
-
---
--- Name: procedures_perimetres Verified Can Update; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Verified Can Update" ON public.procedures_perimetres FOR UPDATE USING (( SELECT profiles.verified
    FROM public.profiles
   WHERE (auth.uid() = profiles.user_id)));
 
@@ -1930,12 +1792,6 @@ ALTER TABLE public.prescriptions ENABLE ROW LEVEL SECURITY;
 --
 
 ALTER TABLE public.procedures ENABLE ROW LEVEL SECURITY;
-
---
--- Name: procedures_perimetres; Type: ROW SECURITY; Schema: public; Owner: -
---
-
-ALTER TABLE public.procedures_perimetres ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: procedures_validations; Type: ROW SECURITY; Schema: public; Owner: -
@@ -2080,24 +1936,6 @@ GRANT ALL ON FUNCTION public.jb_to_ta(jsonb) TO service_role;
 GRANT ALL ON FUNCTION public.one_shot_events() TO anon;
 GRANT ALL ON FUNCTION public.one_shot_events() TO authenticated;
 GRANT ALL ON FUNCTION public.one_shot_events() TO service_role;
-
-
---
--- Name: FUNCTION perimetre_by_procedures_ids_and_insee_codes(procedures_ids json, insee_codes json); Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON FUNCTION public.perimetre_by_procedures_ids_and_insee_codes(procedures_ids json, insee_codes json) TO anon;
-GRANT ALL ON FUNCTION public.perimetre_by_procedures_ids_and_insee_codes(procedures_ids json, insee_codes json) TO authenticated;
-GRANT ALL ON FUNCTION public.perimetre_by_procedures_ids_and_insee_codes(procedures_ids json, insee_codes json) TO service_role;
-
-
---
--- Name: FUNCTION procedures_by_collectivites(codes json); Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON FUNCTION public.procedures_by_collectivites(codes json) TO anon;
-GRANT ALL ON FUNCTION public.procedures_by_collectivites(codes json) TO authenticated;
-GRANT ALL ON FUNCTION public.procedures_by_collectivites(codes json) TO service_role;
 
 
 --
@@ -2324,15 +2162,6 @@ GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.pr
 GRANT ALL ON SEQUENCE public.prescriptions_id_seq TO anon;
 GRANT ALL ON SEQUENCE public.prescriptions_id_seq TO authenticated;
 GRANT ALL ON SEQUENCE public.prescriptions_id_seq TO service_role;
-
-
---
--- Name: TABLE procedures_perimetres; Type: ACL; Schema: public; Owner: -
---
-
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.procedures_perimetres TO anon;
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.procedures_perimetres TO authenticated;
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.procedures_perimetres TO service_role;
 
 
 --
@@ -2683,27 +2512,6 @@ CREATE TRIGGER handle_updated_at BEFORE UPDATE ON public.doc_frise_events FOR EA
 -- GRANT ALL ON FUNCTION public.procedures_duplicate_by_insee_codes(codes json) TO anon;
 -- GRANT ALL ON FUNCTION public.procedures_duplicate_by_insee_codes(codes json) TO authenticated;
 -- GRANT ALL ON FUNCTION public.procedures_duplicate_by_insee_codes(codes json) TO service_role;
-
-
--- There is an error in the SQL function.
---
--- Name: procedures_principales_by_collectivites(json); Type: FUNCTION; Schema: public; Owner: -
---
-
--- CREATE FUNCTION public.procedures_principales_by_collectivites(codes json) RETURNS SETOF record
---     LANGUAGE sql
---     AS $$
--- SELECT p.*, array_agg(pp.*) AS procedures_perimetres
---     FROM procedures p
---     LEFT JOIN procedures_perimetres pp ON p.id = pp.procedure_id
---     WHERE ((p.id IN (
---         SELECT procedure_id
---         FROM procedures_perimetres
---         WHERE collectivite_code IN (
---             SELECT json_array_elements_text(codes)
---         )
---     )) AND p.is_principale = true AND p.status IN ('opposable', 'en cours')) GROUP BY p.id;
--- $$;
 
 --
 -- Name: FUNCTION procedure_status_handler(); Type: ACL; Schema: public; Owner: -

@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from docurba.core.enums import CommuneType
+from docurba.core.utils import OversizedIndex
 
 logger = logging.getLogger(__name__)
 
@@ -979,9 +980,9 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
             models.Value("_"),
             "collectivite_type",
         ),
-        output_field=models.CharField(),
+        output_field=models.TextField(),
         db_persist=True,
-    )  # TextField in DB.
+    )
     # Use the commune_id (GeneratedField) as a foreign key.
     commune = models.ForeignObject(
         Commune,
@@ -989,13 +990,15 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
         to_fields=["collectivite_ptr_id"],
         on_delete=models.DO_NOTHING,
     )
-    procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
-    collectivite_code = models.CharField(
-        verbose_name="Code collectivité"
-    )  # TextField in DB.
-    collectivite_type = models.CharField(
-        verbose_name="Type de collectivité", choices=CommuneType
-    )  # TextField in DB.
+    procedure = models.ForeignKey(Procedure, models.CASCADE)
+    collectivite_code = models.TextField(
+        verbose_name="Code collectivité",
+    )
+    collectivite_type = models.TextField(
+        verbose_name="Type de collectivité",
+        choices=CommuneType,
+        default=CommuneType.COM,
+    )
     opposable = models.BooleanField(verbose_name="Est opposable", default=False)
     # Denormalized version of commune.departement.code_insee already existing in production.
     # Real type is TextField but I used a Charfiel here for performance reasons.
@@ -1005,13 +1008,42 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     # in some records.
     # This should be treated globally when refactoring departements usage as well in Django and in Nuxt.
     # In the meantine, add it in the model so we can use it with the ORM.
-    departement = models.CharField(null=True, blank=True)  # noqa: DJ001
+    departement = models.TextField(null=True, blank=True)  # noqa: DJ001
+
+    created_at = models.DateTimeField(db_default=TransactionNow())
+    added_at = models.DateTimeField(db_default=TransactionNow(), null=True)
 
     class Meta:
-        # Table created by a pre_migrate signal in apps.py.
-        managed = False
         db_table = "procedures_perimetres"
         verbose_name = "Périmètre"
+        constraints = (
+            models.UniqueConstraint(
+                fields=[
+                    "collectivite_code",
+                    "procedure",
+                    "collectivite_type",
+                ],
+                name="uniq_perimeters_collectivite_procedure_type_couple_ids",
+            ),
+        )
+        indexes = [  # noqa: RUF012
+            models.Index(name="departement_idx", fields=["departement"]),
+            OversizedIndex(
+                name="procedure_including_commune_idx",
+                fields=["procedure_id"],
+                include=["commune_id"],
+            ),
+            OversizedIndex(
+                name="procedures_perimetres_commune_id_idx", fields=["commune_id"]
+            ),
+            OversizedIndex(
+                name="procedures_perimetres_commune_id_including_procedure",
+                fields=["commune_id"],
+                include=["procedure_id"],
+            ),
+            # Remove me later.
+            models.Index(name="test_idx", fields=["procedure_id", "collectivite_code"]),
+        ]
 
 
 class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008
