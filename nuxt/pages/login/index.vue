@@ -18,7 +18,7 @@
         <p class="mt-4 text-body-1 g600--text">
           Les données publiques de Docurba sont accessibles librement, sans compte, en naviguant
           sur le site ou en consultant nos
-          <nuxt-link to="/exports" class="text-decoration-underline">
+          <nuxt-link :to="{name: 'dev-api'}" class="text-decoration-underline">
             API.
           </nuxt-link>
         </p>
