@@ -1,7 +1,7 @@
 name: ⏰ Réveil des apps de prod
 on:
   schedule:
-    - cron: "30 6 * * *"
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 jobs:
