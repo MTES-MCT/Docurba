@@ -1,0 +1,4 @@
+DROP TABLE public.procedures_perimetres;
+DROP FUNCTION public.perimetre_by_procedures_ids_and_insee_codes;
+DROP FUNCTION public.procedures_by_collectivites;
+DROP FUNCTION public.procedures_principales_by_collectivites;
