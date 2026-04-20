@@ -11,7 +11,7 @@ Serveur local Nuxt3.
 Attention, le dépôt doit avoir été cloné et Mise doit avoir été installé avant.
 Ensuite, assignez $NUXT3_PATH au chemin vers le dépôt.
 """
-dir = "${NUXT3_PATH}"
+dir = "{{env.NUXT3_PATH}}"
 run = "mise start"
 
 [tasks."start:django"]

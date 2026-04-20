@@ -1,0 +1,76 @@
+[env]
+
+# === NUXT ===
+
+SUPABASE_ADMIN_KEY="<service role> legacy API Key"
+SUPABASE_ANON_KEY="<anon public> legacy API key"
+#SUPABASE_URL="https://{project_id}.supabase.co"
+SUPABASE_URL="http://127.0.0.1:54321"
+# APP_URL is used in emails and Slack webhooks to provide the full path to our app, including the domain name.
+# As Django acts as a proxy to our app, APP_URL points to its address.
+APP_URL="https://djangoserver.domain.com" # without the trailing slash
+# Only used in review apps to provide Nuxt's domain name to Django.
+NUXT_URL="https://nuxtserver.domain.com"
+NUXT3_API_URL="https://nuxt3server.domain.com" # without the trailing slash
+
+# Not mandatory environment variables.
+BREVO_API_KEY=""
+GITHUB_PAC_REPO_NAME=""
+GITHUB_PAC_REPO_OWNER=""
+GITHUB_TOKEN=""
+PIPEDRIVE_API_KEY=""
+SENDGRID_API_KEY=""
+SLACK_EVENT_CTBE=""
+SLACK_WEBHOOK=""
+DDT_ENQUETE_ENABLED=""
+DDT_PROCEDURE_SURVEY_ENABLED_DEPTS=""
+
+
+
+# === DJANGO ===
+
+
+DEBUG=true
+PYTHONPATH="./django/"
+DJANGO_SETTINGS_MODULE="config.settings.dev"
+SECRET_KEY="zSmImnRNcP3XvPdH21XGf6sE0NRklQDd"
+UPSTREAM_NUXT="xxxx"
+DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+
+# scripts/backup_database.sh
+# scripts/restore_database.sh
+BACKUPS_ENABLED="False"
+BACKUPS_DELETE_URL_IN_DUMP_FILE="False"
+BACKUPS_FOLDER_PATH="scripts/exported_data"
+BACKUPS_SLACK_WEBHOOK=""
+BACKUPS_SUPABASE_GRANT_PRIVILEGES_TO_USERS="False"
+BACKUPS_SUPABASE_MODIFY_TRIGGERS="False"
+RCLONE_S3_ACCESS_KEY_ID=""
+RCLONE_S3_SECRET_ACCESS_KEY=""
+RCLONE_AWS_REGION=""
+RCLONE_CONFIG_OUTSCALE_ENDPOINT=""
+RCLONE_CRYPT_PASSWORD=""
+RCLONE_CRYPT_PASSWORD2=""
+RCLONE_CONFIG="path_to_rclone_config_file"
+
+# Review apps
+SUPABASE_PROJECT_ID=""
+SUPABASE_ACCESS_TOKEN=""
+
+# Tests
+TEST_PGUSER="postgres"
+TEST_PGPASSWORD="test_pwd"
+TEST_PGHOST="localhost"
+TEST_PGPORT="5432"
+TEST_PGDATABASE="postgres"
+TEST_DATABASE_URL="postgres://{{env.TEST_PGUSER}}:{{env.TEST_PGPASSWORD}}@{{env.TEST_PGHOST}}:{{env.TEST_PGPORT}}/{{env.TEST_PGDATABASE}}"
+
+# Mise
+NUXT3_PATH="../docurba-nuxt3"
+
+[tasks."start:supabase"]
+description="""
+Serveur local Supabase contenant une interface web (Supabase studio), une base de données, un serveur SSO et un S3.
+"""
+dir = "{{config_root}}"
+run = "npx supabase start"

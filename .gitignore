@@ -117,3 +117,6 @@ exported_data/
 
 # Django's collected statics
 django/static/*
+
+# Mise local config
+mise.local.toml
