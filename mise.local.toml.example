@@ -4,14 +4,13 @@
 
 SUPABASE_ADMIN_KEY="<service role> legacy API Key"
 SUPABASE_ANON_KEY="<anon public> legacy API key"
-#SUPABASE_URL="https://{project_id}.supabase.co"
 SUPABASE_URL="http://127.0.0.1:54321"
 # APP_URL is used in emails and Slack webhooks to provide the full path to our app, including the domain name.
 # As Django acts as a proxy to our app, APP_URL points to its address.
-APP_URL="https://djangoserver.domain.com" # without the trailing slash
+APP_URL="http://localhost:3000" # without the trailing slash
 # Only used in review apps to provide Nuxt's domain name to Django.
 NUXT_URL="https://nuxtserver.domain.com"
-NUXT3_API_URL="https://nuxt3server.domain.com" # without the trailing slash
+NUXT3_API_URL="http://localhost:4000" # without the trailing slash
 
 # Not mandatory environment variables.
 BREVO_API_KEY=""
@@ -34,24 +33,24 @@ DEBUG=true
 PYTHONPATH="./django/"
 DJANGO_SETTINGS_MODULE="config.settings.dev"
 SECRET_KEY="zSmImnRNcP3XvPdH21XGf6sE0NRklQDd"
-UPSTREAM_NUXT="xxxx"
+UPSTREAM_NUXT="{{env.APP_URL}}"
 DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
 
 # scripts/backup_database.sh
 # scripts/restore_database.sh
 BACKUPS_ENABLED="False"
-BACKUPS_DELETE_URL_IN_DUMP_FILE="False"
+BACKUPS_DELETE_URL_IN_DUMP_FILE="True"
 BACKUPS_FOLDER_PATH="scripts/exported_data"
 BACKUPS_SLACK_WEBHOOK=""
-BACKUPS_SUPABASE_GRANT_PRIVILEGES_TO_USERS="False"
-BACKUPS_SUPABASE_MODIFY_TRIGGERS="False"
-RCLONE_S3_ACCESS_KEY_ID=""
-RCLONE_S3_SECRET_ACCESS_KEY=""
-RCLONE_AWS_REGION=""
-RCLONE_CONFIG_OUTSCALE_ENDPOINT=""
-RCLONE_CRYPT_PASSWORD=""
-RCLONE_CRYPT_PASSWORD2=""
-RCLONE_CONFIG="path_to_rclone_config_file"
+BACKUPS_SUPABASE_GRANT_PRIVILEGES_TO_USERS="True"
+BACKUPS_SUPABASE_MODIFY_TRIGGERS="True"
+# RCLONE_S3_ACCESS_KEY_ID=""
+# RCLONE_S3_SECRET_ACCESS_KEY=""
+# RCLONE_AWS_REGION=""
+# RCLONE_CONFIG_OUTSCALE_ENDPOINT=""
+# RCLONE_CRYPT_PASSWORD=""
+# RCLONE_CRYPT_PASSWORD2=""
+# RCLONE_CONFIG="path_to_rclone_config_file"
 
 # Review apps
 SUPABASE_PROJECT_ID=""
