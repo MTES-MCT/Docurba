@@ -1,4 +1,5 @@
 [env]
+_.python.venv = "../venv" # Path to virtualEnv
 
 # === NUXT ===
 
