@@ -47,5 +47,5 @@ Plus les modèles Django refléteront la structure de la base, moins nous aurons
 - Installez [la CLI Supabase](https://supabase.com/docs/guides/local-development/cli/getting-started).
 - Clônez [le dépôt Nuxt 3](https://github.com/betagouv/docurba-nuxt3/) et vérifiez que le serveur local se lance correctement (`$ mise start`).
 - Renseignez les variables d'environnement nécessaires à Nuxt et Django. Voir `django/.env.example` et `nuxt/.env.example`.
-Vous pouvez utiliser [dotenv](https://pypi.org/project/python-dotenv/), un utilitaire Python qui automatise l'usage des variables d'environnement (entre autre).
+Vous pouvez utiliser [direnv](https://direnv.net/), un utilitaire Python qui automatise l'usage des variables d'environnement (entre autre).
 - Utilisez la commande `mise start` pour lancer les serveurs suivants : Nuxt, Django, Nuxt3 et base de test (voir docker-compose.yml)
