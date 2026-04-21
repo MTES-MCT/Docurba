@@ -3,6 +3,7 @@ node = "20"
 python = "3.13"
 uv = 'latest'
 supabase = 'latest'
+pre-commit = 'latest'
 
 [env]
 _.python.venv = "{{config_root}}/django/.venv"

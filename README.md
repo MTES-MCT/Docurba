@@ -48,6 +48,7 @@ Plus les modèles Django refléteront la structure de la base, moins nous aurons
 - Clônez [le dépôt Nuxt 3](https://github.com/betagouv/docurba-nuxt3/) et renseigner la variable d'environnement NUXT3_PATH dans mise.local.toml avec le chemin du dépôt clôné.
 - Utilisez la commande `mise install` pour installer NodeJs, Python, UV et Supabase
 - Utiliser la commande `mise run install_deps` pour installer les dépendances de chaque projet : Django, Nuxt et Nuxt3
+- Installer les hooks pre-commit `mise exec -- pre-commit install`
 - Mettre à jour les variables d'environnements SUPABASE_ADMIN_KEY et SUPABASE_ANON_KEY avec les valeurs disponibles depuis l'interface d'administration de Supabase (http://127.0.0.1:54323 par défaut)
 
 ### Example (sur fedora)
@@ -57,5 +58,6 @@ cd .. && git clone git@github.com:betagouv/docurba-nuxt3.git && cd -
 cp mise.local.toml.example mise.local.toml
 mise install
 mise run install_deps
+mise exec -- pre-commit install
 mise start
 '''
