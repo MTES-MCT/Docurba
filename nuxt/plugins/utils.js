@@ -98,6 +98,38 @@ export default ({ app }, inject) => {
       }
 
       return postes
+    },
+    updateRouteQueryParam (key, newValue) {
+      app.router.replace({
+        ...app.router.currentRoute,
+        query: {
+          ...app.router.currentRoute.query,
+          [key]: newValue
+        }
+      })
+    },
+    hasSameArrayItems (a, b) {
+      return a.length === b.length &&
+        a.every(item => b.includes(item))
+    },
+    getRouteQueryArray (routeValue, defaultValue) {
+      if (!routeValue) {
+        return defaultValue
+      }
+
+      const value = routeValue.split(',')
+
+      return value.length === 0 || this.hasSameArrayItems(value, defaultValue)
+        ? defaultValue
+        : value
+    },
+    updateRouteQueryArray (key, newValue, defaultValue) {
+      this.updateRouteQueryParam(
+        key,
+        !newValue || newValue.length === 0 || this.hasSameArrayItems(newValue, defaultValue)
+          ? undefined
+          : newValue.join(',')
+      )
     }
   }
   inject('utils', utils)

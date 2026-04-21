@@ -158,21 +158,77 @@ export default {
   name: 'ProceduresDepartement',
   layout: 'ddt',
   data () {
-    const documentTypes = ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiHM', 'PLUiM', 'SCOT']
     return {
       referentiel: null,
-      selectedTypesFilter: ['pp', 'ps'],
       typeFilterItems: [{ text: 'Procédures principales', value: 'pp' }, { text: 'Procédures secondaires', value: 'ps' }],
-      selectedDocumentsFilter: documentTypes,
-      documentFilterItems: documentTypes.map(documentType => ({ text: documentType, value: documentType })),
-      selectedStatusFilter: ['en_cours', 'opposable', 'archived'],
+      documentFilterItems: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiHM', 'PLUiM', 'SCOT'].map(documentType => ({ text: documentType, value: documentType })),
       statusFilterItems: [{ text: 'En cours', value: 'en_cours' }, { text: 'Opposable', value: 'opposable' }, { text: 'Archivée', value: 'archived' }],
-      rawProcedures: null,
-      search: this.$route.query.search || ''
-
+      rawProcedures: null
     }
   },
   computed: {
+    search: {
+      get () {
+        return this.$route.query.search || ''
+      },
+      set (newValue) {
+        this.$utils.updateRouteQueryParam('search', newValue || undefined)
+      }
+    },
+    documentFilterValues () {
+      return this.documentFilterItems.map(({ value }) => value)
+    },
+    selectedDocumentsFilter: {
+      get () {
+        return this.$utils.getRouteQueryArray(
+          this.$route.query.documentTypes,
+          this.documentFilterValues
+        )
+      },
+      set (newValue) {
+        this.$utils.updateRouteQueryArray(
+          'documentTypes',
+          newValue,
+          this.documentFilterValues
+        )
+      }
+    },
+    statusFilterValues () {
+      return this.statusFilterItems.map(({ value }) => value)
+    },
+    selectedStatusFilter: {
+      get () {
+        return this.$utils.getRouteQueryArray(
+          this.$route.query.statuses,
+          this.statusFilterValues
+        )
+      },
+      set (newValue) {
+        this.$utils.updateRouteQueryArray(
+          'statuses',
+          newValue,
+          this.statusFilterValues
+        )
+      }
+    },
+    typeFilterValues () {
+      return this.typeFilterItems.map(({ value }) => value)
+    },
+    selectedTypesFilter: {
+      get () {
+        return this.$utils.getRouteQueryArray(
+          this.$route.query.types,
+          this.typeFilterValues
+        )
+      },
+      set (newValue) {
+        this.$utils.updateRouteQueryArray(
+          'types',
+          newValue,
+          this.typeFilterValues
+        )
+      }
+    },
     headers () {
       return [
         { text: 'Nom', align: 'start', value: 'procedureName', filterable: true, width: '45%' },

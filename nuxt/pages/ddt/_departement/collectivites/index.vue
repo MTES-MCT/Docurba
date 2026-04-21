@@ -376,15 +376,12 @@ export default {
       exportingSCoTs: false,
 
       selected: [],
-      searchEpcis: '',
       groupements: [],
-      filterEpci: null,
       hasValidationEnabled: this.$user.canViewEnquete({ departement: this.$route.params.departement }),
       hideValidatedCollectives: false,
       snackbar: false,
       snackVal: { text: '', type: 'success' },
       validatedCollectivites: [],
-      selectedCollectiviteTypesFilter: ['COM', 'CA', 'CC', 'EPT', 'SM', 'SIVU', 'PETR', 'CU', 'METRO'],
       collectiviteTypeFilterItems: [
         { text: 'Communes', value: 'COM' },
         { text: 'CA', value: 'CA' },
@@ -396,12 +393,53 @@ export default {
         { text: 'SIVU', value: 'SIVU' },
         { text: 'PETR', value: 'PETR' }
       ],
-      search: this.$route.query.search || '',
       referentiel: null,
       clickedOnDocLink: true
     }
   },
   computed: {
+    filterEpci: {
+      get () {
+        return this.$route.query.epci || null
+      },
+      set (newValue) {
+        this.$utils.updateRouteQueryParam('epci', newValue || undefined)
+      }
+    },
+    search: {
+      get () {
+        return this.$route.query.search || ''
+      },
+      set (newValue) {
+        this.$utils.updateRouteQueryParam('search', newValue || undefined)
+      }
+    },
+    searchEpcis: {
+      get () {
+        return this.$route.query.searchEpcis || ''
+      },
+      set (newValue) {
+        this.$utils.updateRouteQueryParam('searchEpcis', newValue || undefined)
+      }
+    },
+    collectiviteTypeFilterValues () {
+      return this.collectiviteTypeFilterItems.map(({ value }) => value)
+    },
+    selectedCollectiviteTypesFilter: {
+      get () {
+        return this.$utils.getRouteQueryArray(
+          this.$route.query.types,
+          this.collectiviteTypeFilterValues
+        )
+      },
+      set (newValue) {
+        this.$utils.updateRouteQueryArray(
+          'types',
+          newValue,
+          this.collectiviteTypeFilterValues
+        )
+      }
+    },
     searchEpcisItems () {
       if (!this.searchEpcis) {
         return this.groupements
@@ -489,7 +527,7 @@ export default {
       }
     },
     async cancelValidation (codeCollec) {
-      const { success, error, data } = await this.$enquete.deleteValidationForCollectivite(codeCollec)
+      const { success, error } = await this.$enquete.deleteValidationForCollectivite(codeCollec)
       if (!success) {
         this.snackbar = true
         this.snackVal = { text: `ERREUR: ${error}`, type: 'error' }
