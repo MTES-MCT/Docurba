@@ -12,6 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunSQL(
             sql="DROP MATERIALIZED VIEW view_core_collectivite_adhesions_deep",
+            reverse_sql=migrations.RunSQL.noop,
             state_operations=[
                 migrations.DeleteModel(
                     name="ViewCollectiviteAdhesionsDeep",
