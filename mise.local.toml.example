@@ -1,6 +1,4 @@
 [env]
-_.python.venv = "../venv" # Path to virtualEnv
-
 # === NUXT ===
 
 SUPABASE_ADMIN_KEY="<service role> legacy API Key"
@@ -29,11 +27,9 @@ DDT_PROCEDURE_SURVEY_ENABLED_DEPTS=""
 
 # === DJANGO ===
 
-
-DEBUG=true
-PYTHONPATH="./django/"
+PYTHONPATH="{{config_root}}/django/"
 DJANGO_SETTINGS_MODULE="config.settings.dev"
-SECRET_KEY="zSmImnRNcP3XvPdH21XGf6sE0NRklQDd"
+SECRET_KEY="<your secret>" # django-admin generate_secret_key
 UPSTREAM_NUXT="{{env.APP_URL}}"
 DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
 
@@ -66,11 +62,4 @@ TEST_PGDATABASE="postgres"
 TEST_DATABASE_URL="postgres://{{env.TEST_PGUSER}}:{{env.TEST_PGPASSWORD}}@{{env.TEST_PGHOST}}:{{env.TEST_PGPORT}}/{{env.TEST_PGDATABASE}}"
 
 # Mise
-NUXT3_PATH="../docurba-nuxt3"
-
-[tasks."start:supabase"]
-description="""
-Serveur local Supabase contenant une interface web (Supabase studio), une base de données, un serveur SSO et un S3.
-"""
-dir = "{{config_root}}"
-run = "npx supabase start"
+NUXT3_PATH="{{config_root}}/../docurba-nuxt3"

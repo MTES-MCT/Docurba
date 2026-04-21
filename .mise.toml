@@ -1,5 +1,15 @@
 [tools]
 node = "20"
+python = "3.13"
+uv = 'latest'
+supabase = 'latest'
+
+[env]
+_.python.venv = "{{config_root}}/django/.venv"
+NUXT3_PATH= { required = true }
+
+[settings]
+python.uv_venv_auto = "create|source"
 
 [tasks."start:nuxt"]
 dir = "{{config_root}}/nuxt"
@@ -70,3 +80,41 @@ run = "rclone --config scripts/rclone.conf copy --s3-chunk-size=20M docurba_expo
 dir = "{{config_root}}/django"
 run = "rclone --config scripts/rclone.conf copy --s3-chunk-size=20M docurba_exports:/docurba-exports exports/"
 
+[tasks."install_deps:django"]
+description="Install django dependencies"
+dir = "{{config_root}}/django"
+run = "mise exec -- uv sync"
+
+[tasks."install_deps:nuxt"]
+description="Install nuxt dependencies"
+dir = "{{config_root}}/nuxt"
+run = "mise exec -- npm install ."
+
+[tasks."install_deps:nuxt3"]
+description="Install nuxt3 dependencies"
+dir = "{{env.NUXT3_PATH}}"
+run = "mise exec -- npm install ."
+
+[tasks."install_deps"]
+description="Install all projects dependencies"
+depends = ["install_deps:nuxt", "install_deps:django", "install_deps:nuxt3"]
+
+[tasks."clean_deps:django"]
+description="Clean django dependencies"
+dir = "{{config_root}}/django"
+run = "rm -Rf .venv"
+
+[tasks."clean_deps:nuxt"]
+description="Clean nuxt dependencies"
+dir = "{{config_root}}/nuxt"
+run = "rm -Rf nodes_modules"
+
+[tasks."clean_deps:nuxt3"]
+description="Clean nuxt3 dependencies"
+dir = "{{env.NUXT3_PATH}}"
+run = "rm -Rf nodes_modules"
+
+[tasks."clean"]
+description="Clean all projects dependencies"
+depends = ["clean_deps:nuxt", "clean_deps:django", "clean_deps:nuxt3"]
+run = "mise uninstall --all"
