@@ -104,21 +104,14 @@
               <v-btn
                 outlined
                 color="primary"
-                class="no-text-transform"
                 v-bind="attrs"
                 v-on="on"
               >
-                <v-icon
-                  left
-                  size="20"
-                >
-                  {{ icons.mdiAccountCircleOutline }}
+                <v-icon left>
+                  {{ icons.mdiAccountCircle }}
                 </v-icon>
-                <span style="line-height: 1;">{{ $user.profile.firstname || 'Mon compte' }}</span>
-                <v-icon
-                  right
-                  size="18"
-                >
+                {{ $user.profile.firstname || 'Mon compte' }}
+                <v-icon right>
                   {{ icons.mdiChevronDown }}
                 </v-icon>
               </v-btn>
@@ -128,25 +121,21 @@
                 v-if="dashboardRoute"
                 :to="dashboardRoute"
               >
-                <v-icon
-                  size="18"
-                  class="mr-3"
-                >
+                <v-icon left>
                   {{ icons.mdiViewDashboardOutline }}
                 </v-icon>
-                <v-list-item-title class="text-body-2">
+                <v-list-item-title>
                   {{ dashboardLabel }}
                 </v-list-item-title>
               </v-list-item>
               <v-list-item @click="signOut">
                 <v-icon
-                  size="18"
                   color="error"
-                  class="mr-3"
+                  left
                 >
                   {{ icons.mdiLogout }}
                 </v-icon>
-                <v-list-item-title class="error--text text-body-2">
+                <v-list-item-title class="error--text">
                   Se déconnecter
                 </v-list-item-title>
               </v-list-item>
@@ -160,11 +149,10 @@
           v-else
           outlined
           color="primary"
-          class="no-text-transform"
           :to="{ name: 'login' }"
         >
           <v-icon left>
-            {{ icons.mdiAccountCircleOutline }}
+            {{ icons.mdiAccountCircle }}
           </v-icon>
           Me connecter
         </v-btn>
@@ -177,7 +165,7 @@
 </template>
 
 <script>
-import { mdiChevronDown, mdiAccountCircleOutline, mdiViewDashboardOutline, mdiLogout } from '@mdi/js'
+import { mdiChevronDown, mdiAccountCircle, mdiViewDashboardOutline, mdiLogout } from '@mdi/js'
 
 export default {
   props: {
@@ -194,7 +182,7 @@ export default {
     return {
       icons: {
         mdiChevronDown,
-        mdiAccountCircleOutline,
+        mdiAccountCircle,
         mdiViewDashboardOutline,
         mdiLogout
       }
@@ -241,7 +229,7 @@ export default {
     async signOut () {
       const { error } = await this.$supabase.auth.signOut()
       if (error) {
-        return console.error('signOut error:', error)
+        return
       }
       this.$router.push('/')
     }
