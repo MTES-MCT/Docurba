@@ -1017,7 +1017,9 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
         to_fields=["collectivite_ptr_id"],
         on_delete=models.DO_NOTHING,
     )
-    procedure = models.ForeignKey(Procedure, models.CASCADE)
+    procedure = models.ForeignKey(
+        Procedure, models.CASCADE, related_name="perimetre_through"
+    )
     collectivite_code = models.TextField(
         verbose_name="Code collectivité",
     )
