@@ -18,17 +18,20 @@
     <LayoutsAppBar flat extended>
       <v-tabs v-if="$user.profile.verified" align-with-title class="header-tabs">
         <v-tab
-          v-if="$user.canViewSectionCollectivites({ departement: $user.profile.departement })"
+          v-if="$user.canViewSectionCollectivites({ departement })"
           :to="{
             name: 'ddt-departement-collectivites',
-            params: {departement: $user.profile.departement}
+            params: { departement }
           }"
         >
           Mes collectivités
         </v-tab>
         <v-tab
-          v-if="$user.canViewSectionProcedures({ departement: $user.profile.departement })"
-          :to="`/ddt/${$user.profile.departement}/procedures`"
+          v-if="$user.canViewSectionProcedures({ departement })"
+          :to="{
+            name: 'ddt-departement-procedures',
+            params: { departement }
+          }"
         >
           Mes procédures
         </v-tab>
@@ -45,16 +48,16 @@
           v-if="$user.canViewSectionPAC()"
           :to="{
             name: 'ddt-departement-pac',
-            params: {departement: $user.profile.departement}
+            params: { departement }
           }"
         >
           Mes PAC
         </v-tab>
         <v-tab
-          v-if="$user.canViewProcedureSurvey({ departement: this.$route.params.departement })"
+          v-if="$user.canViewProcedureSurvey({ departement })"
           :to="{
             name:'ddt-departement-enquete',
-            params: {departement: $route.params.departement}
+            params: { departement }
           }"
         >
           Enquête ZAN
@@ -101,6 +104,20 @@ export default {
     }
   },
   computed: {
+    departement () {
+      if (this.$route.params.departement) {
+        return this.$route.params.departement
+      }
+      if (this.$route.params.githubRef) {
+        const [scope, ref] = this.$route.params.githubRef.split('-')
+
+        if (ref && scope === 'dept') {
+          return ref.padStart(2, '0')
+        }
+      }
+
+      return this.$user.profile.departement
+    },
     isVerified () {
       return this.$user?.profile?.verified || this.$user.profile.is_admin
     },
@@ -108,12 +125,12 @@ export default {
       if (this.$user.canViewSectionTramesPAC()) {
         const scopes = { ddt: 'dept', dreal: 'region' }
         const poste = this.$user.profile.poste
-        const code = poste === 'ddt' ? this.$user.profile.departement : this.$user.profile.region
+        const code = poste === 'ddt' ? this.departement : this.$user.profile.region
 
         return `${scopes[poste]}-${this.$options.filters.deptToRef(code)}`
       }
       return ''
-    },
+    }
   },
   async mounted () {
     await this.$user.isReady
