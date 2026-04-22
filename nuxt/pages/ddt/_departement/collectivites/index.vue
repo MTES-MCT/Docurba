@@ -416,10 +416,10 @@ export default {
     },
     searchEpcis: {
       get () {
-        return this.$route.query.searchEpcis || ''
+        return this.$route.query['search-epcis'] || ''
       },
       set (newValue) {
-        this.$utils.updateRouteQueryParam('searchEpcis', newValue || undefined)
+        this.$utils.updateRouteQueryParam('search-epcis', newValue || undefined)
       }
     },
     collectiviteTypeFilterValues () {

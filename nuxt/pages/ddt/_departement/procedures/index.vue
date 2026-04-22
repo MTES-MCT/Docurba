@@ -181,13 +181,13 @@ export default {
     selectedDocumentsFilter: {
       get () {
         return this.$utils.getRouteQueryArray(
-          this.$route.query.documentTypes,
+          this.$route.query['document-types'],
           this.documentFilterValues
         )
       },
       set (newValue) {
         this.$utils.updateRouteQueryArray(
-          'documentTypes',
+          'document-types',
           newValue,
           this.documentFilterValues
         )
