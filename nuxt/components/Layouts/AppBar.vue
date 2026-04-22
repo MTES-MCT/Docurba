@@ -99,6 +99,14 @@
         </v-menu>
 
         <template v-if="$user.id">
+          <v-btn
+            v-if="dashboardRoute"
+            color="primary"
+            depressed
+            :to="dashboardRoute"
+          >
+            {{ dashboardLabel }}
+          </v-btn>
           <v-menu offset-y>
             <template #activator="{ on, attrs }">
               <v-btn
@@ -117,17 +125,6 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item
-                v-if="dashboardRoute"
-                :to="dashboardRoute"
-              >
-                <v-icon left>
-                  {{ icons.mdiViewDashboardOutline }}
-                </v-icon>
-                <v-list-item-title>
-                  {{ dashboardLabel }}
-                </v-list-item-title>
-              </v-list-item>
               <v-list-item @click="signOut">
                 <v-icon
                   color="error"
@@ -165,7 +162,7 @@
 </template>
 
 <script>
-import { mdiChevronDown, mdiAccountCircle, mdiViewDashboardOutline, mdiLogout } from '@mdi/js'
+import { mdiChevronDown, mdiAccountCircle, mdiLogout } from '@mdi/js'
 
 export default {
   props: {
@@ -183,7 +180,6 @@ export default {
       icons: {
         mdiChevronDown,
         mdiAccountCircle,
-        mdiViewDashboardOutline,
         mdiLogout
       }
     }
