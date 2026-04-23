@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 APPS_DIR = BASE_DIR / "docurba"
 EXPORTS_DIR = env.str("SCRIPT_EXPORT_PATH", default=f"{BASE_DIR}/exports")
 
-SECRET_KEY = env.str("SECRET_KEY")
+SECRET_KEY = env.str("SECRET_KEY", default="local_secret_key")
 DEBUG = False
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
@@ -67,7 +67,7 @@ DATABASES = {
     "default": {
         **env.db(
             "DATABASE_URL",
-            default="postgresql://user:password@localhost:5132/postgres",
+            default="postgresql://postgres:postgres@127.0.0.1:54322/postgres",
         ),
         "CONN_MAX_AGE": env.int("CONN_MAX_AGE", 0),
         "CONN_HEALTH_CHECK": True,
@@ -177,5 +177,5 @@ sentry_sdk.init(
 ############ Docurba settings ############
 ##########################################
 
-UPSTREAM_NUXT = env.str("UPSTREAM_NUXT")
+UPSTREAM_NUXT = env.str("UPSTREAM_NUXT", default="http://localhost:3000")
 CREATE_UNMANAGED_TABLES = False

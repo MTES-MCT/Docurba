@@ -35,15 +35,8 @@ jobs:
 
       - run: uv sync --locked --all-extras --dev --active --project=django/
 
-      - uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
-        with:
-          version: 2025.11.4 # [default: latest] mise version to install
-          install: true # [default: true] run `mise install`
-          cache: true # [default: true] cache mise using GitHub's cache
-          experimental: true # [default: false] enable experimental features
-
       - name: 🛠️ Initialize the test database
-        run: mise start:tests
+        run: make setup_test_db
 
       - run: django-admin collectstatic
       - run: pytest --cov django/tests/ django/tests/
