@@ -687,9 +687,18 @@ export default {
       if (!departementObject) {
         return
       }
-      let departement = departementObject.code_departement.toString()
-      departement = departement.padStart('2', '0')
-      this.$router.push({ params: { departement } })
+      const departement = departementObject.code_departement.toString().padStart('2', '0')
+      this.$router.push({
+        ...this.$route,
+        params: {
+          ...this.$route.params,
+          departement
+        },
+        query: {
+          ...this.$route.query,
+          epci: undefined
+        }
+      })
     }
   }
 }
