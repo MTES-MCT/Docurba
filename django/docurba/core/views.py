@@ -7,7 +7,8 @@ from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_safe
 
-from docurba.core.models import Collectivite, Commune, Procedure, TypeCollectivite
+from docurba.core.enums import TypeCollectivite
+from docurba.core.models import Collectivite, Commune, Procedure
 
 
 def _avant(request: HttpRequest) -> date | None:
