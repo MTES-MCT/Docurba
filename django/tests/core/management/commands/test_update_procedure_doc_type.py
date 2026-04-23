@@ -2,9 +2,7 @@ import pytest
 from django.core.management import call_command
 
 from docurba.core.enums import CommuneType, TypeCollectivite
-from docurba.core.models import (
-    TypeDocument,
-)
+from docurba.core.models import TypeDocument, ViewCommuneAdhesionsDeep
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
@@ -95,8 +93,10 @@ class TestUpdateProcedureDocType:
         stdout_formatted = stdout.splitlines()
         assert stdout_formatted == [
             "Raw results to process: 2",
-            "Procedures to be updated: 2",
-            "Updated procedures: 2",
+            "Procedures 'sectorielles' to be updated: 0",
+            "Procedures not 'sectorielles' to be updated: 2",
+            "Updated procedures 'sectorielles': 0",
+            "Updated procedures not 'sectorielles': 2",
         ]
         plu_procedure.refresh_from_db()
         assert plu_procedure.doc_type == TypeDocument.PLU
@@ -127,7 +127,41 @@ class TestUpdateProcedureDocType:
         assert stdout_formatted == [
             "Raw results to process: 1",
             f"{procedure.pk} is not managed by an EPCI. Skipping.",
-            "Procedures to be updated: 0",
-            "Updated procedures: 0",
+            "Procedures 'sectorielles' to be updated: 0",
+            "Procedures not 'sectorielles' to be updated: 0",
+            "Updated procedures 'sectorielles': 0",
+            "Updated procedures not 'sectorielles': 0",
         ]
         assert procedure.doc_type == TypeDocument.PLU
+
+    def test_call_command_pluis(
+        self,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        plui_perimetre = CommuneFactory.create_batch(2)
+        collectivite_porteuse_plui = CollectiviteFactory(
+            type=TypeCollectivite.CC,
+        )
+        collectivite_porteuse_plui.collectivites_adherentes.add(*plui_perimetre)
+        procedure = ProcedureFactory(
+            collectivite_porteuse=collectivite_porteuse_plui,
+            doc_type=TypeDocument.PLU,
+            with_perimetre=plui_perimetre,
+        )
+        # Now add a new commune in the groupement area. The PLUI should be "sectoriel" because it concerns
+        # only a subarea of the groupement area.
+        collectivite_porteuse_plui.collectivites_adherentes.add(CommuneFactory())
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        call_command("update_procedure_doc_type", wet_run=True)
+        stdout, _ = capsys.readouterr()
+        stdout_formatted = stdout.splitlines()
+        assert stdout_formatted == [
+            "Raw results to process: 1",
+            "Procedures 'sectorielles' to be updated: 1",
+            "Procedures not 'sectorielles' to be updated: 0",
+            "Updated procedures 'sectorielles': 1",
+            "Updated procedures not 'sectorielles': 0",
+        ]
+        procedure.refresh_from_db()
+        assert procedure.doc_type == TypeDocument.PLUIS
