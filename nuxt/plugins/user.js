@@ -11,39 +11,59 @@ const defaultUser = {
   user_metadata: {}
 }
 
-function handleRedirect ($supabase, event, user, router) {
+function shouldRedirect (event) {
   if (event === 'SIGNED_IN') {
-    switch (user.profile.side) {
-      case 'etat':
-        if (user.profile.poste === 'dreal') {
-          function trameRef (user) {
-            const scopes = { ddt: 'dept', dreal: 'region' }
-            const { poste } = user.profile
-            const code = poste === 'ddt' ? user.profile.departement : user.profile.region
-            return `${scopes[poste]}-${code}`
-          }
+    return true
+  }
+  if (event !== 'INITIAL_SESSION' || !location.hash) {
+    return false
+  }
 
-          router.push({ name: 'trames-githubRef', params: { githubRef: trameRef(user) } })
-        } else if (user.profile.poste === 'ddt') {
-          router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
+  const hashObject = location.hash.slice(1).split('&').reduce((hashObject, pair) => {
+    const [key, value] = pair.split('=')
+
+    return key && value
+      ? { ...hashObject, [key]: value }
+      : hashObject
+  }, {})
+
+  return !!hashObject.access_token && hashObject.type === 'recovery'
+}
+
+function handleRedirect ($supabase, event, user, router) {
+  if (!shouldRedirect(event)) {
+    return
+  }
+  switch (user.profile.side) {
+    case 'etat':
+      if (user.profile.poste === 'dreal') {
+        function trameRef (user) {
+          const scopes = { ddt: 'dept', dreal: 'region' }
+          const { poste } = user.profile
+          const code = poste === 'ddt' ? user.profile.departement : user.profile.region
+          return `${scopes[poste]}-${code}`
         }
-        break
 
-      case 'ppa':
+        router.push({ name: 'trames-githubRef', params: { githubRef: trameRef(user) } })
+      } else if (user.profile.poste === 'ddt') {
         router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
-        break
+      }
+      break
 
-      case 'collectivite':
-        axios({
-          url: '/api/pipedrive/collectivite_inscrite',
-          method: 'post',
-          data: { userData: { email: user.email } }
-        })
-        router.push({ name: 'collectivites-collectiviteId', params: { collectiviteId: user.profile.collectivite_id } })
-        break
-      default:
-        break
-    }
+    case 'ppa':
+      router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
+      break
+
+    case 'collectivite':
+      axios({
+        url: '/api/pipedrive/collectivite_inscrite',
+        method: 'post',
+        data: { userData: { email: user.email } }
+      })
+      router.push({ name: 'collectivites-collectiviteId', params: { collectiviteId: user.profile.collectivite_id } })
+      break
+    default:
+      break
   }
 }
 
