@@ -77,7 +77,7 @@
               <v-col v-if="$user.canViewMultipleDepartements()" cols="6" class="p-0">
                 <VDeptAutocomplete
                   :default-departement-code="$route.params.departement"
-                  :departements-filter="$user.profile.departements"
+                  :departements-filter="$user.departementsVisitables()"
                   :hide-details="true"
                   :dense="true"
                   :with-label="false"
