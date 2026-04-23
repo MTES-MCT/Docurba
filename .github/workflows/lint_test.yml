@@ -10,19 +10,11 @@ jobs:
     env:
       PYTHONPATH: ${{ github.workspace }}/django/
       DJANGO_SETTINGS_MODULE: config.settings.test
-      TEST_PGUSER: postgres
-      TEST_PGPASSWORD: postgres
-      TEST_PGHOST: 127.0.0.1
-      TEST_PGPORT: 5432
-      TEST_PGDATABASE: test_docurba
+      TEST_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/test_docurba
       SECRET_KEY: test_secret_key
       UPSTREAM_NUXT: http://localhost:3000
 
     steps:
-      - name: Set DATABASE_URL
-        run: |
-          echo "TEST_DATABASE_URL=postgres://${TEST_PGUSER}:${TEST_PGPASSWORD}@${TEST_PGHOST}:${TEST_PGPORT}/${TEST_PGDATABASE}" >> $GITHUB_ENV
-
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -36,8 +28,9 @@ jobs:
       - run: uv sync --locked --all-extras --dev --active --project=django/
 
       - name: 🛠️ Initialize the test database
-        run: make setup_test_db
+        run: ./docker/test_db/setup_test_db.sh
 
+      - run: django-admin migrate
       - run: django-admin collectstatic
       - run: pytest --cov django/tests/ django/tests/
       - run: ruff format --diff django/

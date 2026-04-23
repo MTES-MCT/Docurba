@@ -17,13 +17,13 @@ start_django:
 	$(START_DJANGO_CMD)
 
 setup_test_db:
-	./docker/test_db/setup_test_db.sh
+	./docker/test_db/setup_test_db.sh && cd django && direnv exec . django-admin migrate --settings config.settings.test
 
 clean_test_db:
 	docker compose down test_db
 
 run_tests_django:
-	cd django && source .venv/bin/activate && pytest . -vv
+	cd django && pytest . -vv
 
 # Nuxt
 clean_nuxt:
