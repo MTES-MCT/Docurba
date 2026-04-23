@@ -7,6 +7,7 @@ import pytest
 from django.utils import timezone
 from pytest_django import DjangoAssertNumQueries
 
+from docurba.core.enums import TypeCollectivite
 from docurba.core.models import (
     EVENT_CATEGORY_BY_DOC_TYPE,
     CodeCompetencePerimetre,
@@ -1874,3 +1875,9 @@ class TestCommuneCodeEtat:
             procedure.competence_intercommunalite_code(collectivite_porteuse)
             == expected_code
         )
+
+
+class TestEnums:
+    def test_type_collectivite_epci(self) -> None:
+        assert TypeCollectivite.CC in TypeCollectivite.epci()
+        assert TypeCollectivite.COM not in TypeCollectivite.epci()

@@ -60,3 +60,21 @@ class TypeCollectivite(models.TextChoices):
     CA = "CA", "Communauté d'Agglomération"
     POLEM = "POLEM", "Pôle Métropolitain"
     SIVOM = "SIVOM", "Syndicat Intercommunal à Vocation Multiple"
+
+    @classmethod
+    def epci(cls: models.TextChoices) -> dict:
+        enums = [
+            cls.CC,
+            cls.SMF,
+            cls.SMO,
+            cls.METRO,
+            cls.CU,
+            cls.PETR,
+            cls.MET69,
+            cls.SIVU,
+            cls.EPT,
+            cls.CA,
+            cls.POLEM,
+            cls.SIVOM,
+        ]
+        return {member.value: member for member in cls if member in enums}
