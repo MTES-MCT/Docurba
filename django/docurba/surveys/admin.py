@@ -7,9 +7,9 @@ from typing import Any
 from django.contrib import admin
 from django.db import models
 
+from docurba.core.enums import TypeCollectivite
 from docurba.core.models import (
     Departement,
-    TypeCollectivite,
 )
 from docurba.surveys.models import (
     ProcedureSurvey,
