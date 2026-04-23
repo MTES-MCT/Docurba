@@ -32,6 +32,7 @@ class TypeDocument(models.TextChoices):
     POS = "POS"
 
     PLUI = "PLUi"
+    PLUIS = "PLUiS"
     PLUIH = "PLUiH"
     PLUIHM = "PLUiHM"
     PLUIM = "PLUiM"
