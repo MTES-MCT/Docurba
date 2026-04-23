@@ -60,7 +60,7 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
 
 ### Cloner le dépôt Nuxt 3
 
-- Clônez [le dépôt Nuxt 3](https://github.com/betagouv/docurba-nuxt3/) et renseigner la variable d'environnement NUXT3_PATH avec le chemin du dépôt clôné :
+- Clôner [le dépôt Nuxt 3](https://github.com/betagouv/docurba-nuxt3/) et renseigner la variable d'environnement NUXT3_PATH avec le chemin du dépôt clôné :
 
 ```
 cd .. && git clone git@github.com:betagouv/docurba-nuxt3.git && cd -

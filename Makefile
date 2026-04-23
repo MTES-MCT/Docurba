@@ -1,7 +1,8 @@
 
 # Supabase
-# Use nuxt envrc to start supabase (APP_URL)
 start_supabase:
+# Use nuxt envrc to start supabase (APP_URL)
+# direnv exec DIR COMMAND [...ARGS] : Executes a command after loading the first .envrc or .env found in DIR.
 	direnv exec nuxt supabase start
 
 # Django
