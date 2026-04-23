@@ -10,7 +10,10 @@ CREATE_UNMANAGED_TABLES = True
 
 DATABASES = {
     "default": {
-        **env.db("TEST_DATABASE_URL"),
+        **env.db(
+            "TEST_DATABASE_URL",
+            default="postgresql://postgres:postgres@127.0.0.1:5432/test_docurba",
+        ),
         "CONN_MAX_AGE": env.int("CONN_MAX_AGE", 0),
         "CONN_HEALTH_CHECK": True,
         "TEST": {

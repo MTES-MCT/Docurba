@@ -21,13 +21,13 @@ services:
       # Seed data containing our own schema.
       - ./docker/test_db/prod_schema_before_django_migrations.sql:/docker-entrypoint-initdb.d/seed.sql
     ports:
-      - "${TEST_PGPORT}:5432"
+      - "${TEST_PGPORT:-5432}:5432"
     environment:
-      PGUSER: ${TEST_PGUSER}
-      PGPASSWORD: ${TEST_PGPASSWORD}
-      PGPHOST: ${TEST_PGHOST}
-      PGDATABASE: ${TEST_PGDATABASE}
+      PGUSER: ${TEST_PGUSER:-postgres}
+      PGPASSWORD: ${TEST_PGPASSWORD:-postgres}
+      PGPHOST: ${TEST_PGHOST:-127.0.0.1}
+      PGDATABASE: ${TEST_PGDATABASE:-test_docurba}
       # Used by supabase seeds.
-      POSTGRES_USER: ${TEST_PGUSER}
-      POSTGRES_PASSWORD: ${TEST_PGPASSWORD}
-      POSTGRES_DB: ${TEST_PGDATABASE}
+      POSTGRES_USER: ${TEST_PGUSER:-postgres}
+      POSTGRES_PASSWORD: ${TEST_PGPASSWORD:-postgres}
+      POSTGRES_DB: ${TEST_PGDATABASE:-test_docurba}

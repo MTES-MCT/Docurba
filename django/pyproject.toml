@@ -52,3 +52,6 @@ ignore = [
 [tool.ruff.lint.pydocstyle]
 # Use Google-style docstrings.
 convention = "pep257"
+
+[tool.uv]
+python-downloads = "automatic"
