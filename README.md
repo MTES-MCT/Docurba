@@ -43,9 +43,61 @@ Plus les modèles Django refléteront la structure de la base, moins nous aurons
 
 ##  Environnement local
 
-- Installez [Mise en place](https://mise.jdx.dev/getting-started.html)
-- Installez [la CLI Supabase](https://supabase.com/docs/guides/local-development/cli/getting-started).
-- Clônez [le dépôt Nuxt 3](https://github.com/betagouv/docurba-nuxt3/) et vérifiez que le serveur local se lance correctement (`$ mise start`).
-- Renseignez les variables d'environnement nécessaires à Nuxt et Django. Voir `django/.env.example` et `nuxt/.env.example`.
-Vous pouvez utiliser [direnv](https://direnv.net/), un utilitaire Python qui automatise l'usage des variables d'environnement (entre autre).
-- Utilisez la commande `mise start` pour lancer les serveurs suivants : Nuxt, Django, Nuxt3 et base de test (voir docker-compose.yml)
+### Installation des outils
+- Installer [uv](https://docs.astral.sh/uv/getting-started/installation/) : Gestion des versions Python, dépendances et environnements virtuels
+- Installer [nvm](https://www.nvmnode.com/guide/download.html) : Gestion des versions Node et dépendances
+- Installer [direnv](https://direnv.net/#basic-installation) : Gestion des variables d'environnement locales
+- Installer [Supabase](https://supabase.com/docs/guides/local-development/cli/getting-started)
+- Installer [Docker](https://docs.docker.com/engine/install/)
+- Installer le client [PostgreSQL](https://www.postgresql.org/download/)
+
+Example sous fedora :
+
+```
+sudo dnf install uv direnv postgresql https://github.com/supabase/cli/releases/download/v2.93.1/supabase_2.93.1_linux_amd64.rpm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+```
+
+### Cloner le dépôt Nuxt 3
+
+- Clônez [le dépôt Nuxt 3](https://github.com/betagouv/docurba-nuxt3/) et renseigner la variable d'environnement NUXT3_PATH avec le chemin du dépôt clôné :
+
+```
+cd .. && git clone git@github.com:betagouv/docurba-nuxt3.git && cd -
+```
+
+### Configuration direnv
+
+Copier les fichiers `.env.example` vers `.envrc` et autoriser direnv à y accéder :
+
+```
+cd nuxt && cp .env.example .envrc && direnv allow && cd -
+cd django && cp .env.example .envrc && direnv allow && cd -
+cd ${NUXT3_PATH} && cp .env.example .envrc && direnv allow && cd -
+```
+
+Pour éviter d'avoir à utiliser `direnv allow` à chaque modification de `.envrc`, modifier la config direnv comme suit :
+
+```
+mkdir -p ~/.config/direnv
+cat >> ~/.config/direnv/direnv.toml <<EOF
+[whitelist]
+prefix = [ "/path/to/docurba-nuxt3", "/path/to/Docurba" ]
+EOF
+```
+
+### Installer les dépendances
+
+```
+make install
+```
+
+### Lancer les applications
+
+```
+make start
+```
+
+### Makefile
+
+Se référer au Makefile pour voir les différentes options d'installation et de lancement
