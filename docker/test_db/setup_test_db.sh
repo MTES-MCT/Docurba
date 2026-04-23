@@ -8,8 +8,3 @@ until docker compose exec test_db bash -c '(psql -c "select 1 from public.only_e
     echo "Waiting for Postgres server, $((RETRIES--)) remaining attempts..."
     sleep 2
 done
-cd django
-if [[ -f ".venv/bin/activate" ]]; then
-    source .venv/bin/activate
-fi
-PYTHONPATH=. DJANGO_SETTINGS_MODULE=config.settings.test django-admin migrate
