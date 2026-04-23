@@ -117,7 +117,7 @@
                 {{ item.procedureName }}
               </nuxt-link>
 
-              <div v-if="item.procedures.status === null"></div>
+              <div v-if="item.procedures.status === null" />
               <v-chip v-else-if="item.opposable" class="ml-2 flex-shrink-0 success--text font-weight-bold" small label color="success-light">
                 OPPOSABLE
               </v-chip>
@@ -253,7 +253,6 @@ export default {
   async mounted () {
     try {
       if (!this.$user.canViewSectionProcedures({ departement: this.$route.params.departement })) {
-        console.warn('User is not allowed to view this page.')
         this.$nuxt.context.redirect(302, '/')
       }
       const promProcedures = await this.$urbanisator.getProceduresForDept(this.$route.params.departement)
@@ -297,9 +296,14 @@ export default {
       if (!departementObject) {
         return
       }
-      let departement = departementObject.code_departement.toString()
-      departement = departement.padStart('2', '0')
-      this.$router.push({ params: { departement } })
+      const departement = departementObject.code_departement.toString().padStart('2', '0')
+      this.$router.push({
+        ...this.$route,
+        params: {
+          ...this.$route.params,
+          departement
+        }
+      })
     },
     sortByDateIso (a, b) {
       return dayjs(a?.date_iso || 0) - dayjs(b?.date_iso || 0)
