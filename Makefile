@@ -12,7 +12,7 @@ clean_django:
 install_django:
 	cd django && uv sync
 
-START_DJANGO_CMD := cd django && source .venv/bin/activate && direnv exec . ./manage.py runserver
+START_DJANGO_CMD := cd django && . .venv/bin/activate && direnv exec . ./manage.py runserver
 start_django:
 	$(START_DJANGO_CMD)
 
