@@ -194,8 +194,8 @@ class TestAPICommunes:
         expected_lignes: int,
         client: Client,
     ) -> None:
-        commune_a = CommuneFactory()
-        CommuneFactory()
+        commune_a = CommuneFactory(departement=DepartementFactory(code_insee="13"))
+        CommuneFactory(departement=DepartementFactory(code_insee="84"))
 
         filtre = {}
         if is_filtering:
