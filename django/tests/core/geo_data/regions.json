@@ -1,0 +1,182 @@
+[
+  {
+    "code": "01",
+    "type": "Region",
+    "dateCreation": "2007-07-15",
+    "intituleSansArticle": "Guadeloupe",
+    "typeArticle": "3",
+    "chefLieu": "97105",
+    "intitule": "Guadeloupe",
+    "iso": "FR-GUA"
+  },
+  {
+    "code": "02",
+    "type": "Region",
+    "dateCreation": "1982-03-02",
+    "intituleSansArticle": "Martinique",
+    "typeArticle": "3",
+    "chefLieu": "97209",
+    "intitule": "Martinique",
+    "iso": "FR-MTQ"
+  },
+  {
+    "code": "03",
+    "type": "Region",
+    "dateCreation": "1982-03-02",
+    "intituleSansArticle": "Guyane",
+    "typeArticle": "3",
+    "chefLieu": "97302",
+    "intitule": "Guyane",
+    "iso": "FR-GUF"
+  },
+  {
+    "code": "04",
+    "type": "Region",
+    "dateCreation": "1982-03-02",
+    "intituleSansArticle": "La Réunion",
+    "typeArticle": "0",
+    "chefLieu": "97411",
+    "intitule": "La Réunion",
+    "iso": "FR-LRE"
+  },
+  {
+    "code": "06",
+    "type": "Region",
+    "dateCreation": "2011-03-31",
+    "intituleSansArticle": "Mayotte",
+    "typeArticle": "0",
+    "chefLieu": "97608",
+    "intitule": "Mayotte",
+    "iso": "FR-MAY"
+  },
+  {
+    "code": "11",
+    "type": "Region",
+    "dateCreation": "1982-03-02",
+    "intituleSansArticle": "Île-de-France",
+    "typeArticle": "1",
+    "chefLieu": "75056",
+    "intitule": "Île-de-France",
+    "iso": "FR-IDF"
+  },
+  {
+    "code": "24",
+    "type": "Region",
+    "dateCreation": "2015-01-17",
+    "intituleSansArticle": "Centre-Val de Loire",
+    "typeArticle": "2",
+    "chefLieu": "45234",
+    "intitule": "Centre-Val de Loire",
+    "iso": "FR-CVL"
+  },
+  {
+    "code": "27",
+    "type": "Region",
+    "dateCreation": "2016-01-01",
+    "intituleSansArticle": "Bourgogne-Franche-Comté",
+    "typeArticle": "0",
+    "chefLieu": "21231",
+    "intitule": "Bourgogne-Franche-Comté",
+    "iso": "FR-BFC"
+  },
+  {
+    "code": "28",
+    "type": "Region",
+    "dateCreation": "2016-01-01",
+    "intituleSansArticle": "Normandie",
+    "typeArticle": "0",
+    "chefLieu": "76540",
+    "intitule": "Normandie",
+    "iso": "FR-NOR"
+  },
+  {
+    "code": "32",
+    "type": "Region",
+    "dateCreation": "2016-12-31",
+    "intituleSansArticle": "Hauts-de-France",
+    "typeArticle": "4",
+    "chefLieu": "59350",
+    "intitule": "Hauts-de-France",
+    "iso": "FR-HDF"
+  },
+  {
+    "code": "44",
+    "type": "Region",
+    "dateCreation": "2016-12-31",
+    "intituleSansArticle": "Grand Est",
+    "typeArticle": "2",
+    "chefLieu": "67482",
+    "intitule": "Grand Est",
+    "iso": "FR-GES"
+  },
+  {
+    "code": "52",
+    "type": "Region",
+    "dateCreation": "2019-01-01",
+    "intituleSansArticle": "Pays de la Loire",
+    "typeArticle": "4",
+    "chefLieu": "44109",
+    "intitule": "Pays de la Loire",
+    "iso": "FR-PDL"
+  },
+  {
+    "code": "53",
+    "type": "Region",
+    "dateCreation": "2019-01-01",
+    "intituleSansArticle": "Bretagne",
+    "typeArticle": "0",
+    "chefLieu": "35238",
+    "intitule": "Bretagne",
+    "iso": "FR-BRE"
+  },
+  {
+    "code": "75",
+    "type": "Region",
+    "dateCreation": "2016-09-29",
+    "intituleSansArticle": "Nouvelle-Aquitaine",
+    "typeArticle": "3",
+    "chefLieu": "33063",
+    "intitule": "Nouvelle-Aquitaine",
+    "iso": "FR-NAQ"
+  },
+  {
+    "code": "76",
+    "type": "Region",
+    "dateCreation": "2016-09-29",
+    "intituleSansArticle": "Occitanie",
+    "typeArticle": "1",
+    "chefLieu": "31555",
+    "intitule": "Occitanie",
+    "iso": "FR-OCC"
+  },
+  {
+    "code": "84",
+    "type": "Region",
+    "dateCreation": "2016-01-01",
+    "intituleSansArticle": "Auvergne-Rhône-Alpes",
+    "typeArticle": "1",
+    "chefLieu": "69123",
+    "intitule": "Auvergne-Rhône-Alpes",
+    "iso": "FR-ARA"
+  },
+  {
+    "code": "93",
+    "type": "Region",
+    "dateCreation": "1982-03-02",
+    "intituleSansArticle": "Provence-Alpes-Côte d'Azur",
+    "typeArticle": "0",
+    "chefLieu": "13055",
+    "intitule": "Provence-Alpes-Côte d'Azur",
+    "iso": "FR-PAC"
+  },
+  {
+    "code": "94",
+    "type": "Region",
+    "dateCreation": "1982-03-02",
+    "intituleSansArticle": "Corse",
+    "typeArticle": "0",
+    "chefLieu": "2A004",
+    "intitule": "Corse",
+    "iso": "FR-COR"
+  }
+]
