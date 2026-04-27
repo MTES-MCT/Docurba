@@ -20,9 +20,12 @@ from docurba.core.models import (
 )
 from tests.factories import (
     create_commune,
-    create_departement,
     create_groupement,
     create_procedure,
+)
+
+from tests.core.factories import (
+    DepartementFactory,
 )
 
 
@@ -426,7 +429,7 @@ class TestScotInterdepartemental:
         self,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        departement = create_departement()
+        departement = DepartementFactory()
         groupement_avec_scot = create_groupement()
         commune_a = create_commune(departement=departement)
         commune_b = create_commune(departement=departement)
