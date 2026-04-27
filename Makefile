@@ -10,7 +10,7 @@ clean_django:
 	rm -Rf django/.venv
 
 install_django:
-	cd django && uv sync && uv venv && . .venv/bin/activate && 
+	cd django && uv venv && . .venv/bin/activate && uv sync
 
 START_DJANGO_CMD := cd django && . .venv/bin/activate && direnv exec . ./manage.py runserver
 start_django:
