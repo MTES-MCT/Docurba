@@ -52,7 +52,7 @@ jobs:
 
     - name: 🪆 Creation de la branche Supabase
       run: |
-       supabase branches --project-ref ${SUPABASE_PROJECT_ID} create ${SUPABASE_REVIEW_APP_NAME}
+       supabase branches --project-ref ${SUPABASE_PROJECT_ID} create --size small ${SUPABASE_REVIEW_APP_NAME}
 
     - name: 🤹‍♀️ Export des variables d'environment à partir de Supabase
       shell: bash
