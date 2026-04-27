@@ -1,0 +1,5030 @@
+[
+      {
+    "code": "13",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Bouches-du-Rhône",
+    "typeArticle": "4",
+    "chefLieu": "13055",
+    "intitule": "Bouches-du-Rhône",
+    "communes": [
+      {
+        "code": "13001",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aix-en-Provence",
+        "typeArticle": "1",
+        "intitule": "Aix-en-Provence"
+      },
+      {
+        "code": "13002",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Allauch",
+        "typeArticle": "1",
+        "intitule": "Allauch"
+      },
+      {
+        "code": "13003",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Alleins",
+        "typeArticle": "1",
+        "intitule": "Alleins"
+      },
+      {
+        "code": "13004",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Arles",
+        "typeArticle": "1",
+        "intitule": "Arles"
+      },
+      {
+        "code": "13005",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aubagne",
+        "typeArticle": "1",
+        "intitule": "Aubagne"
+      },
+      {
+        "code": "13006",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aureille",
+        "typeArticle": "1",
+        "intitule": "Aureille"
+      },
+      {
+        "code": "13007",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Auriol",
+        "typeArticle": "1",
+        "intitule": "Auriol"
+      },
+      {
+        "code": "13008",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aurons",
+        "typeArticle": "1",
+        "intitule": "Aurons"
+      },
+      {
+        "code": "13009",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Barben",
+        "typeArticle": "3",
+        "intitule": "La Barben"
+      },
+      {
+        "code": "13010",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Barbentane",
+        "typeArticle": "0",
+        "intitule": "Barbentane"
+      },
+      {
+        "code": "13011",
+        "type": "Commune",
+        "dateCreation": "1958-08-13",
+        "intituleSansArticle": "Baux-de-Provence",
+        "typeArticle": "4",
+        "intitule": "Les Baux-de-Provence"
+      },
+      {
+        "code": "13012",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Beaurecueil",
+        "typeArticle": "0",
+        "intitule": "Beaurecueil"
+      },
+      {
+        "code": "13013",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Belcodène",
+        "typeArticle": "0",
+        "intitule": "Belcodène"
+      },
+      {
+        "code": "13014",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Berre-l'Étang",
+        "typeArticle": "0",
+        "intitule": "Berre-l'Étang"
+      },
+      {
+        "code": "13015",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bouc-Bel-Air",
+        "typeArticle": "0",
+        "intitule": "Bouc-Bel-Air"
+      },
+      {
+        "code": "13016",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bouilladisse",
+        "typeArticle": "3",
+        "intitule": "La Bouilladisse"
+      },
+      {
+        "code": "13017",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Boulbon",
+        "typeArticle": "0",
+        "intitule": "Boulbon"
+      },
+      {
+        "code": "13018",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cabannes",
+        "typeArticle": "0",
+        "intitule": "Cabannes"
+      },
+      {
+        "code": "13019",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cabriès",
+        "typeArticle": "0",
+        "intitule": "Cabriès"
+      },
+      {
+        "code": "13020",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cadolive",
+        "typeArticle": "0",
+        "intitule": "Cadolive"
+      },
+      {
+        "code": "13021",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Carry-le-Rouet",
+        "typeArticle": "0",
+        "intitule": "Carry-le-Rouet"
+      },
+      {
+        "code": "13022",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cassis",
+        "typeArticle": "0",
+        "intitule": "Cassis"
+      },
+      {
+        "code": "13023",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Ceyreste",
+        "typeArticle": "0",
+        "intitule": "Ceyreste"
+      },
+      {
+        "code": "13024",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Charleval",
+        "typeArticle": "0",
+        "intitule": "Charleval"
+      },
+      {
+        "code": "13025",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Châteauneuf-le-Rouge",
+        "typeArticle": "0",
+        "intitule": "Châteauneuf-le-Rouge"
+      },
+      {
+        "code": "13026",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Châteauneuf-les-Martigues",
+        "typeArticle": "0",
+        "intitule": "Châteauneuf-les-Martigues"
+      },
+      {
+        "code": "13027",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Châteaurenard",
+        "typeArticle": "0",
+        "intitule": "Châteaurenard"
+      },
+      {
+        "code": "13028",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Ciotat",
+        "typeArticle": "3",
+        "intitule": "La Ciotat"
+      },
+      {
+        "code": "13029",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cornillon-Confoux",
+        "typeArticle": "0",
+        "intitule": "Cornillon-Confoux"
+      },
+      {
+        "code": "13030",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cuges-les-Pins",
+        "typeArticle": "0",
+        "intitule": "Cuges-les-Pins"
+      },
+      {
+        "code": "13031",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Destrousse",
+        "typeArticle": "3",
+        "intitule": "La Destrousse"
+      },
+      {
+        "code": "13032",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Éguilles",
+        "typeArticle": "1",
+        "intitule": "Éguilles"
+      },
+      {
+        "code": "13033",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Ensuès-la-Redonne",
+        "typeArticle": "1",
+        "intitule": "Ensuès-la-Redonne"
+      },
+      {
+        "code": "13034",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Eygalières",
+        "typeArticle": "1",
+        "intitule": "Eygalières"
+      },
+      {
+        "code": "13035",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Eyguières",
+        "typeArticle": "1",
+        "intitule": "Eyguières"
+      },
+      {
+        "code": "13036",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Eyragues",
+        "typeArticle": "1",
+        "intitule": "Eyragues"
+      },
+      {
+        "code": "13037",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Fare-les-Oliviers",
+        "typeArticle": "3",
+        "intitule": "La Fare-les-Oliviers"
+      },
+      {
+        "code": "13038",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Fontvieille",
+        "typeArticle": "0",
+        "intitule": "Fontvieille"
+      },
+      {
+        "code": "13039",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Fos-sur-Mer",
+        "typeArticle": "0",
+        "intitule": "Fos-sur-Mer"
+      },
+      {
+        "code": "13040",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Fuveau",
+        "typeArticle": "0",
+        "intitule": "Fuveau"
+      },
+      {
+        "code": "13041",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Gardanne",
+        "typeArticle": "0",
+        "intitule": "Gardanne"
+      },
+      {
+        "code": "13042",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Gémenos",
+        "typeArticle": "0",
+        "intitule": "Gémenos"
+      },
+      {
+        "code": "13043",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Gignac-la-Nerthe",
+        "typeArticle": "0",
+        "intitule": "Gignac-la-Nerthe"
+      },
+      {
+        "code": "13044",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Grans",
+        "typeArticle": "0",
+        "intitule": "Grans"
+      },
+      {
+        "code": "13045",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Graveson",
+        "typeArticle": "0",
+        "intitule": "Graveson"
+      },
+      {
+        "code": "13046",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Gréasque",
+        "typeArticle": "0",
+        "intitule": "Gréasque"
+      },
+      {
+        "code": "13047",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Istres",
+        "typeArticle": "1",
+        "intitule": "Istres"
+      },
+      {
+        "code": "13048",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Jouques",
+        "typeArticle": "0",
+        "intitule": "Jouques"
+      },
+      {
+        "code": "13049",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lamanon",
+        "typeArticle": "0",
+        "intitule": "Lamanon"
+      },
+      {
+        "code": "13050",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lambesc",
+        "typeArticle": "0",
+        "intitule": "Lambesc"
+      },
+      {
+        "code": "13051",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lançon-Provence",
+        "typeArticle": "0",
+        "intitule": "Lançon-Provence"
+      },
+      {
+        "code": "13052",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Maillane",
+        "typeArticle": "0",
+        "intitule": "Maillane"
+      },
+      {
+        "code": "13053",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mallemort",
+        "typeArticle": "0",
+        "intitule": "Mallemort"
+      },
+      {
+        "code": "13054",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Marignane",
+        "typeArticle": "0",
+        "intitule": "Marignane"
+      },
+      {
+        "code": "13055",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Marseille",
+        "typeArticle": "0",
+        "intitule": "Marseille"
+      },
+      {
+        "code": "13056",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Martigues",
+        "typeArticle": "0",
+        "intitule": "Martigues"
+      },
+      {
+        "code": "13057",
+        "type": "Commune",
+        "dateCreation": "1966-05-07",
+        "intituleSansArticle": "Mas-Blanc-des-Alpilles",
+        "typeArticle": "0",
+        "intitule": "Mas-Blanc-des-Alpilles"
+      },
+      {
+        "code": "13058",
+        "type": "Commune",
+        "dateCreation": "1968-02-15",
+        "intituleSansArticle": "Maussane-les-Alpilles",
+        "typeArticle": "0",
+        "intitule": "Maussane-les-Alpilles"
+      },
+      {
+        "code": "13059",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Meyrargues",
+        "typeArticle": "0",
+        "intitule": "Meyrargues"
+      },
+      {
+        "code": "13060",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Meyreuil",
+        "typeArticle": "0",
+        "intitule": "Meyreuil"
+      },
+      {
+        "code": "13061",
+        "type": "Commune",
+        "dateCreation": "1992-09-01",
+        "intituleSansArticle": "Saint-Pierre-de-Mézoargues",
+        "typeArticle": "0",
+        "intitule": "Saint-Pierre-de-Mézoargues"
+      },
+      {
+        "code": "13062",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mimet",
+        "typeArticle": "0",
+        "intitule": "Mimet"
+      },
+      {
+        "code": "13063",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Miramas",
+        "typeArticle": "0",
+        "intitule": "Miramas"
+      },
+      {
+        "code": "13064",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mollégès",
+        "typeArticle": "0",
+        "intitule": "Mollégès"
+      },
+      {
+        "code": "13065",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mouriès",
+        "typeArticle": "0",
+        "intitule": "Mouriès"
+      },
+      {
+        "code": "13066",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Noves",
+        "typeArticle": "0",
+        "intitule": "Noves"
+      },
+      {
+        "code": "13067",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Orgon",
+        "typeArticle": "1",
+        "intitule": "Orgon"
+      },
+      {
+        "code": "13068",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Paradou",
+        "typeArticle": "0",
+        "intitule": "Paradou"
+      },
+      {
+        "code": "13069",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Pélissanne",
+        "typeArticle": "0",
+        "intitule": "Pélissanne"
+      },
+      {
+        "code": "13070",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Penne-sur-Huveaune",
+        "typeArticle": "3",
+        "intitule": "La Penne-sur-Huveaune"
+      },
+      {
+        "code": "13071",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Pennes-Mirabeau",
+        "typeArticle": "4",
+        "intitule": "Les Pennes-Mirabeau"
+      },
+      {
+        "code": "13072",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Peynier",
+        "typeArticle": "0",
+        "intitule": "Peynier"
+      },
+      {
+        "code": "13073",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Peypin",
+        "typeArticle": "0",
+        "intitule": "Peypin"
+      },
+      {
+        "code": "13074",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Peyrolles-en-Provence",
+        "typeArticle": "0",
+        "intitule": "Peyrolles-en-Provence"
+      },
+      {
+        "code": "13075",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Plan-de-Cuques",
+        "typeArticle": "0",
+        "intitule": "Plan-de-Cuques"
+      },
+      {
+        "code": "13076",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Plan-d'Orgon",
+        "typeArticle": "0",
+        "intitule": "Plan-d'Orgon"
+      },
+      {
+        "code": "13077",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Port-de-Bouc",
+        "typeArticle": "0",
+        "intitule": "Port-de-Bouc"
+      },
+      {
+        "code": "13078",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Port-Saint-Louis-du-Rhône",
+        "typeArticle": "0",
+        "intitule": "Port-Saint-Louis-du-Rhône"
+      },
+      {
+        "code": "13079",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Puyloubier",
+        "typeArticle": "0",
+        "intitule": "Puyloubier"
+      },
+      {
+        "code": "13080",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Puy-Sainte-Réparade",
+        "typeArticle": "2",
+        "intitule": "Le Puy-Sainte-Réparade"
+      },
+      {
+        "code": "13081",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rognac",
+        "typeArticle": "0",
+        "intitule": "Rognac"
+      },
+      {
+        "code": "13082",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rognes",
+        "typeArticle": "0",
+        "intitule": "Rognes"
+      },
+      {
+        "code": "13083",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rognonas",
+        "typeArticle": "0",
+        "intitule": "Rognonas"
+      },
+      {
+        "code": "13084",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Roque-d'Anthéron",
+        "typeArticle": "3",
+        "intitule": "La Roque-d'Anthéron"
+      },
+      {
+        "code": "13085",
+        "type": "Commune",
+        "dateCreation": "1966-08-29",
+        "intituleSansArticle": "Roquefort-la-Bédoule",
+        "typeArticle": "0",
+        "intitule": "Roquefort-la-Bédoule"
+      },
+      {
+        "code": "13086",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Roquevaire",
+        "typeArticle": "0",
+        "intitule": "Roquevaire"
+      },
+      {
+        "code": "13087",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rousset",
+        "typeArticle": "0",
+        "intitule": "Rousset"
+      },
+      {
+        "code": "13088",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rove",
+        "typeArticle": "2",
+        "intitule": "Le Rove"
+      },
+      {
+        "code": "13089",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Andiol",
+        "typeArticle": "0",
+        "intitule": "Saint-Andiol"
+      },
+      {
+        "code": "13090",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Antonin-sur-Bayon",
+        "typeArticle": "0",
+        "intitule": "Saint-Antonin-sur-Bayon"
+      },
+      {
+        "code": "13091",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Cannat",
+        "typeArticle": "0",
+        "intitule": "Saint-Cannat"
+      },
+      {
+        "code": "13092",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Chamas",
+        "typeArticle": "0",
+        "intitule": "Saint-Chamas"
+      },
+      {
+        "code": "13093",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Estève-Janson",
+        "typeArticle": "0",
+        "intitule": "Saint-Estève-Janson"
+      },
+      {
+        "code": "13094",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Étienne-du-Grès",
+        "typeArticle": "0",
+        "intitule": "Saint-Étienne-du-Grès"
+      },
+      {
+        "code": "13095",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Marc-Jaumegarde",
+        "typeArticle": "0",
+        "intitule": "Saint-Marc-Jaumegarde"
+      },
+      {
+        "code": "13096",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saintes-Maries-de-la-Mer",
+        "typeArticle": "0",
+        "intitule": "Saintes-Maries-de-la-Mer"
+      },
+      {
+        "code": "13097",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Martin-de-Crau",
+        "typeArticle": "0",
+        "intitule": "Saint-Martin-de-Crau"
+      },
+      {
+        "code": "13098",
+        "type": "Commune",
+        "dateCreation": "1949-09-08",
+        "intituleSansArticle": "Saint-Mitre-les-Remparts",
+        "typeArticle": "0",
+        "intitule": "Saint-Mitre-les-Remparts"
+      },
+      {
+        "code": "13099",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Paul-lès-Durance",
+        "typeArticle": "0",
+        "intitule": "Saint-Paul-lès-Durance"
+      },
+      {
+        "code": "13100",
+        "type": "Commune",
+        "dateCreation": "1953-04-12",
+        "intituleSansArticle": "Saint-Rémy-de-Provence",
+        "typeArticle": "0",
+        "intitule": "Saint-Rémy-de-Provence"
+      },
+      {
+        "code": "13101",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Savournin",
+        "typeArticle": "0",
+        "intitule": "Saint-Savournin"
+      },
+      {
+        "code": "13102",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Victoret",
+        "typeArticle": "0",
+        "intitule": "Saint-Victoret"
+      },
+      {
+        "code": "13103",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Salon-de-Provence",
+        "typeArticle": "0",
+        "intitule": "Salon-de-Provence"
+      },
+      {
+        "code": "13104",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sausset-les-Pins",
+        "typeArticle": "0",
+        "intitule": "Sausset-les-Pins"
+      },
+      {
+        "code": "13105",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sénas",
+        "typeArticle": "0",
+        "intitule": "Sénas"
+      },
+      {
+        "code": "13106",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Septèmes-les-Vallons",
+        "typeArticle": "0",
+        "intitule": "Septèmes-les-Vallons"
+      },
+      {
+        "code": "13107",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Simiane-Collongue",
+        "typeArticle": "0",
+        "intitule": "Simiane-Collongue"
+      },
+      {
+        "code": "13108",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Tarascon",
+        "typeArticle": "0",
+        "intitule": "Tarascon"
+      },
+      {
+        "code": "13109",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Tholonet",
+        "typeArticle": "2",
+        "intitule": "Le Tholonet"
+      },
+      {
+        "code": "13110",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Trets",
+        "typeArticle": "0",
+        "intitule": "Trets"
+      },
+      {
+        "code": "13111",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vauvenargues",
+        "typeArticle": "0",
+        "intitule": "Vauvenargues"
+      },
+      {
+        "code": "13112",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Velaux",
+        "typeArticle": "0",
+        "intitule": "Velaux"
+      },
+      {
+        "code": "13113",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Venelles",
+        "typeArticle": "0",
+        "intitule": "Venelles"
+      },
+      {
+        "code": "13114",
+        "type": "Commune",
+        "dateCreation": "1950-05-12",
+        "intituleSansArticle": "Ventabren",
+        "typeArticle": "0",
+        "intitule": "Ventabren"
+      },
+      {
+        "code": "13115",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vernègues",
+        "typeArticle": "0",
+        "intitule": "Vernègues"
+      },
+      {
+        "code": "13116",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Verquières",
+        "typeArticle": "0",
+        "intitule": "Verquières"
+      },
+      {
+        "code": "13117",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vitrolles",
+        "typeArticle": "0",
+        "intitule": "Vitrolles"
+      },
+      {
+        "code": "13118",
+        "type": "Commune",
+        "dateCreation": "1950-05-12",
+        "intituleSansArticle": "Coudoux",
+        "typeArticle": "0",
+        "intitule": "Coudoux"
+      },
+      {
+        "code": "13119",
+        "type": "Commune",
+        "dateCreation": "1966-08-29",
+        "intituleSansArticle": "Carnoux-en-Provence",
+        "typeArticle": "0",
+        "intitule": "Carnoux-en-Provence"
+      }
+    ],
+    "region": {
+      "code": "93",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Provence-Alpes-Côte d'Azur",
+      "typeArticle": "0",
+      "chefLieu": "13055",
+      "intitule": "Provence-Alpes-Côte d'Azur"
+    }
+  },
+  {
+    "code": "84",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Vaucluse",
+    "typeArticle": "2",
+    "chefLieu": "84007",
+    "intitule": "Vaucluse",
+    "communes": [
+      {
+        "code": "84001",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Althen-des-Paluds",
+        "typeArticle": "1",
+        "intitule": "Althen-des-Paluds"
+      },
+      {
+        "code": "84002",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Ansouis",
+        "typeArticle": "1",
+        "intitule": "Ansouis"
+      },
+      {
+        "code": "84003",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Apt",
+        "typeArticle": "1",
+        "intitule": "Apt"
+      },
+      {
+        "code": "84004",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aubignan",
+        "typeArticle": "1",
+        "intitule": "Aubignan"
+      },
+      {
+        "code": "84005",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aurel",
+        "typeArticle": "1",
+        "intitule": "Aurel"
+      },
+      {
+        "code": "84006",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Auribeau",
+        "typeArticle": "1",
+        "intitule": "Auribeau"
+      },
+      {
+        "code": "84007",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Avignon",
+        "typeArticle": "1",
+        "intitule": "Avignon"
+      },
+      {
+        "code": "84008",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Barroux",
+        "typeArticle": "2",
+        "intitule": "Le Barroux"
+      },
+      {
+        "code": "84009",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bastide-des-Jourdans",
+        "typeArticle": "3",
+        "intitule": "La Bastide-des-Jourdans"
+      },
+      {
+        "code": "84010",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bastidonne",
+        "typeArticle": "3",
+        "intitule": "La Bastidonne"
+      },
+      {
+        "code": "84011",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Beaucet",
+        "typeArticle": "2",
+        "intitule": "Le Beaucet"
+      },
+      {
+        "code": "84012",
+        "type": "Commune",
+        "dateCreation": "1954-03-15",
+        "intituleSansArticle": "Beaumes-de-Venise",
+        "typeArticle": "0",
+        "intitule": "Beaumes-de-Venise"
+      },
+      {
+        "code": "84013",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Beaumettes",
+        "typeArticle": "0",
+        "intitule": "Beaumettes"
+      },
+      {
+        "code": "84014",
+        "type": "Commune",
+        "dateCreation": "1953-12-31",
+        "intituleSansArticle": "Beaumont-de-Pertuis",
+        "typeArticle": "0",
+        "intitule": "Beaumont-de-Pertuis"
+      },
+      {
+        "code": "84015",
+        "type": "Commune",
+        "dateCreation": "1953-12-05",
+        "intituleSansArticle": "Beaumont-du-Ventoux",
+        "typeArticle": "0",
+        "intitule": "Beaumont-du-Ventoux"
+      },
+      {
+        "code": "84016",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bédarrides",
+        "typeArticle": "0",
+        "intitule": "Bédarrides"
+      },
+      {
+        "code": "84017",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bédoin",
+        "typeArticle": "0",
+        "intitule": "Bédoin"
+      },
+      {
+        "code": "84018",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Blauvac",
+        "typeArticle": "0",
+        "intitule": "Blauvac"
+      },
+      {
+        "code": "84019",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bollène",
+        "typeArticle": "0",
+        "intitule": "Bollène"
+      },
+      {
+        "code": "84020",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bonnieux",
+        "typeArticle": "0",
+        "intitule": "Bonnieux"
+      },
+      {
+        "code": "84021",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Brantes",
+        "typeArticle": "0",
+        "intitule": "Brantes"
+      },
+      {
+        "code": "84022",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Buisson",
+        "typeArticle": "0",
+        "intitule": "Buisson"
+      },
+      {
+        "code": "84023",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Buoux",
+        "typeArticle": "0",
+        "intitule": "Buoux"
+      },
+      {
+        "code": "84024",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cabrières-d'Aigues",
+        "typeArticle": "0",
+        "intitule": "Cabrières-d'Aigues"
+      },
+      {
+        "code": "84025",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cabrières-d'Avignon",
+        "typeArticle": "0",
+        "intitule": "Cabrières-d'Avignon"
+      },
+      {
+        "code": "84026",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cadenet",
+        "typeArticle": "0",
+        "intitule": "Cadenet"
+      },
+      {
+        "code": "84027",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Caderousse",
+        "typeArticle": "0",
+        "intitule": "Caderousse"
+      },
+      {
+        "code": "84028",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cairanne",
+        "typeArticle": "0",
+        "intitule": "Cairanne"
+      },
+      {
+        "code": "84029",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Camaret-sur-Aigues",
+        "typeArticle": "0",
+        "intitule": "Camaret-sur-Aigues"
+      },
+      {
+        "code": "84030",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Caromb",
+        "typeArticle": "0",
+        "intitule": "Caromb"
+      },
+      {
+        "code": "84031",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Carpentras",
+        "typeArticle": "0",
+        "intitule": "Carpentras"
+      },
+      {
+        "code": "84032",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Caseneuve",
+        "typeArticle": "0",
+        "intitule": "Caseneuve"
+      },
+      {
+        "code": "84033",
+        "type": "Commune",
+        "dateCreation": "2018-11-08",
+        "intituleSansArticle": "Castellet-en-Luberon",
+        "typeArticle": "0",
+        "intitule": "Castellet-en-Luberon"
+      },
+      {
+        "code": "84034",
+        "type": "Commune",
+        "dateCreation": "1953-12-05",
+        "intituleSansArticle": "Caumont-sur-Durance",
+        "typeArticle": "0",
+        "intitule": "Caumont-sur-Durance"
+      },
+      {
+        "code": "84035",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cavaillon",
+        "typeArticle": "0",
+        "intitule": "Cavaillon"
+      },
+      {
+        "code": "84036",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Châteauneuf-de-Gadagne",
+        "typeArticle": "0",
+        "intitule": "Châteauneuf-de-Gadagne"
+      },
+      {
+        "code": "84037",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Châteauneuf-du-Pape",
+        "typeArticle": "0",
+        "intitule": "Châteauneuf-du-Pape"
+      },
+      {
+        "code": "84038",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cheval-Blanc",
+        "typeArticle": "0",
+        "intitule": "Cheval-Blanc"
+      },
+      {
+        "code": "84039",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Courthézon",
+        "typeArticle": "0",
+        "intitule": "Courthézon"
+      },
+      {
+        "code": "84040",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Crestet",
+        "typeArticle": "0",
+        "intitule": "Crestet"
+      },
+      {
+        "code": "84041",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Crillon-le-Brave",
+        "typeArticle": "0",
+        "intitule": "Crillon-le-Brave"
+      },
+      {
+        "code": "84042",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cucuron",
+        "typeArticle": "0",
+        "intitule": "Cucuron"
+      },
+      {
+        "code": "84043",
+        "type": "Commune",
+        "dateCreation": "1993-11-01",
+        "intituleSansArticle": "Entraigues-sur-la-Sorgue",
+        "typeArticle": "1",
+        "intitule": "Entraigues-sur-la-Sorgue"
+      },
+      {
+        "code": "84044",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Entrechaux",
+        "typeArticle": "1",
+        "intitule": "Entrechaux"
+      },
+      {
+        "code": "84045",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Faucon",
+        "typeArticle": "0",
+        "intitule": "Faucon"
+      },
+      {
+        "code": "84046",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Flassan",
+        "typeArticle": "0",
+        "intitule": "Flassan"
+      },
+      {
+        "code": "84047",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Gargas",
+        "typeArticle": "0",
+        "intitule": "Gargas"
+      },
+      {
+        "code": "84048",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Gignac",
+        "typeArticle": "0",
+        "intitule": "Gignac"
+      },
+      {
+        "code": "84049",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Gigondas",
+        "typeArticle": "0",
+        "intitule": "Gigondas"
+      },
+      {
+        "code": "84050",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Gordes",
+        "typeArticle": "0",
+        "intitule": "Gordes"
+      },
+      {
+        "code": "84051",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Goult",
+        "typeArticle": "0",
+        "intitule": "Goult"
+      },
+      {
+        "code": "84052",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Grambois",
+        "typeArticle": "0",
+        "intitule": "Grambois"
+      },
+      {
+        "code": "84053",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Grillon",
+        "typeArticle": "0",
+        "intitule": "Grillon"
+      },
+      {
+        "code": "84054",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Isle-sur-la-Sorgue",
+        "typeArticle": "5",
+        "intitule": "L'Isle-sur-la-Sorgue"
+      },
+      {
+        "code": "84055",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Jonquerettes",
+        "typeArticle": "0",
+        "intitule": "Jonquerettes"
+      },
+      {
+        "code": "84056",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Jonquières",
+        "typeArticle": "0",
+        "intitule": "Jonquières"
+      },
+      {
+        "code": "84057",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Joucas",
+        "typeArticle": "0",
+        "intitule": "Joucas"
+      },
+      {
+        "code": "84058",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lacoste",
+        "typeArticle": "0",
+        "intitule": "Lacoste"
+      },
+      {
+        "code": "84059",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lafare",
+        "typeArticle": "0",
+        "intitule": "Lafare"
+      },
+      {
+        "code": "84060",
+        "type": "Commune",
+        "dateCreation": "1953-12-05",
+        "intituleSansArticle": "Lagarde-d'Apt",
+        "typeArticle": "0",
+        "intitule": "Lagarde-d'Apt"
+      },
+      {
+        "code": "84061",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lagarde-Paréol",
+        "typeArticle": "0",
+        "intitule": "Lagarde-Paréol"
+      },
+      {
+        "code": "84062",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lagnes",
+        "typeArticle": "0",
+        "intitule": "Lagnes"
+      },
+      {
+        "code": "84063",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lamotte-du-Rhône",
+        "typeArticle": "0",
+        "intitule": "Lamotte-du-Rhône"
+      },
+      {
+        "code": "84064",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lapalud",
+        "typeArticle": "0",
+        "intitule": "Lapalud"
+      },
+      {
+        "code": "84065",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lauris",
+        "typeArticle": "0",
+        "intitule": "Lauris"
+      },
+      {
+        "code": "84066",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lioux",
+        "typeArticle": "0",
+        "intitule": "Lioux"
+      },
+      {
+        "code": "84067",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Loriol-du-Comtat",
+        "typeArticle": "0",
+        "intitule": "Loriol-du-Comtat"
+      },
+      {
+        "code": "84068",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lourmarin",
+        "typeArticle": "0",
+        "intitule": "Lourmarin"
+      },
+      {
+        "code": "84069",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Malaucène",
+        "typeArticle": "0",
+        "intitule": "Malaucène"
+      },
+      {
+        "code": "84070",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Malemort-du-Comtat",
+        "typeArticle": "0",
+        "intitule": "Malemort-du-Comtat"
+      },
+      {
+        "code": "84071",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Maubec",
+        "typeArticle": "0",
+        "intitule": "Maubec"
+      },
+      {
+        "code": "84072",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mazan",
+        "typeArticle": "0",
+        "intitule": "Mazan"
+      },
+      {
+        "code": "84073",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Ménerbes",
+        "typeArticle": "0",
+        "intitule": "Ménerbes"
+      },
+      {
+        "code": "84074",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mérindol",
+        "typeArticle": "0",
+        "intitule": "Mérindol"
+      },
+      {
+        "code": "84075",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Méthamis",
+        "typeArticle": "0",
+        "intitule": "Méthamis"
+      },
+      {
+        "code": "84076",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mirabeau",
+        "typeArticle": "0",
+        "intitule": "Mirabeau"
+      },
+      {
+        "code": "84077",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Modène",
+        "typeArticle": "0",
+        "intitule": "Modène"
+      },
+      {
+        "code": "84078",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mondragon",
+        "typeArticle": "0",
+        "intitule": "Mondragon"
+      },
+      {
+        "code": "84079",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Monieux",
+        "typeArticle": "0",
+        "intitule": "Monieux"
+      },
+      {
+        "code": "84080",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Monteux",
+        "typeArticle": "0",
+        "intitule": "Monteux"
+      },
+      {
+        "code": "84081",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Morières-lès-Avignon",
+        "typeArticle": "0",
+        "intitule": "Morières-lès-Avignon"
+      },
+      {
+        "code": "84082",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mormoiron",
+        "typeArticle": "0",
+        "intitule": "Mormoiron"
+      },
+      {
+        "code": "84083",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mornas",
+        "typeArticle": "0",
+        "intitule": "Mornas"
+      },
+      {
+        "code": "84084",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Motte-d'Aigues",
+        "typeArticle": "3",
+        "intitule": "La Motte-d'Aigues"
+      },
+      {
+        "code": "84085",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Murs",
+        "typeArticle": "0",
+        "intitule": "Murs"
+      },
+      {
+        "code": "84086",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Oppède",
+        "typeArticle": "1",
+        "intitule": "Oppède"
+      },
+      {
+        "code": "84087",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Orange",
+        "typeArticle": "1",
+        "intitule": "Orange"
+      },
+      {
+        "code": "84088",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Pernes-les-Fontaines",
+        "typeArticle": "0",
+        "intitule": "Pernes-les-Fontaines"
+      },
+      {
+        "code": "84089",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Pertuis",
+        "typeArticle": "0",
+        "intitule": "Pertuis"
+      },
+      {
+        "code": "84090",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Peypin-d'Aigues",
+        "typeArticle": "0",
+        "intitule": "Peypin-d'Aigues"
+      },
+      {
+        "code": "84091",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Piolenc",
+        "typeArticle": "0",
+        "intitule": "Piolenc"
+      },
+      {
+        "code": "84092",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Pontet",
+        "typeArticle": "2",
+        "intitule": "Le Pontet"
+      },
+      {
+        "code": "84093",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Puget",
+        "typeArticle": "0",
+        "intitule": "Puget"
+      },
+      {
+        "code": "84094",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Puyméras",
+        "typeArticle": "0",
+        "intitule": "Puyméras"
+      },
+      {
+        "code": "84095",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Puyvert",
+        "typeArticle": "0",
+        "intitule": "Puyvert"
+      },
+      {
+        "code": "84096",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rasteau",
+        "typeArticle": "0",
+        "intitule": "Rasteau"
+      },
+      {
+        "code": "84097",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Richerenches",
+        "typeArticle": "0",
+        "intitule": "Richerenches"
+      },
+      {
+        "code": "84098",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Roaix",
+        "typeArticle": "0",
+        "intitule": "Roaix"
+      },
+      {
+        "code": "84099",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Robion",
+        "typeArticle": "0",
+        "intitule": "Robion"
+      },
+      {
+        "code": "84100",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Roque-Alric",
+        "typeArticle": "3",
+        "intitule": "La Roque-Alric"
+      },
+      {
+        "code": "84101",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Roque-sur-Pernes",
+        "typeArticle": "3",
+        "intitule": "La Roque-sur-Pernes"
+      },
+      {
+        "code": "84102",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Roussillon",
+        "typeArticle": "0",
+        "intitule": "Roussillon"
+      },
+      {
+        "code": "84103",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rustrel",
+        "typeArticle": "0",
+        "intitule": "Rustrel"
+      },
+      {
+        "code": "84104",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sablet",
+        "typeArticle": "0",
+        "intitule": "Sablet"
+      },
+      {
+        "code": "84105",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saignon",
+        "typeArticle": "0",
+        "intitule": "Saignon"
+      },
+      {
+        "code": "84106",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sainte-Cécile-les-Vignes",
+        "typeArticle": "0",
+        "intitule": "Sainte-Cécile-les-Vignes"
+      },
+      {
+        "code": "84107",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Christol",
+        "typeArticle": "0",
+        "intitule": "Saint-Christol"
+      },
+      {
+        "code": "84108",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Didier",
+        "typeArticle": "0",
+        "intitule": "Saint-Didier"
+      },
+      {
+        "code": "84109",
+        "type": "Commune",
+        "dateCreation": "1986-06-06",
+        "intituleSansArticle": "Saint-Hippolyte-le-Graveyron",
+        "typeArticle": "0",
+        "intitule": "Saint-Hippolyte-le-Graveyron"
+      },
+      {
+        "code": "84110",
+        "type": "Commune",
+        "dateCreation": "1953-07-19",
+        "intituleSansArticle": "Saint-Léger-du-Ventoux",
+        "typeArticle": "0",
+        "intitule": "Saint-Léger-du-Ventoux"
+      },
+      {
+        "code": "84111",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Marcellin-lès-Vaison",
+        "typeArticle": "0",
+        "intitule": "Saint-Marcellin-lès-Vaison"
+      },
+      {
+        "code": "84112",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Martin-de-Castillon",
+        "typeArticle": "0",
+        "intitule": "Saint-Martin-de-Castillon"
+      },
+      {
+        "code": "84113",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Martin-de-la-Brasque",
+        "typeArticle": "0",
+        "intitule": "Saint-Martin-de-la-Brasque"
+      },
+      {
+        "code": "84114",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Pantaléon",
+        "typeArticle": "0",
+        "intitule": "Saint-Pantaléon"
+      },
+      {
+        "code": "84115",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Pierre-de-Vassols",
+        "typeArticle": "0",
+        "intitule": "Saint-Pierre-de-Vassols"
+      },
+      {
+        "code": "84116",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Romain-en-Viennois",
+        "typeArticle": "0",
+        "intitule": "Saint-Romain-en-Viennois"
+      },
+      {
+        "code": "84117",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Roman-de-Malegarde",
+        "typeArticle": "0",
+        "intitule": "Saint-Roman-de-Malegarde"
+      },
+      {
+        "code": "84118",
+        "type": "Commune",
+        "dateCreation": "1987-07-06",
+        "intituleSansArticle": "Saint-Saturnin-lès-Apt",
+        "typeArticle": "0",
+        "intitule": "Saint-Saturnin-lès-Apt"
+      },
+      {
+        "code": "84119",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Saturnin-lès-Avignon",
+        "typeArticle": "0",
+        "intitule": "Saint-Saturnin-lès-Avignon"
+      },
+      {
+        "code": "84120",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Trinit",
+        "typeArticle": "0",
+        "intitule": "Saint-Trinit"
+      },
+      {
+        "code": "84121",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sannes",
+        "typeArticle": "0",
+        "intitule": "Sannes"
+      },
+      {
+        "code": "84122",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sarrians",
+        "typeArticle": "0",
+        "intitule": "Sarrians"
+      },
+      {
+        "code": "84123",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sault",
+        "typeArticle": "0",
+        "intitule": "Sault"
+      },
+      {
+        "code": "84124",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saumane-de-Vaucluse",
+        "typeArticle": "0",
+        "intitule": "Saumane-de-Vaucluse"
+      },
+      {
+        "code": "84125",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Savoillan",
+        "typeArticle": "0",
+        "intitule": "Savoillan"
+      },
+      {
+        "code": "84126",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Séguret",
+        "typeArticle": "0",
+        "intitule": "Séguret"
+      },
+      {
+        "code": "84127",
+        "type": "Commune",
+        "dateCreation": "1944-01-20",
+        "intituleSansArticle": "Sérignan-du-Comtat",
+        "typeArticle": "0",
+        "intitule": "Sérignan-du-Comtat"
+      },
+      {
+        "code": "84128",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sivergues",
+        "typeArticle": "0",
+        "intitule": "Sivergues"
+      },
+      {
+        "code": "84129",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sorgues",
+        "typeArticle": "0",
+        "intitule": "Sorgues"
+      },
+      {
+        "code": "84130",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Suzette",
+        "typeArticle": "0",
+        "intitule": "Suzette"
+      },
+      {
+        "code": "84131",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Taillades",
+        "typeArticle": "0",
+        "intitule": "Taillades"
+      },
+      {
+        "code": "84132",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Thor",
+        "typeArticle": "2",
+        "intitule": "Le Thor"
+      },
+      {
+        "code": "84133",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Tour-d'Aigues",
+        "typeArticle": "3",
+        "intitule": "La Tour-d'Aigues"
+      },
+      {
+        "code": "84134",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Travaillan",
+        "typeArticle": "0",
+        "intitule": "Travaillan"
+      },
+      {
+        "code": "84135",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Uchaux",
+        "typeArticle": "1",
+        "intitule": "Uchaux"
+      },
+      {
+        "code": "84136",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vacqueyras",
+        "typeArticle": "0",
+        "intitule": "Vacqueyras"
+      },
+      {
+        "code": "84137",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vaison-la-Romaine",
+        "typeArticle": "0",
+        "intitule": "Vaison-la-Romaine"
+      },
+      {
+        "code": "84138",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Valréas",
+        "typeArticle": "0",
+        "intitule": "Valréas"
+      },
+      {
+        "code": "84139",
+        "type": "Commune",
+        "dateCreation": "1946-04-19",
+        "intituleSansArticle": "Fontaine-de-Vaucluse",
+        "typeArticle": "0",
+        "intitule": "Fontaine-de-Vaucluse"
+      },
+      {
+        "code": "84140",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vaugines",
+        "typeArticle": "0",
+        "intitule": "Vaugines"
+      },
+      {
+        "code": "84141",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vedène",
+        "typeArticle": "0",
+        "intitule": "Vedène"
+      },
+      {
+        "code": "84142",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Velleron",
+        "typeArticle": "0",
+        "intitule": "Velleron"
+      },
+      {
+        "code": "84143",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Venasque",
+        "typeArticle": "0",
+        "intitule": "Venasque"
+      },
+      {
+        "code": "84144",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Viens",
+        "typeArticle": "0",
+        "intitule": "Viens"
+      },
+      {
+        "code": "84145",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Villars",
+        "typeArticle": "0",
+        "intitule": "Villars"
+      },
+      {
+        "code": "84146",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Villedieu",
+        "typeArticle": "0",
+        "intitule": "Villedieu"
+      },
+      {
+        "code": "84147",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Villelaure",
+        "typeArticle": "0",
+        "intitule": "Villelaure"
+      },
+      {
+        "code": "84148",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Villes-sur-Auzon",
+        "typeArticle": "0",
+        "intitule": "Villes-sur-Auzon"
+      },
+      {
+        "code": "84149",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Violès",
+        "typeArticle": "0",
+        "intitule": "Violès"
+      },
+      {
+        "code": "84150",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Visan",
+        "typeArticle": "0",
+        "intitule": "Visan"
+      },
+      {
+        "code": "84151",
+        "type": "Commune",
+        "dateCreation": "1996-08-11",
+        "intituleSansArticle": "Vitrolles-en-Lubéron",
+        "typeArticle": "0",
+        "intitule": "Vitrolles-en-Lubéron"
+      }
+    ],
+    "region": {
+      "code": "93",
+      "type": "Region",
+      "dateCreation": "1982-03-02",
+      "intituleSansArticle": "Provence-Alpes-Côte d'Azur",
+      "typeArticle": "0",
+      "chefLieu": "13055",
+      "intitule": "Provence-Alpes-Côte d'Azur"
+    }
+  },
+  {
+    "code": "30",
+    "type": "Departement",
+    "dateCreation": "1943-01-01",
+    "intituleSansArticle": "Gard",
+    "typeArticle": "2",
+    "chefLieu": "30189",
+    "intitule": "Gard",
+    "communes": [
+      {
+        "code": "30001",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aigaliers",
+        "typeArticle": "1",
+        "intitule": "Aigaliers"
+      },
+      {
+        "code": "30002",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aigremont",
+        "typeArticle": "1",
+        "intitule": "Aigremont"
+      },
+      {
+        "code": "30003",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aigues-Mortes",
+        "typeArticle": "1",
+        "intitule": "Aigues-Mortes"
+      },
+      {
+        "code": "30004",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aigues-Vives",
+        "typeArticle": "1",
+        "intitule": "Aigues-Vives"
+      },
+      {
+        "code": "30005",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aiguèze",
+        "typeArticle": "1",
+        "intitule": "Aiguèze"
+      },
+      {
+        "code": "30006",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aimargues",
+        "typeArticle": "1",
+        "intitule": "Aimargues"
+      },
+      {
+        "code": "30007",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Alès",
+        "typeArticle": "1",
+        "intitule": "Alès"
+      },
+      {
+        "code": "30008",
+        "type": "Commune",
+        "dateCreation": "1998-12-09",
+        "intituleSansArticle": "Allègre-les-Fumades",
+        "typeArticle": "1",
+        "intitule": "Allègre-les-Fumades"
+      },
+      {
+        "code": "30009",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Alzon",
+        "typeArticle": "1",
+        "intitule": "Alzon"
+      },
+      {
+        "code": "30010",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Anduze",
+        "typeArticle": "1",
+        "intitule": "Anduze"
+      },
+      {
+        "code": "30011",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Angles",
+        "typeArticle": "4",
+        "intitule": "Les Angles"
+      },
+      {
+        "code": "30012",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aramon",
+        "typeArticle": "1",
+        "intitule": "Aramon"
+      },
+      {
+        "code": "30013",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Argilliers",
+        "typeArticle": "1",
+        "intitule": "Argilliers"
+      },
+      {
+        "code": "30014",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Arpaillargues-et-Aureillac",
+        "typeArticle": "1",
+        "intitule": "Arpaillargues-et-Aureillac"
+      },
+      {
+        "code": "30015",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Arphy",
+        "typeArticle": "1",
+        "intitule": "Arphy"
+      },
+      {
+        "code": "30016",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Arre",
+        "typeArticle": "1",
+        "intitule": "Arre"
+      },
+      {
+        "code": "30017",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Arrigas",
+        "typeArticle": "1",
+        "intitule": "Arrigas"
+      },
+      {
+        "code": "30018",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aspères",
+        "typeArticle": "1",
+        "intitule": "Aspères"
+      },
+      {
+        "code": "30019",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aubais",
+        "typeArticle": "1",
+        "intitule": "Aubais"
+      },
+      {
+        "code": "30020",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aubord",
+        "typeArticle": "1",
+        "intitule": "Aubord"
+      },
+      {
+        "code": "30021",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aubussargues",
+        "typeArticle": "1",
+        "intitule": "Aubussargues"
+      },
+      {
+        "code": "30022",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aujac",
+        "typeArticle": "1",
+        "intitule": "Aujac"
+      },
+      {
+        "code": "30023",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aujargues",
+        "typeArticle": "1",
+        "intitule": "Aujargues"
+      },
+      {
+        "code": "30024",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aulas",
+        "typeArticle": "1",
+        "intitule": "Aulas"
+      },
+      {
+        "code": "30025",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Aumessas",
+        "typeArticle": "1",
+        "intitule": "Aumessas"
+      },
+      {
+        "code": "30026",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Avèze",
+        "typeArticle": "1",
+        "intitule": "Avèze"
+      },
+      {
+        "code": "30027",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bagard",
+        "typeArticle": "0",
+        "intitule": "Bagard"
+      },
+      {
+        "code": "30028",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bagnols-sur-Cèze",
+        "typeArticle": "0",
+        "intitule": "Bagnols-sur-Cèze"
+      },
+      {
+        "code": "30029",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Barjac",
+        "typeArticle": "0",
+        "intitule": "Barjac"
+      },
+      {
+        "code": "30030",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Baron",
+        "typeArticle": "0",
+        "intitule": "Baron"
+      },
+      {
+        "code": "30031",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bastide-d'Engras",
+        "typeArticle": "3",
+        "intitule": "La Bastide-d'Engras"
+      },
+      {
+        "code": "30032",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Beaucaire",
+        "typeArticle": "0",
+        "intitule": "Beaucaire"
+      },
+      {
+        "code": "30033",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Beauvoisin",
+        "typeArticle": "0",
+        "intitule": "Beauvoisin"
+      },
+      {
+        "code": "30034",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bellegarde",
+        "typeArticle": "0",
+        "intitule": "Bellegarde"
+      },
+      {
+        "code": "30035",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Belvézet",
+        "typeArticle": "0",
+        "intitule": "Belvézet"
+      },
+      {
+        "code": "30036",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bernis",
+        "typeArticle": "0",
+        "intitule": "Bernis"
+      },
+      {
+        "code": "30037",
+        "type": "Commune",
+        "dateCreation": "1972-07-01",
+        "intituleSansArticle": "Bessèges",
+        "typeArticle": "0",
+        "intitule": "Bessèges"
+      },
+      {
+        "code": "30038",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bez-et-Esparon",
+        "typeArticle": "0",
+        "intitule": "Bez-et-Esparon"
+      },
+      {
+        "code": "30039",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bezouce",
+        "typeArticle": "0",
+        "intitule": "Bezouce"
+      },
+      {
+        "code": "30040",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Blandas",
+        "typeArticle": "0",
+        "intitule": "Blandas"
+      },
+      {
+        "code": "30041",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Blauzac",
+        "typeArticle": "0",
+        "intitule": "Blauzac"
+      },
+      {
+        "code": "30042",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Boisset-et-Gaujac",
+        "typeArticle": "0",
+        "intitule": "Boisset-et-Gaujac"
+      },
+      {
+        "code": "30043",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Boissières",
+        "typeArticle": "0",
+        "intitule": "Boissières"
+      },
+      {
+        "code": "30044",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bonnevaux",
+        "typeArticle": "0",
+        "intitule": "Bonnevaux"
+      },
+      {
+        "code": "30045",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bordezac",
+        "typeArticle": "0",
+        "intitule": "Bordezac"
+      },
+      {
+        "code": "30046",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Boucoiran-et-Nozières",
+        "typeArticle": "0",
+        "intitule": "Boucoiran-et-Nozières"
+      },
+      {
+        "code": "30047",
+        "type": "Commune",
+        "dateCreation": "1961-09-20",
+        "intituleSansArticle": "Bouillargues",
+        "typeArticle": "0",
+        "intitule": "Bouillargues"
+      },
+      {
+        "code": "30048",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bouquet",
+        "typeArticle": "0",
+        "intitule": "Bouquet"
+      },
+      {
+        "code": "30049",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bourdic",
+        "typeArticle": "0",
+        "intitule": "Bourdic"
+      },
+      {
+        "code": "30050",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bragassargues",
+        "typeArticle": "0",
+        "intitule": "Bragassargues"
+      },
+      {
+        "code": "30051",
+        "type": "Commune",
+        "dateCreation": "1956-05-05",
+        "intituleSansArticle": "Branoux-les-Taillades",
+        "typeArticle": "0",
+        "intitule": "Branoux-les-Taillades"
+      },
+      {
+        "code": "30052",
+        "type": "Commune",
+        "dateCreation": "2019-01-01",
+        "intituleSansArticle": "Bréau-Mars",
+        "typeArticle": "0",
+        "intitule": "Bréau-Mars"
+      },
+      {
+        "code": "30053",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Brignon",
+        "typeArticle": "0",
+        "intitule": "Brignon"
+      },
+      {
+        "code": "30054",
+        "type": "Commune",
+        "dateCreation": "1976-05-05",
+        "intituleSansArticle": "Brouzet-lès-Quissac",
+        "typeArticle": "0",
+        "intitule": "Brouzet-lès-Quissac"
+      },
+      {
+        "code": "30055",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Brouzet-lès-Alès",
+        "typeArticle": "0",
+        "intitule": "Brouzet-lès-Alès"
+      },
+      {
+        "code": "30056",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Bruguière",
+        "typeArticle": "3",
+        "intitule": "La Bruguière"
+      },
+      {
+        "code": "30057",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cabrières",
+        "typeArticle": "0",
+        "intitule": "Cabrières"
+      },
+      {
+        "code": "30058",
+        "type": "Commune",
+        "dateCreation": "1969-01-01",
+        "intituleSansArticle": "Cadière-et-Cambo",
+        "typeArticle": "3",
+        "intitule": "La Cadière-et-Cambo"
+      },
+      {
+        "code": "30059",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cailar",
+        "typeArticle": "2",
+        "intitule": "Le Cailar"
+      },
+      {
+        "code": "30060",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Caissargues",
+        "typeArticle": "0",
+        "intitule": "Caissargues"
+      },
+      {
+        "code": "30061",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Calmette",
+        "typeArticle": "3",
+        "intitule": "La Calmette"
+      },
+      {
+        "code": "30062",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Calvisson",
+        "typeArticle": "0",
+        "intitule": "Calvisson"
+      },
+      {
+        "code": "30064",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Campestre-et-Luc",
+        "typeArticle": "0",
+        "intitule": "Campestre-et-Luc"
+      },
+      {
+        "code": "30065",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Canaules-et-Argentières",
+        "typeArticle": "0",
+        "intitule": "Canaules-et-Argentières"
+      },
+      {
+        "code": "30066",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cannes-et-Clairan",
+        "typeArticle": "0",
+        "intitule": "Cannes-et-Clairan"
+      },
+      {
+        "code": "30067",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Capelle-et-Masmolène",
+        "typeArticle": "3",
+        "intitule": "La Capelle-et-Masmolène"
+      },
+      {
+        "code": "30068",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cardet",
+        "typeArticle": "0",
+        "intitule": "Cardet"
+      },
+      {
+        "code": "30069",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Carnas",
+        "typeArticle": "0",
+        "intitule": "Carnas"
+      },
+      {
+        "code": "30070",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Carsan",
+        "typeArticle": "0",
+        "intitule": "Carsan"
+      },
+      {
+        "code": "30071",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cassagnoles",
+        "typeArticle": "0",
+        "intitule": "Cassagnoles"
+      },
+      {
+        "code": "30072",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Castelnau-Valence",
+        "typeArticle": "0",
+        "intitule": "Castelnau-Valence"
+      },
+      {
+        "code": "30073",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Castillon-du-Gard",
+        "typeArticle": "0",
+        "intitule": "Castillon-du-Gard"
+      },
+      {
+        "code": "30074",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Causse-Bégon",
+        "typeArticle": "0",
+        "intitule": "Causse-Bégon"
+      },
+      {
+        "code": "30075",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Caveirac",
+        "typeArticle": "0",
+        "intitule": "Caveirac"
+      },
+      {
+        "code": "30076",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cavillargues",
+        "typeArticle": "0",
+        "intitule": "Cavillargues"
+      },
+      {
+        "code": "30077",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cendras",
+        "typeArticle": "0",
+        "intitule": "Cendras"
+      },
+      {
+        "code": "30079",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Chambon",
+        "typeArticle": "0",
+        "intitule": "Chambon"
+      },
+      {
+        "code": "30080",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Chamborigaud",
+        "typeArticle": "0",
+        "intitule": "Chamborigaud"
+      },
+      {
+        "code": "30081",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Chusclan",
+        "typeArticle": "0",
+        "intitule": "Chusclan"
+      },
+      {
+        "code": "30082",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Clarensac",
+        "typeArticle": "0",
+        "intitule": "Clarensac"
+      },
+      {
+        "code": "30083",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Codognan",
+        "typeArticle": "0",
+        "intitule": "Codognan"
+      },
+      {
+        "code": "30084",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Codolet",
+        "typeArticle": "0",
+        "intitule": "Codolet"
+      },
+      {
+        "code": "30085",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Collias",
+        "typeArticle": "0",
+        "intitule": "Collias"
+      },
+      {
+        "code": "30086",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Collorgues",
+        "typeArticle": "0",
+        "intitule": "Collorgues"
+      },
+      {
+        "code": "30087",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Colognac",
+        "typeArticle": "0",
+        "intitule": "Colognac"
+      },
+      {
+        "code": "30088",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Combas",
+        "typeArticle": "0",
+        "intitule": "Combas"
+      },
+      {
+        "code": "30089",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Comps",
+        "typeArticle": "0",
+        "intitule": "Comps"
+      },
+      {
+        "code": "30090",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Concoules",
+        "typeArticle": "0",
+        "intitule": "Concoules"
+      },
+      {
+        "code": "30091",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Congénies",
+        "typeArticle": "0",
+        "intitule": "Congénies"
+      },
+      {
+        "code": "30092",
+        "type": "Commune",
+        "dateCreation": "1949-03-30",
+        "intituleSansArticle": "Connaux",
+        "typeArticle": "0",
+        "intitule": "Connaux"
+      },
+      {
+        "code": "30093",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Conqueyrac",
+        "typeArticle": "0",
+        "intitule": "Conqueyrac"
+      },
+      {
+        "code": "30094",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Corbès",
+        "typeArticle": "0",
+        "intitule": "Corbès"
+      },
+      {
+        "code": "30095",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Corconne",
+        "typeArticle": "0",
+        "intitule": "Corconne"
+      },
+      {
+        "code": "30096",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cornillon",
+        "typeArticle": "0",
+        "intitule": "Cornillon"
+      },
+      {
+        "code": "30097",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Courry",
+        "typeArticle": "0",
+        "intitule": "Courry"
+      },
+      {
+        "code": "30098",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Crespian",
+        "typeArticle": "0",
+        "intitule": "Crespian"
+      },
+      {
+        "code": "30099",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cros",
+        "typeArticle": "0",
+        "intitule": "Cros"
+      },
+      {
+        "code": "30100",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Cruviers-Lascours",
+        "typeArticle": "0",
+        "intitule": "Cruviers-Lascours"
+      },
+      {
+        "code": "30101",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Deaux",
+        "typeArticle": "0",
+        "intitule": "Deaux"
+      },
+      {
+        "code": "30102",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Dions",
+        "typeArticle": "0",
+        "intitule": "Dions"
+      },
+      {
+        "code": "30103",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Domazan",
+        "typeArticle": "0",
+        "intitule": "Domazan"
+      },
+      {
+        "code": "30104",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Domessargues",
+        "typeArticle": "0",
+        "intitule": "Domessargues"
+      },
+      {
+        "code": "30105",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Dourbies",
+        "typeArticle": "0",
+        "intitule": "Dourbies"
+      },
+      {
+        "code": "30106",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Durfort-et-Saint-Martin-de-Sossenac",
+        "typeArticle": "0",
+        "intitule": "Durfort-et-Saint-Martin-de-Sossenac"
+      },
+      {
+        "code": "30107",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Estézargues",
+        "typeArticle": "1",
+        "intitule": "Estézargues"
+      },
+      {
+        "code": "30108",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Estréchure",
+        "typeArticle": "5",
+        "intitule": "L'Estréchure"
+      },
+      {
+        "code": "30109",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Euzet",
+        "typeArticle": "1",
+        "intitule": "Euzet"
+      },
+      {
+        "code": "30110",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Flaux",
+        "typeArticle": "0",
+        "intitule": "Flaux"
+      },
+      {
+        "code": "30111",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Foissac",
+        "typeArticle": "0",
+        "intitule": "Foissac"
+      },
+      {
+        "code": "30112",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Fons",
+        "typeArticle": "0",
+        "intitule": "Fons"
+      },
+      {
+        "code": "30113",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Fons-sur-Lussan",
+        "typeArticle": "0",
+        "intitule": "Fons-sur-Lussan"
+      },
+      {
+        "code": "30114",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Fontanès",
+        "typeArticle": "0",
+        "intitule": "Fontanès"
+      },
+      {
+        "code": "30115",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Fontarèches",
+        "typeArticle": "0",
+        "intitule": "Fontarèches"
+      },
+      {
+        "code": "30116",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Fournès",
+        "typeArticle": "0",
+        "intitule": "Fournès"
+      },
+      {
+        "code": "30117",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Fourques",
+        "typeArticle": "0",
+        "intitule": "Fourques"
+      },
+      {
+        "code": "30119",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Fressac",
+        "typeArticle": "0",
+        "intitule": "Fressac"
+      },
+      {
+        "code": "30120",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Gagnières",
+        "typeArticle": "0",
+        "intitule": "Gagnières"
+      },
+      {
+        "code": "30121",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Gailhan",
+        "typeArticle": "0",
+        "intitule": "Gailhan"
+      },
+      {
+        "code": "30122",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Gajan",
+        "typeArticle": "0",
+        "intitule": "Gajan"
+      },
+      {
+        "code": "30123",
+        "type": "Commune",
+        "dateCreation": "1969-09-05",
+        "intituleSansArticle": "Gallargues-le-Montueux",
+        "typeArticle": "0",
+        "intitule": "Gallargues-le-Montueux"
+      },
+      {
+        "code": "30124",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Garn",
+        "typeArticle": "2",
+        "intitule": "Le Garn"
+      },
+      {
+        "code": "30125",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Garons",
+        "typeArticle": "0",
+        "intitule": "Garons"
+      },
+      {
+        "code": "30126",
+        "type": "Commune",
+        "dateCreation": "1982-01-01",
+        "intituleSansArticle": "Garrigues-Sainte-Eulalie",
+        "typeArticle": "0",
+        "intitule": "Garrigues-Sainte-Eulalie"
+      },
+      {
+        "code": "30127",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Gaujac",
+        "typeArticle": "0",
+        "intitule": "Gaujac"
+      },
+      {
+        "code": "30128",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Générac",
+        "typeArticle": "0",
+        "intitule": "Générac"
+      },
+      {
+        "code": "30129",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Générargues",
+        "typeArticle": "0",
+        "intitule": "Générargues"
+      },
+      {
+        "code": "30130",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Génolhac",
+        "typeArticle": "0",
+        "intitule": "Génolhac"
+      },
+      {
+        "code": "30131",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Goudargues",
+        "typeArticle": "0",
+        "intitule": "Goudargues"
+      },
+      {
+        "code": "30132",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Grand-Combe",
+        "typeArticle": "3",
+        "intitule": "La Grand-Combe"
+      },
+      {
+        "code": "30133",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Grau-du-Roi",
+        "typeArticle": "2",
+        "intitule": "Le Grau-du-Roi"
+      },
+      {
+        "code": "30134",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Issirac",
+        "typeArticle": "1",
+        "intitule": "Issirac"
+      },
+      {
+        "code": "30135",
+        "type": "Commune",
+        "dateCreation": "1982-01-01",
+        "intituleSansArticle": "Jonquières-Saint-Vincent",
+        "typeArticle": "0",
+        "intitule": "Jonquières-Saint-Vincent"
+      },
+      {
+        "code": "30136",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Junas",
+        "typeArticle": "0",
+        "intitule": "Junas"
+      },
+      {
+        "code": "30137",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lamelouze",
+        "typeArticle": "0",
+        "intitule": "Lamelouze"
+      },
+      {
+        "code": "30138",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Langlade",
+        "typeArticle": "0",
+        "intitule": "Langlade"
+      },
+      {
+        "code": "30139",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lanuéjols",
+        "typeArticle": "0",
+        "intitule": "Lanuéjols"
+      },
+      {
+        "code": "30140",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lasalle",
+        "typeArticle": "0",
+        "intitule": "Lasalle"
+      },
+      {
+        "code": "30141",
+        "type": "Commune",
+        "dateCreation": "2001-02-04",
+        "intituleSansArticle": "Laudun-l'Ardoise",
+        "typeArticle": "0",
+        "intitule": "Laudun-l'Ardoise"
+      },
+      {
+        "code": "30142",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Laval-Pradel",
+        "typeArticle": "0",
+        "intitule": "Laval-Pradel"
+      },
+      {
+        "code": "30143",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Laval-Saint-Roman",
+        "typeArticle": "0",
+        "intitule": "Laval-Saint-Roman"
+      },
+      {
+        "code": "30144",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lecques",
+        "typeArticle": "0",
+        "intitule": "Lecques"
+      },
+      {
+        "code": "30145",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lédenon",
+        "typeArticle": "0",
+        "intitule": "Lédenon"
+      },
+      {
+        "code": "30146",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lédignan",
+        "typeArticle": "0",
+        "intitule": "Lédignan"
+      },
+      {
+        "code": "30147",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lézan",
+        "typeArticle": "0",
+        "intitule": "Lézan"
+      },
+      {
+        "code": "30148",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Liouc",
+        "typeArticle": "0",
+        "intitule": "Liouc"
+      },
+      {
+        "code": "30149",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lirac",
+        "typeArticle": "0",
+        "intitule": "Lirac"
+      },
+      {
+        "code": "30150",
+        "type": "Commune",
+        "dateCreation": "1976-05-05",
+        "intituleSansArticle": "Logrian-Florian",
+        "typeArticle": "0",
+        "intitule": "Logrian-Florian"
+      },
+      {
+        "code": "30151",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Lussan",
+        "typeArticle": "0",
+        "intitule": "Lussan"
+      },
+      {
+        "code": "30152",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mages",
+        "typeArticle": "4",
+        "intitule": "Les Mages"
+      },
+      {
+        "code": "30153",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Malons-et-Elze",
+        "typeArticle": "0",
+        "intitule": "Malons-et-Elze"
+      },
+      {
+        "code": "30154",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mandagout",
+        "typeArticle": "0",
+        "intitule": "Mandagout"
+      },
+      {
+        "code": "30155",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Manduel",
+        "typeArticle": "0",
+        "intitule": "Manduel"
+      },
+      {
+        "code": "30156",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Marguerittes",
+        "typeArticle": "0",
+        "intitule": "Marguerittes"
+      },
+      {
+        "code": "30158",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Martignargues",
+        "typeArticle": "0",
+        "intitule": "Martignargues"
+      },
+      {
+        "code": "30159",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Martinet",
+        "typeArticle": "2",
+        "intitule": "Le Martinet"
+      },
+      {
+        "code": "30160",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Maruéjols-lès-Gardon",
+        "typeArticle": "0",
+        "intitule": "Maruéjols-lès-Gardon"
+      },
+      {
+        "code": "30161",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Massanes",
+        "typeArticle": "0",
+        "intitule": "Massanes"
+      },
+      {
+        "code": "30162",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Massillargues-Attuech",
+        "typeArticle": "0",
+        "intitule": "Massillargues-Attuech"
+      },
+      {
+        "code": "30163",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mauressargues",
+        "typeArticle": "0",
+        "intitule": "Mauressargues"
+      },
+      {
+        "code": "30164",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Méjannes-le-Clap",
+        "typeArticle": "0",
+        "intitule": "Méjannes-le-Clap"
+      },
+      {
+        "code": "30165",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Méjannes-lès-Alès",
+        "typeArticle": "0",
+        "intitule": "Méjannes-lès-Alès"
+      },
+      {
+        "code": "30166",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Meynes",
+        "typeArticle": "0",
+        "intitule": "Meynes"
+      },
+      {
+        "code": "30167",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Meyrannes",
+        "typeArticle": "0",
+        "intitule": "Meyrannes"
+      },
+      {
+        "code": "30168",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mialet",
+        "typeArticle": "0",
+        "intitule": "Mialet"
+      },
+      {
+        "code": "30169",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Milhaud",
+        "typeArticle": "0",
+        "intitule": "Milhaud"
+      },
+      {
+        "code": "30170",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Molières-Cavaillac",
+        "typeArticle": "0",
+        "intitule": "Molières-Cavaillac"
+      },
+      {
+        "code": "30171",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Molières-sur-Cèze",
+        "typeArticle": "0",
+        "intitule": "Molières-sur-Cèze"
+      },
+      {
+        "code": "30172",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Monoblet",
+        "typeArticle": "0",
+        "intitule": "Monoblet"
+      },
+      {
+        "code": "30173",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mons",
+        "typeArticle": "0",
+        "intitule": "Mons"
+      },
+      {
+        "code": "30174",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Montaren-et-Saint-Médiers",
+        "typeArticle": "0",
+        "intitule": "Montaren-et-Saint-Médiers"
+      },
+      {
+        "code": "30175",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Montclus",
+        "typeArticle": "0",
+        "intitule": "Montclus"
+      },
+      {
+        "code": "30176",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Montdardier",
+        "typeArticle": "0",
+        "intitule": "Montdardier"
+      },
+      {
+        "code": "30177",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Monteils",
+        "typeArticle": "0",
+        "intitule": "Monteils"
+      },
+      {
+        "code": "30178",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Montfaucon",
+        "typeArticle": "0",
+        "intitule": "Montfaucon"
+      },
+      {
+        "code": "30179",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Montfrin",
+        "typeArticle": "0",
+        "intitule": "Montfrin"
+      },
+      {
+        "code": "30180",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Montignargues",
+        "typeArticle": "0",
+        "intitule": "Montignargues"
+      },
+      {
+        "code": "30181",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Montmirat",
+        "typeArticle": "0",
+        "intitule": "Montmirat"
+      },
+      {
+        "code": "30182",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Montpezat",
+        "typeArticle": "0",
+        "intitule": "Montpezat"
+      },
+      {
+        "code": "30183",
+        "type": "Commune",
+        "dateCreation": "1947-10-01",
+        "intituleSansArticle": "Moulézan",
+        "typeArticle": "0",
+        "intitule": "Moulézan"
+      },
+      {
+        "code": "30184",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Moussac",
+        "typeArticle": "0",
+        "intitule": "Moussac"
+      },
+      {
+        "code": "30185",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Mus",
+        "typeArticle": "0",
+        "intitule": "Mus"
+      },
+      {
+        "code": "30186",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Nages-et-Solorgues",
+        "typeArticle": "0",
+        "intitule": "Nages-et-Solorgues"
+      },
+      {
+        "code": "30187",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Navacelles",
+        "typeArticle": "0",
+        "intitule": "Navacelles"
+      },
+      {
+        "code": "30188",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Ners",
+        "typeArticle": "0",
+        "intitule": "Ners"
+      },
+      {
+        "code": "30189",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Nîmes",
+        "typeArticle": "0",
+        "intitule": "Nîmes"
+      },
+      {
+        "code": "30191",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Orsan",
+        "typeArticle": "1",
+        "intitule": "Orsan"
+      },
+      {
+        "code": "30192",
+        "type": "Commune",
+        "dateCreation": "1982-01-01",
+        "intituleSansArticle": "Orthoux-Sérignac-Quilhan",
+        "typeArticle": "1",
+        "intitule": "Orthoux-Sérignac-Quilhan"
+      },
+      {
+        "code": "30193",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Parignargues",
+        "typeArticle": "0",
+        "intitule": "Parignargues"
+      },
+      {
+        "code": "30194",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Peyremale",
+        "typeArticle": "0",
+        "intitule": "Peyremale"
+      },
+      {
+        "code": "30195",
+        "type": "Commune",
+        "dateCreation": "2006-07-09",
+        "intituleSansArticle": "Peyrolles",
+        "typeArticle": "0",
+        "intitule": "Peyrolles"
+      },
+      {
+        "code": "30196",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Pin",
+        "typeArticle": "2",
+        "intitule": "Le Pin"
+      },
+      {
+        "code": "30197",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Plans",
+        "typeArticle": "4",
+        "intitule": "Les Plans"
+      },
+      {
+        "code": "30198",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Plantiers",
+        "typeArticle": "4",
+        "intitule": "Les Plantiers"
+      },
+      {
+        "code": "30199",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Pommiers",
+        "typeArticle": "0",
+        "intitule": "Pommiers"
+      },
+      {
+        "code": "30200",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Pompignan",
+        "typeArticle": "0",
+        "intitule": "Pompignan"
+      },
+      {
+        "code": "30201",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Ponteils-et-Brésis",
+        "typeArticle": "0",
+        "intitule": "Ponteils-et-Brésis"
+      },
+      {
+        "code": "30202",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Pont-Saint-Esprit",
+        "typeArticle": "0",
+        "intitule": "Pont-Saint-Esprit"
+      },
+      {
+        "code": "30203",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Portes",
+        "typeArticle": "0",
+        "intitule": "Portes"
+      },
+      {
+        "code": "30204",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Potelières",
+        "typeArticle": "0",
+        "intitule": "Potelières"
+      },
+      {
+        "code": "30205",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Pougnadoresse",
+        "typeArticle": "0",
+        "intitule": "Pougnadoresse"
+      },
+      {
+        "code": "30206",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Poulx",
+        "typeArticle": "0",
+        "intitule": "Poulx"
+      },
+      {
+        "code": "30207",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Pouzilhac",
+        "typeArticle": "0",
+        "intitule": "Pouzilhac"
+      },
+      {
+        "code": "30208",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Puechredon",
+        "typeArticle": "0",
+        "intitule": "Puechredon"
+      },
+      {
+        "code": "30209",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Pujaut",
+        "typeArticle": "0",
+        "intitule": "Pujaut"
+      },
+      {
+        "code": "30210",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Quissac",
+        "typeArticle": "0",
+        "intitule": "Quissac"
+      },
+      {
+        "code": "30211",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Redessan",
+        "typeArticle": "0",
+        "intitule": "Redessan"
+      },
+      {
+        "code": "30212",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Remoulins",
+        "typeArticle": "0",
+        "intitule": "Remoulins"
+      },
+      {
+        "code": "30213",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Revens",
+        "typeArticle": "0",
+        "intitule": "Revens"
+      },
+      {
+        "code": "30214",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Ribaute-les-Tavernes",
+        "typeArticle": "0",
+        "intitule": "Ribaute-les-Tavernes"
+      },
+      {
+        "code": "30215",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rivières",
+        "typeArticle": "0",
+        "intitule": "Rivières"
+      },
+      {
+        "code": "30216",
+        "type": "Commune",
+        "dateCreation": "1983-04-17",
+        "intituleSansArticle": "Robiac-Rochessadoule",
+        "typeArticle": "0",
+        "intitule": "Robiac-Rochessadoule"
+      },
+      {
+        "code": "30217",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rochefort-du-Gard",
+        "typeArticle": "0",
+        "intitule": "Rochefort-du-Gard"
+      },
+      {
+        "code": "30218",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rochegude",
+        "typeArticle": "0",
+        "intitule": "Rochegude"
+      },
+      {
+        "code": "30219",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rogues",
+        "typeArticle": "0",
+        "intitule": "Rogues"
+      },
+      {
+        "code": "30220",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Roquedur",
+        "typeArticle": "0",
+        "intitule": "Roquedur"
+      },
+      {
+        "code": "30221",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Roquemaure",
+        "typeArticle": "0",
+        "intitule": "Roquemaure"
+      },
+      {
+        "code": "30222",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Roque-sur-Cèze",
+        "typeArticle": "3",
+        "intitule": "La Roque-sur-Cèze"
+      },
+      {
+        "code": "30223",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rousson",
+        "typeArticle": "0",
+        "intitule": "Rousson"
+      },
+      {
+        "code": "30224",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Rouvière",
+        "typeArticle": "3",
+        "intitule": "La Rouvière"
+      },
+      {
+        "code": "30225",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sabran",
+        "typeArticle": "0",
+        "intitule": "Sabran"
+      },
+      {
+        "code": "30226",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Alexandre",
+        "typeArticle": "0",
+        "intitule": "Saint-Alexandre"
+      },
+      {
+        "code": "30227",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Ambroix",
+        "typeArticle": "0",
+        "intitule": "Saint-Ambroix"
+      },
+      {
+        "code": "30228",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sainte-Anastasie",
+        "typeArticle": "0",
+        "intitule": "Sainte-Anastasie"
+      },
+      {
+        "code": "30229",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-André-de-Majencoules",
+        "typeArticle": "0",
+        "intitule": "Saint-André-de-Majencoules"
+      },
+      {
+        "code": "30230",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-André-de-Roquepertuis",
+        "typeArticle": "0",
+        "intitule": "Saint-André-de-Roquepertuis"
+      },
+      {
+        "code": "30231",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-André-de-Valborgne",
+        "typeArticle": "0",
+        "intitule": "Saint-André-de-Valborgne"
+      },
+      {
+        "code": "30232",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-André-d'Olérargues",
+        "typeArticle": "0",
+        "intitule": "Saint-André-d'Olérargues"
+      },
+      {
+        "code": "30233",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Bauzély",
+        "typeArticle": "0",
+        "intitule": "Saint-Bauzély"
+      },
+      {
+        "code": "30234",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Bénézet",
+        "typeArticle": "0",
+        "intitule": "Saint-Bénézet"
+      },
+      {
+        "code": "30235",
+        "type": "Commune",
+        "dateCreation": "1962-07-25",
+        "intituleSansArticle": "Saint-Bonnet-du-Gard",
+        "typeArticle": "0",
+        "intitule": "Saint-Bonnet-du-Gard"
+      },
+      {
+        "code": "30236",
+        "type": "Commune",
+        "dateCreation": "1962-05-16",
+        "intituleSansArticle": "Saint-Bonnet-de-Salendrinque",
+        "typeArticle": "0",
+        "intitule": "Saint-Bonnet-de-Salendrinque"
+      },
+      {
+        "code": "30237",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Brès",
+        "typeArticle": "0",
+        "intitule": "Saint-Brès"
+      },
+      {
+        "code": "30238",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Bresson",
+        "typeArticle": "0",
+        "intitule": "Saint-Bresson"
+      },
+      {
+        "code": "30239",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sainte-Cécile-d'Andorge",
+        "typeArticle": "0",
+        "intitule": "Sainte-Cécile-d'Andorge"
+      },
+      {
+        "code": "30240",
+        "type": "Commune",
+        "dateCreation": "1982-01-01",
+        "intituleSansArticle": "Saint-Césaire-de-Gauzignan",
+        "typeArticle": "0",
+        "intitule": "Saint-Césaire-de-Gauzignan"
+      },
+      {
+        "code": "30241",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Chaptes",
+        "typeArticle": "0",
+        "intitule": "Saint-Chaptes"
+      },
+      {
+        "code": "30242",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Christol-de-Rodières",
+        "typeArticle": "0",
+        "intitule": "Saint-Christol-de-Rodières"
+      },
+      {
+        "code": "30243",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Christol-lez-Alès",
+        "typeArticle": "0",
+        "intitule": "Saint-Christol-lez-Alès"
+      },
+      {
+        "code": "30244",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Clément",
+        "typeArticle": "0",
+        "intitule": "Saint-Clément"
+      },
+      {
+        "code": "30245",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Côme-et-Maruéjols",
+        "typeArticle": "0",
+        "intitule": "Saint-Côme-et-Maruéjols"
+      },
+      {
+        "code": "30246",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sainte-Croix-de-Caderle",
+        "typeArticle": "0",
+        "intitule": "Sainte-Croix-de-Caderle"
+      },
+      {
+        "code": "30247",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Denis",
+        "typeArticle": "0",
+        "intitule": "Saint-Denis"
+      },
+      {
+        "code": "30248",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Dézéry",
+        "typeArticle": "0",
+        "intitule": "Saint-Dézéry"
+      },
+      {
+        "code": "30249",
+        "type": "Commune",
+        "dateCreation": "2011-03-25",
+        "intituleSansArticle": "Saint-Dionisy",
+        "typeArticle": "0",
+        "intitule": "Saint-Dionisy"
+      },
+      {
+        "code": "30250",
+        "type": "Commune",
+        "dateCreation": "1982-01-01",
+        "intituleSansArticle": "Saint-Étienne-de-l'Olm",
+        "typeArticle": "0",
+        "intitule": "Saint-Étienne-de-l'Olm"
+      },
+      {
+        "code": "30251",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Étienne-des-Sorts",
+        "typeArticle": "0",
+        "intitule": "Saint-Étienne-des-Sorts"
+      },
+      {
+        "code": "30252",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Félix-de-Pallières",
+        "typeArticle": "0",
+        "intitule": "Saint-Félix-de-Pallières"
+      },
+      {
+        "code": "30253",
+        "type": "Commune",
+        "dateCreation": "1958-12-20",
+        "intituleSansArticle": "Saint-Florent-sur-Auzonnet",
+        "typeArticle": "0",
+        "intitule": "Saint-Florent-sur-Auzonnet"
+      },
+      {
+        "code": "30254",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Geniès-de-Comolas",
+        "typeArticle": "0",
+        "intitule": "Saint-Geniès-de-Comolas"
+      },
+      {
+        "code": "30255",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Geniès-de-Malgoirès",
+        "typeArticle": "0",
+        "intitule": "Saint-Geniès-de-Malgoirès"
+      },
+      {
+        "code": "30256",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Gervais",
+        "typeArticle": "0",
+        "intitule": "Saint-Gervais"
+      },
+      {
+        "code": "30257",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Gervasy",
+        "typeArticle": "0",
+        "intitule": "Saint-Gervasy"
+      },
+      {
+        "code": "30258",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Gilles",
+        "typeArticle": "0",
+        "intitule": "Saint-Gilles"
+      },
+      {
+        "code": "30259",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Hilaire-de-Brethmas",
+        "typeArticle": "0",
+        "intitule": "Saint-Hilaire-de-Brethmas"
+      },
+      {
+        "code": "30260",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Hilaire-d'Ozilhan",
+        "typeArticle": "0",
+        "intitule": "Saint-Hilaire-d'Ozilhan"
+      },
+      {
+        "code": "30261",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Hippolyte-de-Caton",
+        "typeArticle": "0",
+        "intitule": "Saint-Hippolyte-de-Caton"
+      },
+      {
+        "code": "30262",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Hippolyte-de-Montaigu",
+        "typeArticle": "0",
+        "intitule": "Saint-Hippolyte-de-Montaigu"
+      },
+      {
+        "code": "30263",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Hippolyte-du-Fort",
+        "typeArticle": "0",
+        "intitule": "Saint-Hippolyte-du-Fort"
+      },
+      {
+        "code": "30264",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Jean-de-Ceyrargues",
+        "typeArticle": "0",
+        "intitule": "Saint-Jean-de-Ceyrargues"
+      },
+      {
+        "code": "30265",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Jean-de-Crieulon",
+        "typeArticle": "0",
+        "intitule": "Saint-Jean-de-Crieulon"
+      },
+      {
+        "code": "30266",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Jean-de-Maruéjols-et-Avéjan",
+        "typeArticle": "0",
+        "intitule": "Saint-Jean-de-Maruéjols-et-Avéjan"
+      },
+      {
+        "code": "30267",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Jean-de-Serres",
+        "typeArticle": "0",
+        "intitule": "Saint-Jean-de-Serres"
+      },
+      {
+        "code": "30268",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Jean-de-Valériscle",
+        "typeArticle": "0",
+        "intitule": "Saint-Jean-de-Valériscle"
+      },
+      {
+        "code": "30269",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Jean-du-Gard",
+        "typeArticle": "0",
+        "intitule": "Saint-Jean-du-Gard"
+      },
+      {
+        "code": "30270",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Jean-du-Pin",
+        "typeArticle": "0",
+        "intitule": "Saint-Jean-du-Pin"
+      },
+      {
+        "code": "30271",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Julien-de-Cassagnas",
+        "typeArticle": "0",
+        "intitule": "Saint-Julien-de-Cassagnas"
+      },
+      {
+        "code": "30272",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Julien-de-la-Nef",
+        "typeArticle": "0",
+        "intitule": "Saint-Julien-de-la-Nef"
+      },
+      {
+        "code": "30273",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Julien-de-Peyrolas",
+        "typeArticle": "0",
+        "intitule": "Saint-Julien-de-Peyrolas"
+      },
+      {
+        "code": "30274",
+        "type": "Commune",
+        "dateCreation": "1955-08-05",
+        "intituleSansArticle": "Saint-Julien-les-Rosiers",
+        "typeArticle": "0",
+        "intitule": "Saint-Julien-les-Rosiers"
+      },
+      {
+        "code": "30275",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Just-et-Vacquières",
+        "typeArticle": "0",
+        "intitule": "Saint-Just-et-Vacquières"
+      },
+      {
+        "code": "30276",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Laurent-d'Aigouze",
+        "typeArticle": "0",
+        "intitule": "Saint-Laurent-d'Aigouze"
+      },
+      {
+        "code": "30277",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Laurent-de-Carnols",
+        "typeArticle": "0",
+        "intitule": "Saint-Laurent-de-Carnols"
+      },
+      {
+        "code": "30278",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Laurent-des-Arbres",
+        "typeArticle": "0",
+        "intitule": "Saint-Laurent-des-Arbres"
+      },
+      {
+        "code": "30279",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Laurent-la-Vernède",
+        "typeArticle": "0",
+        "intitule": "Saint-Laurent-la-Vernède"
+      },
+      {
+        "code": "30280",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Laurent-le-Minier",
+        "typeArticle": "0",
+        "intitule": "Saint-Laurent-le-Minier"
+      },
+      {
+        "code": "30281",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Mamert-du-Gard",
+        "typeArticle": "0",
+        "intitule": "Saint-Mamert-du-Gard"
+      },
+      {
+        "code": "30282",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Marcel-de-Careiret",
+        "typeArticle": "0",
+        "intitule": "Saint-Marcel-de-Careiret"
+      },
+      {
+        "code": "30283",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Martial",
+        "typeArticle": "0",
+        "intitule": "Saint-Martial"
+      },
+      {
+        "code": "30284",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Martin-de-Valgalgues",
+        "typeArticle": "0",
+        "intitule": "Saint-Martin-de-Valgalgues"
+      },
+      {
+        "code": "30285",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Maurice-de-Cazevieille",
+        "typeArticle": "0",
+        "intitule": "Saint-Maurice-de-Cazevieille"
+      },
+      {
+        "code": "30286",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Maximin",
+        "typeArticle": "0",
+        "intitule": "Saint-Maximin"
+      },
+      {
+        "code": "30287",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Michel-d'Euzet",
+        "typeArticle": "0",
+        "intitule": "Saint-Michel-d'Euzet"
+      },
+      {
+        "code": "30288",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Nazaire",
+        "typeArticle": "0",
+        "intitule": "Saint-Nazaire"
+      },
+      {
+        "code": "30289",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Nazaire-des-Gardies",
+        "typeArticle": "0",
+        "intitule": "Saint-Nazaire-des-Gardies"
+      },
+      {
+        "code": "30290",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Paulet-de-Caisson",
+        "typeArticle": "0",
+        "intitule": "Saint-Paulet-de-Caisson"
+      },
+      {
+        "code": "30291",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Paul-la-Coste",
+        "typeArticle": "0",
+        "intitule": "Saint-Paul-la-Coste"
+      },
+      {
+        "code": "30292",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Pons-la-Calm",
+        "typeArticle": "0",
+        "intitule": "Saint-Pons-la-Calm"
+      },
+      {
+        "code": "30293",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Privat-de-Champclos",
+        "typeArticle": "0",
+        "intitule": "Saint-Privat-de-Champclos"
+      },
+      {
+        "code": "30294",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Privat-des-Vieux",
+        "typeArticle": "0",
+        "intitule": "Saint-Privat-des-Vieux"
+      },
+      {
+        "code": "30295",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Quentin-la-Poterie",
+        "typeArticle": "0",
+        "intitule": "Saint-Quentin-la-Poterie"
+      },
+      {
+        "code": "30296",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Roman-de-Codières",
+        "typeArticle": "0",
+        "intitule": "Saint-Roman-de-Codières"
+      },
+      {
+        "code": "30297",
+        "type": "Commune",
+        "dateCreation": "1987-07-06",
+        "intituleSansArticle": "Saint-Sauveur-Camprieu",
+        "typeArticle": "0",
+        "intitule": "Saint-Sauveur-Camprieu"
+      },
+      {
+        "code": "30298",
+        "type": "Commune",
+        "dateCreation": "1976-05-05",
+        "intituleSansArticle": "Saint-Sébastien-d'Aigrefeuille",
+        "typeArticle": "0",
+        "intitule": "Saint-Sébastien-d'Aigrefeuille"
+      },
+      {
+        "code": "30299",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Siffret",
+        "typeArticle": "0",
+        "intitule": "Saint-Siffret"
+      },
+      {
+        "code": "30300",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Théodorit",
+        "typeArticle": "0",
+        "intitule": "Saint-Théodorit"
+      },
+      {
+        "code": "30301",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Victor-des-Oules",
+        "typeArticle": "0",
+        "intitule": "Saint-Victor-des-Oules"
+      },
+      {
+        "code": "30302",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Victor-la-Coste",
+        "typeArticle": "0",
+        "intitule": "Saint-Victor-la-Coste"
+      },
+      {
+        "code": "30303",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saint-Victor-de-Malcap",
+        "typeArticle": "0",
+        "intitule": "Saint-Victor-de-Malcap"
+      },
+      {
+        "code": "30304",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Salazac",
+        "typeArticle": "0",
+        "intitule": "Salazac"
+      },
+      {
+        "code": "30305",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Salindres",
+        "typeArticle": "0",
+        "intitule": "Salindres"
+      },
+      {
+        "code": "30306",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Salinelles",
+        "typeArticle": "0",
+        "intitule": "Salinelles"
+      },
+      {
+        "code": "30307",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Salles-du-Gardon",
+        "typeArticle": "4",
+        "intitule": "Les Salles-du-Gardon"
+      },
+      {
+        "code": "30308",
+        "type": "Commune",
+        "dateCreation": "1982-01-01",
+        "intituleSansArticle": "Sanilhac-Sagriès",
+        "typeArticle": "0",
+        "intitule": "Sanilhac-Sagriès"
+      },
+      {
+        "code": "30309",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sardan",
+        "typeArticle": "0",
+        "intitule": "Sardan"
+      },
+      {
+        "code": "30310",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saumane",
+        "typeArticle": "0",
+        "intitule": "Saumane"
+      },
+      {
+        "code": "30311",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sauve",
+        "typeArticle": "0",
+        "intitule": "Sauve"
+      },
+      {
+        "code": "30312",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sauveterre",
+        "typeArticle": "0",
+        "intitule": "Sauveterre"
+      },
+      {
+        "code": "30313",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sauzet",
+        "typeArticle": "0",
+        "intitule": "Sauzet"
+      },
+      {
+        "code": "30314",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Savignargues",
+        "typeArticle": "0",
+        "intitule": "Savignargues"
+      },
+      {
+        "code": "30315",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Saze",
+        "typeArticle": "0",
+        "intitule": "Saze"
+      },
+      {
+        "code": "30316",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sénéchas",
+        "typeArticle": "0",
+        "intitule": "Sénéchas"
+      },
+      {
+        "code": "30317",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sernhac",
+        "typeArticle": "0",
+        "intitule": "Sernhac"
+      },
+      {
+        "code": "30318",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Servas",
+        "typeArticle": "0",
+        "intitule": "Servas"
+      },
+      {
+        "code": "30319",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Serviers-et-Labaume",
+        "typeArticle": "0",
+        "intitule": "Serviers-et-Labaume"
+      },
+      {
+        "code": "30320",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Seynes",
+        "typeArticle": "0",
+        "intitule": "Seynes"
+      },
+      {
+        "code": "30321",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Sommières",
+        "typeArticle": "0",
+        "intitule": "Sommières"
+      },
+      {
+        "code": "30322",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Soudorgues",
+        "typeArticle": "0",
+        "intitule": "Soudorgues"
+      },
+      {
+        "code": "30323",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Soustelle",
+        "typeArticle": "0",
+        "intitule": "Soustelle"
+      },
+      {
+        "code": "30324",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Souvignargues",
+        "typeArticle": "0",
+        "intitule": "Souvignargues"
+      },
+      {
+        "code": "30325",
+        "type": "Commune",
+        "dateCreation": "1959-02-21",
+        "intituleSansArticle": "Sumène",
+        "typeArticle": "0",
+        "intitule": "Sumène"
+      },
+      {
+        "code": "30326",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Tavel",
+        "typeArticle": "0",
+        "intitule": "Tavel"
+      },
+      {
+        "code": "30327",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Tharaux",
+        "typeArticle": "0",
+        "intitule": "Tharaux"
+      },
+      {
+        "code": "30328",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Théziers",
+        "typeArticle": "0",
+        "intitule": "Théziers"
+      },
+      {
+        "code": "30329",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Thoiras",
+        "typeArticle": "0",
+        "intitule": "Thoiras"
+      },
+      {
+        "code": "30330",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Tornac",
+        "typeArticle": "0",
+        "intitule": "Tornac"
+      },
+      {
+        "code": "30331",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Tresques",
+        "typeArticle": "0",
+        "intitule": "Tresques"
+      },
+      {
+        "code": "30332",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Trèves",
+        "typeArticle": "0",
+        "intitule": "Trèves"
+      },
+      {
+        "code": "30333",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Uchaud",
+        "typeArticle": "1",
+        "intitule": "Uchaud"
+      },
+      {
+        "code": "30334",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Uzès",
+        "typeArticle": "1",
+        "intitule": "Uzès"
+      },
+      {
+        "code": "30335",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vabres",
+        "typeArticle": "0",
+        "intitule": "Vabres"
+      },
+      {
+        "code": "30336",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vallabrègues",
+        "typeArticle": "0",
+        "intitule": "Vallabrègues"
+      },
+      {
+        "code": "30337",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vallabrix",
+        "typeArticle": "0",
+        "intitule": "Vallabrix"
+      },
+      {
+        "code": "30338",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vallérargues",
+        "typeArticle": "0",
+        "intitule": "Vallérargues"
+      },
+      {
+        "code": "30339",
+        "type": "Commune",
+        "dateCreation": "2019-01-01",
+        "intituleSansArticle": "Val-d'Aigoual",
+        "typeArticle": "0",
+        "intitule": "Val-d'Aigoual"
+      },
+      {
+        "code": "30340",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Valliguières",
+        "typeArticle": "0",
+        "intitule": "Valliguières"
+      },
+      {
+        "code": "30341",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vauvert",
+        "typeArticle": "0",
+        "intitule": "Vauvert"
+      },
+      {
+        "code": "30342",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vénéjan",
+        "typeArticle": "0",
+        "intitule": "Vénéjan"
+      },
+      {
+        "code": "30343",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Verfeuil",
+        "typeArticle": "0",
+        "intitule": "Verfeuil"
+      },
+      {
+        "code": "30344",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vergèze",
+        "typeArticle": "0",
+        "intitule": "Vergèze"
+      },
+      {
+        "code": "30345",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vernarède",
+        "typeArticle": "3",
+        "intitule": "La Vernarède"
+      },
+      {
+        "code": "30346",
+        "type": "Commune",
+        "dateCreation": "1971-08-12",
+        "intituleSansArticle": "Vers-Pont-du-Gard",
+        "typeArticle": "0",
+        "intitule": "Vers-Pont-du-Gard"
+      },
+      {
+        "code": "30347",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vestric-et-Candiac",
+        "typeArticle": "0",
+        "intitule": "Vestric-et-Candiac"
+      },
+      {
+        "code": "30348",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vézénobres",
+        "typeArticle": "0",
+        "intitule": "Vézénobres"
+      },
+      {
+        "code": "30349",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vic-le-Fesq",
+        "typeArticle": "0",
+        "intitule": "Vic-le-Fesq"
+      },
+      {
+        "code": "30350",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vigan",
+        "typeArticle": "2",
+        "intitule": "Le Vigan"
+      },
+      {
+        "code": "30351",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Villeneuve-lès-Avignon",
+        "typeArticle": "0",
+        "intitule": "Villeneuve-lès-Avignon"
+      },
+      {
+        "code": "30352",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Villevieille",
+        "typeArticle": "0",
+        "intitule": "Villevieille"
+      },
+      {
+        "code": "30353",
+        "type": "Commune",
+        "dateCreation": "1943-01-01",
+        "intituleSansArticle": "Vissec",
+        "typeArticle": "0",
+        "intitule": "Vissec"
+      },
+      {
+        "code": "30354",
+        "type": "Commune",
+        "dateCreation": "1947-10-01",
+        "intituleSansArticle": "Montagnac",
+        "typeArticle": "0",
+        "intitule": "Montagnac"
+      },
+      {
+        "code": "30355",
+        "type": "Commune",
+        "dateCreation": "1949-03-30",
+        "intituleSansArticle": "Saint-Paul-les-Fonts",
+        "typeArticle": "0",
+        "intitule": "Saint-Paul-les-Fonts"
+      },
+      {
+        "code": "30356",
+        "type": "Commune",
+        "dateCreation": "1961-09-20",
+        "intituleSansArticle": "Rodilhan",
+        "typeArticle": "0",
+        "intitule": "Rodilhan"
+      }
+    ],
+    "region": {
+      "code": "76",
+      "type": "Region",
+      "dateCreation": "2016-09-29",
+      "intituleSansArticle": "Occitanie",
+      "typeArticle": "1",
+      "chefLieu": "31555",
+      "intitule": "Occitanie"
+    }
+  }
+]
