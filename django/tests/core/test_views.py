@@ -17,6 +17,7 @@ from tests.core.factories import (
     DepartementFactory,
 )
 
+
 class TestAPI:
     @pytest.mark.parametrize(
         ("invalid_avant", "path"),
