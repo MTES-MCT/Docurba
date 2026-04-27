@@ -8,11 +8,14 @@ from pytest_django import DjangoAssertNumQueries
 
 from docurba.core.models import EventCategory, TypeDocument
 from tests.factories import (
-    create_commune,
     create_groupement,
     create_procedure,
 )
 
+from tests.core.factories import (
+    CommuneFactory,
+    DepartementFactory,
+)
 
 class TestAPI:
     @pytest.mark.parametrize(
@@ -37,7 +40,7 @@ class TestAPIPerimetres:
     def test_format_csv(
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune(code_insee="12345", commune_type="COM")
+        commune = CommuneFactory(type="COM")
         create_procedure(
             collectivite_porteuse=commune,
             doc_type=TypeDocument.PLU,
@@ -75,8 +78,8 @@ class TestAPIPerimetres:
         expected_lignes: int,
         client: Client,
     ) -> None:
-        commune_a = create_commune()
-        commune_b = create_commune()
+        commune_a = CommuneFactory(departement=DepartementFactory(code_insee="13"))
+        commune_b = CommuneFactory(departement=DepartementFactory(code_insee="84"))
 
         create_procedure(
             collectivite_porteuse=commune_a,
@@ -111,7 +114,7 @@ class TestAPIPerimetres:
         opposable: str,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = create_procedure(
             collectivite_porteuse=commune,
             doc_type=TypeDocument.PLU,
@@ -133,7 +136,7 @@ class TestAPICommunes:
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         groupement = create_groupement()
-        commune = create_commune()
+        commune = CommuneFactory()
         plan_en_cours = create_procedure(
             collectivite_porteuse=groupement,
             doc_type=TypeDocument.PLU,
@@ -170,7 +173,7 @@ class TestAPICommunes:
 
         https://fr.wikipedia.org/wiki/Catégorie:Commune_hors_intercommunalité_à_fiscalité_propre_en_France
         """
-        create_commune(intercommunalite=None)
+        CommuneFactory(intercommunalite=None)
 
         response = client.get("/api/communes")
 
@@ -190,8 +193,8 @@ class TestAPICommunes:
         expected_lignes: int,
         client: Client,
     ) -> None:
-        commune_a = create_commune()
-        create_commune()
+        commune_a = CommuneFactory()
+        CommuneFactory()
 
         filtre = {}
         if is_filtering:
@@ -214,7 +217,7 @@ class TestAPICommunes:
         self, client: Client, avant: str, champ_procedure_id: str
     ) -> None:
         groupement = create_groupement()
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = create_procedure(
             collectivite_porteuse=groupement,
             doc_type=TypeDocument.PLU,
@@ -239,7 +242,7 @@ class TestAPICommunes:
     ) -> None:
         for _ in range(2):
             groupement = create_groupement()
-            commune = create_commune()
+            commune = CommuneFactory()
             plan_en_cours = create_procedure(
                 collectivite_porteuse=groupement,
                 doc_type=TypeDocument.PLU,
@@ -354,7 +357,7 @@ class TestAPIScots:
         self, client: Client, avant: str, champ_procedure_id: str
     ) -> None:
         groupement = create_groupement()
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = create_procedure(
             doc_type=TypeDocument.SCOT,
             statut=EventCategory.PUBLICATION_PERIMETRE,  # 01-12-2024

@@ -19,12 +19,12 @@ from docurba.core.models import (
     ViewCommuneAdhesionsDeep,
 )
 from tests.factories import (
-    create_commune,
     create_groupement,
     create_procedure,
 )
 
 from tests.core.factories import (
+    CommuneFactory,
     DepartementFactory,
 )
 
@@ -44,15 +44,15 @@ class TestProcedureCommunesCounts:
         groupement_enfant = create_groupement()
         groupement_enfant.adhesions.add(groupement)
 
-        commune_enfant = create_commune()
+        commune_enfant = CommuneFactory()
         commune_enfant.adhesions.add(groupement)
 
         groupement_grand_enfant = create_groupement()
         groupement_grand_enfant.adhesions.add(groupement_enfant)
-        commune_grand_enfant = create_commune()
+        commune_grand_enfant = CommuneFactory()
         commune_grand_enfant.adhesions.add(groupement_enfant)
 
-        commune_grand_grand_enfant = create_commune()
+        commune_grand_grand_enfant = CommuneFactory()
         commune_grand_grand_enfant.adhesions.add(groupement_grand_enfant)
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
@@ -79,15 +79,15 @@ class TestProcedureCommunesCounts:
         groupement_enfant = create_groupement()
         groupement_enfant.adhesions.add(groupement)
 
-        commune_enfant = create_commune()
+        commune_enfant = CommuneFactory()
         commune_enfant.adhesions.add(groupement)
 
         groupement_grand_enfant = create_groupement()
         groupement_grand_enfant.adhesions.add(groupement_enfant)
-        commune_grand_enfant = create_commune()
+        commune_grand_enfant = CommuneFactory()
         commune_grand_enfant.adhesions.add(groupement_enfant)
 
-        commune_grand_grand_enfant = create_commune()
+        commune_grand_grand_enfant = CommuneFactory()
         commune_grand_grand_enfant.adhesions.add(groupement_grand_enfant)
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
@@ -119,10 +119,10 @@ class TestProcedureCommunesCounts:
         groupement_enfant = create_groupement()
         groupement_enfant.adhesions.add(groupement)
 
-        commune_enfant = create_commune()
+        commune_enfant = CommuneFactory()
         commune_enfant.adhesions.add(groupement)
 
-        commune_double_adherente = create_commune()
+        commune_double_adherente = CommuneFactory()
         commune_double_adherente.adhesions.add(groupement_enfant)
         commune_double_adherente.adhesions.add(groupement)
 
@@ -145,10 +145,10 @@ class TestProcedureCommunesCounts:
     ) -> None:
         groupement = create_groupement()
 
-        commune_enfant = create_commune()
+        commune_enfant = CommuneFactory()
         commune_enfant.adhesions.add(groupement)
 
-        commune_deleguee = create_commune(nouvelle=commune_enfant)
+        commune_deleguee = CommuneFactory(nouvelle=commune_enfant)
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
@@ -245,7 +245,7 @@ class TestCollectivitePortantScot:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         groupement_avec_scot = create_groupement()
-        commune = create_commune()
+        commune = CommuneFactory()
 
         scots_opposables = []
         for date_string in ("2024-02-01", "2024-02-02"):
@@ -303,8 +303,8 @@ class TestCollectivitePortantScot:
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         groupement = create_groupement()
-        commune_a = create_commune()
-        commune_b = create_commune()
+        commune_a = CommuneFactory()
+        commune_b = CommuneFactory()
 
         scot_opposable_a = create_procedure(
             collectivite_porteuse=groupement,
@@ -351,8 +351,8 @@ class TestCollectivitePortantScot:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         groupement_avec_scot = create_groupement()
-        commune_a = create_commune()
-        commune_b = create_commune()
+        commune_a = CommuneFactory()
+        commune_b = CommuneFactory()
 
         scot_en_cours = groupement_avec_scot.procedure_set.create(
             doc_type=TypeDocument.SCOT
@@ -399,7 +399,7 @@ class TestCollectivitePortantScot:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         groupement_avec_scot = create_groupement()
-        commune = create_commune()
+        commune = CommuneFactory()
 
         scot_opposable = create_procedure(
             collectivite_porteuse=groupement_avec_scot,
@@ -431,8 +431,8 @@ class TestScotInterdepartemental:
     ) -> None:
         departement = DepartementFactory()
         groupement_avec_scot = create_groupement()
-        commune_a = create_commune(departement=departement)
-        commune_b = create_commune(departement=departement)
+        commune_a = CommuneFactory(departement=departement)
+        commune_b = CommuneFactory(departement=departement)
 
         scot_en_cours = create_procedure(
             collectivite_porteuse=groupement_avec_scot,
@@ -453,8 +453,8 @@ class TestScotInterdepartemental:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         groupement_avec_scot = create_groupement()
-        commune_a = create_commune()
-        commune_b = create_commune()
+        commune_a = CommuneFactory(departement=DepartementFactory(code_insee="13"))
+        commune_b = CommuneFactory(departement=DepartementFactory(code_insee="84"))
 
         scot_en_cours = create_procedure(
             collectivite_porteuse=groupement_avec_scot,
@@ -507,7 +507,7 @@ class TestProcedureDates:
     def test_none_quand_inexistantes(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         Procedure.objects.create(
             doc_type=TypeDocument.SCOT, collectivite_porteuse=commune
         )
@@ -538,7 +538,7 @@ class TestProcedureDates:
         date_attribute: str,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.SCOT,
             collectivite_porteuse=commune,
@@ -568,7 +568,7 @@ class TestProcedureDates:
         date_attribute: str,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.SCOT, collectivite_porteuse=commune
         )
@@ -598,7 +598,7 @@ class TestProcedureDates:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         """Ignore les événements après la date fournie, sauf pour les dates de fin d'échéance qui doivent toujours être récupérées."""
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.SCOT, collectivite_porteuse=commune
         )
@@ -647,7 +647,7 @@ class TestProcedureTypeDocument:
     def test_plu(
         self, doc_type: TypeDocument, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = create_procedure(
             doc_type=doc_type, collectivite_porteuse=commune, perimetre=[commune]
         )
@@ -669,8 +669,8 @@ class TestProcedureTypeDocument:
     def test_plui(
         self, doc_type: TypeDocument, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune_a = create_commune()
-        commune_b = create_commune()
+        commune_a = CommuneFactory()
+        commune_b = CommuneFactory()
 
         procedure = create_procedure(
             collectivite_porteuse=commune_a,
@@ -700,8 +700,8 @@ class TestProcedureTypeDocument:
         vaut_PLH: bool,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        commune_a = create_commune()
-        commune_b = create_commune()
+        commune_a = CommuneFactory()
+        commune_b = CommuneFactory()
 
         procedure = create_procedure(
             collectivite_porteuse=commune_a,
@@ -732,8 +732,8 @@ class TestProcedureTypeDocument:
         vaut_PDM: bool,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        commune_a = create_commune()
-        commune_b = create_commune()
+        commune_a = CommuneFactory()
+        commune_b = CommuneFactory()
 
         procedure = create_procedure(
             collectivite_porteuse=commune_a,
@@ -769,8 +769,8 @@ class TestProcedureTypeDocument:
         vaut_PDM: bool,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        commune_a = create_commune()
-        commune_b = create_commune()
+        commune_a = CommuneFactory()
+        commune_b = CommuneFactory()
 
         procedure = create_procedure(
             collectivite_porteuse=commune_a,
@@ -800,7 +800,7 @@ class TestProcedureDelaiApprobation:
     def test_none_si_au_moins_une_date_absente(
         self, date_approbation: str, date_prescription: str
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -819,7 +819,7 @@ class TestProcedureDelaiApprobation:
 
     @pytest.mark.django_db
     def test_delai_d_approbation_calcule(self) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -835,7 +835,7 @@ class TestProcedureDelaiApprobation:
 class TestProcedureSort:
     @pytest.mark.django_db
     def test_approuvee_plus_recemment(self) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure_recente = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -860,7 +860,7 @@ class TestProcedureSort:
 
     @pytest.mark.django_db
     def test_prescrite_plus_recemment(self) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure_recente = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -885,7 +885,7 @@ class TestProcedureSort:
 
     @pytest.mark.django_db
     def test_date_approbation_priorite_quand_date_entremelees(self) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure_recente = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -919,7 +919,7 @@ class TestProcedureSort:
     )
     @pytest.mark.django_db
     def test_sans_prescription_utilise_date_creation(self) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure_vieille = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -943,7 +943,7 @@ class TestProcedureStatut:
     def test_principale_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -964,7 +964,7 @@ class TestProcedureStatut:
         self, is_approuve: bool, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         """https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000028809968/2015-08-09."""
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.SD, collectivite_porteuse=commune
         )
@@ -992,7 +992,7 @@ class TestProcedureStatut:
         annee_limite: int,
         statut: str,
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -1022,7 +1022,7 @@ class TestProcedureStatut:
         jour_limite: int,
         statut: EventCategory,
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -1060,7 +1060,7 @@ class TestProcedureStatut:
     ) -> None:
         today = timezone.now().date()
 
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -1079,7 +1079,7 @@ class TestProcedureStatut:
     def test_principale_sans_evenement(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -1094,7 +1094,7 @@ class TestProcedureStatut:
     def test_principale_annule(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -1113,7 +1113,7 @@ class TestProcedureStatut:
     def test_principale_ignore_event_invalide(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -1134,7 +1134,7 @@ class TestProcedureStatut:
     def test_principale_carte_communale_deliberation_d_approbation_pas_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.CC, collectivite_porteuse=commune
         )
@@ -1153,7 +1153,7 @@ class TestProcedureStatut:
     def test_secondaire_non_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure_principale = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -1178,7 +1178,7 @@ class TestProcedureStatut:
     def test_approuvee_quand_prescription_et_approbation_meme_jour(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -1206,7 +1206,7 @@ class TestProcedureStatut:
     def test_abandon_quand_prescription_et_abandon_meme_jour(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -1234,7 +1234,7 @@ class TestProcedureStatut:
     def test_event_sans_date_ignore(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -1265,7 +1265,7 @@ class TestProcedureEnCours:
         expected_en_cours: bool,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI, collectivite_porteuse=commune
         )
@@ -1283,7 +1283,7 @@ class TestProcedureEnCours:
     def test_abrogation_jamais_en_cours(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.PLUI,
@@ -1305,7 +1305,7 @@ class TestProcedureEnCours:
     def test_pos_jamais_en_cours(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         procedure = Procedure.objects.create(
             doc_type=TypeDocument.POS, collectivite_porteuse=commune
@@ -1356,7 +1356,7 @@ class TestCommuneProceduresPrincipales:
     def test_exclut_secondaires(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         procedure_principale = create_procedure(
             doc_type=TypeDocument.PLUI,
@@ -1378,7 +1378,7 @@ class TestCommuneProceduresPrincipales:
     def test_exclut_archivees(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure_reelle = create_procedure(
             doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
@@ -1405,7 +1405,7 @@ class TestCommunePlanEnCours:
     def test_plus_recent_en_cours(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         procedure_saisie_avant = create_procedure(
             doc_type=TypeDocument.PLU,
@@ -1447,7 +1447,7 @@ class TestCommunePlanEnCours:
     def test_ignore_les_procedures_non_lancees(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         procedure_en_cours = create_procedure(
             doc_type=TypeDocument.PLUI,
@@ -1473,14 +1473,14 @@ class TestCommunePlanEnCours:
 class TestCommune:
     @pytest.mark.django_db
     def test_is_pas_nouvelle(self) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         assert not commune.is_nouvelle
 
     @pytest.mark.django_db
     def test_is_nouvelle(self) -> None:
-        commune_nouvelle = create_commune()
-        _commune_deleguee = create_commune(nouvelle=commune_nouvelle)
+        commune_nouvelle = CommuneFactory()
+        _commune_deleguee = CommuneFactory(nouvelle=commune_nouvelle)
 
         assert commune_nouvelle.is_nouvelle
 
@@ -1490,14 +1490,14 @@ class TestCommune:
             (False, True, "GROUPEMENT PLAN EN COURS"),
             (True, False, "GROUPEMENT PLAN OPPOSABLE"),
             (True, True, "GROUPEMENT PLAN EN COURS"),
-            (False, False, "COMMUNE SOI-MÊME"),
+            (False, False, "13001"),
         ],
     )
     @pytest.mark.django_db
     def test_collectivite_porteuse_selon_situation_plans(
         self, plan_opposable: bool, plan_en_cours: bool, collectivite_attendue: str
     ) -> None:
-        commune = create_commune(code_insee="COMMUNE SOI-MÊME")
+        commune = CommuneFactory(code_insee_unique="13001")
 
         if plan_en_cours:
             groupement = create_groupement(code_insee="GROUPEMENT PLAN EN COURS")
@@ -1528,7 +1528,7 @@ class TestCommuneOpposabilite:
     def test_plus_recente_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure_precedente_saisie_avant = create_procedure(
             doc_type=TypeDocument.PLU,
             collectivite_porteuse=commune,
@@ -1574,7 +1574,7 @@ class TestCommuneOpposabilite:
     def test_plans_et_schemas_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         plan_opposable = create_procedure(
             doc_type=TypeDocument.PLUI,
@@ -1611,7 +1611,7 @@ class TestCommuneOpposabilite:
     def test_opposable_sans_prescription(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         procedure_opposable = create_procedure(
             collectivite_porteuse=commune,
@@ -1635,7 +1635,7 @@ class TestCommuneOpposabilite:
     def test_aucune_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         procedure_en_cours = create_procedure(
             collectivite_porteuse=commune,
@@ -1660,7 +1660,7 @@ class TestCommuneOpposabilite:
     def test_abrogation_non_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         procedure_approuvee = create_procedure(
             collectivite_porteuse=commune,
@@ -1685,7 +1685,7 @@ class TestCommuneOpposabilite:
     def test_ignore_procedures_secondaires(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         procedure_principale = create_procedure(
             collectivite_porteuse=commune,
@@ -1716,7 +1716,7 @@ class TestCommuneOpposabilite:
     def test_ignore_procedures_archivees(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
         procedure_reelle = create_procedure(
             collectivite_porteuse=commune, perimetre=[commune]
         )
@@ -1752,7 +1752,7 @@ class TestCommuneOpposabilite:
     def test_ignore_event_apres(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         procedure_opposable_fevrier = create_procedure(
             collectivite_porteuse=commune,
@@ -1802,7 +1802,7 @@ class TestCommuneOpposabilite:
 class TestCommuneCodeEtat:
     @pytest.mark.django_db
     def test_commune_sans_plans(self) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         commune = Commune.objects.with_procedures_principales().first()
         assert commune.code_etat_simplifie == "99"
@@ -1812,7 +1812,7 @@ class TestCommuneCodeEtat:
     def test_fonctionne_et_log_erreur_quand_code_etat_incoherent(
         self, caplog: pytest.LogCaptureFixture
     ) -> None:
-        commune = create_commune()
+        commune = CommuneFactory()
 
         with mock.patch.object(
             Commune, "code_etat_complet", new_callable=mock.PropertyMock
@@ -1828,7 +1828,7 @@ class TestCommuneCodeEtat:
     @pytest.mark.parametrize(
         ("create_collectivite", "perimetre_count", "expected_code"),
         [
-            (create_commune, 1, CodeCompetencePerimetre.COMPETENCE_COMMUNE),
+            (CommuneFactory, 1, CodeCompetencePerimetre.COMPETENCE_COMMUNE),
             (
                 create_groupement,
                 1,
@@ -1856,14 +1856,14 @@ class TestCommuneCodeEtat:
 
         if not collectivite_porteuse.is_commune:
             for _ in range(3):
-                commune = create_commune()
+                commune = CommuneFactory()
                 commune.adhesions.add(collectivite_porteuse)
 
             ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
         procedure = create_procedure(
             collectivite_porteuse=collectivite_porteuse,
-            perimetre=[create_commune() for _ in range(perimetre_count)],
+            perimetre=[CommuneFactory() for _ in range(perimetre_count)],
         )
 
         procedure = Procedure.objects.get(id=procedure.id)
