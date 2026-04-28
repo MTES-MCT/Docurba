@@ -21,9 +21,7 @@ from docurba.core.models import (
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
-)
-from tests.factories import (
-    create_procedure,
+    ProcedureFactory,
 )
 
 
@@ -55,10 +53,10 @@ class TestProcedureCommunesCounts:
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        procedure_sectorielle = create_procedure(
+        procedure_sectorielle = ProcedureFactory(
             collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
-            perimetre=[commune_enfant],
+            with_perimetre=[commune_enfant],
         )
         with django_assert_num_queries(1):
             procedure_sectorielle_with_counts = Procedure.objects.get(
@@ -90,10 +88,10 @@ class TestProcedureCommunesCounts:
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        procedure_non_sectorielle = create_procedure(
+        procedure_non_sectorielle = ProcedureFactory(
             collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
-            perimetre=[
+            with_perimetre=[
                 commune_enfant,
                 commune_grand_enfant,
                 commune_grand_grand_enfant,
@@ -126,10 +124,10 @@ class TestProcedureCommunesCounts:
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        procedure = create_procedure(
+        procedure = ProcedureFactory(
             collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
-            perimetre=[commune_enfant, commune_double_adherente],
+            with_perimetre=[commune_enfant, commune_double_adherente],
         )
 
         with django_assert_num_queries(1):
@@ -150,10 +148,10 @@ class TestProcedureCommunesCounts:
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        procedure = create_procedure(
+        procedure = ProcedureFactory(
             collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
-            perimetre=[commune_enfant, commune_deleguee],
+            with_perimetre=[commune_enfant, commune_deleguee],
         )
 
         with django_assert_num_queries(1):
@@ -247,10 +245,10 @@ class TestCollectivitePortantScot:
 
         scots_opposables = []
         for date_string in ("2024-02-01", "2024-02-02"):
-            scot_opposable = create_procedure(
+            scot_opposable = ProcedureFactory(
                 collectivite_porteuse=collectivite_avec_scot,
                 doc_type=TypeDocument.SCOT,
-                perimetre=[commune],
+                with_perimetre=[commune],
             )
             scot_opposable.event_set.create(
                 type="Délibération d'approbation", date_evenement=date_string
@@ -304,31 +302,31 @@ class TestCollectivitePortantScot:
         commune_a = CommuneFactory()
         commune_b = CommuneFactory()
 
-        scot_opposable_a = create_procedure(
+        scot_opposable_a = ProcedureFactory(
             collectivite_porteuse=collectivite,
             doc_type=TypeDocument.SCOT,
             type="A",
-            perimetre=[commune_a],
+            with_perimetre=[commune_a],
         )
         scot_opposable_a.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-01-01"
         )
 
-        scot_precedent_a = create_procedure(
+        scot_precedent_a = ProcedureFactory(
             collectivite_porteuse=collectivite,
             doc_type=TypeDocument.SCOT,
             type="B",
-            perimetre=[commune_a],
+            with_perimetre=[commune_a],
         )
         scot_precedent_a.event_set.create(
             type="Délibération d'approbation", date_evenement="1999-01-01"
         )
 
-        scot_opposable_a_et_b = create_procedure(
+        scot_opposable_a_et_b = ProcedureFactory(
             collectivite_porteuse=collectivite,
             doc_type=TypeDocument.SCOT,
             type="C",
-            perimetre=[commune_a, commune_b],
+            with_perimetre=[commune_a, commune_b],
         )
         scot_opposable_a_et_b.event_set.create(
             type="Délibération d'approbation", date_evenement="2023-01-01"
@@ -362,10 +360,10 @@ class TestCollectivitePortantScot:
 
         scots_opposables = []
         for commune in [commune_a, commune_b]:
-            scot_opposable = create_procedure(
+            scot_opposable = ProcedureFactory(
                 collectivite_porteuse=collectivite_avec_scot,
                 doc_type=TypeDocument.SCOT,
-                perimetre=[commune],
+                with_perimetre=[commune],
             )
             scot_opposable.event_set.create(
                 type="Délibération d'approbation", date_evenement="2024-12-01"
@@ -399,10 +397,10 @@ class TestCollectivitePortantScot:
         collectivite_avec_scot = CollectiviteFactory()
         commune = CommuneFactory()
 
-        scot_opposable = create_procedure(
+        scot_opposable = ProcedureFactory(
             collectivite_porteuse=collectivite_avec_scot,
             doc_type=TypeDocument.SCOT,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         scot_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement="2025-12-11"
@@ -431,10 +429,10 @@ class TestScotInterdepartemental:
         commune_a = CommuneFactory()
         commune_b = CommuneFactory(departement=commune_a.departement)
 
-        scot_en_cours = create_procedure(
+        scot_en_cours = ProcedureFactory(
             collectivite_porteuse=collectivite_avec_scot,
             doc_type=TypeDocument.SCOT,
-            perimetre=[commune_a, commune_b],
+            with_perimetre=[commune_a, commune_b],
         )
         scot_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
 
@@ -453,10 +451,10 @@ class TestScotInterdepartemental:
         commune_a = CommuneFactory(departement__code_insee="13")
         commune_b = CommuneFactory(departement__code_insee="84")
 
-        scot_en_cours = create_procedure(
+        scot_en_cours = ProcedureFactory(
             collectivite_porteuse=collectivite_avec_scot,
             doc_type=TypeDocument.SCOT,
-            perimetre=[commune_a, commune_b],
+            with_perimetre=[commune_a, commune_b],
         )
         scot_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
 
@@ -645,8 +643,8 @@ class TestProcedureTypeDocument:
         self, doc_type: TypeDocument, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = CommuneFactory()
-        procedure = create_procedure(
-            doc_type=doc_type, collectivite_porteuse=commune, perimetre=[commune]
+        procedure = ProcedureFactory(
+            doc_type=doc_type, collectivite_porteuse=commune, with_perimetre=[commune]
         )
 
         with django_assert_num_queries(1):
@@ -669,10 +667,10 @@ class TestProcedureTypeDocument:
         commune_a = CommuneFactory()
         commune_b = CommuneFactory()
 
-        procedure = create_procedure(
+        procedure = ProcedureFactory(
             collectivite_porteuse=commune_a,
             doc_type=doc_type,
-            perimetre=[commune_a, commune_b],
+            with_perimetre=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
@@ -700,11 +698,11 @@ class TestProcedureTypeDocument:
         commune_a = CommuneFactory()
         commune_b = CommuneFactory()
 
-        procedure = create_procedure(
+        procedure = ProcedureFactory(
             collectivite_porteuse=commune_a,
             doc_type=doc_type,
             vaut_PLH=vaut_PLH,
-            perimetre=[commune_a, commune_b],
+            with_perimetre=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
@@ -732,11 +730,11 @@ class TestProcedureTypeDocument:
         commune_a = CommuneFactory()
         commune_b = CommuneFactory()
 
-        procedure = create_procedure(
+        procedure = ProcedureFactory(
             collectivite_porteuse=commune_a,
             doc_type=doc_type,
             vaut_PDM=vaut_PDM,
-            perimetre=[commune_a, commune_b],
+            with_perimetre=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
@@ -769,12 +767,12 @@ class TestProcedureTypeDocument:
         commune_a = CommuneFactory()
         commune_b = CommuneFactory()
 
-        procedure = create_procedure(
+        procedure = ProcedureFactory(
             collectivite_porteuse=commune_a,
             doc_type=doc_type,
             vaut_PLH=vaut_PLH,
             vaut_PDM=vaut_PDM,
-            perimetre=[commune_a, commune_b],
+            with_perimetre=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
@@ -1355,17 +1353,14 @@ class TestCommuneProceduresPrincipales:
     ) -> None:
         commune = CommuneFactory()
 
-        procedure_principale = create_procedure(
+        procedure_secondaire = ProcedureFactory(
+            with_parente=True,
             doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
-            perimetre=[commune],
+            with_perimetre=[commune],
+            parente__with_perimetre=[commune],
         )
-        _procedure_secondaire = create_procedure(
-            parente=procedure_principale,
-            doc_type=TypeDocument.PLUI,
-            collectivite_porteuse=commune,
-            perimetre=[commune],
-        )
+        procedure_principale = procedure_secondaire.parente
 
         with django_assert_num_queries(3):
             commune = Commune.objects.with_procedures_principales().get()
@@ -1376,21 +1371,19 @@ class TestCommuneProceduresPrincipales:
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = CommuneFactory()
-        procedure_reelle = create_procedure(
+
+        _procedure_supprimee = ProcedureFactory(
+            soft_delete=True, collectivite_porteuse=commune, with_perimetre=[commune]
+        )
+
+        procedure_doublon = ProcedureFactory(
+            with_doublon=True,
             doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
-            perimetre=[commune],
+            with_perimetre=[commune],
+            doublon_cache_de__with_perimetre=[commune],
         )
-
-        _procedure_supprimee = create_procedure(
-            soft_delete=True, collectivite_porteuse=commune, perimetre=[commune]
-        )
-
-        _procedure_doublon = create_procedure(
-            doublon_cache_de=procedure_reelle,
-            collectivite_porteuse=commune,
-            perimetre=[commune],
-        )
+        procedure_reelle = procedure_doublon.doublon_cache_de
 
         with django_assert_num_queries(3):
             commune = Commune.objects.with_procedures_principales().get()
@@ -1404,28 +1397,28 @@ class TestCommunePlanEnCours:
     ) -> None:
         commune = CommuneFactory()
 
-        procedure_saisie_avant = create_procedure(
+        procedure_saisie_avant = ProcedureFactory(
             doc_type=TypeDocument.PLU,
             collectivite_porteuse=commune,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure_saisie_avant.event_set.create(
             type="Prescription", date_evenement="2022-12-01"
         )
 
-        procedure_en_cours = create_procedure(
+        procedure_en_cours = ProcedureFactory(
             doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure_en_cours.event_set.create(
             type="Prescription", date_evenement="2024-12-01"
         )
 
-        procedure_saisie_apres = create_procedure(
+        procedure_saisie_apres = ProcedureFactory(
             doc_type=TypeDocument.PLU,
             collectivite_porteuse=commune,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure_saisie_apres.event_set.create(
             type="Prescription", date_evenement="2023-12-01"
@@ -1446,19 +1439,19 @@ class TestCommunePlanEnCours:
     ) -> None:
         commune = CommuneFactory()
 
-        procedure_en_cours = create_procedure(
+        procedure_en_cours = ProcedureFactory(
             doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure_en_cours.event_set.create(
             type="Prescription", date_evenement="2024-12-01"
         )
 
-        _procedure_pas_commencee = create_procedure(
+        _procedure_pas_commencee = ProcedureFactory(
             doc_type=TypeDocument.PLU,
             collectivite_porteuse=commune,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
 
         with django_assert_num_queries(3):
@@ -1498,19 +1491,19 @@ class TestCommune:
 
         if plan_en_cours:
             collectivite = CollectiviteFactory(code_insee_unique="200003333")
-            procedure = create_procedure(
+            procedure = ProcedureFactory(
                 doc_type=TypeDocument.PLU,
                 collectivite_porteuse=collectivite,
-                perimetre=[commune],
+                with_perimetre=[commune],
             )
             procedure.event_set.create(type="Prescription", date_evenement="2022-12-01")
 
         if plan_opposable:
             collectivite = CollectiviteFactory(code_insee_unique="200004444")
-            procedure = create_procedure(
+            procedure = ProcedureFactory(
                 doc_type=TypeDocument.PLU,
                 collectivite_porteuse=collectivite,
-                perimetre=[commune],
+                with_perimetre=[commune],
             )
             procedure.event_set.create(
                 type="Délibération d'approbation", date_evenement="2022-12-01"
@@ -1526,28 +1519,28 @@ class TestCommuneOpposabilite:
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = CommuneFactory()
-        procedure_precedente_saisie_avant = create_procedure(
+        procedure_precedente_saisie_avant = ProcedureFactory(
             doc_type=TypeDocument.PLU,
             collectivite_porteuse=commune,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure_precedente_saisie_avant.event_set.create(
             type="Délibération d'approbation", date_evenement="2022-12-01"
         )
 
-        procedure_opposable = create_procedure(
+        procedure_opposable = ProcedureFactory(
             doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
-        procedure_precedente_saisie_apres = create_procedure(
+        procedure_precedente_saisie_apres = ProcedureFactory(
             doc_type=TypeDocument.PLU,
             collectivite_porteuse=commune,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure_precedente_saisie_apres.event_set.create(
             type="Délibération d'approbation", date_evenement="2023-12-01"
@@ -1573,19 +1566,19 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = CommuneFactory()
 
-        plan_opposable = create_procedure(
+        plan_opposable = ProcedureFactory(
             doc_type=TypeDocument.PLUI,
             collectivite_porteuse=commune,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         plan_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-01-02"
         )
 
-        schema_opposable = create_procedure(
+        schema_opposable = ProcedureFactory(
             doc_type=TypeDocument.SCOT,
             collectivite_porteuse=commune,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         schema_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-01-01"
@@ -1610,10 +1603,10 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = CommuneFactory()
 
-        procedure_opposable = create_procedure(
+        procedure_opposable = ProcedureFactory(
             collectivite_porteuse=commune,
             doc_type=TypeDocument.PLUI,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
@@ -1634,10 +1627,10 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = CommuneFactory()
 
-        procedure_en_cours = create_procedure(
+        procedure_en_cours = ProcedureFactory(
             collectivite_porteuse=commune,
             doc_type=TypeDocument.PLUI,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure_en_cours.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
@@ -1659,11 +1652,11 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = CommuneFactory()
 
-        procedure_approuvee = create_procedure(
+        procedure_approuvee = ProcedureFactory(
             collectivite_porteuse=commune,
             doc_type=TypeDocument.PLUI,
             type="Abrogation",
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure_approuvee.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
@@ -1684,17 +1677,14 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = CommuneFactory()
 
-        procedure_principale = create_procedure(
-            collectivite_porteuse=commune,
+        procedure_secondaire = ProcedureFactory(
+            with_parente=True,
             doc_type=TypeDocument.PLUI,
-            perimetre=[commune],
-        )
-        procedure_secondaire = create_procedure(
             collectivite_porteuse=commune,
-            doc_type=TypeDocument.PLUI,
-            parente=procedure_principale,
-            perimetre=[commune],
+            with_perimetre=[commune],
+            parente__with_perimetre=[commune],
         )
+        procedure_principale = procedure_secondaire.parente
         procedure_secondaire.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
         )
@@ -1714,22 +1704,21 @@ class TestCommuneOpposabilite:
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = CommuneFactory()
-        procedure_reelle = create_procedure(
-            collectivite_porteuse=commune, perimetre=[commune]
-        )
 
-        procedure_supprimee = create_procedure(
-            collectivite_porteuse=commune, soft_delete=True, perimetre=[commune]
+        procedure_supprimee = ProcedureFactory(
+            collectivite_porteuse=commune, soft_delete=True, with_perimetre=[commune]
         )
         procedure_supprimee.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
-        procedure_doublon = create_procedure(
+        procedure_doublon = ProcedureFactory(
+            with_doublon=True,
             collectivite_porteuse=commune,
-            doublon_cache_de=procedure_reelle,
-            perimetre=[commune],
+            with_perimetre=[commune],
+            doublon_cache_de__with_perimetre=[commune],
         )
+        procedure_reelle = procedure_doublon.doublon_cache_de
         procedure_doublon.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
         )
@@ -1751,19 +1740,19 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = CommuneFactory()
 
-        procedure_opposable_fevrier = create_procedure(
+        procedure_opposable_fevrier = ProcedureFactory(
             collectivite_porteuse=commune,
             doc_type=TypeDocument.PLUI,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure_opposable_fevrier.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-02-02"
         )
 
-        procedure_opposable_janvier = create_procedure(
+        procedure_opposable_janvier = ProcedureFactory(
             collectivite_porteuse=commune,
             doc_type=TypeDocument.PLU,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure_opposable_janvier.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-01-01"
@@ -1858,9 +1847,9 @@ class TestCommuneCodeEtat:
 
             ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        procedure = create_procedure(
+        procedure = ProcedureFactory(
             collectivite_porteuse=collectivite_porteuse,
-            perimetre=[CommuneFactory() for _ in range(perimetre_count)],
+            with_perimetre=[CommuneFactory() for _ in range(perimetre_count)],
         )
 
         procedure = Procedure.objects.get(id=procedure.id)

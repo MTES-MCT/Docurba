@@ -7,9 +7,12 @@ from docurba.core.enums import CommuneType
 from docurba.core.models import (
     Collectivite,
     Commune,
+    CommuneProcedure,
     Departement,
+    Procedure,
     Region,
     TypeCollectivite,
+    TypeDocument,
 )
 
 REGIONS = {
@@ -121,3 +124,63 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
     competence_plan = False
     competence_schema = False
     departement = factory.SubFactory(DepartementFactory)
+
+
+class ProcedureFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Procedure
+        skip_postgeneration_save = True
+
+    collectivite_porteuse = factory.SubFactory(CollectiviteFactory)
+    doc_type = factory.fuzzy.FuzzyChoice(TypeDocument)
+    type = "Élaboration"
+    vaut_PLH = False  # noqa: N815
+    vaut_PDM = False  # noqa: N815
+    soft_delete = False
+    name = factory.LazyAttribute(
+        lambda o: f"{o.type} {o.doc_type} {o.collectivite_porteuse.nom}"
+    )
+    parente = None
+    doublon_cache_de = None
+
+    class Params:
+        with_parente = factory.Trait(
+            parente=factory.SubFactory(
+                "tests.core.factories.ProcedureFactory",
+                doc_type=factory.SelfAttribute("..doc_type"),
+                collectivite_porteuse=factory.SelfAttribute("..collectivite_porteuse"),
+            ),
+        )
+        with_doublon = factory.Trait(
+            doublon_cache_de=factory.SubFactory(
+                "tests.core.factories.ProcedureFactory",
+                doc_type=factory.SelfAttribute("..doc_type"),
+                collectivite_porteuse=factory.SelfAttribute("..collectivite_porteuse"),
+            ),
+        )
+
+    @factory.post_generation
+    def with_perimetre(self, create: bool, extracted: list[Commune] | None) -> None:  # noqa: FBT001
+        if not create or not extracted:
+            return
+
+        for commune in extracted:
+            CommuneProcedureFactory(
+                procedure=self,
+                commune=commune,
+            )
+
+
+class CommuneProcedureFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = CommuneProcedure
+
+    commune = factory.SubFactory(CommuneFactory)
+    commune_id = factory.LazyAttribute(
+        lambda o: f"{o.collectivite_code}_{o.collectivite_type}"
+    )
+    procedure = factory.SubFactory(ProcedureFactory)
+    collectivite_code = factory.SelfAttribute("commune.code_insee_unique")
+    collectivite_type = factory.SelfAttribute("commune.type")
+    opposable = False
+    departement = factory.SelfAttribute("commune.departement.code_insee")
