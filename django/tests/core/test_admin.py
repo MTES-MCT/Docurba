@@ -4,7 +4,8 @@ from django.urls import reverse
 from pytest_django.asserts import assertContains, assertNotContains
 
 from docurba.core.models import Procedure, Topic, TypeCollectivite, TypeDocument
-from tests.factories import create_groupement, create_procedure
+from tests.core.factories import CollectiviteFactory
+from tests.factories import create_procedure
 
 
 @pytest.mark.parametrize("doc_type", TypeDocument.values)
@@ -36,8 +37,8 @@ class TestProcedureList:
         assertContains(response, procedure_with_topic.pk)
 
     def test_collectivite_porteuse_type_filter(self, admin_client: Client) -> None:
-        polem = create_groupement(groupement_type=TypeCollectivite.POLEM)
-        cc = create_groupement(groupement_type=TypeCollectivite.CC)
+        polem = CollectiviteFactory(type=TypeCollectivite.POLEM)
+        cc = CollectiviteFactory(type=TypeCollectivite.CC)
         procedure_polem = create_procedure(collectivite_porteuse=polem)
         procedure_cc = create_procedure(collectivite_porteuse=cc)
 
