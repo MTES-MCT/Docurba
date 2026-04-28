@@ -2,7 +2,7 @@ import pytest
 
 from docurba.core.models import Procedure
 from docurba.surveys.models import ProcedureSurvey, Survey
-from tests.factories import create_groupement
+from tests.core.factories import CollectiviteFactory
 from tests.users.factories import create_user_and_profile
 
 
@@ -13,7 +13,7 @@ class TestSurveys:
         _, profile = create_user_and_profile(
             email="georges-eugene@haussmann.com", other_poste=["rédacteur", "maire"]
         )
-        collectivite = create_groupement()
+        collectivite = CollectiviteFactory()
         survey = Survey.objects.filter(name="zan_03_2026").first()
         procedure = Procedure.objects.create()
         ProcedureSurvey.objects.create(

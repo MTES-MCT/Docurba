@@ -8,11 +8,10 @@ from pytest_django import DjangoAssertNumQueries
 
 from docurba.core.models import EventCategory, TypeDocument
 from tests.core.factories import (
+    CollectiviteFactory,
     CommuneFactory,
-    DepartementFactory,
 )
 from tests.factories import (
-    create_groupement,
     create_procedure,
 )
 
@@ -78,8 +77,8 @@ class TestAPIPerimetres:
         expected_lignes: int,
         client: Client,
     ) -> None:
-        commune_a = CommuneFactory(departement=DepartementFactory(code_insee="13"))
-        commune_b = CommuneFactory(departement=DepartementFactory(code_insee="84"))
+        commune_a = CommuneFactory(departement__code_insee="13")
+        commune_b = CommuneFactory(departement__code_insee="84")
 
         create_procedure(
             collectivite_porteuse=commune_a,
@@ -135,16 +134,16 @@ class TestAPICommunes:
     def test_format_csv(
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        groupement = create_groupement()
+        collectivite = CollectiviteFactory()
         commune = CommuneFactory()
         plan_en_cours = create_procedure(
-            collectivite_porteuse=groupement,
+            collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
             perimetre=[commune],
         )
         plan_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
         plan_opposable = create_procedure(
-            collectivite_porteuse=groupement,
+            collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
             perimetre=[commune],
         )
@@ -193,8 +192,8 @@ class TestAPICommunes:
         expected_lignes: int,
         client: Client,
     ) -> None:
-        commune_a = CommuneFactory(departement=DepartementFactory(code_insee="13"))
-        CommuneFactory(departement=DepartementFactory(code_insee="84"))
+        commune_a = CommuneFactory(departement__code_insee="13")
+        CommuneFactory(departement__code_insee="84")
 
         filtre = {}
         if is_filtering:
@@ -216,10 +215,10 @@ class TestAPICommunes:
     def test_ignore_event_apres(
         self, client: Client, avant: str, champ_procedure_id: str
     ) -> None:
-        groupement = create_groupement()
+        collectivite = CollectiviteFactory()
         commune = CommuneFactory()
         procedure = create_procedure(
-            collectivite_porteuse=groupement,
+            collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
             perimetre=[commune],
         )
@@ -241,10 +240,10 @@ class TestAPICommunes:
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         for _ in range(2):
-            groupement = create_groupement()
+            collectivite = CollectiviteFactory()
             commune = CommuneFactory()
             plan_en_cours = create_procedure(
-                collectivite_porteuse=groupement,
+                collectivite_porteuse=collectivite,
                 doc_type=TypeDocument.PLU,
                 perimetre=[commune],
             )
@@ -264,10 +263,10 @@ class TestAPIScots:
     def test_format_csv(
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        groupement = create_groupement(with_collectivites_adherentes=True)
+        collectivite = CollectiviteFactory()
         scot_en_cours = create_procedure(
             doc_type=TypeDocument.SCOT,
-            collectivite_porteuse=groupement,
+            collectivite_porteuse=collectivite,
             statut=EventCategory.PUBLICATION_PERIMETRE,
         )
 
@@ -283,13 +282,13 @@ class TestAPIScots:
             {
                 "annee_cog": "2024",
                 # Collectivité
-                "scot_code_region": groupement.departement.region.code_insee,
-                "scot_libelle_region": "",
-                "scot_code_departement": groupement.departement.code_insee,
-                "scot_lib_departement": "",
-                "scot_codecollectivite": groupement.code_insee,
-                "scot_code_type_collectivite": groupement.type,
-                "scot_nom_collectivite": "",
+                "scot_code_region": collectivite.departement.region.code_insee,
+                "scot_libelle_region": collectivite.departement.region.nom,
+                "scot_code_departement": collectivite.departement.code_insee,
+                "scot_lib_departement": collectivite.departement.nom,
+                "scot_codecollectivite": collectivite.code_insee,
+                "scot_code_type_collectivite": collectivite.type,
+                "scot_nom_collectivite": collectivite.nom,
                 # Approuvée
                 "pa_id": "",
                 "pa_nom_schema": "",
@@ -325,22 +324,22 @@ class TestAPIScots:
         expected_lignes: int,
         client: Client,
     ) -> None:
-        groupement_a = create_groupement()
-        groupement_b = create_groupement()
+        collectivite_a = CollectiviteFactory()
+        collectivite_b = CollectiviteFactory()
         create_procedure(
             doc_type=TypeDocument.SCOT,
             statut=EventCategory.PUBLICATION_PERIMETRE,
-            collectivite_porteuse=groupement_a,
+            collectivite_porteuse=collectivite_a,
         )
         create_procedure(
             doc_type=TypeDocument.SCOT,
             statut=EventCategory.PUBLICATION_PERIMETRE,
-            collectivite_porteuse=groupement_b,
+            collectivite_porteuse=collectivite_b,
         )
 
         filtre = {}
         if is_filtering:
-            filtre = {"departement": groupement_a.departement.code_insee}
+            filtre = {"departement": collectivite_a.departement.code_insee}
         response = client.get(reverse("api_scots"), filtre)
         reader = DictReader(response.content.decode().splitlines())
         assert len(list(reader)) == expected_lignes
@@ -356,12 +355,12 @@ class TestAPIScots:
     def test_ignore_event_apres(
         self, client: Client, avant: str, champ_procedure_id: str
     ) -> None:
-        groupement = create_groupement()
+        collectivite = CollectiviteFactory()
         commune = CommuneFactory()
         procedure = create_procedure(
             doc_type=TypeDocument.SCOT,
             statut=EventCategory.PUBLICATION_PERIMETRE,  # 01-12-2024
-            collectivite_porteuse=groupement,
+            collectivite_porteuse=collectivite,
             perimetre=[commune],
         )
         procedure.event_set.create(

@@ -5,9 +5,11 @@ import factory.fuzzy
 
 from docurba.core.enums import CommuneType
 from docurba.core.models import (
+    Collectivite,
     Commune,
     Departement,
     Region,
+    TypeCollectivite,
 )
 
 REGIONS = {
@@ -66,6 +68,7 @@ class DepartementFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ("code_insee",)
 
     code_insee = factory.fuzzy.FuzzyChoice(DEPARTEMENTS.keys())
+    nom = factory.LazyAttribute(lambda o: DEPARTEMENTS[o.code_insee]["name"])
     region = factory.SubFactory(
         RegionFactory,
         code_insee=factory.LazyAttribute(
@@ -79,7 +82,7 @@ class CommuneFactory(factory.django.DjangoModelFactory):
         model = Commune
         django_get_or_create = ("code_insee_unique",)
 
-    # Collectivite fields
+    id = factory.LazyAttribute(lambda o: f"{o.code_insee_unique}_{o.type}")
     code_insee_unique = factory.fuzzy.FuzzyChoice(COMMUNES.keys())
     type = CommuneType.COM  # Don't mess with COMD and COMA
     nom = factory.LazyAttribute(lambda o: COMMUNES[o.code_insee_unique]["name"])
@@ -95,6 +98,26 @@ class CommuneFactory(factory.django.DjangoModelFactory):
         ),
     )
 
-    @factory.lazy_attribute
-    def id(self) -> str:
-        return f"{self.code_insee_unique}_{self.type}"
+
+class CollectiviteFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Collectivite
+        django_get_or_create = ("code_insee_unique",)
+
+    id = factory.LazyAttribute(lambda o: f"{o.code_insee_unique}_{o.type}")
+    code_insee_unique = factory.Faker("siren", locale="fr_FR")
+    type = factory.fuzzy.FuzzyChoice(
+        [
+            type_groupement
+            for type_groupement in TypeCollectivite
+            if type_groupement
+            not in (TypeCollectivite.COM, TypeCollectivite.COMA, TypeCollectivite.COMD)
+        ]
+    )
+
+    nom = factory.LazyAttribute(
+        lambda o: f"{o.type} {factory.Faker('company', locale='fr_FR')}"
+    )
+    competence_plan = False
+    competence_schema = False
+    departement = factory.SubFactory(DepartementFactory)

@@ -19,11 +19,10 @@ from docurba.core.models import (
     ViewCommuneAdhesionsDeep,
 )
 from tests.core.factories import (
+    CollectiviteFactory,
     CommuneFactory,
-    DepartementFactory,
 )
 from tests.factories import (
-    create_groupement,
     create_procedure,
 )
 
@@ -38,26 +37,26 @@ class TestProcedureCommunesCounts:
     def test_procedure_sectorielle_perimetre_inferieur_adhesions(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        groupement = create_groupement()
+        collectivite = CollectiviteFactory()
 
-        groupement_enfant = create_groupement()
-        groupement_enfant.adhesions.add(groupement)
+        collectivite_enfant = CollectiviteFactory()
+        collectivite_enfant.adhesions.add(collectivite)
 
         commune_enfant = CommuneFactory()
-        commune_enfant.adhesions.add(groupement)
+        commune_enfant.adhesions.add(collectivite)
 
-        groupement_grand_enfant = create_groupement()
-        groupement_grand_enfant.adhesions.add(groupement_enfant)
+        collectivite_grand_enfant = CollectiviteFactory()
+        collectivite_grand_enfant.adhesions.add(collectivite_enfant)
         commune_grand_enfant = CommuneFactory()
-        commune_grand_enfant.adhesions.add(groupement_enfant)
+        commune_grand_enfant.adhesions.add(collectivite_enfant)
 
         commune_grand_grand_enfant = CommuneFactory()
-        commune_grand_grand_enfant.adhesions.add(groupement_grand_enfant)
+        commune_grand_grand_enfant.adhesions.add(collectivite_grand_enfant)
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
         procedure_sectorielle = create_procedure(
-            collectivite_porteuse=groupement,
+            collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
             perimetre=[commune_enfant],
         )
@@ -73,26 +72,26 @@ class TestProcedureCommunesCounts:
     def test_procedure_non_sectorielle(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        groupement = create_groupement()
+        collectivite = CollectiviteFactory()
 
-        groupement_enfant = create_groupement()
-        groupement_enfant.adhesions.add(groupement)
+        collectivite_enfant = CollectiviteFactory()
+        collectivite_enfant.adhesions.add(collectivite)
 
         commune_enfant = CommuneFactory()
-        commune_enfant.adhesions.add(groupement)
+        commune_enfant.adhesions.add(collectivite)
 
-        groupement_grand_enfant = create_groupement()
-        groupement_grand_enfant.adhesions.add(groupement_enfant)
+        collectivite_grand_enfant = CollectiviteFactory()
+        collectivite_grand_enfant.adhesions.add(collectivite_enfant)
         commune_grand_enfant = CommuneFactory()
-        commune_grand_enfant.adhesions.add(groupement_enfant)
+        commune_grand_enfant.adhesions.add(collectivite_enfant)
 
         commune_grand_grand_enfant = CommuneFactory()
-        commune_grand_grand_enfant.adhesions.add(groupement_grand_enfant)
+        commune_grand_grand_enfant.adhesions.add(collectivite_grand_enfant)
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
         procedure_non_sectorielle = create_procedure(
-            collectivite_porteuse=groupement,
+            collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
             perimetre=[
                 commune_enfant,
@@ -113,22 +112,22 @@ class TestProcedureCommunesCounts:
     def test_communes_distinctes_quand_double_adhesion(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        groupement = create_groupement()
+        collectivite = CollectiviteFactory()
 
-        groupement_enfant = create_groupement()
-        groupement_enfant.adhesions.add(groupement)
+        collectivite_enfant = CollectiviteFactory()
+        collectivite_enfant.adhesions.add(collectivite)
 
         commune_enfant = CommuneFactory()
-        commune_enfant.adhesions.add(groupement)
+        commune_enfant.adhesions.add(collectivite)
 
         commune_double_adherente = CommuneFactory()
-        commune_double_adherente.adhesions.add(groupement_enfant)
-        commune_double_adherente.adhesions.add(groupement)
+        commune_double_adherente.adhesions.add(collectivite_enfant)
+        commune_double_adherente.adhesions.add(collectivite)
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
         procedure = create_procedure(
-            collectivite_porteuse=groupement,
+            collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
             perimetre=[commune_enfant, commune_double_adherente],
         )
@@ -142,17 +141,17 @@ class TestProcedureCommunesCounts:
     def test_exclut_commune_deleguee_du_perimetre_count(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        groupement = create_groupement()
+        collectivite = CollectiviteFactory()
 
         commune_enfant = CommuneFactory()
-        commune_enfant.adhesions.add(groupement)
+        commune_enfant.adhesions.add(collectivite)
 
         commune_deleguee = CommuneFactory(nouvelle=commune_enfant)
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
         procedure = create_procedure(
-            collectivite_porteuse=groupement,
+            collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
             perimetre=[commune_enfant, commune_deleguee],
         )
@@ -166,11 +165,11 @@ class TestProcedureCommunesCounts:
     def test_retourne_zero_quand_pas_de_commune(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        groupement = create_groupement()
+        collectivite = CollectiviteFactory()
 
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        procedure = groupement.procedure_set.create(doc_type=TypeDocument.PLU)
+        procedure = collectivite.procedure_set.create(doc_type=TypeDocument.PLU)
 
         with django_assert_num_queries(1):
             procedure_with_counts = Procedure.objects.get(id=procedure.id)
@@ -187,8 +186,8 @@ class TestCollectivitePortantScot:
     def test_retourne_que_collectivite_avec_scot(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        groupement_avec_scot = create_groupement()
-        scot_en_cours = groupement_avec_scot.procedure_set.create(
+        collectivite_avec_scot = CollectiviteFactory()
+        scot_en_cours = collectivite_avec_scot.procedure_set.create(
             doc_type=TypeDocument.SCOT
         )
         scot_en_cours.event_set.create(
@@ -196,27 +195,27 @@ class TestCollectivitePortantScot:
             date_evenement="2024-12-01",
         )
 
-        _groupement_sans_procedure = create_groupement()
+        _collectivite_sans_procedure = CollectiviteFactory()
 
-        groupement_avec_plan = create_groupement()
-        groupement_avec_plan.procedure_set.create(doc_type=TypeDocument.PLU)
+        collectivite_avec_plan = CollectiviteFactory()
+        collectivite_avec_plan.procedure_set.create(doc_type=TypeDocument.PLU)
 
         with django_assert_num_queries(4):
-            groupements = list(Collectivite.objects.portant_scot())
-            assert groupements == [groupement_avec_scot]
+            collectivites = list(Collectivite.objects.portant_scot())
+            assert collectivites == [collectivite_avec_scot]
 
-            assert groupements[0].scots_pour_csv == [(None, scot_en_cours)]
+            assert collectivites[0].scots_pour_csv == [(None, scot_en_cours)]
 
     @pytest.mark.django_db
     def test_ignore_procedures_archivees(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        groupement = create_groupement()
-        scot_supprime = groupement.procedure_set.create(
+        collectivite = CollectiviteFactory()
+        scot_supprime = collectivite.procedure_set.create(
             doc_type=TypeDocument.SCOT, soft_delete=True
         )
 
-        _scot_doublon = groupement.procedure_set.create(
+        _scot_doublon = collectivite.procedure_set.create(
             doc_type=TypeDocument.SCOT, doublon_cache_de=scot_supprime
         )
 
@@ -227,11 +226,11 @@ class TestCollectivitePortantScot:
     def test_ignore_procedures_secondaires(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        groupement = create_groupement()
-        parent_procedure = groupement.procedure_set.create(
+        collectivite = CollectiviteFactory()
+        parent_procedure = collectivite.procedure_set.create(
             doc_type=TypeDocument.SCOT, soft_delete=True
         )
-        groupement.procedure_set.create(
+        collectivite.procedure_set.create(
             doc_type=TypeDocument.SCOT, parente=parent_procedure, archived=False
         )
 
@@ -243,13 +242,13 @@ class TestCollectivitePortantScot:
         self,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        groupement_avec_scot = create_groupement()
+        collectivite_avec_scot = CollectiviteFactory()
         commune = CommuneFactory()
 
         scots_opposables = []
         for date_string in ("2024-02-01", "2024-02-02"):
             scot_opposable = create_procedure(
-                collectivite_porteuse=groupement_avec_scot,
+                collectivite_porteuse=collectivite_avec_scot,
                 doc_type=TypeDocument.SCOT,
                 perimetre=[commune],
             )
@@ -259,10 +258,10 @@ class TestCollectivitePortantScot:
             scots_opposables.append(scot_opposable)
 
         with django_assert_num_queries(6):
-            groupements = list(Collectivite.objects.portant_scot())
-            assert groupements == [groupement_avec_scot]
+            collectivites = list(Collectivite.objects.portant_scot())
+            assert collectivites == [collectivite_avec_scot]
 
-            assert groupements[0].scots_pour_csv == [(scots_opposables[1], None)]
+            assert collectivites[0].scots_pour_csv == [(scots_opposables[1], None)]
 
     @pytest.mark.django_db
     def test_fonctionne_et_log_erreur_quand_plusieurs_scots_en_cours(
@@ -270,11 +269,11 @@ class TestCollectivitePortantScot:
         django_assert_num_queries: DjangoAssertNumQueries,
         caplog: pytest.LogCaptureFixture,
     ) -> None:
-        groupement_avec_scot = create_groupement()
+        collectivite_avec_scot = CollectiviteFactory()
 
         scots_en_cours = []
         for _ in range(2):
-            scot_en_cours = groupement_avec_scot.procedure_set.create(
+            scot_en_cours = collectivite_avec_scot.procedure_set.create(
                 doc_type=TypeDocument.SCOT
             )
             scot_en_cours.event_set.create(
@@ -284,16 +283,16 @@ class TestCollectivitePortantScot:
             scots_en_cours.append(scot_en_cours)
 
         with django_assert_num_queries(4):
-            groupements = list(Collectivite.objects.portant_scot())
-            assert groupements == [groupement_avec_scot]
+            collectivites = list(Collectivite.objects.portant_scot())
+            assert collectivites == [collectivite_avec_scot]
 
-            assert len(groupements[0].scots_pour_csv) == 1
-            actual_opposable, actual_en_cours = groupements[0].scots_pour_csv[0]
+            assert len(collectivites[0].scots_pour_csv) == 1
+            actual_opposable, actual_en_cours = collectivites[0].scots_pour_csv[0]
             assert actual_opposable is None
             assert actual_en_cours
 
             assert (
-                f"Plusieurs SCoT en cours pour la collectivité {groupement_avec_scot.code_insee}"
+                f"Plusieurs SCoT en cours pour la collectivité {collectivite_avec_scot.code_insee}"
                 in caplog.messages
             )
 
@@ -301,12 +300,12 @@ class TestCollectivitePortantScot:
     def test_retourne_scot_opposables_des_qu_une_commune_considere_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        groupement = create_groupement()
+        collectivite = CollectiviteFactory()
         commune_a = CommuneFactory()
         commune_b = CommuneFactory()
 
         scot_opposable_a = create_procedure(
-            collectivite_porteuse=groupement,
+            collectivite_porteuse=collectivite,
             doc_type=TypeDocument.SCOT,
             type="A",
             perimetre=[commune_a],
@@ -316,7 +315,7 @@ class TestCollectivitePortantScot:
         )
 
         scot_precedent_a = create_procedure(
-            collectivite_porteuse=groupement,
+            collectivite_porteuse=collectivite,
             doc_type=TypeDocument.SCOT,
             type="B",
             perimetre=[commune_a],
@@ -326,7 +325,7 @@ class TestCollectivitePortantScot:
         )
 
         scot_opposable_a_et_b = create_procedure(
-            collectivite_porteuse=groupement,
+            collectivite_porteuse=collectivite,
             doc_type=TypeDocument.SCOT,
             type="C",
             perimetre=[commune_a, commune_b],
@@ -336,10 +335,10 @@ class TestCollectivitePortantScot:
         )
 
         with django_assert_num_queries(6):
-            groupements = list(Collectivite.objects.portant_scot())
-            assert groupements == [groupement]
+            collectivites = list(Collectivite.objects.portant_scot())
+            assert collectivites == [collectivite]
 
-            assert set(groupements[0].scots_pour_csv) == {
+            assert set(collectivites[0].scots_pour_csv) == {
                 (scot_opposable_a, None),
                 (scot_opposable_a_et_b, None),
             }
@@ -349,11 +348,11 @@ class TestCollectivitePortantScot:
         self,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        groupement_avec_scot = create_groupement()
+        collectivite_avec_scot = CollectiviteFactory()
         commune_a = CommuneFactory()
         commune_b = CommuneFactory()
 
-        scot_en_cours = groupement_avec_scot.procedure_set.create(
+        scot_en_cours = collectivite_avec_scot.procedure_set.create(
             doc_type=TypeDocument.SCOT
         )
         scot_en_cours.event_set.create(
@@ -364,7 +363,7 @@ class TestCollectivitePortantScot:
         scots_opposables = []
         for commune in [commune_a, commune_b]:
             scot_opposable = create_procedure(
-                collectivite_porteuse=groupement_avec_scot,
+                collectivite_porteuse=collectivite_avec_scot,
                 doc_type=TypeDocument.SCOT,
                 perimetre=[commune],
             )
@@ -374,10 +373,10 @@ class TestCollectivitePortantScot:
             scots_opposables.append(scot_opposable)
 
         with django_assert_num_queries(6):
-            groupements = list(Collectivite.objects.portant_scot())
-            assert groupements == [groupement_avec_scot]
+            collectivites = list(Collectivite.objects.portant_scot())
+            assert collectivites == [collectivite_avec_scot]
 
-            assert set(groupements[0].scots_pour_csv) == {
+            assert set(collectivites[0].scots_pour_csv) == {
                 (scots_opposables[0], scot_en_cours),
                 (scots_opposables[1], scot_en_cours),
             }
@@ -397,11 +396,11 @@ class TestCollectivitePortantScot:
         has_scot_opposable: bool,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        groupement_avec_scot = create_groupement()
+        collectivite_avec_scot = CollectiviteFactory()
         commune = CommuneFactory()
 
         scot_opposable = create_procedure(
-            collectivite_porteuse=groupement_avec_scot,
+            collectivite_porteuse=collectivite_avec_scot,
             doc_type=TypeDocument.SCOT,
             perimetre=[commune],
         )
@@ -413,13 +412,13 @@ class TestCollectivitePortantScot:
         )
 
         with django_assert_num_queries(6):
-            groupements = list(Collectivite.objects.portant_scot(avant=avant))
-        assert groupements == [groupement_avec_scot]
+            collectivites = list(Collectivite.objects.portant_scot(avant=avant))
+        assert collectivites == [collectivite_avec_scot]
 
         if has_scot_opposable:
-            assert groupements[0].scots_pour_csv == [(scot_opposable, None)]
+            assert collectivites[0].scots_pour_csv == [(scot_opposable, None)]
         else:
-            assert groupements[0].scots_pour_csv == []
+            assert collectivites[0].scots_pour_csv == []
 
 
 class TestScotInterdepartemental:
@@ -428,45 +427,44 @@ class TestScotInterdepartemental:
         self,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        departement = DepartementFactory()
-        groupement_avec_scot = create_groupement()
-        commune_a = CommuneFactory(departement=departement)
-        commune_b = CommuneFactory(departement=departement)
+        collectivite_avec_scot = CollectiviteFactory()
+        commune_a = CommuneFactory()
+        commune_b = CommuneFactory(departement=commune_a.departement)
 
         scot_en_cours = create_procedure(
-            collectivite_porteuse=groupement_avec_scot,
+            collectivite_porteuse=collectivite_avec_scot,
             doc_type=TypeDocument.SCOT,
             perimetre=[commune_a, commune_b],
         )
         scot_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
 
         with django_assert_num_queries(6):
-            groupements = list(Collectivite.objects.portant_scot())
-            assert groupements == [groupement_avec_scot]
+            collectivites = list(Collectivite.objects.portant_scot())
+            assert collectivites == [collectivite_avec_scot]
 
-            assert not groupements[0].scots[0].is_interdepartemental
+            assert not collectivites[0].scots[0].is_interdepartemental
 
     @pytest.mark.django_db
     def test_plusieurs_departements(
         self,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        groupement_avec_scot = create_groupement()
-        commune_a = CommuneFactory(departement=DepartementFactory(code_insee="13"))
-        commune_b = CommuneFactory(departement=DepartementFactory(code_insee="84"))
+        collectivite_avec_scot = CollectiviteFactory()
+        commune_a = CommuneFactory(departement__code_insee="13")
+        commune_b = CommuneFactory(departement__code_insee="84")
 
         scot_en_cours = create_procedure(
-            collectivite_porteuse=groupement_avec_scot,
+            collectivite_porteuse=collectivite_avec_scot,
             doc_type=TypeDocument.SCOT,
             perimetre=[commune_a, commune_b],
         )
         scot_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
 
         with django_assert_num_queries(6):
-            groupements = list(Collectivite.objects.portant_scot())
-            assert groupements == [groupement_avec_scot]
+            collectivites = list(Collectivite.objects.portant_scot())
+            assert collectivites == [collectivite_avec_scot]
 
-            assert groupements[0].scots[0].is_interdepartemental
+            assert collectivites[0].scots[0].is_interdepartemental
 
 
 class TestProcedure:
@@ -1486,9 +1484,9 @@ class TestCommune:
     @pytest.mark.parametrize(
         ("plan_opposable", "plan_en_cours", "collectivite_attendue"),
         [
-            (False, True, "GROUPEMENT PLAN EN COURS"),
-            (True, False, "GROUPEMENT PLAN OPPOSABLE"),
-            (True, True, "GROUPEMENT PLAN EN COURS"),
+            (False, True, "200003333"),
+            (True, False, "200004444"),
+            (True, True, "200003333"),
             (False, False, "13001"),
         ],
     )
@@ -1499,19 +1497,19 @@ class TestCommune:
         commune = CommuneFactory(code_insee_unique="13001")
 
         if plan_en_cours:
-            groupement = create_groupement(code_insee="GROUPEMENT PLAN EN COURS")
+            collectivite = CollectiviteFactory(code_insee_unique="200003333")
             procedure = create_procedure(
                 doc_type=TypeDocument.PLU,
-                collectivite_porteuse=groupement,
+                collectivite_porteuse=collectivite,
                 perimetre=[commune],
             )
             procedure.event_set.create(type="Prescription", date_evenement="2022-12-01")
 
         if plan_opposable:
-            groupement = create_groupement(code_insee="GROUPEMENT PLAN OPPOSABLE")
+            collectivite = CollectiviteFactory(code_insee_unique="200004444")
             procedure = create_procedure(
                 doc_type=TypeDocument.PLU,
-                collectivite_porteuse=groupement,
+                collectivite_porteuse=collectivite,
                 perimetre=[commune],
             )
             procedure.event_set.create(
@@ -1829,17 +1827,17 @@ class TestCommuneCodeEtat:
         [
             (CommuneFactory, 1, CodeCompetencePerimetre.COMPETENCE_COMMUNE),
             (
-                create_groupement,
+                CollectiviteFactory,
                 1,
                 CodeCompetencePerimetre.COMPETENCE_EPCI_PROCEDURE_COMMUNALE,
             ),
             (
-                create_groupement,
+                CollectiviteFactory,
                 2,
                 CodeCompetencePerimetre.COMPETENCE_EPCI_PERIMETRE_INFERIEUR_EPCI,
             ),
             (
-                create_groupement,
+                CollectiviteFactory,
                 3,
                 CodeCompetencePerimetre.COMPETENCE_EPCI_PERIMETRE_EPCI,
             ),
