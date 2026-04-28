@@ -4,14 +4,13 @@ from django.urls import reverse
 from pytest_django.asserts import assertContains, assertNotContains
 
 from docurba.core.models import Procedure, Topic, TypeCollectivite, TypeDocument
-from tests.core.factories import CollectiviteFactory
-from tests.factories import create_procedure
+from tests.core.factories import ProcedureFactory
 
 
 @pytest.mark.parametrize("doc_type", TypeDocument.values)
 @pytest.mark.django_db
 def test_procedure_change_page(admin_client: Client, doc_type: TypeDocument) -> None:
-    procedure = create_procedure(doc_type=doc_type)
+    procedure = ProcedureFactory(doc_type=doc_type)
     response = admin_client.get(
         reverse("admin:core_procedure_change", kwargs={"object_id": procedure.pk})
     )
@@ -37,13 +36,13 @@ class TestProcedureList:
         assertContains(response, procedure_with_topic.pk)
 
     def test_collectivite_porteuse_type_filter(self, admin_client: Client) -> None:
-        polem = CollectiviteFactory(type=TypeCollectivite.POLEM)
-        cc = CollectiviteFactory(type=TypeCollectivite.CC)
-        procedure_polem = create_procedure(collectivite_porteuse=polem)
-        procedure_cc = create_procedure(collectivite_porteuse=cc)
+        procedure_polem = ProcedureFactory(
+            collectivite_porteuse__type=TypeCollectivite.POLEM
+        )
+        procedure_cc = ProcedureFactory(collectivite_porteuse__type=TypeCollectivite.CC)
 
         response = admin_client.get(
-            f"{reverse('admin:core_procedure_changelist')}?collectivite_type={polem.type}"
+            f"{reverse('admin:core_procedure_changelist')}?collectivite_type={procedure_polem.collectivite_porteuse.type}"
         )
         assertNotContains(response, procedure_cc.pk)
         assertContains(response, procedure_polem.pk)

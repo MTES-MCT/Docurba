@@ -10,6 +10,7 @@ from docurba.core.models import EventCategory, TypeDocument
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
+    ProcedureFactory,
 )
 from tests.factories import (
     create_procedure,
@@ -40,10 +41,10 @@ class TestAPIPerimetres:
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = CommuneFactory(type="COM")
-        create_procedure(
+        ProcedureFactory(
             collectivite_porteuse=commune,
             doc_type=TypeDocument.PLU,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
 
         with django_assert_num_queries(3):
@@ -80,15 +81,15 @@ class TestAPIPerimetres:
         commune_a = CommuneFactory(departement__code_insee="13")
         commune_b = CommuneFactory(departement__code_insee="84")
 
-        create_procedure(
+        ProcedureFactory(
             collectivite_porteuse=commune_a,
             doc_type=TypeDocument.PLU,
-            perimetre=[commune_a],
+            with_perimetre=[commune_a],
         )
-        create_procedure(
+        ProcedureFactory(
             collectivite_porteuse=commune_b,
             doc_type=TypeDocument.PLU,
-            perimetre=[commune_b],
+            with_perimetre=[commune_b],
         )
 
         filtre = {}
@@ -114,10 +115,10 @@ class TestAPIPerimetres:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         commune = CommuneFactory()
-        procedure = create_procedure(
+        procedure = ProcedureFactory(
             collectivite_porteuse=commune,
             doc_type=TypeDocument.PLU,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         procedure.event_set.create(
             type="Délibération d'approbation", date_evenement="2023-01-02"
@@ -136,16 +137,16 @@ class TestAPICommunes:
     ) -> None:
         collectivite = CollectiviteFactory()
         commune = CommuneFactory()
-        plan_en_cours = create_procedure(
+        plan_en_cours = ProcedureFactory(
             collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
         plan_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
-        plan_opposable = create_procedure(
+        plan_opposable = ProcedureFactory(
             collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
 
         plan_opposable.event_set.create(
@@ -217,10 +218,10 @@ class TestAPICommunes:
     ) -> None:
         collectivite = CollectiviteFactory()
         commune = CommuneFactory()
-        procedure = create_procedure(
+        procedure = ProcedureFactory(
             collectivite_porteuse=collectivite,
             doc_type=TypeDocument.PLU,
-            perimetre=[commune],
+            with_perimetre=[commune],
         )
 
         procedure.event_set.create(type="Prescription", date_evenement="2021-12-01")
@@ -242,10 +243,10 @@ class TestAPICommunes:
         for _ in range(2):
             collectivite = CollectiviteFactory()
             commune = CommuneFactory()
-            plan_en_cours = create_procedure(
+            plan_en_cours = ProcedureFactory(
                 collectivite_porteuse=collectivite,
                 doc_type=TypeDocument.PLU,
-                perimetre=[commune],
+                with_perimetre=[commune],
             )
             plan_en_cours.event_set.create(
                 type="Prescription", date_evenement="2024-12-01"
