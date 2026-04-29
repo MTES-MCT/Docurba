@@ -6,14 +6,12 @@ from django.test import Client
 from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 
-from docurba.core.models import EventCategory, TypeDocument
+from docurba.core.models import TypeDocument
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
+    EventFactory,
     ProcedureFactory,
-)
-from tests.factories import (
-    create_procedure,
 )
 
 
@@ -264,12 +262,10 @@ class TestAPIScots:
     def test_format_csv(
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        collectivite = CollectiviteFactory()
-        scot_en_cours = create_procedure(
-            doc_type=TypeDocument.SCOT,
-            collectivite_porteuse=collectivite,
-            statut=EventCategory.PUBLICATION_PERIMETRE,
+        event = EventFactory(
+            type="Publication de périmètre", procedure__doc_type=TypeDocument.SCOT
         )
+        collectivite = event.procedure.collectivite_porteuse
 
         with django_assert_num_queries(4):
             response = client.get(reverse("api_scots"))
@@ -303,12 +299,12 @@ class TestAPIScots:
                 "pa_date_fin_echeance": "",
                 "pa_nombre_communes": "",
                 # En cours
-                "pc_id": str(scot_en_cours.id),
-                "pc_nom_schema": "",
+                "pc_id": str(event.procedure.id),
+                "pc_nom_schema": event.procedure.name,
                 "pc_noserie_procedure": "",
                 "pc_proc_elaboration_revision": "Élaboration",
                 "pc_scot_interdepartement": "False",
-                "pc_date_publication_perimetre": "2024-12-01",
+                "pc_date_publication_perimetre": str(event.date_evenement),
                 "pc_date_prescription": "",
                 "pc_date_arret_projet": "",
                 "pc_nombre_communes": "0",
@@ -325,18 +321,14 @@ class TestAPIScots:
         expected_lignes: int,
         client: Client,
     ) -> None:
-        collectivite_a = CollectiviteFactory()
-        collectivite_b = CollectiviteFactory()
-        create_procedure(
-            doc_type=TypeDocument.SCOT,
-            statut=EventCategory.PUBLICATION_PERIMETRE,
-            collectivite_porteuse=collectivite_a,
+
+        event_a = EventFactory(
+            type="Publication de périmètre", procedure__doc_type=TypeDocument.SCOT
         )
-        create_procedure(
-            doc_type=TypeDocument.SCOT,
-            statut=EventCategory.PUBLICATION_PERIMETRE,
-            collectivite_porteuse=collectivite_b,
+        EventFactory(
+            type="Publication de périmètre", procedure__doc_type=TypeDocument.SCOT
         )
+        collectivite_a = event_a.procedure.collectivite_porteuse
 
         filtre = {}
         if is_filtering:
@@ -356,16 +348,16 @@ class TestAPIScots:
     def test_ignore_event_apres(
         self, client: Client, avant: str, champ_procedure_id: str
     ) -> None:
-        collectivite = CollectiviteFactory()
-        commune = CommuneFactory()
-        procedure = create_procedure(
-            doc_type=TypeDocument.SCOT,
-            statut=EventCategory.PUBLICATION_PERIMETRE,  # 01-12-2024
-            collectivite_porteuse=collectivite,
-            perimetre=[commune],
+        event_a = EventFactory(
+            type="Publication de périmètre",
+            date_evenement="2024-12-01",
+            procedure__doc_type=TypeDocument.SCOT,
         )
-        procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement="2025-10-01"
+        procedure = event_a.procedure
+        EventFactory(
+            type="Délibération d'approbation",
+            date_evenement="2025-10-01",
+            procedure=procedure,
         )
 
         response = client.get(reverse("api_scots"), {"avant": avant})
