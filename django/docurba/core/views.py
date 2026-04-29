@@ -134,6 +134,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "pc_nom_sst",
             "pc_cout_sst_ht",
             "pc_cout_sst_ttc",
+            "pc_objets",
             # Approuvée
             "pa_docurba_id",
             "pa_num_procedure_sudocuh",
@@ -157,6 +158,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "pa_nom_sst",
             "pa_cout_sst_ht",
             "pa_cout_sst_ttc",
+            "pa_objets",
         ],
     )
 
@@ -225,6 +227,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
                 and plan_en_cours.maitrise_d_oeuvre["coutplanht"],
                 "pc_cout_sst_ttc": plan_en_cours.maitrise_d_oeuvre
                 and plan_en_cours.maitrise_d_oeuvre["coutplanttc"],
+                "pc_objets": plan_en_cours.concatenated_topics_as_string,
             }
 
         champs_opposable = {}
@@ -256,6 +259,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
                 and plan_opposable.maitrise_d_oeuvre["coutplanht"],
                 "pa_cout_sst_ttc": plan_opposable.maitrise_d_oeuvre
                 and plan_opposable.maitrise_d_oeuvre["coutplanttc"],
+                "pa_objets": plan_opposable.concatenated_topics_as_string,
             }
         return (
             champs_commune
