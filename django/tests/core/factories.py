@@ -1,3 +1,4 @@
+import datetime
 from json import loads
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from docurba.core.models import (
     Commune,
     CommuneProcedure,
     Departement,
+    Event,
     Procedure,
     Region,
     TypeCollectivite,
@@ -184,3 +186,12 @@ class CommuneProcedureFactory(factory.django.DjangoModelFactory):
     collectivite_type = factory.SelfAttribute("commune.type")
     opposable = False
     departement = factory.SelfAttribute("commune.departement.code_insee")
+
+
+class EventFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Event
+
+    procedure = factory.SubFactory(ProcedureFactory)
+    date_evenement = factory.fuzzy.FuzzyDate(datetime.date(1970, 1, 1))
+    type = "Prescription"
