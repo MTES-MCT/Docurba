@@ -791,6 +791,7 @@ class CommuneQuerySet(models.QuerySet):
     ) -> Self:
         procedures_principales = (
             Procedure.objects.defer("current_perimetre", "initial_perimetre")
+            .with_concatenated_topics_as_string()
             .with_events(avant=avant)
             .filter(parente=None, archived=False)
         )

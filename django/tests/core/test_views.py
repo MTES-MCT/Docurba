@@ -263,6 +263,70 @@ class TestAPICommunes:
         reader = DictReader(response.content.decode().splitlines())
         assert [cp["pc_type_document"] for cp in reader] == ["PLU", "PLU"]
 
+    @pytest.mark.parametrize(
+        ("procedure_status", "expected_filled_key", "expected_empty_key"),
+        [
+            pytest.param(
+                EventCategory.PUBLICATION_PERIMETRE,
+                "pc_objets",
+                "pa_objets",
+                id="ongoing_procedure",
+            ),
+            pytest.param(
+                EventCategory.APPROUVE,
+                "pa_objets",
+                "pc_objets",
+                id="approved_procedure",
+            ),
+        ],
+    )
+    @pytest.mark.parametrize(
+        ("procedure_topics_to_add", "expected_result"),
+        [
+            pytest.param("", "", id="no_topic"),
+            pytest.param(["zan"], "Trajectoire ZAN", id="one_topic"),
+            pytest.param(
+                ["zan", "forest_fire"],
+                "Feu de forêt,Trajectoire ZAN",
+                id="several_topics",
+            ),
+        ],
+    )
+    @pytest.mark.django_db
+    def test_with_topics(
+        self,
+        procedure_status: EventCategory,
+        expected_filled_key: str,
+        expected_empty_key: str,
+        procedure_topics_to_add: str,
+        expected_result: str,
+        client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        procedure = ProcedureFactory(
+            doc_type=TypeDocument.PLU,
+            with_perimetre=[CommuneFactory()],
+            collectivite_porteuse=CollectiviteFactory(),
+        )
+        match procedure_status:
+            case EventCategory.PUBLICATION_PERIMETRE:
+                EventFactory(type="Publication de périmètre", procedure=procedure)
+            case EventCategory.APPROUVE:
+                EventFactory(
+                    type="Délibération d'approbation du municipal ou communautaire",
+                    procedure=procedure,
+                )
+        if procedure_topics_to_add:
+            topics = Topic.objects.filter(name__in=procedure_topics_to_add)
+            procedure.topics.add(*topics)
+
+        with django_assert_num_queries(4):
+            response = client.get(reverse("api_communes"))
+
+        results = list(DictReader(response.content.decode().splitlines()))
+        assert results[0][expected_filled_key] == expected_result
+        assert results[0][expected_empty_key] == ""
+
 
 class TestAPIScots:
     @pytest.mark.django_db
@@ -430,7 +494,7 @@ class TestAPIScots:
         ],
     )
     @pytest.mark.django_db
-    def test_with_topics(  # noqa: PLR0913
+    def test_with_topics(
         self,
         procedure_status: EventCategory,
         expected_filled_key: str,
