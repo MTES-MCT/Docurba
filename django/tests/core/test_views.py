@@ -6,7 +6,13 @@ from django.test import Client
 from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 
-from docurba.core.models import TypeDocument
+from docurba.core.models import (
+    EventCategory,
+    Procedure,
+    TypeCollectivite,
+    TypeDocument,
+    ViewCommuneAdhesionsDeep,
+)
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
@@ -259,36 +265,113 @@ class TestAPICommunes:
 
 class TestAPIScots:
     @pytest.mark.django_db
-    def test_format_csv(
-        self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    @pytest.mark.parametrize(
+        (
+            "nb_communes",
+            "event_category",
+            "dict_attendu_dans_resultat",
+        ),
+        [
+            pytest.param(
+                3,
+                "Délibération d'approbation",
+                {
+                    "pa_nombre_communes": "3",
+                    "pa_annee_approbation": "2024",
+                    "pa_date_approbation": "2024-12-01",
+                    "pa_scot_interdepartement": "False",
+                },
+                id="scot_approuve_plusieurs_communes",
+            ),
+            pytest.param(
+                3,
+                "Publication de périmètre",
+                {
+                    "pc_nombre_communes": "3",
+                    "pc_date_publication_perimetre": "2024-12-01",
+                    "pc_scot_interdepartement": "False",
+                    "pc_proc_elaboration_revision": "Élaboration",
+                },
+                id="scot_en_cours_plusieurs_communes",
+            ),
+            pytest.param(
+                0,
+                "Publication de périmètre",
+                {
+                    "pc_nombre_communes": "0",
+                    "pc_date_publication_perimetre": "2024-12-01",
+                    "pc_scot_interdepartement": "False",
+                    "pc_proc_elaboration_revision": "Élaboration",
+                },
+                id="scot_en_cours_sans_commune",
+            ),
+        ],
+    )
+    def test_scot_cas_differents(
+        self,
+        client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+        nb_communes: int,
+        event_category: dict[str, EventCategory],
+        dict_attendu_dans_resultat: dict[str, str],
     ) -> None:
-        event = EventFactory(
-            type="Publication de périmètre", procedure__doc_type=TypeDocument.SCOT
+        perimetre_initial = CommuneFactory.create_batch(
+            nb_communes, departement__code_insee="13"
         )
-        collectivite = event.procedure.collectivite_porteuse
+        collectivite_porteuse = CollectiviteFactory(type=TypeCollectivite.CC)
+        collectivite_porteuse.collectivites_adherentes.add(*perimetre_initial)
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
-        with django_assert_num_queries(4):
+        event = EventFactory(
+            type=event_category,
+            date_evenement="2024-12-01",
+            procedure__doc_type=TypeDocument.SCOT,
+            procedure__with_perimetre=perimetre_initial,
+            procedure__collectivite_porteuse=collectivite_porteuse,
+        )
+        # .with_events() is required to call scot.statut
+        scot = Procedure.objects.with_events().get(pk=event.procedure_id)
+
+        with django_assert_num_queries(6 if nb_communes else 4):
             response = client.get(reverse("api_scots"))
-
-        assert response.status_code == 200
-        assert response["content-type"] == "text/csv;charset=utf-8"
-
-        reader = DictReader(response.content.decode().splitlines())
-
-        assert list(reader) == [
-            {
-                "annee_cog": "2024",
-                # Collectivité
-                "scot_code_region": collectivite.departement.region.code_insee,
-                "scot_libelle_region": collectivite.departement.region.nom,
-                "scot_code_departement": collectivite.departement.code_insee,
-                "scot_lib_departement": collectivite.departement.nom,
-                "scot_codecollectivite": collectivite.code_insee,
-                "scot_code_type_collectivite": collectivite.type,
-                "scot_nom_collectivite": collectivite.nom,
-                # Approuvée
-                "pa_id": "",
-                "pa_nom_schema": "",
+        result = list(DictReader(response.content.decode().splitlines()))
+        resultat_par_defaut = {
+            "annee_cog": "2024",
+            # Collectivité
+            "scot_code_region": collectivite_porteuse.departement.region.code_insee,
+            "scot_libelle_region": collectivite_porteuse.departement.region.nom,
+            "scot_code_departement": collectivite_porteuse.departement.code_insee,
+            "scot_lib_departement": collectivite_porteuse.departement.nom,
+            "scot_codecollectivite": collectivite_porteuse.code_insee,
+            "scot_code_type_collectivite": collectivite_porteuse.type.value,
+            "scot_nom_collectivite": scot.collectivite_porteuse.nom,
+            # Approuvée
+            "pa_id": "",
+            "pa_nom_schema": "",
+            "pa_noserie_procedure": "",
+            "pa_scot_interdepartement": "",
+            "pa_date_publication_perimetre": "",
+            "pa_date_prescription": "",
+            "pa_date_arret_projet": "",
+            "pa_date_approbation": "",
+            "pa_annee_approbation": "",
+            "pa_date_fin_echeance": "",
+            "pa_nombre_communes": "",
+            # En cours
+            "pc_id": "",
+            "pc_nom_schema": "",
+            "pc_noserie_procedure": "",
+            "pc_proc_elaboration_revision": "",
+            "pc_scot_interdepartement": "",
+            "pc_date_publication_perimetre": "",
+            "pc_date_prescription": "",
+            "pc_date_arret_projet": "",
+            "pc_nombre_communes": "",
+        }
+        if scot.statut == EventCategory.APPROUVE:
+            resultat_par_defaut = resultat_par_defaut | {
+                "pa_id": str(scot.id),
+                "pa_nom_schema": str(scot.name),
                 "pa_noserie_procedure": "",
                 "pa_scot_interdepartement": "",
                 "pa_date_publication_perimetre": "",
@@ -298,18 +381,21 @@ class TestAPIScots:
                 "pa_annee_approbation": "",
                 "pa_date_fin_echeance": "",
                 "pa_nombre_communes": "",
-                # En cours
-                "pc_id": str(event.procedure.id),
-                "pc_nom_schema": event.procedure.name,
+            }
+        elif scot.statut == EventCategory.PUBLICATION_PERIMETRE:
+            resultat_par_defaut = resultat_par_defaut | {
+                "pc_id": str(scot.id),
+                "pc_nom_schema": str(scot.name),
                 "pc_noserie_procedure": "",
                 "pc_proc_elaboration_revision": "Élaboration",
                 "pc_scot_interdepartement": "False",
                 "pc_date_publication_perimetre": str(event.date_evenement),
                 "pc_date_prescription": "",
                 "pc_date_arret_projet": "",
-                "pc_nombre_communes": "0",
+                "pc_nombre_communes": "",
             }
-        ]
+        expected_result = resultat_par_defaut | dict_attendu_dans_resultat
+        assert result[0] == expected_result
 
     @pytest.mark.parametrize(
         ("is_filtering", "expected_lignes"), [(False, 2), (True, 1)]
