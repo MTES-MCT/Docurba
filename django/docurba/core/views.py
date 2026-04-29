@@ -310,6 +310,7 @@ def api_scots(request: HttpRequest) -> HttpResponse:
             "pa_annee_approbation",
             "pa_date_fin_echeance",
             "pa_nombre_communes",
+            "pa_objets",
             # En cours
             "pc_id",
             "pc_nom_schema",
@@ -320,6 +321,7 @@ def api_scots(request: HttpRequest) -> HttpResponse:
             "pc_date_prescription",
             "pc_date_arret_projet",
             "pc_nombre_communes",
+            "pc_objets",
         ],
     )
 
@@ -353,6 +355,7 @@ def api_scots(request: HttpRequest) -> HttpResponse:
                 "pa_annee_approbation": scot_opposable.date_approbation.year,
                 "pa_date_fin_echeance": scot_opposable.date_fin_echeance,
                 "pa_nombre_communes": len(scot_opposable.communes),
+                "pa_objets": scot_opposable.concatenated_topics_as_string,
             }
 
         champs_en_cours = {}
@@ -367,6 +370,7 @@ def api_scots(request: HttpRequest) -> HttpResponse:
                 "pc_date_prescription": scot_en_cours.date_prescription,
                 "pc_date_arret_projet": scot_en_cours.date_arret_projet,
                 "pc_nombre_communes": len(scot_en_cours.communes),
+                "pc_objets": scot_en_cours.concatenated_topics_as_string,
             }
 
         return champs_groupement | champs_opposable | champs_en_cours

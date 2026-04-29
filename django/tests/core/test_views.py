@@ -9,6 +9,7 @@ from pytest_django import DjangoAssertNumQueries
 from docurba.core.models import (
     EventCategory,
     Procedure,
+    Topic,
     TypeCollectivite,
     TypeDocument,
     ViewCommuneAdhesionsDeep,
@@ -357,6 +358,7 @@ class TestAPIScots:
             "pa_annee_approbation": "",
             "pa_date_fin_echeance": "",
             "pa_nombre_communes": "",
+            "pa_objets": "",
             # En cours
             "pc_id": "",
             "pc_nom_schema": "",
@@ -367,6 +369,7 @@ class TestAPIScots:
             "pc_date_prescription": "",
             "pc_date_arret_projet": "",
             "pc_nombre_communes": "",
+            "pc_objets": "",
         }
         if scot.statut == EventCategory.APPROUVE:
             resultat_par_defaut = resultat_par_defaut | {
@@ -396,6 +399,70 @@ class TestAPIScots:
             }
         expected_result = resultat_par_defaut | dict_attendu_dans_resultat
         assert result[0] == expected_result
+
+    @pytest.mark.parametrize(
+        ("procedure_status", "expected_filled_key", "expected_empty_key"),
+        [
+            pytest.param(
+                EventCategory.PUBLICATION_PERIMETRE,
+                "pc_objets",
+                "pa_objets",
+                id="ongoing_procedure",
+            ),
+            pytest.param(
+                EventCategory.APPROUVE,
+                "pa_objets",
+                "pc_objets",
+                id="approved_procedure",
+            ),
+        ],
+    )
+    @pytest.mark.parametrize(
+        ("procedure_topics_to_add", "expected_result"),
+        [
+            pytest.param("", "", id="no_topic"),
+            pytest.param(["zan"], "Trajectoire ZAN", id="one_topic"),
+            pytest.param(
+                ["zan", "forest_fire"],
+                "Feu de forêt,Trajectoire ZAN",
+                id="several_topics",
+            ),
+        ],
+    )
+    @pytest.mark.django_db
+    def test_with_topics(  # noqa: PLR0913
+        self,
+        procedure_status: EventCategory,
+        expected_filled_key: str,
+        expected_empty_key: str,
+        procedure_topics_to_add: str,
+        expected_result: str,
+        client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        procedure = ProcedureFactory(
+            doc_type=TypeDocument.SCOT,
+            with_perimetre=[CommuneFactory()],
+        )
+        match procedure_status:
+            case EventCategory.PUBLICATION_PERIMETRE:
+                EventFactory(type="Publication de périmètre", procedure=procedure)
+            case EventCategory.APPROUVE:
+                EventFactory(
+                    type="Retrait de l'annulation totale",
+                    procedure=procedure,
+                )
+
+        if procedure_topics_to_add:
+            topics = Topic.objects.filter(name__in=procedure_topics_to_add)
+            procedure.topics.add(*topics)
+
+        with django_assert_num_queries(6):
+            response = client.get(reverse("api_scots"))
+
+        results = list(DictReader(response.content.decode().splitlines()))
+        assert results[0][expected_filled_key] == expected_result
+        assert results[0][expected_empty_key] == ""
 
     @pytest.mark.parametrize(
         ("is_filtering", "expected_lignes"), [(False, 2), (True, 1)]
