@@ -15,6 +15,7 @@ from docurba.core.models import (
     Event,
     EventCategory,
     Procedure,
+    Topic,
     TypeDocument,
     ViewCommuneAdhesionsDeep,
 )
@@ -28,6 +29,22 @@ from tests.core.factories import (
 class TestCollectivite:
     def test_code_insee(self) -> None:
         assert Commune(id="12345_COM").code_insee == "12345"
+
+
+class TestProcedureQuerySet:
+    @pytest.mark.django_db
+    def test_with_concatenated_topics_as_string(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        topics = Topic.objects.filter(name__in=["zan", "forest_fire"])
+        procedure = ProcedureFactory()
+        procedure.topics.add(*topics)
+        with django_assert_num_queries(1):
+            procedure = Procedure.objects.with_concatenated_topics_as_string().get(
+                pk=procedure.pk
+            )
+        assert hasattr(procedure, "concatenated_topics_as_string")
+        assert procedure.concatenated_topics_as_string == "Feu de forêt,Trajectoire ZAN"
 
 
 class TestProcedureCommunesCounts:

@@ -8,6 +8,8 @@ from typing import Self
 
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
 from django.db import connection, models
+from django.db.models import Value
+from django.db.models.aggregates import StringAgg
 from django.db.models.constraints import UniqueConstraint
 from django.db.models.functions import Now
 from django.urls import reverse
@@ -309,6 +311,15 @@ class ProcedureQuerySet(models.QuerySet):
     def without_adhesions_count(self) -> Self:
         self.query.annotations.pop("communes_adherentes__count")
         return self
+
+    def with_concatenated_topics_as_string(self) -> Self:
+        return self.annotate(
+            concatenated_topics_as_string=StringAgg(
+                "topics__display_name",
+                delimiter=Value(","),
+                order_by="topics__display_name",
+            ),
+        )
 
 
 class ProcedureManager(models.Manager):
@@ -685,6 +696,7 @@ class CollectiviteQuerySet(models.QuerySet):
                     "procedure_set",
                     Procedure.objects.defer("current_perimetre", "initial_perimetre")
                     .with_events(avant=avant)
+                    .with_concatenated_topics_as_string()
                     .without_adhesions_count()
                     .order_by("created_at")
                     .filter(
