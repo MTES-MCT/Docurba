@@ -40,6 +40,7 @@ ignore = [
     "D10",    # Missing docstring
     "E501",   # Line too long
     "TD",     # Todos
+    "PLR0913", # Too many arguments in function definition
     # "ERA001", # Commented out code
 ]
 [tool.ruff.lint.per-file-ignores]

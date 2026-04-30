@@ -59,7 +59,7 @@ class TestMigrateProceduretopics:
             ),
         ],
     )
-    def test_call_command_simple_case(  # noqa: PLR0913
+    def test_call_command_simple_case(
         self,
         capsys: pytest.CaptureFixture[str],
         settings: SettingsWrapper,
