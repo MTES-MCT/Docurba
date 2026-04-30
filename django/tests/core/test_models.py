@@ -801,6 +801,43 @@ class TestProcedureTypeDocument:
             assert procedure.vaut_PLH_consolide
             assert procedure.vaut_PDM_consolide
 
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("src_doc_type", "expected_doc_type"),
+        [
+            (TypeDocument.PLU, TypeDocument.PLUIS),
+            (TypeDocument.PLUI, TypeDocument.PLUIS),
+            (TypeDocument.PLUIH, TypeDocument.PLUISH),
+            (TypeDocument.PLUIM, TypeDocument.PLUISM),
+            (TypeDocument.PLUIHM, TypeDocument.PLUISHM),
+        ],
+    )
+    def test_type_document_pour_procedure_sectorielle(
+        self,
+        src_doc_type: TypeDocument,
+        expected_doc_type: TypeDocument,
+    ) -> None:
+        commune_a = CommuneFactory()
+        commune_b = CommuneFactory()
+        collectivite = CollectiviteFactory(
+            with_collectivites_adherentes=[
+                commune_a,
+                commune_b,
+                CommuneFactory(),
+            ]
+        )
+        procedure = ProcedureFactory(
+            doc_type=src_doc_type,
+            collectivite_porteuse=collectivite,
+            with_perimetre=[commune_a, commune_b],
+        )
+
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        procedure = Procedure.objects.get(id=procedure.id)
+
+        assert procedure.type_document == expected_doc_type
+
 
 class TestProcedureDelaiApprobation:
     @pytest.mark.django_db
