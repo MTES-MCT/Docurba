@@ -36,12 +36,21 @@ class TypeDocument(models.TextChoices):
     PLUIHM = "PLUiHM"
     PLUIM = "PLUiM"
 
+    PLUIS = "PLUiS"
+    PLUISH = "PLUiSH"
+    PLUISHM = "PLUiSHM"
+    PLUISM = "PLUiSM"
+
 
 PLU_LIKE = (
     TypeDocument.PLUI,
     TypeDocument.PLUIH,
     TypeDocument.PLUIHM,
     TypeDocument.PLUIM,
+    TypeDocument.PLUIS,
+    TypeDocument.PLUISH,
+    TypeDocument.PLUISHM,
+    TypeDocument.PLUISM,
 )
 
 
@@ -61,6 +70,10 @@ TYPE_DOCUMENT_TO_CODE = {
     TypeDocument.PLUIH: 3,
     TypeDocument.PLUIM: 3,
     TypeDocument.PLUIHM: 3,
+    TypeDocument.PLUIS: 3,
+    TypeDocument.PLUISH: 3,
+    TypeDocument.PLUISHM: 3,
+    TypeDocument.PLUISM: 3,
 }
 
 CODE_ETAT_SIMPLIFIE_TO_LIBELLE = {
