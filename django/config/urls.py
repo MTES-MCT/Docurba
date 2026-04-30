@@ -16,8 +16,8 @@ urlpatterns = [
         core_views.collectivite,
         name="collectivite-detail",
     ),
-    path("api/perimetres", core_views.api_perimetres),
-    path("api/communes", core_views.api_communes),
+    path("api/perimetres", core_views.api_perimetres, name="api_perimetres"),
+    path("api/communes", core_views.api_communes, name="api_communes"),
     path("api/scots", core_views.api_scots, name="api_scots"),
     # URLs Nuxt globales
     path("", nuxt_proxy, {"path": ""}),
