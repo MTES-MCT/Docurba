@@ -3,16 +3,14 @@ import pytest
 from docurba.core.models import Procedure
 from docurba.surveys.models import ProcedureSurvey, Survey
 from tests.core.factories import CollectiviteFactory
-from tests.users.factories import create_user_and_profile
+from tests.users.factories import ProfileFactory
 
 
 @pytest.mark.django_db
 class TestSurveys:
     def test_fixtures(self) -> None:
         assert Survey.objects.count() == 1
-        _, profile = create_user_and_profile(
-            email="georges-eugene@haussmann.com", other_poste=["rédacteur", "maire"]
-        )
+        profile = ProfileFactory(other_poste=["rédacteur", "maire"])
         collectivite = CollectiviteFactory()
         survey = Survey.objects.filter(name="zan_03_2026").first()
         procedure = Procedure.objects.create()

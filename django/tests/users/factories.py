@@ -1,15 +1,23 @@
-import uuid
-from typing import Any
+import factory.fuzzy
 
+from docurba.users.enums import PosteType
 from docurba.users.models import Profile, User
-from tests.factories import _Auto
-
-Auto: Any = _Auto()
 
 
-def create_user_and_profile(
-    *, email: str = Auto, other_poste: list = Auto
-) -> tuple[User, Profile]:
-    user = User.objects.create(id=uuid.uuid4(), email=email)
-    profile = Profile.objects.create(user=user, other_poste=other_poste)
-    return user, profile
+class UserFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = User
+
+    id = factory.Faker("uuid4")
+    email = factory.Faker("email")
+
+
+class ProfileFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Profile
+
+    user = factory.SubFactory(UserFactory)
+    firstname = factory.Faker("first_name", locale="fr_FR")
+    lastname = factory.Faker("last_name", locale="fr_FR")
+    poste = factory.fuzzy.FuzzyChoice(PosteType)
+    other_poste: factory.List([])

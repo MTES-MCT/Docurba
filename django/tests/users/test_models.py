@@ -1,10 +1,8 @@
-import uuid
-
 import pytest
 
 from docurba.users.models import Profile, User
 
-from .factories import create_user_and_profile
+from .factories import ProfileFactory, UserFactory
 
 
 @pytest.mark.django_db
@@ -17,14 +15,12 @@ def test_user_creation() -> None:
     Elle existe uniquement car Supabase l'utilise dans sa fonctionnalité SSO.
     Pour le moment, et uniquement pour les tests, créons un schéma `auth`.
     """
-    User.objects.create(id=uuid.uuid4(), email="georges-eugene@haussmann.com")
+    UserFactory()
     assert User.objects.count() == 1
 
 
 @pytest.mark.django_db
 def test_profile_creation() -> None:
-    _, profile = create_user_and_profile(
-        email="georges-eugene@haussmann.com", other_poste=["rédacteur", "maire"]
-    )
+    profile = ProfileFactory(other_poste=["rédacteur", "maire"])
     assert Profile.objects.count() == 1
     assert profile.other_poste == ["rédacteur", "maire"]

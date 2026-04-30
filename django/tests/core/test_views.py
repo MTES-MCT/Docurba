@@ -323,10 +323,14 @@ class TestAPIScots:
     ) -> None:
 
         event_a = EventFactory(
-            type="Publication de périmètre", procedure__doc_type=TypeDocument.SCOT
+            type="Publication de périmètre",
+            procedure__doc_type=TypeDocument.SCOT,
+            procedure__collectivite_porteuse__departement__code_insee="13",
         )
         EventFactory(
-            type="Publication de périmètre", procedure__doc_type=TypeDocument.SCOT
+            type="Publication de périmètre",
+            procedure__doc_type=TypeDocument.SCOT,
+            procedure__collectivite_porteuse__departement__code_insee="84",
         )
         collectivite_a = event_a.procedure.collectivite_porteuse
 
@@ -348,10 +352,12 @@ class TestAPIScots:
     def test_ignore_event_apres(
         self, client: Client, avant: str, champ_procedure_id: str
     ) -> None:
+        commune = CommuneFactory()
         event_a = EventFactory(
             type="Publication de périmètre",
             date_evenement="2024-12-01",
             procedure__doc_type=TypeDocument.SCOT,
+            procedure__with_perimetre=[commune],
         )
         procedure = event_a.procedure
         EventFactory(
