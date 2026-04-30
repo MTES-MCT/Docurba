@@ -536,12 +536,26 @@ class Procedure(models.Model):
             if not self.is_intercommunal:
                 return TypeDocument.PLU
             if self.vaut_PLH_consolide and self.vaut_PDM_consolide:
-                return TypeDocument.PLUIHM
+                return (
+                    TypeDocument.PLUISHM
+                    if self.is_sectoriel_consolide
+                    else TypeDocument.PLUIHM
+                )
             if self.vaut_PLH_consolide:
-                return TypeDocument.PLUIH
+                return (
+                    TypeDocument.PLUISH
+                    if self.is_sectoriel_consolide
+                    else TypeDocument.PLUIH
+                )
             if self.vaut_PDM_consolide:
-                return TypeDocument.PLUIM
-            return TypeDocument.PLUI
+                return (
+                    TypeDocument.PLUISM
+                    if self.is_sectoriel_consolide
+                    else TypeDocument.PLUIM
+                )
+            return (
+                TypeDocument.PLUIS if self.is_sectoriel_consolide else TypeDocument.PLUI
+            )
 
         return self.doc_type
 
