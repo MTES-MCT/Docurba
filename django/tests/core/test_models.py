@@ -1788,7 +1788,7 @@ class TestCommuneOpposabilite:
 class TestCommuneCodeEtat:
     @pytest.mark.django_db
     def test_commune_sans_plans(self) -> None:
-        commune = CommuneFactory()
+        CommuneFactory()
 
         commune = Commune.objects.with_procedures_principales().first()
         assert commune.code_etat_simplifie == "99"
