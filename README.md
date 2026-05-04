@@ -101,3 +101,7 @@ make start
 ### Makefile
 
 Se référer au Makefile pour voir les différentes options d'installation et de lancement
+
+## Autre
+
+Ajout d'une ligne pour pouvoir ouvrir une PR et déclencher le déploiement d'une recette jetable
