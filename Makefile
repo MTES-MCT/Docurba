@@ -90,3 +90,6 @@ copy_exports_from_outscale:
 
 move_exports_from_outscale:
 	cd django && direnv exec . rclone --config scripts/rclone.conf move --s3-chunk-size=20M docurba_exports:/docurba-exports exports/
+
+delete_silk_files:
+	find -name "*.prof" -delete
