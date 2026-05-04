@@ -3,7 +3,11 @@ from datetime import date
 from itertools import groupby
 from operator import attrgetter
 
-from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
+from django.http import (
+    HttpRequest,
+    HttpResponseBadRequest,
+    StreamingHttpResponse,
+)
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_safe
 
@@ -18,8 +22,20 @@ def _avant(request: HttpRequest) -> date | None:
     )
 
 
+class Echo:
+    """False buffer.
+
+    An object that implements just the write method of the file-like
+    interface.
+    """
+
+    def write(self, value: str) -> str:
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
+
+
 @require_safe
-def api_perimetres(request: HttpRequest) -> HttpResponse:
+def api_perimetres(request: HttpRequest) -> StreamingHttpResponse:
     try:
         avant = _avant(request)
     except ValueError:
@@ -33,10 +49,10 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
     if departement := request.GET.get("departement"):
         communes = communes.filter(departement__code_insee=departement)
 
-    response = HttpResponse(content_type="text/csv;charset=utf-8")
+    pseudo_buffer = Echo()
 
     csv_writer = DictWriter(
-        response,
+        pseudo_buffer,
         dialect="unix",
         fieldnames=[
             "annee_cog",
@@ -47,24 +63,29 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
             "opposable",
         ],
     )
-    csv_writer.writeheader()
-    csv_writer.writerows(
-        {
-            "annee_cog": "2024",
-            "collectivite_code": commune.code_insee,
-            "collectivite_type": commune.type,
-            "procedure_id": procedure.id,
-            "type_document": procedure.type_document,
-            "opposable": commune.is_opposable(procedure),
-        }
-        for commune in communes.iterator(chunk_size=1000)
-        for procedure in commune.procedures_principales
+    return StreamingHttpResponse(
+        (
+            csv_writer.writeheader(),
+            csv_writer.writerows(
+                {
+                    "annee_cog": "2024",
+                    "collectivite_code": commune.code_insee,
+                    "collectivite_type": commune.type,
+                    "procedure_id": procedure.id,
+                    "type_document": procedure.type_document,
+                    "opposable": commune.is_opposable(procedure),
+                }
+                for commune in communes.iterator(chunk_size=1000)
+                for procedure in commune.procedures_principales
+            ),
+        ),
+        content_type="text/csv;charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="perimetres.csv"'},
     )
-    return response
 
 
 @require_safe
-def api_communes(request: HttpRequest) -> HttpResponse:
+def api_communes(request: HttpRequest) -> StreamingHttpResponse:
     try:
         avant = _avant(request)
     except ValueError:
@@ -80,9 +101,9 @@ def api_communes(request: HttpRequest) -> HttpResponse:
     if departement := request.GET.get("departement"):
         communes = communes.filter(departement__code_insee=departement)
 
-    response = HttpResponse(content_type="text/csv;charset=utf-8")
+    pseudo_buffer = Echo()
     csv_writer = DictWriter(
-        response,
+        pseudo_buffer,
         dialect="unix",
         fieldnames=[
             "annee_cog",
@@ -264,15 +285,20 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             | champs_en_cours
         )
 
-    csv_writer.writeheader()
-    csv_writer.writerows(
-        format_row(commune) for commune in communes.iterator(chunk_size=1000)
+    return StreamingHttpResponse(
+        (
+            csv_writer.writeheader(),
+            csv_writer.writerows(
+                format_row(commune) for commune in communes.iterator(chunk_size=1000)
+            ),
+        ),
+        content_type="text/csv;charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="communes.csv"'},
     )
-    return response
 
 
 @require_safe
-def api_scots(request: HttpRequest) -> HttpResponse:
+def api_scots(request: HttpRequest) -> StreamingHttpResponse:
     try:
         avant = _avant(request)
     except ValueError:
@@ -284,9 +310,9 @@ def api_scots(request: HttpRequest) -> HttpResponse:
     if departement := request.GET.get("departement"):
         collectivites = collectivites.filter(departement__code_insee=departement)
 
-    response = HttpResponse(content_type="text/csv;charset=utf-8")
+    pseudo_buffer = Echo()
     csv_writer = DictWriter(
-        response,
+        pseudo_buffer,
         dialect="unix",
         fieldnames=[
             "annee_cog",
@@ -371,19 +397,24 @@ def api_scots(request: HttpRequest) -> HttpResponse:
 
         return champs_groupement | champs_opposable | champs_en_cours
 
-    csv_writer.writeheader()
-    csv_writer.writerows(
-        format_row(collectivite, scot_opposable, scot_en_cours)
-        for collectivite in collectivites.iterator(chunk_size=1000)
-        for scot_opposable, scot_en_cours in collectivite.scots_pour_csv
+    return StreamingHttpResponse(
+        (
+            csv_writer.writeheader(),
+            csv_writer.writerows(
+                format_row(collectivite, scot_opposable, scot_en_cours)
+                for collectivite in collectivites.iterator(chunk_size=1000)
+                for scot_opposable, scot_en_cours in collectivite.scots_pour_csv
+            ),
+        ),
+        content_type="text/csv;charset=utf-8",
+        headers={"Content-Disposition": 'attachment; filename="scots.csv"'},
     )
-    return response
 
 
 @require_safe
 def collectivite(
     request: HttpRequest, collectivite_code: str, collectivite_type: str = "COM"
-) -> HttpResponse:
+) -> StreamingHttpResponse:
     try:
         avant = _avant(request)
     except ValueError:
