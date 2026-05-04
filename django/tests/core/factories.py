@@ -121,7 +121,9 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
     )
 
     nom = factory.LazyAttribute(
-        lambda o: f"{o.type} {factory.Faker('company', locale='fr_FR')}"
+        lambda o: (
+            f"{o.type} {factory.Faker('company', locale='fr_FR').evaluate(None, None, {'locale': 'fr_FR'})}"
+        )
     )
     competence_plan = False
     competence_schema = False
