@@ -14,7 +14,11 @@
           Type de procédure
         </div>
         <div>
-          {{ procedure.type }}
+          {{ procedure.type }}{{
+            procedure.type === 'Modification' && procedure.started_before_huwart_law
+              ? ' (antérieure à la loi Huwart)'
+              : ''
+          }}
         </div>
       </v-col>
       <v-col>
