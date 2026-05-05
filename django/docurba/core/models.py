@@ -252,6 +252,14 @@ EVENT_CATEGORY_BY_DOC_TYPE |= dict.fromkeys(
     PLU_LIKE, EVENT_CATEGORY_BY_DOC_TYPE[TypeDocument.PLU]
 )
 
+# Reverse of EVENT_CATEGORY_BY_DOC_TYPE keeping the same first-level keys.
+EVENT_TYPE_BY_EVENT_CATEGORY = {}
+for doc_type, types in EVENT_CATEGORY_BY_DOC_TYPE.items():
+    for name, category in types.items():
+        EVENT_TYPE_BY_EVENT_CATEGORY.setdefault(doc_type, {}).setdefault(
+            category, []
+        ).append(name)
+
 
 class ProcedureStatusChoices(models.TextChoices):
     ANNULE = "annule", "Annulé"

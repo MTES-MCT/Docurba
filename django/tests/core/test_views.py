@@ -307,15 +307,9 @@ class TestAPICommunes:
             doc_type=TypeDocument.PLU,
             with_perimetre=[CommuneFactory()],
             collectivite_porteuse=CollectiviteFactory(),
+            with_event=True,
+            with_event__category=procedure_status,
         )
-        match procedure_status:
-            case EventCategory.PUBLICATION_PERIMETRE:
-                EventFactory(type="Publication de périmètre", procedure=procedure)
-            case EventCategory.APPROUVE:
-                EventFactory(
-                    type="Délibération d'approbation du municipal ou communautaire",
-                    procedure=procedure,
-                )
         if procedure_topics_to_add:
             topics = Topic.objects.filter(name__in=procedure_topics_to_add)
             procedure.topics.add(*topics)
@@ -507,15 +501,9 @@ class TestAPIScots:
         procedure = ProcedureFactory(
             doc_type=TypeDocument.SCOT,
             with_perimetre=[CommuneFactory()],
+            with_event=True,
+            with_event__category=procedure_status,
         )
-        match procedure_status:
-            case EventCategory.PUBLICATION_PERIMETRE:
-                EventFactory(type="Publication de périmètre", procedure=procedure)
-            case EventCategory.APPROUVE:
-                EventFactory(
-                    type="Retrait de l'annulation totale",
-                    procedure=procedure,
-                )
 
         if procedure_topics_to_add:
             topics = Topic.objects.filter(name__in=procedure_topics_to_add)
