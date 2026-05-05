@@ -58,6 +58,7 @@ Pour le SCoT opposable :
 - `pa_annee_approbation` : Année d'approbation
 - `pa_date_fin_echeance` : Date de fin d'échéance
 - `pa_nombre_communes` : Nombre de communes dans le périmètre de la procédure
+- `pa_objets` : Objets de la procédure séparés par des virgules
 
 <br>
 Pour le SCoT en cours :
@@ -71,6 +72,7 @@ Pour le SCoT en cours :
 - `pc_date_prescription` : Date de prescription
 - `pc_date_arret_projet` : Date d'arrêt de projet
 - `pc_nombre_communes` : Nombre de communes dans le périmètre de la procédure
+- `pc_objets` : Objets de la procédure séparés par des virgules
 
 <br>
 Toutes les dates sont au format ISO 8601.

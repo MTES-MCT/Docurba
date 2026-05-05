@@ -87,6 +87,7 @@ Pour le plan en cours :
 - `pc_nom_sst` : Nom du prestataire externe
 - `pc_cout_sst_ht` : Coût HT
 - `pc_cout_sst_ttc` : Coût TTC
+- `pc_objets` : Objets de la procédure séparés par des virgules
 
 <br>
 Pour le plan opposable :
@@ -113,6 +114,7 @@ Pour le plan opposable :
 - `pa_nom_sst` : Nom du prestataire externe
 - `pa_cout_sst_ht` : Coût HT
 - `pa_cout_sst_ttc` : Coût TTC
+- `pa_objets` : Objets de la procédure séparés par des virgules
 
 <br>
 Toutes les dates sont au format ISO 8601.
