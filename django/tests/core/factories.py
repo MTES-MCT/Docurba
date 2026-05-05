@@ -6,6 +6,7 @@ import factory.fuzzy
 
 from docurba.core.enums import CommuneType
 from docurba.core.models import (
+    EVENT_TYPE_BY_EVENT_CATEGORY,
     Collectivite,
     Commune,
     CommuneProcedure,
@@ -171,6 +172,19 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
                 procedure=self,
                 commune=commune,
             )
+
+    @factory.post_generation
+    def with_event(self, create: bool, extracted: bool, **extra: dict) -> None:  # noqa: FBT001
+        if not create or not extracted:
+            return
+
+        event_type = "Prescription"
+        if extra.get("category"):
+            event_type = EVENT_TYPE_BY_EVENT_CATEGORY[self.doc_type][
+                extra.pop("category")
+            ][0]
+
+        EventFactory(procedure=self, type=event_type, **extra)
 
 
 class CommuneProcedureFactory(factory.django.DjangoModelFactory):
