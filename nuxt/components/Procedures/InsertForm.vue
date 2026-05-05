@@ -3,6 +3,14 @@
   <validation-observer v-else-if="(procedureCategory === 'principale' || (procedureCategory === 'secondaire' && proceduresParents && proceduresParents.length > 0))" :ref="`observerAddProcedure-${procedureCategory}`" v-slot="{ handleSubmit, invalid }">
     <form @submit.prevent="handleSubmit(createProcedure)">
       <v-container class="pa-0">
+        <v-row v-if="procedureCategory === 'secondaire'">
+          <v-col cols="6">
+            <v-checkbox
+              v-model="startedBeforeHuwartLaw"
+              label="Cette procédure a été lancée avant le 26 mai 2026"
+            />
+          </v-col>
+        </v-row>
         <v-row>
           <v-col cols="6">
             <validation-provider v-slot="{ errors }" name="Type de la procédure" rules="required">
@@ -12,7 +20,7 @@
                 filled
                 placeholder="Selectionner une option"
                 label="Type de procédure"
-                :items="typesProcedure[procedureCategory]"
+                :items="typesProcedure"
               />
             </validation-provider>
           </v-col>
@@ -193,11 +201,8 @@ export default {
     return {
       loaded: false,
       loadingSave: false,
+      startedBeforeHuwartLaw: false,
       typeProcedure: '',
-      typesProcedure: {
-        principale: ['Elaboration', 'Révision'],
-        secondaire: ['Révision à modalité simplifiée ou Révision allégée', 'Modification', 'Modification simplifiée', 'Mise en compatibilité', 'Mise à jour']
-      },
       procedureParent: null,
       proceduresParents: null,
       numberProcedure: '',
@@ -225,6 +230,21 @@ export default {
       return this.perimetre.length === 1
         ? singleCommuneDUTypes
         : multipleCommunesDUTypes
+    },
+    typesProcedure () {
+      if (this.procedureCategory === 'principale') {
+        return ['Elaboration', 'Révision']
+      }
+
+      return [
+        ...(
+          this.startedBeforeHuwartLaw
+            ? ['Révision à modalité simplifiée ou Révision allégée', 'Modification', 'Modification simplifiée']
+            : ['Modification']
+        ),
+        'Mise en compatibilité',
+        'Mise à jour'
+      ]
     },
     collectivitePorteuseCode () {
       if (this.collectivite[this.typeCompetence]) {
@@ -269,6 +289,12 @@ export default {
     }
   },
   watch: {
+    startedBeforeHuwartLaw () {
+      // Reset the selected procedure type if it is not available anymore
+      if (!this.typesProcedure.includes(this.typeProcedure)) {
+        this.typeProcedure = ''
+      }
+    },
     typesDu (newTypesDu) {
       if (
         this.typeDu &&
@@ -405,6 +431,7 @@ export default {
           project_id: insertedProject,
           name: (this.baseName + ' ' + this.nameComplement).trim(),
           owner_id: this.$user.id,
+          started_before_huwart_law: this.startedBeforeHuwartLaw,
           testing: true
         }).select()
 
