@@ -122,12 +122,14 @@ class ProcedureAdmin(admin.ModelAdmin):
         "current_perimetre",
         "is_principale",
         "archived",
+        "started_before_huwart_law",
     )
     autocomplete_fields = ("collectivite_porteuse",)
     list_filter = (
         ("parente", admin.EmptyFieldListFilter),
         ("name", admin.EmptyFieldListFilter),
         "doc_type",
+        "started_before_huwart_law",
         CollectiviteTypeFilter,
         TopicsFilter,
     )
