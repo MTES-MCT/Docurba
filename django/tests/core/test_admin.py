@@ -50,3 +50,17 @@ class TestProcedureList:
         response = admin_client.get(reverse("admin:core_procedure_changelist"))
         assertContains(response, procedure_polem.pk)
         assertContains(response, procedure_cc.pk)
+
+    def test_huwart_law_filter(self, admin_client: Client) -> None:
+        huwart = ProcedureFactory(started_before_huwart_law=True)
+        not_huwart = ProcedureFactory(started_before_huwart_law=False)
+
+        response = admin_client.get(
+            f"{reverse('admin:core_procedure_changelist')}?started_before_huwart_law__exact=1"
+        )
+        assertNotContains(response, not_huwart.pk)
+        assertContains(response, huwart.pk)
+
+        response = admin_client.get(reverse("admin:core_procedure_changelist"))
+        assertContains(response, not_huwart.pk)
+        assertContains(response, huwart.pk)

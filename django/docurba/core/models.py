@@ -372,7 +372,9 @@ class Procedure(models.Model):
     current_perimetre = models.JSONField(null=True)
 
     last_updated_by = models.ForeignKey("users.Profile", models.DO_NOTHING, null=True)
-    started_before_huwart_law = models.BooleanField(db_default=False)
+    started_before_huwart_law = models.BooleanField(
+        db_default=False, verbose_name="lancée avant la loi Huwart"
+    )
 
     # Denormalized information used only by Nuxt. See self.statut for the Django logic.
     status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001
