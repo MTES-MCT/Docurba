@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.13"
 
 [[package]]
@@ -291,8 +291,8 @@ dev = [
     { name = "django-browser-reload" },
     { name = "django-debug-toolbar" },
     { name = "django-extensions" },
-    { name = "factory-boy" },
     { name = "django-silk" },
+    { name = "factory-boy" },
     { name = "pre-commit" },
     { name = "ptpython" },
     { name = "pytest" },
@@ -318,8 +318,8 @@ dev = [
     { name = "django-browser-reload" },
     { name = "django-debug-toolbar" },
     { name = "django-extensions" },
-    { name = "factory-boy" },
     { name = "django-silk", specifier = ">=5.4.3" },
+    { name = "factory-boy" },
     { name = "pre-commit", specifier = ">=4.3.0" },
     { name = "ptpython" },
     { name = "pytest", specifier = ">=9.0.3" },
