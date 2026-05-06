@@ -284,7 +284,7 @@ class TestAPIScots:
                 "scot_code_departement": collectivite.departement.code_insee,
                 "scot_lib_departement": collectivite.departement.nom,
                 "scot_codecollectivite": collectivite.code_insee,
-                "scot_code_type_collectivite": collectivite.type,
+                "scot_code_type_collectivite": collectivite.type.name,
                 "scot_nom_collectivite": collectivite.nom,
                 # Approuvée
                 "pa_id": "",
