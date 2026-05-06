@@ -260,6 +260,18 @@ class ProcedureStatusChoices(models.TextChoices):
 
 
 class ProcedureQuerySet(models.QuerySet):
+    def with_is_interdepartemental(self) -> Self:
+        return self.annotate(
+            count_communes_departements=models.Count(
+                models.F("perimetre__departement_id"), distinct=True
+            )
+        ).annotate(
+            is_interdepartemental=models.Case(
+                models.When(models.Q(count_communes_departements__gt=1), then=True),
+                default=False,
+            )
+        )
+
     def with_events(self, *, avant: date | None = None) -> Self:
         events = Event.objects.exclude(date_evenement=None)
         return self.annotate(
@@ -682,7 +694,9 @@ class CollectiviteQuerySet(models.QuerySet):
             .prefetch_related(
                 models.Prefetch(
                     "procedure_set",
+                    #         return len({commune.departement for commune in self.communes}) > 1
                     Procedure.objects.defer("current_perimetre", "initial_perimetre")
+                    # .with_is_interdepartemental()
                     .with_events(avant=avant)
                     .without_adhesions_count()
                     .order_by("created_at")
