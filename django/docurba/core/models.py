@@ -15,29 +15,13 @@ from django.db.models.functions import Now
 from django.urls import reverse
 from django.utils import timezone
 
-from docurba.core.enums import CommuneType
+from docurba.core.enums import CommuneType, TypeCollectivite
 from docurba.core.utils import OversizedIndex
 
 logger = logging.getLogger(__name__)
 
 
 # NOTE(cms): These TextChoices should be moved to enums.py
-class TypeCollectivite(models.TextChoices):
-    COM = "COM", "Commune"
-    COMD = "COMD", "Commune déléguée"
-    COMA = "COMA", "Commune associée"
-    CC = "CC", "Communauté de communes"
-    SMF = "SMF", "Syndicat Mixte Fermé"
-    SMO = "SMO", "Syndicat Mixte Ouvert"
-    METRO = "METRO", "Métropole"
-    CU = "CU", "Communauté Urbaine"
-    PETR = "PETR", "Pôle d'Équilibre Territorial et Rural"
-    MET69 = "MET69", "Métropole de Lyon"
-    SIVU = "SIVU", "Syndicat Intercommunal à Vocation Unique"
-    EPT = "EPT", "Établissement Public Territorial"
-    CA = "CA", "Communauté d'Agglomération"
-    POLEM = "POLEM", "Pôle Métropolitain"
-    SIVOM = "SIVOM", "Syndicat Intercommunal à Vocation Multiple"
 
 
 class TypeDocument(models.TextChoices):
@@ -48,6 +32,7 @@ class TypeDocument(models.TextChoices):
     POS = "POS"
 
     PLUI = "PLUi"
+    PLUIS = "PLUiS"
     PLUIH = "PLUiH"
     PLUIHM = "PLUiHM"
     PLUIM = "PLUiM"
@@ -1014,7 +999,9 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
         to_fields=["collectivite_ptr_id"],
         on_delete=models.DO_NOTHING,
     )
-    procedure = models.ForeignKey(Procedure, models.CASCADE)
+    procedure = models.ForeignKey(
+        Procedure, models.CASCADE, related_name="perimetre_through"
+    )
     collectivite_code = models.TextField(
         verbose_name="Code collectivité",
     )
