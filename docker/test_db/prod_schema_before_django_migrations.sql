@@ -2387,60 +2387,64 @@ create extension if not exists moddatetime schema extensions;
 CREATE TRIGGER handle_updated_at BEFORE UPDATE ON public.doc_frise_events FOR EACH ROW EXECUTE FUNCTION extensions.moddatetime('updated_at');
 
 
-
---- TODO(cms)
---- Triggers disabled because they run HTTP queries we can't manage locally or in tests for the moment.
-
--- Performs an HTTP query on Nuxt3.
 --
 -- Name: event_procedure_status_handler(); Type: FUNCTION; Schema: public; Owner: -
 --
 
--- CREATE FUNCTION public.event_procedure_status_handler() RETURNS trigger
---     LANGUAGE plpgsql
---     AS $$ declare procedure procedures; event_processed doc_frise_events; BEGIN IF TG_OP = 'UPDATE' OR TG_OP = 'INSERT' then event_processed := new; else event_processed := old; END IF; SELECT * into procedure FROM procedures WHERE id = event_processed.procedure_id; PERFORM set_procedure_status(procedure); /* NUXT3_API_URL is hardcoded here because this dump will disappear soon and I don't know how to change it quickly in SQL. */ PERFORM net.http_get('api/urba/procedures/' || event_processed.procedure_id || '/update'); return event_processed; END; $$;
+CREATE FUNCTION public.event_procedure_status_handler() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$ declare procedure procedures; event_processed doc_frise_events;
+    BEGIN
+        IF TG_OP = 'UPDATE' OR TG_OP = 'INSERT' then event_processed := new;
+        else event_processed := old;
+        END IF;
+        SELECT * into procedure FROM procedures WHERE id = event_processed.procedure_id;
+        PERFORM set_procedure_status(procedure);
+        /* NUXT3_API_URL is hardcoded here because this dump will disappear soon and I don't know how to change it quickly in SQL. */
+        -- TODO(cms): API call is disabled here because Nuxt3 does not listen on test mode.
+        -- PERFORM net.http_get('localhost:4000/api/urba/procedures/' || event_processed.procedure_id || '/update');
+    return event_processed; END; $$;
 
 --
 -- Name: doc_frise_events trigger_event_procedure_status_handler; Type: TRIGGER; Schema: public; Owner: -
 --
--- CREATE TRIGGER trigger_event_procedure_status_handler AFTER INSERT OR DELETE OR UPDATE ON public.doc_frise_events FOR EACH ROW EXECUTE FUNCTION public.event_procedure_status_handler();
+CREATE TRIGGER trigger_event_procedure_status_handler AFTER INSERT OR DELETE OR UPDATE ON public.doc_frise_events FOR EACH ROW EXECUTE FUNCTION public.event_procedure_status_handler();
 
 --
 -- Name: FUNCTION event_procedure_status_handler(); Type: ACL; Schema: public; Owner: -
 --
 
--- GRANT ALL ON FUNCTION public.event_procedure_status_handler() TO anon;
--- GRANT ALL ON FUNCTION public.event_procedure_status_handler() TO authenticated;
--- GRANT ALL ON FUNCTION public.event_procedure_status_handler() TO service_role;
+GRANT ALL ON FUNCTION public.event_procedure_status_handler() TO anon;
+GRANT ALL ON FUNCTION public.event_procedure_status_handler() TO authenticated;
+GRANT ALL ON FUNCTION public.event_procedure_status_handler() TO service_role;
 
 
 
--- Performs an HTTP query.
 --
 -- Name: procedure_status_handler(); Type: FUNCTION; Schema: public; Owner: -
 --
 
--- CREATE FUNCTION public.procedure_status_handler() RETURNS trigger
---     LANGUAGE plpgsql
---     AS $$
--- declare
--- procedure procedures;
--- BEGIN
---   IF TG_OP = 'UPDATE' OR TG_OP = 'INSERT' then
---     procedure := new;
---   else
---     procedure := old;
---   END IF;
+CREATE FUNCTION public.procedure_status_handler() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+declare
+procedure procedures;
+BEGIN
+  IF TG_OP = 'UPDATE' OR TG_OP = 'INSERT' then
+    procedure := new;
+  else
+    procedure := old;
+  END IF;
 
---   PERFORM set_procedure_status(procedure);
+  PERFORM set_procedure_status(procedure);
 
---   -- Perform the HTTP GET request
---   PERFORM http_get('api/urba/procedures/' || procedure.id || '/update');
---   return procedure;
--- END;
--- $$;
+  -- Perform the HTTP GET request
+  -- TODO(cms): API call is disabled here because Nuxt3 does not listen on test mode.
+  -- PERFORM http_get('localhost:4000/api/urba/procedures/' || procedure.id || '/update');
+  return procedure;
+END;
+$$;
 
--- Performs an HTTP request on Pipedrive.
 --
 -- Name: projects_sharing Pipedrive Sharing Update; Type: TRIGGER; Schema: public; Owner: -
 --
@@ -2517,11 +2521,12 @@ CREATE TRIGGER handle_updated_at BEFORE UPDATE ON public.doc_frise_events FOR EA
 -- Name: FUNCTION procedure_status_handler(); Type: ACL; Schema: public; Owner: -
 --
 
--- GRANT ALL ON FUNCTION public.procedure_status_handler() TO anon;
--- GRANT ALL ON FUNCTION public.procedure_status_handler() TO authenticated;
--- GRANT ALL ON FUNCTION public.procedure_status_handler() TO service_role;
+GRANT ALL ON FUNCTION public.procedure_status_handler() TO anon;
+GRANT ALL ON FUNCTION public.procedure_status_handler() TO authenticated;
+GRANT ALL ON FUNCTION public.procedure_status_handler() TO service_role;
 
 
+-- ERROR:  function public.procedures_principales_by_collectivites(json) does not exist
 --
 -- Name: FUNCTION procedures_principales_by_collectivites(codes json); Type: ACL; Schema: public; Owner: -
 --
