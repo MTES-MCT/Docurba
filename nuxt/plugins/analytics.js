@@ -58,4 +58,19 @@ export default ({ $supabase, $user, $isDev, app }, inject) => {
   }
 
   inject('analytics', sendEvent)
+
+  if (!process.client) {
+    return
+  }
+
+  // Trigger an analytics page view when first loading the app on the client
+  const { resolved } = app.router.resolve(app.router.currentRoute.path)
+
+  if (resolved.matched.length > 0) {
+    sendEvent({
+      category: 'page view',
+      name: 'land',
+      value: app.router.currentRoute.path
+    })
+  }
 }
