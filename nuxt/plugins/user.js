@@ -8,7 +8,8 @@ const defaultUser = {
   profile: {},
   scope: null,
   isReady: false,
-  user_metadata: {}
+  user_metadata: {},
+  supabase_access_token: null,
 }
 
 function shouldRedirect (event) {
@@ -133,6 +134,8 @@ export default async ({ $supabase, app }, inject) => {
         // console.log('update user with session')
         if (event === 'INITIAL_SESSION ' || !currentSession) {
           const user = await updateUser(session)
+          user.supabase_access_token = session.access_token
+
           // console.log('user updated')
           handleRedirect($supabase, event, user, app.router)
         }
