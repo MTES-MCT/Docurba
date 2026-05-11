@@ -20,6 +20,8 @@
                 filled
                 placeholder="Selectionner une option"
                 label="Type de procédure"
+                item-text="text"
+                item-value="value"
                 :items="typesProcedure"
               />
             </validation-provider>
@@ -233,18 +235,22 @@ export default {
     },
     typesProcedure () {
       if (this.procedureCategory === 'principale') {
-        return ['Elaboration', 'Révision']
+        return ['Elaboration', 'Révision'].map(value => ({ text: value, value }))
       }
 
       return [
         ...(
           this.startedBeforeHuwartLaw
-            ? ['Révision à modalité simplifiée ou Révision allégée', 'Modification', 'Modification simplifiée']
-            : ['Modification']
+            ? [
+                'Révision à modalité simplifiée ou Révision allégée',
+                { text: 'Modification (antérieure à la loi Huwart)', value: 'Modification' },
+                'Modification simplifiée'
+              ]
+            : [{ text: 'Modification (postérieure à la loi Huwart)', value: 'Modification' }]
         ),
         'Mise en compatibilité',
         'Mise à jour'
-      ]
+      ].map(item => typeof item === 'string' ? { text: item, value: item } : item)
     },
     collectivitePorteuseCode () {
       if (this.collectivite[this.typeCompetence]) {
@@ -291,7 +297,7 @@ export default {
   watch: {
     startedBeforeHuwartLaw () {
       // Reset the selected procedure type if it is not available anymore
-      if (!this.typesProcedure.includes(this.typeProcedure)) {
+      if (!this.typesProcedure.some(({ value }) => value === this.typeProcedure)) {
         this.typeProcedure = ''
       }
     },
