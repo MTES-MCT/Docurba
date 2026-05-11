@@ -380,12 +380,15 @@ class Procedure(models.Model):
     doublon_cache_de = models.OneToOneField(
         "self", on_delete=models.DO_NOTHING, blank=True, null=True, unique=True
     )
-    soft_delete = models.BooleanField(db_default=False)
+    soft_delete = models.BooleanField(
+        db_default=False, verbose_name="archivée (soft_delete)"
+    )
     archived = models.GeneratedField(
         expression=models.Q(doublon_cache_de__isnull=False)
         | models.Q(soft_delete=True),
         output_field=models.BooleanField(),
         db_persist=True,
+        verbose_name="archivée (archived)",
     )
     initial_perimetre = models.JSONField(null=True)
     current_perimetre = models.JSONField(null=True)

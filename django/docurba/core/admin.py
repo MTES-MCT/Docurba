@@ -121,8 +121,8 @@ class ProcedureAdmin(admin.ModelAdmin):
         "commentaire",
         "current_perimetre",
         "is_principale",
-        "archived",
         "started_before_huwart_law",
+        "archived",
     )
     autocomplete_fields = ("collectivite_porteuse",)
     list_filter = (
@@ -139,6 +139,7 @@ class ProcedureAdmin(admin.ModelAdmin):
     fields = [
         *autocomplete_fields,
         *readonly_fields,
+        "soft_delete",
     ]
 
     def has_add_permission(self, request: object) -> bool:
