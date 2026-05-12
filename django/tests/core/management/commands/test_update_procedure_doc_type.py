@@ -190,3 +190,32 @@ class TestUpdateProcedureDocType:
         with filename.open() as csvfile:
             results = list(csv.DictReader(csvfile, delimiter=";"))
             assert len(results) == 2
+
+    def test_call_command_update_procedure_name(
+        self,
+        settings: SettingsWrapper,
+        tmp_path: pathlib.Path,
+    ) -> None:
+        settings.EXPORTS_DIR = tmp_path
+        perimetre = CommuneFactory.create_batch(2)
+        collectivite_porteuse_plui = CollectiviteFactory(
+            type=TypeCollectivite.COM,
+        )
+        collectivite_porteuse_plui.collectivites_adherentes.add(*perimetre)
+        procedure_with_hardcoded_name = ProcedureFactory(
+            collectivite_porteuse=collectivite_porteuse_plui,
+            doc_type=TypeDocument.PLU,
+            with_perimetre=perimetre,
+            name="Mise à jour de PLU Est Ensemble",
+        )
+        procedure_without_hardcoded_name = ProcedureFactory(
+            collectivite_porteuse=collectivite_porteuse_plui,
+            doc_type=TypeDocument.PLU,
+            with_perimetre=perimetre,
+            name="",
+        )
+        call_command("update_procedure_doc_type", wet_run=True)
+        procedure_with_hardcoded_name.refresh_from_db()
+        procedure_without_hardcoded_name.refresh_from_db()
+        assert procedure_with_hardcoded_name.name == "Mise à jour de PLUi Est Ensemble"
+        assert procedure_without_hardcoded_name.name == ""
