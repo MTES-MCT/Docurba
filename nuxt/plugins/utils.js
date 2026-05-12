@@ -25,7 +25,6 @@ export default ({ app }, inject) => {
         procedure.type,
         procedure.numero,
         procedure.doc_type +
-          (isInter ? 'i' : '') +
           (procedure.is_pluih ? 'H' : ''),
         collectivitePorteuse?.intitule ?? ''
       ].filter(Boolean)
