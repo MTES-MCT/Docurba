@@ -114,7 +114,8 @@ __pycache__
 exported_data/
 
 # Exports files
-*/exports/*
+django/exports/*
+!django/exports/README.md
 
 # Django's collected statics
 django/static/*
