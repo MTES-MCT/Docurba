@@ -29,7 +29,14 @@ export default ({ $supabase, $dayjs }, inject) => {
         .throwOnError()
       const groupedProceduresPerim = groupBy(data, e => e.procedure_id)
       const procedures = data.map((e) => {
-        const lastEvent = maxBy(e.procedures.doc_frise_events, 'date_iso')
+        const now = new Date()
+        const lastEvent = maxBy(
+          // Remove future events
+          e.procedures.doc_frise_events.filter(
+            event => new Date(event.date_iso) <= now
+          ),
+          'date_iso'
+        )
         const prescription = e.procedures.doc_frise_events.find(y => y.code === 'PRES')
         return { ...e, perimetre: groupedProceduresPerim[e.procedure_id], last_event: lastEvent, prescription }
       })
