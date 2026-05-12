@@ -64,19 +64,36 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Procedures to be updated: {procedures_qs.count()}")
 
+        procedures_to_update = []
+        for procedure in procedures_qs.iterator(1000):
+            procedure.doc_type = TypeDocument.PLUI
+            procedure.previous_name = procedure.name
+            if procedure.name:
+                procedure.name = procedure.name.replace(" PLU ", " PLUi ")
+            procedures_to_update.append(procedure)
+
+        updated_counter = 0
+        if wet_run:
+            updated_counter = Procedure.objects.bulk_update(
+                procedures_to_update, fields=["name", "doc_type"], batch_size=1000
+            )
+
         with filename.open(mode="w+", newline="") as file:
             writer = csv.DictWriter(
                 file,
-                fieldnames=["id", "doc_type"],
+                fieldnames=["id", "doc_type", "nom_avant", "nom_apres"],
                 delimiter=";",
             )
             writer.writeheader()
             writer.writerows(
                 [
-                    {"id": procedure.id, "doc_type": procedure.doc_type}
-                    for procedure in procedures_qs.values_list(
-                        "id", "doc_type", named=True
-                    )
+                    {
+                        "id": procedure.id,
+                        "doc_type": procedure.doc_type,
+                        "nom_avant": procedure.previous_name,
+                        "nom_apres": procedure.name,
+                    }
+                    for procedure in procedures_to_update
                 ]
             )
             writer.writerows(
@@ -85,9 +102,5 @@ class Command(BaseCommand):
                     for procedure in skipped_procedures_pk
                 ]
             )
-
-        updated_counter = 0
-        if wet_run:
-            updated_counter = procedures_qs.update(doc_type=TypeDocument.PLUI)
 
         self.stdout.write(f"Updated procedures: {updated_counter}")
