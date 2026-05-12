@@ -206,7 +206,6 @@ export default {
       topicOtherComment: '',
       typeDu: '',
       nameComplement: '',
-      typesDu: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiM', 'PLUiHM', 'SCOT'],
       perimetre: null,
       icons: { mdiInformationOutline, mdiOpenInNew }
     }
@@ -214,6 +213,18 @@ export default {
   computed: {
     typeCompetence () {
       return this.typeDu === 'SCOT' ? 'competenceSCOT' : 'competencePLU'
+    },
+    typesDu () {
+      const multipleCommunesDUTypes = ['PLUi', 'PLUiH', 'PLUiM', 'PLUiHM', 'SCOT']
+      const singleCommuneDUTypes = ['CC', 'PLU']
+
+      if (!this.perimetre || !this.perimetre.length) {
+        return [...singleCommuneDUTypes, ...multipleCommunesDUTypes]
+      }
+
+      return this.perimetre.length === 1
+        ? singleCommuneDUTypes
+        : multipleCommunesDUTypes
     },
     collectivitePorteuseCode () {
       if (this.collectivite[this.typeCompetence]) {
@@ -255,6 +266,16 @@ export default {
     },
     topicOtherCommentSelected () {
       return this.topics.some(e => e.text === 'Autre')
+    }
+  },
+  watch: {
+    typesDu (newTypesDu) {
+      if (
+        this.typeDu &&
+        !newTypesDu.includes(this.typeDu)
+      ) {
+        this.typeDu = ''
+      }
     }
   },
   async mounted () {
