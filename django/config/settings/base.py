@@ -188,3 +188,10 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "docurba.internal_api.paginators.DocurbaPagination",
     "PAGE_SIZE": 200,
 }
+
+##########################################
+############ Supabase settings ############
+##########################################
+
+SUPABASE_URL = env.str("SUPABASE_URL", default="http://127.0.0.1:54321")
+SUPABASE_ANON_KEY = env.str("SUPABASE_ANON_KEY", default="")
