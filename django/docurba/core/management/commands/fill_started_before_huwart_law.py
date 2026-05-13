@@ -1,10 +1,9 @@
 from typing import Any
 
 from django.core.management.base import BaseCommand
-from django.db.models import Exists, OuterRef, Q
+from django.db.models import Exists, OuterRef
 
 from docurba.core.constants import HUWART_LAW_DATE
-from docurba.core.enums import ProcedureType
 from docurba.core.models import Event, Procedure
 
 
@@ -20,31 +19,19 @@ class Command(BaseCommand):
             Procedure.objects.annotate(
                 # PLU and POS only.
                 # There are 2080 different event types currently in production.
-                has_start_event=Exists(
+                has_start_event_after_huwart_law=Exists(
                     Event.objects.filter(
                         procedure_id=OuterRef("pk"),
                         type__in=[
                             "Arrêté de lancement de la procédure",
                             "Délibération de prescription du conseil municipal ou communautaire",
+                            "Délibération de l'établissement public qui prescrit",
                         ],
-                        date_evenement__lt=HUWART_LAW_DATE,
+                        date_evenement__gte=HUWART_LAW_DATE,
                     )
-                )
+                ),
             )
-            .filter(
-                Q(
-                    type__in=[
-                        ProcedureType.MODIFICATION,
-                        ProcedureType.MODIFICATION_SIMPLIFIEE,
-                        ProcedureType.REVISION_MS_RA,
-                        ProcedureType.REVISION_ALLEGEE,
-                        ProcedureType.REVISION_SIMPLIFIEE,
-                    ],
-                    has_start_event=True,
-                    from_sudocuh__isnull=True,
-                )
-                | Q(from_sudocuh__isnull=False)
-            )
+            .exclude(has_start_event_after_huwart_law=True)
             .only(
                 "started_before_huwart_law",
             )
