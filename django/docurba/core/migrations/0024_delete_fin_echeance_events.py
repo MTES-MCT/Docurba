@@ -27,7 +27,7 @@ ENABLE_TRIGGERS = """
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0022_alter_date_evenement_string"),
+        ("core", "0023_alter_date_evenement_string"),
     ]
 
     operations = [

@@ -6,7 +6,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0021_add_started_before_huwart_law"),
+        ("core", "0022_alter_communeprocedure_procedure"),
     ]
 
     operations = [
