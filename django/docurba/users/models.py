@@ -15,6 +15,9 @@ class User(models.Model):
 
     id = models.UUIDField(primary_key=True)
     email = models.EmailField(verbose_name="Email", blank=True)
+    last_sign_in_at = models.DateTimeField(
+        verbose_name="Date de dernière connexion", db_default=Now(), editable=False
+    )
 
     class Meta:
         # Table created by a pre_migrate signal in apps.py.
