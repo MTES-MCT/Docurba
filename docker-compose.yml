@@ -12,6 +12,7 @@ services:
     image: supabase/postgres:15.1.1.13
     restart: unless-stopped
     volumes:
+      - ./docker/test_db/supabase_seeds/sessions.sql:/docker-entrypoint-initdb.d/init-scripts/96-sessions.sql:Z
       - ./docker/test_db/supabase_seeds/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:Z
       - ./docker/test_db/supabase_seeds/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:Z
       # Changes required for internal supabase data such as _analytics
