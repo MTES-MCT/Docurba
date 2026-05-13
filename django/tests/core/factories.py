@@ -178,7 +178,7 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
         if not create or not extracted:
             return
 
-        event_type = "Prescription"
+        event_type = extra.pop("type") or "Prescription"
         if extra.get("category"):
             event_type = EVENT_TYPE_BY_EVENT_CATEGORY[self.doc_type][
                 extra.pop("category")
