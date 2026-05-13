@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "docurba.core",
     "docurba.surveys",
     "docurba.users",
+    "docurba.internal_api",
 ]
 
 MIDDLEWARE = [

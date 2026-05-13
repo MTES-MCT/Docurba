@@ -19,7 +19,7 @@ urlpatterns = [
     path("api/perimetres", core_views.api_perimetres, name="api_perimetres"),
     path("api/communes", core_views.api_communes, name="api_communes"),
     path("api/scots", core_views.api_scots, name="api_scots"),
-    path("api-internes/", include("internal_api.urls")),
+    path("api-internes/", include("docurba.internal_api.urls")),
     # URLs Nuxt globales
     path("", nuxt_proxy, {"path": ""}),
     re_path(r"(?P<path>^_content.*)", nuxt_proxy),
