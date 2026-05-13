@@ -361,6 +361,7 @@ class Procedure(models.Model):
         to_field="code_insee_unique",
     )
     created_at = models.DateTimeField(db_default=TransactionNow(), null=True)
+    last_updated_at = models.DateTimeField(db_default=TransactionNow(), null=True)
     doublon_cache_de = models.OneToOneField(
         "self", on_delete=models.DO_NOTHING, blank=True, null=True, unique=True
     )

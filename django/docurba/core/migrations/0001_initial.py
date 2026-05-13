@@ -25,11 +25,15 @@ class Migration(migrations.Migration):
         migrations.SeparateDatabaseAndState(
             database_operations=[
                 migrations.RunSQL(
+                    sql=read_sql_from_file("create_table_procedures.sql"),
+                    reverse_sql=read_sql_from_file("drop_table_procedures.sql"),
+                ),
+                migrations.RunSQL(
                     sql=read_sql_from_file("create_table_procedures_perimetres.sql"),
                     reverse_sql=read_sql_from_file(
                         "drop_table_procedures_perimetres.sql"
                     ),
-                )
+                ),
             ],
             state_operations=[
                 migrations.CreateModel(
@@ -107,6 +111,12 @@ class Migration(migrations.Migration):
                 ("numero", models.CharField(blank=True, null=True)),
                 (
                     "created_at",
+                    models.DateTimeField(
+                        db_default=django.db.models.functions.datetime.Now()
+                    ),
+                ),
+                (
+                    "last_updated_at",
                     models.DateTimeField(
                         db_default=django.db.models.functions.datetime.Now()
                     ),

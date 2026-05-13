@@ -16,34 +16,35 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 -- Name: procedures; Type: TABLE; Schema: public; Owner: -
 --
 
+-- Commented column are added by Django migrations and handled on Django models.
 CREATE TABLE public.procedures (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     project_id uuid,
-    type text,
-    commentaire text,
-    created_at timestamp with time zone DEFAULT now(),
-    last_updated_at timestamp with time zone DEFAULT now(),
-    from_sudocuh integer,
-    collectivite_porteuse_id text,
-    is_principale boolean,
-    status text,
-    secondary_procedure_of uuid,
-    doc_type text,
+    -- type text,
+    -- commentaire text,
+    -- created_at timestamp with time zone DEFAULT now(),
+    -- last_updated_at timestamp with time zone DEFAULT now(),
+    -- from_sudocuh integer,
+    -- collectivite_porteuse_id text,
+    -- is_principale boolean,
+    -- status text,
+    -- secondary_procedure_of uuid,
+    -- doc_type text,
     is_sectoriel boolean,
-    is_scot boolean,
-    is_pluih boolean,
-    is_pdu boolean,
-    mandatory_pdu boolean,
+    -- is_scot boolean,
+    -- is_pluih boolean,
+    -- is_pdu boolean,
+    -- mandatory_pdu boolean,
     moe jsonb,
     volet_qualitatif jsonb,
     sudocu_secondary_procedure_of integer,
     departements text[],
-    current_perimetre jsonb,
-    initial_perimetre jsonb,
-    name text,
+    -- current_perimetre jsonb,
+    -- initial_perimetre jsonb,
+    -- name text,
     is_sudocuh_scot boolean,
     testing boolean,
-    numero text,
+    -- numero text,
     owner_id uuid,
     previous_opposable_procedures_ids uuid,
     test boolean DEFAULT false,
@@ -51,10 +52,10 @@ CREATE TABLE public.procedures (
     doc_type_code text,
     comment_dgd text,
     shareable boolean DEFAULT false,
-    doublon_cache_de_id uuid,
-    soft_delete boolean DEFAULT false NOT NULL,
-    archived boolean GENERATED ALWAYS AS (((doublon_cache_de_id IS NOT NULL) OR soft_delete)) STORED,
-    comment_from_sudocuh text DEFAULT ''::text NOT NULL
+    -- soft_delete boolean DEFAULT false NOT NULL,
+    -- archived boolean GENERATED ALWAYS AS (((doublon_cache_de_id IS NOT NULL) OR soft_delete)) STORED,
+    -- comment_from_sudocuh text DEFAULT ''::text NOT NULL,
+    doublon_cache_de_id uuid
 );
 
 --
@@ -492,38 +493,6 @@ $_$;
 CREATE FUNCTION public.one_shot_events() RETURNS void
     LANGUAGE plpgsql
     AS $$ DECLARE procedure procedures; start_time timestamp := clock_timestamp(); end_time timestamp; execution_time interval; i INT := 0; BEGIN RAISE LOG 'Processing One shot events'; UPDATE procedures SET status = null; FOR procedure IN SELECT * FROM procedures WHERE is_principale IS TRUE LOOP i := i + 1; RAISE LOG 'Processing procedure events N: %', i; PERFORM set_procedure_status(procedure); END LOOP; end_time := clock_timestamp(); execution_time := end_time - start_time; RAISE LOG 'FUNCTION ONE SHOT execution time: %', execution_time; END; $$;
-
-
---
--- Name: procedures_by_insee_codes(json); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.procedures_by_insee_codes(codes json) RETURNS SETOF record
-    LANGUAGE sql
-    AS $$
-SELECT *
-FROM procedures
-WHERE EXISTS (
-  SELECT id, status, doc_type, current_perimetre, is_pluih
-  FROM jsonb_array_elements(current_perimetre) obj
-  WHERE ((obj->>'inseeCode')::text IN (
-    SELECT jsonb_array_elements_text(codes::jsonb)
-  )) and (status in ('opposable', 'en cours')) and (is_principale = true)
-);
-$$;
-
-
---
--- Name: procedures_by_sudocuh_ids(json); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.procedures_by_sudocuh_ids(sudocuh_ids json) RETURNS SETOF record
-    LANGUAGE sql
-    AS $$
-SELECT id, from_sudocuh, initial_perimetre, current_perimetre, status
-FROM procedures
-WHERE from_sudocuh::text IN (SELECT value FROM jsonb_array_elements_text(sudocuh_ids::jsonb));
-$$;
 
 --
 -- Name: COLUMN pac_sections_dept.ordre; Type: COMMENT; Schema: public; Owner: -
@@ -1003,16 +972,6 @@ ALTER TABLE ONLY public.prescriptions
 ALTER TABLE ONLY public.procedures
     ADD CONSTRAINT procedures_doublon_cache_de_id_key UNIQUE (doublon_cache_de_id);
 
-
---
--- Name: procedures procedures_from_sudocuh_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.procedures
-    ADD CONSTRAINT procedures_from_sudocuh_key UNIQUE (from_sudocuh);
-
-
-
 --
 -- Name: procedures procedures_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
@@ -1143,55 +1102,6 @@ CREATE INDEX idx_doc_frise_events_procedure_id_date_iso ON public.doc_frise_even
 
 
 --
--- Name: idx_procedures_collectivite_porteuse_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_procedures_collectivite_porteuse_id ON public.procedures USING btree (collectivite_porteuse_id);
-
-
---
--- Name: idx_procedures_created_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_procedures_created_at ON public.procedures USING btree (created_at);
-
-
---
--- Name: idx_procedures_doc_type; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_procedures_doc_type ON public.procedures USING btree (doc_type);
-
-
---
--- Name: idx_procedures_is_principale; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_procedures_is_principale ON public.procedures USING btree (id, is_principale, archived);
-
-
---
--- Name: idx_procedures_is_principale_created_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_procedures_is_principale_created_at ON public.procedures USING btree (is_principale, created_at);
-
-
---
--- Name: idx_procedures_is_principale_doc_type_created_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_procedures_is_principale_doc_type_created_at ON public.procedures USING btree (is_principale, doc_type, created_at);
-
-
---
--- Name: idx_procedures_secondary_procedure_of; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_procedures_secondary_procedure_of ON public.procedures USING btree (secondary_procedure_of);
-
-
---
 -- Name: idx_project_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1210,14 +1120,6 @@ CREATE UNIQUE INDEX pac_sections_data_unique_path_ref_url ON public.pac_sections
 --
 
 CREATE INDEX procedure_id_idx ON public.analytics_events USING btree (procedure_id);
-
-
---
--- Name: procedures_pkey_secondary_null_not_archived; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX procedures_pkey_secondary_null_not_archived ON public.procedures USING btree (id) WHERE ((secondary_procedure_of IS NULL) AND (NOT archived));
-
 
 
 
@@ -1298,14 +1200,6 @@ ALTER TABLE ONLY public.procedures
 
 ALTER TABLE ONLY public.procedures
     ADD CONSTRAINT procedures_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id) ON DELETE CASCADE;
-
-
---
--- Name: procedures procedures_secondary_procedure_of_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.procedures
-    ADD CONSTRAINT procedures_secondary_procedure_of_fkey FOREIGN KEY (secondary_procedure_of) REFERENCES public.procedures(id);
 
 
 --
@@ -1936,25 +1830,6 @@ GRANT ALL ON FUNCTION public.jb_to_ta(jsonb) TO service_role;
 GRANT ALL ON FUNCTION public.one_shot_events() TO anon;
 GRANT ALL ON FUNCTION public.one_shot_events() TO authenticated;
 GRANT ALL ON FUNCTION public.one_shot_events() TO service_role;
-
-
---
--- Name: FUNCTION procedures_by_insee_codes(codes json); Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON FUNCTION public.procedures_by_insee_codes(codes json) TO anon;
-GRANT ALL ON FUNCTION public.procedures_by_insee_codes(codes json) TO authenticated;
-GRANT ALL ON FUNCTION public.procedures_by_insee_codes(codes json) TO service_role;
-
-
---
--- Name: FUNCTION procedures_by_sudocuh_ids(sudocuh_ids json); Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON FUNCTION public.procedures_by_sudocuh_ids(sudocuh_ids json) TO anon;
-GRANT ALL ON FUNCTION public.procedures_by_sudocuh_ids(sudocuh_ids json) TO authenticated;
-GRANT ALL ON FUNCTION public.procedures_by_sudocuh_ids(sudocuh_ids json) TO service_role;
-
 
 
 --
