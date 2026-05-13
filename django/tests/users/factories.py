@@ -1,7 +1,7 @@
 import factory.fuzzy
 
 from docurba.users.enums import PosteType
-from docurba.users.models import Profile, User
+from docurba.users.models import Profile, Session, User
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -10,6 +10,14 @@ class UserFactory(factory.django.DjangoModelFactory):
 
     id = factory.Faker("uuid4")
     email = factory.Faker("email")
+
+
+class SessionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Session
+
+    id = factory.Faker("uuid4")
+    user = factory.SubFactory(UserFactory)
 
 
 class ProfileFactory(factory.django.DjangoModelFactory):
