@@ -1,7 +1,7 @@
 {
   "name": "Nuxt review apps",
   "env": {
-    "NUXT_URL": {
+    "APP_URL": {
       "description": "URL of the application",
       "generator": "url"
     }
