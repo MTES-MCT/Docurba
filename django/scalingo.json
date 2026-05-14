@@ -1,6 +1,6 @@
 {
     "env": {
-        "APP_URL": {
+        "DOCURBA_API_URL": {
             "description": "URL of the application",
             "generator": "url"
         },

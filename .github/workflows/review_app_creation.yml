@@ -132,14 +132,14 @@ jobs:
       run: |
         # Déploiement manuel.
         scalingo --app "${NUXT_2_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}"  &> /dev/null
-        # Récupération de NUXT_URL pour Django.
+        # Récupération de APP_URL pour Django.
         until scalingo apps | grep "${NUXT_2_REVIEW_APP_NAME}" | grep --quiet 'running' &> /dev/null
         do
           echo "En attente de l'application Nuxt."
           sleep 10s
         done
-        nuxt_url=$(scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-get NUXT_URL)
-        echo "NUXT_URL=${nuxt_url}" >> $GITHUB_ENV
+        nuxt_url=$(scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-get APP_URL)
+        echo "APP_URL=${nuxt_url}" >> $GITHUB_ENV
 
     - name: 🛠️ Installation de Python
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -155,7 +155,7 @@ jobs:
         echo "::add-mask::${django_secret_key}";
         scalingo --app ${SCALINGO_DJANGO_APP_NAME} integration-link-manual-review-app ${{ github.event.number }}
         scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-set \
-         ALLOWED_HOSTS="${NUXT_URL}" \
+         CORS_ALLOWED_ORIGINS="${APP_URL}" \
          DATABASE_URL="${DATABASE_URL}" \
          NUXT3_API_URL="${NUXT3_URL}" \
          SECRET_KEY="${django_secret_key}"
@@ -169,23 +169,23 @@ jobs:
           echo "En attente de l'application Django pendant 10 secondes."
           sleep 10s
         done
-        django_url=$(scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-get APP_URL)
+        django_url=$(scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-get DOCURBA_API_URL)
         echo "DJANGO_URL=${django_url}" >> $GITHUB_ENV
 
     - name: 🤹‍♀️ Intégration de l'URL de Django dans Nuxt2
-      run: scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-set APP_URL="${DJANGO_URL}"
+      run: scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-set DOCURBA_API_URL="${DJANGO_URL}"
 
     # APP_URL : Supabase est le SSO de Nuxt2. APP_URL est l'URL de redirection après la connexion par lien magique.
     # Configurée dans supabase/config.toml et dans l'interface : Supabase > Authorization > URL configuration.
     - name: 🤹‍♀️ Mise à jour de la configuration de Supabase
       continue-on-error: true
-      run: APP_URL="${DJANGO_URL}" supabase --project-ref "${SUPABASE_BRANCH_ID}" --yes config push
+      run: APP_URL="${APP_URL}" supabase --project-ref "${SUPABASE_BRANCH_ID}" --yes config push
 
     - name: 🍻 Ajout du lien en commentaire de la PR
       uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
       with:
         message: |-
-          🥁 La recette jetable est prête ! [👉 Je veux tester cette PR !](${{ env.DJANGO_URL }})
+          🥁 La recette jetable est prête ! [👉 Je veux tester cette PR !](${{ env.APP_URL }})
           Lien vers Nuxt3 pour modifier le déclencheur : [${{ env.NUXT3_URL }}](${{ env.NUXT3_URL }}).
           Attention, les données ne sont pas encore importées. Revenez quand l'action GitHub sera terminée.
 
