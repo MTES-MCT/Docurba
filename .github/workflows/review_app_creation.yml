@@ -155,7 +155,7 @@ jobs:
         echo "::add-mask::${django_secret_key}";
         scalingo --app ${SCALINGO_DJANGO_APP_NAME} integration-link-manual-review-app ${{ github.event.number }}
         scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-set \
-         UPSTREAM_NUXT="${NUXT_URL}" \
+         ALLOWED_HOSTS="${NUXT_URL}" \
          DATABASE_URL="${DATABASE_URL}" \
          NUXT3_API_URL="${NUXT3_URL}" \
          SECRET_KEY="${django_secret_key}"

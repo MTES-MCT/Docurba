@@ -29,7 +29,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "revproxy.apps.RevProxyConfig",
     "docurba.core",
     "docurba.surveys",
     "docurba.users",
@@ -179,5 +178,4 @@ sentry_sdk.init(
 ############ Docurba settings ############
 ##########################################
 
-UPSTREAM_NUXT = env.str("UPSTREAM_NUXT", default="http://localhost:3000")
 CREATE_UNMANAGED_TABLES = False

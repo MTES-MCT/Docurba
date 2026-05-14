@@ -234,18 +234,6 @@ wheels = [
 ]
 
 [[package]]
-name = "django-revproxy"
-version = "0.13.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-    { name = "urllib3" },
-]
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/1c/76/7781f0b011521b4f6eab515a21bf021ff78db52de4075cc61f1a0bcc70a6/django_revproxy-0.13.0-py3-none-any.whl", hash = "sha256:6130d52d5042624c918134369be0a825e9f7e87d15e12b739d6666e5ed1f32ef", size = 19476, upload-time = "2024-11-06T07:05:11.551Z" },
-]
-
-[[package]]
 name = "djangorestframework"
 version = "3.16.1"
 source = { registry = "https://pypi.org/simple" }
@@ -265,7 +253,6 @@ dependencies = [
     { name = "django" },
     { name = "django-datadog-logger" },
     { name = "django-environ" },
-    { name = "django-revproxy" },
     { name = "djangorestframework" },
     { name = "gunicorn", extra = ["gevent"] },
     { name = "psycopg", extra = ["binary", "pool"] },
@@ -292,7 +279,6 @@ requires-dist = [
     { name = "django" },
     { name = "django-datadog-logger" },
     { name = "django-environ" },
-    { name = "django-revproxy" },
     { name = "djangorestframework", specifier = ">=3.16.1" },
     { name = "gunicorn", extras = ["gevent"] },
     { name = "psycopg", extras = ["binary", "pool"] },
