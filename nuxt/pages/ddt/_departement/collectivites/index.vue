@@ -653,7 +653,7 @@ export default {
       })
 
       this.exportingCommunes = true
-      const { data } = await axios(`/api/communes?departement=${departementCode}`)
+      const { data } = await axios(`${process.env.DOCURBA_API_URL}/api/communes?departement=${departementCode}`)
 
       const a = document.createElement('a')
       const blob = new Blob([data], { type: 'text/csv' })
@@ -673,7 +673,7 @@ export default {
       })
 
       this.exportingSCoTs = true
-      const { data } = await axios(`/api/scots?departement=${departementCode}`)
+      const { data } = await axios(`${process.env.DOCURBA_API_URL}/api/scots?departement=${departementCode}`)
 
       const a = document.createElement('a')
       const blob = new Blob([data], { type: 'text/csv' })
