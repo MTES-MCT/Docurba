@@ -9,6 +9,7 @@ export default {
     NUXT3_API_URL: process.env.NUXT3_API_URL,
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+    DOCURBA_API_URL: process.env.DOCURBA_API_URL,
   },
   head: {
     titleTemplate: '%s - Docurba',
