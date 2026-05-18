@@ -312,6 +312,9 @@ export default {
         // eslint-disable-next-line no-console
         console.log('error getProcedures', error)
       }
+      if (procedures.length === 0) {
+        return []
+      }
 
       const collectiviteCodes = new Set(procedures.flatMap(p => [
         p.collectivite_porteuse_id,
@@ -334,7 +337,7 @@ export default {
           } else { return c.code === p.collectivite_porteuse_id }
         })
 
-        if (comd) {
+        if (collectivite && comd) {
           collectivite.intitule += ' COMD'
         }
 
@@ -346,7 +349,9 @@ export default {
       })
 
       if (this.collectivite.type !== 'COM') {
-        return enrichedProcedures.filter(e => e.current_perimetre.length > 1)
+        return enrichedProcedures.filter(e =>
+          e.current_perimetre && e.current_perimetre.length > 1
+        )
       } else {
         return enrichedProcedures
       }
