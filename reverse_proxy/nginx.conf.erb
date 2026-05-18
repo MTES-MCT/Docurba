@@ -1,0 +1,19 @@
+location /_admin {
+  proxy_pass <%= ENV["DJANGO_URL"] %>;
+}
+location /api/perimetres {
+  proxy_pass <%= ENV["DJANGO_URL"] %>;
+}
+location /api/communes {
+  proxy_pass <%= ENV["DJANGO_URL"] %>;
+}
+location /api/scots {
+  proxy_pass <%= ENV["DJANGO_URL"] %>;
+}
+location /api-internes {
+  proxy_pass <%= ENV["DJANGO_URL"] %>;
+}
+
+location / {
+  proxy_pass <%= ENV["NUXT_URL"] %>;
+}
