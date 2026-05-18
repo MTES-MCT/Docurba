@@ -12,7 +12,7 @@ dependencies = [
     "sentry-sdk[django]",
     "whitenoise[brotli]",
     "django-datadog-logger", # https://github.com/namespace-ee/django-datadog-logger
-    "djangorestframework>=3.16.1",
+    "djangorestframework>=3.17.1",
 ]
 
 # Scalingo command: `uv sync --locked --no-default-groups`
