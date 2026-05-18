@@ -17,6 +17,7 @@ env:
   PR_ID: ${{ github.event.number }}
   SCALINGO_DJANGO_APP_NAME: docurba-django-demo
   SCALINGO_NUXT_APP_NAME: docurba-nuxt-demo
+  SCALINGO_REVPROXY_APP_NAME: docurba-revproxy-demo
   NUXT3_REPO_HTTPS: https://github.com/betagouv/docurba-nuxt3/
   NUXT3_BRANCH: main
 
@@ -42,6 +43,8 @@ jobs:
         echo "NUXT_3_REVIEW_APP_NAME=docurba-nuxt3-pr${PR_ID}" >> $GITHUB_ENV
         echo "NUXT_2_REVIEW_APP_NAME=${SCALINGO_NUXT_APP_NAME}-pr${PR_ID}" >> $GITHUB_ENV
         echo "DJANGO_REVIEW_APP_NAME=${SCALINGO_DJANGO_APP_NAME}-pr${PR_ID}" >> $GITHUB_ENV
+        echo "REVPROXY_REVIEW_APP_NAME=${SCALINGO_REVPROXY_APP_NAME}-pr${PR_ID}" >> $GITHUB_ENV
+        echo "REVPROXY_URL=https://${SCALINGO_REVPROXY_APP_NAME}-pr${PR_ID}.osc-fr1.scalingo.io" >> $GITHUB_ENV
 
     # La version est figée car la dernière version casse lors de l'envoi de la configuration.
     # L'erreur est cryptique.
@@ -171,6 +174,23 @@ jobs:
         django_url=$(scalingo --app "${DJANGO_REVIEW_APP_NAME}" env-get APP_URL)
         echo "DJANGO_URL=${django_url}" >> $GITHUB_ENV
 
+    - name: 🪆 Création de la recette jetable Nginx
+      run: |
+        scalingo --app ${SCALINGO_REVPROXY_APP_NAME} integration-link-manual-review-app ${{ github.event.number }}
+        scalingo --app "${REVPROXY_REVIEW_APP_NAME}" env-set \
+         DJANGO_URL="${DJANGO_URL}" \
+         NUXT_URL="${NUXT_URL}"
+        scalingo --app "${REVPROXY_REVIEW_APP_NAME}" integration-link-update --auto-deploy --branch "${BRANCH}" --destroy-on-close
+
+    - name: 🪆 Déploiement de la recette jetable Nginx
+      run: |
+        scalingo --app "${REVPROXY_REVIEW_APP_NAME}" integration-link-manual-deploy "${BRANCH}" &> /dev/null
+        until scalingo apps | grep "${REVPROXY_REVIEW_APP_NAME}" | grep --quiet 'running' &> /dev/null
+        do
+          echo "En attente de l'application Django pendant 10 secondes."
+          sleep 10s
+        done
+
     - name: 🤹‍♀️ Intégration de l'URL de Django dans Nuxt2
       run: scalingo --app "${NUXT_2_REVIEW_APP_NAME}" env-set APP_URL="${DJANGO_URL}"
 
@@ -178,13 +198,13 @@ jobs:
     # Configurée dans supabase/config.toml et dans l'interface : Supabase > Authorization > URL configuration.
     - name: 🤹‍♀️ Mise à jour de la configuration de Supabase
       continue-on-error: true
-      run: APP_URL="${DJANGO_URL}" supabase --project-ref "${SUPABASE_BRANCH_ID}" --yes config push
+      run: APP_URL="${REVPROXY_URL}" supabase --project-ref "${SUPABASE_BRANCH_ID}" --yes config push
 
     - name: 🍻 Ajout du lien en commentaire de la PR
       uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
       with:
         message: |-
-          🥁 La recette jetable est prête ! [👉 Je veux tester cette PR !](${{ env.DJANGO_URL }})
+          🥁 La recette jetable est prête ! [👉 Je veux tester cette PR !](${{ env.REVPROXY_URL }})
           Lien vers Nuxt3 pour modifier le déclencheur : [${{ env.NUXT3_URL }}](${{ env.NUXT3_URL }}).
           Attention, les données ne sont pas encore importées. Revenez quand l'action GitHub sera terminée.
 
