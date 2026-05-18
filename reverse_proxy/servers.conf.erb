@@ -1,0 +1,50 @@
+# See https://doc.scalingo.com/platform/deployment/buildpacks/nginx
+# & https://doc.scalingo.com/platform/app/static-files-hosting#using-nginx-as-web-server
+
+# limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
+
+server {
+    server_name localhost;
+    listen <%= ENV['PORT'] %>;
+
+    charset utf-8;
+
+    # location /_admin {
+    #   proxy_pass <%= ENV["DJANGO_URL"] %>;
+    # }
+    # location /api/perimetres {
+    #   proxy_pass <%= ENV["DJANGO_URL"] %>;
+    # }
+    # location /api/communes {
+    #   proxy_pass <%= ENV["DJANGO_URL"] %>;
+    # }
+    # location /api/scots {
+    #   proxy_pass <%= ENV["DJANGO_URL"] %>;
+    # }
+    # location /api-internes {
+    #   proxy_pass <%= ENV["DJANGO_URL"] %>;
+    # }
+    # location /static {
+    #   proxy_pass <%= ENV["DJANGO_URL"] %>;
+    # }
+
+    # location / {
+    #   proxy_pass <%= ENV["NUXT_URL"] %>;
+    # }
+
+    location ~ (/api-internes|/api/communes|/api/scots|/api/perimetres|/_admin|/static) {
+      proxy_pass <%= ENV["DJANGO_URL"] %>;
+      # proxy_set_header Host $host;
+      # proxy_set_header X-Real-IP $remote_addr;
+      # proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      # proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+      proxy_pass <%= ENV["NUXT_URL"] %>;
+      # proxy_set_header Host $host;
+      # proxy_set_header X-Real-IP $remote_addr;
+      # proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      # proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
