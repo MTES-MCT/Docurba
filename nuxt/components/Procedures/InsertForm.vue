@@ -203,7 +203,7 @@ export default {
     return {
       loaded: false,
       loadingSave: false,
-      startedBeforeHuwartLaw: false,
+      startedBeforeHuwartLaw: new Date() < new Date('2026-05-26'),
       typeProcedure: '',
       procedureParent: null,
       proceduresParents: null,
