@@ -6,44 +6,95 @@ name: 🔪 Suppression d'une recette jetable
 # https://doc.scalingo.com/platform/app/review-apps
 on:
   pull_request:
-    types: [ closed ]
-  # https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow
-  workflow_dispatch:
-
-env:
-  SUPABASE_ACCESS_TOKEN: ${{ secrets.TEST_SUPABASE_ACCESS_TOKEN }}
-  SUPABASE_PROJECT_ID: ${{ secrets.TEST_SUPABASE_PROJECT_ID }}
-  BRANCH: ${{ github.head_ref }}
-  PR_ID: ${{ github.event.number }}
+    types: [ closed, unlabeled ]
 
 jobs:
-  delete:
+  prepare:
     runs-on: ubuntu-latest
-    if: contains( github.event.pull_request.labels.*.name, 'recette-jetable')
+    if: |
+      (github.event.action == 'unlabeled' && github.event.label.name == 'recette-jetable') ||
+      (github.event.action == 'closed')
+    outputs:
+      app_matrix: ${{ steps.config.outputs.apps }}
+      SUPABASE_REVIEW_APP_NAME: ${{ steps.config.outputs.SUPABASE_REVIEW_APP_NAME }}
+      NUXT_3_REVIEW_APP_NAME: ${{ steps.config.outputs.NUXT_3_REVIEW_APP_NAME }}
 
     steps:
-    - name: 🏷️ Définition des noms de la recette jetable
-      run: |
-        # Le nom est déterminé automatiquement par Scalingo pour les applications Nuxt2 et Django
-        # car ce sont des recettes jetables.
-        # Suivons le même modèle pour Supabase et Nuxt3.
-        echo "SUPABASE_REVIEW_APP_NAME=supabase-pr${PR_ID}" >> $GITHUB_ENV
-        echo "NUXT_3_REVIEW_APP_NAME=docurba-nuxt3-pr${PR_ID}" >> $GITHUB_ENV
+      - name: Get configuration
+        id: config
+        run: |
+          PR_ID=${{ github.event.number }}
 
+          NUXT_2_REVIEW_APP_NAME=docurba-nuxt-demo-pr${PR_ID}
+          DJANGO_REVIEW_APP_NAME=docurba-django-demo-pr${PR_ID}
+
+          echo "NUXT_3_REVIEW_APP_NAME=docurba-nuxt3-pr${PR_ID}" >> $GITHUB_OUTPUT
+          echo "SUPABASE_REVIEW_APP_NAME=supabase-pr${PR_ID}" >> $GITHUB_OUTPUT
+
+          # APP MATRIX
+          echo "[]" \
+          | jq  '. + [{name:$name}]' --arg name "${NUXT_2_REVIEW_APP_NAME}" \
+          | jq  '. + [{name:$name}]' --arg name "${DJANGO_REVIEW_APP_NAME}" > apps.json
+
+          echo "App matrix"
+          cat apps.json
+          echo "apps=$(jq -c < apps.json)" >> $GITHUB_OUTPUT
+
+  stop_scalingo:
+    needs: prepare
+    runs-on: ubuntu-latest
+    if: github.event.action == 'unlabeled'
+    strategy:
+      matrix:
+        app: ${{ fromJSON(needs.prepare.outputs.app_matrix) }}
+
+    steps:
     - name: 🛠️ Installation de la CLI de Scalingo
       uses: scalingo-community/setup-scalingo@87fe86eedc708ffb9d232c756b21f6a5784f6c8a # v0.1.1
       with:
         api_token: ${{ secrets.SCALINGO_API_TOKEN }}
         region: 'osc-fr1'
 
-    - name: 🚮 Suppression de l'application Nuxt3
-      run: scalingo destroy --app "${NUXT_3_REVIEW_APP_NAME}" --force
+    - name: 🚮 Arrêt de l'application
+      run: |
+        if scalingo apps-info --app ${{matrix.app.name}}
+        then
+          echo "Arrêt de l'environnement ${{matrix.app.name}}"
+          scalingo --app "${{matrix.app.name}}" scale web:0
+        fi
 
 
+  delete_nuxt3:
+    needs: prepare
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🛠️ Installation de la CLI de Scalingo
+      uses: scalingo-community/setup-scalingo@87fe86eedc708ffb9d232c756b21f6a5784f6c8a # v0.1.1
+      with:
+        api_token: ${{ secrets.SCALINGO_API_TOKEN }}
+        region: 'osc-fr1'
+
+    - name: 🚮 Suppression de l'application
+      run: |
+        if scalingo apps-info --app ${{ needs.prepare.outputs.NUXT_3_REVIEW_APP_NAME }}
+        then
+          echo "Suppression de l'environnement ${{ needs.prepare.outputs.NUXT_3_REVIEW_APP_NAME }}"
+          scalingo destroy --app "${{ needs.prepare.outputs.NUXT_3_REVIEW_APP_NAME }}" --force
+        fi
+
+  delete_supabase:
+    needs: prepare
+    runs-on: ubuntu-latest
+
+    steps:
     - name: 🛠️ Installation de la CLI de Supabase
       uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
       with:
         version: latest
 
     - name: 🚮 Suppression de la branche Supabase
-      run: supabase branches --project-ref "${SUPABASE_PROJECT_ID}" delete "${SUPABASE_REVIEW_APP_NAME}"
+      env:
+        SUPABASE_ACCESS_TOKEN: ${{ secrets.TEST_SUPABASE_ACCESS_TOKEN }}
+        SUPABASE_PROJECT_ID: ${{ secrets.TEST_SUPABASE_PROJECT_ID }}
+      run: supabase branches delete "${{ needs.prepare.outputs.SUPABASE_REVIEW_APP_NAME }}"
