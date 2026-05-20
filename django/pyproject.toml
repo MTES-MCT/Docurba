@@ -23,6 +23,7 @@ dev = [
     "django-browser-reload",
     "django-debug-toolbar",
     "django-extensions",
+    "django-cors-headers",
     "ptpython",
     "pytest-cov",
     "pytest>=9.0.3",
