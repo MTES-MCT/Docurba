@@ -124,7 +124,10 @@ class ProcedureAdmin(admin.ModelAdmin):
         "started_before_huwart_law",
         "archived",
     )
-    autocomplete_fields = ("collectivite_porteuse",)
+    autocomplete_fields = (
+        "collectivite_porteuse",
+        "owner",
+    )
     list_filter = (
         ("parente", admin.EmptyFieldListFilter),
         ("name", admin.EmptyFieldListFilter),

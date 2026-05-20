@@ -143,6 +143,16 @@ class Migration(migrations.Migration):
                         output_field=models.BooleanField(),
                     ),
                 ),
+                (
+                    "owner",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.DO_NOTHING,
+                        to="users.Profile",
+                        verbose_name="propriétaire",
+                        related_name="procedures",
+                    ),
+                ),
             ],
             options={
                 "db_table": "procedures",

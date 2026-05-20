@@ -383,6 +383,13 @@ class Procedure(models.Model):
     started_before_huwart_law = models.BooleanField(
         db_default=False, verbose_name="lancée avant la loi Huwart"
     )
+    owner = models.ForeignKey(
+        "users.Profile",
+        models.DO_NOTHING,
+        null=True,
+        verbose_name="propriétaire",
+        related_name="procedures",
+    )
 
     # Denormalized information used only by Nuxt. See self.statut for the Django logic.
     status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001
