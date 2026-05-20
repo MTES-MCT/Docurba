@@ -164,7 +164,7 @@
         <p class="text-h6">
           Pas de procédure principale
         </p>
-        Aucune procédure principale n’a été trouvée pour la collectivité. Une procédure secondaire doit être attachée à une procédure principale.
+        Aucune procédure principale opposable n’a été trouvée pour la collectivité. Une procédure secondaire doit être attachée à une procédure principale opposable.
       </v-col>
     </v-row>
   </v-container>
