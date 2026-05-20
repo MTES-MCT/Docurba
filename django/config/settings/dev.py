@@ -10,8 +10,10 @@ INSTALLED_APPS.extend(
         "django_browser_reload",
         "django_extensions",
         "debug_toolbar",
+        "corsheaders",
     ]
 )
+
 
 # https://whitenoise.readthedocs.io/en/stable/django.html
 INSTALLED_APPS.insert(
@@ -24,6 +26,11 @@ MIDDLEWARE += [
     "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
+MIDDLEWARE.insert(
+    MIDDLEWARE.index("django.middleware.security.SecurityMiddleware") + 1,
+    "corsheaders.middleware.CorsMiddleware",
+)
+
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "django.template.context_processors.debug"
 )
@@ -33,3 +40,5 @@ del LOGGING["handlers"]["console"]["formatter"]
 
 SESSION_COOKIE_SECURE = False
 SECURE_SSL_REDIRECT = False
+
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
