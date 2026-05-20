@@ -71,6 +71,15 @@ class Migration(migrations.Migration):
                     models.CharField(db_column="date_iso", null=True),
                 ),
                 ("is_valid", models.BooleanField(db_default=True)),
+                (
+                    "profile",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.DO_NOTHING,
+                        to="users.Profile",
+                        verbose_name="profil",
+                    ),
+                ),
             ],
             options={
                 "db_table": "doc_frise_events",
