@@ -69,27 +69,31 @@ export default {
       }
       return currDocType
     },
+    internalProcedureType () {
+      switch (this.procedure.type) {
+        case 'Elaboration':
+        case 'Révision':
+          return this.procedure.current_perimetre.length > 1 && this.internalDocType !== 'CC' ? 'ppi' : 'pp'
+        case 'Mise à jour':
+          return 'mj'
+        case 'Mise en compatibilité':
+          return 'mc'
+        case 'Modification':
+          return this.procedure.started_before_huwart_law ? 'm' : 'mlh'
+        case 'Modification simplifiée':
+          return 'ms'
+        case 'Révision allégée (ou RMS)':
+        case 'Révision à modalité simplifiée ou Révision allégée':
+          return 'rms'
+        default:
+          return 'aucun'
+      }
+    },
     filteredEvents () {
-      console.log('this.procedure: ', this.procedure)
-      let internalType = 'aucun'
-      const isIntercommunal = this.procedure.current_perimetre.length > 1
-
-      const secondairesTypes = {
-        'Révision à modalité simplifiée ou Révision allégée': 'rms',
-        'Révision allégée (ou RMS)': 'rms',
-        Modification: 'm',
-        'Modification simplifiée': 'ms',
-        'Mise en compatibilité': 'mc',
-        'Mise à jour': 'mj'
-      }
-      if (secondairesTypes[this.procedure.type]) { internalType = secondairesTypes[this.procedure.type] }
-      if (['Elaboration', 'Révision'].includes(this.procedure.type)) {
-        if (isIntercommunal && this.internalDocType !== 'CC') { internalType = 'ppi' } else { internalType = 'pp' }
-      }
-      console.log(' this.documentEvents: ', this.documentEvents, ' internalType: ', internalType, ' this.procedure.type: ', this.procedure.type)
-      return this.documentEvents.filter(e => e.scope_liste.includes(internalType))
+      return this.documentEvents.filter(e => e.scope_liste.includes(this.internalProcedureType))
+        .sort((a, b) => a.order - b.order)
         .map(event => event.name)
-        .sort((a, b) => a.order - b.order).concat(['Autre'])
+        .concat(['Autre'])
     },
     isOther () {
       return this.selectedEvent === 'Autre'

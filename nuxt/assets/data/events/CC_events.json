@@ -1,217 +1,220 @@
 [
   {
     "code": "PRES",
-    "Listées par Docurba": "Délibération de prescription du conseil municipal",
-    "lib EV (sur l'outil Sudocuh)": "Prescription",
-    "Priorisation": "Obligatoire",
+    "condition": null,
+    "impact": "en cours",
+    "law": null,
     "name": "Délibération de prescription du conseil municipal",
+    "name_sudocuh": "Prescription",
     "order": 1,
-    "law": "",
     "phases": "Définition des modalités",
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
     "scope_sugg": [
       "pp",
-      "ms",
+      "ms"
+    ],
+    "structurant": true
+  },
+  {
+    "code": null,
+    "condition": null,
+    "impact": "en cours",
+    "law": null,
+    "name": "Notification au préfet",
+    "name_sudocuh": null,
+    "order": 2,
+    "phases": null,
+    "scope_liste": [
       "mj"
     ],
-    "structurant": true,
-    "impact": "en cours",
-    "Condition": ""
+    "scope_sugg": [
+      "mj"
+    ],
+    "structurant": true
   },
   {
     "code": "DELOMC",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Délibération ou arrêté définissant les objectifs et modalités concertation",
-    "Priorisation": "Obligatoire",
+    "condition": "Obligatoire pour pp facultatif pour les autres sauf si évaluation environnementale",
+    "impact": null,
+    "law": null,
     "name": "Délibération ou arrêté définissant les objectifs et modalités concertation",
-    "order": 2,
-    "law": "",
+    "name_sudocuh": "Délibération ou arrêté définissant les objectifs et modalités concertation",
+    "order": 3,
     "phases": "Définition des modalités",
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": [
+    "scope_sugg": [],
+    "structurant": false
+  },
+  {
+    "code": null,
+    "condition": null,
+    "impact": null,
+    "law": null,
+    "name": "Transmission du courrier d'association et de la lettre d'information régionale",
+    "name_sudocuh": null,
+    "order": 4,
+    "phases": null,
+    "scope_liste": [
       "pp"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": "Obligatoire pour pp facultatif pour les autres sauf si évaluation environnementale"
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "RECRUITBE",
-    "Listées par Docurba": "Recrutement d'un bureau d'études",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Fortement recommandé",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Recrutement d'un bureau d'études",
-    "order": 3,
-    "law": "",
+    "name_sudocuh": null,
+    "order": 5,
     "phases": "Définition des modalités",
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
     "scope_sugg": [
       "pp"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "structurant": false
   },
   {
     "code": "REUPPA",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Réunion des PPA",
-    "Priorisation": "Fortement recommandé",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Réunion des PPA",
-    "order": 4,
-    "law": "",
+    "name_sudocuh": "Réunion des PPA",
+    "order": 6,
     "phases": "Toutes phases",
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "REUGP",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Réunion de concertation grand public",
-    "Priorisation": "Fortement recommandé",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Réunion de concertation grand public",
-    "order": 5,
-    "law": "",
+    "name_sudocuh": "Réunion de concertation grand public",
+    "order": 7,
     "phases": "Toutes phases",
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "CONSDIAG",
-    "Listées par Docurba": "Phase de construction du diagnostic",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Fortement recommandé",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Phase de construction du diagnostic",
-    "order": 6,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 8,
+    "phases": null,
     "scope_liste": [
       "pp"
     ],
     "scope_sugg": [
       "pp"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "structurant": false
   },
   {
     "code": "PAC",
-    "Listées par Docurba": "Transmission du porter-à-connaissance",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Transmission du porter-à-connaissance",
-    "order": "",
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 9,
+    "phases": null,
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": true
   },
   {
     "code": "CHECKPAC",
-    "Listées par Docurba": "Prise en compte du porter à connaissance dans le projet",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Fortement recommandé",
+    "condition": "Lorsqu'il y en a un",
+    "impact": null,
+    "law": null,
     "name": "Prise en compte du porter à connaissance dans le projet",
-    "order": 8,
-    "law": "",
+    "name_sudocuh": null,
+    "order": 10,
     "phases": "Diagnostic",
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": "Lorsqu'il y en a un"
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "NOTENJ",
-    "Listées par Docurba": "Transmission de la note d'enjeux",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Transmission de la note d'enjeux",
-    "order": "",
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 11,
+    "phases": null,
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": true
   },
   {
     "code": "READNOTE",
-    "Listées par Docurba": "Prise en compte de la note d'enjeux",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Fortement recommandé",
+    "condition": "Lorsqu'il y en a une",
+    "impact": null,
+    "law": null,
     "name": "Prise en compte de la note d'enjeux",
-    "order": 9,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 12,
+    "phases": null,
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": "Lorsqu'il y en a une"
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "PACCOMP",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Transmission du porter à connaissance complémentaire",
-    "Priorisation": "Suggéré",
+    "condition": "Lorsqu'il y en a un",
+    "impact": null,
+    "law": null,
     "name": "Transmission du porter à connaissance complémentaire",
-    "order": 11,
-    "law": "",
+    "name_sudocuh": "Transmission du porter à connaissance complémentaire",
+    "order": 13,
     "phases": "Toutes phases",
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": "Lorsqu'il y en a un"
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "DIAGPPA",
-    "Listées par Docurba": "Présentation du diagnostic aux PPA",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Fortement recommandé",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Présentation du diagnostic aux PPA",
-    "order": 12,
-    "law": "",
+    "name_sudocuh": null,
+    "order": 14,
     "phases": "Diagnostic",
     "scope_liste": [
       "pp"
@@ -219,35 +222,31 @@
     "scope_sugg": [
       "pp"
     ],
-    "structurant": true,
-    "impact": "",
-    "Condition": ""
+    "structurant": true
   },
   {
     "code": "STARTEVALENV",
-    "Listées par Docurba": "Lancement de l'évaluation environnementale du projet",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Obligatoire",
+    "condition": "Tout au long du projet Pour PP : obligatoire SI affecte N2000. Obligatoire si soumission par cas par cas ad'hoc",
+    "impact": null,
+    "law": null,
     "name": "Lancement de l'évaluation environnementale du projet",
-    "order": 13,
-    "law": "",
+    "name_sudocuh": null,
+    "order": 15,
     "phases": "EE",
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": "Tout au long du projet\nPour PP : obligatoire SI affecte N2000. Obligatoire si soumission par cas par cas ad'hoc"
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "BUILDRP",
-    "Listées par Docurba": "Phase de construction du rapport de présentation",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Obligatoire",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Phase de construction du rapport de présentation",
-    "order": 14,
-    "law": "",
+    "name_sudocuh": null,
+    "order": 16,
     "phases": "Rapport de présentation",
     "scope_liste": [
       "pp"
@@ -255,18 +254,16 @@
     "scope_sugg": [
       "pp"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "structurant": false
   },
   {
     "code": "BUILDREGLE",
-    "Listées par Docurba": "Phase de construction de(s) réglement(s) graphique(s)",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Obligatoire",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Phase de construction de(s) réglement(s) graphique(s)",
-    "order": 15,
-    "law": "",
+    "name_sudocuh": null,
+    "order": 17,
     "phases": "Règlement",
     "scope_liste": [
       "pp"
@@ -274,253 +271,309 @@
     "scope_sugg": [
       "pp"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "structurant": false
   },
   {
     "code": "CONSENVCPC",
-    "Listées par Docurba": "Consultation de l'autorité environnementale au cas par cas ad'hoc",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Obligatoire SI",
+    "condition": "Pour PP : Obligatoire sauf SI le projet affecte un site N2000",
+    "impact": null,
+    "law": null,
     "name": "Consultation de l'autorité environnementale au cas par cas ad'hoc",
-    "order": 16,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 18,
+    "phases": null,
     "scope_liste": [
       "pp"
     ],
     "scope_sugg": [
       "pp"
     ],
-    "structurant": true,
-    "impact": "",
-    "Condition": "Pour PP : Obligatoire sauf SI le projet affecte un site N2000"
+    "structurant": true
   },
   {
     "code": "EXEMEVALENV",
-    "Listées par Docurba": "Exemption d'évaluation environnementale",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": "Le cas échéant",
+    "impact": null,
+    "law": null,
     "name": "Exemption d'évaluation environnementale",
-    "order": 17,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 19,
+    "phases": null,
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "",
-    "Condition": "Le cas échéant"
+    "scope_sugg": [],
+    "structurant": true
   },
   {
     "code": "SUBEVALENV",
-    "Listées par Docurba": "Soumission à évaluation environnementale",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": "Le cas échéant, dans ce cas bascule dans \"lancement de l'évaluation environnementale\"",
+    "impact": null,
+    "law": null,
     "name": "Soumission à évaluation environnementale",
-    "order": 18,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 20,
+    "phases": null,
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "",
-    "Condition": "Le cas échéant, dans ce cas bascule dans \"lancement de l'évaluation environnementale"
+    "scope_sugg": [],
+    "structurant": true
   },
   {
     "code": "DELBILAN",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Délibération de bilan de la concertation",
-    "Priorisation": "Obligatoire",
+    "condition": "S'il y a eu concertation",
+    "impact": null,
+    "law": null,
     "name": "Délibération de bilan de la concertation",
-    "order": 19,
-    "law": "",
+    "name_sudocuh": "Délibération de bilan de la concertation",
+    "order": 21,
     "phases": "Concertation",
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": "fasle",
-    "impact": "",
-    "Condition": "S'il y a eu concertation"
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "CONSENV",
-    "Listées par Docurba": "Saisine de l'Autorité environnementale pour avis",
-    "lib EV (sur l'outil Sudocuh)": "Consultation de l'autorité environnementale",
-    "Priorisation": "Obligatoire",
+    "condition": "Obligatoire SI il y a eu EE",
+    "impact": null,
+    "law": null,
     "name": "Saisine de l'Autorité environnementale pour avis",
-    "order": 20,
-    "law": "",
+    "name_sudocuh": "Consultation de l'autorité environnementale",
+    "order": 22,
     "phases": "Arrêt du projet",
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": "Obligatoire SI il y a eu EE"
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "CONSCDNPS",
-    "Listées par Docurba": "Saisine de la CDNPS pour avis",
-    "lib EV (sur l'outil Sudocuh)": "Consultation de la CDNPS",
-    "Priorisation": "Obligatoire SI",
+    "condition": "Obligatoire SI la collectivité est en loi littorale ET le DU classe des parcs et ensembles boisés existants les plus significatifs de la commune ou du groupement de communes en espace boisé classé (EBC) Obligatoire SI la collectivité est en loi montagne ET  - produit une étude pour déroger au principe de continuité avec l’urbanisation existante - OU délimite des zones d'urbanisation future de taille et de capacité d'accueil limitées - OU prévoit des constructions ou aménagements à moins de 300m des rives d'un plan d'eau inférieur à 1000 ha Obligatoire SI le document prévoit a réalisation d'une ou plusieurs unités touristiques nouvelles locales",
+    "impact": null,
+    "law": null,
     "name": "Saisine de la CDNPS pour avis",
-    "order": 21,
-    "law": "",
+    "name_sudocuh": "Consultation de la CDNPS",
+    "order": 23,
     "phases": "Arrêt du projet",
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": "Obligatoire SI la collectivité est en loi littorale ET le DU classe des parcs et ensembles boisés existants les plus significatifs de la commune ou du groupement de communes en espace boisé classé (EBC)\nObligatoire SI la collectivité est en loi montagne ET \n- produit une étude pour déroger au principe de continuité avec l’urbanisation existante\n- OU délimite des zones d'urbanisation future de taille et de capacité d'accueil limitées\n- OU prévoit des constructions ou aménagements à moins de 300m des rives d'un plan d'eau inférieur à 1000 ha\nObligatoire SI le document prévoit a réalisation d'une ou plusieurs unités touristiques nouvelles locales"
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "CONSCDPENAF",
-    "Listées par Docurba": "Saisine de la CDPENAF pour avis",
-    "lib EV (sur l'outil Sudocuh)": "Consultation de la CDPENAF",
-    "Priorisation": "Obligatoire SI",
+    "condition": "Obligatoire SI la collectivité n'est pas couverte par un SCoT approuvé ET a pour conséquence une réduction des surfaces des espaces naturels, agricoles et forestiers ;  Obligatoire SI le réglement du docuement prévoit en zone A et N : - la délimitation de secteurs de taille et de capacité d’accueil limitées (STECAL), - OU le changement de destination de bâtiments en dehors des STECAL, - OU constructions et installations nécessaires à la transformation, au conditionnement et à la commercialisation des produits agricoles, - OU les extensions de bâtiments d’habitation existants et l’ajout d’annexe(s) à ces bâtiments ;",
+    "impact": null,
+    "law": null,
     "name": "Saisine de la CDPENAF pour avis",
-    "order": 22,
-    "law": "",
+    "name_sudocuh": "Consultation de la CDPENAF",
+    "order": 24,
     "phases": "Arrêt du projet",
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": "Obligatoire SI la collectivité n'est pas couverte par un SCoT approuvé ET a pour conséquence une réduction des surfaces des espaces naturels, agricoles et forestiers ; \nObligatoire SI le réglement du docuement prévoit en zone A et N :\n- la délimitation de secteurs de taille et de capacité d’accueil limitées (STECAL),\n- OU le changement de destination de bâtiments en dehors des STECAL,\n- OU constructions et installations nécessaires à la transformation, au conditionnement et à la commercialisation des produits agricoles,\n- OU les extensions de bâtiments d’habitation existants et l’ajout d’annexe(s) à ces bâtiments ;"
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "AVISENV",
-    "Listées par Docurba": "Réception de l'avis de l'autorité environnementale",
-    "lib EV (sur l'outil Sudocuh)": "Avis de l'autorité environnementale",
-    "Priorisation": "Obligatoire",
+    "condition": "Si EE",
+    "impact": null,
+    "law": null,
     "name": "Réception de l'avis de l'autorité environnementale",
-    "order": 23,
-    "law": "",
+    "name_sudocuh": "Avis de l'autorité environnementale",
+    "order": 25,
     "phases": "Arrêt du projet",
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": "fasle",
-    "impact": "",
-    "Condition": "Si EE"
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "AVICDPENAF",
-    "Listées par Docurba": "Réception de l'avis CDPENAF",
-    "lib EV (sur l'outil Sudocuh)": "Avis de la CDPENAF",
-    "Priorisation": "",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Réception de l'avis CDPENAF",
-    "order": 24,
-    "law": "",
+    "name_sudocuh": "Avis de la CDPENAF",
+    "order": 26,
     "phases": "?",
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "AVICDNPS",
-    "Listées par Docurba": "Réception de l'avis de la CDNPS",
-    "lib EV (sur l'outil Sudocuh)": "Avis de la CDNPS",
-    "Priorisation": "",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Réception de l'avis de la CDNPS",
-    "order": 25,
-    "law": "",
+    "name_sudocuh": "Avis de la CDNPS",
+    "order": 27,
     "phases": "?",
     "scope_liste": [
       "pp"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "ADSPUBLIC",
-    "Listées par Docurba": "Publicité sur mise à disposition du public",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Obligatoire",
+    "condition": "8 jours au moins avant le début",
+    "impact": null,
+    "law": null,
     "name": "Publicité sur mise à disposition du public",
-    "order": 26,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 28,
+    "phases": null,
     "scope_liste": [
-      "ms",
-      "mj"
+      "ms"
     ],
     "scope_sugg": [
-      "ms",
-      "mj"
+      "ms"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": "8 jours au moins avant le début"
+    "structurant": false
   },
   {
     "code": "DEBINFO",
-    "Listées par Docurba": "Début de mise à disposition du public",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Obligatoire",
+    "condition": "1 mois",
+    "impact": null,
+    "law": null,
     "name": "Début de mise à disposition du public",
-    "order": 27,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 29,
+    "phases": null,
     "scope_liste": [
-      "ms",
-      "mj"
+      "ms"
     ],
     "scope_sugg": [
-      "ms",
-      "mj"
+      "ms"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": "1 mois"
+    "structurant": false
   },
   {
     "code": "FININFO",
-    "Listées par Docurba": "Fin de mise à disposition du public",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Obligatoire",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Fin de mise à disposition du public",
-    "order": 28,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 30,
+    "phases": null,
     "scope_liste": [
-      "ms",
-      "mj"
+      "ms"
     ],
     "scope_sugg": [
-      "ms",
-      "mj"
+      "ms"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "structurant": false
+  },
+  {
+    "code": null,
+    "condition": null,
+    "impact": null,
+    "law": null,
+    "name": "Décision de recourir à la participation du public par voie électronique (PPVE)",
+    "name_sudocuh": null,
+    "order": 31,
+    "phases": null,
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [],
+    "structurant": false
+  },
+  {
+    "code": null,
+    "condition": null,
+    "impact": null,
+    "law": null,
+    "name": "Constitution et mise à disposition du dossier de PPVE",
+    "name_sudocuh": null,
+    "order": 32,
+    "phases": null,
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [],
+    "structurant": false
+  },
+  {
+    "code": null,
+    "condition": null,
+    "impact": null,
+    "law": null,
+    "name": "Publicité préalable à l'ouverture de la PPVE",
+    "name_sudocuh": null,
+    "order": 33,
+    "phases": null,
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [],
+    "structurant": false
+  },
+  {
+    "code": null,
+    "condition": null,
+    "impact": null,
+    "law": null,
+    "name": "Début de la participation du public par voie électronique",
+    "name_sudocuh": null,
+    "order": 34,
+    "phases": null,
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [],
+    "structurant": true
+  },
+  {
+    "code": null,
+    "condition": null,
+    "impact": null,
+    "law": null,
+    "name": "Fin de la participation du public par voie électronique",
+    "name_sudocuh": null,
+    "order": 35,
+    "phases": null,
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [],
+    "structurant": true
+  },
+  {
+    "code": null,
+    "condition": null,
+    "impact": null,
+    "law": null,
+    "name": "Synthèse de la participation du public par voie électronique",
+    "name_sudocuh": null,
+    "order": 36,
+    "phases": null,
+    "scope_liste": [
+      "pp"
+    ],
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "ARRENQ",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Arrêté d'enquête publique",
-    "Priorisation": "Obligatoire",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Arrêté d'enquête publique",
-    "order": 29,
-    "law": "",
+    "name_sudocuh": "Arrêté d'enquête publique",
+    "order": 37,
     "phases": "Enquête publique",
     "scope_liste": [
       "pp"
@@ -528,18 +581,16 @@
     "scope_sugg": [
       "pp"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "structurant": false
   },
   {
     "code": "DEBENQ",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Début d'enquête publique",
-    "Priorisation": "Obligatoire",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Début d'enquête publique",
-    "order": 30,
-    "law": "",
+    "name_sudocuh": "Début d'enquête publique",
+    "order": 38,
     "phases": "Enquête publique",
     "scope_liste": [
       "pp"
@@ -547,18 +598,16 @@
     "scope_sugg": [
       "pp"
     ],
-    "structurant": true,
-    "impact": "",
-    "Condition": ""
+    "structurant": true
   },
   {
     "code": "FINENQ",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Fin d'enquête publique",
-    "Priorisation": "Obligatoire",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Fin d'enquête publique",
-    "order": 31,
-    "law": "",
+    "name_sudocuh": "Fin d'enquête publique",
+    "order": 39,
     "phases": "Enquête publique",
     "scope_liste": [
       "pp"
@@ -566,18 +615,16 @@
     "scope_sugg": [
       "pp"
     ],
-    "structurant": true,
-    "impact": "",
-    "Condition": ""
+    "structurant": true
   },
   {
     "code": "RAPCOMENQ",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Rapport du commissaire enquêteur",
-    "Priorisation": "Fortement recommandé",
-    "name": "Rapport du commissaire enquêteur",
-    "order": 32,
-    "law": "",
+    "condition": null,
+    "impact": null,
+    "law": null,
+    "name": "Rapport et conclusions de l'enquête publique",
+    "name_sudocuh": "Rapport du commissaire enquêteur",
+    "order": 40,
     "phases": "Enquête publique",
     "scope_liste": [
       "pp"
@@ -585,18 +632,16 @@
     "scope_sugg": [
       "pp"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "structurant": false
   },
   {
     "code": "PATCHENQPUB",
-    "Listées par Docurba": "Intégration des retours faits pendant l'enquête publique",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Intégration des retours faits pendant l'enquête publique",
-    "order": 33,
-    "law": "",
+    "name_sudocuh": null,
+    "order": 41,
     "phases": "Enquête publique",
     "scope_liste": [
       "pp"
@@ -604,188 +649,178 @@
     "scope_sugg": [
       "pp"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "structurant": false
   },
   {
     "code": "ABAND",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Abandon",
-    "Priorisation": "",
+    "condition": null,
+    "impact": "abandonné",
+    "law": null,
     "name": "Abandon",
-    "order": 34,
-    "law": "",
+    "name_sudocuh": "Abandon",
+    "order": 42,
     "phases": "Avant l'approbation",
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "abandonné",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": true
   },
   {
     "code": "DELAPPCM",
-    "Listées par Docurba": "Délibération d'approbation du conseil municipal ou communautaire",
-    "lib EV (sur l'outil Sudocuh)": "Délibération d'approbation",
-    "Priorisation": "Obligatoire",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Délibération d'approbation du conseil municipal ou communautaire",
-    "order": 35,
-    "law": "",
+    "name_sudocuh": "Délibération d'approbation",
+    "order": 43,
     "phases": "Approbation",
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
     "scope_sugg": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "structurant": true,
-    "impact": "",
-    "Condition": ""
+    "structurant": true
   },
   {
     "code": "TRPREFAPP",
-    "Listées par Docurba": "Transmission au préfet pour approbation",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "Obligatoire",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Transmission au préfet pour approbation",
-    "order": 36,
-    "law": "",
+    "name_sudocuh": null,
+    "order": 44,
     "phases": "Approbation",
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
     "scope_sugg": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "structurant": true,
-    "impact": "",
-    "Condition": ""
+    "structurant": true
   },
   {
     "code": "REFAPPREF",
-    "Listées par Docurba": "Refus d'approbation du préfet",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": "le cas échéant",
+    "impact": null,
+    "law": null,
     "name": "Refus d'approbation du préfet",
-    "order": 37,
-    "law": "",
+    "name_sudocuh": null,
+    "order": 45,
     "phases": "Approbation",
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "",
-    "Condition": "le cas échéant"
+    "scope_sugg": [],
+    "structurant": true
   },
   {
     "code": "APPPREF",
-    "Listées par Docurba": "Approbation du préfet",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": "le cas échéant",
+    "impact": "opposable",
+    "law": null,
     "name": "Approbation du préfet",
-    "order": 38,
-    "law": "",
+    "name_sudocuh": null,
+    "order": 46,
     "phases": "Approbation",
     "scope_liste": [
       "pp",
-      "ms",
+      "ms"
+    ],
+    "scope_sugg": [],
+    "structurant": true
+  },
+  {
+    "code": null,
+    "condition": null,
+    "impact": "opposable",
+    "law": null,
+    "name": "Arrêté de mise à jour",
+    "name_sudocuh": null,
+    "order": 47,
+    "phases": "Approbation",
+    "scope_liste": [
       "mj"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "opposable",
-    "Condition": "le cas échéant"
+    "scope_sugg": [
+      "mj"
+    ],
+    "structurant": true
   },
   {
     "code": "TRANSCONT",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Transmission au contrôle de légalité",
-    "Priorisation": "Obligatoire",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Transmission au contrôle de légalité",
-    "order": 39,
-    "law": "",
+    "name_sudocuh": "Transmission au contrôle de légalité",
+    "order": 48,
     "phases": "Caractère exécutoire",
     "scope_liste": [
+      "pp",
       "ms",
       "mj"
     ],
     "scope_sugg": [
+      "pp",
       "ms",
       "mj"
     ],
-    "structurant": true,
-    "impact": "",
-    "Condition": ""
+    "structurant": true
   },
   {
     "code": "ADSPRESS",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Publicité dans la presse",
-    "Priorisation": "Obligatoire",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Publicité dans la presse",
-    "order": 40,
-    "law": "",
+    "name_sudocuh": "Publicité dans la presse",
+    "order": 49,
     "phases": "Caractère exécutoire",
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
     "scope_sugg": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "structurant": false
   },
   {
     "code": "AFF",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Affichage en commune",
-    "Priorisation": "Obligatoire",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Affichage en commune",
-    "order": 41,
-    "law": "",
+    "name_sudocuh": "Affichage en commune",
+    "order": 50,
     "phases": "Caractère exécutoire",
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
     "scope_sugg": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "structurant": false
   },
   {
     "code": "PUB",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Publication du PLU sur le GPU",
-    "Priorisation": "Obligatoire",
-    "name": "Publication du PLU sur le GPU",
-    "order": 42,
-    "law": "",
+    "condition": null,
+    "impact": null,
+    "law": null,
+    "name": "Publication sur le GPU",
+    "name_sudocuh": "Publication du PLU sur le GPU",
+    "order": 51,
     "phases": "Caractère exécutoire",
     "scope_liste": [
       "pp",
@@ -797,217 +832,187 @@
       "ms",
       "mj"
     ],
-    "structurant": true,
-    "impact": "",
-    "Condition": ""
+    "structurant": true
   },
   {
     "code": "EXECUT",
-    "Listées par Docurba": "Caractère éxécutoire",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
-    "name": "Caractère éxécutoire",
-    "order": 43,
-    "law": "",
-    "phases": "",
+    "condition": null,
+    "impact": "opposable",
+    "law": null,
+    "name": "Caractère exécutoire",
+    "name_sudocuh": null,
+    "order": 53,
+    "phases": null,
     "scope_liste": [
       "pp",
       "ms",
       "mj"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "opposable",
-    "Condition": ""
+    "scope_sugg": [
+      "pp",
+      "ms",
+      "mj"
+    ],
+    "structurant": true
   },
   {
     "code": "RECGRAC",
-    "Listées par Docurba": "",
-    "lib EV (sur l'outil Sudocuh)": "Recours gracieux de l'État",
-    "Priorisation": "",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Recours gracieux de l'État",
-    "order": 44,
-    "law": "",
+    "name_sudocuh": "Recours gracieux de l'État",
+    "order": 54,
     "phases": "?",
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "BACKPRESCR",
-    "Listées par Docurba": "Retrait de la délibération de prescription",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": null,
+    "impact": "abandonné",
+    "law": null,
     "name": "Retrait de la délibération de prescription",
-    "order": "",
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 55,
+    "phases": null,
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "abandonné",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": true
   },
   {
     "code": "BACKAPPROB",
-    "Listées par Docurba": "Retrait de la délibération d'approbation",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": null,
+    "impact": "en cours",
+    "law": null,
     "name": "Retrait de la délibération d'approbation",
-    "order": 46,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 56,
+    "phases": null,
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "en cours",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": true
   },
   {
     "code": "DESISGRAC",
-    "Listées par Docurba": "Désistement recours gracieux de l’État",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Désistement recours gracieux de l’État",
-    "order": 47,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 57,
+    "phases": null,
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": false
   },
   {
     "code": "ANNULTAP",
-    "Listées par Docurba": "Annulation TA partielle",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Annulation TA partielle",
-    "order": 48,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 58,
+    "phases": null,
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": true
   },
   {
     "code": "ANNULTA",
-    "Listées par Docurba": "Annulation TA totale",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": null,
+    "impact": "annulé",
+    "law": null,
     "name": "Annulation TA totale",
-    "order": 49,
-    "law": "",
+    "name_sudocuh": null,
+    "order": 59,
     "phases": "?",
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "annulé",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": true
   },
   {
     "code": "BACKANNUL",
-    "Listées par Docurba": "Retrait de l'annulation totale",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "condition": null,
+    "impact": "opposable",
+    "law": null,
     "name": "Retrait de l'annulation totale",
-    "order": 50,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 60,
+    "phases": null,
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "opposable",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": true
   },
   {
     "code": "ARRABRO",
-    "Listées par Docurba": "Arrêté préfectoral d'abrogation de la carte communale",
-    "lib EV (sur l'outil Sudocuh)": "Arrêté d'abrogation",
-    "Priorisation": "",
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Arrêté préfectoral d'abrogation de la carte communale",
-    "order": 51,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": "Arrêté d'abrogation",
+    "order": 61,
+    "phases": null,
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": false
   },
   {
-    "code": "",
-    "Listées par Docurba": "Délibération communal ou communautaire d’abrogation de la carte communale",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "code": null,
+    "condition": null,
+    "impact": null,
+    "law": null,
     "name": "Délibération communal ou communautaire d’abrogation de la carte communale",
-    "order": 52,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 62,
+    "phases": null,
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": false,
-    "impact": "",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": false
   },
   {
-    "code": "",
-    "Listées par Docurba": "Abrogation effective",
-    "lib EV (sur l'outil Sudocuh)": "",
-    "Priorisation": "",
+    "code": null,
+    "condition": null,
+    "impact": "abrogé",
+    "law": null,
     "name": "Abrogation effective",
-    "order": 53,
-    "law": "",
-    "phases": "",
+    "name_sudocuh": null,
+    "order": 63,
+    "phases": null,
     "scope_liste": [
       "pp",
-      "ms",
-      "mj"
+      "ms"
     ],
-    "scope_sugg": "",
-    "structurant": true,
-    "impact": "abrogé",
-    "Condition": ""
+    "scope_sugg": [],
+    "structurant": true
   }
 ]
