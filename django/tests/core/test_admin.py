@@ -1,10 +1,22 @@
 import pytest
 from django.test import Client
 from django.urls import reverse
+from pytest_django import DjangoAssertNumQueries
 from pytest_django.asserts import assertContains, assertNotContains
 
 from docurba.core.models import Procedure, Topic, TypeCollectivite, TypeDocument
-from tests.core.factories import ProcedureFactory
+from tests.core.factories import EventFactory, ProcedureFactory
+from tests.users.factories import ProfileFactory
+
+UPDATE_BASE_EXPECTED_NUM_QUERIES = (
+    1  # django_session
+    + 1  # get authenticated user info
+    + 1  # savepoint
+    + 1  # insert into django_admin_log
+    + 1  # release savepoint
+    + 1  # django session
+    + 1  # get authenticated user info
+)
 
 
 @pytest.mark.parametrize("doc_type", TypeDocument.values)
@@ -64,3 +76,35 @@ class TestProcedureList:
         response = admin_client.get(reverse("admin:core_procedure_changelist"))
         assertContains(response, not_huwart.pk)
         assertContains(response, huwart.pk)
+
+
+def test_event_change_page(
+    admin_client: Client, django_assert_num_queries: DjangoAssertNumQueries
+) -> None:
+    event = EventFactory()
+    with django_assert_num_queries(5):
+        response = admin_client.get(
+            reverse("admin:core_event_change", kwargs={"object_id": event.pk})
+        )
+    assert response.status_code == 200
+
+    new_user = ProfileFactory()
+    num_queries = (
+        1  # select doc_frise _event
+        + 1  # select procedures_perimetres
+        + 2  # select profile
+        + 1  # update doc_frise_events
+        + 1  # select doc_frise_events
+        + 1  # select procedures_perimetres
+        + 1  # select profiles
+    )
+    with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + num_queries):
+        response = admin_client.post(
+            reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
+            data={
+                "profile": new_user.pk,
+                "_continue": "Enregistrer et continuer les modifications",
+            },
+            follow=True,
+        )
+    assert response.status_code == 200

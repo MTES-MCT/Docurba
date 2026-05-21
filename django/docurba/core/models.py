@@ -657,7 +657,7 @@ class Event(models.Model):
     )
 
     class Meta:
-        # Table created by a pre_migrate signal in apps.py.
+        verbose_name = "évènement"
         managed = False
         db_table = "doc_frise_events"
         ordering = ("-date_evenement",)

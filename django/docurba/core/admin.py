@@ -181,3 +181,36 @@ class TopicAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None) -> bool:
         return False
+
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    readonly_fields = (
+        "pk",
+        "procedure",
+        "type",
+        "date_evenement",
+        "is_valid",
+        "visibility",
+    )
+    list_display = ("pk",)
+    search_fields = ("pk",)
+    autocomplete_fields = ("profile",)
+    fields = [
+        *readonly_fields,
+        *autocomplete_fields,
+    ]
+
+    def has_add_permission(self, request: object) -> bool:
+        return False
+
+    def has_delete_permission(self, request, obj=None) -> bool:
+        return False
+
+    def get_queryset(self, request) -> models.QuerySet:
+        queryset = super().get_queryset(request)
+        return (
+            queryset.select_related("procedure")
+            .select_related("procedure__collectivite_porteuse")
+            .prefetch_related("procedure__perimetre")
+        )
