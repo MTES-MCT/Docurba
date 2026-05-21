@@ -351,7 +351,7 @@ export default
       return this.events.map((event) => {
         const ev = this.documentEvents.find(x =>
           // Matche le type d'événement en regardant le libellé Docurba ET le libellé Sudocuh
-          [x.name, x["lib EV (sur l'outil Sudocuh)"]].includes(event.type)
+          [x.name, x.name_sudocuh].includes(event.type)
         )
         return { ...event, structurant: !!ev?.structurant }
       }).filter((event) => {
@@ -378,25 +378,30 @@ export default
       if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
       const lastEventType = this.events[0]
 
-      const lastEventOrder = this.documentEvents.find(e => e.name === lastEventType.type)
+      const lastEventOrder = this.documentEvents.find(e => [e.name, e.name_sudocuh].includes(lastEventType.type))
 
       if (!lastEventOrder) { return filteredDocumentEvents[0] }
       return filteredDocumentEvents.find(e => _.gt(e.order, lastEventOrder.order))
     },
     internalProcedureType () {
-      const isIntercommunal = this.procedure.current_perimetre.length > 1
-      const secondairesTypes = {
-        'Révision à modalité simplifiée ou Révision allégée': 'rms',
-        Modification: 'm',
-        'Modification simplifiée': 'ms',
-        'Mise en compatibilité': 'mc',
-        'Mise à jour': 'mj'
+      switch (this.procedure.type) {
+        case 'Elaboration':
+        case 'Révision':
+          return this.procedure.current_perimetre.length > 1 && this.internalDocType !== 'CC' ? 'ppi' : 'pp'
+        case 'Mise à jour':
+          return 'mj'
+        case 'Mise en compatibilité':
+          return 'mc'
+        case 'Modification':
+          return this.procedure.started_before_huwart_law ? 'm' : 'mlh'
+        case 'Modification simplifiée':
+          return 'ms'
+        case 'Révision allégée (ou RMS)':
+        case 'Révision à modalité simplifiée ou Révision allégée':
+          return 'rms'
+        default:
+          return 'aucun'
       }
-      if (secondairesTypes[this.procedure.type]) { return secondairesTypes[this.procedure.type] }
-      if (['Elaboration', 'Révision'].includes(this.procedure.type)) {
-        if (isIntercommunal && this.internalDocType !== 'CC') { return 'ppi' } else { return 'pp' }
-      }
-      return 'aucun'
     }
   },
   async mounted () {
