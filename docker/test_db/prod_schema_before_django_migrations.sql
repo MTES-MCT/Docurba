@@ -45,7 +45,7 @@ CREATE TABLE public.procedures (
     is_sudocuh_scot boolean,
     testing boolean,
     -- numero text,
-    owner_id uuid,
+    -- owner_id uuid,
     previous_opposable_procedures_ids uuid,
     test boolean DEFAULT false,
     type_code text,
@@ -1248,16 +1248,6 @@ ALTER TABLE ONLY public.doc_frise_events
 
 ALTER TABLE ONLY public.github_ref_roles
     ADD CONSTRAINT public_github_ref_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
-
-
---
--- Name: procedures public_procedures_owner_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.procedures
-    ADD CONSTRAINT public_procedures_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES public.profiles(user_id) ON DELETE SET NULL;
-
-
 
 --
 -- Name: profiles public_profiles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -

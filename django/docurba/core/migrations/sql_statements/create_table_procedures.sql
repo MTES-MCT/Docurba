@@ -28,7 +28,7 @@ ALTER TABLE public.procedures
     -- ADD COLUMN is_sudocuh_scot boolean,
     -- ADD COLUMN testing boolean,
     ADD COLUMN numero text,
-    -- ADD COLUMN owner_id uuid,
+    ADD COLUMN owner_id uuid,
     -- ADD COLUMN previous_opposable_procedures_ids uuid,
     -- ADD COLUMN test boolean DEFAULT false,
     -- ADD COLUMN type_code text,
@@ -64,7 +64,8 @@ $$;
 
 ALTER TABLE ONLY public.procedures
     ADD CONSTRAINT procedures_from_sudocuh_key UNIQUE (from_sudocuh),
-    ADD CONSTRAINT procedures_secondary_procedure_of_fkey FOREIGN KEY (secondary_procedure_of) REFERENCES public.procedures(id)
+    ADD CONSTRAINT procedures_secondary_procedure_of_fkey FOREIGN KEY (secondary_procedure_of) REFERENCES public.procedures(id),
+    ADD CONSTRAINT public_procedures_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES public.profiles(user_id) ON DELETE SET NULL
 ;
 
 CREATE INDEX idx_procedures_collectivite_porteuse_id ON public.procedures USING btree (collectivite_porteuse_id);
