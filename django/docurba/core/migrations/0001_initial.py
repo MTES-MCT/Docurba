@@ -34,6 +34,10 @@ class Migration(migrations.Migration):
                         "drop_table_procedures_perimetres.sql"
                     ),
                 ),
+                migrations.RunSQL(
+                    sql=read_sql_from_file("create_table_doc_frise_events.sql"),
+                    reverse_sql=read_sql_from_file("drop_table_doc_frise_events.sql"),
+                ),
             ],
             state_operations=[
                 migrations.CreateModel(
@@ -54,38 +58,38 @@ class Migration(migrations.Migration):
                         "managed": False,
                     },
                 ),
+                migrations.CreateModel(
+                    name="Event",
+                    fields=[
+                        (
+                            "id",
+                            models.UUIDField(
+                                default=uuid.uuid4, primary_key=True, serialize=False
+                            ),
+                        ),
+                        ("type", models.TextField(blank=True, null=True)),
+                        (
+                            "date_evenement_string",
+                            models.CharField(db_column="date_iso", null=True),
+                        ),
+                        ("is_valid", models.BooleanField(db_default=True)),
+                        (
+                            "profile",
+                            models.ForeignKey(
+                                null=True,
+                                on_delete=django.db.models.DO_NOTHING,
+                                to="users.Profile",
+                                verbose_name="profil",
+                            ),
+                        ),
+                    ],
+                    options={
+                        "db_table": "doc_frise_events",
+                        "ordering": ("-date_evenement_string",),
+                        "managed": False,
+                    },
+                ),
             ],
-        ),
-        migrations.CreateModel(
-            name="Event",
-            fields=[
-                (
-                    "id",
-                    models.UUIDField(
-                        default=uuid.uuid4, primary_key=True, serialize=False
-                    ),
-                ),
-                ("type", models.TextField(blank=True, null=True)),
-                (
-                    "date_evenement_string",
-                    models.CharField(db_column="date_iso", null=True),
-                ),
-                ("is_valid", models.BooleanField(db_default=True)),
-                (
-                    "profile",
-                    models.ForeignKey(
-                        null=True,
-                        on_delete=django.db.models.DO_NOTHING,
-                        to="users.Profile",
-                        verbose_name="profil",
-                    ),
-                ),
-            ],
-            options={
-                "db_table": "doc_frise_events",
-                "ordering": ("-date_evenement_string",),
-                "managed": False,
-            },
         ),
         migrations.CreateModel(
             name="Procedure",
