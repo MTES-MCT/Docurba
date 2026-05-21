@@ -127,12 +127,6 @@ CREATE INDEX idx_doc_frise_events_procedure_id ON public.doc_frise_events USING 
 CREATE INDEX idx_doc_frise_events_procedure_id_date_iso ON public.doc_frise_events USING btree (procedure_id, date_iso DESC);
 CREATE INDEX test_index ON public.doc_frise_events USING btree (procedure_id, date_iso); -- removed
 
--- NOTE(cms) Remove this index.
--- select * from pg_stat_all_indexes as stats where stats.schemaname = 'public' and stats.indexrelname = 'test_index'
---- 0
-CREATE INDEX test_index ON public.doc_frise_events USING btree (procedure_id, date_iso);
-
-
 ALTER TABLE ONLY public.doc_frise_events
     ADD CONSTRAINT doc_frise_events_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(user_id),
     ADD CONSTRAINT public_doc_frise_events_procedure_id_fkey FOREIGN KEY (procedure_id) REFERENCES public.procedures(id) ON DELETE CASCADE;
@@ -180,17 +174,3 @@ GRANT ALL ON FUNCTION public.one_shot_events() TO service_role;
 GRANT ALL ON FUNCTION public.procedure_status_handler() TO anon;
 GRANT ALL ON FUNCTION public.procedure_status_handler() TO authenticated;
 GRANT ALL ON FUNCTION public.procedure_status_handler() TO service_role;
-
-
--- TODO(cms): remove me from the DB as the `doc_frise_events_duplicate` does not exist anymore.
---
--- Name: events_duplicate_by_procedures_ids(json); Type: FUNCTION; Schema: public; Owner: -
---
-
--- CREATE FUNCTION public.events_duplicate_by_procedures_ids(procedures_ids json) RETURNS SETOF record
---     LANGUAGE sql
---     AS $$
--- SELECT *
--- FROM doc_frise_events_duplicate
--- WHERE procedure_id::text IN (SELECT value FROM jsonb_array_elements_text(procedures_ids::jsonb));
--- $$;
