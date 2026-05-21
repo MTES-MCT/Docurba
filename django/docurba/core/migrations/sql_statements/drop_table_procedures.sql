@@ -26,7 +26,7 @@ ALTER TABLE public.procedures
     -- ADD COLUMN is_sudocuh_scot boolean,
     -- ADD COLUMN testing boolean,
     DROP COLUMN numero,
-    -- ADD COLUMN owner_id uuid,
+    DROP COLUMN owner_id,
     -- ADD COLUMN previous_opposable_procedures_ids uuid,
     -- ADD COLUMN test boolean DEFAULT false,
     -- ADD COLUMN type_code text,
