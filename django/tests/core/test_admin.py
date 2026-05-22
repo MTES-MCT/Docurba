@@ -4,8 +4,16 @@ from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 from pytest_django.asserts import assertContains, assertNotContains
 
-from docurba.core.models import Procedure, Topic, TypeCollectivite, TypeDocument
-from tests.core.factories import EventFactory, ProcedureFactory
+from docurba.core.models import (
+    Procedure,
+    Topic,
+    TypeCollectivite,
+    TypeDocument,
+)
+from tests.core.factories import (
+    EventFactory,
+    ProcedureFactory,
+)
 from tests.users.factories import ProfileFactory
 
 UPDATE_BASE_EXPECTED_NUM_QUERIES = (
