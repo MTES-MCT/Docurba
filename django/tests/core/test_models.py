@@ -23,6 +23,7 @@ from docurba.core.models import (
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
+    EventFactory,
     ProcedureFactory,
 )
 
@@ -1362,6 +1363,45 @@ class TestEvent:
     def test_date_null(self) -> None:
         procedure = Procedure()
         assert Event(procedure=procedure).date_evenement is None
+
+
+@pytest.mark.django_db
+class TestEventUpdate:
+    def test_event_procedure_status_handler__status_update(self) -> None:
+        procedure = ProcedureFactory(
+            with_event=True,
+            with_event__category=EventCategory.PUBLICATION_PERIMETRE,
+            doc_type=TypeDocument.CC,
+        )
+        procedure = Procedure.objects.with_events().get(pk=procedure.pk)
+        procedure.status = procedure.statut
+        assert procedure.status == EventCategory.PUBLICATION_PERIMETRE
+
+        # Adding or updating an event triggers the `event_procedure_status_handler` sql function.
+        procedure.event_set.add(*[EventFactory(type="Retrait de l'annulation totale")])
+        procedure.refresh_from_db()
+        assert procedure.status == "opposable"
+
+    @pytest.mark.xfail(
+        reason="DB calls the Nuxt3 endpoint which is not listening on test and is impossible to mock."
+    )
+    def test_event_procedure_status_handler__commune_procedure_update(self) -> None:
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(
+            with_event=True,
+            with_event__category=EventCategory.PUBLICATION_PERIMETRE,
+            doc_type=TypeDocument.CC,
+            with_perimetre=[commune],
+        )
+        procedure = Procedure.objects.with_events().get(pk=procedure.pk)
+        procedure.status = procedure.statut
+        assert not procedure.perimetre_through.first().opposable
+
+        # Adding or updating an event triggers the `event_procedure_status_handler` sql function.
+        event_type = "Retrait de l'annulation totale"
+        procedure.event_set.add(*[EventFactory(type=event_type)])
+        procedure.refresh_from_db()
+        assert procedure.perimetre_through.first().opposable
 
 
 class TestCommuneProceduresPrincipales:

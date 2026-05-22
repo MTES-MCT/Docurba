@@ -69,8 +69,7 @@ CREATE FUNCTION public.event_procedure_status_handler() RETURNS trigger
         SELECT * into procedure FROM procedures WHERE id = event_processed.procedure_id;
         PERFORM set_procedure_status(procedure);
         /* NUXT3_API_URL is hardcoded here because this dump will disappear soon and I don't know how to change it quickly in SQL. */
-        -- TODO(cms): API call is disabled here because Nuxt3 does not listen on test mode.
-        -- PERFORM net.http_get('localhost:4000/api/urba/procedures/' || event_processed.procedure_id || '/update');
+        PERFORM net.http_get('http://localhost:4000/api/urba/procedures/' || event_processed.procedure_id || '/update');
     return event_processed; END; $$;
 
 
