@@ -267,9 +267,7 @@ import { mdiBookmark, mdiChevronLeft, mdiDotsVertical, mdiPaperclip, mdiSync } f
 import axios from 'axios'
 import _ from 'lodash'
 
-import ccEvents from '@/assets/data/events/CC_events.json'
-import PluEvents from '@/assets/data/events/PLU_events.json'
-import ScotEvents from '@/assets/data/events/SCOT_events.json'
+import { getDocumentTypeEvents, getProcedureEventsScope } from '@/plugins/event'
 
 export default
 {
@@ -325,23 +323,8 @@ export default
       }
       return this.isAdmin && !this.procedure.secondary_procedure_of
     },
-    internalDocType () {
-      let currDocType = this.procedure.doc_type
-      if (currDocType.match(/i|H|M/)) {
-        currDocType = 'PLU'
-      }
-      return currDocType
-    },
     documentEvents () {
-      const documentsEvents = {
-        PLU: PluEvents,
-        PLUi: PluEvents,
-        POS: PluEvents,
-        SCOT: ScotEvents,
-        CC: ccEvents,
-        SD: ScotEvents
-      }
-      return documentsEvents[this.internalDocType]
+      return getDocumentTypeEvents(this.procedure?.doc_type)
     },
     eventsStructurants () {
       return this.enrichedEvents.filter(e => e.structurant)
@@ -384,24 +367,7 @@ export default
       return filteredDocumentEvents.find(e => _.gt(e.order, lastEventOrder.order))
     },
     internalProcedureType () {
-      switch (this.procedure.type) {
-        case 'Elaboration':
-        case 'Révision':
-          return this.procedure.current_perimetre.length > 1 && this.internalDocType !== 'CC' ? 'ppi' : 'pp'
-        case 'Mise à jour':
-          return 'mj'
-        case 'Mise en compatibilité':
-          return 'mc'
-        case 'Modification':
-          return this.procedure.started_before_huwart_law ? 'm' : 'mlh'
-        case 'Modification simplifiée':
-          return 'ms'
-        case 'Révision allégée (ou RMS)':
-        case 'Révision à modalité simplifiée ou Révision allégée':
-          return 'rms'
-        default:
-          return 'aucun'
-      }
+      return getProcedureEventsScope(this.procedure)
     }
   },
   async mounted () {
