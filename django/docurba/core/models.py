@@ -663,7 +663,7 @@ class Event(models.Model):
         ordering = ("-date_evenement",)
 
     def __str__(self) -> str:
-        return f"{self.procedure}  - {self.type}"
+        return self.type
 
     @property
     def category(self) -> EventCategory | None:
