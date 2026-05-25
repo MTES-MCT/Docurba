@@ -67,6 +67,10 @@ class Migration(migrations.Migration):
                                 default=uuid.uuid4, primary_key=True, serialize=False
                             ),
                         ),
+                        (
+                            "from_sudocuh",
+                            models.IntegerField(blank=True, null=True),
+                        ),
                         ("type", models.TextField(blank=True, null=True)),
                         (
                             "date_evenement_string",

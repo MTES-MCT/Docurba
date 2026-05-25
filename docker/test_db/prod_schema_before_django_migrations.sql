@@ -746,14 +746,6 @@ ALTER TABLE ONLY public.analytics_events
 
 
 --
--- Name: doc_frise_events doc_frise_events_from_sudocuh_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.doc_frise_events
-    ADD CONSTRAINT doc_frise_events_from_sudocuh_key UNIQUE (from_sudocuh);
-
-
---
 -- Name: doc_frise_events doc_frise_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 

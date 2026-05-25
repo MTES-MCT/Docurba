@@ -119,6 +119,7 @@ class CollectiviteTypeFilter(admin.SimpleListFilter):
 class ProcedureAdmin(admin.ModelAdmin):
     readonly_fields = (
         "collectivite_porteuse_id",
+        "from_sudocuh",
         "doc_type",
         "type",
         "numero",

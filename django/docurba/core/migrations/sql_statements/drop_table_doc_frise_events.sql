@@ -27,7 +27,7 @@ ALTER TABLE public.doc_frise_events
     -- DROP COLUMN updated_at,
     -- DROP COLUMN attachements,
     DROP COLUMN visibility ,
-    -- DROP COLUMN from_sudocuh,
+    DROP COLUMN from_sudocuh,
     DROP COLUMN is_valid,
     DROP COLUMN procedure_id,
     -- DROP COLUMN is_sudocuh_scot,
