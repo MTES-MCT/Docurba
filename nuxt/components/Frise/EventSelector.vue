@@ -23,10 +23,7 @@
 </template>
 <script>
 import FormInput from '@/mixins/FormInput.js'
-
-import PluEvents from '@/assets/data/events/PLU_events.json'
-import ScotEvents from '@/assets/data/events/SCOT_events.json'
-import ccEvents from '@/assets/data/events/CC_events.json'
+import { getDocumentTypeEvents, getProcedureEventsScope } from '@/plugins/event'
 
 export default {
   mixins: [FormInput],
@@ -52,42 +49,10 @@ export default {
   },
   computed: {
     documentEvents () {
-      const documentsEvents = {
-        PLU: PluEvents,
-        PLUi: PluEvents,
-        POS: PluEvents,
-        SCOT: ScotEvents,
-        CC: ccEvents
-      }
-      console.log('internalDocType:', this.internalDocType)
-      return documentsEvents[this.internalDocType]
-    },
-    internalDocType () {
-      let currDocType = this.procedure.doc_type
-      if (currDocType.match(/i|H|M/)) {
-        currDocType = 'PLU'
-      }
-      return currDocType
+      return getDocumentTypeEvents(this.procedure.doc_type)
     },
     internalProcedureType () {
-      switch (this.procedure.type) {
-        case 'Elaboration':
-        case 'Révision':
-          return this.procedure.current_perimetre.length > 1 && this.internalDocType !== 'CC' ? 'ppi' : 'pp'
-        case 'Mise à jour':
-          return 'mj'
-        case 'Mise en compatibilité':
-          return 'mc'
-        case 'Modification':
-          return this.procedure.started_before_huwart_law ? 'm' : 'mlh'
-        case 'Modification simplifiée':
-          return 'ms'
-        case 'Révision allégée (ou RMS)':
-        case 'Révision à modalité simplifiée ou Révision allégée':
-          return 'rms'
-        default:
-          return 'aucun'
-      }
+      return getProcedureEventsScope(this.procedure)
     },
     filteredEvents () {
       return this.documentEvents.filter(e => e.scope_liste.includes(this.internalProcedureType))
