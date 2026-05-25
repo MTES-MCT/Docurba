@@ -190,7 +190,6 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "plan_libelle_code_etat_simplifie": commune.libelle_code_etat_simplifie,
             "plan_code_etat_complet": commune.code_etat_complet,
             "plan_libelle_code_etat_complet": commune.libelle_code_etat_complet,
-            # "types_pc": "currentsDocTypes",  # noqa: ERA001
         }
 
         champs_intercommunalite = {}
