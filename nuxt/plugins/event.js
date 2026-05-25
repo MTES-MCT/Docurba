@@ -19,6 +19,8 @@ export function getDocumentTypeEvents (documentType) {
       return SCoTEvents
     case 'CC':
       return CCEvents
+    default:
+      return []
   }
 }
 
