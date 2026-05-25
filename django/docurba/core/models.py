@@ -653,7 +653,7 @@ class Event(models.Model):
     is_valid = models.BooleanField(db_default=True)
     visibility = models.TextField(db_default="public")
     profile = models.ForeignKey(
-        "users.Profile", models.DO_NOTHING, null=True, verbose_name="profil"
+        "users.Profile", models.DO_NOTHING, null=True, blank=True, verbose_name="profil"
     )
 
     class Meta:
