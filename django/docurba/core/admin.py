@@ -64,6 +64,14 @@ class ProcedurePerimetreInline(admin.TabularInline):
 
 class EventsInline(admin.TabularInline):
     model = Event
+    show_change_link = True
+    autocomplete_fields = ("profile",)
+    readonly_fields = (
+        "type",
+        "date_evenement",
+        "is_valid",
+        "visibility",
+    )
 
     def get_queryset(self, request) -> models.QuerySet:
         queryset = super().get_queryset(request)
@@ -78,7 +86,7 @@ class EventsInline(admin.TabularInline):
         return False
 
     def has_change_permission(self, *args: list, **kwargs: dict) -> bool:
-        return False
+        return True
 
 
 class TopicsFilter(admin.SimpleListFilter):
