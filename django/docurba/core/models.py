@@ -148,21 +148,22 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Délibération de prescription du conseil municipal": EventCategory.PRESCRIPTION,
         "Approbation du préfet": EventCategory.APPROUVE,
         "Retrait de l'annulation totale": EventCategory.APPROUVE,
+        "Arrêté de mise à jour": EventCategory.APPROUVE,
         "Abandon": EventCategory.ABANDON,
         "Retrait de la délibération de prescription": EventCategory.ABANDON,
         "Annulation TA totale": EventCategory.ANNULE,
-        "Annulation TA": EventCategory.ANNULE,
+        "Annulation TA": EventCategory.ANNULE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Abrogation effective": EventCategory.ANNULE,
         "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
-        "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,
-        "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
-        "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,
-        "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
-        "Fin d'échéance": EventCategory.FIN_ECHEANCE,
+        "Fin d'échéance": EventCategory.FIN_ECHEANCE,  # Deleted 11/28/25
     },
     TypeDocument.SCOT: {
-        "Prescription": EventCategory.PRESCRIPTION,
+        "Prescription": EventCategory.PRESCRIPTION,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Délibération de l'Etablissement Public": EventCategory.PRESCRIPTION,
         "Délibération de l'établissement public qui prescrit": EventCategory.PRESCRIPTION,
         "Retrait de la délibération d'approbation": EventCategory.PRESCRIPTION,
@@ -171,16 +172,16 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Abandon": EventCategory.ABANDON,
         "Retrait de la délibération de prescription": EventCategory.ABANDON,
         "Annulation TA totale": EventCategory.ANNULE,
-        "Annulation TA": EventCategory.ANNULE,
-        "Caducité": EventCategory.CADUC,
+        "Annulation TA": EventCategory.ANNULE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Caducité": EventCategory.CADUC,  # Deleted 05/26/26
         "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
-        "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,
-        "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
-        "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,
-        "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Publication du périmètre par le préfet": EventCategory.PUBLICATION_PERIMETRE,
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
-        "Fin d'échéance": EventCategory.FIN_ECHEANCE,
+        "Fin d'échéance": EventCategory.FIN_ECHEANCE,  # Deleted 11/28/25
     },
     TypeDocument.SD: {
         "Prescription": EventCategory.PRESCRIPTION,
@@ -188,48 +189,48 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Délibération d'approbation": EventCategory.APPROUVE,
         "Abandon": EventCategory.ABANDON,
         "Annulation TA totale": EventCategory.ANNULE,
-        "Annulation TA": EventCategory.ANNULE,
-        "Caducité": EventCategory.CADUC,
+        "Annulation TA": EventCategory.ANNULE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Caducité": EventCategory.CADUC,  # Deleted 05/26/26
     },
     TypeDocument.PLU: {
         "Prescription": EventCategory.PRESCRIPTION,
         "Délibération de prescription du conseil municipal ou communautaire": EventCategory.PRESCRIPTION,
         "Retrait de l'annulation totale": EventCategory.APPROUVE,
-        "Délibération d'approbation du municipal ou communautaire": EventCategory.APPROUVE,
+        "Délibération d'approbation du municipal ou communautaire": EventCategory.APPROUVE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Délibération d'approbation du conseil municipal ou communautaire": EventCategory.APPROUVE,
         "Délibération d'approbation": EventCategory.APPROUVE,
         "Abandon": EventCategory.ABANDON,
         "Retrait de la délibération de prescription": EventCategory.ABANDON,
         "Annulation TA totale": EventCategory.ANNULE,
-        "Annulation TA": EventCategory.ANNULE,
+        "Annulation TA": EventCategory.ANNULE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Abrogation": EventCategory.ANNULE,
         "Arrêté d'abrogation": EventCategory.ANNULE,
-        "Caducité": EventCategory.CADUC,
+        "Caducité": EventCategory.CADUC,  # Deleted 05/26/26
         "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
-        "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,
-        "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
-        "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,
-        "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
-        "Fin d'échéance": EventCategory.FIN_ECHEANCE,
+        "Fin d'échéance": EventCategory.FIN_ECHEANCE,  # Deleted 11/28/25
     },
     TypeDocument.POS: {
         "Prescription": EventCategory.PRESCRIPTION,
         "Délibération de prescription du conseil municipal ou communautaire": EventCategory.PRESCRIPTION,
-        "Délibération d'approbation du municipal ou communautaire": EventCategory.APPROUVE,
+        "Délibération d'approbation du municipal ou communautaire": EventCategory.APPROUVE,  # not found
         "Délibération d'approbation du conseil municipal ou communautaire": EventCategory.APPROUVE,
         "Délibération d'approbation": EventCategory.APPROUVE,
         "Abandon": EventCategory.ABANDON,
-        "Annulation TA": EventCategory.ANNULE,
+        "Annulation TA": EventCategory.ANNULE,  # not found
         "Annulation TA totale": EventCategory.ANNULE,
-        "Caducité": EventCategory.CADUC,
+        "Caducité": EventCategory.CADUC,  # Deleted 05/26/26
         "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
-        "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,
-        "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
-        "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,
-        "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,
+        "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,  # not found
+        "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,  # not found
+        "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not fund
+        "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
-        "Fin d'échéance": EventCategory.FIN_ECHEANCE,
+        "Fin d'échéance": EventCategory.FIN_ECHEANCE,  # Deleted 11/28/25
     },
 }
 EVENT_CATEGORY_BY_DOC_TYPE |= dict.fromkeys(
