@@ -170,7 +170,7 @@ export default {
       collectivite: null,
       editable: false,
       opening: false,
-      searchedSectionPath: null,
+      searchedSectionPath: this.$route.query.path ?? null,
       shareDialog: false,
       loadingPdf: false,
       renameMode: false,
