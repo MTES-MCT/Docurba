@@ -158,6 +158,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
         "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Transmission du porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
         "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
@@ -178,6 +179,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
         "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Transmission du porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
         "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Publication du périmètre par le préfet": EventCategory.PUBLICATION_PERIMETRE,
@@ -210,6 +212,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
         "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
+        "Transmission du porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
         "Publication de périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Publication périmètre": EventCategory.PUBLICATION_PERIMETRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
