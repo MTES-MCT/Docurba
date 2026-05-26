@@ -105,6 +105,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
+                    "from_sudocuh",
+                    models.IntegerField(blank=True, null=True),
+                ),
+                (
                     "type_document",
                     models.CharField(
                         blank=True,

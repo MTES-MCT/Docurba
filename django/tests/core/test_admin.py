@@ -86,33 +86,54 @@ class TestProcedureList:
         assertContains(response, huwart.pk)
 
 
-def test_event_change_page(
-    admin_client: Client, django_assert_num_queries: DjangoAssertNumQueries
-) -> None:
-    event = EventFactory()
-    with django_assert_num_queries(5):
+@pytest.mark.django_db
+class TestEventChange:
+    def test_nominal_case(
+        self, admin_client: Client, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        event = EventFactory()
+        with django_assert_num_queries(5):
+            response = admin_client.get(
+                reverse("admin:core_event_change", kwargs={"object_id": event.pk})
+            )
+        assert response.status_code == 200
+        assertContains(response, "Enregistrer et continuer les modifications")
+
+        new_user = ProfileFactory()
+        num_queries = (
+            1  # select doc_frise _event
+            + 1  # select procedures_perimetres
+            + 2  # select profile
+            + 1  # update doc_frise_events
+            + 1  # select doc_frise_events
+            + 1  # select procedures_perimetres
+            + 1  # select profiles
+        )
+        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + num_queries):
+            response = admin_client.post(
+                reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
+                data={
+                    "profile": new_user.pk,
+                    "_continue": "Enregistrer et continuer les modifications",
+                },
+                follow=True,
+            )
+        assert response.status_code == 200
+
+    def test_sudocuh_event_is_read_only(self, admin_client: Client) -> None:
+        event = EventFactory(from_sudocuh=123456)
         response = admin_client.get(
             reverse("admin:core_event_change", kwargs={"object_id": event.pk})
         )
-    assert response.status_code == 200
+        assert response.status_code == 200
+        assertNotContains(response, "Enregistrer et continuer les modifications")
 
-    new_user = ProfileFactory()
-    num_queries = (
-        1  # select doc_frise _event
-        + 1  # select procedures_perimetres
-        + 2  # select profile
-        + 1  # update doc_frise_events
-        + 1  # select doc_frise_events
-        + 1  # select procedures_perimetres
-        + 1  # select profiles
-    )
-    with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + num_queries):
+        new_user = ProfileFactory()
         response = admin_client.post(
             reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
             data={
                 "profile": new_user.pk,
                 "_continue": "Enregistrer et continuer les modifications",
             },
-            follow=True,
         )
-    assert response.status_code == 200
+        assert response.status_code == 403

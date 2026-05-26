@@ -647,6 +647,7 @@ class Topic(models.Model):
 
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    from_sudocuh = models.IntegerField(blank=True, null=True)
     procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
     date_evenement = models.DateField(db_column="date_iso", null=True)
