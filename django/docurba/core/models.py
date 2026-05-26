@@ -118,11 +118,12 @@ CODE_ETAT_COMPLET_TO_LIBELLE = {
 
 
 class EventCategory(StrEnum):
-    PRESCRIPTION = auto()
-    APPROUVE = auto()
-    ABANDON = auto()
-    ANNULE = auto()
-    CADUC = auto()
+    # procedure.status (nuxt side) and column "impact" on the Google Sheet commented out.
+    PRESCRIPTION = auto()  # "en cours"
+    APPROUVE = auto()  # "opposable"
+    ABANDON = auto()  # "abandonné"
+    ANNULE = auto()  # "annulé"
+    CADUC = auto()  # "caduc"
     ARRET_DE_PROJET = auto()
     PORTER_A_CONNAISSANCE = auto()
     PORTER_A_CONNAISSANCE_COMPLEMENTAIRE = auto()
@@ -153,7 +154,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Retrait de la délibération de prescription": EventCategory.ABANDON,
         "Annulation TA totale": EventCategory.ANNULE,
         "Annulation TA": EventCategory.ANNULE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
-        "Abrogation effective": EventCategory.ANNULE,
+        "Abrogation effective": EventCategory.ANNULE,  # should be "abrogé"
         "Arrêt de projet": EventCategory.ARRET_DE_PROJET,
         "Porter à connaissance": EventCategory.PORTER_A_CONNAISSANCE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Porter à connaissance complémentaire": EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
