@@ -93,7 +93,7 @@ CREATE TABLE public.doc_frise_events (
     updated_at timestamp with time zone DEFAULT now(),
     attachements json,
     -- visibility text DEFAULT 'public'::text,
-    from_sudocuh integer,
+    -- from_sudocuh integer,
     -- is_valid boolean DEFAULT true NOT NULL,
     -- procedure_id uuid,
     is_sudocuh_scot boolean,

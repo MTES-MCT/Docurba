@@ -71,6 +71,7 @@ class EventsInline(admin.TabularInline):
         "date_evenement",
         "is_valid",
         "visibility",
+        "from_sudocuh",
     )
 
     def get_queryset(self, request) -> models.QuerySet:
@@ -85,8 +86,10 @@ class EventsInline(admin.TabularInline):
     def has_delete_permission(self, *args: list, **kwargs: dict) -> bool:
         return False
 
-    def has_change_permission(self, *args: list, **kwargs: dict) -> bool:
-        return True
+    def has_change_permission(self, request, obj=None) -> bool:
+        if obj and bool(obj.from_sudocuh):
+            return False
+        return super().has_change_permission(request, obj)
 
 
 class TopicsFilter(admin.SimpleListFilter):
@@ -201,8 +204,10 @@ class EventAdmin(admin.ModelAdmin):
         "date_evenement",
         "is_valid",
         "visibility",
+        "from_sudocuh",
     )
     list_display = ("pk",)
+    list_filter = ("from_sudocuh",)
     search_fields = ("pk",)
     autocomplete_fields = ("profile",)
     fields = [
@@ -213,8 +218,13 @@ class EventAdmin(admin.ModelAdmin):
     def has_add_permission(self, request: object) -> bool:
         return False
 
-    def has_delete_permission(self, request, obj=None) -> bool:
+    def has_delete_permission(self, request: object, obj=None) -> bool:
         return False
+
+    def has_change_permission(self, request: object, obj=None) -> bool:
+        if obj and bool(obj.from_sudocuh):
+            return False
+        return super().has_change_permission(request, obj)
 
     def get_queryset(self, request) -> models.QuerySet:
         queryset = super().get_queryset(request)
