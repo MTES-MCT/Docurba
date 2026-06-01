@@ -18,6 +18,19 @@
                 <v-col cols="12">
                   <VTextDatePicker v-model="event.date_iso" label="Date de l'évènement" />
                 </v-col>
+                <v-col v-if="!validDate" cols="12">
+                  <validation-provider
+                    v-slot="{ errors }"
+                    :custom-messages="{ required: 'Cochez cette case ou changez la date de l\'évènement' }"
+                    :rules="{ required: { allowFalse: false } }"
+                  >
+                    <v-checkbox
+                      v-model="overrideHuwartField"
+                      :error-messages="errors"
+                      :label="`Cet évènement de lancement est ${procedure.started_before_huwart_law ? 'postérieur' : 'antérieur'} à la loi Huwart mais la procédure a été définie comme ${procedure.started_before_huwart_law ? 'antérieure' : 'postérieure'} à la loi Huwart. Cochez cette case pour changer la définition de la procédure.`"
+                    />
+                  </validation-provider>
+                </v-col>
                 <v-col cols="12">
                   <v-textarea
                     v-model="event.description"
@@ -100,6 +113,8 @@
 import axios from 'axios'
 import { mdiTrashCan } from '@mdi/js'
 import FormInput from '@/mixins/FormInput.js'
+import { getEventPhase } from '@/plugins/event'
+
 export default {
   mixins: [FormInput],
   props: {
@@ -145,7 +160,22 @@ export default {
       icons: { mdiTrashCan },
       loading: !!this.eventId,
       saving: false,
-      deleteModal: false
+      deleteModal: false,
+      overrideHuwartField: false
+    }
+  },
+  computed: {
+    // Check if the lauch event date is compatible with the before Huwart law procedure field
+    validDate () {
+      return !this.event.date_iso ||
+        !this.launchEvent ||
+        this.procedure.started_before_huwart_law === (
+          new Date(this.event.date_iso) < new Date('2026-05-26')
+        )
+    },
+    launchEvent () {
+      return !!this.event.type &&
+        getEventPhase(this.procedure.doc_type, this.event.type) === 'Définition des modalités'
     }
   },
   mounted () {
@@ -179,6 +209,11 @@ export default {
         } else {
           const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(upsertEvent).select()
           await this.saveAttachements(savedEvents[0].id)
+        }
+        if (this.overrideHuwartField) {
+          await this.$supabase.from('procedures').update({
+            started_before_huwart_law: !this.procedure.started_before_huwart_law
+          }).eq('id', this.procedure.id)
         }
 
         this.$analytics({
