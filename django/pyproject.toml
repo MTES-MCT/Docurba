@@ -7,7 +7,7 @@ dependencies = [
     "django",
     "django-environ",
     "django-revproxy",
-    "gunicorn[gevent]",
+    # "gunicorn[gevent]",
     "psycopg[binary,pool]",
     "sentry-sdk[django]",
     "whitenoise[brotli]",
