@@ -24,6 +24,13 @@ export function getDocumentTypeEvents (documentType) {
   }
 }
 
+export function getEventPhase (documentType, eventType) {
+  const documentTypeEvents = getDocumentTypeEvents(documentType)
+  const event = documentTypeEvents.find(({ name }) => name === eventType)
+
+  return (event && event.phases) ?? null
+}
+
 export function getProcedureEventsScope (procedure) {
   if (!procedure) {
     return 'aucun'
