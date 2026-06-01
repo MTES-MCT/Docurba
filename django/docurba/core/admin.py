@@ -67,6 +67,7 @@ class EventsInline(admin.TabularInline):
     show_change_link = True
     autocomplete_fields = ("profile",)
     readonly_fields = (
+        "id",
         "type",
         "date_evenement",
         "is_valid",
@@ -207,7 +208,6 @@ class EventAdmin(admin.ModelAdmin):
         "from_sudocuh",
     )
     list_display = ("pk",)
-    list_filter = ("from_sudocuh",)
     search_fields = ("pk",)
     autocomplete_fields = ("profile",)
     fields = [
