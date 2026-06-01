@@ -8,7 +8,7 @@ dependencies = [
     "django-environ",
     "django-revproxy",
     "gunicorn[gevent]",
-    "psycopg[binary,pool]",
+    # "psycopg[binary,pool]",
     "sentry-sdk[django]",
     "whitenoise[brotli]",
     "django-datadog-logger", # https://github.com/namespace-ee/django-datadog-logger
