@@ -644,6 +644,20 @@ class Topic(models.Model):
         return self.name
 
 
+class EventManager(models.Manager):
+    pass
+
+
+class FastLoadingEventManager(EventManager):
+    def get_queryset(self) -> Self:
+        # Text, Array or JSON fields.
+        heavy_fields = [
+            "description",
+            "attachements",
+        ]
+        return super().get_queryset().defer(*heavy_fields)
+
+
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
     procedure = models.ForeignKey(
@@ -669,11 +683,15 @@ class Event(models.Model):
     )
     profile = models.ForeignKey("users.Profile", models.DO_NOTHING, null=True)
 
+    objects = FastLoadingEventManager()
+    full_objects = EventManager()
+
     class Meta:
         verbose_name = "évènement"
         managed = False
         db_table = "doc_frise_events"
         ordering = ("-date_evenement",)
+        base_manager_name = "objects"
 
     def __str__(self) -> str:
         return self.type
