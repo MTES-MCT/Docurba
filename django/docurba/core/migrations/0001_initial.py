@@ -170,19 +170,34 @@ class Migration(migrations.Migration):
                         (
                             "id",
                             models.UUIDField(
-                                default=uuid.uuid4, primary_key=True, serialize=False
+                                db_default=django.contrib.postgres.functions.RandomUUID(),
+                                editable=False,
+                                primary_key=True,
+                                serialize=False,
                             ),
                         ),
                         (
                             "from_sudocuh",
-                            models.IntegerField(blank=True, null=True),
+                            models.IntegerField(
+                                blank=True,
+                                null=True,
+                                unique=True,
+                                verbose_name="from_sudocuh",
+                            ),
                         ),
                         ("type", models.TextField(blank=True, null=True)),
                         (
                             "date_evenement_string",
-                            models.CharField(db_column="date_iso", null=True),
+                            models.CharField(
+                                db_column="date_iso", null=True, verbose_name="date"
+                            ),
                         ),
-                        ("is_valid", models.BooleanField(db_default=True)),
+                        (
+                            "is_valid",
+                            models.BooleanField(
+                                db_default=True, verbose_name="est valide"
+                            ),
+                        ),
                         (
                             "profile",
                             models.ForeignKey(
@@ -190,6 +205,99 @@ class Migration(migrations.Migration):
                                 on_delete=django.db.models.DO_NOTHING,
                                 to="users.Profile",
                                 verbose_name="profil",
+                            ),
+                        ),
+                        (
+                            "actors",
+                            models.JSONField(
+                                blank=True, null=True, verbose_name="acteurs"
+                            ),
+                        ),
+                        (
+                            "attachements",
+                            models.JSONField(
+                                blank=True, null=True, verbose_name="pièces-jointes"
+                            ),
+                        ),
+                        (
+                            "code",
+                            models.TextField(blank=True, null=True),
+                        ),
+                        (
+                            "created_at",
+                            models.DateTimeField(
+                                blank=True,
+                                db_default=django.contrib.postgres.functions.TransactionNow(),
+                                null=True,
+                                verbose_name="créé le",
+                            ),
+                        ),
+                        (
+                            "description",
+                            models.TextField(blank=True, null=True),
+                        ),
+                        (
+                            "from_sudocuh_procedure_id",
+                            models.IntegerField(
+                                blank=True,
+                                null=True,
+                                verbose_name="from_sudocuh_procedure_id",
+                            ),
+                        ),
+                        (
+                            "is_sudocuh_scot",
+                            models.BooleanField(
+                                blank=True, null=True, verbose_name="is_sudocuh_scot"
+                            ),
+                        ),
+                        (
+                            "procedure",
+                            models.ForeignKey(
+                                null=True,
+                                on_delete=django.db.models.deletion.DO_NOTHING,
+                                to="core.procedure",
+                                verbose_name="procédure",
+                            ),
+                        ),
+                        (
+                            "project",
+                            models.ForeignKey(
+                                blank=True,
+                                null=True,
+                                on_delete=django.db.models.deletion.SET_NULL,
+                                to="core.project",
+                            ),
+                        ),
+                        (
+                            "test",
+                            models.BooleanField(blank=True, null=True),
+                        ),
+                        (
+                            "updated_at",
+                            models.DateTimeField(
+                                blank=True,
+                                db_default=django.contrib.postgres.functions.TransactionNow(),
+                                null=True,
+                                verbose_name="modifié le",
+                            ),
+                        ),
+                        (
+                            "visibility",
+                            models.TextField(
+                                blank=True,
+                                choices=[
+                                    (
+                                        "public",
+                                        "Publique - Visible par le grand public",
+                                    ),
+                                    (
+                                        "private",
+                                        "Privé - Visible uniquement par les collaborateur·ices de la procédure",
+                                    ),
+                                ],
+                                db_default="public",
+                                null=True,
+                                verbose_name="visibilité",
                             ),
                         ),
                     ],

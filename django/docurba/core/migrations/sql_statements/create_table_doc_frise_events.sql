@@ -1,25 +1,25 @@
 -- commented columns are created previously by the prod_schema_before_django_migrations.sql
 
-ALTER TABLE public.doc_frise_events
-    -- ADD COLUMN id uuid DEFAULT extensions.uuid_generate_v4() NOT NULL,
-    -- ADD COLUMN project_id uuid,
-    ADD COLUMN type text,
-    ADD COLUMN date_iso date,
-    -- ADD COLUMN description text,
-    -- ADD COLUMN created_at timestamp with time zone DEFAULT now(),
-    -- ADD COLUMN actors json,
-    -- ADD COLUMN updated_at timestamp with time zone DEFAULT now(),
-    -- ADD COLUMN attachements json,
-    ADD COLUMN visibility text DEFAULT 'public'::text,
-    ADD COLUMN from_sudocuh integer,
-    ADD COLUMN is_valid boolean DEFAULT true NOT NULL,
-    ADD COLUMN procedure_id uuid,
-    -- ADD COLUMN is_sudocuh_scot boolean,
-    ADD COLUMN profile_id uuid
-    -- ADD COLUMN test boolean DEFAULT false,
-    -- ADD COLUMN code text,
-    -- ADD COLUMN from_sudocuh_procedure_id integer
-;
+CREATE TABLE public.doc_frise_events (
+    id uuid DEFAULT extensions.uuid_generate_v4() NOT NULL,
+    project_id uuid,
+    type text,
+    date_iso date,
+    description text,
+    created_at timestamp with time zone DEFAULT now(),
+    actors json,
+    updated_at timestamp with time zone DEFAULT now(),
+    attachements json,
+    visibility text DEFAULT 'public'::text,
+    from_sudocuh integer,
+    is_valid boolean DEFAULT true NOT NULL,
+    procedure_id uuid,
+    is_sudocuh_scot boolean,
+    profile_id uuid,
+    test boolean DEFAULT false,
+    code text,
+    from_sudocuh_procedure_id integer
+);
 
 
 CREATE FUNCTION public.set_procedure_status(procedure public.procedures) RETURNS void
@@ -130,7 +130,8 @@ ALTER TABLE ONLY public.doc_frise_events
     ADD CONSTRAINT doc_frise_events_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(user_id),
     ADD CONSTRAINT public_doc_frise_events_procedure_id_fkey FOREIGN KEY (procedure_id) REFERENCES public.procedures(id) ON DELETE CASCADE,
     ADD CONSTRAINT doc_frise_events_from_sudocuh_key UNIQUE (from_sudocuh),
-    ADD CONSTRAINT doc_frise_events_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id);
+    ADD CONSTRAINT doc_frise_events_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id),
+    ADD CONSTRAINT doc_frise_events_pkey PRIMARY KEY (id);
 
 CREATE POLICY "Users Can Read" ON public.doc_frise_events FOR SELECT USING (true);
 
