@@ -637,37 +637,6 @@ COMMENT ON COLUMN public.profiles.no_signup IS 'Si l''utilisateur passe par un d
 
 COMMENT ON COLUMN public.profiles.is_admin IS 'super admin bypass';
 
-
---
--- Name: projects; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.projects (
-    created_at timestamp with time zone DEFAULT now(),
-    name character varying,
-    doc_type character varying NOT NULL,
-    region character varying,
-    "PAC" jsonb,
-    owner uuid,
-    id uuid DEFAULT extensions.uuid_generate_v4() NOT NULL,
-    towns jsonb,
-    epci jsonb,
-    trame character varying,
-    archived boolean DEFAULT false NOT NULL,
-    sudocuh_procedure_id integer,
-    collectivite_id text,
-    from_sudocuh integer,
-    current_perimetre jsonb[],
-    initial_perimetre jsonb[],
-    collectivite_porteuse_id text,
-    is_sudocuh_scot boolean,
-    current_perimetre_new jsonb,
-    test boolean,
-    doc_type_code text,
-    from_sudocuh_procedure_id integer
-);
-
-
 --
 -- Name: projects_sharing; Type: TABLE; Schema: public; Owner: -
 --
@@ -905,30 +874,6 @@ ALTER TABLE ONLY public.projects_sharing
 
 
 --
--- Name: projects projects_from_sudocuh_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.projects
-    ADD CONSTRAINT projects_from_sudocuh_key UNIQUE (from_sudocuh);
-
-
---
--- Name: projects projects_from_sudocuh_procedure_id_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.projects
-    ADD CONSTRAINT projects_from_sudocuh_procedure_id_key UNIQUE (from_sudocuh_procedure_id);
-
-
---
--- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.projects
-    ADD CONSTRAINT projects_pkey PRIMARY KEY (id);
-
-
---
 -- Name: regions regions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -994,35 +939,11 @@ CREATE INDEX procedure_id_idx ON public.analytics_events USING btree (procedure_
 
 
 --
--- Name: doc_frise_events doc_frise_events_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.doc_frise_events
-    ADD CONSTRAINT doc_frise_events_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id);
-
-
---
 -- Name: etapes_versement etapes_versement_versement_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.etapes_versement
     ADD CONSTRAINT etapes_versement_versement_id_fkey FOREIGN KEY (versement_id) REFERENCES public.versements(id) ON DELETE CASCADE;
-
-
---
--- Name: pac_sections_project pac_sections_project_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.pac_sections_project
-    ADD CONSTRAINT pac_sections_project_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id);
-
-
---
--- Name: prescriptions prescriptions_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.prescriptions
-    ADD CONSTRAINT prescriptions_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id);
 
 
 --
@@ -1048,15 +969,6 @@ ALTER TABLE ONLY public.procedures
 ALTER TABLE ONLY public.procedures
     ADD CONSTRAINT procedures_previous_opposable_procedure_id_fkey FOREIGN KEY (previous_opposable_procedures_ids) REFERENCES public.procedures(id);
 
-
---
--- Name: procedures procedures_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.procedures
-    ADD CONSTRAINT procedures_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id) ON DELETE CASCADE;
-
-
 --
 -- Name: procedures_validations procedures_validations_procedure_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
@@ -1071,14 +983,6 @@ ALTER TABLE ONLY public.procedures_validations
 
 ALTER TABLE ONLY public.procedures_validations
     ADD CONSTRAINT procedures_validations_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(user_id);
-
-
---
--- Name: projects_sharing projectsSharing_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.projects_sharing
-    ADD CONSTRAINT "projectsSharing_project_id_fkey" FOREIGN KEY (project_id) REFERENCES public.projects(id);
 
 
 --
@@ -1102,14 +1006,6 @@ ALTER TABLE ONLY public.github_ref_roles
 
 ALTER TABLE ONLY public.profiles
     ADD CONSTRAINT public_profiles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
-
-
---
--- Name: projects public_projects_owner_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.projects
-    ADD CONSTRAINT public_projects_owner_fkey FOREIGN KEY (owner) REFERENCES public.profiles(user_id) ON DELETE SET NULL;
 
 
 --
@@ -1139,16 +1035,6 @@ CREATE POLICY "Enable delete for users based on user_id" ON public.procedures_va
 
 CREATE POLICY "Enable insert access for all users" ON public.analytics_events FOR INSERT WITH CHECK (true);
 
-
---
--- Name: projects Enable insert for authenticated users only; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Enable insert for authenticated users only" ON public.projects FOR INSERT WITH CHECK (( SELECT profiles.verified
-   FROM public.profiles
-  WHERE (auth.uid() = profiles.user_id)));
-
-
 --
 -- Name: procedures_validations Enable insert for users based on role; Type: POLICY; Schema: public; Owner: -
 --
@@ -1165,25 +1051,6 @@ CREATE POLICY "Enable insert for users based on role" ON public.procedures_valid
 --
 
 CREATE POLICY "Enable insert to all users" ON public.news_letter_emails FOR INSERT WITH CHECK (true);
-
-
-
---
--- Name: projects Enable read for users; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Enable read for users" ON public.projects FOR SELECT USING (true);
-
-
---
--- Name: projects Enable update for users verified; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Enable update for users verified" ON public.projects FOR UPDATE USING (( SELECT profiles.verified
-   FROM public.profiles
-  WHERE (auth.uid() = profiles.user_id))) WITH CHECK (( SELECT profiles.verified
-   FROM public.profiles
-  WHERE (auth.uid() = profiles.user_id)));
 
 --
 -- Name: admin_users_dept Insert user request; Type: POLICY; Schema: public; Owner: -
@@ -1235,17 +1102,6 @@ CREATE POLICY "Select if DDT or Dreal" ON public.procedures_validations FOR SELE
   WHERE (auth.uid() = profiles.user_id)) = 'ddt'::text) OR (( SELECT profiles.poste
    FROM public.profiles
   WHERE (auth.uid() = profiles.user_id)) = 'dreal'::text)));
-
-
---
--- Name: projects_sharing Update; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Update" ON public.projects_sharing FOR UPDATE USING (((auth.uid() = shared_by) AND (auth.uid() = ( SELECT projects.owner
-   FROM public.projects
-  WHERE (projects.id = projects_sharing.project_id))))) WITH CHECK (((auth.uid() = shared_by) AND (auth.uid() = ( SELECT projects.owner
-   FROM public.projects
-  WHERE (projects.id = projects_sharing.project_id)))));
 
 
 --
@@ -1494,12 +1350,6 @@ ALTER TABLE public.procedures_validations ENABLE ROW LEVEL SECURITY;
 --
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-
---
--- Name: projects; Type: ROW SECURITY; Schema: public; Owner: -
---
-
-ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: projects_sharing; Type: ROW SECURITY; Schema: public; Owner: -
@@ -1934,15 +1784,6 @@ GRANT SELECT(is_staff) ON TABLE public.profiles TO authenticated;
 
 
 --
--- Name: TABLE projects; Type: ACL; Schema: public; Owner: -
---
-
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.projects TO anon;
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.projects TO authenticated;
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.projects TO service_role;
-
-
---
 -- Name: TABLE projects_sharing; Type: ACL; Schema: public; Owner: -
 --
 
@@ -1998,12 +1839,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,INSERT,
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLES TO authenticated;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLES TO service_role;
 
---
--- Name: projects_sharing Pipedrive Sharing Update; Type: TRIGGER; Schema: public; Owner: -
---
-
--- CREATE TRIGGER "Pipedrive Sharing Update" AFTER INSERT ON public.projects_sharing FOR EACH ROW EXECUTE FUNCTION supabase_functions.http_request('pipedrive/sharing', 'POST', '{"Content-type":"application/json"}', '{}', '10000');
-
 
 -- Performs an HTTP request on Pipedrive.
 --
@@ -2012,33 +1847,17 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,INSERT,
 
 -- CREATE TRIGGER "Pipedrive Update" AFTER INSERT OR UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION supabase_functions.http_request('pipedrive/profiles', 'POST', '{"Content-type":"application/json"}', '{}', '1000');
 
+--
+-- Name: projects_sharing Pipedrive Sharing Update; Type: TRIGGER; Schema: public; Owner: -
+--
+
+-- CREATE TRIGGER "Pipedrive Sharing Update" AFTER INSERT ON public.projects_sharing FOR EACH ROW EXECUTE FUNCTION supabase_functions.http_request('pipedrive/sharing', 'POST', '{"Content-type":"application/json"}', '{}', '10000');
 
 -- The `auth.jwt()` function does not exist. It is installed by the `auth` Supabase service.
 -- See https://github.com/supabase/auth/blob/master/migrations/00_init_auth_schema.up.sql
 --
 -- Name: projects_sharing Delete; Type: POLICY; Schema: public; Owner: -
 --
-
--- CREATE POLICY "Delete" ON public.projects_sharing FOR DELETE USING ((public.is_admin(auth.uid()) OR (((auth.uid() = shared_by) OR (shared_by IS NULL)) AND ((auth.uid() = ( SELECT projects.owner
---    FROM public.projects
---   WHERE (projects.id = projects_sharing.project_id))) OR (EXISTS ( SELECT 1
---    FROM (public.projects p
---      JOIN public.profiles prof ON ((prof.user_id = auth.uid())))
---   WHERE ((p.id = projects_sharing.project_id) AND (prof.departement = (p.trame)::text)))) OR public.check_project_sharing_permission(project_id, (auth.jwt() ->> 'email'::text))))));
-
-
--- The `auth.jwt()` function does not exist. It is installed by the `auth` Supabase service.
--- See https://github.com/supabase/auth/blob/master/migrations/00_init_auth_schema.up.sql
---
--- Name: projects_sharing Insert; Type: POLICY; Schema: public; Owner: -
---
-
--- CREATE POLICY "Insert" ON public.projects_sharing FOR INSERT WITH CHECK ((public.is_admin(auth.uid()) OR ((auth.uid() = shared_by) AND ((auth.uid() = ( SELECT projects.owner
---    FROM public.projects
---   WHERE (projects.id = projects_sharing.project_id))) OR (EXISTS ( SELECT 1
---    FROM (public.projects p
---      JOIN public.profiles prof ON ((prof.user_id = auth.uid())))
---   WHERE ((p.id = projects_sharing.project_id) AND (prof.departement = (p.trame)::text)))) OR public.check_project_sharing_permission(project_id, (auth.jwt() ->> 'email'::text))))));
 
 
 

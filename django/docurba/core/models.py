@@ -5,6 +5,7 @@ from functools import cached_property
 from operator import attrgetter
 from typing import Self
 
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
 from django.db import connection, models
 from django.db.models import Value
@@ -644,6 +645,97 @@ class Topic(models.Model):
         return self.name
 
 
+class ProjectManager(models.Manager):
+    pass
+
+
+class FastLoadingProjectManager(ProjectManager):
+    def get_queryset(self) -> Self:
+        # There is no mention of these fields on Nuxt side.
+        to_be_removed_fields = [
+            "test",
+            "is_sudocuh_scot",
+            "initial_perimetre",
+            "current_perimetre_new",
+        ]
+        # Text, Array or JSON fields.
+        heavy_fields = [
+            "epci",
+            "current_perimetre",
+            "doc_type_code",
+            "pac",
+            "towns",
+        ]
+        return super().get_queryset().defer(*to_be_removed_fields, *heavy_fields)
+
+
+class Project(models.Model):
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID())
+    created_at = models.DateTimeField(db_default=models.functions.Now())
+    archived = models.BooleanField(db_default=False)
+    name = models.CharField(blank=True, null=True)  # noqa: DJ001
+    test = models.BooleanField(blank=True, null=True)
+
+    collectivite = models.ForeignKey(
+        "core.Collectivite",
+        blank=True,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="projects",
+        to_field="code_insee_unique",
+    )
+    collectivite_porteuse = models.ForeignKey(
+        "core.Collectivite",
+        blank=True,
+        null=True,
+        on_delete=models.DO_NOTHING,
+        related_name="owned_projects",
+        to_field="code_insee_unique",
+    )
+    epci = models.JSONField(blank=True, null=True)
+    current_perimetre = ArrayField(
+        base_field=models.JSONField(blank=True, null=True),
+        blank=True,
+        null=True,
+    )
+    initial_perimetre = ArrayField(
+        base_field=models.JSONField(blank=True, null=True),
+        blank=True,
+        null=True,
+    )
+    current_perimetre_new = models.JSONField(blank=True, null=True)
+    doc_type = models.CharField()
+    doc_type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
+
+    from_sudocuh = models.IntegerField(unique=True, blank=True, null=True)
+    from_sudocuh_procedure_id = models.IntegerField(unique=True, blank=True, null=True)
+    sudocuh_procedure_id = models.IntegerField(blank=True, null=True)
+    is_sudocuh_scot = models.BooleanField(
+        blank=True, null=True
+    )  # No reference in Nuxt's side but column is filled with different values.
+
+    pac = models.JSONField(db_column="PAC", blank=True, null=True)
+    trame = models.CharField(blank=True, null=True)  # noqa: DJ001
+
+    region = models.CharField(blank=True, null=True)  # noqa: DJ001
+    towns = models.JSONField(blank=True, null=True)
+
+    owner = models.ForeignKey(
+        "users.Profile", models.DO_NOTHING, db_column="owner", blank=True, null=True
+    )
+
+    objects = FastLoadingProjectManager()
+    full_objects = ProjectManager()
+
+    class Meta:
+        verbose_name = "projet"
+        db_table = "projects"
+        base_manager_name = "objects"
+
+    def __str__(self) -> str:
+        return f"{self.pk} - {self.name}"
+
+
 class EventManager(models.Manager):
     pass
 
@@ -699,6 +791,9 @@ class Event(models.Model):
     profile = models.ForeignKey(
         "users.Profile", models.DO_NOTHING, null=True, verbose_name="profil"
     )
+    project = models.ForeignKey(
+        "core.Project", blank=True, null=True, on_delete=models.SET_NULL
+    )
     actors = models.JSONField(blank=True, null=True, verbose_name="acteurs")
     is_sudocuh_scot = models.BooleanField(
         blank=True, null=True, verbose_name="is_sudocuh_scot"
@@ -728,7 +823,7 @@ class Event(models.Model):
                 "is_valid",
                 name="aaaaa",
             ),
-            models.Index(
+            OversizedIndex(
                 "procedure",
                 models.F("date_evenement").desc(),
                 name="idx_doc_frise_events_procedure_id_date_iso",
