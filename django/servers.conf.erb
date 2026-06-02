@@ -1,0 +1,28 @@
+# See https://doc.scalingo.com/platform/deployment/buildpacks/nginx
+# & https://doc.scalingo.com/platform/networking/public/routing#headers
+# & https://docs.djangoproject.com/en/6.0/ref/settings/#std-setting-SECURE_PROXY_SSL_HEADER
+
+upstream gunicorn_server {
+    # fail_timeout=0 means we always retry an upstream even if it failed
+    # to return a good HTTP response
+
+    # for UNIX domain socket setups
+    server unix:/tmp/gunicorn.sock fail_timeout=0;
+}
+
+server {
+    server_name localhost;
+    listen <%= ENV['PORT'] %>;
+
+    charset utf-8;
+
+    location ~ (/api-internes|/api/communes|/api/scots|/api/perimetres|/_admin|/static) {
+        proxy_pass http://gunicorn_server;
+        proxy_set_header Host   $host;
+        # Scalingo sets the X-Forwarded-Proto headers
+    }
+
+    location / {
+      proxy_pass <%= ENV["UPSTREAM_NUXT"] %>;
+    }
+}
