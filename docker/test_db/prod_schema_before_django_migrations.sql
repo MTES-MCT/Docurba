@@ -79,31 +79,6 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: doc_frise_events; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.doc_frise_events (
-    id uuid DEFAULT extensions.uuid_generate_v4() NOT NULL,
-    project_id uuid,
-    -- type text,
-    -- date_iso date,
-    description text,
-    created_at timestamp with time zone DEFAULT now(),
-    actors json,
-    updated_at timestamp with time zone DEFAULT now(),
-    attachements json,
-    -- visibility text DEFAULT 'public'::text,
-    -- from_sudocuh integer,
-    -- is_valid boolean DEFAULT true NOT NULL,
-    -- procedure_id uuid,
-    is_sudocuh_scot boolean,
-    -- profile_id uuid,
-    test boolean DEFAULT false,
-    code text,
-    from_sudocuh_procedure_id integer
-);
-
---
 -- Name: pac_sections; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -712,14 +687,6 @@ ALTER TABLE ONLY public.admin_users_region
 
 ALTER TABLE ONLY public.analytics_events
     ADD CONSTRAINT analytics_events_pkey PRIMARY KEY (id);
-
-
---
--- Name: doc_frise_events doc_frise_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.doc_frise_events
-    ADD CONSTRAINT doc_frise_events_pkey PRIMARY KEY (id);
 
 
 --

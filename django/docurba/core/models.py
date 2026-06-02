@@ -817,7 +817,6 @@ class Event(models.Model):
 
     class Meta:
         verbose_name = "évènement"
-        managed = False
         db_table = "doc_frise_events"
         ordering = ("-date_evenement",)
         base_manager_name = "objects"
