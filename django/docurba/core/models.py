@@ -718,6 +718,22 @@ class Event(models.Model):
         db_table = "doc_frise_events"
         ordering = ("-date_evenement",)
         base_manager_name = "objects"
+        indexes = (
+            models.Index(
+                "procedure",
+                models.F(
+                    "date_evenement"
+                ).desc(),  # https://github.com/django-extensions/django-extensions/issues/1790
+                "type",
+                "is_valid",
+                name="aaaaa",
+            ),
+            models.Index(
+                "procedure",
+                models.F("date_evenement").desc(),
+                name="idx_doc_frise_events_procedure_id_date_iso",
+            ),
+        )
 
     def __str__(self) -> str:
         return self.type

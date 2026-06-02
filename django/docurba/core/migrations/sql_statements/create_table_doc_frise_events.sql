@@ -120,10 +120,10 @@ create extension if not exists moddatetime schema extensions;
 CREATE TRIGGER handle_updated_at BEFORE UPDATE ON public.doc_frise_events FOR EACH ROW EXECUTE FUNCTION extensions.moddatetime('updated_at');
 CREATE TRIGGER trigger_event_procedure_status_handler AFTER INSERT OR DELETE OR UPDATE ON public.doc_frise_events FOR EACH ROW EXECUTE FUNCTION public.event_procedure_status_handler();
 
-CREATE INDEX aaaaa ON public.doc_frise_events USING btree (procedure_id, date_iso DESC, type, is_valid);
-CREATE INDEX doc_frise_events_profile_id_idx ON public.doc_frise_events USING btree (profile_id);
-CREATE INDEX idx_doc_frise_events_procedure_id ON public.doc_frise_events USING btree (procedure_id);
-CREATE INDEX idx_doc_frise_events_procedure_id_date_iso ON public.doc_frise_events USING btree (procedure_id, date_iso DESC);
+CREATE INDEX aaaaa ON public.doc_frise_events USING btree (procedure_id, date_iso DESC, type, is_valid); -- ok
+CREATE INDEX doc_frise_events_profile_id_idx ON public.doc_frise_events USING btree (profile_id); -- OK
+CREATE INDEX idx_doc_frise_events_procedure_id ON public.doc_frise_events USING btree (procedure_id); -- ok
+CREATE INDEX idx_doc_frise_events_procedure_id_date_iso ON public.doc_frise_events USING btree (procedure_id, date_iso DESC); -- OK
 CREATE INDEX test_index ON public.doc_frise_events USING btree (procedure_id, date_iso); -- removed
 
 ALTER TABLE ONLY public.doc_frise_events
