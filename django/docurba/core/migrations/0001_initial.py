@@ -25,6 +25,10 @@ class Migration(migrations.Migration):
         migrations.SeparateDatabaseAndState(
             database_operations=[
                 migrations.RunSQL(
+                    sql=read_sql_from_file("create_table_projects.sql"),
+                    reverse_sql=read_sql_from_file("drop_table_projects.sql"),
+                ),
+                migrations.RunSQL(
                     sql=read_sql_from_file("create_table_procedures.sql"),
                     reverse_sql=read_sql_from_file("drop_table_procedures.sql"),
                 ),
@@ -40,6 +44,108 @@ class Migration(migrations.Migration):
                 ),
             ],
             state_operations=[
+                migrations.CreateModel(
+                    name="Project",
+                    fields=[
+                        (
+                            "id",
+                            models.UUIDField(
+                                db_default=django.contrib.postgres.functions.RandomUUID(),
+                                primary_key=True,
+                                serialize=False,
+                            ),
+                        ),
+                        (
+                            "created_at",
+                            models.DateTimeField(
+                                db_default=django.db.models.functions.datetime.Now()
+                            ),
+                        ),
+                        ("archived", models.BooleanField(db_default=False)),
+                        ("name", models.CharField(blank=True, null=True)),
+                        ("test", models.BooleanField(blank=True, null=True)),
+                        ("epci", models.JSONField(blank=True, null=True)),
+                        (
+                            "current_perimetre",
+                            django.contrib.postgres.fields.ArrayField(
+                                base_field=models.JSONField(blank=True, null=True),
+                                blank=True,
+                                null=True,
+                            ),
+                        ),
+                        (
+                            "initial_perimetre",
+                            django.contrib.postgres.fields.ArrayField(
+                                base_field=models.JSONField(blank=True, null=True),
+                                blank=True,
+                                null=True,
+                            ),
+                        ),
+                        (
+                            "current_perimetre_new",
+                            models.JSONField(blank=True, null=True),
+                        ),
+                        ("doc_type", models.CharField()),
+                        ("doc_type_code", models.TextField(blank=True, null=True)),
+                        (
+                            "from_sudocuh",
+                            models.IntegerField(blank=True, null=True, unique=True),
+                        ),
+                        (
+                            "from_sudocuh_procedure_id",
+                            models.IntegerField(blank=True, null=True, unique=True),
+                        ),
+                        (
+                            "sudocuh_procedure_id",
+                            models.IntegerField(blank=True, null=True),
+                        ),
+                        ("is_sudocuh_scot", models.BooleanField(blank=True, null=True)),
+                        (
+                            "pac",
+                            models.JSONField(blank=True, db_column="PAC", null=True),
+                        ),
+                        ("trame", models.CharField(blank=True, null=True)),
+                        ("region", models.CharField(blank=True, null=True)),
+                        ("towns", models.JSONField(blank=True, null=True)),
+                        (
+                            "collectivite",
+                            models.ForeignKey(
+                                blank=True,
+                                null=True,
+                                on_delete=django.db.models.deletion.DO_NOTHING,
+                                related_name="projects",
+                                to="core.collectivite",
+                                to_field="code_insee_unique",
+                            ),
+                        ),
+                        (
+                            "collectivite_porteuse",
+                            models.ForeignKey(
+                                blank=True,
+                                null=True,
+                                on_delete=django.db.models.deletion.DO_NOTHING,
+                                related_name="owned_projects",
+                                to="core.collectivite",
+                                to_field="code_insee_unique",
+                            ),
+                        ),
+                        (
+                            "owner",
+                            models.ForeignKey(
+                                blank=True,
+                                db_column="owner",
+                                null=True,
+                                on_delete=django.db.models.deletion.DO_NOTHING,
+                                to="users.profile",
+                            ),
+                        ),
+                    ],
+                    options={
+                        "verbose_name": "projet",
+                        "db_table": "projects",
+                        "base_manager_name": "objects",
+                    },
+                ),
                 migrations.CreateModel(
                     name="CommuneProcedure",
                     fields=[

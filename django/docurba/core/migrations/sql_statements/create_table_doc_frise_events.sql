@@ -129,7 +129,8 @@ CREATE INDEX test_index ON public.doc_frise_events USING btree (procedure_id, da
 ALTER TABLE ONLY public.doc_frise_events
     ADD CONSTRAINT doc_frise_events_profile_id_fkey FOREIGN KEY (profile_id) REFERENCES public.profiles(user_id),
     ADD CONSTRAINT public_doc_frise_events_procedure_id_fkey FOREIGN KEY (procedure_id) REFERENCES public.procedures(id) ON DELETE CASCADE,
-    ADD CONSTRAINT doc_frise_events_from_sudocuh_key UNIQUE (from_sudocuh);
+    ADD CONSTRAINT doc_frise_events_from_sudocuh_key UNIQUE (from_sudocuh),
+    ADD CONSTRAINT doc_frise_events_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id);
 
 CREATE POLICY "Users Can Read" ON public.doc_frise_events FOR SELECT USING (true);
 
