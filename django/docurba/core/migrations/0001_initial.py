@@ -199,83 +199,94 @@ class Migration(migrations.Migration):
                         "managed": False,
                     },
                 ),
-            ],
-        ),
-        migrations.CreateModel(
-            name="Procedure",
-            fields=[
-                (
-                    "id",
-                    models.UUIDField(
-                        default=uuid.uuid4, primary_key=True, serialize=False
-                    ),
-                ),
-                (
-                    "from_sudocuh",
-                    models.IntegerField(blank=True, null=True),
-                ),
-                (
-                    "type_document",
-                    models.CharField(
-                        blank=True,
-                        choices=[
-                            ("CC", "Cc"),
-                            ("SCOT", "Scot"),
-                            ("SD", "Sd"),
-                            ("PLU", "Plu"),
-                            ("POS", "Pos"),
-                            ("PLUi", "Plui"),
-                            ("PLUiH", "Pluih"),
-                            ("PLUiHM", "Pluihm"),
-                            ("PLUiM", "Pluim"),
-                        ],
-                        db_column="doc_type",
-                        null=True,
-                    ),
-                ),
-                ("name", models.TextField(blank=True, null=True)),
-                ("type", models.CharField(blank=True, null=True)),
-                ("numero", models.CharField(blank=True, null=True)),
-                (
-                    "created_at",
-                    models.DateTimeField(
-                        db_default=django.db.models.functions.datetime.Now()
-                    ),
-                ),
-                (
-                    "last_updated_at",
-                    models.DateTimeField(
-                        db_default=django.db.models.functions.datetime.Now()
-                    ),
-                ),
-                ("soft_delete", models.BooleanField(db_default=False)),
-                (
-                    "archived",
-                    models.GeneratedField(
-                        db_persist=True,
-                        expression=models.Q(
-                            ("doublon_cache_de__isnull", False),
-                            ("soft_delete", True),
-                            _connector="OR",
+                migrations.CreateModel(
+                    name="Procedure",
+                    fields=[
+                        (
+                            "id",
+                            models.UUIDField(
+                                default=uuid.uuid4, primary_key=True, serialize=False
+                            ),
                         ),
-                        output_field=models.BooleanField(),
-                    ),
-                ),
-                (
-                    "owner",
-                    models.ForeignKey(
-                        null=True,
-                        on_delete=django.db.models.DO_NOTHING,
-                        to="users.Profile",
-                        verbose_name="propriétaire",
-                        related_name="procedures",
-                    ),
+                        (
+                            "from_sudocuh",
+                            models.IntegerField(blank=True, null=True),
+                        ),
+                        (
+                            "type_document",
+                            models.CharField(
+                                blank=True,
+                                choices=[
+                                    ("CC", "Cc"),
+                                    ("SCOT", "Scot"),
+                                    ("SD", "Sd"),
+                                    ("PLU", "Plu"),
+                                    ("POS", "Pos"),
+                                    ("PLUi", "Plui"),
+                                    ("PLUiH", "Pluih"),
+                                    ("PLUiHM", "Pluihm"),
+                                    ("PLUiM", "Pluim"),
+                                ],
+                                db_column="doc_type",
+                                null=True,
+                            ),
+                        ),
+                        ("name", models.TextField(blank=True, null=True)),
+                        ("type", models.CharField(blank=True, null=True)),
+                        ("numero", models.CharField(blank=True, null=True)),
+                        (
+                            "created_at",
+                            models.DateTimeField(
+                                db_default=django.db.models.functions.datetime.Now()
+                            ),
+                        ),
+                        (
+                            "last_updated_at",
+                            models.DateTimeField(
+                                db_default=django.db.models.functions.datetime.Now()
+                            ),
+                        ),
+                        ("soft_delete", models.BooleanField(db_default=False)),
+                        (
+                            "archived",
+                            models.GeneratedField(
+                                db_persist=True,
+                                expression=models.Q(
+                                    ("doublon_cache_de__isnull", False),
+                                    ("soft_delete", True),
+                                    _connector="OR",
+                                ),
+                                output_field=models.BooleanField(),
+                            ),
+                        ),
+                        (
+                            "owner",
+                            models.ForeignKey(
+                                null=True,
+                                on_delete=django.db.models.DO_NOTHING,
+                                to="users.Profile",
+                                verbose_name="propriétaire",
+                                related_name="procedures",
+                            ),
+                        ),
+                        (
+                            "project",
+                            models.ForeignKey(
+                                null=True,
+                                blank=True,
+                                on_delete=django.db.models.SET_NULL,
+                                to="core.project",
+                                verbose_name="project",
+                                related_name="procedures",
+                            ),
+                        ),
+                    ],
+                    options={
+                        "db_table": "procedures",
+                        "managed": False,
+                    },
                 ),
             ],
-            options={
-                "db_table": "procedures",
-                "managed": False,
-            },
         ),
         migrations.CreateModel(
             name="Departement",

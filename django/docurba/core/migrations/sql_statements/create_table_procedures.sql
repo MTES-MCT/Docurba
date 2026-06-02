@@ -2,7 +2,7 @@
 
 ALTER TABLE public.procedures
     -- ADD COLUMN id uuid DEFAULT gen_random_uuid() NOT NULL,
-    -- ADD COLUMN project_id uuid,
+    ADD COLUMN project_id uuid,
     ADD COLUMN type text,
     ADD COLUMN commentaire text,
     ADD COLUMN created_at timestamp with time zone DEFAULT now(),
@@ -77,6 +77,8 @@ CREATE INDEX idx_procedures_is_principale_created_at ON public.procedures USING 
 CREATE INDEX idx_procedures_is_principale_doc_type_created_at ON public.procedures USING btree (is_principale, doc_type, created_at);
 CREATE INDEX idx_procedures_secondary_procedure_of ON public.procedures USING btree (secondary_procedure_of);
 CREATE UNIQUE INDEX procedures_pkey_secondary_null_not_archived ON public.procedures USING btree (id) WHERE ((secondary_procedure_of IS NULL) AND (NOT archived));
+CREATE INDEX idx_project_id ON public.procedures USING btree (project_id);
+
 
 GRANT ALL ON FUNCTION public.procedures_by_insee_codes(codes json) TO anon;
 GRANT ALL ON FUNCTION public.procedures_by_insee_codes(codes json) TO authenticated;
