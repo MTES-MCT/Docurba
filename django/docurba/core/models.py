@@ -1,5 +1,4 @@
 import logging
-import uuid
 from datetime import date
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
@@ -15,7 +14,7 @@ from django.db.models.functions import Now
 from django.urls import reverse
 from django.utils import timezone
 
-from docurba.core.enums import CommuneType, TypeCollectivite
+from docurba.core.enums import CommuneType, TypeCollectivite, VisibilityType
 from docurba.core.utils import OversizedIndex
 
 logger = logging.getLogger(__name__)
@@ -646,16 +645,29 @@ class Topic(models.Model):
 
 
 class Event(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    from_sudocuh = models.IntegerField(blank=True, null=True)
-    procedure = models.ForeignKey(Procedure, models.DO_NOTHING)
-    type = models.TextField(blank=True, null=True)  # noqa: DJ001
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
+    procedure = models.ForeignKey(
+        "core.Procedure", models.DO_NOTHING, editable=False, null=True
+    )
+    type = models.CharField(blank=True, null=True)  # noqa: DJ001
     date_evenement = models.DateField(db_column="date_iso", null=True)
     is_valid = models.BooleanField(db_default=True)
-    visibility = models.TextField(db_default="public")
-    profile = models.ForeignKey(
-        "users.Profile", models.DO_NOTHING, null=True, blank=True, verbose_name="profil"
+    visibility = models.CharField(  # noqa: DJ001
+        blank=True, null=True, db_default="public", choices=VisibilityType
     )
+    description = models.TextField(blank=True, null=True)  # noqa: DJ001
+
+    created_at = models.DateTimeField(
+        blank=True, null=True, db_default=TransactionNow(), editable=False
+    )
+    updated_at = models.DateTimeField(
+        blank=True, null=True, db_default=TransactionNow(), editable=False
+    )
+    attachements = models.JSONField(blank=True, null=True, editable=False)
+    from_sudocuh = models.IntegerField(
+        unique=True, blank=True, null=True, editable=False
+    )
+    profile = models.ForeignKey("users.Profile", models.DO_NOTHING, null=True)
 
     class Meta:
         verbose_name = "évènement"

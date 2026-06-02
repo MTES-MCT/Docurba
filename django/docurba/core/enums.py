@@ -7,6 +7,14 @@ class CommuneType(models.TextChoices):
     UNKWN = "UNKWN", "Inconnu"
 
 
+class VisibilityType(models.TextChoices):
+    PUBLIC = "public", "Publique - Visible par le grand public"
+    PRIVATE = (
+        "private",
+        "Privé - Visible uniquement par les collaborateur·ices de la procédure",
+    )
+
+
 class ProcedureType(models.TextChoices):
     # NOTE(cms): these enums are not really pythonic as they should be in upper case
     # and without space but it's the way they are stored in the database today.
