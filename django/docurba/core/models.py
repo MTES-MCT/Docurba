@@ -668,32 +668,46 @@ class FastLoadingEventManager(EventManager):
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
     procedure = models.ForeignKey(
-        "core.Procedure", models.DO_NOTHING, editable=False, null=True
+        "core.Procedure", models.DO_NOTHING, null=True, verbose_name="procédure"
     )
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
-    date_evenement = models.DateField(db_column="date_iso", null=True)
-    is_valid = models.BooleanField(db_default=True)
-    visibility = models.CharField(  # noqa: DJ001
-        blank=True, null=True, db_default="public", choices=VisibilityType
+    date_evenement = models.DateField(
+        db_column="date_iso", null=True, verbose_name="date"
+    )
+    is_valid = models.BooleanField(db_default=True, verbose_name="est valide")
+    visibility = models.TextField(  # noqa: DJ001
+        blank=True,
+        null=True,
+        db_default="public",
+        choices=VisibilityType,
+        verbose_name="visibilité",
     )
     description = models.TextField(blank=True, null=True)  # noqa: DJ001
 
     created_at = models.DateTimeField(
-        blank=True, null=True, db_default=TransactionNow(), editable=False
+        blank=True, null=True, db_default=TransactionNow(), verbose_name="créé le"
     )
     updated_at = models.DateTimeField(
-        blank=True, null=True, db_default=TransactionNow(), editable=False
+        blank=True, null=True, db_default=TransactionNow(), verbose_name="modifié le"
     )
-    attachements = models.JSONField(blank=True, null=True, editable=False)
+    attachements = models.JSONField(
+        blank=True, null=True, verbose_name="pièces-jointes"
+    )
     from_sudocuh = models.IntegerField(
-        unique=True, blank=True, null=True, editable=False
+        unique=True, blank=True, null=True, verbose_name="from_sudocuh"
     )
-    profile = models.ForeignKey("users.Profile", models.DO_NOTHING, null=True)
-    actors = models.JSONField(blank=True, null=True)
-    is_sudocuh_scot = models.BooleanField(blank=True, null=True)
+    profile = models.ForeignKey(
+        "users.Profile", models.DO_NOTHING, null=True, verbose_name="profil"
+    )
+    actors = models.JSONField(blank=True, null=True, verbose_name="acteurs")
+    is_sudocuh_scot = models.BooleanField(
+        blank=True, null=True, verbose_name="is_sudocuh_scot"
+    )
     test = models.BooleanField(blank=True, null=True)
     code = models.TextField(blank=True, null=True)  # noqa: DJ001
-    from_sudocuh_procedure_id = models.IntegerField(blank=True, null=True)
+    from_sudocuh_procedure_id = models.IntegerField(
+        blank=True, null=True, verbose_name="from_sudocuh_procedure_id"
+    )
 
     objects = FastLoadingEventManager()
     full_objects = EventManager()
