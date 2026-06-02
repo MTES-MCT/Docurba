@@ -20,7 +20,6 @@ class User(models.Model):
     )
 
     class Meta:
-        # Table created by a pre_migrate signal in apps.py.
         managed = False
         db_table = '"auth"."users"'
         verbose_name = "utilisateur"
@@ -43,7 +42,6 @@ class Session(models.Model):
     )
 
     class Meta:
-        # Table created by a pre_migrate signal in apps.py.
         managed = False
         db_table = '"auth"."sessions"'
 
