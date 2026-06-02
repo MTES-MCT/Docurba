@@ -16,6 +16,11 @@ dependencies = [
     "supabase>=2.30.0",
 ]
 
+[project.optional-dependencies]
+deploy = [
+    "supervisor>=4.3.0", # https://www.supervisord.org/index.html : manage nginx & gunicorn processes
+]
+
 # Scalingo command: `uv sync --locked --no-default-groups`
 [dependency-groups]
 dev = [

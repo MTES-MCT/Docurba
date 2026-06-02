@@ -1,5 +1,5 @@
-web: gunicorn config.wsgi --worker-class=gevent --limit-request-line=0 --log-file=-
-# limit-request-line désactivé à cause de https://github.com/MTES-MCT/Docurba/issues/1237
+# https://www.supervisord.org/running.html#running-supervisord
+web: supervisord --configuration=supervisord.conf
 
 postdeploy: bin/post_deploy
 
