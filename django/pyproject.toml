@@ -7,7 +7,6 @@ dependencies = [
     "django",
     "django-environ",
     "django-filter",
-    "django-revproxy",
     "gunicorn[gevent]",
     "psycopg[binary,pool]",
     "sentry-sdk[django]",
