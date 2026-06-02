@@ -650,12 +650,19 @@ class EventManager(models.Manager):
 
 class FastLoadingEventManager(EventManager):
     def get_queryset(self) -> Self:
+        to_be_removed_fields = [
+            "is_sudocuh_scot",
+            "test",
+            "code",
+            "from_sudocuh_procedure_id",
+        ]
         # Text, Array or JSON fields.
         heavy_fields = [
             "description",
             "attachements",
+            "actors",
         ]
-        return super().get_queryset().defer(*heavy_fields)
+        return super().get_queryset().defer(*to_be_removed_fields, *heavy_fields)
 
 
 class Event(models.Model):
@@ -682,6 +689,11 @@ class Event(models.Model):
         unique=True, blank=True, null=True, editable=False
     )
     profile = models.ForeignKey("users.Profile", models.DO_NOTHING, null=True)
+    actors = models.JSONField(blank=True, null=True)
+    is_sudocuh_scot = models.BooleanField(blank=True, null=True)
+    test = models.BooleanField(blank=True, null=True)
+    code = models.TextField(blank=True, null=True)  # noqa: DJ001
+    from_sudocuh_procedure_id = models.IntegerField(blank=True, null=True)
 
     objects = FastLoadingEventManager()
     full_objects = EventManager()
