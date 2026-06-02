@@ -27,7 +27,7 @@
                     <v-checkbox
                       v-model="overrideHuwartField"
                       :error-messages="errors"
-                      :label="`Cet évènement de lancement est ${procedure.started_before_huwart_law ? 'postérieur' : 'antérieur'} à la loi Huwart mais la procédure a été définie comme ${procedure.started_before_huwart_law ? 'antérieure' : 'postérieure'} à la loi Huwart. Cochez cette case pour changer la définition de la procédure.`"
+                      :label="`Cet évènement de lancement est ${procedure.started_before_huwart_law ? 'postérieur' : 'antérieur'} au 26 mai 2026 mais la procédure a été définie comme lancée ${procedure.started_before_huwart_law ? 'avant' : 'après'} le 26 mai 2026 lors de sa création. Cochez cette case pour changer la définition de cette procédure.`"
                     />
                   </validation-provider>
                 </v-col>
@@ -113,7 +113,7 @@
 import axios from 'axios'
 import { mdiTrashCan } from '@mdi/js'
 import FormInput from '@/mixins/FormInput.js'
-import { getEventPhase } from '@/plugins/event'
+import { getLaunchEvent } from '@/plugins/event'
 
 export default {
   mixins: [FormInput],
@@ -174,8 +174,7 @@ export default {
         )
     },
     launchEvent () {
-      return !!this.event.type &&
-        getEventPhase(this.procedure.doc_type, this.event.type) === 'Définition des modalités'
+      return !!this.event.type && getLaunchEvent(this.event.type)
     }
   },
   mounted () {
