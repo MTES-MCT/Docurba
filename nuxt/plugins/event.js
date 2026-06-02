@@ -24,11 +24,14 @@ export function getDocumentTypeEvents (documentType) {
   }
 }
 
-export function getEventPhase (documentType, eventType) {
-  const documentTypeEvents = getDocumentTypeEvents(documentType)
-  const event = documentTypeEvents.find(({ name }) => name === eventType)
-
-  return (event && event.phases) ?? null
+export function getLaunchEvent (eventType) {
+  return [
+    'Arrêté de lancement de la procédure',
+    'Délibération de l\'établissement public qui prescrit',
+    'Délibération de prescription du conseil métropolitain',
+    'Délibération de prescription du conseil municipal',
+    'Délibération de prescription du conseil municipal ou communautaire'
+  ].includes(eventType)
 }
 
 export function getProcedureEventsScope (procedure) {
