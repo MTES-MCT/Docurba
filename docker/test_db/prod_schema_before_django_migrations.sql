@@ -19,7 +19,7 @@ COMMENT ON SCHEMA public IS 'standard public schema';
 -- Commented column are added by Django migrations and handled on Django models.
 CREATE TABLE public.procedures (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    project_id uuid,
+    -- project_id uuid,
     -- type text,
     -- commentaire text,
     -- created_at timestamp with time zone DEFAULT now(),
@@ -915,14 +915,6 @@ CREATE INDEX category_idx ON public.analytics_events USING btree (category);
 --
 
 CREATE INDEX created_at_brin ON public.analytics_events USING brin (created_at);
-
-
---
--- Name: idx_project_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_project_id ON public.procedures USING btree (project_id);
-
 
 --
 -- Name: pac_sections_data_unique_path_ref_url; Type: INDEX; Schema: public; Owner: -

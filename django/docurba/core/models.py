@@ -390,6 +390,14 @@ class Procedure(models.Model):
         verbose_name="propriétaire",
         related_name="procedures",
     )
+    project = models.ForeignKey(
+        "core.Project",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name="projet",
+        related_name="procedures",
+    )
 
     # Denormalized information used only by Nuxt. See self.statut for the Django logic.
     status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001

@@ -12,6 +12,7 @@ from docurba.core.models import (
     Commune,
     Event,
     Procedure,
+    Project,
     Topic,
 )
 
@@ -119,6 +120,22 @@ class CollectiviteTypeFilter(admin.SimpleListFilter):
         return queryset.filter(collectivite_porteuse__type=self.value())
 
 
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    search_fields = [
+        "id",
+    ]
+
+    def has_add_permission(self, request: object) -> bool:
+        return False
+
+    def has_change_permission(self, request, obj=None) -> bool:
+        return False
+
+    def has_delete_permission(self, request, obj=None) -> bool:
+        return False
+
+
 @admin.register(Procedure)
 class ProcedureAdmin(admin.ModelAdmin):
     readonly_fields = (
@@ -137,6 +154,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         "started_before_huwart_law",
         "archived",
     )
+    raw_id_fields = ("project",)
     autocomplete_fields = (
         "collectivite_porteuse",
         "owner",
@@ -155,6 +173,7 @@ class ProcedureAdmin(admin.ModelAdmin):
     fields = [
         *autocomplete_fields,
         *readonly_fields,
+        *raw_id_fields,
         "soft_delete",
     ]
 

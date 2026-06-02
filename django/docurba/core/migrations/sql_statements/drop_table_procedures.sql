@@ -1,6 +1,6 @@
 ALTER TABLE public.procedures
     -- ADD COLUMN id uuid DEFAULT gen_random_uuid() NOT NULL,
-    -- ADD COLUMN project_id uuid,
+    DROP COLUMN project_id,
     DROP COLUMN type,
     DROP COLUMN commentaire,
     DROP COLUMN created_at,
