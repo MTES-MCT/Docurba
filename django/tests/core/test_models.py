@@ -1404,6 +1404,34 @@ class TestEventUpdate:
         assert procedure.perimetre_through.first().opposable
 
 
+@pytest.mark.django_db
+class TestEventManagers:
+    def test_base_manager(self, subtests: pytest.Subtests) -> None:
+        EventFactory()
+        heavy_fields = [
+            "description",
+            "attachements",
+        ]
+
+        event = Event.objects.earliest("id")
+        for item in heavy_fields:
+            with subtests.test(item, item=item):
+                assert item not in event.__dict__
+
+    @pytest.mark.django_db
+    def test_full_objects_manager(self, subtests: pytest.Subtests) -> None:
+        EventFactory()
+        heavy_fields = [
+            "description",
+            "attachements",
+        ]
+
+        event = Event.full_objects.earliest("id")
+        for item in heavy_fields:
+            with subtests.test(item, item=item):
+                assert item in event.__dict__
+
+
 class TestCommuneProceduresPrincipales:
     @pytest.mark.django_db
     def test_exclut_secondaires(
