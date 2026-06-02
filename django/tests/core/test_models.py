@@ -1408,26 +1408,38 @@ class TestEventUpdate:
 class TestEventManagers:
     def test_base_manager(self, subtests: pytest.Subtests) -> None:
         EventFactory()
+        to_be_removed_fields = [
+            "is_sudocuh_scot",
+            "test",  # Still set in Nuxt code but not read.
+            "code",
+            "from_sudocuh_procedure_id",
+        ]
         heavy_fields = [
             "description",
             "attachements",
+            "actors",
         ]
-
         event = Event.objects.earliest("id")
-        for item in heavy_fields:
+        for item in [*to_be_removed_fields, *heavy_fields]:
             with subtests.test(item, item=item):
                 assert item not in event.__dict__
 
     @pytest.mark.django_db
     def test_full_objects_manager(self, subtests: pytest.Subtests) -> None:
         EventFactory()
+        to_be_removed_fields = [
+            "is_sudocuh_scot",
+            "test",
+            "code",
+            "from_sudocuh_procedure_id",
+        ]
         heavy_fields = [
             "description",
             "attachements",
+            "actors",
         ]
-
         event = Event.full_objects.earliest("id")
-        for item in heavy_fields:
+        for item in [*to_be_removed_fields, *heavy_fields]:
             with subtests.test(item, item=item):
                 assert item in event.__dict__
 
