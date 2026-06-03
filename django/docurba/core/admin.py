@@ -48,10 +48,23 @@ class CommuneAdmin(CollectiviteAdmin):
 
 class ProcedurePerimetreInline(admin.TabularInline):
     model = Procedure.perimetre.through
+    readonly_fields = (
+        "collectivite_code",
+        "collectivite_type",
+        "opposable",
+        "departement",
+        "created_at",
+        "added_at",
+    )
+    fields = [
+        *readonly_fields,
+    ]
 
     def get_queryset(self, request) -> models.QuerySet:
         queryset = super().get_queryset(request)
-        return queryset.select_related("commune", "procedure")
+        return queryset.select_related(
+            "procedure",
+        )
 
     def has_add_permission(self, *args: list, **kwargs: dict) -> bool:
         return False
@@ -75,6 +88,10 @@ class EventsInline(admin.TabularInline):
         "visibility",
         "from_sudocuh",
     )
+    fields = [
+        *readonly_fields,
+        *autocomplete_fields,
+    ]
 
     def get_queryset(self, request) -> models.QuerySet:
         queryset = super().get_queryset(request)
@@ -225,8 +242,18 @@ class EventAdmin(admin.ModelAdmin):
         "is_valid",
         "visibility",
         "from_sudocuh",
+        "description",
+        "created_at",
+        "updated_at",
+        "attachements",
+        "actors",
+        "is_sudocuh_scot",
+        "code",
+        "from_sudocuh_procedure_id",
     )
-    list_display = ("pk",)
+    raw_id_fields = ("project",)
+    list_display = ("pk", "created_at")
+    list_filter = ("code",)
     search_fields = ("pk",)
     autocomplete_fields = ("profile",)
     fields = [
