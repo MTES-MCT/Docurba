@@ -10,23 +10,32 @@ upstream gunicorn_server {
     server unix:/tmp/gunicorn.sock fail_timeout=0;
 }
 
+# https://docs.nginx.com/nginx/admin-guide/security-controls/controlling-access-proxied-http/
+limit_req_zone $http_x_forwarded_for zone=per_ip:16m rate=5r/s;
+
 server {
     server_name localhost;
     listen <%= ENV['PORT'] %>;
 
     charset utf-8;
 
+    # TODO: Remove
+    limit_req_dry_run on;
+
     location /static/ {
         alias <%= ENV["HOME"] %>/static/collected/;
+        limit_req zone=per_ip burst=20 delay=10;
     }
 
     location ~ (/api-internes|/api/communes|/api/scots|/api/perimetres|/_admin) {
+        # Scalingo sets the X-Forwarded-Proto headers
         proxy_pass http://gunicorn_server;
         proxy_set_header Host   $host;
-        # Scalingo sets the X-Forwarded-Proto headers
+        limit_req zone=per_ip burst=5;
     }
 
     location / {
-      proxy_pass <%= ENV["UPSTREAM_NUXT"] %>;
+        proxy_pass <%= ENV["UPSTREAM_NUXT"] %>;
+        limit_req zone=per_ip burst=10 delay=5;
     }
 }
