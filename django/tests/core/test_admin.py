@@ -29,9 +29,11 @@ UPDATE_BASE_EXPECTED_NUM_QUERIES = (
 
 @pytest.mark.parametrize("doc_type", TypeDocument.values)
 @pytest.mark.django_db
-def test_procedure_change_page(admin_client: Client, doc_type: TypeDocument) -> None:
+def test_procedure_change_page(
+    admin_session_client: Client, doc_type: TypeDocument
+) -> None:
     procedure = ProcedureFactory(doc_type=doc_type)
-    response = admin_client.get(
+    response = admin_session_client.get(
         reverse("admin:core_procedure_change", kwargs={"object_id": procedure.pk})
     )
     assert response.status_code == 200
@@ -39,49 +41,56 @@ def test_procedure_change_page(admin_client: Client, doc_type: TypeDocument) -> 
 
 @pytest.mark.django_db
 class TestProcedureList:
-    def test_topics_filter(self, admin_client: Client) -> None:
+    def test_topics_filter(self, admin_session_client: Client) -> None:
         topic = Topic.objects.first()
         procedure_with_topic = Procedure.objects.create()
         procedure_with_topic.topics.add(topic)
         procedure_without_topics = Procedure.objects.create()
 
-        response = admin_client.get(
+        response = admin_session_client.get(
             f"{reverse('admin:core_procedure_changelist')}?topic={topic.name}"
         )
         assertNotContains(response, procedure_without_topics.pk)
         assertContains(response, procedure_with_topic.pk)
 
-        response = admin_client.get(reverse("admin:core_procedure_changelist"))
+        response = admin_session_client.get(reverse("admin:core_procedure_changelist"))
         assertContains(response, procedure_without_topics.pk)
         assertContains(response, procedure_with_topic.pk)
 
-    def test_collectivite_porteuse_type_filter(self, admin_client: Client) -> None:
+    def test_collectivite_porteuse_type_filter(
+        self,
+        admin_session_client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
         procedure_polem = ProcedureFactory(
             collectivite_porteuse__type=TypeCollectivite.POLEM
         )
         procedure_cc = ProcedureFactory(collectivite_porteuse__type=TypeCollectivite.CC)
 
-        response = admin_client.get(
+        response = admin_session_client.get(
             f"{reverse('admin:core_procedure_changelist')}?collectivite_type={procedure_polem.collectivite_porteuse.type}"
         )
         assertNotContains(response, procedure_cc.pk)
         assertContains(response, procedure_polem.pk)
 
-        response = admin_client.get(reverse("admin:core_procedure_changelist"))
+        with django_assert_num_queries(8):
+            response = admin_session_client.get(
+                reverse("admin:core_procedure_changelist")
+            )
         assertContains(response, procedure_polem.pk)
         assertContains(response, procedure_cc.pk)
 
-    def test_huwart_law_filter(self, admin_client: Client) -> None:
+    def test_huwart_law_filter(self, admin_session_client: Client) -> None:
         huwart = ProcedureFactory(started_before_huwart_law=True)
         not_huwart = ProcedureFactory(started_before_huwart_law=False)
 
-        response = admin_client.get(
+        response = admin_session_client.get(
             f"{reverse('admin:core_procedure_changelist')}?started_before_huwart_law__exact=1"
         )
         assertNotContains(response, not_huwart.pk)
         assertContains(response, huwart.pk)
 
-        response = admin_client.get(reverse("admin:core_procedure_changelist"))
+        response = admin_session_client.get(reverse("admin:core_procedure_changelist"))
         assertContains(response, not_huwart.pk)
         assertContains(response, huwart.pk)
 
@@ -89,11 +98,13 @@ class TestProcedureList:
 @pytest.mark.django_db
 class TestEventChange:
     def test_nominal_case(
-        self, admin_client: Client, django_assert_num_queries: DjangoAssertNumQueries
+        self,
+        admin_session_client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         event = EventFactory()
-        with django_assert_num_queries(5):
-            response = admin_client.get(
+        with django_assert_num_queries(6):
+            response = admin_session_client.get(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk})
             )
         assert response.status_code == 200
@@ -108,9 +119,10 @@ class TestEventChange:
             + 1  # select doc_frise_events
             + 1  # select procedures_perimetres
             + 1  # select profiles
+            + 1  # select project
         )
         with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + num_queries):
-            response = admin_client.post(
+            response = admin_session_client.post(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
                 data={
                     "profile": new_user.pk,
@@ -120,16 +132,16 @@ class TestEventChange:
             )
         assert response.status_code == 200
 
-    def test_sudocuh_event_is_read_only(self, admin_client: Client) -> None:
+    def test_sudocuh_event_is_read_only(self, admin_session_client: Client) -> None:
         event = EventFactory(from_sudocuh=123456)
-        response = admin_client.get(
+        response = admin_session_client.get(
             reverse("admin:core_event_change", kwargs={"object_id": event.pk})
         )
         assert response.status_code == 200
         assertNotContains(response, "Enregistrer et continuer les modifications")
 
         new_user = ProfileFactory()
-        response = admin_client.post(
+        response = admin_session_client.post(
             reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
             data={
                 "profile": new_user.pk,
