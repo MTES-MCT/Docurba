@@ -237,3 +237,12 @@ export default async ({ $supabase, app }, inject) => {
 
   inject('user', user)
 }
+
+export function getCommitter (user) {
+  return user && user.profile
+    ? {
+        email: user.profile.email,
+        name: `${user.profile.firstname} ${user.profile.lastname}`
+      }
+    : undefined
+}
