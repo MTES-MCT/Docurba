@@ -14,13 +14,6 @@ INSTALLED_APPS.extend(
     ]
 )
 
-
-# https://whitenoise.readthedocs.io/en/stable/django.html
-INSTALLED_APPS.insert(
-    INSTALLED_APPS.index("django.contrib.staticfiles") - 1,
-    "whitenoise.runserver_nostatic",
-)
-
 MIDDLEWARE += [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",

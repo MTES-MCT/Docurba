@@ -10,7 +10,6 @@ dependencies = [
     "gunicorn[gevent]",
     "psycopg[binary,pool]",
     "sentry-sdk[django]",
-    "whitenoise[brotli]",
     "django-datadog-logger", # https://github.com/namespace-ee/django-datadog-logger
     "djangorestframework>=3.17.1",
     "supabase>=2.30.0",

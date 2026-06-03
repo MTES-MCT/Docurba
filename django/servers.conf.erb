@@ -16,7 +16,11 @@ server {
 
     charset utf-8;
 
-    location ~ (/api-internes|/api/communes|/api/scots|/api/perimetres|/_admin|/static) {
+    location /static/ {
+        alias <%= ENV["HOME"] %>/static/collected/;
+    }
+
+    location ~ (/api-internes|/api/communes|/api/scots|/api/perimetres|/_admin) {
         proxy_pass http://gunicorn_server;
         proxy_set_header Host   $host;
         # Scalingo sets the X-Forwarded-Proto headers
