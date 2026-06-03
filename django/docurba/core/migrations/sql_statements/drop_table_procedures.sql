@@ -1,42 +1,10 @@
-ALTER TABLE public.procedures
-    -- ADD COLUMN id uuid DEFAULT gen_random_uuid() NOT NULL,
-    DROP COLUMN project_id,
-    DROP COLUMN type,
-    DROP COLUMN commentaire,
-    DROP COLUMN created_at,
-    DROP COLUMN last_updated_at,
-    DROP COLUMN from_sudocuh,
-    DROP COLUMN collectivite_porteuse_id,
-    DROP COLUMN is_principale,
-    DROP COLUMN status,
-    DROP COLUMN secondary_procedure_of,
-    DROP COLUMN doc_type,
-    -- ADD COLUMN is_sectoriel boolean,
-    DROP COLUMN is_scot,
-    DROP COLUMN is_pluih,
-    DROP COLUMN is_pdu,
-    DROP COLUMN mandatory_pdu,
-    -- ADD COLUMN moe jsonb,
-    -- ADD COLUMN volet_qualitatif jsonb,
-    -- ADD COLUMN sudocu_secondary_procedure_of integer,
-    -- ADD COLUMN departements text[],
-    DROP COLUMN current_perimetre,
-    DROP COLUMN initial_perimetre,
-    DROP COLUMN name,
-    -- ADD COLUMN is_sudocuh_scot boolean,
-    -- ADD COLUMN testing boolean,
-    DROP COLUMN numero,
-    DROP COLUMN owner_id,
-    -- ADD COLUMN previous_opposable_procedures_ids uuid,
-    -- ADD COLUMN test boolean DEFAULT false,
-    -- ADD COLUMN type_code text,
-    -- ADD COLUMN doc_type_code text,
-    -- ADD COLUMN comment_dgd text,
-    -- ADD COLUMN shareable boolean DEFAULT false,
-    -- ADD COLUMN doublon_cache_de_id uuid,
-    DROP COLUMN archived,
-    DROP COLUMN soft_delete
-;
+ALTER TABLE ONLY public.versements
+    DROP CONSTRAINT versements_procedure_id_fkey;
+
+ALTER TABLE ONLY public.procedures_validations
+    DROP CONSTRAINT procedures_validations_procedure_id_fkey;
+
+DROP TABLE public.procedures;
 
 DROP FUNCTION public.procedures_by_insee_codes;
 DROP FUNCTION public.procedures_by_sudocuh_ids;

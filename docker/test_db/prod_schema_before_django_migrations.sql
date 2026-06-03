@@ -13,52 +13,6 @@
 COMMENT ON SCHEMA public IS 'standard public schema';
 
 --
--- Name: procedures; Type: TABLE; Schema: public; Owner: -
---
-
--- Commented column are added by Django migrations and handled on Django models.
-CREATE TABLE public.procedures (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    -- project_id uuid,
-    -- type text,
-    -- commentaire text,
-    -- created_at timestamp with time zone DEFAULT now(),
-    -- last_updated_at timestamp with time zone DEFAULT now(),
-    -- from_sudocuh integer,
-    -- collectivite_porteuse_id text,
-    -- is_principale boolean,
-    -- status text,
-    -- secondary_procedure_of uuid,
-    -- doc_type text,
-    is_sectoriel boolean,
-    -- is_scot boolean,
-    -- is_pluih boolean,
-    -- is_pdu boolean,
-    -- mandatory_pdu boolean,
-    moe jsonb,
-    volet_qualitatif jsonb,
-    sudocu_secondary_procedure_of integer,
-    departements text[],
-    -- current_perimetre jsonb,
-    -- initial_perimetre jsonb,
-    -- name text,
-    is_sudocuh_scot boolean,
-    testing boolean,
-    -- numero text,
-    -- owner_id uuid,
-    previous_opposable_procedures_ids uuid,
-    test boolean DEFAULT false,
-    type_code text,
-    doc_type_code text,
-    comment_dgd text,
-    shareable boolean DEFAULT false,
-    -- soft_delete boolean DEFAULT false NOT NULL,
-    -- archived boolean GENERATED ALWAYS AS (((doublon_cache_de_id IS NOT NULL) OR soft_delete)) STORED,
-    -- comment_from_sudocuh text DEFAULT ''::text NOT NULL,
-    doublon_cache_de_id uuid
-);
-
---
 -- Name: pac_sections_dept; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -802,21 +756,6 @@ ALTER TABLE ONLY public.prescriptions
 
 
 --
--- Name: procedures procedures_doublon_cache_de_id_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.procedures
-    ADD CONSTRAINT procedures_doublon_cache_de_id_key UNIQUE (doublon_cache_de_id);
-
---
--- Name: procedures procedures_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.procedures
-    ADD CONSTRAINT procedures_pkey PRIMARY KEY (id);
-
-
---
 -- Name: procedures_validations procedures_validation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -914,29 +853,6 @@ ALTER TABLE ONLY public.prescriptions
 
 
 --
--- Name: procedures procedures_doublon_cache_de_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.procedures
-    ADD CONSTRAINT procedures_doublon_cache_de_id_fkey FOREIGN KEY (doublon_cache_de_id) REFERENCES public.procedures(id) ON UPDATE CASCADE ON DELETE RESTRICT;
-
-
---
--- Name: procedures procedures_previous_opposable_procedure_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.procedures
-    ADD CONSTRAINT procedures_previous_opposable_procedure_id_fkey FOREIGN KEY (previous_opposable_procedures_ids) REFERENCES public.procedures(id);
-
---
--- Name: procedures_validations procedures_validations_procedure_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.procedures_validations
-    ADD CONSTRAINT procedures_validations_procedure_id_fkey FOREIGN KEY (procedure_id) REFERENCES public.procedures(id);
-
-
---
 -- Name: procedures_validations procedures_validations_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -973,13 +889,6 @@ ALTER TABLE ONLY public.profiles
 
 ALTER TABLE ONLY public.projects_sharing
     ADD CONSTRAINT public_projects_sharing_shared_by_fkey FOREIGN KEY (shared_by) REFERENCES public.profiles(user_id) ON UPDATE CASCADE ON DELETE CASCADE;
-
---
--- Name: versements versements_procedure_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.versements
-    ADD CONSTRAINT versements_procedure_id_fkey FOREIGN KEY (procedure_id) REFERENCES public.procedures(id);
 
 --
 -- Name: procedures_validations Enable delete for users based on user_id; Type: POLICY; Schema: public; Owner: -
@@ -1085,13 +994,6 @@ CREATE POLICY "Users Can Insert" ON public.profiles FOR INSERT WITH CHECK (true)
 
 
 --
--- Name: procedures Users Can Read; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Users Can Read" ON public.procedures FOR SELECT USING (true);
-
-
---
 -- Name: pac_sections Users Can read; Type: POLICY; Schema: public; Owner: -
 --
 
@@ -1129,15 +1031,6 @@ CREATE POLICY "Users can read" ON public.github_ref_roles FOR SELECT USING (true
 
 
 --
--- Name: procedures Verified Can Delete; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Verified Can Delete" ON public.procedures FOR DELETE USING (( SELECT profiles.verified
-   FROM public.profiles
-  WHERE (auth.uid() = profiles.user_id)));
-
-
---
 -- Name: github_ref_roles Verified Can Insert; Type: POLICY; Schema: public; Owner: -
 --
 
@@ -1165,15 +1058,6 @@ CREATE POLICY "Verified Can Insert" ON public.pac_sections_data FOR INSERT WITH 
 
 
 --
--- Name: procedures Verified Can Insert; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Verified Can Insert" ON public.procedures FOR INSERT WITH CHECK (( SELECT profiles.verified
-   FROM public.profiles
-  WHERE (auth.uid() = profiles.user_id)));
-
-
---
 -- Name: pac_sections Verified Can Update; Type: POLICY; Schema: public; Owner: -
 --
 
@@ -1187,15 +1071,6 @@ CREATE POLICY "Verified Can Update" ON public.pac_sections FOR UPDATE USING (( S
 --
 
 CREATE POLICY "Verified Can Update" ON public.pac_sections_data FOR UPDATE USING (( SELECT profiles.verified
-   FROM public.profiles
-  WHERE (auth.uid() = profiles.user_id)));
-
-
---
--- Name: procedures Verified Can Update; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Verified Can Update" ON public.procedures FOR UPDATE USING (( SELECT profiles.verified
    FROM public.profiles
   WHERE (auth.uid() = profiles.user_id)));
 
@@ -1293,12 +1168,6 @@ ALTER TABLE public."pac_sections_save_13-03-24" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.prescriptions ENABLE ROW LEVEL SECURITY;
 
 --
--- Name: procedures; Type: ROW SECURITY; Schema: public; Owner: -
---
-
-ALTER TABLE public.procedures ENABLE ROW LEVEL SECURITY;
-
---
 -- Name: procedures_validations; Type: ROW SECURITY; Schema: public; Owner: -
 --
 
@@ -1391,15 +1260,6 @@ GRANT ALL ON FUNCTION public.is_admin(user_id uuid) TO service_role;
 GRANT ALL ON FUNCTION public.jb_to_ta(jsonb) TO anon;
 GRANT ALL ON FUNCTION public.jb_to_ta(jsonb) TO authenticated;
 GRANT ALL ON FUNCTION public.jb_to_ta(jsonb) TO service_role;
-
-
---
--- Name: TABLE procedures; Type: ACL; Schema: public; Owner: -
---
-
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.procedures TO anon;
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.procedures TO authenticated;
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.procedures TO service_role;
 
 
 --

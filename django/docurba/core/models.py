@@ -256,7 +256,7 @@ class ProcedureStatusChoices(models.TextChoices):
 
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self, *, avant: date | None = None) -> Self:
-        events = Event.objects.exclude(date_evenement=None)
+        events = Event.objects.exclude(date_evenement=None).defer("attachements")
         return self.annotate(
             date_pivot=models.Value(
                 avant or timezone.now().date(), output_field=models.DateField()
@@ -326,9 +326,34 @@ class ProcedureManager(models.Manager):
         )
 
 
+class FastLoadingProcedureManager(ProcedureManager):
+    def get_queryset(self) -> Self:
+        # There is no mention of these fields on Nuxt side.
+        to_be_removed_fields = [
+            "test",
+            "testing",
+            "doc_type_code",
+            "is_sudocuh_scot",
+            "previous_opposable_procedures_ids",
+            "type_code",
+            "initial_perimetre",
+        ]
+        # Text or JSON fields.
+        heavy_fields = [
+            "current_perimetre",
+            "comment_dgd",
+            "volet_qualitatif",
+        ]
+        return super().get_queryset().defer(*to_be_removed_fields, *heavy_fields)
+
+
 class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
-    doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001
+    test = models.BooleanField(db_default=False)
+    testing = models.BooleanField(blank=True, null=True)
+    doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001 # TextField in DB.
+    doc_type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
+    type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
     vaut_SCoT = models.BooleanField(db_column="is_scot", blank=True, null=True)  # noqa: N815
     # Programme Local de l'Habitat
     vaut_PLH = models.BooleanField(db_column="is_pluih", blank=True, null=True)  # noqa: N815
@@ -351,9 +376,16 @@ class Procedure(models.Model):
     name = models.TextField(blank=True, null=True)  # noqa: DJ001
     commentaire = models.TextField(blank=True, null=True)  # noqa: DJ001
     comment_from_sudocuh = models.TextField(blank=True)
+    comment_dgd = models.TextField(blank=True, null=True)  # noqa: DJ001
     is_principale = models.BooleanField(blank=True, null=True)
-    type = models.CharField(blank=True, null=True)  # noqa: DJ001
-    numero = models.CharField(blank=True, null=True)  # noqa: DJ001
+    is_sectoriel = models.BooleanField(blank=True, null=True)
+    is_sudocuh_scot = models.BooleanField(
+        blank=True, null=True
+    )  # No reference in Nuxt's side but column is filled with different values.
+    sudocu_secondary_procedure_of = models.IntegerField(blank=True, null=True)
+    shareable = models.BooleanField(db_default=False)
+    type = models.CharField(blank=True, null=True)  # noqa: DJ001 # TextField in DB.
+    numero = models.CharField(blank=True, null=True)  # noqa: DJ001 # TextField in DB.
     collectivite_porteuse = models.ForeignKey(
         "Collectivite",
         models.DO_NOTHING,
@@ -363,8 +395,13 @@ class Procedure(models.Model):
     )
     created_at = models.DateTimeField(db_default=TransactionNow(), null=True)
     last_updated_at = models.DateTimeField(db_default=TransactionNow(), null=True)
+    # Procedure updated "in cascade" when the parent procedure is.
+    # See create_table_procedures.sql.
+    # Used in Nuxt's side to display a warning when the procedure is a duplicate.
+    # Also used to filter archived procedures (as it's used in `archived`).
+    # NOTE(cms): refactor this some day and add tests.
     doublon_cache_de = models.OneToOneField(
-        "self", on_delete=models.DO_NOTHING, blank=True, null=True, unique=True
+        "self", on_delete=models.RESTRICT, blank=True, null=True, unique=True
     )
     soft_delete = models.BooleanField(
         db_default=False, verbose_name="archivée (soft_delete)"
@@ -378,6 +415,7 @@ class Procedure(models.Model):
     )
     initial_perimetre = models.JSONField(null=True)
     current_perimetre = models.JSONField(null=True)
+    volet_qualitatif = models.JSONField(blank=True, null=True)
 
     last_updated_by = models.ForeignKey("users.Profile", models.DO_NOTHING, null=True)
     started_before_huwart_law = models.BooleanField(
@@ -385,7 +423,7 @@ class Procedure(models.Model):
     )
     owner = models.ForeignKey(
         "users.Profile",
-        models.DO_NOTHING,
+        models.SET_NULL,
         null=True,
         verbose_name="propriétaire",
         related_name="procedures",
@@ -394,25 +432,75 @@ class Procedure(models.Model):
         "core.Project",
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         verbose_name="projet",
         related_name="procedures",
     )
+    # This columns seems completely obsolete and will be deleted in a migration.
+    # The related name is here to prevent a conflict with the `doublon_cache_de_id` column.
+    previous_opposable_procedures_ids = models.ForeignKey(
+        "self",
+        blank=True,
+        null=True,
+        db_column="previous_opposable_procedures_ids",
+        on_delete=models.SET_NULL,
+        related_name="procedures_previous_opposable_procedures_ids_set",
+    )  # Seems unused
+    departements = ArrayField(
+        verbose_name="Départements",
+        # Charfield pour permettre aux départements ne contenant qu'un chiffre de commencer par un zéro.
+        base_field=models.CharField(max_length=3, blank=True),
+        blank=True,
+        null=True,
+    )
 
     # Denormalized information used only by Nuxt. See self.statut for the Django logic.
-    status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001
+    status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001 # TextField in DB.
 
-    objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
+    objects = FastLoadingProcedureManager.from_queryset(ProcedureQuerySet)()
+    full_objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
     class Meta:
-        # Table created by a pre_migrate signal in apps.py.
-        managed = False
+        base_manager_name = "objects"
         db_table = "procedures"
         constraints = (
             UniqueConstraint(
                 "id",
                 condition=models.Q(parente=None, archived=False),
                 name="procedures_pkey_secondary_null_not_archived",
+            ),
+        )
+        indexes = (
+            models.Index(
+                "created_at",
+                name="idx_procedures_created_at",
+            ),
+            models.Index(
+                "doc_type",
+                name="idx_procedures_doc_type",
+            ),
+            models.Index(
+                fields=[
+                    "id",
+                    "is_principale",
+                    "archived",
+                ],
+                name="idx_procedures_is_principale",
+            ),
+            OversizedIndex(
+                fields=[
+                    "is_principale",
+                    "created_at",
+                ],
+                name="idx_procedures_is_principale_created_at",
+            ),
+            OversizedIndex(
+                fields=[
+                    "is_principale",
+                    "doc_type",
+                    "created_at",
+                ],
+                name="idx_procedures_is_principale_doc_type_created_at",
             ),
         )
 
@@ -878,8 +966,7 @@ class CollectiviteQuerySet(models.QuerySet):
             .prefetch_related(
                 models.Prefetch(
                     "procedure_set",
-                    Procedure.objects.defer("current_perimetre", "initial_perimetre")
-                    .with_events(avant=avant)
+                    Procedure.objects.with_events(avant=avant)
                     .with_concatenated_topics_as_string()
                     .without_adhesions_count()
                     .order_by("created_at")
@@ -975,8 +1062,7 @@ class CommuneQuerySet(models.QuerySet):
         self, *, avant: date | None = None, with_adhesions_count: bool = True
     ) -> Self:
         procedures_principales = (
-            Procedure.objects.defer("current_perimetre", "initial_perimetre")
-            .with_concatenated_topics_as_string()
+            Procedure.objects.with_concatenated_topics_as_string()
             .with_events(avant=avant)
             .filter(parente=None, archived=False)
         )
@@ -998,9 +1084,9 @@ class CommuneQuerySet(models.QuerySet):
         return self.prefetch_related(
             models.Prefetch(
                 "procedures",
-                Procedure.objects.defer("current_perimetre", "initial_perimetre")
-                .with_events(avant=avant)
-                .filter(doc_type="SCOT", parente=None, archived=False),
+                Procedure.objects.with_events(avant=avant).filter(
+                    doc_type="SCOT", parente=None, archived=False
+                ),
                 to_attr="procedures_principales",
             )
         )
