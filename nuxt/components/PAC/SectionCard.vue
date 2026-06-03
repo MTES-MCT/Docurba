@@ -279,6 +279,7 @@ import {
   mdiLinkVariant
 } from '@mdi/js'
 import { encode } from 'js-base64'
+import { getCommitter } from '@/plugins/user'
 
 export default {
   props: {
@@ -558,6 +559,7 @@ export default {
           data: {
             userId: this.$user.id,
             commit: {
+              committer: getCommitter(this.$user),
               path: filePath,
               content: encode(this.sectionMarkdown),
               sha: this.section.type === 'dir' ? this.section.introSha : this.section.sha
