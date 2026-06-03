@@ -256,10 +256,16 @@ export default {
         this.$nuxt.context.redirect(302, '/')
       }
       const promProcedures = await this.$urbanisator.getProceduresForDept(this.$route.params.departement)
-      const rawReferentiel = fetch(`/api/geo/collectivites?departements=${this.$route.params.departement}`)
+      const promCommunes = this.$djangoApi.get('/communes/', {
+        departement: this.$route.params.departement
+      })
+      const promGroupements = this.$djangoApi.get('/collectivites/', {
+        departement: this.$route.params.departement,
+        without_communes: true,
+        competence: ['plan', 'schema']
+      })
 
-      const [rawProcedures, referentiel] = await Promise.all([promProcedures, rawReferentiel])
-      const { communes, groupements } = await referentiel.json()
+      const [rawProcedures, communes, groupements] = await Promise.all([promProcedures, promCommunes, promGroupements])
       this.rawProcedures = rawProcedures.map((e) => {
         let collectivitePorteuse
         if (e.perimetre.length > 1) {
