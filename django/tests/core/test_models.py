@@ -1336,6 +1336,54 @@ class TestProcedureEnCours:
             assert not procedure_with_events.is_en_cours
 
 
+@pytest.mark.django_db
+class TestProcedureManagers:
+    def test_base_manager(self, subtests: pytest.Subtests) -> None:
+        ProcedureFactory()
+        to_be_removed_fields = [
+            "test",
+            "testing",
+            "doc_type_code",
+            "is_sudocuh_scot",
+            "previous_opposable_procedures_ids_id",
+            "type_code",
+            "initial_perimetre",
+        ]
+        heavy_fields = [
+            "current_perimetre",
+            "comment_dgd",
+            "volet_qualitatif",
+        ]
+
+        procedure = Procedure.objects.earliest("id")
+        for item in [*to_be_removed_fields, *heavy_fields]:
+            with subtests.test(item, item=item):
+                assert item not in procedure.__dict__
+
+    @pytest.mark.django_db
+    def test_full_objects_manager(self, subtests: pytest.Subtests) -> None:
+        ProcedureFactory()
+        to_be_removed_fields = [
+            "test",
+            "testing",
+            "doc_type_code",
+            "is_sudocuh_scot",
+            "previous_opposable_procedures_ids_id",
+            "type_code",
+            "initial_perimetre",
+        ]
+        heavy_fields = [
+            "current_perimetre",
+            "comment_dgd",
+            "volet_qualitatif",
+        ]
+
+        procedure = Procedure.full_objects.earliest("id")
+        for item in [*to_be_removed_fields, *heavy_fields]:
+            with subtests.test(item, item=item):
+                assert item in procedure.__dict__
+
+
 class TestEvent:
     @pytest.mark.parametrize(
         ("doc_type", "type_event", "category"),
