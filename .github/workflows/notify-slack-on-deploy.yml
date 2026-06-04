@@ -1,0 +1,24 @@
+name: 📢 Alerte Slack lors du lancement d'un déploiement
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  notify:
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-your-pull_request-workflow-when-a-pull-request-merges
+    # github.event.pull_request.merged == true
+    if: >
+      !contains(github.event.pull_request.labels.*.name, 'dependencies')
+      && !contains(github.event.pull_request.labels.*.name, 'tech')
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: "📢 Notify the #bot-release channel"
+        uses: slackapi/slack-github-action@45a88b9581bfab2566dc881e2cd66d334e621e2c # v3.0.3
+        with:
+          webhook: ${{ secrets.SLACK_RELEASE_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            text: >-
+              ${{ format('<{0}|{1}>', github.event.pull_request.html_url, github.event.pull_request.title) }}
