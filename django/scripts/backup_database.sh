@@ -82,7 +82,7 @@ if type rclone 2>/dev/null; then
   echo "Rclone est déjà installé."
 else
   rclone_version='1.71.2'
-  wget https://downloads.rclone.org/v${rclone_version}/rclone-v${rclone_version}-linux-amd64.zip
+  curl https://downloads.rclone.org/v${rclone_version}/rclone-v${rclone_version}-linux-amd64.zip -o rclone-v${rclone_version}-linux-amd64.zip
   # https://github.com/rclone/rclone/releases/download/v1.71.2/MD5SUMS
   if [[ $(echo "6238ac7cb4c9eb83f1b1f5077c931c22  rclone-v${rclone_version}-linux-amd64.zip" | md5sum --check) != "rclone-v${rclone_version}-linux-amd64.zip: OK" ]]; then
       echo '🙈 Le hash de rclone est différent de celui qui est attendu. Fin du script.'
