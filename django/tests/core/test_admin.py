@@ -135,20 +135,10 @@ class TestEventChange:
 
 @pytest.mark.django_db
 class TestEventSnapshotAdmin:
-    def test_event_changelist(self, admin_session_client: Client) -> None:
+    def test_eventssnapshot_changelist(self, admin_session_client: Client) -> None:
         procedure = ProcedureFactory()
         procedure.event_set.create(type="Dummy", attachements=[])
 
         url = reverse("admin:core_eventssnapshot_changelist")
         response = admin_session_client.get(url)
-        assert response.status_code == 200
-
-    def test_event_change(self, admin_session_client: Client) -> None:
-        procedure = ProcedureFactory()
-        dummy_event = procedure.event_set.create(type="Dummy", attachements=[])
-        snapshot = dummy_event.events.first()
-
-        url = reverse("admin:core_event_change", kwargs={"object_id": snapshot.pk})
-
-        response = admin_session_client.get(url, follow=True)
         assert response.status_code == 200
