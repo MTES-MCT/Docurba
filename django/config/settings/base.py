@@ -49,6 +49,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.gzip.GZipMiddleware",
+    # https://django-pghistory.readthedocs.io/en/3.9.2/module/#pghistory.middleware.HistoryMiddleware
+    "pghistory.middleware.HistoryMiddleware",
     # Final logger
     "django_datadog_logger.middleware.error_log.ErrorLoggingMiddleware",
     "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware",
