@@ -131,14 +131,3 @@ class TestEventChange:
                 follow=True,
             )
         assert response.status_code == 200
-
-
-@pytest.mark.django_db
-class TestEventSnapshotAdmin:
-    def test_eventssnapshot_changelist(self, admin_session_client: Client) -> None:
-        procedure = ProcedureFactory()
-        procedure.event_set.create(type="Dummy", attachements=[])
-
-        url = reverse("admin:core_eventssnapshot_changelist")
-        response = admin_session_client.get(url)
-        assert response.status_code == 200

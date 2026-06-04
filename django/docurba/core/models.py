@@ -5,7 +5,6 @@ from functools import cached_property
 from operator import attrgetter
 from typing import Self
 
-import pghistory
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
 from django.db import connection, models
@@ -862,7 +861,6 @@ class FastLoadingEventManager(EventManager):
         return super().get_queryset().defer(*to_be_removed_fields, *heavy_fields)
 
 
-@pghistory.track(model_name="EventsSnapshot")
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
     procedure = models.ForeignKey(
