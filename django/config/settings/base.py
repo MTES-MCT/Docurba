@@ -21,6 +21,7 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 # Application definition
 
 INSTALLED_APPS = [
+    # Must be above django.contrib.admin
     "pghistory.admin",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     "docurba.surveys",
     "docurba.users",
     "docurba.internal_api",
+    "docurba.history",
 ]
 
 MIDDLEWARE = [
@@ -182,6 +184,7 @@ sentry_sdk.init(
     # We recommend adjusting this value in production.
     profiles_sample_rate=1.0,
 )
+PGHISTORY_ADMIN_MODEL = "history.Change"
 
 ##########################################
 ############ Docurba settings ############
