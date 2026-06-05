@@ -12,7 +12,7 @@ dependencies = [
     "sentry-sdk[django]",
     "django-datadog-logger", # https://github.com/namespace-ee/django-datadog-logger
     "djangorestframework>=3.17.1",
-    "supabase>=2.30.0",
+    "supabase>=2.30.1",
 ]
 
 [project.optional-dependencies]
