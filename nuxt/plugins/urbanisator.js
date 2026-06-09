@@ -38,7 +38,7 @@ export default ({ $supabase, $dayjs }, inject) => {
           ),
           'date_iso'
         )
-        const prescription = e.procedures.doc_frise_events.find(y => getPrescriptionEvent(y.type))
+        const prescription = e.procedures.doc_frise_events.find(getPrescriptionEvent)
         return { ...e, perimetre: groupedProceduresPerim[e.procedure_id], last_event: lastEvent, prescription }
       })
       const uniqProcedures = uniqBy(procedures, e => e.procedure_id)

@@ -34,15 +34,15 @@ export function getLaunchEvent (eventType) {
   ].includes(eventType)
 }
 
-export function getPrescriptionEvent (eventType) {
-  return [
+export function getPrescriptionEvent (event) {
+  return !!event.is_valid && [
     'Délibération de l\'établissement public qui prescrit',
     'Délibération de l\'Etablissement Public',
     'Délibération de prescription du conseil métropolitain',
     'Délibération de prescription du conseil municipal ou communautaire',
     'Délibération de prescription du conseil municipal',
     'Prescription'
-  ].includes(eventType)
+  ].includes(event.type)
 }
 
 export function getProcedureEventsScope (procedure) {
