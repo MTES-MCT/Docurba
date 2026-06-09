@@ -199,6 +199,7 @@ export default {
         .from('projects')
         .select('id, name, doc_type, towns, collectivite_id, trame, region, PAC, created_at')
         .not('collectivite_id', 'is', null)
+        .not('trame', 'is', null)
         .match({
           owner: this.$user.id,
           archived: false
@@ -208,15 +209,18 @@ export default {
         .from('projects_sharing')
         .select('id, role, created_at, profiles (user_id, firstname, lastname), projects (id, name, doc_type, towns, collectivite_id, trame, region, PAC, created_at)')
         .not('projects.collectivite_id', 'is', null)
+        .not('projects.trame', 'is', null)
         .match({
           user_email: this.$user.email,
           'projects.archived': false
         })
 
+      const ownProjectsIds = ownProjects.map(({ id }) => id)
+
       this.projects = [
         ...ownProjects,
         ...sharings
-          .filter(sharing => sharing.projects)
+          .filter(sharing => sharing.projects && !ownProjectsIds.includes(sharing.projects.id))
           .map(sharing => ({
             ...sharing.projects,
             sharing: {
