@@ -1,3 +1,4 @@
+import datetime
 from csv import DictReader
 from itertools import product
 
@@ -7,6 +8,7 @@ from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 
 from docurba.core.models import (
+    EVENT_TYPE_BY_EVENT_CATEGORY,
     EventCategory,
     Procedure,
     Topic,
@@ -135,8 +137,8 @@ class TestAPIPerimetres:
         assert [cp["opposable"] for cp in reader] == [opposable]
 
 
+@pytest.mark.django_db
 class TestAPICommunes:
-    @pytest.mark.django_db
     def test_format_csv(
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -171,7 +173,6 @@ class TestAPICommunes:
         assert communes[0]["pc_docurba_id"] == str(plan_en_cours.id)
         assert communes[0]["pa_docurba_id"] == str(plan_opposable.id)
 
-    @pytest.mark.django_db
     def test_commune_sans_intercommunalite_ne_crashe_pas(self, client: Client) -> None:
         """
         4 îles n'ont pas d'intercommunalité.
@@ -191,7 +192,6 @@ class TestAPICommunes:
     @pytest.mark.parametrize(
         ("is_filtering", "expected_lignes"), [(False, 2), (True, 1)]
     )
-    @pytest.mark.django_db
     def test_filtre_par_department(
         self,
         is_filtering: bool,  # noqa: FBT001
@@ -210,7 +210,6 @@ class TestAPICommunes:
 
         assert len(list(reader)) == expected_lignes
 
-    @pytest.mark.django_db
     @pytest.mark.parametrize(
         ("avant", "champ_procedure_id"),
         [
@@ -241,7 +240,6 @@ class TestAPICommunes:
             str(procedure.id)
         ]
 
-    @pytest.mark.django_db
     def test_nb_queries(
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -292,7 +290,6 @@ class TestAPICommunes:
             ),
         ],
     )
-    @pytest.mark.django_db
     def test_with_topics(
         self,
         procedure_status: EventCategory,
@@ -319,6 +316,104 @@ class TestAPICommunes:
 
         results = list(DictReader(response.content.decode().splitlines()))
         assert results[0][expected_filled_key] == expected_result
+        assert results[0][expected_empty_key] == ""
+
+    @pytest.mark.parametrize(
+        ("event_category", "expected_filled_key", "expected_empty_key"),
+        [
+            pytest.param(
+                EventCategory.PUBLICATION_PERIMETRE,
+                "pc_date_pac_comp",
+                "pa_date_pac_comp",
+                id="ongoing_procedure",
+            ),
+            pytest.param(
+                EventCategory.APPROUVE,
+                "pa_date_pac_comp",
+                "pc_date_pac_comp",
+                id="approved_procedure",
+            ),
+        ],
+    )
+    def test_date_pac_comp(
+        self,
+        event_category: EventCategory,
+        expected_filled_key: str,
+        expected_empty_key: str,
+        client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        perimetre = [CommuneFactory()]
+        # Create an ongoing procedure.
+        procedure = ProcedureFactory(
+            doc_type=TypeDocument.PLU,
+            with_perimetre=perimetre,
+            collectivite_porteuse=CollectiviteFactory(),
+            with_event=True,
+            with_event__category=event_category,
+            with_event__date_evenement=datetime.date(2025, 10, 10),
+        )
+
+        EventFactory(
+            type=EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][
+                EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE
+            ][0],
+            date_evenement=datetime.date(2025, 11, 11),
+            procedure=procedure,
+        )
+        with django_assert_num_queries(4):
+            response = client.get(reverse("api_communes"))
+        results = list(DictReader(response.content.decode().splitlines()))
+        assert results[0][expected_filled_key] == "2025-11-11"
+        assert results[0][expected_empty_key] == ""
+
+    @pytest.mark.parametrize(
+        ("event_category", "expected_filled_key", "expected_empty_key"),
+        [
+            pytest.param(
+                EventCategory.PUBLICATION_PERIMETRE,
+                "pc_date_pac",
+                "pa_date_pac",
+                id="ongoing_procedure",
+            ),
+            pytest.param(
+                EventCategory.APPROUVE,
+                "pa_date_pac",
+                "pc_date_pac",
+                id="approved_procedure",
+            ),
+        ],
+    )
+    def test_date_pac(
+        self,
+        event_category: EventCategory,
+        expected_filled_key: str,
+        expected_empty_key: str,
+        client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        perimetre = [CommuneFactory()]
+        # Create an ongoing procedure.
+        procedure = ProcedureFactory(
+            doc_type=TypeDocument.PLU,
+            with_perimetre=perimetre,
+            collectivite_porteuse=CollectiviteFactory(),
+            with_event=True,
+            with_event__category=event_category,
+            with_event__date_evenement=datetime.date(2025, 10, 10),
+        )
+
+        EventFactory(
+            type=EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][
+                EventCategory.PORTER_A_CONNAISSANCE
+            ][0],
+            date_evenement=datetime.date(2025, 11, 11),
+            procedure=procedure,
+        )
+        with django_assert_num_queries(4):
+            response = client.get(reverse("api_communes"))
+        results = list(DictReader(response.content.decode().splitlines()))
+        assert results[0][expected_filled_key] == "2025-11-11"
         assert results[0][expected_empty_key] == ""
 
 
