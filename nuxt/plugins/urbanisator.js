@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import { groupBy, uniqBy, orderBy, maxBy } from 'lodash'
 import axios from 'axios'
+import { getPrescriptionEvent } from '@/plugins/event'
 
 export default ({ $supabase, $dayjs }, inject) => {
   Vue.filter('docType', function (procedure) {
@@ -37,7 +38,7 @@ export default ({ $supabase, $dayjs }, inject) => {
           ),
           'date_iso'
         )
-        const prescription = e.procedures.doc_frise_events.find(y => y.code === 'PRES')
+        const prescription = e.procedures.doc_frise_events.find(y => getPrescriptionEvent(y.type))
         return { ...e, perimetre: groupedProceduresPerim[e.procedure_id], last_event: lastEvent, prescription }
       })
       const uniqProcedures = uniqBy(procedures, e => e.procedure_id)
