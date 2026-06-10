@@ -20,19 +20,6 @@ const csvParser = new AsyncParser()
 const app = express()
 app.use(express.json())
 
-// TOTO: Pour le dump journalier - connecter a la base de dev
-app.get('/departements/:code', async (req, res) => {
-  const communesCodes = departements.find(d => d.code === req.params.code).communes.map(c => c.code)
-  const communes = await procedures.getCommunes(communesCodes)
-
-  res.status(200).send(communes)
-})
-
-app.get('/communes/:inseeCode', async (req, res) => {
-  const commune = await procedures.getCommune(req.params.inseeCode)
-  res.status(200).send(commune)
-})
-
 app.get('/exports/departements/:code', async (req, res) => {
   const departement = departements.find(d => d.code === req.params.code)
 
@@ -59,27 +46,6 @@ app.get('/exports/departements/:code', async (req, res) => {
     })
     res.status(200).send(mapedCommunes)
   }
-})
-
-app.get('/exports/communes', async (req, res) => {
-  const inseeCodes = req.body.inseeCodes
-  const communes = await procedures.getCommunes(inseeCodes)
-
-  const mapedCommunes = communes.map((c) => {
-    return mapValues(sudocuhCommunes, key => get(c, key, ''))
-  })
-
-  if (req.query.csv) {
-    const csv = await csvParser.parse(mapedCommunes).promise()
-    res.status(200).attachment('communes.csv').send(csv)
-  } else {
-    res.status(200).send(mapedCommunes)
-  }
-})
-
-app.get('/exports/communes/:inseeCode', async (req, res) => {
-  const commune = await procedures.getCommune(req.params.inseeCode)
-  res.status(200).send(mapValues(sudocuhCommunes, key => get(commune, key, '')))
 })
 
 app.get('/exports/prescriptions', async (req, res) => {

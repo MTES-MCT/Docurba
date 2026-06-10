@@ -63,14 +63,6 @@ export default ({ route }, inject) => {
   }
 
   inject('daturba', {
-    async getCommunesDetails (inseeArr) {
-      const { data } = await axios({
-        url: '/api/communes',
-        method: 'get',
-        params: { communes: inseeArr }
-      })
-      return data
-    },
     async getGeorisques ({ dataset, insee }) {
       const EXISTING_DATASETS = GEORISQUES_MAP.map(e => e.endpoint)
       if (!EXISTING_DATASETS.includes(dataset)) { throw new Error('Le dataset demandé est inconnu. Types disponibles:' + EXISTING_DATASETS.join(', ')) }
