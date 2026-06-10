@@ -356,9 +356,9 @@ jobs:
     - name: 🔂 Génération des données
       run: scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" run './scripts/restore_database.sh ${DATABASE_URL}' &> /dev/null
 
-    - name: ⏩ Lancement des migrations
+    - name: ⏩ Lancement des migrations et mise à jour du déclencheur utilisant Nuxt3
       run: |
         # La connexion PG doit être libérée avant de pouvoir passer les migrations
         # mais on ne sait jamais combien de temps Supabase met à le faire.
         sleep 5m
-        scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" run 'django-admin migrate'
+        scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" run 'django-admin update_nuxt3_trigger && django-admin migrate'
