@@ -1,0 +1,251 @@
+@font-face {
+  font-display: swap;
+  font-family: Marianne;
+  font-style: normal;
+  font-weight: 100;
+  src: url('@/assets/fonts/Marianne-Thin.woff2') format('woff2'),
+       url('@/assets/fonts/Marianne-Thin.woff') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: Marianne;
+  font-style: italic;
+  font-weight: 100;
+  src: url('@/assets/fonts/Marianne-Thin_Italic.woff2') format('woff2'),
+       url('@/assets/fonts/Marianne-Thin_Italic.woff') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: Marianne;
+  font-style: normal;
+  font-weight: 300;
+  src: url('@/assets/fonts/Marianne-Light.woff2') format('woff2'),
+       url('@/assets/fonts/Marianne-Light.woff') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: Marianne;
+  font-style: italic;
+  font-weight: 300;
+  src: url('@/assets/fonts/Marianne-Light_Italic.woff2') format('woff2'),
+       url('@/assets/fonts/Marianne-Light_Italic.woff') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: Marianne;
+  font-style: normal;
+  font-weight: 400;
+  src: url('@/assets/fonts/Marianne-Regular.woff2') format('woff2'),
+       url('@/assets/fonts/Marianne-Regular.woff') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: Marianne;
+  font-style: italic;
+  font-weight: 400;
+  src: url('@/assets/fonts/Marianne-Regular_Italic.woff2') format('woff2'),
+       url('@/assets/fonts/Marianne-Regular_Italic.woff') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: Marianne;
+  font-style: normal;
+  font-weight: 500;
+  src: url('@/assets/fonts/Marianne-Medium.woff2') format('woff2'),
+       url('@/assets/fonts/Marianne-Medium.woff') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: Marianne;
+  font-style: italic;
+  font-weight: 500;
+  src: url('@/assets/fonts/Marianne-Medium_Italic.woff2') format('woff2'),
+       url('@/assets/fonts/Marianne-Medium_Italic.woff') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: Marianne;
+  font-style: normal;
+  font-weight: 700;
+  src: url('@/assets/fonts/Marianne-Bold.woff2') format('woff2'),
+       url('@/assets/fonts/Marianne-Bold.woff') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: Marianne;
+  font-style: italic;
+  font-weight: 700;
+  src: url('@/assets/fonts/Marianne-Bold_Italic.woff2') format('woff2'),
+       url('@/assets/fonts/Marianne-Bold_Italic.woff') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: Marianne;
+  font-style: normal;
+  font-weight: 900;
+  src: url('@/assets/fonts/Marianne-ExtraBold.woff2') format('woff2'),
+       url('@/assets/fonts/Marianne-ExtraBold.woff') format('woff');
+}
+@font-face {
+  font-display: swap;
+  font-family: Marianne;
+  font-style: italic;
+  font-weight: 900;
+  src: url('@/assets/fonts/Marianne-ExtraBold_Italic.woff2') format('woff2'),
+       url('@/assets/fonts/Marianne-ExtraBold_Italic.woff') format('woff');
+}
+
+:root {
+  --color-blue-ecume-950: hsl(227.9deg 88.3% 95.4%);
+  --color-blue-ecume-sun-247: hsl(225.8deg 43.4% 32.5%);
+  --color-blue-france-125: hsl(240deg 29.8% 21.6%);
+  --color-blue-france-125-hover: hsl(240deg 25.6% 39.0%);
+  --color-blue-france-625: hsl(240deg 86.5% 74.4%);
+  --color-blue-france-625-hover: hsl(240deg 85.7% 83.5%);
+  --color-blue-france-925: hsl(240deg 86.5% 94.2%);
+  --color-blue-france-925-hover: hsl(240deg 87.9% 87.1%);
+  --color-blue-france-975: hsl(240deg 86.3% 98%);
+  --color-blue-france-sun-113: hsl(240deg 100% 28.4%);
+  --color-blue-france-sun-113-hover: hsl(240deg 100% 53.5%);
+  --color-error-100: hsl(.2deg 33.6% 16.6%);
+  --color-error-100-hover: hsl(0deg 30.1% 32.6%);
+  --color-error-425: hsl(1.4deg 100% 40.4%);
+  --color-error-625: hsl(.4deg 100% 66.6%);
+  --color-error-950: hsl(.2deg 100% 95.6%);
+  --color-error-950-hover: hsl(0deg 100% 88.6%);
+  --color-green-emeraude-950: hsl(139.4deg 85.8% 87.4%);
+  --color-green-emeraude-sun-425: hsl(155.5deg 47% 30.5%);
+  --color-grey-50: hsl(0deg 0% 8.6%);
+  --color-grey-50-hover: hsl(0deg 0% 20.4%);
+  --color-grey-75: hsl(0deg 0% 11.8%);
+  --color-grey-75-hover: hsl(0deg 0% 24.7%);
+  --color-grey-100: hsl(0deg 0% 14.1%);
+  --color-grey-125: hsl(0deg 0% 16.5%);
+  --color-grey-175: hsl(0deg 0% 20.8%);
+  --color-grey-200: hsl(0deg 0% 22.7%);
+  --color-grey-425: hsl(0deg 0% 40%);
+  --color-grey-625: hsl(0deg 0% 57.3%);
+  --color-grey-850: hsl(0deg 0% 80.8%);
+  --color-grey-900: hsl(0deg 0% 86.7%);
+  --color-grey-950: hsl(0deg 0% 93.3%);
+  --color-grey-925: hsl(0deg 0% 89.8%);
+  --color-grey-975: hsl(0deg 0% 96.5%);
+  --color-grey-1000: hsl(0deg 0% 100%);
+  --color-grey-1000-hover: hsl(0deg 0% 96.5%);
+  --color-info-100: hsl(223.7deg 31.3% 16.3%);
+  --color-info-100-hover: hsl(223.6deg 27.2% 31.8%);
+  --color-info-425: hsl(210.8deg 100% 39.8%);
+  --color-info-625: hsl(218.7deg 100% 65.9%);
+  --color-info-950: hsl(226.9deg 100% 95.5%);
+  --color-info-950-hover: hsl(225.3deg 100% 88.0%);
+  --color-success-425: hsl(143deg 65.5% 27.7%);
+  --color-success-625: hsl(143deg 62.1% 40.2%);
+  --color-warning-100: hsl(9.7deg 36.8% 15.5%);
+  --color-warning-100-hover: hsl(9.8deg 31.6% 30.4%);
+  --color-warning-425: hsl(21.3deg 100% 35.1%);
+  --color-warning-625: hsl(22.1deg 100% 49.4%);
+  --color-warning-950: hsl(7.1deg 100% 95.1%);
+  --color-warning-950-hover: hsl(8.2deg 100% 87.1%);
+  --color-yellow-tournesol-950: hsl(42.5deg 95.9% 87.8%);
+  --color-yellow-tournesol-sun-407: hsl(37.8deg 25.6% 35.3%);
+
+  --color-blue-ecume-950-sun-247: var(--color-blue-ecume-950);
+  --color-blue-ecume-sun-247-950: var(--color-blue-ecume-sun-247);
+  --color-blue-france-925-125: var(--color-blue-france-925);
+  --color-blue-france-925-125-hover: var(--color-blue-france-925-hover);
+  --color-blue-france-975-sun-113: var(--color-blue-france-975);
+  --color-blue-france-sun-113-625: var(--color-blue-france-sun-113);
+  --color-blue-france-sun-113-625-hover: var(--color-blue-france-sun-113-hover);
+  --color-error-425-625: var(--color-error-425);
+  --color-error-950-100: var(--color-error-950);
+  --color-error-950-100-hover: var(--color-error-950-hover);
+  --color-green-emeraude-950-sun-425: var(--color-green-emeraude-950);
+  --color-green-emeraude-sun-425-950: var(--color-green-emeraude-sun-425);
+  --color-grey-50-1000: var(--color-grey-50);
+  --color-grey-200-850: var(--color-grey-200);
+  --color-grey-425-625: var(--color-grey-425);
+  --color-grey-625-425: var(--color-grey-625);
+  --color-grey-900-175: var(--color-grey-900);
+  --color-grey-925-125: var(--color-grey-925);
+  --color-grey-950-100: var(--color-grey-950);
+  --color-grey-975-75: var(--color-grey-975);
+  --color-grey-1000-50: var(--color-grey-1000);
+  --color-grey-1000-50-hover: var(--color-grey-1000-hover);
+  --color-grey-1000-75: var(--color-grey-1000);
+  --color-grey-1000-75-hover: var(--color-grey-1000-hover);
+  --color-grey-1000-100: var(--color-grey-1000);
+  --color-info-425-625: var(--color-info-425);
+  --color-info-950-100: var(--color-info-950);
+  --color-info-950-100-hover: var(--color-info-950-hover);
+  --color-shadow: hsl(240deg 100% 3.5% / .16);
+  --color-success-425-625: var(--color-success-425);
+  --color-warning-425-625: var(--color-warning-425);
+  --color-warning-950-100: var(--color-warning-950);
+  --color-warning-950-100-hover: var(--color-warning-950-hover);
+  --color-yellow-tournesol-950-sun-407: var(--color-yellow-tournesol-950);
+  --color-yellow-tournesol-sun-407-950: var(--color-yellow-tournesol-sun-407);
+
+  --font-family-sans: Marianne, arial, sans-serif;
+
+  --shadow-overlap: 0 .125rem .375rem var(--color-shadow);
+  --shadow-raised: 0 .0625rem .1875rem var(--color-shadow);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-blue-ecume-950-sun-247: var(--color-blue-ecume-sun-247);
+    --color-blue-ecume-sun-247-950: var(--color-blue-ecume-950);
+    --color-blue-france-925-125: var(--color-blue-france-125);
+    --color-blue-france-925-125-hover: var(--color-blue-france-125-hover);
+    --color-blue-france-975-sun-113: var(--color-blue-france-sun-113);
+    --color-blue-france-sun-113-625: var(--color-blue-france-625);
+    --color-blue-france-sun-113-625-hover: var(--color-blue-france-625-hover);
+    --color-error-425-625: var(--color-error-625);
+    --color-error-950-100: var(--color-error-100);
+    --color-error-950-100-hover: var(--color-error-100-hover);
+    --color-green-emeraude-950-sun-425: var(--color-green-emeraude-sun-425);
+    --color-green-emeraude-sun-425-950: var(--color-green-emeraude-950);
+    --color-grey-50-1000: var(--color-grey-1000);
+    --color-grey-200-850: var(--color-grey-850);
+    --color-grey-425-625: var(--color-grey-625);
+    --color-grey-625-425: var(--color-grey-425);
+    --color-grey-900-175: var(--color-grey-175);
+    --color-grey-925-125: var(--color-grey-125);
+    --color-grey-950-100: var(--color-grey-100);
+    --color-grey-975-75: var(--color-grey-75);
+    --color-grey-1000-50: var(--color-grey-50);
+    --color-grey-1000-50-hover: var(--color-grey-50-hover);
+    --color-grey-1000-75: var(--color-grey-75);
+    --color-grey-1000-75-hover: var(--color-grey-75-hover);
+    --color-grey-1000-100: var(--color-grey-100);
+    --color-info-425-625: var(--color-info-625);
+    --color-info-950-100: var(--color-info-100);
+    --color-info-950-100-hover: var(--color-info-100-hover);
+    --color-shadow: hsl(240deg 100% 3.5% / .32);
+    --color-success-425-625: var(--color-success-625);
+    --color-warning-425-625: var(--color-warning-625);
+    --color-warning-950-100: var(--color-warning-100);
+    --color-warning-950-100-hover: var(--color-warning-100-hover);
+    --color-yellow-tournesol-950-sun-407: var(--color-yellow-tournesol-sun-407);
+    --color-yellow-tournesol-sun-407-950: var(--color-yellow-tournesol-950);
+  }
+}
+
+html {
+  height: 100%;
+}
+body {
+  background-color: var(--color-grey-1000-50);
+  height: 100%;
+  margin: 0;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}

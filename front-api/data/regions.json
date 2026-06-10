@@ -1,0 +1,110 @@
+[
+  {
+    "creationDate": "2007-07-15",
+    "id": "01",
+    "iso": "FR-GUA",
+    "name": "Guadeloupe"
+  },
+  {
+    "creationDate": "1982-03-02",
+    "id": "02",
+    "iso": "FR-MTQ",
+    "name": "Martinique"
+  },
+  {
+    "creationDate": "1982-03-02",
+    "id": "03",
+    "iso": "FR-GUF",
+    "name": "Guyane"
+  },
+  {
+    "creationDate": "1982-03-02",
+    "id": "04",
+    "iso": "FR-LRE",
+    "name": "La Réunion"
+  },
+  {
+    "creationDate": "2011-03-31",
+    "id": "06",
+    "iso": "FR-MAY",
+    "name": "Mayotte"
+  },
+  {
+    "creationDate": "1982-03-02",
+    "id": "11",
+    "iso": "FR-IDF",
+    "name": "Île-de-France"
+  },
+  {
+    "creationDate": "2015-01-17",
+    "id": "24",
+    "iso": "FR-CVL",
+    "name": "Centre-Val de Loire"
+  },
+  {
+    "creationDate": "2016-01-01",
+    "id": "27",
+    "iso": "FR-BFC",
+    "name": "Bourgogne-Franche-Comté"
+  },
+  {
+    "creationDate": "2016-01-01",
+    "id": "28",
+    "iso": "FR-NOR",
+    "name": "Normandie"
+  },
+  {
+    "creationDate": "2016-12-31",
+    "id": "32",
+    "iso": "FR-HDF",
+    "name": "Hauts-de-France"
+  },
+  {
+    "creationDate": "2016-12-31",
+    "id": "44",
+    "iso": "FR-GES",
+    "name": "Grand Est"
+  },
+  {
+    "creationDate": "2019-01-01",
+    "id": "52",
+    "iso": "FR-PDL",
+    "name": "Pays de la Loire"
+  },
+  {
+    "creationDate": "2019-01-01",
+    "id": "53",
+    "iso": "FR-BRE",
+    "name": "Bretagne"
+  },
+  {
+    "creationDate": "2016-09-29",
+    "id": "75",
+    "iso": "FR-NAQ",
+    "name": "Nouvelle-Aquitaine"
+  },
+  {
+    "creationDate": "2016-09-29",
+    "id": "76",
+    "iso": "FR-OCC",
+    "name": "Occitanie"
+  },
+  {
+    "creationDate": "2016-01-01",
+    "id": "84",
+    "iso": "FR-ARA",
+    "name": "Auvergne-Rhône-Alpes"
+  },
+  {
+    "creationDate": "1982-03-02",
+    "id": "93",
+    "iso": "FR-PAC",
+    "name": "Provence-Alpes-Côte d'Azur"
+  },
+  {
+    "creationDate": "1982-03-02",
+    "id": "94",
+    "iso": "FR-COR",
+    "name": "Corse"
+  }
+]

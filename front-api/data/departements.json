@@ -1,0 +1,608 @@
+[
+  {
+    "creationDate": "1967-12-31",
+    "id": "01",
+    "name": "Ain",
+    "regionId": "84"
+  },
+  {
+    "creationDate": "2016-12-31",
+    "id": "02",
+    "name": "Aisne",
+    "regionId": "32"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "03",
+    "name": "Allier",
+    "regionId": "84"
+  },
+  {
+    "creationDate": "1970-04-13",
+    "id": "04",
+    "name": "Alpes-de-Haute-Provence",
+    "regionId": "93"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "05",
+    "name": "Hautes-Alpes",
+    "regionId": "93"
+  },
+  {
+    "creationDate": "1947-09-17",
+    "id": "06",
+    "name": "Alpes-Maritimes",
+    "regionId": "93"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "07",
+    "name": "Ardèche",
+    "regionId": "84"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "08",
+    "name": "Ardennes",
+    "regionId": "44"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "09",
+    "name": "Ariège",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "10",
+    "name": "Aube",
+    "regionId": "44"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "11",
+    "name": "Aude",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "12",
+    "name": "Aveyron",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "13",
+    "name": "Bouches-du-Rhône",
+    "regionId": "93"
+  },
+  {
+    "creationDate": "2018-01-01",
+    "id": "14",
+    "name": "Calvados",
+    "regionId": "28"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "15",
+    "name": "Cantal",
+    "regionId": "84"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "16",
+    "name": "Charente",
+    "regionId": "75"
+  },
+  {
+    "creationDate": "1941-09-04",
+    "id": "17",
+    "name": "Charente-Maritime",
+    "regionId": "75"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "18",
+    "name": "Cher",
+    "regionId": "24"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "19",
+    "name": "Corrèze",
+    "regionId": "75"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "21",
+    "name": "Côte-d'Or",
+    "regionId": "27"
+  },
+  {
+    "creationDate": "1990-03-08",
+    "id": "22",
+    "name": "Côtes-d'Armor",
+    "regionId": "53"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "23",
+    "name": "Creuse",
+    "regionId": "75"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "24",
+    "name": "Dordogne",
+    "regionId": "75"
+  },
+  {
+    "creationDate": "1974-06-01",
+    "id": "25",
+    "name": "Doubs",
+    "regionId": "27"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "26",
+    "name": "Drôme",
+    "regionId": "84"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "27",
+    "name": "Eure",
+    "regionId": "28"
+  },
+  {
+    "creationDate": "1974-11-01",
+    "id": "28",
+    "name": "Eure-et-Loir",
+    "regionId": "24"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "29",
+    "name": "Finistère",
+    "regionId": "53"
+  },
+  {
+    "creationDate": "1976-01-01",
+    "id": "2A",
+    "name": "Corse-du-Sud",
+    "regionId": "94"
+  },
+  {
+    "creationDate": "1976-01-01",
+    "id": "2B",
+    "name": "Haute-Corse",
+    "regionId": "94"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "30",
+    "name": "Gard",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "31",
+    "name": "Haute-Garonne",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "32",
+    "name": "Gers",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "33",
+    "name": "Gironde",
+    "regionId": "75"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "34",
+    "name": "Hérault",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "2019-01-01",
+    "id": "35",
+    "name": "Ille-et-Vilaine",
+    "regionId": "53"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "36",
+    "name": "Indre",
+    "regionId": "24"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "37",
+    "name": "Indre-et-Loire",
+    "regionId": "24"
+  },
+  {
+    "creationDate": "1971-04-01",
+    "id": "38",
+    "name": "Isère",
+    "regionId": "84"
+  },
+  {
+    "creationDate": "1974-06-01",
+    "id": "39",
+    "name": "Jura",
+    "regionId": "27"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "40",
+    "name": "Landes",
+    "regionId": "75"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "41",
+    "name": "Loir-et-Cher",
+    "regionId": "24"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "42",
+    "name": "Loire",
+    "regionId": "84"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "43",
+    "name": "Haute-Loire",
+    "regionId": "84"
+  },
+  {
+    "creationDate": "2019-01-01",
+    "id": "44",
+    "name": "Loire-Atlantique",
+    "regionId": "52"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "45",
+    "name": "Loiret",
+    "regionId": "24"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "46",
+    "name": "Lot",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "47",
+    "name": "Lot-et-Garonne",
+    "regionId": "75"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "48",
+    "name": "Lozère",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "2018-01-01",
+    "id": "49",
+    "name": "Maine-et-Loire",
+    "regionId": "52"
+  },
+  {
+    "creationDate": "2018-01-01",
+    "id": "50",
+    "name": "Manche",
+    "regionId": "28"
+  },
+  {
+    "creationDate": "2016-12-31",
+    "id": "51",
+    "name": "Marne",
+    "regionId": "44"
+  },
+  {
+    "creationDate": "1975-01-01",
+    "id": "52",
+    "name": "Haute-Marne",
+    "regionId": "44"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "53",
+    "name": "Mayenne",
+    "regionId": "52"
+  },
+  {
+    "creationDate": "1997-01-01",
+    "id": "54",
+    "name": "Meurthe-et-Moselle",
+    "regionId": "44"
+  },
+  {
+    "creationDate": "1997-01-01",
+    "id": "55",
+    "name": "Meuse",
+    "regionId": "44"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "56",
+    "name": "Morbihan",
+    "regionId": "53"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "57",
+    "name": "Moselle",
+    "regionId": "44"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "58",
+    "name": "Nièvre",
+    "regionId": "27"
+  },
+  {
+    "creationDate": "1973-09-01",
+    "id": "59",
+    "name": "Nord",
+    "regionId": "32"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "60",
+    "name": "Oise",
+    "regionId": "32"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "61",
+    "name": "Orne",
+    "regionId": "28"
+  },
+  {
+    "creationDate": "1974-01-01",
+    "id": "62",
+    "name": "Pas-de-Calais",
+    "regionId": "32"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "63",
+    "name": "Puy-de-Dôme",
+    "regionId": "84"
+  },
+  {
+    "creationDate": "1969-10-10",
+    "id": "64",
+    "name": "Pyrénées-Atlantiques",
+    "regionId": "75"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "65",
+    "name": "Hautes-Pyrénées",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "66",
+    "name": "Pyrénées-Orientales",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "67",
+    "name": "Bas-Rhin",
+    "regionId": "44"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "68",
+    "name": "Haut-Rhin",
+    "regionId": "44"
+  },
+  {
+    "creationDate": "1971-04-01",
+    "id": "69",
+    "name": "Rhône",
+    "regionId": "84"
+  },
+  {
+    "creationDate": "1974-07-01",
+    "id": "70",
+    "name": "Haute-Saône",
+    "regionId": "27"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "71",
+    "name": "Saône-et-Loire",
+    "regionId": "27"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "72",
+    "name": "Sarthe",
+    "regionId": "52"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "73",
+    "name": "Savoie",
+    "regionId": "84"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "74",
+    "name": "Haute-Savoie",
+    "regionId": "84"
+  },
+  {
+    "creationDate": "1968-01-01",
+    "id": "75",
+    "name": "Paris",
+    "regionId": "11"
+  },
+  {
+    "creationDate": "1955-01-18",
+    "id": "76",
+    "name": "Seine-Maritime",
+    "regionId": "28"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "77",
+    "name": "Seine-et-Marne",
+    "regionId": "11"
+  },
+  {
+    "creationDate": "1969-11-29",
+    "id": "78",
+    "name": "Yvelines",
+    "regionId": "11"
+  },
+  {
+    "creationDate": "1973-08-03",
+    "id": "79",
+    "name": "Deux-Sèvres",
+    "regionId": "75"
+  },
+  {
+    "creationDate": "1974-01-01",
+    "id": "80",
+    "name": "Somme",
+    "regionId": "32"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "81",
+    "name": "Tarn",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "82",
+    "name": "Tarn-et-Garonne",
+    "regionId": "76"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "83",
+    "name": "Var",
+    "regionId": "93"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "84",
+    "name": "Vaucluse",
+    "regionId": "93"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "85",
+    "name": "Vendée",
+    "regionId": "52"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "86",
+    "name": "Vienne",
+    "regionId": "75"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "87",
+    "name": "Haute-Vienne",
+    "regionId": "75"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "88",
+    "name": "Vosges",
+    "regionId": "44"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "89",
+    "name": "Yonne",
+    "regionId": "27"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "90",
+    "name": "Territoire de Belfort",
+    "regionId": "27"
+  },
+  {
+    "creationDate": "1974-11-01",
+    "id": "91",
+    "name": "Essonne",
+    "regionId": "11"
+  },
+  {
+    "creationDate": "1968-01-01",
+    "id": "92",
+    "name": "Hauts-de-Seine",
+    "regionId": "11"
+  },
+  {
+    "creationDate": "1968-01-01",
+    "id": "93",
+    "name": "Seine-Saint-Denis",
+    "regionId": "11"
+  },
+  {
+    "creationDate": "1968-01-01",
+    "id": "94",
+    "name": "Val-de-Marne",
+    "regionId": "11"
+  },
+  {
+    "creationDate": "1968-01-01",
+    "id": "95",
+    "name": "Val-d'Oise",
+    "regionId": "11"
+  },
+  {
+    "creationDate": "2007-07-15",
+    "id": "971",
+    "name": "Guadeloupe",
+    "regionId": "01"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "972",
+    "name": "Martinique",
+    "regionId": "02"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "973",
+    "name": "Guyane",
+    "regionId": "03"
+  },
+  {
+    "creationDate": "1943-01-01",
+    "id": "974",
+    "name": "La Réunion",
+    "regionId": "04"
+  },
+  {
+    "creationDate": "2011-03-31",
+    "id": "976",
+    "name": "Mayotte",
+    "regionId": "06"
+  }
+]
