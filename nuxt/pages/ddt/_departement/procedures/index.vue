@@ -141,6 +141,11 @@
           </template>
 
           <!-- eslint-disable-next-line -->
+          <template #item.stop="{ item }">
+            <span class="mention-grey--text">{{ item.stop?.date_iso_formattee ?? '-' }}</span>
+          </template>
+
+          <!-- eslint-disable-next-line -->
           <template #item.last_event="{ item }">
             <span class="mention-grey--text">{{ item.last_event?.date_iso_formattee }} - {{ item.last_event?.type }}</span>
           </template>
@@ -233,7 +238,8 @@ export default {
       return [
         { text: 'Nom', align: 'start', value: 'procedureName', filterable: true, width: '45%' },
         { text: 'Périmètre', align: 'start', value: 'perimetre', filterable: false, width: '150px' },
-        { text: 'Prescription', value: 'prescription', filterable: false, width: '135px', sort: this.sortByDateIso },
+        { text: 'Prescrit le', value: 'prescription', filterable: false, width: '135px', sort: this.sortByDateIso },
+        { text: 'Arrêté le', value: 'stop', filterable: false, width: '135px', sort: this.sortByDateIso },
         { text: 'Dernier évènement', value: 'last_event', filterable: false, sort: this.sortByDateIso }
       ]
     },

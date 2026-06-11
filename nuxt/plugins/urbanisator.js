@@ -1,7 +1,7 @@
 import Vue from 'vue'
-import { groupBy, uniqBy, orderBy, maxBy } from 'lodash'
+import { groupBy, uniqBy, orderBy } from 'lodash'
 import axios from 'axios'
-import { getPrescriptionEvent } from '@/plugins/event'
+import { enrichProcedureWithEvents } from '@/plugins/procedure'
 
 export default ({ $supabase, $dayjs }, inject) => {
   Vue.filter('docType', function (procedure) {
@@ -29,18 +29,11 @@ export default ({ $supabase, $dayjs }, inject) => {
         .is('procedures.archived', false)
         .throwOnError()
       const groupedProceduresPerim = groupBy(data, e => e.procedure_id)
-      const procedures = data.map((e) => {
-        const now = new Date()
-        const lastEvent = maxBy(
-          // Remove future events
-          e.procedures.doc_frise_events.filter(
-            event => new Date(event.date_iso) <= now
-          ),
-          'date_iso'
-        )
-        const prescription = e.procedures.doc_frise_events.find(getPrescriptionEvent)
-        return { ...e, perimetre: groupedProceduresPerim[e.procedure_id], last_event: lastEvent, prescription }
-      })
+      const procedures = data.map(e => ({
+        e,
+        ...enrichProcedureWithEvents(e.procedures),
+        perimetre: groupedProceduresPerim[e.procedure_id]
+      }))
       const uniqProcedures = uniqBy(procedures, e => e.procedure_id)
       const orderedProcedures = orderBy(uniqProcedures, e => e.last_event?.date_iso, ['desc'])
       return orderedProcedures

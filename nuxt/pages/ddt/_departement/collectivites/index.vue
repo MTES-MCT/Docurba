@@ -159,7 +159,7 @@
             </div>
           </template>
           <!-- eslint-disable-next-line -->
-            <template #item.procedures="{ item }">
+          <template #item.procedures="{ item }">
             <div class="my-5">
               <div v-if="!item.plans || item.plans.length === 0">
                 <v-chip v-if="item.type === 'COM'" class="ml-2 error--text font-weight-bold" small label color="error-light">
@@ -202,6 +202,18 @@
                 <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
                   + {{ item.plans.length - 2 }} procédure{{ item.plans.length - 2 > 1 ? 's' : '' }}
                 </nuxt-link>
+              </div>
+            </div>
+          </template>
+          <!-- eslint-disable-next-line -->
+          <template #item.prescriptions="{ item }">
+            <div class="my-5">
+              <div v-for="(plan, index) in item.plans" :key="plan.id" class="mb-4">
+                <div v-if="index < 3" class="d-flex align-center">
+                  <template v-if="index < 2">
+                    {{ plan.prescription?.date_iso_formattee ?? '' }}
+                  </template>
+                </div>
               </div>
             </div>
           </template>
@@ -454,10 +466,12 @@ export default {
     },
     headers () {
       const headers = [
-        { text: 'Nom', align: 'start', value: 'code', filterable: true, width: '30%', sort (a, b) { return b.localeCompare(a) } },
-        { text: 'Type', align: 'start', value: 'type', filterable: false, width: '10%' },
-        { text: 'Procédures', value: 'procedures', filterable: false, sortable: false, width: '30%' },
-        { text: 'SCOTs', value: 'scots', filterable: false, sortable: false, width: '30%' }
+        { text: 'Nom', align: 'start', value: 'code', filterable: true, width: '25%', sort (a, b) { return b.localeCompare(a) } },
+        { text: 'Type', align: 'start', value: 'type', filterable: false, width: '5%' },
+        { text: 'Procédures', value: 'procedures', filterable: false, sortable: false, width: '25%' },
+        { text: 'Prescrit le', value: 'prescriptions', filterable: false, sortable: false, width: '10%' },
+        { text: 'Approuvé le', value: 'approvals', filterable: false, sortable: false, width: '10%' },
+        { text: 'SCOTs', value: 'scots', filterable: false, sortable: false, width: '25%' }
       ]
       if (this.hasValidationEnabled) {
         headers.push({ text: 'Valider', value: 'data-table-select' })
