@@ -3,8 +3,11 @@
 # ruff: noqa: RUF012
 from typing import Any
 
+from django.conf import settings
 from django.contrib import admin
 from django.db import models
+from django.forms.models import ModelForm
+from django.utils.html import escape
 
 from docurba.core.enums import TypeCollectivite
 from docurba.core.models import (
@@ -236,29 +239,34 @@ class TopicAdmin(admin.ModelAdmin):
 class EventAdmin(admin.ModelAdmin):
     readonly_fields = (
         "pk",
-        "procedure",
-        "type",
-        "date_evenement",
-        "is_valid",
-        "visibility",
-        "from_sudocuh",
-        "description",
         "created_at",
         "updated_at",
+        "project",
         "attachements",
         "actors",
+        # Data imported from Sudocuh
+        "is_valid",
         "is_sudocuh_scot",
-        "code",
         "from_sudocuh_procedure_id",
     )
-    raw_id_fields = ("project",)
+    raw_id_fields = ("procedure",)
     list_display = ("pk", "created_at")
     list_filter = ("code",)
     search_fields = ("pk",)
     autocomplete_fields = ("profile",)
+    historized_fields = (
+        "type",
+        "code",
+        "date_evenement",
+        "description",
+        "from_sudocuh",
+    )
     fields = [
-        *readonly_fields,
+        "visibility",
         *autocomplete_fields,
+        *raw_id_fields,
+        *historized_fields,
+        *readonly_fields,
     ]
 
     def has_add_permission(self, request: object) -> bool:
@@ -277,3 +285,10 @@ class EventAdmin(admin.ModelAdmin):
             .select_related("procedure__collectivite_porteuse")
             .prefetch_related("procedure__perimetre")
         )
+
+    def get_form(self, request, obj=None, change=False, **kwargs) -> type[ModelForm]:  # noqa: ANN003, FBT002
+        form = super().get_form(request, obj=obj, change=change, **kwargs)
+        form.base_fields[
+            "type"
+        ].help_text = f"""<a href="{escape(settings.EVENT_TYPE_HELP_TEXT_URL)}" target="_blank">Voir le tableau des types d'évènements</a>"""
+        return form
