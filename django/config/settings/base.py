@@ -21,6 +21,8 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 # Application definition
 
 INSTALLED_APPS = [
+    # Must be above django.contrib.admin
+    "pghistory.admin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -30,10 +32,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "django_filters",
+    "pgtrigger",
+    "pghistory",
     "docurba.core",
     "docurba.surveys",
     "docurba.users",
     "docurba.internal_api",
+    "docurba.history",
 ]
 
 MIDDLEWARE = [
@@ -46,6 +51,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.gzip.GZipMiddleware",
+    # https://django-pghistory.readthedocs.io/en/3.9.2/module/#pghistory.middleware.HistoryMiddleware
+    "pghistory.middleware.HistoryMiddleware",
     # Final logger
     "django_datadog_logger.middleware.error_log.ErrorLoggingMiddleware",
     "django_datadog_logger.middleware.request_log.RequestLoggingMiddleware",
@@ -177,6 +184,7 @@ sentry_sdk.init(
     # We recommend adjusting this value in production.
     profiles_sample_rate=1.0,
 )
+PGHISTORY_ADMIN_MODEL = "history.Change"
 
 ##########################################
 ############ Docurba settings ############

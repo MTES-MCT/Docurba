@@ -131,21 +131,3 @@ class TestEventChange:
                 follow=True,
             )
         assert response.status_code == 200
-
-    def test_sudocuh_event_is_read_only(self, admin_session_client: Client) -> None:
-        event = EventFactory(from_sudocuh=123456)
-        response = admin_session_client.get(
-            reverse("admin:core_event_change", kwargs={"object_id": event.pk})
-        )
-        assert response.status_code == 200
-        assertNotContains(response, "Enregistrer et continuer les modifications")
-
-        new_user = ProfileFactory()
-        response = admin_session_client.post(
-            reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
-            data={
-                "profile": new_user.pk,
-                "_continue": "Enregistrer et continuer les modifications",
-            },
-        )
-        assert response.status_code == 403

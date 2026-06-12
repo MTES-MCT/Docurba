@@ -268,8 +268,6 @@ class EventAdmin(admin.ModelAdmin):
         return False
 
     def has_change_permission(self, request: object, obj=None) -> bool:
-        if obj and bool(obj.from_sudocuh):
-            return False
         return super().has_change_permission(request, obj)
 
     def get_queryset(self, request) -> models.QuerySet:
