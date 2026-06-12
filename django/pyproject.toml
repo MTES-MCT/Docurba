@@ -34,6 +34,8 @@ dev = [
     "ruff",
     "pre-commit>=4.6.0", # https://github.com/pre-commit/pre-commit
     "factory-boy", # https://github.com/FactoryBoy/factory_boy
+    "inline-snapshot-django",
+    "syrupy",
 ]
 
 [tool.pytest.ini_options]

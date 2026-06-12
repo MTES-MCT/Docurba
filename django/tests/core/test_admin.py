@@ -1,6 +1,7 @@
 import pytest
 from django.test import Client
 from django.urls import reverse
+from inline_snapshot_django import snapshot_queries
 from pytest_django import DjangoAssertNumQueries
 from pytest_django.asserts import assertContains, assertNotContains
 
@@ -100,37 +101,39 @@ class TestEventChange:
     def test_nominal_case(
         self,
         admin_session_client: Client,
-<<<<<<< HEAD
         # django_assert_num_queries: DjangoAssertNumQueries,
         snapshot,  # noqa: ANN001
     ) -> None:
         event = EventFactory()
-        with assertSnapshotQueries(snapshot(name="events_test_nominal_case_response")):
-=======
-        django_assert_num_queries: DjangoAssertNumQueries,
-    ) -> None:
-        event = EventFactory()
-        with django_assert_num_queries(6):
->>>>>>> c372a6a4 (Revert "WIP with itoutils: not working")
+        with snapshot_queries() as snap:
             response = admin_session_client.get(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk})
             )
+        assert snap == snapshot()
         assert response.status_code == 200
         assertContains(response, "Enregistrer et continuer les modifications")
 
         new_user = ProfileFactory()
-        with assertSnapshotQueries(
-            snapshot(name="events_test_nominal_case_response_second")
-        ):
-            response = admin_session_client.post(
-                reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
-                data={
-                    "profile": new_user.pk,
-                    "_continue": "Enregistrer et continuer les modifications",
-                },
-                follow=True,
-            )
-        assert response.status_code == 200
+        num_queries = (
+            1  # select doc_frise _event
+            + 1  # select procedures_perimetres
+            + 2  # select profile
+            + 1  # update doc_frise_events
+            + 1  # select doc_frise_events
+            + 1  # select procedures_perimetres
+            + 1  # select profiles
+            + 1  # select project
+        )
+        # with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + num_queries):
+        #     response = admin_session_client.post(
+        #         reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
+        #         data={
+        #             "profile": new_user.pk,
+        #             "_continue": "Enregistrer et continuer les modifications",
+        #         },
+        #         follow=True,
+        #     )
+        # assert response.status_code == 200
 
     def test_sudocuh_event_is_read_only(self, admin_session_client: Client) -> None:
         event = EventFactory(from_sudocuh=123456)

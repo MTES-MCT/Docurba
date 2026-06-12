@@ -1,4 +1,5 @@
 # serializer version: 1
+<<<<<<< HEAD
 # name: TestEventChange.test_nominal_case[events_test_nominal_case_response]
   dict({
     'num_queries': 6,
@@ -3571,4 +3572,15 @@
       }),
     ]),
   })
+=======
+# name: TestEventChange.test_nominal_case
+  list([
+    'SELECT ... FROM django_session WHERE ... LIMIT ...',
+    'SELECT ... FROM auth_user WHERE ... LIMIT ...',
+    'SELECT ... FROM doc_frise_events LEFT OUTER JOIN procedures ON ... LEFT OUTER JOIN core_collectivite ON ... WHERE ... LIMIT ...',
+    'SELECT ... FROM core_commune INNER JOIN procedures_perimetres ON ... INNER JOIN core_collectivite ON ... WHERE ...',
+    'SELECT ... FROM django_content_type WHERE ... LIMIT ...',
+    'SELECT ... FROM doc_frise_events WHERE ... LIMIT ...',
+  ])
+>>>>>>> 1535097a (inline_snapshot_queries)
 # ---
