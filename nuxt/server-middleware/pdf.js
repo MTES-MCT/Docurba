@@ -6,12 +6,8 @@ app.use(express.json())
 const axios = require('axios')
 const FormData = require('form-data')
 
-// const isDev = process.env.NODE_ENV === 'development'
-
 const gotenbergUrl = 'https://gotenberg-5hkjqo623a-od.a.run.app'
-// const gotenbergUrl = isDev ? 'http://localhost:8080' : 'https://gotenberg-5hkjqo623a-od.a.run.app'
 const printUrl = 'https://docurba.beta.gouv.fr'
-// const printUrl = isDev ? 'https://dev-dot-docurba.ew.r.appspot.com' : 'https://docurba.beta.gouv.fr'
 
 app.get('/:ref', (req, res) => {
   const { ref } = req.params
