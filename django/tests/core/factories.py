@@ -13,10 +13,12 @@ from docurba.core.models import (
     Departement,
     Event,
     Procedure,
+    Project,
     Region,
     TypeCollectivite,
     TypeDocument,
 )
+from tests.users.factories import ProfileFactory
 
 REGIONS = {
     "76": "Occitanie",
@@ -129,6 +131,16 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
     departement = factory.SubFactory(DepartementFactory)
 
 
+class ProjectFactory(factory.django.DjangoModelFactory):
+    name = factory.Faker("sentence")
+    collectivite = factory.SubFactory(CollectiviteFactory)
+    collectivite_porteuse = factory.SubFactory(CollectiviteFactory)
+    owner = factory.SubFactory(ProfileFactory)
+
+    class Meta:
+        model = Project
+
+
 class ProcedureFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Procedure
@@ -145,6 +157,7 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
     )
     parente = None
     doublon_cache_de = None
+    project = factory.SubFactory(ProjectFactory)
 
     class Params:
         with_parente = factory.Trait(
