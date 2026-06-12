@@ -1,7 +1,6 @@
 import pytest
 from django.test import Client
 from django.urls import reverse
-from itoutils.django.testing import assertSnapshotQueries
 from pytest_django import DjangoAssertNumQueries
 from pytest_django.asserts import assertContains, assertNotContains
 
@@ -101,11 +100,18 @@ class TestEventChange:
     def test_nominal_case(
         self,
         admin_session_client: Client,
+<<<<<<< HEAD
         # django_assert_num_queries: DjangoAssertNumQueries,
         snapshot,  # noqa: ANN001
     ) -> None:
         event = EventFactory()
         with assertSnapshotQueries(snapshot(name="events_test_nominal_case_response")):
+=======
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        event = EventFactory()
+        with django_assert_num_queries(6):
+>>>>>>> c372a6a4 (Revert "WIP with itoutils: not working")
             response = admin_session_client.get(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk})
             )

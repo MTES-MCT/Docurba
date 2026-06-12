@@ -1,8 +1,6 @@
 # ruff: noqa: F405 F403
 from config.settings.base import *  # NOSONAR (S2208)
 
-APPS_DIR = str(APPS_DIR)
-
 STORAGES["staticfiles"]["BACKEND"] = (
     "django.contrib.staticfiles.storage.StaticFilesStorage"
 )
@@ -25,9 +23,3 @@ DATABASES = {
 }
 
 NUXT3_API_URL = "http://fake-nuxt3.com"
-ASSERT_SNAPSHOT_QUERIES_EXTRA_PACKAGES_ALLOWLIST = [
-    ("django/db/models/query.py", "count")
-]
-if env.str("DEBUG_SQL_SNAPSHOT", default=None):
-    # Mandatory to have detailed stacktrace inside templates
-    TEMPLATES[0]["OPTIONS"]["debug"] = True
