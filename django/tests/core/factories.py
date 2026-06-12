@@ -109,6 +109,7 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Collectivite
         django_get_or_create = ("code_insee_unique",)
+        skip_postgeneration_save = True
 
     id = factory.LazyAttribute(lambda o: f"{o.code_insee_unique}_{o.type}")
     code_insee_unique = factory.Faker("siren", locale="fr_FR")
@@ -127,6 +128,18 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
     competence_plan = False
     competence_schema = False
     departement = factory.SubFactory(DepartementFactory)
+
+    @factory.post_generation
+    def with_collectivites_adherentes(
+        self,
+        create: bool,  # noqa: FBT001
+        extracted: list[Collectivite] | None,
+    ) -> None:
+        if not create or not extracted:
+            return
+
+        for collectivite in extracted:
+            self.collectivites_adherentes.add(collectivite)
 
 
 class ProcedureFactory(factory.django.DjangoModelFactory):
