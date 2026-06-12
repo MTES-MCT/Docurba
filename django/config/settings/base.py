@@ -197,6 +197,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "docurba.internal_api.paginators.DocurbaPagination",
     "PAGE_SIZE": 200,
 }
+EVENT_TYPE_HELP_TEXT_URL = env.str("EVENT_TYPE_HELP_TEXT_URL", default="")
 
 ##########################################
 ############ Supabase settings ############

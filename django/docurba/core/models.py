@@ -936,6 +936,11 @@ class Event(models.Model):
     def __str__(self) -> str:
         return self.type
 
+    def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+        if self.procedure:
+            self.project_id = self.procedure.project_id
+        super().save(*args, **kwargs)
+
     @property
     def category(self) -> EventCategory | None:
         if not self.is_valid:
