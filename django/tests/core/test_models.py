@@ -1,6 +1,7 @@
 # ruff: noqa: FBT001, N803
 from collections.abc import Callable
 from datetime import date, timedelta
+from functools import partial
 from unittest import mock
 
 import pytest
@@ -1411,6 +1412,33 @@ class TestEvent:
     def test_date_null(self) -> None:
         procedure = Procedure()
         assert Event(procedure=procedure).date_evenement is None
+
+    @pytest.mark.django_db
+    def test_project_id(
+        self,
+        django_assert_num_queries: DjangoAssertNumQueries,
+        subtests: pytest.Subtests,
+    ) -> None:
+        factories = [
+            ProcedureFactory,
+            partial(ProcedureFactory, project=None),
+        ]
+        for factory in factories:
+            with subtests.test(factory, factory=factory):
+                old_procedure = ProcedureFactory(with_event=True)
+                event = old_procedure.event_set.first()
+                new_procedure = factory()
+                event.procedure = new_procedure
+                with django_assert_num_queries(1):
+                    event.save()
+                event.refresh_from_db()
+                assert event.project_id == new_procedure.project_id
+
+        event = EventFactory(procedure=None)
+        event.description = "Something new"
+        event.save()
+        event.refresh_from_db()
+        assert not event.project_id
 
 
 @pytest.mark.django_db

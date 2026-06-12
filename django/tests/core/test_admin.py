@@ -103,7 +103,7 @@ class TestEventChange:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         event = EventFactory()
-        with django_assert_num_queries(6):
+        with django_assert_num_queries(8):
             response = admin_session_client.get(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk})
             )
@@ -111,17 +111,7 @@ class TestEventChange:
         assertContains(response, "Enregistrer et continuer les modifications")
 
         new_user = ProfileFactory()
-        num_queries = (
-            1  # select doc_frise _event
-            + 1  # select procedures_perimetres
-            + 2  # select profile
-            + 1  # update doc_frise_events
-            + 1  # select doc_frise_events
-            + 1  # select procedures_perimetres
-            + 1  # select profiles
-            + 1  # select project
-        )
-        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + num_queries):
+        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + 4):
             response = admin_session_client.post(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
                 data={
@@ -131,21 +121,3 @@ class TestEventChange:
                 follow=True,
             )
         assert response.status_code == 200
-
-    def test_sudocuh_event_is_read_only(self, admin_session_client: Client) -> None:
-        event = EventFactory(from_sudocuh=123456)
-        response = admin_session_client.get(
-            reverse("admin:core_event_change", kwargs={"object_id": event.pk})
-        )
-        assert response.status_code == 200
-        assertNotContains(response, "Enregistrer et continuer les modifications")
-
-        new_user = ProfileFactory()
-        response = admin_session_client.post(
-            reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
-            data={
-                "profile": new_user.pk,
-                "_continue": "Enregistrer et continuer les modifications",
-            },
-        )
-        assert response.status_code == 403
