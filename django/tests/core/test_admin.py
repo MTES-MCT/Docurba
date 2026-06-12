@@ -1,6 +1,7 @@
 import pytest
 from django.test import Client
 from django.urls import reverse
+from itoutils.django.testing import assertSnapshotQueries
 from pytest_django import DjangoAssertNumQueries
 from pytest_django.asserts import assertContains, assertNotContains
 
@@ -100,10 +101,11 @@ class TestEventChange:
     def test_nominal_case(
         self,
         admin_session_client: Client,
-        django_assert_num_queries: DjangoAssertNumQueries,
+        # django_assert_num_queries: DjangoAssertNumQueries,
+        snapshot,  # noqa: ANN001
     ) -> None:
         event = EventFactory()
-        with django_assert_num_queries(6):
+        with assertSnapshotQueries(snapshot(name="events_test_nominal_case_response")):
             response = admin_session_client.get(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk})
             )
@@ -111,17 +113,9 @@ class TestEventChange:
         assertContains(response, "Enregistrer et continuer les modifications")
 
         new_user = ProfileFactory()
-        num_queries = (
-            1  # select doc_frise _event
-            + 1  # select procedures_perimetres
-            + 2  # select profile
-            + 1  # update doc_frise_events
-            + 1  # select doc_frise_events
-            + 1  # select procedures_perimetres
-            + 1  # select profiles
-            + 1  # select project
-        )
-        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + num_queries):
+        with assertSnapshotQueries(
+            snapshot(name="events_test_nominal_case_response_second")
+        ):
             response = admin_session_client.post(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
                 data={
