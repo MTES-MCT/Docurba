@@ -137,7 +137,12 @@
 
           <!-- eslint-disable-next-line -->
           <template #item.prescription="{ item }">
-            <span class="mention-grey--text">{{ item.prescription?.date_iso_formattee ?? '-' }}</span>
+            <span class="mention-grey--text">{{ item.prescription?.date_iso_formattee ?? '' }}</span>
+          </template>
+
+          <!-- eslint-disable-next-line -->
+          <template #item.stop="{ item }">
+            <span class="mention-grey--text">{{ item.stop?.date_iso_formattee ?? '' }}</span>
           </template>
 
           <!-- eslint-disable-next-line -->
@@ -233,7 +238,8 @@ export default {
       return [
         { text: 'Nom', align: 'start', value: 'procedureName', filterable: true, width: '45%' },
         { text: 'Périmètre', align: 'start', value: 'perimetre', filterable: false, width: '150px' },
-        { text: 'Prescription', value: 'prescription', filterable: false, width: '135px', sort: this.sortByDateIso },
+        { text: 'Prescrit le', value: 'prescription', filterable: false, width: '135px', sort: this.sortByDateIso },
+        { text: 'Arrêté le', value: 'stop', filterable: false, width: '135px', sort: this.sortByDateIso },
         { text: 'Dernier évènement', value: 'last_event', filterable: false, sort: this.sortByDateIso }
       ]
     },

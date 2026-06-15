@@ -3,6 +3,27 @@ import CCEvents from '@/assets/data/events/CC_events.json'
 import PLUEvents from '@/assets/data/events/PLU_events.json'
 import SCoTEvents from '@/assets/data/events/SCOT_events.json'
 
+export function addFormattedDate (event) {
+  return event && event.date_iso && !event.date_iso_formattee
+    ? {
+        ...event,
+        date_iso_formattee: event.date_iso.split('-').reverse().join('/')
+      }
+    : event
+}
+
+export function getApprovalEvent (event) {
+  return !!event.is_valid && [
+    'Approbation du préfet',
+    'Arrêté de mise à jour',
+    'Arrêté du Maire ou du Préfet ou de l\'EPCI',
+    'Déclaration d\'intérêt général',
+    'Délibération d\'approbation',
+    'Délibération d\'approbation du conseil municipal ou communautaire',
+    'DUP emportant mise en compatibilité'
+  ].includes(event.type)
+}
+
 export function getDocumentTypeEvents (documentType) {
   if (!documentType) {
     return []
@@ -67,4 +88,12 @@ export function getProcedureEventsScope (procedure) {
     default:
       return 'aucun'
   }
+}
+
+export function getStopEvent (event) {
+  return !!event.is_valid && [
+    'Arrêt de projet',
+    'Délibération du conseil communautaire qui arrête le projet de PLU',
+    'Délibération qui arrête le projet de SCoT'
+  ].includes(event.type)
 }
