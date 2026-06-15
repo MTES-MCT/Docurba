@@ -63,7 +63,7 @@ class CollectiviteTypeFilter(admin.SimpleListFilter):
 
 @admin.register(ProcedureSurvey)
 class ProcedureSurveyAdmin(admin.ModelAdmin):
-    list_display = ("procedure", "is_validated")
+    list_display = ("procedure", "procedure_id", "is_validated")
     readonly_fields = (
         "created_at",
         "responded_at",
