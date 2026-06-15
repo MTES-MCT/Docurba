@@ -145,6 +145,15 @@
           </template>
 
           <!-- eslint-disable-next-line -->
+          <template #header.procedures>
+            <span class="d-flex align-center">
+              <span style="width:calc(100% - 16rem)">Procédures</span>
+              <span class="pl-8" style="width:8rem">Prescrit le</span>
+              <span class="pl-8" style="width:8rem">Approuvé le</span>
+            </span>
+          </template>
+
+          <!-- eslint-disable-next-line -->
           <template #item.code="{ item }">
             <div class="my-5">
               <nuxt-link :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`" class="text-decoration-none font-weight-bold">
@@ -170,32 +179,39 @@
               <div v-for="(plan, index) in item.plans" :key="plan.id" class="mb-4">
                 <template v-if="index < 2">
                   <div class="d-flex align-center">
-                    <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${plan.id}`">
-                      {{ $utils.formatProcedureName(plan, item) }}
-                    </nuxt-link>
-                    <div class="d-flex align-middle">
-                      <v-chip-group column>
-                        <v-chip
-                          :class="{
-                            'success-light': plan.inContextStatus === 'OPPOSABLE',
-                            'success--text': plan.inContextStatus === 'OPPOSABLE',
-                            'bf200': plan.inContextStatus === 'EN COURS',
-                            'primary--text': plan.inContextStatus === 'EN COURS',
-                            'text--lighten-2': plan.inContextStatus === 'EN COURS',
-
-                          }"
-                          class="font-weight-bold flex-shrink-0 ml-2"
-                          small
-                          label
-                        >
-                          {{ plan.inContextStatus }}
-                        </v-chip>
-                      </v-chip-group>
-                      <v-chip-group column>
-                        <span v-if="plan.topics">
-                          <ProceduresTopicChips :topics="plan.topics" :small="true" />
-                        </span>
-                      </v-chip-group>
+                    <div class="d-flex align-center mr-auto" style="max-width:calc(100% - 16rem)">
+                      <nuxt-link class="font-weight-bold text-decoration-none" :to="`/frise/${plan.id}`">
+                        {{ $utils.formatProcedureName(plan, item) }}
+                      </nuxt-link>
+                      <div class="d-flex align-middle">
+                        <v-chip-group column>
+                          <v-chip
+                            :class="{
+                              'success-light': plan.inContextStatus === 'OPPOSABLE',
+                              'success--text': plan.inContextStatus === 'OPPOSABLE',
+                              'bf200': plan.inContextStatus === 'EN COURS',
+                              'primary--text': plan.inContextStatus === 'EN COURS',
+                              'text--lighten-2': plan.inContextStatus === 'EN COURS',
+                            }"
+                            class="font-weight-bold flex-shrink-0 ml-2"
+                            small
+                            label
+                          >
+                            {{ plan.inContextStatus }}
+                          </v-chip>
+                        </v-chip-group>
+                        <v-chip-group column>
+                          <span v-if="plan.topics">
+                            <ProceduresTopicChips :topics="plan.topics" :small="true" />
+                          </span>
+                        </v-chip-group>
+                      </div>
+                    </div>
+                    <div class="pl-8" style="width:8rem">
+                      {{ plan.prescription?.date_iso_formattee ?? '' }}
+                    </div>
+                    <div class="pl-8" style="width:8rem">
+                      {{ plan.approval?.date_iso_formattee ?? '' }}
                     </div>
                   </div>
                 </template>
@@ -454,10 +470,10 @@ export default {
     },
     headers () {
       const headers = [
-        { text: 'Nom', align: 'start', value: 'code', filterable: true, width: '30%', sort (a, b) { return b.localeCompare(a) } },
-        { text: 'Type', align: 'start', value: 'type', filterable: false, width: '10%' },
-        { text: 'Procédures', value: 'procedures', filterable: false, sortable: false, width: '30%' },
-        { text: 'SCOTs', value: 'scots', filterable: false, sortable: false, width: '30%' }
+        { text: 'Nom', align: 'start', value: 'code', filterable: true, width: '25%', sort (a, b) { return b.localeCompare(a) } },
+        { text: 'Type', align: 'start', value: 'type', filterable: false, width: '5%' },
+        { text: 'Procédures', value: 'procedures', filterable: false, sortable: false, width: '45%' },
+        { text: 'SCOTs', value: 'scots', filterable: false, sortable: false, width: '25%' }
       ]
       if (this.hasValidationEnabled) {
         headers.push({ text: 'Valider', value: 'data-table-select' })
