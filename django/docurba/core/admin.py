@@ -204,6 +204,7 @@ class ProjectAdmin(admin.ModelAdmin):
 @admin.register(Procedure)
 class ProcedureAdmin(admin.ModelAdmin):
     readonly_fields = (
+        "id",
         "collectivite_porteuse_id",
         "from_sudocuh",
         "doc_type",
@@ -233,7 +234,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         TopicsFilter,
     )
     inlines = [ProcedurePerimetreInline, EventsInline]
-    list_display = ("__str__", "django_status")
+    list_display = ("id", "__str__", "django_status")
     search_fields = ("pk",)
     fields = [
         *autocomplete_fields,
