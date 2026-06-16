@@ -1,4 +1,4 @@
-import { maxBy } from 'lodash'
+import { maxBy, orderBy } from 'lodash'
 import { addFormattedDate, getApprovalEvent, getPrescriptionEvent, getStopEvent } from '@/plugins/event'
 
 export function enrichProcedureWithEvents (procedure) {
@@ -16,7 +16,7 @@ export function enrichProcedureWithEvents (procedure) {
   )
   let approval, prescription, stop
 
-  for (const event of events) {
+  for (const event of orderBy(events, 'date_iso', 'desc')) {
     const eventWithFormattedDate = addFormattedDate(event)
 
     if (!approval && getApprovalEvent(event)) {
