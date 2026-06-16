@@ -1,10 +1,7 @@
 from csv import DictWriter
 from datetime import date
-from itertools import groupby
-from operator import attrgetter
 
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
-from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_safe
 
 from docurba.core.enums import TypeCollectivite
@@ -386,38 +383,3 @@ def api_scots(request: HttpRequest) -> HttpResponse:
         for scot_opposable, scot_en_cours in collectivite.scots_pour_csv
     )
     return response
-
-
-@require_safe
-def collectivite(
-    request: HttpRequest, collectivite_code: str, collectivite_type: str = "COM"
-) -> HttpResponse:
-    try:
-        avant = _avant(request)
-    except ValueError:
-        return HttpResponseBadRequest(
-            "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
-        )
-    commune_qs = Commune.objects.with_procedures_principales(avant=avant)
-    commune = get_object_or_404(
-        commune_qs, id=f"{collectivite_code}_{collectivite_type}"
-    )
-    is_schema = attrgetter("is_schema")
-    procedures_principales_by_schema = {
-        schema: [
-            (procedure, commune.is_opposable(procedure)) for procedure in procedures
-        ]
-        for schema, procedures in groupby(
-            sorted(commune.procedures_principales, key=is_schema),
-            key=is_schema,
-        )
-    }
-
-    return render(
-        request,
-        "core/collectivite.html",
-        {
-            "collectivite": commune,
-            "procedures_principales_by_schema": procedures_principales_by_schema,
-        },
-    )
