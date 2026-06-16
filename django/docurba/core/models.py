@@ -868,7 +868,7 @@ class Event(models.Model):
     )
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
     date_evenement = models.DateField(
-        db_column="date_iso", null=True, verbose_name="date"
+        db_column="date_iso", blank=True, null=True, verbose_name="date"
     )
     is_valid = models.BooleanField(db_default=True, verbose_name="est valide")
     visibility = models.TextField(  # noqa: DJ001
@@ -893,7 +893,7 @@ class Event(models.Model):
         unique=True, blank=True, null=True, verbose_name="from_sudocuh"
     )
     profile = models.ForeignKey(
-        "users.Profile", models.DO_NOTHING, null=True, verbose_name="profil"
+        "users.Profile", models.DO_NOTHING, blank=True, null=True, verbose_name="profil"
     )
     project = models.ForeignKey(
         "core.Project", blank=True, null=True, on_delete=models.SET_NULL
