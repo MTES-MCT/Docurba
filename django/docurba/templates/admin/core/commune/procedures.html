@@ -1,0 +1,51 @@
+{% extends "admin/change_form.html" %}
+{% load admin_urls %}
+{% block after_related_objects %}
+{{ block.super }}
+<div class="inline-group">
+    <div class="tabular inline-related">
+        <fieldset class="module">
+            <h2 class="inline-heading"> Procédures dont le périmètre inclut la commune</h2>
+            <div class="wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Procedure</th>
+                            <th>Type document</th>
+                            <th>Opposable</th>
+                            <th>Statut</th>
+                            <th>Date prescription</th>
+                            <th>Date approbation</th>
+                            <th>Dernier event impactant</th>
+                            <th>Archivée</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for procedure in procedures %}
+                        <tr class="form-row">
+                            <td><p>
+                                <a href="{% url 'admin:core_procedure_change' procedure.pk %}">
+                                        {{ procedure.id }}
+                                </a>
+                                : {{ procedure }}
+                            </p></td>
+                            <td>
+                                <p>{{ procedure.type_document }}</p>
+                            </td>
+                            <td>
+                                <p>{% if procedure.is_opposable %}✅{% endif %}</p>
+                            </td>
+                            <td><p>{{ procedure.statut | default_if_none:"" }}</p></td>
+                            <td><p>{{ procedure.date_prescription | default_if_none:"" }}</p></td>
+                            <td><p>{{ procedure.date_approbation | default_if_none:"" }}</p></td>
+                            <td><p>{{ procedure.dernier_event_impactant | default_if_none:"" }}</p></td>
+                            <td><p>{% if procedure.archived %}✅{% endif %}</p></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+    </div>
+</div>
+{% endblock %}
