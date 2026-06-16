@@ -30,3 +30,4 @@ class CommuneViewSet(viewsets.ReadOnlyModelViewSet):
     )
     serializer_class = CommuneSerializer
     filterset_class = custom_filters.CommuneFilter
+    lookup_field = "code_insee_unique"
