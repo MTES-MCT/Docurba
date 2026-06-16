@@ -2,6 +2,7 @@
 const axios = require('axios')
 const geo = require('./geo.js')
 const supabase = require('./supabase.js')
+const _ = require('lodash')
 
 module.exports = {
   shareProcedure ({ from, to, type, procedure, pac }) {
@@ -62,6 +63,8 @@ module.exports = {
     })
   },
   requestCollectiviteAccess (userData) {
+    // See '/webhook/interactivity' to see fields needed by the webhook (action_id == 'collectivite_validation')
+    const payload = _.pick(userData, ['user_id', 'email', 'firstname', 'lastname', 'collectivite_id'])
     return axios({
       url: process.env.SLACK_WEBHOOK,
       method: 'post',
@@ -92,7 +95,7 @@ module.exports = {
                   type: 'plain_text',
                   text: `Valider ${userData.email}`
                 },
-                value: JSON.stringify(userData),
+                value: JSON.stringify(payload),
                 action_id: 'collectivite_validation'
               }
             ]
@@ -113,6 +116,8 @@ module.exports = {
     } else if (userData.poste === 'dreal') {
       textContent = `- region: ${userData.region.name} - ${userData.region.code} \n - email: ${userData.email}`
     }
+    // See '/webhook/interactivity' to see fields needed by the webhook (action_id == 'ddt_validation')
+    const payload = _.pick(userData, ['user_id', 'email', 'departement'])
     return axios({
       url: process.env.SLACK_WEBHOOK,
       method: 'post',
@@ -143,7 +148,7 @@ module.exports = {
                   type: 'plain_text',
                   text: `Valider ${userData.email}`
                 },
-                value: JSON.stringify(userData),
+                value: JSON.stringify(payload),
                 action_id: 'ddt_validation'
               }
             ]
