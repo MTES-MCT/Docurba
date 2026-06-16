@@ -415,7 +415,7 @@ def collectivite(
 
     return render(
         request,
-        "collectivite.html",
+        "core/collectivite.html",
         {
             "collectivite": commune,
             "procedures_principales_by_schema": procedures_principales_by_schema,
