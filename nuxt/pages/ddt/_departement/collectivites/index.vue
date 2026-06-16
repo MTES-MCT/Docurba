@@ -657,7 +657,9 @@ export default {
       })
 
       this.exportingCommunes = true
-      const { data } = await axios(`/api/communes?departement=${departementCode}`)
+      const { data } = await this.$djangoApi.get('/api/communes', {
+        departement: departementCode
+      })
 
       const a = document.createElement('a')
       const blob = new Blob([data], { type: 'text/csv' })

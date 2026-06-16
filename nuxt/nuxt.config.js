@@ -128,7 +128,6 @@ export default {
     '~/server-middleware/redirects.js',
     { path: '/api/admin', handler: '~/server-middleware/admin.js' },
     { path: '/api/auth', handler: '~/server-middleware/auth.js' },
-    { path: '/api/communes', handler: '~/server-middleware/communes.js' },
     { path: '/api/data', handler: '~/server-middleware/data.js' },
     { path: '/api/geoide', handler: '~/server-middleware/geoide.js' },
     { path: '/api/georisques', handler: '~/server-middleware/georisques.js' },
