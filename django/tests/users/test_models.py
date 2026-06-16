@@ -1,4 +1,5 @@
 import pytest
+from django.db import connection, transaction
 
 from docurba.users.models import Profile, User
 
@@ -18,6 +19,25 @@ class TestUserModel:
         """
         UserFactory()
         assert User.objects.count() == 1
+
+    def test_update_password(self) -> None:
+        user = UserFactory()
+        assert not user.encrypted_password
+        password = "ARandomPassword"  # noqa: S105
+        user.update_password(password=password)
+        user.refresh_from_db()
+
+        assert user.encrypted_password
+
+        with connection.cursor() as cursor, transaction.atomic():
+            cursor.execute(
+                """
+                    SELECT (encrypted_password = crypt(%s, encrypted_password)) AS encrypted_password FROM auth.users;
+                """,
+                [password],
+            )
+            row = cursor.fetchone()
+        assert row[0]
 
 
 @pytest.mark.django_db

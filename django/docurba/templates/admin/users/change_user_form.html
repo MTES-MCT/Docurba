@@ -1,0 +1,23 @@
+{% extends 'admin/change_form.html' %}
+
+{% block submit_buttons_bottom %}
+
+    {% if perms.users.change_user %}
+        <div class="submit-row">
+            <input class="danger with-confirm" type="submit" value="Créer un mot de passe par défaut" name="_update_user_password">
+        </div>
+    {% endif %}
+
+    {{ block.super }}
+
+    <script nonce="{{ csp_nonce }}">
+        var buttons = document.getElementsByClassName("with-confirm");
+        Array.prototype.forEach.call(buttons, function(button) {
+            button.addEventListener("click", function(event) {
+                if (!confirm('Voulez-vous vraiment modifier le mot de passe ?')) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+{% endblock %}
