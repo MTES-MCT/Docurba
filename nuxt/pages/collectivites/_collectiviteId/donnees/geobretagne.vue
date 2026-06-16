@@ -4,8 +4,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   // async asyncData ({ $daturba, route }) {
   //   return await $daturba.getData(route.query.region, route.query.insee)
@@ -41,12 +39,10 @@ export default {
     //   return `commune/${code.toString().length < 5 ? '0' + code : code}`
     // })
 
-    const communeDetails = (await axios({
-      url: `/api/communes/${this.$route.query.insee}`,
-      method: 'get'
-    })).data
+    const communeDetails = await this.$djangoApi
+      .get(`/api-internes/communes/${this.$route.query.insee}/`)
 
-    const { cards, themes } = await this.$daturba.getGeoIDE(communeDetails.nom_commune, 'bretagne')
+    const { cards, themes } = await this.$daturba.getGeoIDE(communeDetails.intitule, 'bretagne')
 
     this.dataset = cards
     const inspireThemes = themes.dimension.find(d => d['@label'] === 'inspireThemes')
