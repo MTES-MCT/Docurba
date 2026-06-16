@@ -1,5 +1,8 @@
+import secrets
+import string
+
 from django.contrib.postgres.fields import ArrayField
-from django.db import models
+from django.db import connection, models, transaction
 from django.db.models.functions import Now
 
 from docurba.users import enums as users_enums
@@ -18,6 +21,7 @@ class User(models.Model):
     last_sign_in_at = models.DateTimeField(
         verbose_name="Date de dernière connexion", db_default=Now(), editable=False
     )
+    encrypted_password = models.CharField()
 
     class Meta:
         managed = False
@@ -26,6 +30,45 @@ class User(models.Model):
 
     def __str__(self) -> str:
         return self.email
+
+    @classmethod
+    def _random_password(cls) -> str:
+        # https://docs.python.org/3/library/secrets.html#recipes-and-best-practices
+        alphabet = string.ascii_letters + string.digits
+        length = 20
+        min_digits = 3
+        while True:
+            password = "".join(secrets.choice(alphabet) for _ in range(length))
+            if (
+                any(c.islower() for c in password)
+                and any(c.isupper() for c in password)
+                and sum(c.isdigit() for c in password) >= min_digits
+            ):
+                break
+        return password
+
+    def update_password(self, password: str | None = None) -> str:
+        """Update user password handled by Supabase.
+
+        Passwords are crypted by Supabase at the database level.
+        Their client does not allow to update users' password without
+        them logging in first.
+        https://supabase.com/docs/reference/python/auth-resetpasswordforemail
+        """
+        if not password:
+            password = self._random_password()
+
+        with transaction.atomic(), connection.cursor() as cursor:
+            # https://github.com/orgs/supabase/discussions/5043
+            cursor.execute(
+                """
+                UPDATE auth.users
+                SET encrypted_password = crypt(%s, gen_salt('bf'))
+                WHERE id = %s;
+            """,
+                [password, self.id],
+            )
+        return password
 
 
 class Session(models.Model):

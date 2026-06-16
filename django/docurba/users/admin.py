@@ -3,7 +3,10 @@ from typing import ClassVar, Literal
 
 from django.contrib import admin
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import PermissionDenied
 from django.forms.widgets import TextInput
+from django.http import HttpResponse
+from django.utils.html import format_html
 
 from docurba.users.models import Profile, User
 
@@ -14,6 +17,7 @@ class ProfileAdmin(admin.ModelAdmin):
         "user",
         "email",  # email doit correspondre à celui connu par Supabase Auth donc on désactive l'édition
     )
+
     list_display = (
         "__str__",
         "side",
@@ -35,7 +39,6 @@ class ProfileAdmin(admin.ModelAdmin):
         "region",
         "departement",
     )
-
     autocomplete_fields = ("collectivite",)
     save_on_top = True
     radio_fields: ClassVar = {"side": admin.VERTICAL}
@@ -63,10 +66,29 @@ class ProfileAdmin(admin.ModelAdmin):
 class UserAdmin(admin.ModelAdmin):
     """Les données sont gérées par Supabase."""
 
-    def has_delete_permission(self, request, obj=None) -> Literal[False]:
-        return False
+    readonly_fields = (
+        "id",
+        "email",
+        "last_sign_in_at",
+    )
+    fields = (*readonly_fields,)
+    change_form_template = "admin/users/change_user_form.html"
 
-    def has_change_permission(self, request, obj=None) -> Literal[False]:
+    def response_change(self, request, obj) -> HttpResponse:
+        """Add custom "actions" as buttons."""
+        if "_update_user_password" in request.POST:
+            if request.user.has_perm("users.change_user"):
+                password = obj.update_password()
+                self.message_user(
+                    request, format_html("Nouveau mot de passe : {}", password)
+                )
+                self.log_change(request, obj, "Modification du mot de passe")
+            else:
+                raise PermissionDenied
+
+        return super().response_change(request, obj)
+
+    def has_delete_permission(self, request, obj=None) -> Literal[False]:
         return False
 
     def has_add_permission(self, request) -> Literal[False]:
