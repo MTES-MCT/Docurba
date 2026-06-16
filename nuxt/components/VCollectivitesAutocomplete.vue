@@ -126,7 +126,7 @@ export default {
             without_communes: true,
             competence: ['plan', 'schema']
           })
-          const communes = await this.$djangoApi.get('/communes/', {
+          const communes = await this.$djangoApi.get('/api-internes/communes/', {
             departement: this.selectedDepartement.code_departement,
             type: 'COM'
           })
