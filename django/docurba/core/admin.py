@@ -7,6 +7,8 @@ from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from django.forms.models import ModelForm
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.utils.html import format_html
 
 from docurba.core.enums import TypeCollectivite
@@ -46,7 +48,50 @@ class CollectiviteAdmin(admin.ModelAdmin):
 
 @admin.register(Commune)
 class CommuneAdmin(CollectiviteAdmin):
-    pass
+    change_form_template = "admin/core/commune/procedures.html"
+
+    def get_extra_context(self, object_id) -> dict:
+        commune = get_object_or_404(
+            Commune.objects.with_procedures_principales(), pk=object_id
+        )
+        procedures = (
+            commune.procedures.filter(parente=None)
+            .with_events()
+            .order_by("doc_type", "-created_at")
+        )
+        for procedure in procedures:
+            procedure.is_opposable = commune.is_opposable(procedure)
+        return {"procedures": procedures}
+
+    # We cant use inlines here as they only work with ForeignKey and not with ForeignObject (CommuneProcedure.commune)
+    def change_view(
+        self, request, object_id, form_url="", extra_context=None
+    ) -> HttpResponse:
+        extra_context = extra_context or {}
+        extra_context.update(self.get_extra_context(admin.utils.unquote(object_id)))
+        return super().change_view(
+            request,
+            object_id,
+            form_url,
+            extra_context=extra_context,
+        )
+
+    def get_queryset(self, request) -> models.QuerySet:
+        queryset = super().get_queryset(request)
+        return queryset.with_procedures_principales()
+
+    def get_readonly_fields(self, request, obj=None) -> tuple[str]:
+        readonly = super().get_readonly_fields(request, obj)
+
+        return (*readonly, "code_etat_simplifie", "code_etat_complet")
+
+    @admin.display(description="Code état Simplifié")
+    def code_etat_simplifie(self, obj) -> str:
+        return f"{obj.code_etat_simplifie} - {obj.libelle_code_etat_simplifie}"
+
+    @admin.display(description="Code état Complet")
+    def code_etat_complet(self, obj) -> str:
+        return f"{obj.code_etat_complet} - {obj.libelle_code_etat_complet}"
 
 
 class ProcedurePerimetreInline(admin.TabularInline):
