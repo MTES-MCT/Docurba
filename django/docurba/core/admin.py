@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from django.forms.models import ModelForm
-from django.utils.html import escape
+from django.utils.html import format_html
 
 from docurba.core.enums import TypeCollectivite
 from docurba.core.models import (
@@ -288,7 +288,8 @@ class EventAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, change=False, **kwargs) -> type[ModelForm]:  # noqa: ANN003, FBT002
         form = super().get_form(request, obj=obj, change=change, **kwargs)
-        form.base_fields[
-            "type"
-        ].help_text = f"""<a href="{escape(settings.EVENT_TYPE_HELP_TEXT_URL)}" target="_blank">Voir le tableau des types d'évènements</a>"""
+        form.base_fields["type"].help_text = format_html(
+            """<a href="{}" target="_blank">Voir le tableau des types d'évènements</a>""",
+            settings.EVENT_TYPE_HELP_TEXT_URL,
+        )
         return form
