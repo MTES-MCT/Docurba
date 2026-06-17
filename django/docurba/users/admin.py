@@ -72,6 +72,7 @@ class UserAdmin(admin.ModelAdmin):
         "last_sign_in_at",
     )
     fields = (*readonly_fields,)
+    search_fields = ("email",)
     change_form_template = "admin/users/change_user_form.html"
 
     def response_change(self, request, obj) -> HttpResponse:
