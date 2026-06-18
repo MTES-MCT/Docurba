@@ -40,27 +40,6 @@ CREATE TABLE public.procedures (
     archived boolean GENERATED ALWAYS AS (((doublon_cache_de_id IS NOT NULL) OR soft_delete)) STORED
 );
 
-CREATE FUNCTION public.procedures_by_insee_codes(codes json) RETURNS SETOF record
-    LANGUAGE sql
-    AS $$
-SELECT *
-FROM procedures
-WHERE EXISTS (
-  SELECT id, status, doc_type, current_perimetre, is_pluih
-  FROM jsonb_array_elements(current_perimetre) obj
-  WHERE ((obj->>'inseeCode')::text IN (
-    SELECT jsonb_array_elements_text(codes::jsonb)
-  )) and (status in ('opposable', 'en cours')) and (is_principale = true)
-);
-$$;
-
-CREATE FUNCTION public.procedures_by_sudocuh_ids(sudocuh_ids json) RETURNS SETOF record
-    LANGUAGE sql
-    AS $$
-SELECT id, from_sudocuh, initial_perimetre, current_perimetre, status
-FROM procedures
-WHERE from_sudocuh::text IN (SELECT value FROM jsonb_array_elements_text(sudocuh_ids::jsonb));
-$$;
 
 ALTER TABLE ONLY public.procedures
     ADD CONSTRAINT procedures_from_sudocuh_key UNIQUE (from_sudocuh),
@@ -84,12 +63,6 @@ CREATE UNIQUE INDEX procedures_pkey_secondary_null_not_archived ON public.proced
 CREATE INDEX idx_project_id ON public.procedures USING btree (project_id);
 
 
-GRANT ALL ON FUNCTION public.procedures_by_insee_codes(codes json) TO anon;
-GRANT ALL ON FUNCTION public.procedures_by_insee_codes(codes json) TO authenticated;
-GRANT ALL ON FUNCTION public.procedures_by_insee_codes(codes json) TO service_role;
-GRANT ALL ON FUNCTION public.procedures_by_sudocuh_ids(sudocuh_ids json) TO anon;
-GRANT ALL ON FUNCTION public.procedures_by_sudocuh_ids(sudocuh_ids json) TO authenticated;
-GRANT ALL ON FUNCTION public.procedures_by_sudocuh_ids(sudocuh_ids json) TO service_role;
 GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.procedures TO anon;
 GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.procedures TO authenticated;
 GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.procedures TO service_role;
