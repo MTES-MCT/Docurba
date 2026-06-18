@@ -167,7 +167,9 @@ export default {
       const departement = this.$user.profile.departement
 
       if (departement) {
-        const { data: communes } = await axios(`/api/geo/communes?departementCode=${departement}`)
+        const communes = await this.$djangoApi.get('/api-internes/communes/', {
+          departement
+        })
         const { data: intercomunalites } = await axios(`/api/geo/intercommunalites?departementCode=${departement}`)
 
         this.collectivites = [{ header: 'EPCI' }, ...intercomunalites, { divider: true }, { header: 'Communes' }, ...communes]
