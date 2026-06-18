@@ -48,6 +48,8 @@ export default {
     { src: '~/plugins/rules.js' },
     { src: '~/plugins/notifications.js', mode: 'client' },
     { src: '~/plugins/githubRefs.js' },
+    { src: '~/plugins/django-api.js', mode: 'client' }, // Need to be before urbanisator plugin
+    { src: '~/plugins/collectivite.js', mode: 'client' },
     { src: '~/plugins/urbanisator.js' },
     { src: '~/plugins/pdfMake.js', mode: 'client' },
     { src: '~/plugins/analytics.js' },
@@ -57,9 +59,7 @@ export default {
     { src: '~/plugins/sharing.js' },
     { src: '~/plugins/enquete.js' },
     { src: '~/plugins/zanSurvey.js' },
-    { src: '~/plugins/nuxt3api.js', mode: 'client' },
-    { src: '~/plugins/django-api.js', mode: 'client' },
-    { src: '~/plugins/collectivite.js', mode: 'client' }
+    { src: '~/plugins/nuxt3api.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

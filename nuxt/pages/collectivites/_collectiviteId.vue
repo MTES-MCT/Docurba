@@ -53,7 +53,7 @@ export default {
   },
   methods: {
     async getProcedures () {
-      // console.log('this.$route.params.collectiviteId: ', this.$route.params.collectiviteId)
+      // TODO :: Migrate this to Django once `membres` is available in `/api-internes/collectivites/`
       const { data: collectivite } = await axios({
         url: `/api/geo/collectivites/${this.$route.params.collectiviteId}`
       })
