@@ -11,8 +11,8 @@ const supabase = require('./modules/supabase.js')
 
 // modules
 const admin = require('./modules/admin.js')
+const djangoApi = require('./modules/django-api.js')
 const slack = require('./modules/slack.js')
-const geo = require('./modules/geo.js')
 const sharing = require('./modules/sharing.js')
 
 app.post('/notify/admin/acte', (req, res) => {
@@ -167,7 +167,7 @@ async function collectiviteValidation (data, responseUrl) {
       .eq('user_id', data.user_id)
 
     const profile = profiles[0]
-    const collectivite = geo.getCollectivite(profile.collectivite_id)
+    const collectivite = await djangoApi.get(`/api-internes/collectivites/${profile.collectivite_id}/`)
 
     const sharedProcedureUrl = await sharing.latestProcedurePrincipaleSharedUrl(data.email)
     sendgrid.sendEmail({
