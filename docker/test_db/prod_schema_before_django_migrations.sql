@@ -382,53 +382,6 @@ returning section.*;$$;
 
 
 --
--- Name: validated_collectivites(date, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.validated_collectivites(since date, departement text) RETURNS TABLE(collectivite_code text, created_at timestamp without time zone, profile_id uuid, email text)
-    LANGUAGE sql
-    AS $$SELECT
-	inn.*,
-	pf.email
-FROM
-	(
-		SELECT
-			pv.collectivite_code,
-			MIN(pv.created_at) AS created_at,
-			MIN(pv.profile_id::text)::UUID AS profile_id
-		FROM
-			procedures_validations pv
-		WHERE
-			pv.created_at > since
-			AND pv.departement = departement
-		GROUP BY
-			pv.collectivite_code
-		ORDER BY
-			pv.collectivite_code
-	) AS inn
-	LEFT JOIN profiles pf ON inn.profile_id = pf.user_id;$$;
-
-
---
--- Name: validated_collectivites_by_depts(date); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.validated_collectivites_by_depts(since date) RETURNS TABLE(departement text, unique_collectivites_count bigint)
-    LANGUAGE sql SECURITY DEFINER
-    AS $$SELECT
-	departement,
-	COUNT(DISTINCT collectivite_code) AS unique_collectivites_count
-FROM
-	procedures_validations
-WHERE
-  created_at > since
-GROUP BY
-	departement
-ORDER BY
-	departement;$$;
-
-
---
 -- Name: wrap_check_user_access(uuid); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1283,24 +1236,6 @@ GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.pa
 GRANT ALL ON FUNCTION public.update_sections_path(payload json) TO anon;
 GRANT ALL ON FUNCTION public.update_sections_path(payload json) TO authenticated;
 GRANT ALL ON FUNCTION public.update_sections_path(payload json) TO service_role;
-
-
---
--- Name: FUNCTION validated_collectivites(since date, departement text); Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON FUNCTION public.validated_collectivites(since date, departement text) TO anon;
-GRANT ALL ON FUNCTION public.validated_collectivites(since date, departement text) TO authenticated;
-GRANT ALL ON FUNCTION public.validated_collectivites(since date, departement text) TO service_role;
-
-
---
--- Name: FUNCTION validated_collectivites_by_depts(since date); Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON FUNCTION public.validated_collectivites_by_depts(since date) TO anon;
-GRANT ALL ON FUNCTION public.validated_collectivites_by_depts(since date) TO authenticated;
-GRANT ALL ON FUNCTION public.validated_collectivites_by_depts(since date) TO service_role;
 
 
 --

@@ -202,7 +202,8 @@ export default {
 
         const upsertEvent = { ...this.event, profile_id: this.$user.id }
         if (this.eventId) {
-          await this.$supabase.from('doc_frise_events').update(upsertEvent).eq('id', this.eventId)
+          const payload = { ...upsertEvent, updated_at: new Date().toISOString() }
+          await this.$supabase.from('doc_frise_events').update(payload).eq('id', this.eventId)
           await this.saveAttachements(this.eventId)
         } else {
           const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(upsertEvent).select()

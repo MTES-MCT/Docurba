@@ -13,15 +13,11 @@ def delete_fin_echeance(apps, schema_editor) -> None:  # noqa: ANN001, ARG001
 
 
 DISABLE_TRIGGERS = """
-    ALTER TABLE doc_frise_events
-        DISABLE TRIGGER handle_updated_at,
-        DISABLE TRIGGER trigger_event_procedure_status_handler;
+    ALTER TABLE doc_frise_events DISABLE TRIGGER USER;
 """
 
 ENABLE_TRIGGERS = """
-    ALTER TABLE doc_frise_events
-        ENABLE TRIGGER handle_updated_at,
-        ENABLE TRIGGER trigger_event_procedure_status_handler;
+    ALTER TABLE doc_frise_events ENABLE TRIGGER USER;
 """
 
 
