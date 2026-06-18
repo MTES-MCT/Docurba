@@ -79,6 +79,8 @@ export default {
   },
   methods: {
     async getProcedures () {
+      // TODO :: Migrate this once `intercommunaliteCode`, `membres` and `groupements` are available in `/api-internes/collectivites/`
+      // TODO :: Also get intercommunalite from `intercommunaliteCode`
       this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
       this.schemas = schemas
