@@ -77,9 +77,9 @@ export default {
   watch: {
     async dialog (newVal) {
       if (newVal) {
-        const rawReferentiel = await fetch(`/api/geo/collectivites?codes=${this.perimetre.map(e => e.collectivite_code)}`)
-        const referentiel = await rawReferentiel.json()
-        this.fullPerimetre = referentiel.filter(e => this.perimetre.map(y => y.collectivite_code).includes(e.code))
+        this.fullPerimetre = await this.$djangoApi.get('/api-internes/collectivites/', {
+          code: this.perimetre.map(y => y.collectivite_code)
+        })
       }
     }
   }

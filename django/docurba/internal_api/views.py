@@ -15,6 +15,7 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
 
     serializer_class = CollectiviteSerializer
     filterset_class = custom_filters.CollectiviteFilter
+    lookup_field = "code_insee_unique"
 
     def get_serializer_context(self) -> dict:
         context = super().get_serializer_context()
