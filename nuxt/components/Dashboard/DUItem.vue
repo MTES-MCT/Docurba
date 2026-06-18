@@ -69,6 +69,7 @@ export default {
       this.collectivite = this.procedure.procedures_perimetres[0]
     } else {
       try {
+        // TODO :: Migrate this to Django once `groupements` and `membres` are available in `/api-internes/collectivites/`
         const { data: collectiviteData } = await axios(`/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}`)
         this.collectivite = collectiviteData
       } catch (err) {
