@@ -27,33 +27,6 @@ CREATE FUNCTION public.set_procedure_status(procedure public.procedures) RETURNS
     AS $$ DECLARE new_status text; event doc_frise_events; current_date_opposable text; BEGIN FOR event IN SELECT * FROM doc_frise_events WHERE procedure_id = procedure.id AND (is_valid = true OR type = 'Abandon') ORDER BY date_iso DESC, type LOOP new_status := get_event_impact(event, procedure.doc_type); IF new_status = 'opposable' THEN current_date_opposable := event.date_iso; END IF; IF new_status IS NOT null then EXIT; END IF; END LOOP; IF new_status IS NULL THEN new_status := 'en cours'; END IF; UPDATE procedures SET status = new_status WHERE id = procedure.id; current_date_opposable := null; new_status := null; END; $$;
 
 
-CREATE FUNCTION public.one_shot_events() RETURNS void
-    LANGUAGE plpgsql
-    AS $$ DECLARE procedure procedures; start_time timestamp := clock_timestamp(); end_time timestamp; execution_time interval; i INT := 0; BEGIN RAISE LOG 'Processing One shot events'; UPDATE procedures SET status = null; FOR procedure IN SELECT * FROM procedures WHERE is_principale IS TRUE LOOP i := i + 1; RAISE LOG 'Processing procedure events N: %', i; PERFORM set_procedure_status(procedure); END LOOP; end_time := clock_timestamp(); execution_time := end_time - start_time; RAISE LOG 'FUNCTION ONE SHOT execution time: %', execution_time; END; $$;
-
-
-CREATE FUNCTION public.procedure_status_handler() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-declare
-procedure procedures;
-BEGIN
-  IF TG_OP = 'UPDATE' OR TG_OP = 'INSERT' then
-    procedure := new;
-  else
-    procedure := old;
-  END IF;
-
-  PERFORM set_procedure_status(procedure);
-
-  -- Perform the HTTP GET request
-  -- TODO(cms): API call is disabled here because Nuxt3 does not listen on test mode.
-  -- PERFORM http_get('localhost:4000/api/urba/procedures/' || procedure.id || '/update');
-  return procedure;
-END;
-$$;
-
-
 CREATE FUNCTION public.get_event_impact(event_processed public.doc_frise_events, doc_type text) RETURNS text
     LANGUAGE plpgsql
     AS $$ declare is_opposable_event bool; is_caduc_event bool; is_abandon_event bool; is_ongoing_event bool; is_annule_event bool; new_status text := NULL; impactful_events jsonb := '{ "CC": { "en cours": ["Délibération de prescription du conseil municipal"], "opposable": ["Approbation du préfet", "Caractère exécutoire", "Retrait de l''annulation totale"], "abandon": ["Abandon", "Retrait de la délibération de prescription"], "annule": ["Annulation TA totale", "Annulation TA", "Abrogation effective"], "caduc": [] }, "SCOT": { "en cours": ["Délibération de l''établissement public qui prescrit", "Retrait de la délibération d''approbation"], "opposable": ["Délibération d''approbation", "Caractère exécutoire", "Retrait de l''annulation totale"], "abandon": ["Abandon", "Retrait de la délibération de prescription"], "annule": ["Annulation TA totale", "Annulation TA"], "caduc": ["Caducité"] }, "SD": { "en cours": ["Délibération de l''établissement public qui prescrit"], "opposable": ["Délibération d''approbation", "Caractère exécutoire"], "abandon": ["Abandon"], "annule": ["Annulation TA totale", "Annulation TA"], "caduc": ["Caducité"] }, "PLU": { "en cours": ["Délibération de prescription du conseil municipal ou communautaire"], "opposable": ["Caractère exécutoire", "Retrait de l''annulation totale", "Délibération d''approbation du municipal ou communautaire", "Délibération d''approbation du conseil municipal ou communautaire", "Délibération d''approbation"], "abandon": ["Abandon", "Retrait de la délibération de prescription"], "annule": ["Annulation TA totale", "Annulation TA", "Abrogation", "Arrêté d''abrogation"], "caduc": ["Caducité"] }, "POS": { "en cours": ["Délibération de prescription du conseil municipal ou communautaire"], "opposable": ["Caractère exécutoire", "Délibération d''approbation du municipal ou communautaire", "Délibération d''approbation du conseil municipal ou communautaire", "Délibération d''approbation"], "abandon": ["Abandon"], "annule": ["Annulation TA", "Annulation TA totale", "Caducité"], "caduc": [] } }'; begin if doc_type ILIKE 'PLU%' then doc_type := 'PLU'; end if; RAISE LOG 'doc_type PASSED IN FUNC: %', doc_type; select (impactful_events->doc_type->'caduc')::jsonb ? event_processed.type into is_caduc_event; if is_caduc_event is true then RAISE LOG 'IS CADUC: %', event_processed.type; return 'caduc'; end if; select (impactful_events->doc_type->'opposable')::jsonb ? event_processed.type into is_opposable_event; if is_opposable_event is true then RAISE LOG 'IS OPPOSABLE: %', event_processed.type; return 'opposable'; end if; select (impactful_events->doc_type->'annule')::jsonb ? event_processed.type into is_annule_event; if is_annule_event is true then RAISE LOG 'IS ANNULE'; return 'annule'; end if; select (impactful_events->doc_type->'en cours')::jsonb ? event_processed.type into is_ongoing_event; if is_ongoing_event is true then RAISE LOG 'IS EN COURS'; return 'en cours'; end if; select (impactful_events->doc_type->'abandon')::jsonb ? event_processed.type into is_abandon_event; if is_abandon_event is true then RAISE LOG 'IS ABANDON'; return 'abandon'; end if; return null; end; $$;
@@ -80,40 +53,6 @@ SELECT *
 FROM doc_frise_events
 WHERE procedure_id::text IN (SELECT value FROM jsonb_array_elements_text(procedures_ids::jsonb));
 $$;
-
-
-CREATE FUNCTION public.get_event_status(p_id uuid, doc_type text) RETURNS text
-    LANGUAGE plpgsql
-    AS $$
-DECLARE
-    event_record doc_frise_events%ROWTYPE;
-    new_status TEXT;
-    current_date_opposable DATE;
-BEGIN
-    FOR event_record IN
-        SELECT *
-        FROM doc_frise_events
-        WHERE procedure_id = p_id
-          AND (is_valid = true OR type = 'Abandon')
-        ORDER BY date_iso DESC, type
-    LOOP
-        new_status := get_event_impact(event_record, doc_type);
-
-        IF new_status = 'opposable' THEN
-            current_date_opposable := event_record.date_iso;
-        END IF;
-
-        IF new_status IS NOT NULL THEN
-            EXIT;
-        END IF;
-    END LOOP;
-
-    IF new_status IS NULL THEN
-        new_status := 'en cours';
-    END IF;
-
-    RETURN new_status;
-END $$;
 
 
 create extension if not exists moddatetime schema extensions;
@@ -160,18 +99,9 @@ GRANT ALL ON FUNCTION public.get_event_impact(event_processed public.doc_frise_e
 GRANT ALL ON FUNCTION public.events_by_procedures_ids(procedures_ids json) TO anon;
 GRANT ALL ON FUNCTION public.events_by_procedures_ids(procedures_ids json) TO authenticated;
 GRANT ALL ON FUNCTION public.events_by_procedures_ids(procedures_ids json) TO service_role;
-GRANT ALL ON FUNCTION public.get_event_status(p_id uuid, doc_type text) TO anon;
-GRANT ALL ON FUNCTION public.get_event_status(p_id uuid, doc_type text) TO authenticated;
-GRANT ALL ON FUNCTION public.get_event_status(p_id uuid, doc_type text) TO service_role;
 GRANT ALL ON FUNCTION public.set_procedure_status(procedure public.procedures) TO anon;
 GRANT ALL ON FUNCTION public.set_procedure_status(procedure public.procedures) TO authenticated;
 GRANT ALL ON FUNCTION public.set_procedure_status(procedure public.procedures) TO service_role;
 GRANT ALL ON FUNCTION public.event_procedure_status_handler() TO anon;
 GRANT ALL ON FUNCTION public.event_procedure_status_handler() TO authenticated;
 GRANT ALL ON FUNCTION public.event_procedure_status_handler() TO service_role;
-GRANT ALL ON FUNCTION public.one_shot_events() TO anon;
-GRANT ALL ON FUNCTION public.one_shot_events() TO authenticated;
-GRANT ALL ON FUNCTION public.one_shot_events() TO service_role;
-GRANT ALL ON FUNCTION public.procedure_status_handler() TO anon;
-GRANT ALL ON FUNCTION public.procedure_status_handler() TO authenticated;
-GRANT ALL ON FUNCTION public.procedure_status_handler() TO service_role;
