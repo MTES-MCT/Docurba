@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import viewsets
 
 from docurba.core.models import Collectivite, Commune
@@ -8,13 +9,40 @@ from docurba.internal_api.serializers import CollectiviteSerializer, CommuneSeri
 class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
     """Collectivités en base."""
 
-    queryset = (
-        Collectivite.objects.select_related("departement", "departement__region")
-        .order_by("code_insee_unique")
-        .all()
-    )
     serializer_class = CollectiviteSerializer
     filterset_class = custom_filters.CollectiviteFilter
+
+    def get_serializer_context(self) -> dict:
+        context = super().get_serializer_context()
+        if "avec_membres" in self.request.query_params:
+            context["with_members"] = True
+
+        if "avec_groupements" in self.request.query_params:
+            context["with_groups"] = True
+
+        return context
+
+    def get_queryset(self):  # noqa: ANN201
+        qs = Collectivite.objects.select_related("departement", "departement__region")
+        if "with_members" in self.get_serializer_context():
+            qs = qs.prefetch_related(
+                models.Prefetch(
+                    "flat_members",
+                    queryset=Collectivite.objects.select_related(
+                        "departement", "departement__region"
+                    ).order_by("code_insee_unique"),
+                )
+            )
+        if "with_groups" in self.get_serializer_context():
+            qs = qs.prefetch_related(
+                models.Prefetch(
+                    "flat_groups",
+                    queryset=Collectivite.objects.select_related(
+                        "departement", "departement__region"
+                    ).order_by("code_insee_unique"),
+                )
+            )
+        return qs.order_by("code_insee_unique").all()
 
 
 class CommuneViewSet(viewsets.ReadOnlyModelViewSet):

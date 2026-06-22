@@ -493,8 +493,11 @@ class TestAPIScots:
         perimetre_initial = CommuneFactory.create_batch(
             nb_communes, departement__code_insee="13"
         )
-        collectivite_porteuse = CollectiviteFactory(type=TypeCollectivite.CC)
-        collectivite_porteuse.collectivites_adherentes.add(*perimetre_initial)
+        collectivite_porteuse = CollectiviteFactory(
+            type=TypeCollectivite.CC,
+            with_members=True,
+            with_members__list=perimetre_initial,
+        )
         ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
         event = EventFactory(

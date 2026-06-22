@@ -7,6 +7,7 @@ from typing import Self
 
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
+from django.core.exceptions import PermissionDenied
 from django.db import connection, models
 from django.db.models import Value
 from django.db.models.aggregates import StringAgg
@@ -1007,6 +1008,8 @@ class Adhesion(models.Model):
         verbose_name = "adhésion"
         verbose_name_plural = "adhésions"
         unique_together = ("from_collectivite", "to_collectivite")
+        # The many to many was first created without a manager.
+        db_table = "core_collectivite_adhesions"
 
     def __str__(self) -> str:
         return f"{self.pk}"
@@ -1060,13 +1063,17 @@ class Collectivite(models.Model):
     nom = models.CharField()
     competence_plan = models.BooleanField(db_default=False)
     competence_schema = models.BooleanField(db_default=False)
-    # rename me to Groupements
     adhesions = models.ManyToManyField(
         "self",
-        # rename me to membres
         related_name="collectivites_adherentes",
         symmetrical=False,
-        through="Adhesion",
+        through="core.Adhesion",
+    )
+    flat_groups = models.ManyToManyField(
+        "self",
+        related_name="flat_members",
+        through="core.MaterializedViewFlatMembership",
+        symmetrical=False,
     )
     departement = models.ForeignKey(
         Departement, models.DO_NOTHING, related_name="collectivites"
@@ -1394,13 +1401,83 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
         ]
 
 
-class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008
+class MaterializedViewFlatMembershipQuerySet(models.QuerySet):
+    def create(self, *args: list, **kwargs: dict) -> Exception:  # noqa: ARG002
+        raise PermissionDenied(self.model.READ_ONLY_EXCEPTION_MSG)
+
+    def bulk_create(self, *args: list, **kwargs: dict) -> Exception:  # noqa: ARG002
+        raise PermissionDenied(self.model.READ_ONLY_EXCEPTION_MSG)
+
+    def bulk_update(self, *args: list, **kwargs: dict) -> Exception:  # noqa: ARG002
+        raise PermissionDenied(self.model.READ_ONLY_EXCEPTION_MSG)
+
+    def delete(self, *args: list, **kwargs: dict) -> Exception:  # noqa: ARG002
+        raise PermissionDenied(self.model.READ_ONLY_EXCEPTION_MSG)
+
+
+class MaterializedViewFlatMembership(models.Model):
+    READ_ONLY_EXCEPTION_MSG = (
+        "ViewCommuneAdhesionsDeep is read only because it is a materialized view."
+        "Refresh the table with ViewCommuneAdhesionsDeep.refresh()"
+    )
+
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID())
+    member = models.ForeignKey(
+        "core.Collectivite",
+        models.DO_NOTHING,
+        related_name="flat_groups_through",
+        verbose_name="Membre",
+    )
+    group = models.ForeignKey(
+        "core.Collectivite",
+        models.DO_NOTHING,
+        related_name="flat_members_through",
+        verbose_name="Groupement",
+    )
+
+    objects = MaterializedViewFlatMembershipQuerySet.as_manager()
+
+    class Meta:
+        db_table = "materialized_view_flat_memberships"
+        managed = False
+        indexes = (
+            models.Index(
+                "member",
+                name="flat_memberships_member_id_idx",
+                include=("group_id",),
+            ),
+            models.Index(
+                "group",
+                name="flat_memberships_group_id_idx",
+                include=("member_id",),
+            ),
+        )
+
+    def __str__(self) -> str:
+        return str(self.id)
+
+    def save_base(self, *args: list, **kwargs: dict) -> Exception:  # noqa: ARG002
+        raise PermissionDenied(self.READ_ONLY_EXCEPTION_MSG)
+
+    def delete(self, *args: list, **kwargs: dict) -> Exception:  # noqa: ARG002
+        raise PermissionDenied(self.READ_ONLY_EXCEPTION_MSG)
+
+    @classmethod
+    def refresh(cls) -> None:
+        with connection.cursor() as cursor:
+            cursor.execute(f"REFRESH MATERIALIZED VIEW {cls._meta.db_table}")
+
+
+class ViewCommuneAdhesionsDeep(models.Model):
     commune = models.ForeignKey(Commune, models.DO_NOTHING, related_name="+")
     groupement = models.ForeignKey(Collectivite, models.DO_NOTHING, related_name="+")
 
     class Meta:
         db_table = "view_commune_adhesions_deep"
         managed = False
+
+    def __str__(self) -> str:
+        return f"{self.commune_id} - {self.groupement_id}"
 
     @classmethod
     def _refresh_materialized_view(cls) -> None:
