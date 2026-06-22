@@ -993,6 +993,29 @@ class Departement(models.Model):
         return f"{self.code_insee} - {self.nom}"
 
 
+class Adhesion(models.Model):
+    from_collectivite = models.ForeignKey(
+        "core.Collectivite",
+        on_delete=models.CASCADE,
+        related_name="to_collectivite_through",
+        verbose_name="groupement",
+    )
+    to_collectivite = models.ForeignKey(
+        "core.Collectivite",
+        on_delete=models.RESTRICT,
+        related_name="from_collectivite_through",
+        verbose_name="membre",
+    )
+
+    class Meta:
+        verbose_name = "adhésion"
+        verbose_name_plural = "adhésions"
+        unique_together = ("from_collectivite", "to_collectivite")
+
+    def __str__(self) -> str:
+        return f"{self.pk}"
+
+
 class CollectiviteQuerySet(models.QuerySet):
     def portant_scot(self, avant: date | None = None) -> Self:
         return (
@@ -1039,8 +1062,13 @@ class Collectivite(models.Model):
     nom = models.CharField()
     competence_plan = models.BooleanField(db_default=False)
     competence_schema = models.BooleanField(db_default=False)
+    # rename me to Groupements
     adhesions = models.ManyToManyField(
-        "self", related_name="collectivites_adherentes", symmetrical=False
+        "self",
+        # rename me to membres
+        related_name="collectivites_adherentes",
+        symmetrical=False,
+        through="Adhesion",
     )
     departement = models.ForeignKey(
         Departement, models.DO_NOTHING, related_name="collectivites"
