@@ -5,17 +5,20 @@ from functools import partial
 from unittest import mock
 
 import pytest
+from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from pytest_django import DjangoAssertNumQueries
 
 from docurba.core.enums import TypeCollectivite
 from docurba.core.models import (
     EVENT_CATEGORY_BY_DOC_TYPE,
+    Adhesion,
     CodeCompetencePerimetre,
     Collectivite,
     Commune,
     Event,
     EventCategory,
+    MaterializedViewFlatMembership,
     Procedure,
     Topic,
     TypeDocument,
@@ -32,6 +35,68 @@ from tests.core.factories import (
 class TestCollectivite:
     def test_code_insee(self) -> None:
         assert Commune(id="12345_COM").code_insee == "12345"
+
+
+@pytest.mark.django_db
+class TestMaterializedViewFlatMembership:
+    def test_through_memberships(
+        self,
+    ) -> None:
+        grand_parent = CollectiviteFactory(
+            with_flat_members=True,
+        )
+        parent = grand_parent.collectivites_adherentes.first()
+        node = parent.collectivites_adherentes.first()
+
+        CollectiviteFactory(
+            with_flat_members=True,
+        )
+        assert Adhesion.objects.count() == 4
+        assert MaterializedViewFlatMembership.objects.count() == 6
+
+        assert hasattr(grand_parent, "flat_members")
+        assert sorted(grand_parent.flat_members.values_list("id", flat=True)) == sorted(
+            [
+                parent.pk,
+                node.pk,
+            ]
+        )
+
+        assert hasattr(node, "flat_groups")
+        assert sorted(node.flat_groups.values_list("id", flat=True)) == sorted(
+            [
+                grand_parent.pk,
+                parent.pk,
+            ]
+        )
+
+    def test_read_only(self) -> None:
+        collectivite = CollectiviteFactory(with_members=True)
+        flat_membership = collectivite.flat_members_through.first()
+        flat_membership.group_id = CollectiviteFactory().pk
+        with pytest.raises(PermissionDenied):
+            flat_membership.save()
+
+        with pytest.raises(PermissionDenied):
+            flat_membership.delete()
+
+        with pytest.raises(PermissionDenied):
+            MaterializedViewFlatMembership.objects.create(
+                member_id=CollectiviteFactory().pk, group_id=CollectiviteFactory().pk
+            )
+
+        with pytest.raises(PermissionDenied):
+            MaterializedViewFlatMembership.objects.bulk_create()
+
+        memberships = MaterializedViewFlatMembership.objects.all()
+        for membership in memberships:
+            membership.group_id = CollectiviteFactory().pk
+
+        with pytest.raises(PermissionDenied):
+            memberships.bulk_update(memberships, fields=["group_id"])
+
+        with pytest.raises(PermissionDenied):
+            memberships.delete()
 
 
 class TestProcedureQuerySet:
@@ -820,11 +885,12 @@ class TestProcedureTypeDocument:
         commune_a = CommuneFactory()
         commune_b = CommuneFactory()
         collectivite = CollectiviteFactory(
-            with_collectivites_adherentes=[
+            with_members=True,
+            with_members__list=[
                 commune_a,
                 commune_b,
                 CommuneFactory(),
-            ]
+            ],
         )
         procedure = ProcedureFactory(
             doc_type=src_doc_type,
