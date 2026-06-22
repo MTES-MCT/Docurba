@@ -6,47 +6,16 @@ import express from 'express'
 import { mapValues, get, uniq } from 'lodash'
 import allCommunes from './Data/referentiels/communes.json'
 import groupements from './Data/referentiels/groupements.json'
-import departements from './Data/INSEE/departements.json'
 
-import procedures from './modules/procedures.js'
 import supabase from './modules/supabase.js'
 
 // exports maps
 import prescriptionsMap from './modules/exportMaps/prescriptions.js'
-import sudocuhCommunes from './modules/exportMaps/sudocuhCommunes.js'
 
 const csvParser = new AsyncParser()
 
 const app = express()
 app.use(express.json())
-
-app.get('/exports/departements/:code', async (req, res) => {
-  const departement = departements.find(d => d.code === req.params.code)
-
-  await supabase.from('analytics_events').insert([{
-    user_id: null,
-    category: 'api',
-    name: 'exports communes',
-    value: req.fullPath,
-    path: req.fullPath,
-    dept: req.params.code,
-    region: departement.region.code
-  }])
-
-  if (req.query.csv) {
-    res.redirect(`${process.env.NUXT3_API_URL}/api/urba/exports/communes?departementCode=${req.params.code}`)
-    // const csv = await csvParser.parse(mapedCommunes).promise()
-    // res.status(200).attachment(`${req.params.code}_${departement.intitule}.csv`).send(csv)
-  } else {
-    const communesCodes = departement.communes.map(c => c.code)
-    const communes = await procedures.getCommunes(communesCodes)
-
-    const mapedCommunes = communes.map((c) => {
-      return mapValues(sudocuhCommunes, key => get(c, key, ''))
-    })
-    res.status(200).send(mapedCommunes)
-  }
-})
 
 app.get('/exports/prescriptions', async (req, res) => {
   const { data: prescriptions } = await supabase.from('prescriptions').select('*')
