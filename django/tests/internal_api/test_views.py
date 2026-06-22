@@ -5,7 +5,9 @@ from django.urls import reverse
 from pytest_django.asserts import assertNumQueries
 from rest_framework.test import APIClient
 
-from docurba.core.models import TypeCollectivite
+from docurba.core.models import (
+    TypeCollectivite,
+)
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
@@ -248,6 +250,319 @@ class TestCollectivitesAPI:
         )
         url = f"{reverse('internal_api:collectivites-list')}?{urlencode(query_params)}"
         with assertNumQueries(BASE_QUERIES_COUNT + 1):
+            response = api_client.get(url, format="json")
+
+        assert response.status_code == 200
+        assert response.json()["results"] == expected
+
+    @pytest.mark.parametrize(
+        ("query_params", "expected_num_queries", "expected"),
+        [
+            pytest.param(
+                {"avec_membres": "true"},
+                3,
+                [
+                    {
+                        "code": "243000585",
+                        "type": "CC",
+                        "intitule": "CC Beaucaire Terre d'Argence",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "membres": [
+                            {
+                                "code": "30032",
+                                "type": "COM",
+                                "intitule": "Beaucaire",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "30034",
+                                "type": "COM",
+                                "intitule": "Bellegarde",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "30117",
+                                "type": "COM",
+                                "intitule": "Fourques",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "30135",
+                                "type": "COM",
+                                "intitule": "Jonquières-Saint-Vincent",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "30336",
+                                "type": "COM",
+                                "intitule": "Vallabrègues",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                        ],
+                    },
+                    {
+                        "code": "253000020",
+                        "type": "SMO",
+                        "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "membres": [
+                            {
+                                "code": "243000585",
+                                "type": "CC",
+                                "intitule": "CC Beaucaire Terre d'Argence",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "30032",
+                                "type": "COM",
+                                "intitule": "Beaucaire",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "30034",
+                                "type": "COM",
+                                "intitule": "Bellegarde",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "30117",
+                                "type": "COM",
+                                "intitule": "Fourques",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "30135",
+                                "type": "COM",
+                                "intitule": "Jonquières-Saint-Vincent",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "30336",
+                                "type": "COM",
+                                "intitule": "Vallabrègues",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                        ],
+                    },
+                    {
+                        "code": "30032",
+                        "type": "COM",
+                        "intitule": "Beaucaire",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "membres": [],
+                    },
+                    {
+                        "code": "30034",
+                        "type": "COM",
+                        "intitule": "Bellegarde",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "membres": [],
+                    },
+                    {
+                        "code": "30117",
+                        "type": "COM",
+                        "intitule": "Fourques",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "membres": [],
+                    },
+                    {
+                        "code": "30135",
+                        "type": "COM",
+                        "intitule": "Jonquières-Saint-Vincent",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "membres": [],
+                    },
+                    {
+                        "code": "30336",
+                        "type": "COM",
+                        "intitule": "Vallabrègues",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "membres": [],
+                    },
+                ],
+                id="avec_membres",
+            ),
+            pytest.param(
+                {"avec_groupements": "true"},
+                3,
+                [
+                    {
+                        "code": "243000585",
+                        "type": "CC",
+                        "intitule": "CC Beaucaire Terre d'Argence",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "groupements": [
+                            {
+                                "code": "253000020",
+                                "type": "SMO",
+                                "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                        ],
+                    },
+                    {
+                        "code": "253000020",
+                        "type": "SMO",
+                        "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "groupements": [],
+                    },
+                    {
+                        "code": "30032",
+                        "type": "COM",
+                        "intitule": "Beaucaire",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "groupements": [
+                            {
+                                "code": "243000585",
+                                "type": "CC",
+                                "intitule": "CC Beaucaire Terre d'Argence",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "253000020",
+                                "type": "SMO",
+                                "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                        ],
+                    },
+                    {
+                        "code": "30034",
+                        "type": "COM",
+                        "intitule": "Bellegarde",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "groupements": [
+                            {
+                                "code": "243000585",
+                                "type": "CC",
+                                "intitule": "CC Beaucaire Terre d'Argence",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "253000020",
+                                "type": "SMO",
+                                "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                        ],
+                    },
+                    {
+                        "code": "30117",
+                        "type": "COM",
+                        "intitule": "Fourques",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "groupements": [
+                            {
+                                "code": "243000585",
+                                "type": "CC",
+                                "intitule": "CC Beaucaire Terre d'Argence",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "253000020",
+                                "type": "SMO",
+                                "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                        ],
+                    },
+                    {
+                        "code": "30135",
+                        "type": "COM",
+                        "intitule": "Jonquières-Saint-Vincent",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "groupements": [
+                            {
+                                "code": "243000585",
+                                "type": "CC",
+                                "intitule": "CC Beaucaire Terre d'Argence",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "253000020",
+                                "type": "SMO",
+                                "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                        ],
+                    },
+                    {
+                        "code": "30336",
+                        "type": "COM",
+                        "intitule": "Vallabrègues",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                        "groupements": [
+                            {
+                                "code": "243000585",
+                                "type": "CC",
+                                "intitule": "CC Beaucaire Terre d'Argence",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                            {
+                                "code": "253000020",
+                                "type": "SMO",
+                                "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
+                                "regionCode": "76",
+                                "departementCode": "30",
+                            },
+                        ],
+                    },
+                ],
+                id="avec_groupements",
+            ),
+        ],
+    )
+    def test_with_groupements_and_members(
+        self,
+        api_client: APIClient,
+        expected_num_queries: int,
+        query_params: dict,
+        expected: list,
+    ) -> None:
+        CollectiviteFactory(
+            for_snapshot=True,
+            with_flat_members=True,
+            with_flat_members__for_snapshot=True,
+            departement__code_insee="30",
+        )
+        url = f"{reverse('internal_api:collectivites-list')}?{urlencode(query_params)}"
+        with assertNumQueries(expected_num_queries):
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200
