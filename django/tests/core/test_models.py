@@ -34,6 +34,24 @@ class TestCollectivite:
         assert Commune(id="12345_COM").code_insee == "12345"
 
 
+@pytest.mark.django_db
+class TestAdhesion:
+    def test_flat_adherents(self) -> None:
+        grand_parent = CollectiviteFactory()
+        parent = CollectiviteFactory()
+        node = CollectiviteFactory()
+        grand_parent.adhesions.add(*[parent])
+        parent.adhesions.add(*[node])
+
+        other_grand_parent = CollectiviteFactory()
+        other_parent = CollectiviteFactory()
+        other_node = CollectiviteFactory()
+        other_grand_parent.adhesions.add(*[other_parent])
+        other_parent.adhesions.add(*[other_node])
+
+        assert Collectivite.objects.flat_adherents().count() == 3
+
+
 class TestProcedureQuerySet:
     @pytest.mark.django_db
     def test_with_concatenated_topics_as_string(

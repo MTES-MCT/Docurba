@@ -984,6 +984,8 @@ class Adhesion(models.Model):
         verbose_name = "adhésion"
         verbose_name_plural = "adhésions"
         unique_together = ("from_collectivite", "to_collectivite")
+        # The many to many was first created without a manager.
+        db_table = "core_collectivite_adhesions"
 
     def __str__(self) -> str:
         return f"{self.pk}"
@@ -1022,6 +1024,192 @@ class CollectiviteQuerySet(models.QuerySet):
                 ),
             )
         )
+
+    def flat_groupements(self) -> Self:
+        ascending = """
+            WITH RECURSIVE
+            adhesion_paths AS (
+                SELECT
+                    from_collectivite_id,
+                    to_collectivite_id,
+                    1 as depth,
+                    ARRAY[from_collectivite_id, to_collectivite_id] AS PATH
+                FROM
+                    core_collectivite_adhesions
+                UNION
+                SELECT
+                    adhesion_paths.from_collectivite_id,
+                    core_collectivite_adhesions.to_collectivite_id,
+                    adhesion_paths.depth + 1,
+                    adhesion_paths.path || core_collectivite_adhesions.to_collectivite_id
+                FROM
+                    adhesion_paths
+                    JOIN core_collectivite_adhesions ON core_collectivite_adhesions.from_collectivite_id = adhesion_paths.to_collectivite_id
+            )
+        SELECT
+            from_collectivite_id,
+            to_collectivite_id,
+            path,
+            depth
+        FROM
+            adhesion_paths
+        order by depth desc
+        ;
+        """
+        pass
+
+    def flat_adherents(self) -> Self:
+
+        # def make_regions_cte(cte):
+        #     # non-recursive: get root nodes
+        #     return Region.objects.filter(
+        #         parent__isnull=True
+        #     ).values(
+        #         "name",
+        #         path=F("name"),
+        #         depth=Value(0, output_field=IntegerField()),
+        #     ).union(
+        #         # recursive union: get descendants
+        #         cte.join(Region, parent=cte.col.name).values(
+        #             "name",
+        #             path=Concat(
+        #                 cte.col.path, Value(" / "), F("name"),
+        #                 output_field=TextField(),
+        #             ),
+        #             depth=cte.col.depth + Value(1, output_field=IntegerField()),
+        #         ),
+        #         all=True,
+        #     )
+
+        # cte = CTE.recursive(make_regions_cte)
+
+        # regions = with_cte(
+        #     cte,
+        #     select=cte.join(Region, name=cte.col.name)
+        #     .annotate(
+        #         path=cte.col.path,
+        #         depth=cte.col.depth,
+        #     )
+        #     .filter(depth=2)
+        #     .order_by("path")
+        # )
+        from django.db.models import Value
+        from django.db.models.functions import Concat
+        from django_cte import CTE, with_cte
+
+        def make_collectivites_cte(cte):
+            # SELECT
+            #     to_collectivite_id,
+            #     from_collectivite_id,
+            #     1 as depth,
+            #     ARRAY[to_collectivite_id, from_collectivite_id] AS PATH
+            # FROM
+            #     core_collectivite_adhesions
+
+            # non-recursive: get root nodes
+            return (
+                Adhesion.objects.filter(from_collectivite_id=self.id)
+                .values(
+                    "to_collectivite_id",
+                    "from_collectivite_id",
+                    depth=Value(1, output_field=models.IntegerField()),
+                    path=Concat(
+                        models.F("to_collectivite_id"),
+                        Value(" / "),
+                        models.F("from_collectivite_id"),
+                        output_field=models.TextField(),
+                    ),
+                )
+                .union(
+                    # UNION
+                    # SELECT
+                    #     adhesion_paths.to_collectivite_id,
+                    #     core_collectivite_adhesions.from_collectivite_id,
+                    #     adhesion_paths.depth + 1,
+                    #     adhesion_paths.path || core_collectivite_adhesions.from_collectivite_id
+                    # FROM
+                    #     adhesion_paths
+                    #     JOIN core_collectivite_adhesions ON core_collectivite_adhesions.to_collectivite_id = adhesion_paths.from_collectivite_id
+                    # recursive union: get descendants
+                    cte.join(
+                        Adhesion, to_collectivite_id=cte.col.from_collectivite_id
+                    ).values(
+                        "to_collectivite_id",
+                        "from_collectivite_id",
+                        depth=cte.col.depth
+                        + Value(1, output_field=models.IntegerField()),
+                        path=Concat(
+                            cte.col.path,
+                            Value(" / "),
+                            models.F("from_collectivite_id"),
+                            output_field=models.TextField(),
+                        ),
+                    ),
+                    all=True,
+                )
+            )
+
+        cte = CTE.recursive(make_collectivites_cte)
+
+        # SELECT
+        #     to_collectivite_id,
+        #     from_collectivite_id,
+        #     path,
+        #     depth
+        # FROM
+        #     adhesion_paths
+        # order by depth desc
+
+        qs = with_cte(
+            cte,
+            select=cte.join(
+                Adhesion,
+                to_collectivite_id=cte.col.to_collectivite_id,
+                from_collectivite_id=cte.col.from_collectivite_id,
+            )
+            .annotate(
+                path=cte.col.path,
+                depth=cte.col.depth,
+            )
+            # .filter(depth=2)
+            .order_by("path"),
+        )
+        # except Exception as e:
+        #     print(e)
+
+        # max depth: 6
+        # path 251710398_SMO, 251701306_SMO, 251601787_SMO, 251704839_SMO, 257901256_SMF, 200041317_CA, 79003_COM
+        # descending = """
+        #     WITH RECURSIVE
+        #         adhesion_paths AS (
+        #             SELECT
+        #                 to_collectivite_id,
+        #                 from_collectivite_id,
+        #                 1 as depth,
+        #                 ARRAY[to_collectivite_id, from_collectivite_id] AS PATH
+        #             FROM
+        #                 core_collectivite_adhesions
+        #             UNION
+        #             SELECT
+        #                 adhesion_paths.to_collectivite_id,
+        #                 core_collectivite_adhesions.from_collectivite_id,
+        #                 adhesion_paths.depth + 1,
+        #                 adhesion_paths.path || core_collectivite_adhesions.from_collectivite_id
+        #             FROM
+        #                 adhesion_paths
+        #                 JOIN core_collectivite_adhesions ON core_collectivite_adhesions.to_collectivite_id = adhesion_paths.from_collectivite_id
+        #         )
+        #     SELECT
+        #         to_collectivite_id,
+        #         from_collectivite_id,
+        #         path,
+        #         depth
+        #     FROM
+        #         adhesion_paths
+        #     order by depth desc
+        #     ;
+        # """
+        return qs.all()
 
 
 class Collectivite(models.Model):
