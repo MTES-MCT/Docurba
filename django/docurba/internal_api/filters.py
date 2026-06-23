@@ -83,10 +83,11 @@ class CommuneFilter(DepartementRegionFilterSet):
     type = filters.MultipleChoiceFilter(
         field_name="type", choices=TypeCollectivite.communes()
     )
+    code = filters.AllValuesMultipleFilter(field_name="code_insee_unique")
 
     class Meta:
         model = Commune
-        fields = ("type", *DepartementRegionFilterSet.fields)
+        fields = ("type", "code", *DepartementRegionFilterSet.fields)
 
 
 class EventTypeFilter(filters.FilterSet):
