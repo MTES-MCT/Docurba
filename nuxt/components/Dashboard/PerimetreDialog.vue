@@ -78,7 +78,7 @@ export default {
     async dialog (newVal) {
       if (newVal) {
         this.fullPerimetre = await this.$djangoApi.get('/api-internes/collectivites/', {
-          code: this.perimetre.map(y => y.collectivite_code)
+          codes_siren: this.perimetre.map(y => y.collectivite_code)
         })
       }
     }
