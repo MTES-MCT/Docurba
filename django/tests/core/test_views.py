@@ -30,7 +30,7 @@ class TestAPI:
         list(
             product(
                 ("2023-1-01", "2023-02-30", "invalid-date", "2023/01/01"),
-                ("/api/perimetres", reverse("api_scots")),
+                (reverse("api_perimetres"), reverse("api_scots")),
             )
         ),
     )
@@ -58,7 +58,8 @@ class TestAPIPerimetres:
 
         with django_assert_num_queries(3):
             response = client.get(
-                "/api/perimetres", {"departement": commune.departement.code_insee}
+                reverse("api_perimetres"),
+                {"departement": commune.departement.code_insee},
             )
 
         assert response.status_code == 200
@@ -104,7 +105,7 @@ class TestAPIPerimetres:
         filtre = {}
         if is_filtering:
             filtre = {"departement": commune_a.departement.code_insee}
-        response = client.get("/api/perimetres", filtre)
+        response = client.get(reverse("api_perimetres"), filtre)
         reader = DictReader(response.content.decode().splitlines())
         assert len(list(reader)) == expected_lignes
 
@@ -134,7 +135,7 @@ class TestAPIPerimetres:
         )
 
         with django_assert_num_queries(3):
-            response = client.get("/api/perimetres", {"avant": avant})
+            response = client.get(reverse("api_perimetres"), {"avant": avant})
         reader = DictReader(response.content.decode().splitlines())
         assert [cp["opposable"] for cp in reader] == [opposable]
 
@@ -163,7 +164,7 @@ class TestAPICommunes:
         )
 
         with django_assert_num_queries(4):
-            response = client.get("/api/communes")
+            response = client.get(reverse("api_communes"))
 
         assert response.status_code == 200
         assert response["content-type"] == "text/csv;charset=utf-8"
@@ -183,7 +184,7 @@ class TestAPICommunes:
         """
         CommuneFactory(intercommunalite=None)
 
-        response = client.get("/api/communes")
+        response = client.get(reverse("api_communes"))
 
         assert response.status_code == 200
 
@@ -207,7 +208,7 @@ class TestAPICommunes:
         if is_filtering:
             filtre = {"departement": commune_a.departement.code_insee}
 
-        response = client.get("/api/communes", filtre)
+        response = client.get(reverse("api_communes"), filtre)
         reader = DictReader(response.content.decode().splitlines())
 
         assert len(list(reader)) == expected_lignes
@@ -235,7 +236,7 @@ class TestAPICommunes:
             type="Délibération d'approbation", date_evenement="2024-01-01"
         )
 
-        response = client.get("/api/communes", {"avant": avant})
+        response = client.get(reverse("api_communes"), {"avant": avant})
 
         reader = DictReader(response.content.decode().splitlines())
         assert [collectivite[champ_procedure_id] for collectivite in reader] == [
@@ -258,7 +259,7 @@ class TestAPICommunes:
             )
 
             with django_assert_num_queries(4):
-                response = client.get("/api/communes")
+                response = client.get(reverse("api_communes"))
 
         reader = DictReader(response.content.decode().splitlines())
         assert [cp["pc_type_document"] for cp in reader] == ["PLU", "PLU"]
