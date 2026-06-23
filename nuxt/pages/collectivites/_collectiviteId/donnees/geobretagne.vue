@@ -39,10 +39,11 @@ export default {
     //   return `commune/${code.toString().length < 5 ? '0' + code : code}`
     // })
 
-    const communeDetails = await this.$djangoApi
-      .get(`/api-internes/communes/${this.$route.query.insee}/`)
-
-    const { cards, themes } = await this.$daturba.getGeoIDE(communeDetails.intitule, 'bretagne')
+    const communes = await this.$djangoApi.get('/api-internes/communes/', {
+      code: this.$route.query.insee,
+      type: 'COM'
+    })
+    const { cards, themes } = await this.$daturba.getGeoIDE(communes[0]?.intitule, 'bretagne')
 
     this.dataset = cards
     const inspireThemes = themes.dimension.find(d => d['@label'] === 'inspireThemes')
