@@ -27,9 +27,11 @@ from tests.core.factories import (
 class TestAPI:
     @pytest.mark.parametrize(
         ("invalid_avant", "path"),
-        product(
-            ("2023-1-01", "2023-02-30", "invalid-date", "2023/01/01"),
-            ("/api/perimetres", reverse("api_scots")),
+        list(
+            product(
+                ("2023-1-01", "2023-02-30", "invalid-date", "2023/01/01"),
+                ("/api/perimetres", reverse("api_scots")),
+            )
         ),
     )
     def test_parsing_avant(self, client: Client, invalid_avant: str, path: str) -> None:
