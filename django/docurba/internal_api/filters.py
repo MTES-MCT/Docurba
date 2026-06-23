@@ -44,7 +44,7 @@ COMPETENCES_CHOICES = (
 
 class CollectiviteFilter(DepartementRegionFilterSet):
     type = filters.MultipleChoiceFilter(field_name="type", choices=TypeCollectivite)
-    code = filters.AllValuesMultipleFilter(field_name="code_insee_unique")
+    codes_siren = filters.AllValuesMultipleFilter(field_name="code_insee_unique")
     without_communes = filters.BooleanFilter(
         label="Sans les communes", method="_without_communes"
     )
@@ -56,7 +56,12 @@ class CollectiviteFilter(DepartementRegionFilterSet):
 
     class Meta:
         model = Collectivite
-        fields = ("type", "code", "competence", *DepartementRegionFilterSet.fields)
+        fields = (
+            "type",
+            "codes_siren",
+            "competence",
+            *DepartementRegionFilterSet.fields,
+        )
 
     def _filter_competences(
         self, queryset: QuerySet, name: str, values: str
