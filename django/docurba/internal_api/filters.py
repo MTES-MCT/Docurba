@@ -10,6 +10,7 @@ from docurba.core.models import (
     Collectivite,
     Commune,
     Departement,
+    Event,
     EventType,
     Region,
     TypeCollectivite,
@@ -113,3 +114,9 @@ class EventTypeFilter(filters.FilterSet):
     class Meta:
         model = EventType
         fields = ("document_type",)
+
+
+class EventFilter(filters.FilterSet):
+    class Meta:
+        model = Event
+        fields = ("procedure",)
