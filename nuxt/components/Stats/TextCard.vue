@@ -1,6 +1,5 @@
 <template>
   <v-card flat color="bf100-g750" class="position-relative">
-    <!-- <VFloatingShape src="/images/landing/circle_light_yellow.svg" :size="80" :right="floatingShape.right" :bottom="floatingShape.bottom" /> -->
     <v-card-title>
       <v-row no-gutters>
         <v-col cols="12">
