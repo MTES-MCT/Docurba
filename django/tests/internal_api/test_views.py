@@ -5,16 +5,21 @@ from django.urls import reverse
 from pytest_django.asserts import assertNumQueries
 from rest_framework.test import APIClient
 from syrupy import SnapshotAssertion
+from syrupy.matchers import path_type
 
 from docurba.core.enums import EventScope
 from docurba.core.models import (
+    Event,
     EventType,
     TypeCollectivite,
+    VisibilityType,
 )
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
+    EventFactory,
     EventTypeFactory,
+    ProcedureFactory,
 )
 
 BASE_QUERIES_COUNT = 1  # Count made by DRF for the pagination.
@@ -516,3 +521,304 @@ class TestEventTypesAPI:
             "isStructuring": False,
             "sudocuhName": "",
         }
+
+
+@pytest.mark.django_db
+class TestEventAPI:
+    @pytest.mark.parametrize(
+        ("query_params", "expected_num_queries"),
+        [
+            pytest.param(
+                {},
+                BASE_QUERIES_COUNT + 1,
+                id="no_filter",
+            ),
+            pytest.param(
+                {"procedure": "00000000-0000-0000-1111-000000000000"},
+                BASE_QUERIES_COUNT + 2,
+                id="filter_procedure",
+            ),
+        ],
+    )
+    def test_list(
+        self,
+        api_client: APIClient,
+        expected_num_queries: int,
+        query_params: dict,
+        snapshot: SnapshotAssertion,
+    ) -> None:
+        procedure = ProcedureFactory(id="00000000-0000-0000-1111-000000000000")
+        EventFactory(
+            id="00000000-0000-0000-1111-000000000000",
+            procedure=procedure,
+            type="Event Test 1",
+            date_evenement="2012-06-02",
+            description="Lorem ipsum dolor sit amet",
+            attachements=[
+                {"id": "00000000-1111-0000-0000-000000000000", "name": "test_1.pdf"},
+                {"id": "sudocuh/0/00000000000000001.pdf", "name": "test_2.pdf"},
+            ],
+        )
+        EventFactory(
+            id="00000000-0000-0000-2222-000000000000",
+            procedure__id="00000000-0000-0000-2222-000000000000",
+            type="Event Test 2",
+            date_evenement="2012-06-03",
+        )
+        EventFactory(
+            id="00000000-0000-0000-3333-000000000000",
+            procedure=procedure,
+            type="Event Test 3",
+            date_evenement="2012-06-03",
+        )
+        EventFactory(archived=True)
+        url = f"{reverse('internal_api:events-list')}?{urlencode(query_params, doseq=True)}"
+
+        with assertNumQueries(expected_num_queries):
+            response = api_client.get(url, format="json")
+
+        assert response.status_code == 200
+        assert response.json()["results"] == snapshot()
+
+    def test_create(self, api_client: APIClient, snapshot: SnapshotAssertion) -> None:
+
+        procedure = ProcedureFactory(id="00000000-0000-0000-1111-000000000000")
+        data = {
+            "procedureId": procedure.id,
+            "type": "Event Test 1",
+            "dateEvenement": "2012-06-03",
+            "description": "Lorem ipsum dolor sit amet",
+            "visibility": "public",
+            "attachements": [
+                {"id": "00000000-1111-0000-0000-000000000000", "name": "test_1.pdf"},
+                {"id": "sudocuh/0/00000000000000001.pdf", "name": "test_2.pdf"},
+            ],
+        }
+        url = reverse("internal_api:events-list")
+        with assertNumQueries(2):
+            response = api_client.post(url, format="json", data=data)
+
+        assert response.status_code == 201
+        assert response.json() == snapshot(
+            matcher=path_type(
+                {
+                    "id": (str,),
+                },
+                replacer=lambda *_: "00000000-1111-0000-0000-000000000000",
+            )
+        )
+
+    def test_detail(self, api_client: APIClient, snapshot: SnapshotAssertion) -> None:
+        event = EventFactory(
+            id="00000000-0000-0000-1111-000000000000",
+            procedure__id="00000000-0000-0000-1111-000000000000",
+            type="Event Test 1",
+            date_evenement="2012-06-03",
+            description="Lorem ipsum dolor sit amet",
+            attachements=[
+                {"id": "00000000-1111-0000-0000-000000000000", "name": "test_1.pdf"},
+                {"id": "sudocuh/0/00000000000000001.pdf", "name": "test_2.pdf"},
+            ],
+        )
+
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with assertNumQueries(1):
+            response = api_client.get(url, format="json")
+
+        assert response.status_code == 200
+        assert response.json() == snapshot()
+
+        event = EventFactory(archived=True)
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with assertNumQueries(1):
+            response = api_client.get(url, format="json")
+
+        assert response.status_code == 404
+
+    def test_update(self, api_client: APIClient, snapshot: SnapshotAssertion) -> None:
+        event = EventFactory(
+            id="00000000-0000-0000-2222-000000000000",
+            procedure__id="00000000-0000-0000-2222-000000000000",
+            type="Event Test 1",
+            date_evenement="2012-06-03",
+            visibility=VisibilityType.PUBLIC,
+        )
+        data = {
+            "type": "Event Test 1 updated",
+            "dateEvenement": "2022-10-01",
+            "description": "Lorem ipsum dolor sit amet - updated",
+            "visibility": "private",
+            "attachements": [
+                {"id": "00000000-1111-0000-0000-000000000000", "name": "test_1.pdf"},
+                {"id": "sudocuh/0/00000000000000001.pdf", "name": "test_2.pdf"},
+            ],
+        }
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with assertNumQueries(3):
+            response = api_client.put(url, format="json", data=data)
+
+        assert response.status_code == 200
+        assert response.json() == snapshot()
+
+        data = {
+            "type": "Event Test 1 patched",
+            "dateEvenement": "2022-10-02",
+            "description": "Lorem ipsum dolor sit amet - patched",
+            "visibility": "public",
+        }
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with assertNumQueries(3):
+            response = api_client.patch(url, format="json", data=data)
+
+        assert response.status_code == 200
+        assert response.json() == snapshot()
+
+        event = EventFactory(archived=True)
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with assertNumQueries(1):
+            response = api_client.put(url, format="json")
+
+        assert response.status_code == 404
+
+    def test_update_procedure_is_not_updated(
+        self, api_client: APIClient, snapshot: SnapshotAssertion
+    ) -> None:
+        procedure = ProcedureFactory(id="00000000-0000-0000-1111-000000000000")
+        event = EventFactory(
+            id="00000000-0000-0000-2222-000000000000",
+            procedure__id="00000000-0000-0000-2222-000000000000",
+            type="Event Test 1",
+            date_evenement="2012-06-03",
+            visibility=VisibilityType.PUBLIC,
+        )
+        data = {
+            "procedureId": procedure.id,
+            "type": "Event Test 1 updated",
+            "dateEvenement": "2022-10-01",
+            "description": "Lorem ipsum dolor sit amet - updated",
+            "visibility": "private",
+        }
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with assertNumQueries(3):
+            response = api_client.put(url, format="json", data=data)
+
+        assert response.status_code == 200
+        assert response.json() == snapshot()
+
+        data = {
+            "procedureId": procedure.id,
+        }
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with assertNumQueries(3):
+            response = api_client.patch(url, format="json", data=data)
+
+        assert response.status_code == 200
+        assert response.json() == snapshot()
+
+    def test_delete(self, api_client: APIClient) -> None:
+        procedure = ProcedureFactory(id="00000000-0000-0000-1111-000000000000")
+        deleted_event = EventFactory(
+            id="00000000-0000-0000-1111-000000000000",
+            procedure=procedure,
+            type="Event Test 1",
+        )
+        remaining_event = EventFactory(
+            id="00000000-0000-0000-2222-000000000000",
+            procedure=procedure,
+            type="Event Test 2",
+        )
+        url = reverse("internal_api:events-detail", args=[deleted_event.pk])
+        with assertNumQueries(2):
+            response = api_client.delete(url, format="json")
+
+        assert response.status_code == 204
+        events = Event.objects.filter(procedure=procedure)
+        assert events.count() == 1
+        assert events.first().id == remaining_event.id
+
+        events = Event.full_objects.filter(archived_at__isnull=False)
+        assert events.count() == 1
+        assert events.first().id == deleted_event.id
+
+        deleted_event = EventFactory(archived=True)
+        url = reverse("internal_api:events-detail", args=[deleted_event.pk])
+        with assertNumQueries(1):
+            response = api_client.delete(url, format="json")
+
+        assert response.status_code == 404
+
+    @pytest.mark.parametrize(
+        ("attachements", "valid"),
+        [
+            pytest.param([], True),
+            pytest.param(
+                [
+                    {
+                        "id": "00000000-0000-0000-1111-000000000000",
+                        "name": "test.pdf",
+                        "type": "file",
+                    }
+                ],
+                True,
+            ),
+            pytest.param(
+                [
+                    {
+                        "id": "00000000-0000-0000-1111-000000000000",
+                        "name": "test.pdf",
+                        "type": "link",
+                    }
+                ],
+                True,
+            ),
+            pytest.param(
+                [
+                    {"id": "00000000-0000-0000-1111-000000000000", "name": "test.pdf"},
+                    {
+                        "id": "00000000-0000-0000-2222-000000000000",
+                        "name": "test_2.pdf",
+                    },
+                ],
+                True,
+            ),
+            pytest.param(None, False),
+            pytest.param("None", False),
+            pytest.param([None], False),
+            pytest.param([{}], False),
+            pytest.param(
+                [{"id": "00000000-0000-0000-1111-000000000000", "type": "file"}], False
+            ),
+            pytest.param([{"name": "test.pdf", "type": "file"}], False),
+            pytest.param([{"id": None, "name": "test.pdf"}], False),
+            pytest.param(
+                [
+                    {
+                        "id": "00000000-0000-0000-1111-000000000000",
+                        "name": "test.pdf",
+                        "type": "invalid_type",
+                    }
+                ],
+                False,
+            ),
+        ],
+    )
+    def test_attachements(
+        self,
+        api_client: APIClient,
+        attachements,  # noqa: ANN001
+        valid: bool,  # noqa: FBT001
+    ) -> None:
+
+        procedure = ProcedureFactory(id="00000000-0000-0000-1111-000000000000")
+        data = {
+            "procedureId": procedure.id,
+            "type": "Event Test 1",
+            "dateEvenement": "2012-06-03",
+            "description": "Lorem ipsum dolor sit amet",
+            "visibility": "public",
+            "attachements": attachements,
+        }
+        url = reverse("internal_api:events-list")
+        response = api_client.post(url, format="json", data=data)
+
+        assert response.status_code == 201 if valid else 400

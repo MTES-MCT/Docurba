@@ -966,12 +966,12 @@ class EventQuerySet(models.QuerySet):
             "test",
             "code",
             "from_sudocuh_procedure_id",
+            "actors",
         ]
         # Text, Array or JSON fields.
         heavy_fields = [
             "description",
             "attachements",
-            "actors",
         ]
         return self.defer(*to_be_removed_fields, *heavy_fields)
 
