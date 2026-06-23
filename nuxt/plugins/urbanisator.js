@@ -76,7 +76,7 @@ export default ({ $djangoApi, $supabase, $dayjs }, inject) => {
       ])
 
       const collectivites = await $djangoApi.get('/api-internes/collectivites/', {
-        code: collectivitesCodes
+        codes_siren: collectivitesCodes
       })
 
       procedures.forEach((procedure) => {
