@@ -16,7 +16,6 @@
 
 <script>
 import axios from 'axios'
-// import depts from '@/assets/data/departements-france.json'
 
 export default {
   data () {
