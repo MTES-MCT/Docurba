@@ -137,12 +137,12 @@
 
           <!-- eslint-disable-next-line -->
           <template #item.prescription="{ item }">
-            <span class="mention-grey--text">{{ item.prescription?.date_iso_formattee ?? '' }}</span>
+            <span class="mention-grey--text">{{ item.prescription_event?.date_iso_formattee ?? '' }}</span>
           </template>
 
           <!-- eslint-disable-next-line -->
           <template #item.stop="{ item }">
-            <span class="mention-grey--text">{{ item.stop?.date_iso_formattee ?? '' }}</span>
+            <span class="mention-grey--text">{{ item.stop_event?.date_iso_formattee ?? '' }}</span>
           </template>
 
           <!-- eslint-disable-next-line -->
@@ -281,8 +281,8 @@ export default {
         }
 
         const procedureName = this.$utils.formatProcedureName({ ...e.procedures, procedures_perimetres: e.perimetre }, collectivitePorteuse)
-        if (e.prescription?.date_iso) {
-          e.prescription.date_iso_formattee = dayjs(e.prescription.date_iso).format('DD/MM/YYYY')
+        if (e.prescription_event?.date_iso) {
+          e.prescription_event.date_iso_formattee = dayjs(e.prescription_event.date_iso).format('DD/MM/YYYY')
         }
         if (e.last_event?.date_iso) {
           e.last_event.date_iso_formattee = dayjs(e.last_event.date_iso).format('DD/MM/YYYY')

@@ -203,10 +203,10 @@
                     </div>
                   </div>
                   <div class="pl-8" style="width:8rem">
-                    {{ plan.prescription?.date_iso_formattee ?? '' }}
+                    {{ plan.prescription_event?.date_iso_formattee ?? '' }}
                   </div>
                   <div class="pl-8" style="width:8rem">
-                    {{ plan.approval?.date_iso_formattee ?? '' }}
+                    {{ plan.approval_event?.date_iso_formattee ?? '' }}
                   </div>
                 </div>
                 <nuxt-link v-else-if="index === 2" class="font-weight-bold text-decoration-none" :to="`/ddt/${item.departementCode}/collectivites/${item.code}/${item.code.length > 5 ? 'epci' : 'commune'}`">
