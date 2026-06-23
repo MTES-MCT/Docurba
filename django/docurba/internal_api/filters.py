@@ -5,7 +5,7 @@ import functools
 from django.db.models import Q, QuerySet
 from django_filters import rest_framework as filters
 
-from docurba.core.models import Collectivite, Commune, TypeCollectivite
+from docurba.core.models import Collectivite, Commune, Event, TypeCollectivite
 
 
 class CharInFilter(filters.BaseInFilter, filters.CharFilter):
@@ -85,3 +85,9 @@ class CommuneFilter(DepartementRegionFilterSet):
     class Meta:
         model = Commune
         fields = ("type", *DepartementRegionFilterSet.fields)
+
+
+class EventFilter(filters.FilterSet):
+    class Meta:
+        model = Event
+        fields = ("procedure",)

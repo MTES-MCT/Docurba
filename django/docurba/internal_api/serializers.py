@@ -1,7 +1,7 @@
 # ruff: noqa: N815, RUF012
 from rest_framework import serializers
 
-from docurba.core.models import Collectivite, Commune
+from docurba.core.models import Collectivite, Commune, Event
 
 
 class CollectiviteSerializer(serializers.ModelSerializer):
@@ -26,3 +26,35 @@ class CommuneSerializer(serializers.ModelSerializer):
         model = Commune
         fields = ["code", "type", "intitule", "departementCode", "regionCode"]
         read_only_fields = fields
+
+
+class EventListSerializer(serializers.ModelSerializer):
+    dateEvenement = serializers.DateField(source="date_evenement")
+    fromSudocuh = serializers.IntegerField(source="from_sudocuh", required=False)
+    isValid = serializers.BooleanField(source="is_valid", read_only=True)
+    visibility = serializers.CharField()
+
+    class Meta:
+        model = Event
+        read_only_fields = ["id", "isValid", "fromSudocuh"]
+        fields = [
+            *read_only_fields,
+            "procedure",
+            "type",
+            "dateEvenement",
+            "visibility",
+        ]
+
+
+class EventDetailSerializer(EventListSerializer):
+    class Meta(EventListSerializer.Meta):
+        fields = [
+            *EventListSerializer.Meta.fields,
+            "description",
+            "attachements",  # TODO: Use specific endpoint for attachements # noqa: FIX002
+        ]
+
+
+class EventCreateSerializer(EventDetailSerializer):
+    class Meta(EventDetailSerializer.Meta):
+        read_only_fields = [*EventDetailSerializer.Meta.read_only_fields, "procedure"]
