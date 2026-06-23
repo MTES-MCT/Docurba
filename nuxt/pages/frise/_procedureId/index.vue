@@ -86,7 +86,6 @@
 
           <v-list>
             <!-- TODO(cms): remove me later -->
-            <!-- <FriseInfosDialog /> -->
             <!-- <FriseVoletQualiDialog /> -->
             <FriseDgdDialog />
 
