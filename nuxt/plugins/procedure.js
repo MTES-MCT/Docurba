@@ -14,30 +14,30 @@ export function enrichProcedureWithEvents (procedure) {
     events.filter(event => new Date(event.date_iso) <= now),
     'date_iso'
   )
-  let approval, prescription, stop
+  let approvalEvent, prescriptionEvent, stopEvent
 
   for (const event of orderBy(events, 'date_iso', 'desc')) {
     const eventWithFormattedDate = addFormattedDate(event)
 
-    if (!approval && getApprovalEvent(event)) {
-      approval = eventWithFormattedDate
+    if (!approvalEvent && getApprovalEvent(event)) {
+      approvalEvent = eventWithFormattedDate
     }
-    if (!prescription && getPrescriptionEvent(event)) {
-      prescription = eventWithFormattedDate
+    if (!prescriptionEvent && getPrescriptionEvent(event)) {
+      prescriptionEvent = eventWithFormattedDate
     }
-    if (!stop && getStopEvent(event)) {
-      stop = eventWithFormattedDate
+    if (!stopEvent && getStopEvent(event)) {
+      stopEvent = eventWithFormattedDate
     }
-    if (approval && prescription && stop) {
+    if (approvalEvent && prescriptionEvent && stopEvent) {
       break
     }
   }
 
   return {
     ...procedure,
-    approval,
+    approval_event: approvalEvent,
     last_event: lastEvent,
-    prescription,
-    stop
+    prescription_event: prescriptionEvent,
+    stop_event: stopEvent
   }
 }

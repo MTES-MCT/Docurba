@@ -34,11 +34,11 @@ export default ({ $supabase, $dayjs }, inject) => {
 
         return {
           ...e,
-          approval: enrichedProcedure.approval,
+          approval_event: enrichedProcedure.approval_event,
           last_event: enrichedProcedure.last_event,
           perimetre: groupedProceduresPerim[e.procedure_id],
-          prescription: enrichedProcedure.prescription,
-          stop: enrichedProcedure.stop
+          prescription_event: enrichedProcedure.prescription_event,
+          stop_event: enrichedProcedure.stop_event
         }
       })
       const uniqProcedures = uniqBy(procedures, e => e.procedure_id)
