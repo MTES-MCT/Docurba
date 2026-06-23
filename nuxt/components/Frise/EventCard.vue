@@ -102,7 +102,6 @@
 
 <script>
 import { mdiPencil, mdiPaperclip, mdiBookmark } from '@mdi/js'
-// import actors from '@/assets/friseActors.json'
 
 export default {
   props: {
