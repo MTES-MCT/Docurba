@@ -105,6 +105,38 @@ class EventTypeViewSet(PublicAPIView, viewsets.ReadOnlyModelViewSet):
     filterset_class = custom_filters.EventTypeFilter
 
 
+class PublicEventViewSet(PublicAPIView, viewsets.ReadOnlyModelViewSet):
+    """Vue publique des évenements en base."""
+
+    queryset = core_models.Event.full_objects.exclude_archived().filter_public()
+    serializer_class = core_serializers.PublicEventSerializer
+    filterset_class = custom_filters.EventFilter
+
+
+class EventViewSet(viewsets.ModelViewSet):
+    """Evenements en base."""
+
+    queryset = core_models.Event.full_objects.exclude_archived().select_related(
+        "event_type", "profile"
+    )
+    serializer_class = core_serializers.EventSerializer
+    filterset_class = custom_filters.EventFilter
+    authentication_classes = [SupabaseAuthentication]  # noqa: RUF012
+    permission_classes = [IsAuthenticated]  # noqa: RUF012
+
+    def perform_destroy(self, instance: core_models.Event) -> None:
+        instance.archive(archived_by=self.request.user.profile)
+        instance.save()
+
+    def perform_create(self, serializer: core_serializers.EventSerializer) -> None:
+        serializer.save(
+            profile=self.request.user.profile, created_by=self.request.user.profile
+        )
+
+    def perform_update(self, serializer: core_serializers.EventSerializer) -> None:
+        serializer.save(profile=self.request.user.profile)
+
+
 class UserMustUpdatePasswordView(PublicAPIView, generics.GenericAPIView):
     def get(self, request: Request, *args, **kwargs) -> Response:  # noqa: ANN002, ANN003, ARG002
         must_update_password = (

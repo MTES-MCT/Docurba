@@ -1,0 +1,647 @@
+# serializer version: 1
+# name: TestEventAPI.test_event_api_create
+  dict({
+    'attachements': list([
+      dict({
+        'id': '00000000-1111-0000-0000-000000000000',
+        'name': 'test_1.pdf',
+        'path': '00000000-0000-0000-1111-000000000000/00000000-1111-0000-0000-000000000000/00000000-1111-0000-0000-000000000000',
+      }),
+      dict({
+        'id': '00000000-2222-0000-0000-000000000000',
+        'name': 'test_2.pdf',
+        'path': '00000000-0000-0000-1111-000000000000/00000000-1111-0000-0000-000000000000/00000000-2222-0000-0000-000000000000',
+      }),
+    ]),
+    'dateEvenement': '2012-06-03T02:00:00+02:00',
+    'description': 'Lorem ipsum dolor sit amet',
+    'editable': True,
+    'eventType': dict({
+      'documentType': 'CC',
+      'id': '00000000-0000-0000-1111-000000000000',
+      'isStructuring': False,
+      'name': 'test',
+      'scopeList': list([
+      ]),
+      'scopeSugg': list([
+      ]),
+    }),
+    'id': '00000000-1111-0000-0000-000000000000',
+    'isPublic': True,
+    'isSudocuh': False,
+    'isSystem': False,
+    'isValid': True,
+    'name': 'test',
+    'otherName': '',
+    'procedureId': '00000000-0000-0000-1111-000000000000',
+    'profile': dict({
+      'email': 'mail-aleatoire@example.org',
+      'firstname': 'Josianne',
+      'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'lastname': 'Dupont',
+      'side': 'etat',
+    }),
+    'visibility': 'public',
+  })
+# ---
+# name: TestEventAPI.test_event_api_detail
+  dict({
+    'attachements': list([
+      dict({
+        'id': '00000000-1111-0000-0000-000000000000',
+        'name': 'test_1.pdf',
+        'path': '00000000-0000-0000-1111-000000000000/00000000-0000-0000-1111-000000000000/00000000-1111-0000-0000-000000000000',
+      }),
+      dict({
+        'id': '00000000-2222-0000-0000-000000000000',
+        'name': 'test_2.pdf',
+        'path': '00000000-0000-0000-1111-000000000000/00000000-0000-0000-1111-000000000000/00000000-2222-0000-0000-000000000000',
+      }),
+    ]),
+    'dateEvenement': '2012-06-03T02:00:00+02:00',
+    'description': 'Lorem ipsum dolor sit amet',
+    'editable': True,
+    'eventType': dict({
+      'documentType': 'CC',
+      'id': '00000000-0000-0000-1111-000000000000',
+      'isStructuring': False,
+      'name': 'test',
+      'scopeList': list([
+      ]),
+      'scopeSugg': list([
+      ]),
+    }),
+    'id': '00000000-0000-0000-1111-000000000000',
+    'isPublic': True,
+    'isSudocuh': False,
+    'isSystem': False,
+    'isValid': True,
+    'name': 'test',
+    'otherName': '',
+    'procedureId': '00000000-0000-0000-1111-000000000000',
+    'profile': dict({
+      'email': 'mail-aleatoire@example.org',
+      'firstname': 'Josianne',
+      'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'lastname': 'Dupont',
+      'side': 'etat',
+    }),
+    'visibility': 'public',
+  })
+# ---
+# name: TestEventAPI.test_event_api_list[filter_procedure]
+  list([
+    dict({
+      'attachements': list([
+        dict({
+          'id': 'sudocuh/0/00000000000000001.pdf',
+          'name': 'test_1.pdf',
+          'path': 'sudocuh/0/00000000000000001.pdf',
+        }),
+        dict({
+          'id': 'sudocuh/0/00000000000000002.pdf',
+          'name': 'test_2.pdf',
+          'path': 'sudocuh/0/00000000000000002.pdf',
+        }),
+      ]),
+      'dateEvenement': '2012-05-19T02:00:00+02:00',
+      'description': None,
+      'editable': False,
+      'eventType': None,
+      'id': '00000000-0000-0000-4444-000000000000',
+      'isPublic': False,
+      'isSudocuh': True,
+      'isSystem': True,
+      'isValid': True,
+      'name': 'Event Test 4',
+      'otherName': 'Event Test 4',
+      'procedureId': '00000000-0000-0000-1111-000000000000',
+      'profile': dict({
+        'email': 'admin@docurba.test',
+        'firstname': 'Josianne',
+        'id': '1cd65b57-8888-4aa5-8d19-5e1baf8d6f09',
+        'lastname': 'Dupont',
+        'side': 'etat',
+      }),
+      'visibility': 'private',
+    }),
+    dict({
+      'attachements': None,
+      'dateEvenement': '2012-05-14T02:00:00+02:00',
+      'description': None,
+      'editable': True,
+      'eventType': None,
+      'id': '00000000-0000-0000-3333-000000000000',
+      'isPublic': True,
+      'isSudocuh': False,
+      'isSystem': False,
+      'isValid': True,
+      'name': 'Event Test 3',
+      'otherName': 'Event Test 3',
+      'procedureId': '00000000-0000-0000-1111-000000000000',
+      'profile': None,
+      'visibility': 'public',
+    }),
+    dict({
+      'attachements': list([
+        dict({
+          'id': '00000000-1111-0000-0000-000000000000',
+          'name': 'test_1.pdf',
+          'path': '00000000-0000-0000-1111-000000000000/00000000-0000-0000-1111-000000000000/00000000-1111-0000-0000-000000000000',
+        }),
+        dict({
+          'id': '00000000-2222-0000-0000-000000000000',
+          'name': 'test_2.pdf',
+          'path': '00000000-0000-0000-1111-000000000000/00000000-0000-0000-1111-000000000000/00000000-2222-0000-0000-000000000000',
+        }),
+      ]),
+      'dateEvenement': '2012-05-04T02:00:00+02:00',
+      'description': 'Lorem ipsum dolor sit amet',
+      'editable': True,
+      'eventType': dict({
+        'documentType': 'CC',
+        'id': '00000000-0000-0000-1111-000000000000',
+        'isStructuring': False,
+        'name': 'test',
+        'scopeList': list([
+        ]),
+        'scopeSugg': list([
+        ]),
+      }),
+      'id': '00000000-0000-0000-1111-000000000000',
+      'isPublic': True,
+      'isSudocuh': False,
+      'isSystem': False,
+      'isValid': True,
+      'name': 'test',
+      'otherName': '',
+      'procedureId': '00000000-0000-0000-1111-000000000000',
+      'profile': dict({
+        'email': 'mail-aleatoire@example.org',
+        'firstname': 'Josianne',
+        'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+        'lastname': 'Dupont',
+        'side': 'etat',
+      }),
+      'visibility': 'public',
+    }),
+  ])
+# ---
+# name: TestEventAPI.test_event_api_list[no_filter]
+  list([
+    dict({
+      'attachements': list([
+        dict({
+          'id': 'sudocuh/0/00000000000000001.pdf',
+          'name': 'test_1.pdf',
+          'path': 'sudocuh/0/00000000000000001.pdf',
+        }),
+        dict({
+          'id': 'sudocuh/0/00000000000000002.pdf',
+          'name': 'test_2.pdf',
+          'path': 'sudocuh/0/00000000000000002.pdf',
+        }),
+      ]),
+      'dateEvenement': '2012-05-19T02:00:00+02:00',
+      'description': None,
+      'editable': False,
+      'eventType': None,
+      'id': '00000000-0000-0000-4444-000000000000',
+      'isPublic': False,
+      'isSudocuh': True,
+      'isSystem': True,
+      'isValid': True,
+      'name': 'Event Test 4',
+      'otherName': 'Event Test 4',
+      'procedureId': '00000000-0000-0000-1111-000000000000',
+      'profile': dict({
+        'email': 'admin@docurba.test',
+        'firstname': 'Josianne',
+        'id': '1cd65b57-8888-4aa5-8d19-5e1baf8d6f09',
+        'lastname': 'Dupont',
+        'side': 'etat',
+      }),
+      'visibility': 'private',
+    }),
+    dict({
+      'attachements': None,
+      'dateEvenement': '2012-05-14T02:00:00+02:00',
+      'description': None,
+      'editable': True,
+      'eventType': None,
+      'id': '00000000-0000-0000-3333-000000000000',
+      'isPublic': True,
+      'isSudocuh': False,
+      'isSystem': False,
+      'isValid': True,
+      'name': 'Event Test 3',
+      'otherName': 'Event Test 3',
+      'procedureId': '00000000-0000-0000-1111-000000000000',
+      'profile': None,
+      'visibility': 'public',
+    }),
+    dict({
+      'attachements': None,
+      'dateEvenement': '2012-05-09T02:00:00+02:00',
+      'description': None,
+      'editable': True,
+      'eventType': None,
+      'id': '00000000-0000-0000-2222-000000000000',
+      'isPublic': True,
+      'isSudocuh': False,
+      'isSystem': False,
+      'isValid': True,
+      'name': 'Event Test 2',
+      'otherName': 'Event Test 2',
+      'procedureId': '00000000-0000-0000-2222-000000000000',
+      'profile': None,
+      'visibility': 'public',
+    }),
+    dict({
+      'attachements': list([
+        dict({
+          'id': '00000000-1111-0000-0000-000000000000',
+          'name': 'test_1.pdf',
+          'path': '00000000-0000-0000-1111-000000000000/00000000-0000-0000-1111-000000000000/00000000-1111-0000-0000-000000000000',
+        }),
+        dict({
+          'id': '00000000-2222-0000-0000-000000000000',
+          'name': 'test_2.pdf',
+          'path': '00000000-0000-0000-1111-000000000000/00000000-0000-0000-1111-000000000000/00000000-2222-0000-0000-000000000000',
+        }),
+      ]),
+      'dateEvenement': '2012-05-04T02:00:00+02:00',
+      'description': 'Lorem ipsum dolor sit amet',
+      'editable': True,
+      'eventType': dict({
+        'documentType': 'CC',
+        'id': '00000000-0000-0000-1111-000000000000',
+        'isStructuring': False,
+        'name': 'test',
+        'scopeList': list([
+        ]),
+        'scopeSugg': list([
+        ]),
+      }),
+      'id': '00000000-0000-0000-1111-000000000000',
+      'isPublic': True,
+      'isSudocuh': False,
+      'isSystem': False,
+      'isValid': True,
+      'name': 'test',
+      'otherName': '',
+      'procedureId': '00000000-0000-0000-1111-000000000000',
+      'profile': dict({
+        'email': 'mail-aleatoire@example.org',
+        'firstname': 'Josianne',
+        'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+        'lastname': 'Dupont',
+        'side': 'etat',
+      }),
+      'visibility': 'public',
+    }),
+  ])
+# ---
+# name: TestEventAPI.test_event_api_update
+  dict({
+    'attachements': list([
+      dict({
+        'id': '00000000-1111-0000-0000-000000000000',
+        'name': 'test_1.pdf',
+        'path': '00000000-0000-0000-2222-000000000000/00000000-0000-0000-2222-000000000000/00000000-1111-0000-0000-000000000000',
+      }),
+      dict({
+        'id': '00000000-2222-0000-0000-000000000000',
+        'name': 'test_2.pdf',
+        'path': '00000000-0000-0000-2222-000000000000/00000000-0000-0000-2222-000000000000/00000000-2222-0000-0000-000000000000',
+      }),
+    ]),
+    'dateEvenement': '2012-05-04T02:00:00+02:00',
+    'description': 'Lorem ipsum dolor sit amet - updated',
+    'editable': True,
+    'eventType': dict({
+      'documentType': 'CC',
+      'id': '00000000-0000-0000-1111-000000000000',
+      'isStructuring': False,
+      'name': 'test',
+      'scopeList': list([
+      ]),
+      'scopeSugg': list([
+      ]),
+    }),
+    'id': '00000000-0000-0000-2222-000000000000',
+    'isPublic': False,
+    'isSudocuh': False,
+    'isSystem': False,
+    'isValid': True,
+    'name': 'test',
+    'otherName': '',
+    'procedureId': '00000000-0000-0000-2222-000000000000',
+    'profile': dict({
+      'email': 'mail-aleatoire@example.org',
+      'firstname': 'Josianne',
+      'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'lastname': 'Dupont',
+      'side': 'etat',
+    }),
+    'visibility': 'private',
+  })
+# ---
+# name: TestEventAPI.test_event_api_update.1
+  dict({
+    'attachements': list([
+      dict({
+        'id': '00000000-1111-0000-0000-000000000000',
+        'name': 'test_1.pdf',
+        'path': '00000000-0000-0000-2222-000000000000/00000000-0000-0000-2222-000000000000/00000000-1111-0000-0000-000000000000',
+      }),
+      dict({
+        'id': '00000000-2222-0000-0000-000000000000',
+        'name': 'test_2.pdf',
+        'path': '00000000-0000-0000-2222-000000000000/00000000-0000-0000-2222-000000000000/00000000-2222-0000-0000-000000000000',
+      }),
+    ]),
+    'dateEvenement': '2012-05-14T02:00:00+02:00',
+    'description': 'Lorem ipsum dolor sit amet - patched',
+    'editable': True,
+    'eventType': None,
+    'id': '00000000-0000-0000-2222-000000000000',
+    'isPublic': True,
+    'isSudocuh': False,
+    'isSystem': False,
+    'isValid': True,
+    'name': 'Event Test 1 patched',
+    'otherName': 'Event Test 1 patched',
+    'procedureId': '00000000-0000-0000-2222-000000000000',
+    'profile': dict({
+      'email': 'mail-aleatoire@example.org',
+      'firstname': 'Josianne',
+      'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'lastname': 'Dupont',
+      'side': 'etat',
+    }),
+    'visibility': 'public',
+  })
+# ---
+# name: TestEventAPI.test_event_api_update_procedure_is_not_updated
+  dict({
+    'attachements': list([
+    ]),
+    'dateEvenement': '2012-05-04T02:00:00+02:00',
+    'description': 'Lorem ipsum dolor sit amet - updated',
+    'editable': True,
+    'eventType': dict({
+      'documentType': 'CC',
+      'id': '00000000-0000-0000-1111-000000000000',
+      'isStructuring': False,
+      'name': 'test',
+      'scopeList': list([
+      ]),
+      'scopeSugg': list([
+      ]),
+    }),
+    'id': '00000000-0000-0000-2222-000000000000',
+    'isPublic': False,
+    'isSudocuh': False,
+    'isSystem': False,
+    'isValid': True,
+    'name': 'test',
+    'otherName': '',
+    'procedureId': '00000000-0000-0000-2222-000000000000',
+    'profile': dict({
+      'email': 'mail-aleatoire@example.org',
+      'firstname': 'Josianne',
+      'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'lastname': 'Dupont',
+      'side': 'etat',
+    }),
+    'visibility': 'private',
+  })
+# ---
+# name: TestEventAPI.test_event_api_update_procedure_is_not_updated.1
+  dict({
+    'attachements': list([
+    ]),
+    'dateEvenement': '2012-05-04T02:00:00+02:00',
+    'description': 'Lorem ipsum dolor sit amet - updated',
+    'editable': True,
+    'eventType': dict({
+      'documentType': 'CC',
+      'id': '00000000-0000-0000-1111-000000000000',
+      'isStructuring': False,
+      'name': 'test',
+      'scopeList': list([
+      ]),
+      'scopeSugg': list([
+      ]),
+    }),
+    'id': '00000000-0000-0000-2222-000000000000',
+    'isPublic': False,
+    'isSudocuh': False,
+    'isSystem': False,
+    'isValid': True,
+    'name': 'test',
+    'otherName': '',
+    'procedureId': '00000000-0000-0000-2222-000000000000',
+    'profile': dict({
+      'email': 'mail-aleatoire@example.org',
+      'firstname': 'Josianne',
+      'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'lastname': 'Dupont',
+      'side': 'etat',
+    }),
+    'visibility': 'private',
+  })
+# ---
+# name: TestPublicEventAPI.test_public_event_api_detail
+  dict({
+    'attachements': list([
+      dict({
+        'id': '00000000-1111-0000-0000-000000000000',
+        'name': 'test_1.pdf',
+        'path': '00000000-0000-0000-1111-000000000000/00000000-0000-0000-1111-000000000000/00000000-1111-0000-0000-000000000000',
+      }),
+      dict({
+        'id': '00000000-2222-0000-0000-000000000000',
+        'name': 'test_2.pdf',
+        'path': '00000000-0000-0000-1111-000000000000/00000000-0000-0000-1111-000000000000/00000000-2222-0000-0000-000000000000',
+      }),
+    ]),
+    'dateEvenement': '2012-06-03T02:00:00+02:00',
+    'eventType': dict({
+      'documentType': 'CC',
+      'id': '00000000-0000-0000-1111-000000000000',
+      'isStructuring': False,
+      'name': 'test',
+      'scopeList': list([
+      ]),
+      'scopeSugg': list([
+      ]),
+    }),
+    'id': '00000000-0000-0000-1111-000000000000',
+    'isPublic': True,
+    'isSudocuh': False,
+    'isSystem': False,
+    'isValid': True,
+    'name': 'test',
+    'otherName': 'Prescription',
+    'procedureId': '00000000-0000-0000-1111-000000000000',
+  })
+# ---
+# name: TestPublicEventAPI.test_public_event_api_list[filter_procedure]
+  list([
+    dict({
+      'attachements': None,
+      'dateEvenement': '2012-05-19T02:00:00+02:00',
+      'eventType': dict({
+        'documentType': 'CC',
+        'id': '00000000-0000-0000-4444-000000000000',
+        'isStructuring': True,
+        'name': 'event 4444',
+        'scopeList': list([
+        ]),
+        'scopeSugg': list([
+        ]),
+      }),
+      'id': '00000000-0000-0000-4444-000000000000',
+      'isPublic': True,
+      'isSudocuh': True,
+      'isSystem': False,
+      'isValid': True,
+      'name': 'event 4444',
+      'otherName': 'Prescription',
+      'procedureId': '00000000-0000-0000-1111-000000000000',
+    }),
+    dict({
+      'attachements': None,
+      'dateEvenement': '2012-05-14T02:00:00+02:00',
+      'eventType': None,
+      'id': '00000000-0000-0000-3333-000000000000',
+      'isPublic': True,
+      'isSudocuh': False,
+      'isSystem': True,
+      'isValid': True,
+      'name': 'Event Test 3',
+      'otherName': 'Event Test 3',
+      'procedureId': '00000000-0000-0000-1111-000000000000',
+    }),
+    dict({
+      'attachements': list([
+        dict({
+          'id': '00000000-1111-0000-0000-000000000000',
+          'name': 'test_1.pdf',
+          'path': '00000000-0000-0000-1111-000000000000/00000000-0000-0000-1111-000000000000/00000000-1111-0000-0000-000000000000',
+        }),
+        dict({
+          'id': '00000000-2222-0000-0000-000000000000',
+          'name': 'test_2.pdf',
+          'path': '00000000-0000-0000-1111-000000000000/00000000-0000-0000-1111-000000000000/00000000-2222-0000-0000-000000000000',
+        }),
+      ]),
+      'dateEvenement': '2012-05-04T02:00:00+02:00',
+      'eventType': dict({
+        'documentType': 'CC',
+        'id': '00000000-0000-0000-1111-000000000000',
+        'isStructuring': False,
+        'name': 'test',
+        'scopeList': list([
+        ]),
+        'scopeSugg': list([
+        ]),
+      }),
+      'id': '00000000-0000-0000-1111-000000000000',
+      'isPublic': True,
+      'isSudocuh': False,
+      'isSystem': False,
+      'isValid': True,
+      'name': 'test',
+      'otherName': 'Prescription',
+      'procedureId': '00000000-0000-0000-1111-000000000000',
+    }),
+  ])
+# ---
+# name: TestPublicEventAPI.test_public_event_api_list[no_filter]
+  list([
+    dict({
+      'attachements': None,
+      'dateEvenement': '2012-05-19T02:00:00+02:00',
+      'eventType': dict({
+        'documentType': 'CC',
+        'id': '00000000-0000-0000-4444-000000000000',
+        'isStructuring': True,
+        'name': 'event 4444',
+        'scopeList': list([
+        ]),
+        'scopeSugg': list([
+        ]),
+      }),
+      'id': '00000000-0000-0000-4444-000000000000',
+      'isPublic': True,
+      'isSudocuh': True,
+      'isSystem': False,
+      'isValid': True,
+      'name': 'event 4444',
+      'otherName': 'Prescription',
+      'procedureId': '00000000-0000-0000-1111-000000000000',
+    }),
+    dict({
+      'attachements': None,
+      'dateEvenement': '2012-05-14T02:00:00+02:00',
+      'eventType': None,
+      'id': '00000000-0000-0000-3333-000000000000',
+      'isPublic': True,
+      'isSudocuh': False,
+      'isSystem': True,
+      'isValid': True,
+      'name': 'Event Test 3',
+      'otherName': 'Event Test 3',
+      'procedureId': '00000000-0000-0000-1111-000000000000',
+    }),
+    dict({
+      'attachements': None,
+      'dateEvenement': '2012-05-09T02:00:00+02:00',
+      'eventType': None,
+      'id': '00000000-0000-0000-2222-000000000000',
+      'isPublic': True,
+      'isSudocuh': False,
+      'isSystem': False,
+      'isValid': True,
+      'name': 'Event Test 2',
+      'otherName': 'Event Test 2',
+      'procedureId': '00000000-0000-0000-2222-000000000000',
+    }),
+    dict({
+      'attachements': list([
+        dict({
+          'id': '00000000-1111-0000-0000-000000000000',
+          'name': 'test_1.pdf',
+          'path': '00000000-0000-0000-1111-000000000000/00000000-0000-0000-1111-000000000000/00000000-1111-0000-0000-000000000000',
+        }),
+        dict({
+          'id': '00000000-2222-0000-0000-000000000000',
+          'name': 'test_2.pdf',
+          'path': '00000000-0000-0000-1111-000000000000/00000000-0000-0000-1111-000000000000/00000000-2222-0000-0000-000000000000',
+        }),
+      ]),
+      'dateEvenement': '2012-05-04T02:00:00+02:00',
+      'eventType': dict({
+        'documentType': 'CC',
+        'id': '00000000-0000-0000-1111-000000000000',
+        'isStructuring': False,
+        'name': 'test',
+        'scopeList': list([
+        ]),
+        'scopeSugg': list([
+        ]),
+      }),
+      'id': '00000000-0000-0000-1111-000000000000',
+      'isPublic': True,
+      'isSudocuh': False,
+      'isSystem': False,
+      'isValid': True,
+      'name': 'test',
+      'otherName': 'Prescription',
+      'procedureId': '00000000-0000-0000-1111-000000000000',
+    }),
+  ])
+# ---
