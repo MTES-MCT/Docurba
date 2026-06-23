@@ -293,6 +293,26 @@ class TestCommunesAPI:
                 ],
                 id="code_insee",
             ),
+            pytest.param(
+                {"code": ["13150", "30000"]},
+                [
+                    {
+                        "code": "13150",
+                        "type": "COM",
+                        "intitule": "Commune 1",
+                        "regionCode": "93",
+                        "departementCode": "13",
+                    },
+                    {
+                        "code": "30000",
+                        "type": "COM",
+                        "intitule": "Commune 2",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                    },
+                ],
+                id="several_insee_codes",
+            ),
         ],
     )
     def test_list(
