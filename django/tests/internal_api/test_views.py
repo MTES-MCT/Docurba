@@ -307,6 +307,19 @@ class TestCommunesAPI:
                 BASE_QUERIES_COUNT + 1,
                 id="type_commune",
             ),
+            pytest.param(
+                {"code": "13150"},
+                [
+                    {
+                        "code": "13150",
+                        "type": "COM",
+                        "intitule": "Commune 1",
+                        "regionCode": "93",
+                        "departementCode": "13",
+                    },
+                ],
+                id="code_insee",
+            ),
         ],
     )
     def test_list(
