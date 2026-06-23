@@ -85,8 +85,6 @@
           </template>
 
           <v-list>
-            <!-- TODO(cms): remove me later -->
-            <!-- <FriseVoletQualiDialog /> -->
             <FriseDgdDialog />
 
             <v-list-item
