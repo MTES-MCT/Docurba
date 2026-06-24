@@ -86,3 +86,12 @@ class TypeCollectivite(models.TextChoices):
             cls.SIVOM,
         ]
         return {member.value: member for member in cls if member in enums}
+
+    @classmethod
+    def communes(cls: models.TextChoices) -> dict:
+        enums = [
+            cls.COM,
+            cls.COMD,
+            cls.COMA,
+        ]
+        return {member.value: member for member in cls if member in enums}
