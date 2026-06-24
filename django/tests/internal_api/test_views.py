@@ -17,10 +17,11 @@ BASE_QUERIES_COUNT = 1  # Count made by DRF for the pagination.
 @pytest.mark.django_db
 class TestCollectivitesAPI:
     @pytest.mark.parametrize(
-        ("query_params", "expected"),
+        ("query_params", "expected_num_queries", "expected"),
         [
             pytest.param(
                 {},
+                BASE_QUERIES_COUNT + 1,
                 [
                     {
                         "code": "123456789",
@@ -48,6 +49,7 @@ class TestCollectivitesAPI:
             ),
             pytest.param(
                 {"departement": "84"},
+                BASE_QUERIES_COUNT + 2,
                 [
                     {
                         "code": "123456789",
@@ -60,7 +62,8 @@ class TestCollectivitesAPI:
                 id="one_department",
             ),
             pytest.param(
-                {"departement": "84,13"},
+                {"departement": ["84", "13"]},
+                BASE_QUERIES_COUNT + 2,
                 [
                     {
                         "code": "123456789",
@@ -81,6 +84,7 @@ class TestCollectivitesAPI:
             ),
             pytest.param(
                 {"region": "93", "type": "CC"},
+                BASE_QUERIES_COUNT + 2,
                 [
                     {
                         "code": "987654321",
@@ -94,6 +98,7 @@ class TestCollectivitesAPI:
             ),
             pytest.param(
                 {"region": "93"},
+                BASE_QUERIES_COUNT + 2,
                 [
                     {
                         "code": "123456789",
@@ -113,7 +118,8 @@ class TestCollectivitesAPI:
                 id="region",
             ),
             pytest.param(
-                {"type": "CC,SMO"},
+                {"type": ["CC", "SMO"]},
+                BASE_QUERIES_COUNT + 1,
                 [
                     {
                         "code": "132435465",
@@ -135,7 +141,11 @@ class TestCollectivitesAPI:
         ],
     )
     def test_list_filters(
-        self, api_client: APIClient, query_params: str, expected: list
+        self,
+        api_client: APIClient,
+        expected_num_queries: int,
+        query_params: str,
+        expected: list,
     ) -> None:
         CollectiviteFactory(
             code_insee_unique="987654321",
@@ -156,8 +166,8 @@ class TestCollectivitesAPI:
             nom="Groupement 3",
         )
 
-        url = f"{reverse('internal_api:collectivites-list')}?{urlencode(query_params)}"
-        with assertNumQueries(BASE_QUERIES_COUNT + 1):
+        url = f"{reverse('internal_api:collectivites-list')}?{urlencode(query_params, doseq=True)}"
+        with assertNumQueries(expected_num_queries):
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200
@@ -399,10 +409,11 @@ class TestCollectivitesAPI:
 @pytest.mark.django_db
 class TestCommunesAPI:
     @pytest.mark.parametrize(
-        ("query_params", "expected"),
+        ("query_params", "expected_num_queries", "expected"),
         [
             pytest.param(
                 {},
+                BASE_QUERIES_COUNT + 1,
                 [
                     {
                         "code": "13150",
@@ -429,7 +440,8 @@ class TestCommunesAPI:
                 id="no_filter",
             ),
             pytest.param(
-                {"departement": 13},
+                {"departement": "13"},
+                BASE_QUERIES_COUNT + 2,
                 [
                     {
                         "code": "13150",
@@ -442,7 +454,8 @@ class TestCommunesAPI:
                 id="one_department",
             ),
             pytest.param(
-                {"departement": "30,13"},
+                {"departement": ["30", "13"]},
+                BASE_QUERIES_COUNT + 2,
                 [
                     {
                         "code": "13150",
@@ -463,6 +476,7 @@ class TestCommunesAPI:
             ),
             pytest.param(
                 {"region": "93", "type": "COMD"},
+                BASE_QUERIES_COUNT + 2,
                 [
                     {
                         "code": "84000",
@@ -476,6 +490,7 @@ class TestCommunesAPI:
             ),
             pytest.param(
                 {"region": "93"},
+                BASE_QUERIES_COUNT + 2,
                 [
                     {
                         "code": "13150",
@@ -494,10 +509,35 @@ class TestCommunesAPI:
                 ],
                 id="region",
             ),
+            pytest.param(
+                {"type": ["COM"]},
+                BASE_QUERIES_COUNT + 1,
+                [
+                    {
+                        "code": "13150",
+                        "type": "COM",
+                        "intitule": "Commune 1",
+                        "regionCode": "93",
+                        "departementCode": "13",
+                    },
+                    {
+                        "code": "30000",
+                        "type": "COM",
+                        "intitule": "Commune 2",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                    },
+                ],
+                id="type_commune",
+            ),
         ],
     )
     def test_list(
-        self, api_client: APIClient, query_params: dict, expected: list
+        self,
+        api_client: APIClient,
+        expected_num_queries: int,
+        query_params: dict,
+        expected: list,
     ) -> None:
         CommuneFactory(
             code_insee_unique="13150",
@@ -517,9 +557,9 @@ class TestCommunesAPI:
             departement__code_insee="84",
             nom="Commune 3",
         )
-        url = f"{reverse('internal_api:communes-list')}?{urlencode(query_params)}"
+        url = f"{reverse('internal_api:communes-list')}?{urlencode(query_params, doseq=True)}"
 
-        with assertNumQueries(BASE_QUERIES_COUNT + 1):
+        with assertNumQueries(expected_num_queries):
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200

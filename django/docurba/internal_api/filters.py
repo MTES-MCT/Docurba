@@ -5,23 +5,26 @@ import functools
 from django.db.models import Q, QuerySet
 from django_filters import rest_framework as filters
 
-from docurba.core.models import Collectivite, Commune, TypeCollectivite
-
-
-class CharInFilter(filters.BaseInFilter, filters.CharFilter):
-    def in_filter(self, queryset: QuerySet, name: str, values: list) -> QuerySet:
-        query = Q()
-        for value in values:
-            query |= Q(departement__code_insee__icontains=value)
-        if query:
-            queryset = queryset.filter(query)
-
-        return queryset
+from docurba.core.models import (
+    Collectivite,
+    Commune,
+    Departement,
+    Region,
+    TypeCollectivite,
+)
 
 
 class DepartementRegionFilterSet(filters.FilterSet):
-    departement = CharInFilter(field_name="departement__code_insee", lookup_expr="in")
-    region = CharInFilter(field_name="departement__region__code_insee")
+    departement = filters.ModelMultipleChoiceFilter(
+        field_name="departement__code_insee",
+        to_field_name="code_insee",
+        queryset=Departement.objects.all(),
+    )
+    region = filters.ModelMultipleChoiceFilter(
+        field_name="departement__region__code_insee",
+        to_field_name="code_insee",
+        queryset=Region.objects.all(),
+    )
     fields = (
         "departement",
         "region",
@@ -40,7 +43,7 @@ COMPETENCES_CHOICES = (
 
 
 class CollectiviteFilter(DepartementRegionFilterSet):
-    type = CharInFilter(field_name="type")
+    type = filters.MultipleChoiceFilter(field_name="type", choices=TypeCollectivite)
     without_communes = filters.BooleanFilter(
         label="Sans les communes", method="_without_communes"
     )
@@ -71,16 +74,14 @@ class CollectiviteFilter(DepartementRegionFilterSet):
     def _without_communes(self, queryset: QuerySet, name: str, value: str) -> QuerySet:
         if not value:
             return queryset
-        commune_types = [
-            TypeCollectivite.COM,
-            TypeCollectivite.COMA,
-            TypeCollectivite.COMD,
-        ]
+        commune_types = TypeCollectivite.communes()
         return queryset.exclude(type__in=commune_types)
 
 
 class CommuneFilter(DepartementRegionFilterSet):
-    type = CharInFilter(field_name="type")
+    type = filters.MultipleChoiceFilter(
+        field_name="type", choices=TypeCollectivite.communes()
+    )
 
     class Meta:
         model = Commune
