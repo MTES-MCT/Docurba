@@ -11,6 +11,7 @@ from pytest_django import DjangoAssertNumQueries
 from docurba.core.enums import TypeCollectivite
 from docurba.core.models import (
     EVENT_CATEGORY_BY_DOC_TYPE,
+    Adhesion,
     CodeCompetencePerimetre,
     Collectivite,
     Commune,
@@ -36,7 +37,9 @@ class TestCollectivite:
 
 @pytest.mark.django_db
 class TestAdhesion:
-    def test_flat_adherents(self) -> None:
+    def test_flat_adherents(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
         grand_parent = CollectiviteFactory()
         parent = CollectiviteFactory()
         node = CollectiviteFactory()
@@ -49,7 +52,22 @@ class TestAdhesion:
         other_grand_parent.adhesions.add(*[other_parent])
         other_parent.adhesions.add(*[other_node])
 
-        assert Collectivite.objects.flat_adherents().count() == 3
+        assert Adhesion.objects.count() == 4
+
+        with django_assert_num_queries(1):
+            qs = Collectivite.objects.with_flat_adherents()
+            grand_parent = qs.filter(
+                code_insee_unique=grand_parent.code_insee_unique
+            ).first()  # get(code_insee_unique=grand_parent.code_insee_unique)
+        a = "a"
+        assert hasattr(grand_parent, "flat_adherents")
+        assert grand_parent.flat_adherents == [parent, node]
+
+        with django_assert_num_queries(1):
+            qs = Collectivite.objects.with_flat_groupements()
+            node = qs.get(pk=node.pk)
+        assert hasattr(node, "flat_groupements")
+        assert node.flat_groupements == [grand_parent, parent]
 
 
 class TestProcedureQuerySet:
