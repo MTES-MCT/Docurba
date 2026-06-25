@@ -399,7 +399,9 @@ export default {
         } else {
           perimetre = this.perimetre
         }
-        const detailedPerimetre = (await axios({ url: `/api/geo/communes?codes=${perimetre}`, method: 'get' })).data
+        const detailedPerimetre = this.$djangoApi.get('/api-internes/communes/', {
+          code: perimetre
+        })
         const oldFomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
         const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
         let insertedProject = null
