@@ -29,9 +29,7 @@ class MemberSerializer(BaseCollectiviteSerializer):
 
 
 class CollectiviteSerializer(BaseCollectiviteSerializer):
-    membres = serializers.SerializerMethodField(
-        read_only=True, method_name="get_members"
-    )
+    membres = MemberSerializer(source="membres_flat", many=True, read_only=True)
 
     class Meta:
         model = Collectivite
@@ -47,10 +45,6 @@ class CollectiviteSerializer(BaseCollectiviteSerializer):
         with_members = self.context.get("with_members", False)
         if not with_members:
             self.fields.pop("membres")
-
-    def get_members(self, obj) -> dict:
-        serializer = MemberSerializer(instance=obj.adhesions.all(), many=True)
-        return serializer.data
 
 
 class CommuneSerializer(serializers.ModelSerializer):

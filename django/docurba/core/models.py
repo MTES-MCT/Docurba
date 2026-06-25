@@ -1058,7 +1058,7 @@ class CollectiviteQuerySet(models.QuerySet):
         """
         pass
 
-    def with_flat_adherents(self) -> Self:
+    def with_membres_flat(self) -> Self:
 
         # def make_regions_cte(cte):
         #     # non-recursive: get root nodes
@@ -1157,17 +1157,24 @@ class CollectiviteQuerySet(models.QuerySet):
 
         qs = with_cte(
             cte,
-            select=cte.join(
-                Collectivite,
-                id=cte.col.from_collectivite_id,
-                # from_collectivite_id=cte.col.from_collectivite_id,
-            )
-            .annotate(
-                path=cte.col.path,
-                depth=cte.col.depth,
-            )
-            # .filter(depth=2)
-            .order_by("path"),
+            # select=self.annotate(members=cte.queryset().filter(models.F("cte.col.path").startswith(models.OuterRef("id"))).values(cte.col.path))
+            select=self.annotate(members=cte.col.path),
+            # select=cte.join(self, id=cte.col.from_collectivite_id)
+            # cte.join(
+            #     self,
+            # id=cte.col.to_collectivite_id,
+            # from_collectivite_id=cte.col.from_collectivite_id,
+            # )
+            # .annotate(
+            #     path=cte.col.path,
+            #     depth=cte.col.depth,
+            # ),
+            # select=self.annotate(
+            #     path=cte.col.path,
+            #     depth=cte.col.depth,
+            # )
+            # .filter(depth=1),  # get only leaves
+            # .order_by("path"),
         )
         # except Exception as e:
         #     print(e)

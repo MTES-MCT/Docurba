@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import viewsets
 
 from docurba.core.models import Collectivite, Commune
@@ -21,7 +22,16 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         qs = Collectivite.objects.select_related("departement", "departement__region")
         if "with_members" in self.get_serializer_context():
-            qs = qs.prefetch_related("adhesions")
+            # get Collectivite
+            qs = qs.with_membres_flat()
+            # qs = qs.prefetch_related(
+            #     models.Prefetch(
+            #         "membres_flat",
+            #         queryset=Collectivite.objects.select_related(
+            #             "departement", "commune"
+            #         ),
+            #     ),
+            # )
         return qs.order_by("code_insee_unique").all()
 
 

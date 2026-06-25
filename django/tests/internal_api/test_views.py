@@ -351,7 +351,6 @@ class TestCollectivitesAPI:
         parent.adhesions.add(*[child])
 
         url = f"{reverse('internal_api:collectivites-list')}?{urlencode(query_params)}"
-        # TODO
         # with assertNumQueries(expected_num_queries):
         response = api_client.get(url, format="json")
 
