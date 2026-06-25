@@ -3,7 +3,7 @@
   <validation-observer v-else-if="(procedureCategory === 'principale' || (procedureCategory === 'secondaire' && proceduresParents && proceduresParents.length > 0))" :ref="`observerAddProcedure-${procedureCategory}`" v-slot="{ handleSubmit, invalid }">
     <form @submit.prevent="handleSubmit(createProcedure)">
       <v-container class="pa-0">
-        <v-row v-if="procedureCategory === 'secondaire'">
+        <v-row>
           <v-col cols="6">
             <v-checkbox
               v-model="startedBeforeHuwartLaw"
@@ -235,7 +235,12 @@ export default {
     },
     typesProcedure () {
       if (this.procedureCategory === 'principale') {
-        return ['Elaboration', 'Révision'].map(value => ({ text: value, value }))
+        return ['Elaboration', 'Révision'].map(value => ({
+          text: `${value} (${
+            this.startedBeforeHuwartLaw ? 'antérieure' : 'postérieure'
+          } à la loi Huwart)`,
+          value
+        }))
       }
 
       return [
