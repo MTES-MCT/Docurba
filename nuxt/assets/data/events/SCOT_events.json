@@ -1077,21 +1077,6 @@
     "structurant": true
   },
   {
-    "code": "DIG",
-    "condition": null,
-    "impact": null,
-    "law": null,
-    "name": "Déclaration d'intérêt général",
-    "name_sudocuh": "Déclaration d'intérêt général",
-    "order": 68,
-    "phases": "Approbation",
-    "scope_liste": [
-      "mc"
-    ],
-    "scope_sugg": [],
-    "structurant": false
-  },
-  {
     "code": "DELMEC",
     "condition": null,
     "impact": null,
@@ -1309,21 +1294,6 @@
     "order": 80,
     "phases": null,
     "scope_liste": [],
-    "scope_sugg": [],
-    "structurant": false
-  },
-  {
-    "code": "DUP",
-    "condition": null,
-    "impact": null,
-    "law": null,
-    "name": "DUP emportant mise en compatibilité",
-    "name_sudocuh": "DUP emportant mise en compatibilité",
-    "order": 81,
-    "phases": null,
-    "scope_liste": [
-      "mc"
-    ],
     "scope_sugg": [],
     "structurant": false
   },
