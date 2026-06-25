@@ -3,15 +3,18 @@ from json import loads
 from pathlib import Path
 
 import factory.fuzzy
+from factory.random import randgen
 
 from docurba.core.enums import CommuneType
 from docurba.core.models import (
+    EVENT_CATEGORY_BY_DOC_TYPE,
     EVENT_TYPE_BY_EVENT_CATEGORY,
     Collectivite,
     Commune,
     CommuneProcedure,
     Departement,
     Event,
+    EventType,
     Procedure,
     Project,
     Region,
@@ -226,6 +229,19 @@ class CommuneProcedureFactory(factory.django.DjangoModelFactory):
     collectivite_type = factory.SelfAttribute("commune.type")
     opposable = False
     departement = factory.SelfAttribute("commune.departement.code_insee")
+
+
+class EventTypeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = EventType
+
+    name = factory.LazyAttribute(
+        lambda o: randgen.choice(
+            list(EVENT_CATEGORY_BY_DOC_TYPE[o.document_type].keys())
+        )
+    )
+    document_type = factory.fuzzy.FuzzyChoice(EventType.DocumentType)
+    impact = factory.fuzzy.FuzzyChoice(EventType.Impact)
 
 
 class EventFactory(factory.django.DjangoModelFactory):
