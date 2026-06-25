@@ -404,6 +404,7 @@ export default
 
       const perimetre = this.procedure.procedures_perimetres.filter(c => c.collectivite_type === 'COM')
       const collectiviteId = perimetre.length === 1 ? perimetre[0].collectivite_code : this.procedure.collectivite_porteuse_id
+      // TODO :: Migrate this once `intercommunaliteCode`, `membres` and `groupements` are available in `/api-internes/collectivites/`
       const { data: collectivite } = await axios({
         url: `/api/geo/collectivites/${collectiviteId}`
       })

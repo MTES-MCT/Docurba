@@ -15,6 +15,7 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
     )
     serializer_class = CollectiviteSerializer
     filterset_class = custom_filters.CollectiviteFilter
+    lookup_field = "code_insee_unique"
 
 
 class CommuneViewSet(viewsets.ReadOnlyModelViewSet):
