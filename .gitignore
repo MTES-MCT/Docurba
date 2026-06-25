@@ -119,3 +119,9 @@ django/exports/*
 
 # Django's collected statics
 django/static/*
+# Django settings files
+!django/config/settings/base.py
+!django/config/settings/dev.py
+!django/config/settings/test.py
+!django/config/settings/__init__.py
+django/config/settings/*
