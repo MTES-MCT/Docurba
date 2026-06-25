@@ -7,6 +7,7 @@ from typing import Self
 
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
+from django.core.validators import MinValueValidator
 from django.db import connection, models
 from django.db.models import Value
 from django.db.models.aggregates import StringAgg
@@ -859,6 +860,62 @@ class FastLoadingEventManager(EventManager):
             "actors",
         ]
         return super().get_queryset().defer(*to_be_removed_fields, *heavy_fields)
+
+
+class EventType(models.Model):
+    class Impact(models.TextChoices):
+        EN_COURS = "EN_COURS", "En cours"
+        ABANDON = "ABANDON", "Abandon"
+        OPPOSABLE = "OPPOSABLE", "Opposable"
+        ANNULE = "ANNULE", "Annulé"
+
+    class TypeDocument(models.TextChoices):
+        PLU = "PLU", "PLU"
+        CC = "CC", "CC"
+        SCOT = "SCOT", "SCOT"
+
+    class Scope(models.TextChoices):
+        PP = "pp", "Procédure principale"
+        PPI = "ppi", "Procédure principale intercommunale"
+        RMS = "rms", "Révision allégée ou à modalité simplifiée"
+        M = "m", "Modification (antérieur loi Huwart)"
+        MS = "ms", "Modification simplifiée"
+        MC = "mc", "Mise en compatibilité"
+        MJ = "mj", "Mise à jour"
+        MLH = "mlh", "Modification (postérieur loi Huwart)"
+
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
+    name = models.CharField(verbose_name="nom", unique=True)
+    type_document = models.CharField(verbose_name="catégorie", choices=TypeDocument)
+    priority = models.PositiveIntegerField(
+        verbose_name="priorité", validators=[MinValueValidator(1)]
+    )
+    impact = models.CharField(blank=True, choices=Impact)
+    structurant = models.BooleanField(default=False)
+    scope_liste = ArrayField(
+        verbose_name="liste des scopes",
+        base_field=models.CharField(choices=Scope),
+        default=list,
+    )
+    scope_sugg = ArrayField(
+        verbose_name="Scopes suggérés",
+        base_field=models.CharField(choices=Scope),
+        default=list,
+    )
+    sudocuh_name = models.CharField(verbose_name="nom sudocuh", blank=True)
+    sudocuh_code = models.CharField(verbose_name="code sudocuh", blank=True)
+    created_at = models.DateTimeField(
+        verbose_name="créé le", auto_now_add=True, db_default=Now()
+    )
+    updated_at = models.DateTimeField(
+        verbose_name="mis à jour le", auto_now=True, null=True
+    )
+
+    class Meta:
+        verbose_name = "Type d'évènement"
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Event(models.Model):
