@@ -928,19 +928,6 @@ CREATE POLICY "Insert user request" ON public.admin_users_dept FOR INSERT WITH C
 
 
 --
--- Name: etapes_versement Policy with security definer functions; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Policy with security definer functions" ON public.etapes_versement USING (true);
-
-
---
--- Name: versements Policy with security definer functions; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Policy with security definer functions" ON public.versements TO authenticated USING (true);
-
---
 -- Name: projects_sharing Read; Type: POLICY; Schema: public; Owner: -
 --
 
