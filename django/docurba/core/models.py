@@ -8,6 +8,7 @@ from typing import Self
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
 from django.core.exceptions import PermissionDenied
+from django.core.validators import MinValueValidator
 from django.db import connection, models
 from django.db.models import Value
 from django.db.models.aggregates import StringAgg
@@ -16,7 +17,7 @@ from django.db.models.functions import Now
 from django.urls import reverse
 from django.utils import timezone
 
-from docurba.core.enums import CommuneType, TypeCollectivite, VisibilityType
+from docurba.core.enums import CommuneType, EventScope, TypeCollectivite, VisibilityType
 from docurba.core.utils import OversizedIndex
 
 logger = logging.getLogger(__name__)
@@ -863,6 +864,90 @@ class Project(models.Model):
 
     def __str__(self) -> str:
         return f"{self.pk} - {self.name}"
+
+
+class EventTypeManager(models.Manager):
+    pass
+
+
+class ActiveEventTypeManager(EventTypeManager):
+    def get_queryset(self) -> Self:
+        return super().get_queryset().filter(is_active=True)
+
+
+class EventType(models.Model):
+    class DocumentType(models.TextChoices):
+        PLU = TypeDocument.PLU
+        CC = TypeDocument.CC
+        SCOT = TypeDocument.SCOT
+
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
+    document_type = models.CharField(
+        verbose_name="type de document", choices=DocumentType
+    )
+    name = models.CharField(verbose_name="nom")
+    order = models.PositiveIntegerField(
+        verbose_name="ordre",
+        validators=[MinValueValidator(1)],
+        blank=True,
+    )
+    is_active = models.BooleanField(verbose_name="actif", default=True, db_default=True)
+    is_structuring = models.BooleanField(
+        verbose_name="structurant", default=False, db_default=False
+    )
+    scope_list = ArrayField(
+        verbose_name="liste des scopes",
+        base_field=models.CharField(choices=EventScope),
+        blank=True,
+        default=list,
+        db_default="{}",
+    )
+    scope_sugg = ArrayField(
+        verbose_name="Scopes suggérés",
+        base_field=models.CharField(choices=EventScope),
+        blank=True,
+        default=list,
+        db_default="{}",
+    )
+    impact = models.CharField(
+        blank=True, default="", db_default="", choices=ProcedureStatusChoices
+    )
+    sudocuh_name = models.CharField(
+        verbose_name="nom sudocuh", blank=True, default="", db_default=""
+    )
+    sudocuh_code = models.CharField(
+        verbose_name="code sudocuh", blank=True, default="", db_default=""
+    )
+    created_at = models.DateTimeField(
+        verbose_name="créé le", auto_now_add=True, db_default=Now()
+    )
+    updated_at = models.DateTimeField(
+        verbose_name="mis à jour le", auto_now=True, null=True
+    )
+
+    objects = ActiveEventTypeManager()
+    all_objects = EventTypeManager()
+
+    class Meta:
+        verbose_name = "type d'évènement"
+        verbose_name_plural = "types d'évènement"
+        unique_together = ("document_type", "name")
+        ordering = ("order",)
+
+    def __str__(self) -> str:
+        return f"{self.document_type} - {self.name}"
+
+    def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+        if self.order is None:
+            self.order = EventType.get_next_order(self.document_type)
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_next_order(cls, document_type: DocumentType) -> int:
+        result = cls.objects.filter(document_type=document_type).aggregate(
+            next_order=models.Max("order", default=0) + 1,
+        )
+        return result["next_order"]
 
 
 class EventManager(models.Manager):

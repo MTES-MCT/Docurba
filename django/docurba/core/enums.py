@@ -1,6 +1,17 @@
 from django.db import models
 
 
+class EventScope(models.TextChoices):
+    PP = "pp", "Procédure principale"
+    PPI = "ppi", "Procédure principale intercommunale"
+    RMS = "rms", "Révision allégée ou à modalité simplifiée"
+    M = "m", "Modification (antérieur loi Huwart)"
+    MS = "ms", "Modification simplifiée"
+    MC = "mc", "Mise en compatibilité"
+    MJ = "mj", "Mise à jour"
+    MLH = "mlh", "Modification (postérieur loi Huwart)"
+
+
 class CommuneType(models.TextChoices):
     COM = "COM", "Commune"
     COMD = "COMD", "Commune déléguée"

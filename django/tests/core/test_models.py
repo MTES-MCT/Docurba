@@ -18,6 +18,7 @@ from docurba.core.models import (
     Commune,
     Event,
     EventCategory,
+    EventType,
     MaterializedViewFlatMembership,
     Procedure,
     Topic,
@@ -27,6 +28,7 @@ from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
     EventFactory,
+    EventTypeFactory,
     ProcedureFactory,
 )
 
@@ -2147,3 +2149,17 @@ class TestEnums:
     def test_type_collectivite_epci(self) -> None:
         assert TypeCollectivite.CC in TypeCollectivite.epci()
         assert TypeCollectivite.COM not in TypeCollectivite.epci()
+
+
+class TestEventType:
+    @pytest.mark.django_db
+    def test_order(self) -> None:
+        cc1 = EventTypeFactory(document_type=EventType.DocumentType.CC, name="CC1")
+
+        assert cc1.order == 1
+
+        cc2 = EventTypeFactory(document_type=EventType.DocumentType.CC, name="CC2")
+        assert cc2.order == 2
+
+        plu1 = EventTypeFactory(document_type=EventType.DocumentType.PLU)
+        assert plu1.order == 1

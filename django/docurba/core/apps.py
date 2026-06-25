@@ -20,12 +20,12 @@ def create_topics(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # n
     from docurba.core.models import Topic  # noqa: PLC0415
 
     if Topic._meta.db_table in connection.introspection.table_names():  # noqa: SLF001
-        json_path = pathlib.Path(settings.APPS_DIR) / "core/data/create_topics.json"
+        json_path = pathlib.Path(settings.APPS_DIR) / "core/data/topics.json"
         with json_path.open("rb") as fp:
-            admin_crits_spec = json.load(fp)
+            topics = json.load(fp)
         with transaction.atomic():
-            for spec in admin_crits_spec:
+            for topic in topics:
                 Topic.objects.update_or_create(
-                    pk=spec["pk"],
-                    defaults=spec["fields"],
+                    pk=topic["pk"],
+                    defaults=topic["fields"],
                 )
