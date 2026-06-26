@@ -36,12 +36,21 @@ class TypeDocument(models.TextChoices):
     PLUIHM = "PLUiHM"
     PLUIM = "PLUiM"
 
+    PLUIS = "PLUiS"
+    PLUISH = "PLUiSH"
+    PLUISHM = "PLUiSHM"
+    PLUISM = "PLUiSM"
+
 
 PLU_LIKE = (
     TypeDocument.PLUI,
     TypeDocument.PLUIH,
     TypeDocument.PLUIHM,
     TypeDocument.PLUIM,
+    TypeDocument.PLUIS,
+    TypeDocument.PLUISH,
+    TypeDocument.PLUISHM,
+    TypeDocument.PLUISM,
 )
 
 
@@ -61,6 +70,10 @@ TYPE_DOCUMENT_TO_CODE = {
     TypeDocument.PLUIH: 3,
     TypeDocument.PLUIM: 3,
     TypeDocument.PLUIHM: 3,
+    TypeDocument.PLUIS: 3,
+    TypeDocument.PLUISH: 3,
+    TypeDocument.PLUISHM: 3,
+    TypeDocument.PLUISM: 3,
 }
 
 CODE_ETAT_SIMPLIFIE_TO_LIBELLE = {
@@ -634,12 +647,26 @@ class Procedure(models.Model):
             if not self.is_intercommunal:
                 return TypeDocument.PLU
             if self.vaut_PLH_consolide and self.vaut_PDM_consolide:
-                return TypeDocument.PLUIHM
+                return (
+                    TypeDocument.PLUISHM
+                    if self.is_sectoriel_consolide
+                    else TypeDocument.PLUIHM
+                )
             if self.vaut_PLH_consolide:
-                return TypeDocument.PLUIH
+                return (
+                    TypeDocument.PLUISH
+                    if self.is_sectoriel_consolide
+                    else TypeDocument.PLUIH
+                )
             if self.vaut_PDM_consolide:
-                return TypeDocument.PLUIM
-            return TypeDocument.PLUI
+                return (
+                    TypeDocument.PLUISM
+                    if self.is_sectoriel_consolide
+                    else TypeDocument.PLUIM
+                )
+            return (
+                TypeDocument.PLUIS if self.is_sectoriel_consolide else TypeDocument.PLUI
+            )
 
         return self.doc_type
 
