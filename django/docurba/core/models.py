@@ -966,6 +966,31 @@ class Departement(models.Model):
         return f"{self.code_insee} - {self.nom}"
 
 
+class Adhesion(models.Model):
+    from_collectivite = models.ForeignKey(
+        "core.Collectivite",
+        on_delete=models.CASCADE,
+        related_name="to_collectivite_through",
+        verbose_name="groupement",
+    )
+    to_collectivite = models.ForeignKey(
+        "core.Collectivite",
+        on_delete=models.RESTRICT,
+        related_name="from_collectivite_through",
+        verbose_name="membre",
+    )
+
+    class Meta:
+        verbose_name = "adhésion"
+        verbose_name_plural = "adhésions"
+        unique_together = ("from_collectivite", "to_collectivite")
+        # The many to many was first created without a manager.
+        db_table = "core_collectivite_adhesions"
+
+    def __str__(self) -> str:
+        return f"{self.pk}"
+
+
 class CollectiviteQuerySet(models.QuerySet):
     def portant_scot(self, avant: date | None = None) -> Self:
         return (
@@ -1000,6 +1025,39 @@ class CollectiviteQuerySet(models.QuerySet):
             )
         )
 
+    def flat_groupements(self) -> Self:
+        ascending = """
+            WITH RECURSIVE
+            adhesion_paths AS (
+                SELECT
+                    from_collectivite_id,
+                    to_collectivite_id,
+                    1 as depth,
+                    ARRAY[from_collectivite_id, to_collectivite_id] AS PATH
+                FROM
+                    core_collectivite_adhesions
+                UNION
+                SELECT
+                    adhesion_paths.from_collectivite_id,
+                    core_collectivite_adhesions.to_collectivite_id,
+                    adhesion_paths.depth + 1,
+                    adhesion_paths.path || core_collectivite_adhesions.to_collectivite_id
+                FROM
+                    adhesion_paths
+                    JOIN core_collectivite_adhesions ON core_collectivite_adhesions.from_collectivite_id = adhesion_paths.to_collectivite_id
+            )
+        SELECT
+            from_collectivite_id,
+            to_collectivite_id,
+            path,
+            depth
+        FROM
+            adhesion_paths
+        order by depth desc
+        ;
+        """
+        pass
+
 
 class Collectivite(models.Model):
     id = models.CharField(primary_key=True)  # Au format code_type
@@ -1012,8 +1070,19 @@ class Collectivite(models.Model):
     nom = models.CharField()
     competence_plan = models.BooleanField(db_default=False)
     competence_schema = models.BooleanField(db_default=False)
+    # TODO: rename me to groups
     adhesions = models.ManyToManyField(
-        "self", related_name="collectivites_adherentes", symmetrical=False
+        "self",
+        # rename me to members
+        related_name="collectivites_adherentes",
+        symmetrical=False,
+        through="core.Adhesion",
+    )
+    flat_groups = models.ManyToManyField(
+        "self",
+        related_name="flat_members",
+        through="core.MaterializedViewFlatMembership",
+        symmetrical=False,
     )
     departement = models.ForeignKey(
         Departement, models.DO_NOTHING, related_name="collectivites"
@@ -1343,6 +1412,47 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
             # Remove me later.
             models.Index(name="test_idx", fields=["procedure_id", "collectivite_code"]),
         ]
+
+
+class MaterializedViewFlatMembership(models.Model):
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID())
+    member = models.ForeignKey(
+        "core.Collectivite",
+        models.DO_NOTHING,
+        related_name="flat_member_through",
+        verbose_name="Membre",
+    )
+    group = models.ForeignKey(
+        "core.Collectivite",
+        models.DO_NOTHING,
+        related_name="flat_group_through",
+        verbose_name="Groupement",
+    )
+    level = models.IntegerField(verbose_name="Niveau")
+    path = ArrayField(
+        base_field=models.CharField(), verbose_name="Chemin vers la racine"
+    )
+
+    class Meta:
+        db_table = "materialized_view_flat_memberships"
+        managed = False
+        indexes = (
+            models.Index(
+                "member",
+                name="flat_memberships_member_id_idx",
+                include=("group_id",),
+            ),
+            models.Index(
+                "group",
+                name="flat_memberships_group_id_idx",
+                include=("member_id",),
+            ),
+        )
+
+    @classmethod
+    def refresh(cls) -> None:
+        with connection.cursor() as cursor:
+            cursor.execute(f"REFRESH MATERIALIZED VIEW {cls._meta.db_table}")
 
 
 class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008

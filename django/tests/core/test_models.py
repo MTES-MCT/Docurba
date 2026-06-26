@@ -11,11 +11,13 @@ from pytest_django import DjangoAssertNumQueries
 from docurba.core.enums import TypeCollectivite
 from docurba.core.models import (
     EVENT_CATEGORY_BY_DOC_TYPE,
+    Adhesion,
     CodeCompetencePerimetre,
     Collectivite,
     Commune,
     Event,
     EventCategory,
+    MaterializedViewFlatMembership,
     Procedure,
     Topic,
     TypeDocument,
@@ -32,6 +34,44 @@ from tests.core.factories import (
 class TestCollectivite:
     def test_code_insee(self) -> None:
         assert Commune(id="12345_COM").code_insee == "12345"
+
+
+@pytest.mark.django_db
+class TestMaterializedViewFlatMembership:
+    def test_through_memberships(
+        self,
+    ) -> None:
+        grand_parent = CollectiviteFactory()
+        parent = CollectiviteFactory()
+        node = CollectiviteFactory()
+        parent.adhesions.add(*[grand_parent])
+        node.adhesions.add(*[parent])
+
+        other_grand_parent = CollectiviteFactory()
+        other_parent = CollectiviteFactory()
+        other_node = CollectiviteFactory()
+        other_parent.adhesions.add(*[other_grand_parent])
+        other_node.adhesions.add(*[other_parent])
+
+        MaterializedViewFlatMembership.refresh()
+        assert Adhesion.objects.count() == 4
+        assert MaterializedViewFlatMembership.objects.count() == 6
+
+        assert hasattr(grand_parent, "flat_members")
+        assert sorted(grand_parent.flat_members.values_list("id", flat=True)) == sorted(
+            [
+                parent.pk,
+                node.pk,
+            ]
+        )
+
+        assert hasattr(node, "flat_groups")
+        assert sorted(node.flat_groups.values_list("id", flat=True)) == sorted(
+            [
+                grand_parent.pk,
+                parent.pk,
+            ]
+        )
 
 
 class TestProcedureQuerySet:
