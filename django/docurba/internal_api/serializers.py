@@ -29,7 +29,7 @@ class MemberSerializer(BaseCollectiviteSerializer):
 
 
 class CollectiviteSerializer(BaseCollectiviteSerializer):
-    membres = MemberSerializer(source="membres_flat", many=True, read_only=True)
+    membres = MemberSerializer(source="flat_members", many=True, read_only=True)
 
     class Meta:
         model = Collectivite

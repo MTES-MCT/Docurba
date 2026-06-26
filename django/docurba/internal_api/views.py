@@ -1,7 +1,7 @@
 from django.db import models
 from rest_framework import viewsets
 
-from docurba.core.models import Collectivite, Commune
+from docurba.core.models import Collectivite, Commune, MaterializedViewFlatMembership
 from docurba.internal_api import filters as custom_filters
 from docurba.internal_api.serializers import CollectiviteSerializer, CommuneSerializer
 
@@ -23,15 +23,14 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
         qs = Collectivite.objects.select_related("departement", "departement__region")
         if "with_members" in self.get_serializer_context():
             # get Collectivite
-            qs = qs.with_membres_flat()
-            # qs = qs.prefetch_related(
-            #     models.Prefetch(
-            #         "membres_flat",
-            #         queryset=Collectivite.objects.select_related(
-            #             "departement", "commune"
-            #         ),
-            #     ),
-            # )
+            qs = qs.prefetch_related(
+                models.Prefetch(
+                    "flat_members",
+                    queryset=Collectivite.objects.select_related(
+                        "departement", "departement__region"
+                    ),
+                )
+            )
         return qs.order_by("code_insee_unique").all()
 
 

@@ -17,6 +17,7 @@ from docurba.core.models import (
     Commune,
     Event,
     EventCategory,
+    MaterializedViewFlatMembership,
     Procedure,
     Topic,
     TypeDocument,
@@ -36,38 +37,41 @@ class TestCollectivite:
 
 
 @pytest.mark.django_db
-class TestAdhesion:
-    def test_flat_adherents(
-        self, django_assert_num_queries: DjangoAssertNumQueries
+class TestMaterializedViewFlatMembership:
+    def test_through_memberships(
+        self,
     ) -> None:
         grand_parent = CollectiviteFactory()
         parent = CollectiviteFactory()
         node = CollectiviteFactory()
-        grand_parent.adhesions.add(*[parent])
-        parent.adhesions.add(*[node])
+        parent.adhesions.add(*[grand_parent])
+        node.adhesions.add(*[parent])
 
         other_grand_parent = CollectiviteFactory()
         other_parent = CollectiviteFactory()
         other_node = CollectiviteFactory()
-        other_grand_parent.adhesions.add(*[other_parent])
-        other_parent.adhesions.add(*[other_node])
+        other_parent.adhesions.add(*[other_grand_parent])
+        other_node.adhesions.add(*[other_parent])
 
+        MaterializedViewFlatMembership.refresh()
         assert Adhesion.objects.count() == 4
+        assert MaterializedViewFlatMembership.objects.count() == 6
 
-        with django_assert_num_queries(1):
-            qs = Collectivite.objects.with_flat_adherents()
-            grand_parent = qs.filter(
-                code_insee_unique=grand_parent.code_insee_unique
-            ).first()  # get(code_insee_unique=grand_parent.code_insee_unique)
-        a = "a"
-        assert hasattr(grand_parent, "flat_adherents")
-        assert grand_parent.flat_adherents == [parent, node]
+        assert hasattr(grand_parent, "flat_members")
+        assert sorted(grand_parent.flat_members.values_list("id", flat=True)) == sorted(
+            [
+                parent.pk,
+                node.pk,
+            ]
+        )
 
-        with django_assert_num_queries(1):
-            qs = Collectivite.objects.with_flat_groupements()
-            node = qs.get(pk=node.pk)
-        assert hasattr(node, "flat_groupements")
-        assert node.flat_groupements == [grand_parent, parent]
+        assert hasattr(node, "flat_groups")
+        assert sorted(node.flat_groups.values_list("id", flat=True)) == sorted(
+            [
+                grand_parent.pk,
+                parent.pk,
+            ]
+        )
 
 
 class TestProcedureQuerySet:

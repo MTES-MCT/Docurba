@@ -5,7 +5,11 @@ from django.urls import reverse
 from pytest_django.asserts import assertNumQueries
 from rest_framework.test import APIClient
 
-from docurba.core.models import Collectivite, TypeCollectivite
+from docurba.core.models import (
+    Collectivite,
+    MaterializedViewFlatMembership,
+    TypeCollectivite,
+)
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
@@ -274,6 +278,14 @@ class TestCollectivitesAPI:
                         ],
                     },
                     {
+                        "code": "12345",
+                        "type": "COM",
+                        "intitule": "Enfant",
+                        "regionCode": "93",
+                        "departementCode": "13",
+                        "membres": [],
+                    },
+                    {
                         "code": "22222222",
                         "type": "CC",
                         "intitule": "Parent",
@@ -288,14 +300,6 @@ class TestCollectivitesAPI:
                                 "departementCode": "13",
                             },
                         ],
-                    },
-                    {
-                        "code": "12345",
-                        "type": "COM",
-                        "intitule": "Enfant",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                        "membres": [],
                     },
                 ],
                 id="with_members",
@@ -347,12 +351,13 @@ class TestCollectivitesAPI:
             nom="Enfant",
             code_insee_unique="12345",
         )
-        grand_parent.adhesions.add(*[parent])
-        parent.adhesions.add(*[child])
+        parent.adhesions.add(*[grand_parent])
+        child.adhesions.add(*[parent])
+        MaterializedViewFlatMembership.refresh()
 
         url = f"{reverse('internal_api:collectivites-list')}?{urlencode(query_params)}"
-        # with assertNumQueries(expected_num_queries):
-        response = api_client.get(url, format="json")
+        with assertNumQueries(expected_num_queries):
+            response = api_client.get(url, format="json")
 
         assert response.status_code == 200
         assert response.json()["results"] == expected

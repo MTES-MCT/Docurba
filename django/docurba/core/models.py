@@ -1058,162 +1058,6 @@ class CollectiviteQuerySet(models.QuerySet):
         """
         pass
 
-    def with_membres_flat(self) -> Self:
-
-        # def make_regions_cte(cte):
-        #     # non-recursive: get root nodes
-        #     return Region.objects.filter(
-        #         parent__isnull=True
-        #     ).values(
-        #         "name",
-        #         path=F("name"),
-        #         depth=Value(0, output_field=IntegerField()),
-        #     ).union(
-        #         # recursive union: get descendants
-        #         cte.join(Region, parent=cte.col.name).values(
-        #             "name",
-        #             path=Concat(
-        #                 cte.col.path, Value(" / "), F("name"),
-        #                 output_field=TextField(),
-        #             ),
-        #             depth=cte.col.depth + Value(1, output_field=IntegerField()),
-        #         ),
-        #         all=True,
-        #     )
-
-        # cte = CTE.recursive(make_regions_cte)
-
-        # regions = with_cte(
-        #     cte,
-        #     select=cte.join(Region, name=cte.col.name)
-        #     .annotate(
-        #         path=cte.col.path,
-        #         depth=cte.col.depth,
-        #     )
-        #     .filter(depth=2)
-        #     .order_by("path")
-        # )
-        from django.db.models import Value
-        from django.db.models.functions import Concat
-        from django_cte import CTE, with_cte
-
-        def make_collectivites_cte(cte):
-            # SELECT
-            #     to_collectivite_id,
-            #     from_collectivite_id,
-            #     1 as depth,
-            #     ARRAY[to_collectivite_id, from_collectivite_id] AS PATH
-            # FROM
-            #     core_collectivite_adhesions
-
-            # non-recursive: get root nodes
-            return Adhesion.objects.values(
-                "to_collectivite_id",
-                "from_collectivite_id",
-                depth=Value(1, output_field=models.IntegerField()),
-                path=Concat(
-                    models.F("to_collectivite_id"),
-                    Value(" / "),
-                    models.F("from_collectivite_id"),
-                    output_field=models.TextField(),
-                ),
-            ).union(
-                # UNION
-                # SELECT
-                #     adhesion_paths.to_collectivite_id,
-                #     core_collectivite_adhesions.from_collectivite_id,
-                #     adhesion_paths.depth + 1,
-                #     adhesion_paths.path || core_collectivite_adhesions.from_collectivite_id
-                # FROM
-                #     adhesion_paths
-                #     JOIN core_collectivite_adhesions ON core_collectivite_adhesions.to_collectivite_id = adhesion_paths.from_collectivite_id
-                # recursive union: get descendants
-                cte.join(
-                    Adhesion, to_collectivite_id=cte.col.from_collectivite_id
-                ).values(
-                    "to_collectivite_id",
-                    "from_collectivite_id",
-                    depth=cte.col.depth + Value(1, output_field=models.IntegerField()),
-                    path=Concat(
-                        cte.col.path,
-                        Value(" / "),
-                        models.F("from_collectivite_id"),
-                        output_field=models.TextField(),
-                    ),
-                ),
-                all=True,
-            )
-
-        cte = CTE.recursive(make_collectivites_cte)
-
-        # SELECT
-        #     to_collectivite_id,
-        #     from_collectivite_id,
-        #     path,
-        #     depth
-        # FROM
-        #     adhesion_paths
-        # order by depth desc
-
-        qs = with_cte(
-            cte,
-            # select=self.annotate(members=cte.queryset().filter(models.F("cte.col.path").startswith(models.OuterRef("id"))).values(cte.col.path))
-            select=self.annotate(members=cte.col.path),
-            # select=cte.join(self, id=cte.col.from_collectivite_id)
-            # cte.join(
-            #     self,
-            # id=cte.col.to_collectivite_id,
-            # from_collectivite_id=cte.col.from_collectivite_id,
-            # )
-            # .annotate(
-            #     path=cte.col.path,
-            #     depth=cte.col.depth,
-            # ),
-            # select=self.annotate(
-            #     path=cte.col.path,
-            #     depth=cte.col.depth,
-            # )
-            # .filter(depth=1),  # get only leaves
-            # .order_by("path"),
-        )
-        # except Exception as e:
-        #     print(e)
-
-        # max depth: 6
-        # path 251710398_SMO, 251701306_SMO, 251601787_SMO, 251704839_SMO, 257901256_SMF, 200041317_CA, 79003_COM
-        # descending = """
-        #     WITH RECURSIVE
-        #         adhesion_paths AS (
-        #             SELECT
-        #                 to_collectivite_id,
-        #                 from_collectivite_id,
-        #                 1 as depth,
-        #                 ARRAY[to_collectivite_id, from_collectivite_id] AS PATH
-        #             FROM
-        #                 core_collectivite_adhesions
-        #             UNION
-        #             SELECT
-        #                 adhesion_paths.to_collectivite_id,
-        #                 core_collectivite_adhesions.from_collectivite_id,
-        #                 adhesion_paths.depth + 1,
-        #                 adhesion_paths.path || core_collectivite_adhesions.from_collectivite_id
-        #             FROM
-        #                 adhesion_paths
-        #                 JOIN core_collectivite_adhesions ON core_collectivite_adhesions.to_collectivite_id = adhesion_paths.from_collectivite_id
-        #         )
-        #     SELECT
-        #         to_collectivite_id,
-        #         from_collectivite_id,
-        #         path,
-        #         depth
-        #     FROM
-        #         adhesion_paths
-        #     order by depth desc
-        #     ;
-        # """
-
-        return qs
-
 
 class Collectivite(models.Model):
     id = models.CharField(primary_key=True)  # Au format code_type
@@ -1226,13 +1070,19 @@ class Collectivite(models.Model):
     nom = models.CharField()
     competence_plan = models.BooleanField(db_default=False)
     competence_schema = models.BooleanField(db_default=False)
-    # rename me to Groupements
+    # TODO: rename me to groups
     adhesions = models.ManyToManyField(
         "self",
-        # rename me to membres
+        # rename me to members
         related_name="collectivites_adherentes",
         symmetrical=False,
-        through="Adhesion",
+        through="core.Adhesion",
+    )
+    flat_groups = models.ManyToManyField(
+        "self",
+        related_name="flat_members",
+        through="core.MaterializedViewFlatMembership",
+        symmetrical=False,
     )
     departement = models.ForeignKey(
         Departement, models.DO_NOTHING, related_name="collectivites"
@@ -1562,6 +1412,47 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
             # Remove me later.
             models.Index(name="test_idx", fields=["procedure_id", "collectivite_code"]),
         ]
+
+
+class MaterializedViewFlatMembership(models.Model):
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID())
+    member = models.ForeignKey(
+        "core.Collectivite",
+        models.DO_NOTHING,
+        related_name="flat_member_through",
+        verbose_name="Membre",
+    )
+    group = models.ForeignKey(
+        "core.Collectivite",
+        models.DO_NOTHING,
+        related_name="flat_group_through",
+        verbose_name="Groupement",
+    )
+    level = models.IntegerField(verbose_name="Niveau")
+    path = ArrayField(
+        base_field=models.CharField(), verbose_name="Chemin vers la racine"
+    )
+
+    class Meta:
+        db_table = "materialized_view_flat_memberships"
+        managed = False
+        indexes = (
+            models.Index(
+                "member",
+                name="flat_memberships_member_id_idx",
+                include=("group_id",),
+            ),
+            models.Index(
+                "group",
+                name="flat_memberships_group_id_idx",
+                include=("member_id",),
+            ),
+        )
+
+    @classmethod
+    def refresh(cls) -> None:
+        with connection.cursor() as cursor:
+            cursor.execute(f"REFRESH MATERIALIZED VIEW {cls._meta.db_table}")
 
 
 class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008
