@@ -64,17 +64,6 @@ app.get('/projects', async (req, res) => {
   })
 })
 
-app.get('/fdr', async (req, res) => {
-  const { count } = await supabase.from('doc_frise_events')
-    .select('id, projects!inner(owner)', { count: 'exact', head: true })
-    .filter('projects.owner', 'not.in', '(' + docurbaTeamIds.map(id => `"${id}"`).join(',') + ')')
-    .is('from_sudocuh', null)
-
-  res.status(200).send({
-    nbEvents: count
-  })
-})
-
 app.get('/ddt', async (req, res) => {
   let { data: admins } = await supabase.from('github_ref_roles').select('user_id, ref, created_at').eq('role', 'admin')
 
