@@ -24,6 +24,7 @@ from docurba.core.models import (
     TypeCollectivite,
     TypeDocument,
 )
+from docurba.internal_api.filters import get_insee_codes_choices
 from tests.users.factories import ProfileFactory
 
 REGIONS = {
@@ -111,6 +112,11 @@ class CommuneFactory(factory.django.DjangoModelFactory):
             ]
         ),
     )
+
+    @classmethod
+    def refresh_cache(cls) -> None:
+        get_insee_codes_choices.cache_clear()
+        get_insee_codes_choices()
 
 
 class CollectiviteFactory(factory.django.DjangoModelFactory):
