@@ -33,6 +33,13 @@ TEMPLATES[0]["OPTIONS"]["context_processors"].append(
 # Don't use json formatter in dev
 del LOGGING["handlers"]["console"]["formatter"]
 
+DEBUG_SQL = env.bool("DEBUG_SQL", default=False)
+if DEBUG_SQL:
+    LOGGING["loggers"]["django.db.backends"] = {
+        "level": "DEBUG",
+        "handlers": ["console"],
+    }
+
 SESSION_COOKIE_SECURE = False
 SECURE_SSL_REDIRECT = False
 
