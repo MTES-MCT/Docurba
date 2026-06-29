@@ -532,6 +532,7 @@ class TestCommunesAPI:
             ),
             pytest.param(
                 {"code": "13150"},
+                BASE_QUERIES_COUNT + 1,
                 [
                     {
                         "code": "13150",
@@ -545,6 +546,7 @@ class TestCommunesAPI:
             ),
             pytest.param(
                 {"code": ["13150", "30000"]},
+                BASE_QUERIES_COUNT + 2,
                 [
                     {
                         "code": "13150",
