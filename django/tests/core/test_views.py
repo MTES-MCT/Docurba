@@ -1,5 +1,6 @@
 import datetime
 from csv import DictReader
+from functools import partial
 from itertools import product
 
 import pytest
@@ -26,16 +27,18 @@ from tests.core.factories import (
 
 class TestAPI:
     @pytest.mark.parametrize(
-        ("invalid_avant", "path"),
+        ("invalid_avant", "reverse_view"),
         list(
             product(
                 ("2023-1-01", "2023-02-30", "invalid-date", "2023/01/01"),
-                (reverse("api_perimetres"), reverse("api_scots")),
+                (partial(reverse, "api_perimetres"), partial(reverse, "api_scots")),
             )
         ),
     )
-    def test_parsing_avant(self, client: Client, invalid_avant: str, path: str) -> None:
-        response = client.get(path, {"avant": invalid_avant})
+    def test_parsing_avant(
+        self, client: Client, invalid_avant: str, reverse_view: str
+    ) -> None:
+        response = client.get(reverse_view(), {"avant": invalid_avant})
 
         assert response.status_code == 400
         assert (
