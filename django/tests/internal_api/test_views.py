@@ -140,6 +140,7 @@ class TestCollectivitesAPI:
             ),
             pytest.param(
                 {"codes_siren": ["132435465", "987654321"]},
+                BASE_QUERIES_COUNT + 2,
                 [
                     {
                         "code": "132435465",
