@@ -16,6 +16,7 @@ from docurba.core.models import (
     Collectivite,
     Commune,
     Event,
+    EventType,
     Procedure,
     Project,
     Topic,
@@ -278,6 +279,27 @@ class TopicAdmin(admin.ModelAdmin):
         return False
 
     def has_change_permission(self, request, obj=None) -> bool:
+        return False
+
+
+@admin.register(EventType)
+class EventTypeAdmin(admin.ModelAdmin):
+    list_display = (
+        "__str__",
+        "sudocuh_code",
+        "scope_list",
+        "scope_sugg",
+        "is_structuring",
+        "is_active",
+        "order",
+    )
+    list_filter = ("document_type", "is_structuring", "is_active")
+    search_fields = ("name", "sudocuh_name", "sudocuh_code")
+
+    def get_queryset(self, request) -> models.QuerySet:
+        return self.model.all_objects.get_queryset()
+
+    def has_delete_permission(self, request, obj=None) -> bool:
         return False
 
 
