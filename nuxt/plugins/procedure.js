@@ -41,3 +41,17 @@ export function enrichProcedureWithEvents (procedure) {
     stop_event: stopEvent
   }
 }
+
+export function getProcedureTypeLabel (procedure) {
+  return procedure
+    ? `${procedure.type}${
+      [
+        'Elaboration',
+        'Modification',
+        'Révision'
+      ].includes(procedure.type) && procedure.started_before_huwart_law
+        ? ' (antérieure à la loi Huwart)'
+        : ''
+    }`
+    : ''
+}

@@ -1,3 +1,5 @@
+import { getProcedureTypeLabel } from '@/plugins/procedure'
+
 export default {
   data () {
     return {
@@ -12,6 +14,9 @@ export default {
     }
   },
   computed: {
+    procedureTypeLabel () {
+      return getProcedureTypeLabel(this.procedure)
+    },
     step () {
       if (this.procedure.abort_date) {
         return `Abandon (${this.procedure.abort_date})`
