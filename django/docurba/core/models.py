@@ -1059,6 +1059,9 @@ class Collectivite(models.Model):
         null=True,
         db_comment="Peut-être vide pour une COMD ayant le même code que sa commune parente",
     )
+    # NOTE(cms): this is a copy of `code_insee_unique` containing SIREN codes only.
+    # NOTE(cms): add a unique constraint when siren will not be in code_insee_unique anymore.
+    siren = models.CharField(blank=True, verbose_name="SIREN", max_length=9)
     type = models.CharField(choices=TypeCollectivite.choices)
     nom = models.CharField()
     competence_plan = models.BooleanField(db_default=False)
