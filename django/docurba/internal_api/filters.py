@@ -9,6 +9,7 @@ from docurba.core.models import (
     Collectivite,
     Commune,
     Departement,
+    EventType,
     Region,
     TypeCollectivite,
 )
@@ -86,3 +87,9 @@ class CommuneFilter(DepartementRegionFilterSet):
     class Meta:
         model = Commune
         fields = ("type", *DepartementRegionFilterSet.fields)
+
+
+class EventTypeFilter(filters.FilterSet):
+    class Meta:
+        model = EventType
+        fields = ("document_type",)

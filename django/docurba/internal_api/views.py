@@ -1,9 +1,13 @@
 from django.db import models
 from rest_framework import viewsets
 
-from docurba.core.models import Collectivite, Commune
+from docurba.core.models import Collectivite, Commune, EventType
 from docurba.internal_api import filters as custom_filters
-from docurba.internal_api.serializers import CollectiviteSerializer, CommuneSerializer
+from docurba.internal_api.serializers import (
+    CollectiviteSerializer,
+    CommuneSerializer,
+    EventTypeSerializer,
+)
 
 
 class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
@@ -82,3 +86,9 @@ class CommuneViewSet(viewsets.ReadOnlyModelViewSet):
     )
     serializer_class = CommuneSerializer
     filterset_class = custom_filters.CommuneFilter
+
+
+class EventTypeViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = EventType.objects.all()
+    serializer_class = EventTypeSerializer
+    filterset_class = custom_filters.EventTypeFilter
