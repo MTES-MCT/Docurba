@@ -48,10 +48,12 @@ export function getDocumentTypeEvents (documentType) {
 export function getLaunchEvent (eventType) {
   return [
     'Arrêté de lancement de la procédure',
+    'Délibération de l\'Etablissement Public',
     'Délibération de l\'établissement public qui prescrit',
     'Délibération de prescription du conseil métropolitain',
     'Délibération de prescription du conseil municipal',
-    'Délibération de prescription du conseil municipal ou communautaire'
+    'Délibération de prescription du conseil municipal ou communautaire',
+    'Prescription'
   ].includes(eventType)
 }
 
