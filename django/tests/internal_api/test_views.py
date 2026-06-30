@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertNumQueries
 from rest_framework.test import APIClient
+from syrupy.data import Snapshot
 
 from docurba.core.models import (
     TypeCollectivite,
@@ -19,125 +20,36 @@ BASE_QUERIES_COUNT = 1  # Count made by DRF for the pagination.
 @pytest.mark.django_db
 class TestCollectivitesAPI:
     @pytest.mark.parametrize(
-        ("query_params", "expected_num_queries", "expected"),
+        ("query_params", "expected_num_queries"),
         [
             pytest.param(
                 {},
                 BASE_QUERIES_COUNT + 1,
-                [
-                    {
-                        "code": "123456789",
-                        "type": "SIVOM",
-                        "intitule": "Groupement 2",
-                        "regionCode": "93",
-                        "departementCode": "84",
-                    },
-                    {
-                        "code": "132435465",
-                        "type": "SMO",
-                        "intitule": "Groupement 3",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                    },
-                    {
-                        "code": "987654321",
-                        "type": "CC",
-                        "intitule": "Groupement 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                ],
                 id="no_filter",
             ),
             pytest.param(
                 {"departement": "84"},
                 BASE_QUERIES_COUNT + 2,
-                [
-                    {
-                        "code": "123456789",
-                        "type": "SIVOM",
-                        "intitule": "Groupement 2",
-                        "regionCode": "93",
-                        "departementCode": "84",
-                    },
-                ],
                 id="one_department",
             ),
             pytest.param(
                 {"departement": ["84", "13"]},
                 BASE_QUERIES_COUNT + 2,
-                [
-                    {
-                        "code": "123456789",
-                        "type": "SIVOM",
-                        "intitule": "Groupement 2",
-                        "regionCode": "93",
-                        "departementCode": "84",
-                    },
-                    {
-                        "code": "987654321",
-                        "type": "CC",
-                        "intitule": "Groupement 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                ],
                 id="many_departments",
             ),
             pytest.param(
                 {"region": "93", "type": "CC"},
                 BASE_QUERIES_COUNT + 2,
-                [
-                    {
-                        "code": "987654321",
-                        "type": "CC",
-                        "intitule": "Groupement 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                ],
                 id="region_and_type",
             ),
             pytest.param(
                 {"region": "93"},
                 BASE_QUERIES_COUNT + 2,
-                [
-                    {
-                        "code": "123456789",
-                        "type": "SIVOM",
-                        "intitule": "Groupement 2",
-                        "regionCode": "93",
-                        "departementCode": "84",
-                    },
-                    {
-                        "code": "987654321",
-                        "type": "CC",
-                        "intitule": "Groupement 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                ],
                 id="region",
             ),
             pytest.param(
                 {"type": ["CC", "SMO"]},
                 BASE_QUERIES_COUNT + 1,
-                [
-                    {
-                        "code": "132435465",
-                        "type": "SMO",
-                        "intitule": "Groupement 3",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                    },
-                    {
-                        "code": "987654321",
-                        "type": "CC",
-                        "intitule": "Groupement 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                ],
                 id="many_types",
             ),
         ],
@@ -147,7 +59,7 @@ class TestCollectivitesAPI:
         api_client: APIClient,
         expected_num_queries: int,
         query_params: str,
-        expected: list,
+        snapshot: Snapshot,
     ) -> None:
         CollectiviteFactory(
             code_insee_unique="987654321",
@@ -173,68 +85,27 @@ class TestCollectivitesAPI:
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200
-        assert response.json()["results"] == expected
+        assert response.json()["results"] == snapshot()
 
     @pytest.mark.parametrize(
-        ("query_params", "expected"),
+        ("query_params"),
         [
             pytest.param(
                 {"without_communes": "true"},
-                [
-                    {
-                        "code": "123456778",
-                        "type": "CC",
-                        "intitule": "Groupement 2",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                ],
                 id="without_communes",
             ),
             pytest.param(
                 {"without_communes": "false"},
-                [
-                    {
-                        "code": "123456778",
-                        "type": "CC",
-                        "intitule": "Groupement 2",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "123456789",
-                        "type": "COM",
-                        "intitule": "Groupement 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                ],
                 id="with_communes",
             ),
             pytest.param(
                 {},
-                [
-                    {
-                        "code": "123456778",
-                        "type": "CC",
-                        "intitule": "Groupement 2",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "123456789",
-                        "type": "COM",
-                        "intitule": "Groupement 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                ],
                 id="default_value",
             ),
         ],
     )
     def test_without_communes_from_list(
-        self, api_client: APIClient, query_params: dict, expected: list
+        self, api_client: APIClient, query_params: dict, snapshot: Snapshot
     ) -> None:
         CollectiviteFactory(
             type=TypeCollectivite.COM,
@@ -253,297 +124,19 @@ class TestCollectivitesAPI:
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200
-        assert response.json()["results"] == expected
+        assert response.json()["results"] == snapshot()
 
     @pytest.mark.parametrize(
-        ("query_params", "expected_num_queries", "expected"),
+        ("query_params", "expected_num_queries"),
         [
             pytest.param(
                 {"avec_membres": "true"},
                 3,
-                [
-                    {
-                        "code": "243000585",
-                        "type": "CC",
-                        "intitule": "CC Beaucaire Terre d'Argence",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "membres": [
-                            {
-                                "code": "30032",
-                                "type": "COM",
-                                "intitule": "Beaucaire",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "30034",
-                                "type": "COM",
-                                "intitule": "Bellegarde",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "30117",
-                                "type": "COM",
-                                "intitule": "Fourques",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "30135",
-                                "type": "COM",
-                                "intitule": "Jonquières-Saint-Vincent",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "30336",
-                                "type": "COM",
-                                "intitule": "Vallabrègues",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                        ],
-                    },
-                    {
-                        "code": "253000020",
-                        "type": "SMO",
-                        "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "membres": [
-                            {
-                                "code": "243000585",
-                                "type": "CC",
-                                "intitule": "CC Beaucaire Terre d'Argence",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "30032",
-                                "type": "COM",
-                                "intitule": "Beaucaire",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "30034",
-                                "type": "COM",
-                                "intitule": "Bellegarde",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "30117",
-                                "type": "COM",
-                                "intitule": "Fourques",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "30135",
-                                "type": "COM",
-                                "intitule": "Jonquières-Saint-Vincent",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "30336",
-                                "type": "COM",
-                                "intitule": "Vallabrègues",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                        ],
-                    },
-                    {
-                        "code": "30032",
-                        "type": "COM",
-                        "intitule": "Beaucaire",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "membres": [],
-                    },
-                    {
-                        "code": "30034",
-                        "type": "COM",
-                        "intitule": "Bellegarde",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "membres": [],
-                    },
-                    {
-                        "code": "30117",
-                        "type": "COM",
-                        "intitule": "Fourques",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "membres": [],
-                    },
-                    {
-                        "code": "30135",
-                        "type": "COM",
-                        "intitule": "Jonquières-Saint-Vincent",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "membres": [],
-                    },
-                    {
-                        "code": "30336",
-                        "type": "COM",
-                        "intitule": "Vallabrègues",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "membres": [],
-                    },
-                ],
                 id="avec_membres",
             ),
             pytest.param(
                 {"avec_groupements": "true"},
                 3,
-                [
-                    {
-                        "code": "243000585",
-                        "type": "CC",
-                        "intitule": "CC Beaucaire Terre d'Argence",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "groupements": [
-                            {
-                                "code": "253000020",
-                                "type": "SMO",
-                                "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                        ],
-                    },
-                    {
-                        "code": "253000020",
-                        "type": "SMO",
-                        "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "groupements": [],
-                    },
-                    {
-                        "code": "30032",
-                        "type": "COM",
-                        "intitule": "Beaucaire",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "groupements": [
-                            {
-                                "code": "243000585",
-                                "type": "CC",
-                                "intitule": "CC Beaucaire Terre d'Argence",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "253000020",
-                                "type": "SMO",
-                                "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                        ],
-                    },
-                    {
-                        "code": "30034",
-                        "type": "COM",
-                        "intitule": "Bellegarde",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "groupements": [
-                            {
-                                "code": "243000585",
-                                "type": "CC",
-                                "intitule": "CC Beaucaire Terre d'Argence",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "253000020",
-                                "type": "SMO",
-                                "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                        ],
-                    },
-                    {
-                        "code": "30117",
-                        "type": "COM",
-                        "intitule": "Fourques",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "groupements": [
-                            {
-                                "code": "243000585",
-                                "type": "CC",
-                                "intitule": "CC Beaucaire Terre d'Argence",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "253000020",
-                                "type": "SMO",
-                                "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                        ],
-                    },
-                    {
-                        "code": "30135",
-                        "type": "COM",
-                        "intitule": "Jonquières-Saint-Vincent",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "groupements": [
-                            {
-                                "code": "243000585",
-                                "type": "CC",
-                                "intitule": "CC Beaucaire Terre d'Argence",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "253000020",
-                                "type": "SMO",
-                                "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                        ],
-                    },
-                    {
-                        "code": "30336",
-                        "type": "COM",
-                        "intitule": "Vallabrègues",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                        "groupements": [
-                            {
-                                "code": "243000585",
-                                "type": "CC",
-                                "intitule": "CC Beaucaire Terre d'Argence",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                            {
-                                "code": "253000020",
-                                "type": "SMO",
-                                "intitule": "Syndicat mixte d'équipement de la commune de Beaucaire",
-                                "regionCode": "76",
-                                "departementCode": "30",
-                            },
-                        ],
-                    },
-                ],
                 id="avec_groupements",
             ),
         ],
@@ -553,7 +146,7 @@ class TestCollectivitesAPI:
         api_client: APIClient,
         expected_num_queries: int,
         query_params: dict,
-        expected: list,
+        snapshot: Snapshot,
     ) -> None:
         CollectiviteFactory(
             for_snapshot=True,
@@ -566,109 +159,31 @@ class TestCollectivitesAPI:
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200
-        assert response.json()["results"] == expected
+        assert response.json()["results"] == snapshot()
 
     @pytest.mark.parametrize(
-        ("query_params", "expected"),
+        ("query_params"),
         [
             pytest.param(
                 {"competence": "schema"},
-                [
-                    {
-                        "code": "123456789",
-                        "type": "CC",
-                        "intitule": "Groupement 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "987654321",
-                        "type": "CC",
-                        "intitule": "Groupement 3",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                    },
-                ],
                 id="competence_schema",
             ),
             pytest.param(
                 {"competence": "plan"},
-                [
-                    {
-                        "code": "123456778",
-                        "type": "CC",
-                        "intitule": "Groupement 2",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "987654321",
-                        "type": "CC",
-                        "intitule": "Groupement 3",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                    },
-                ],
                 id="competence_plan",
             ),
             pytest.param(
                 {},
-                [
-                    {
-                        "code": "123456778",
-                        "type": "CC",
-                        "intitule": "Groupement 2",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "123456789",
-                        "type": "CC",
-                        "intitule": "Groupement 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "987654321",
-                        "type": "CC",
-                        "intitule": "Groupement 3",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                    },
-                ],
                 id="sans_competence",
             ),
             pytest.param(
                 {"competence": ["plan", "schema"]},
-                [
-                    {
-                        "code": "123456778",
-                        "type": "CC",
-                        "intitule": "Groupement 2",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "123456789",
-                        "type": "CC",
-                        "intitule": "Groupement 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "987654321",
-                        "type": "CC",
-                        "intitule": "Groupement 3",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                    },
-                ],
                 id="competence_schema_ou_plan",
             ),
         ],
     )
     def test_competences_list(
-        self, api_client: APIClient, query_params: dict, expected: list
+        self, api_client: APIClient, query_params: dict, snapshot: Snapshot
     ) -> None:
         CollectiviteFactory(
             type=TypeCollectivite.CC,
@@ -697,7 +212,7 @@ class TestCollectivitesAPI:
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200
-        assert response.json()["results"] == expected
+        assert response.json()["results"] == snapshot()
 
     def test_detail(self, api_client: APIClient) -> None:
         groupement = CollectiviteFactory(
@@ -724,125 +239,36 @@ class TestCollectivitesAPI:
 @pytest.mark.django_db
 class TestCommunesAPI:
     @pytest.mark.parametrize(
-        ("query_params", "expected_num_queries", "expected"),
+        ("query_params", "expected_num_queries"),
         [
             pytest.param(
                 {},
                 BASE_QUERIES_COUNT + 1,
-                [
-                    {
-                        "code": "13150",
-                        "type": "COM",
-                        "intitule": "Commune 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "30000",
-                        "type": "COM",
-                        "intitule": "Commune 2",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                    },
-                    {
-                        "code": "84000",
-                        "type": "COMD",
-                        "intitule": "Commune 3",
-                        "regionCode": "93",
-                        "departementCode": "84",
-                    },
-                ],
                 id="no_filter",
             ),
             pytest.param(
                 {"departement": "13"},
                 BASE_QUERIES_COUNT + 2,
-                [
-                    {
-                        "code": "13150",
-                        "type": "COM",
-                        "intitule": "Commune 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                ],
                 id="one_department",
             ),
             pytest.param(
                 {"departement": ["30", "13"]},
                 BASE_QUERIES_COUNT + 2,
-                [
-                    {
-                        "code": "13150",
-                        "type": "COM",
-                        "intitule": "Commune 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "30000",
-                        "type": "COM",
-                        "intitule": "Commune 2",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                    },
-                ],
                 id="many_departments",
             ),
             pytest.param(
                 {"region": "93", "type": "COMD"},
                 BASE_QUERIES_COUNT + 2,
-                [
-                    {
-                        "code": "84000",
-                        "type": "COMD",
-                        "intitule": "Commune 3",
-                        "regionCode": "93",
-                        "departementCode": "84",
-                    },
-                ],
                 id="region_and_type",
             ),
             pytest.param(
                 {"region": "93"},
                 BASE_QUERIES_COUNT + 2,
-                [
-                    {
-                        "code": "13150",
-                        "type": "COM",
-                        "intitule": "Commune 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "84000",
-                        "type": "COMD",
-                        "intitule": "Commune 3",
-                        "regionCode": "93",
-                        "departementCode": "84",
-                    },
-                ],
                 id="region",
             ),
             pytest.param(
                 {"type": ["COM"]},
                 BASE_QUERIES_COUNT + 1,
-                [
-                    {
-                        "code": "13150",
-                        "type": "COM",
-                        "intitule": "Commune 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "30000",
-                        "type": "COM",
-                        "intitule": "Commune 2",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                    },
-                ],
                 id="type_commune",
             ),
         ],
@@ -852,7 +278,7 @@ class TestCommunesAPI:
         api_client: APIClient,
         expected_num_queries: int,
         query_params: dict,
-        expected: list,
+        snapshot: Snapshot,
     ) -> None:
         CommuneFactory(
             code_insee_unique="13150",
@@ -878,7 +304,7 @@ class TestCommunesAPI:
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200
-        assert response.json()["results"] == expected
+        assert response.json()["results"] == snapshot()
 
     def test_detail(self, api_client: APIClient) -> None:
         commune = CommuneFactory(
