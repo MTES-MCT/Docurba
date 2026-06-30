@@ -7,5 +7,6 @@ app_name = "internal_api"
 router = routers.DefaultRouter()
 router.register(r"collectivites", views.CollectiviteViewSet, basename="collectivites")
 router.register(r"communes", views.CommuneViewSet, basename="communes")
+router.register(r"types-evenement", views.EventTypeViewSet, basename="event_types")
 
 urlpatterns = router.urls
