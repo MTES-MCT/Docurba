@@ -262,10 +262,10 @@ export default {
         this.$nuxt.context.redirect(302, '/')
       }
       const promProcedures = await this.$urbanisator.getProceduresForDept(this.$route.params.departement)
-      const promCommunes = this.$djangoApi.get('/communes/', {
+      const promCommunes = this.$djangoApi.get('/api-internes/communes/', {
         departement: this.$route.params.departement
       })
-      const promGroupements = this.$djangoApi.get('/collectivites/', {
+      const promGroupements = this.$djangoApi.get('/api-internes/collectivites/', {
         departement: this.$route.params.departement,
         without_communes: true,
         competence: ['plan', 'schema']

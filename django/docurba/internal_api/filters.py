@@ -78,11 +78,19 @@ class CollectiviteFilter(DepartementRegionFilterSet):
         return queryset.exclude(type__in=commune_types)
 
 
+@functools.cache
+def get_insee_codes_choices():  # noqa: ANN201
+    return [(o, o) for o in Commune.objects.values_list("code_insee_unique", flat=True)]
+
+
 class CommuneFilter(DepartementRegionFilterSet):
     type = filters.MultipleChoiceFilter(
         field_name="type", choices=TypeCollectivite.communes()
     )
+    code = filters.MultipleChoiceFilter(
+        field_name="code_insee_unique", choices=get_insee_codes_choices
+    )
 
     class Meta:
         model = Commune
-        fields = ("type", *DepartementRegionFilterSet.fields)
+        fields = ("type", "code", *DepartementRegionFilterSet.fields)
