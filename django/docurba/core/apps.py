@@ -14,7 +14,8 @@ class CoreAppConfig(AppConfig):
     def ready(self) -> None:
         super().ready()
         models.signals.post_migrate.connect(create_topics, sender=self)
-        models.signals.post_migrate.connect(create_event_types, sender=self)
+        if settings.ENVIRONMENT != "test":
+            models.signals.post_migrate.connect(create_event_types, sender=self)
 
 
 def create_topics(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # noqa: ARG001
