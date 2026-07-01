@@ -70,6 +70,19 @@ class TestMaterializedViewFlatMembership:
             ]
         )
 
+    def test_denormalized_data(
+        self,
+    ) -> None:
+        collectivite = CollectiviteFactory(with_members=True)
+        members = collectivite.adhesions.all()
+        for member in members:
+            assert MaterializedViewFlatMembership.objects.filter(
+                member_id=member.id,
+                member_type=member.type,
+                group_id=collectivite.id,
+                group_type=collectivite.type,
+            ).exists()
+
     @pytest.mark.django_db
     def test_different_path_same_flat_membership(self) -> None:
         # Two path should lead to only one flat membership.
