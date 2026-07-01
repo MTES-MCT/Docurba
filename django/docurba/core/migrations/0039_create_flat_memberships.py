@@ -10,41 +10,56 @@ def create_view() -> str:
                 adhesion_paths AS (
                     SELECT
                         from_collectivite_id,
-                        to_collectivite_id
+                        to_collectivite_id,
+                        from_collectivite.type as from_collectivite_type,
+                        to_collectivite.type as to_collectivite_type
                     FROM
                         core_collectivite_adhesions
+                        inner join core_collectivite as from_collectivite on from_collectivite.id = core_collectivite_adhesions.from_collectivite_id
+                        inner join core_collectivite as to_collectivite on to_collectivite.id = core_collectivite_adhesions.to_collectivite_id
                     UNION
                     SELECT
                         adhesion_paths.from_collectivite_id,
-                        core_collectivite_adhesions.to_collectivite_id
+                        core_collectivite_adhesions.to_collectivite_id,
+                        from_collectivite_inner.type as from_collectivite_type,
+                        to_collectivite_inner.type as to_collectivite_type
                     FROM
                         adhesion_paths
                         JOIN core_collectivite_adhesions ON core_collectivite_adhesions.from_collectivite_id = adhesion_paths.to_collectivite_id
+                        INNER JOIN core_collectivite as from_collectivite_inner on from_collectivite_inner.id = adhesion_paths.from_collectivite_id
+                        inner join core_collectivite as to_collectivite_inner on to_collectivite_inner.id = core_collectivite_adhesions.to_collectivite_id
                 )
         SELECT
             gen_random_uuid() as id,
             from_collectivite_id as member_id,
-            to_collectivite_id as group_id
+            to_collectivite_id as group_id,
+            from_collectivite_type as member_type,
+            to_collectivite_type as group_type
         FROM
             adhesion_paths
         group by
-            member_id, group_id
+            member_id, group_id, member_type, group_type
         ;
     """
 
 
 def create_indexes() -> str:
     return """
-        CREATE INDEX flat_memberships_member_id_idx ON materialized_view_flat_memberships (member_id varchar_pattern_ops) include (group_id);
-
-        CREATE INDEX flat_memberships_group_id_idx ON materialized_view_flat_memberships (group_id varchar_pattern_ops) include (member_id);
+        CREATE INDEX member_id_idx ON materialized_view_flat_memberships (member_id varchar_pattern_ops) include (group_id);
+        CREATE INDEX group_id_idx ON materialized_view_flat_memberships (group_id varchar_pattern_ops) include (member_id);
+        CREATE INDEX group_id_member_type_idx ON materialized_view_flat_memberships (group_id, member_type) include (member_id);
+        CREATE INDEX member_id_group_type_idx ON materialized_view_flat_memberships (member_id, group_type) include (group_id);
+        CREATE INDEX member_type_idx ON materialized_view_flat_memberships (member_type);
     """
 
 
 def drop_indexes() -> str:
     return """
-        DROP INDEX flat_memberships_member_id_idx;
-        DROP INDEX flat_memberships_group_id_idx;
+        DROP INDEX member_id_idx;
+        DROP INDEX group_id_idx;
+        DROP INDEX group_id_member_type_idx;
+        DROP INDEX member_id_group_type_idx;
+        DROP INDEX member_type_idx;
     """
 
 
@@ -95,6 +110,8 @@ class Migration(migrations.Migration):
                                 verbose_name="Groupement",
                             ),
                         ),
+                        ("member_type", models.CharField(blank=True, null=True)),
+                        ("group_type", models.CharField(blank=True, null=True)),
                     ],
                     options={
                         "db_table": "materialized_view_flat_memberships",
