@@ -295,12 +295,13 @@ class ProcedureQuerySet(models.QuerySet):
             # 254003304 est un bon EPCI pour tester DISTINCT : 1279 communes en 2024
             communes_adherentes__count=models.functions.Coalesce(
                 models.Subquery(
-                    ViewCommuneAdhesionsDeep.objects.filter(
-                        groupement=models.OuterRef("collectivite_porteuse__id")
+                    MaterializedViewFlatMembership.objects.filter(
+                        group=models.OuterRef("collectivite_porteuse__id"),
+                        member_type=TypeCollectivite.COM,
                     )
-                    .values("groupement")
+                    .values("group")
                     .annotate(
-                        communes_adherentes__count=models.Count("commune"),
+                        communes_adherentes__count=models.Count("member"),
                     )
                     .values("communes_adherentes__count")
                 ),
@@ -1180,11 +1181,6 @@ class Commune(Collectivite):
     procedures = models.ManyToManyField(
         Procedure, through="CommuneProcedure", related_name="perimetre"
     )
-    adhesions_deep = models.ManyToManyField(
-        Collectivite,
-        through="ViewCommuneAdhesionsDeep",
-        related_name="communes_adherentes_deep",
-    )
 
     objects = CommuneQuerySet.as_manager()
 
@@ -1489,23 +1485,5 @@ class MaterializedViewFlatMembership(models.Model):
 
     @classmethod
     def refresh(cls) -> None:
-        with connection.cursor() as cursor:
-            cursor.execute(f"REFRESH MATERIALIZED VIEW {cls._meta.db_table}")
-
-
-class ViewCommuneAdhesionsDeep(models.Model):
-    commune = models.ForeignKey(Commune, models.DO_NOTHING, related_name="+")
-    groupement = models.ForeignKey(Collectivite, models.DO_NOTHING, related_name="+")
-
-    class Meta:
-        db_table = "view_commune_adhesions_deep"
-        managed = False
-
-    def __str__(self) -> str:
-        return f"{self.commune_id} - {self.groupement_id}"
-
-    @classmethod
-    def _refresh_materialized_view(cls) -> None:
-        """Uniquement pour les tests."""
         with connection.cursor() as cursor:
             cursor.execute(f"REFRESH MATERIALIZED VIEW {cls._meta.db_table}")
