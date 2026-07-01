@@ -15,6 +15,7 @@ class BaseCollectiviteSerializer(serializers.ModelSerializer):
         model = Collectivite
         fields = [
             "code",
+            "siren",
             "type",
             "intitule",
             "regionCode",
