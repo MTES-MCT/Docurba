@@ -1,0 +1,5859 @@
+[
+    {
+        "model": "core.eventtype",
+        "pk": "0181677d-596b-412d-8204-65b08276d407",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Consultation des PPA",
+            "order": 38,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Consultation des PPA",
+            "sudocuh_code": "CONSPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "01a96063-3746-43f7-800b-4a2e47d081b6",
+        "fields": {
+            "document_type": "CC",
+            "name": "Publicité dans la presse",
+            "order": 49,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Publicité dans la presse",
+            "sudocuh_code": "ADSPRESS"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "02dc2bb9-5ba9-4fca-9cf9-2ec73d58d669",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Annulation TA partielle",
+            "order": 85,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "0313b584-077a-469d-be0a-cebb517ca8be",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Débat sur les orientations du PAS",
+            "order": 24,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "Débat sur le PADD ou PAS",
+            "sudocuh_code": "DEBPADD"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "046d00e1-47b8-456a-a588-dd4f2f7d229d",
+        "fields": {
+            "document_type": "CC",
+            "name": "Caractère exécutoire",
+            "order": 53,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms",
+                "mj"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ms",
+                "mj"
+            ],
+            "impact": "opposable",
+            "sudocuh_name": "",
+            "sudocuh_code": "EXECUT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "066217b8-92e4-447b-8d1c-8989ed76aacf",
+        "fields": {
+            "document_type": "CC",
+            "name": "Recrutement d'un bureau d'études",
+            "order": 5,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "RECRUITBE"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "06f4499c-9ecd-4929-b057-16ab3bd6a2a4",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Compte-rendu de réunion PPA",
+            "order": 114,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "070cc86a-6a99-44bc-9f7c-aaa8bdef3289",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Débat sur le PADD en conseil métropolitain",
+            "order": 30,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "07ee693b-0a5c-4dae-87b5-82f5e81e68b9",
+        "fields": {
+            "document_type": "CC",
+            "name": "Phase de construction du diagnostic",
+            "order": 8,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "CONSDIAG"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "0810cb24-f915-4757-9a4f-25f5b28d0e08",
+        "fields": {
+            "document_type": "CC",
+            "name": "Délibération ou arrêté définissant les objectifs et modalités concertation",
+            "order": 3,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Délibération ou arrêté définissant les objectifs et modalités concertation",
+            "sudocuh_code": "DELOMC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "088e15d9-d145-4b8e-85d1-3c3df6b788b9",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Caducité",
+            "order": 91,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "caduc",
+            "sudocuh_name": "Caducité",
+            "sudocuh_code": "CADUC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "0951d0c4-7b02-4bdd-a2ee-e193cdd7dc06",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Retrait de l'arrêt de projet",
+            "order": 94,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "0a2a83af-677f-4691-9311-38dfc424e2e2",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Evaluation du PLU au bout de 6 ans ou révision substantielle si besoin",
+            "order": 110,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "EVAL6ANS"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "0a9375cd-e104-4c37-9d79-9e778c61b943",
+        "fields": {
+            "document_type": "CC",
+            "name": "Prise en compte du porter à connaissance dans le projet",
+            "order": 10,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "CHECKPAC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "0dd7168a-38b5-4eac-85de-b20261cf8a12",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Délibération de bilan de la concertation",
+            "order": 44,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Délibération de bilan de la concertation",
+            "sudocuh_code": "DELBILAN"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "0faa572a-552c-406e-bf2a-3a435de3edac",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Transmission du porter à connaissance complémentaire",
+            "order": 18,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Transmission du porter à connaissance complémentaire",
+            "sudocuh_code": "PACCOMP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "10e72810-322f-4855-b60b-ad80a246b399",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Intégration des retours sur le PADD",
+            "order": 27,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "PATCHPADD"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "111b2266-19d3-4825-8358-efa797acb8d4",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Phase de construction du rapport de présentation",
+            "order": 31,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "BUILDRP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "11b1c7b4-fc4f-450c-920f-d2566f778d9b",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Publicité préalable à l'ouverture de la PPVE",
+            "order": 55,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "126f7598-6cf9-4310-b5f6-c40c9e21046a",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Publicité préalable à l'ouverture de la PPVE",
+            "order": 75,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "143381b4-c5fd-4cb2-8bbd-94e5cd6594b0",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Délibération ou arrêté définissant les objectifs et modalités concertation",
+            "order": 5,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Délibération ou arrêté définissant les objectifs et modalités concertation",
+            "sudocuh_code": "DELOMC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "15113926-e66d-4229-9138-d772a940dde2",
+        "fields": {
+            "document_type": "CC",
+            "name": "Désistement recours gracieux de l’État",
+            "order": 57,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DESISGRAC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "153e72ab-6d46-42e3-85fd-69f85104b136",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Exemption d'évaluation environnementale -> délibération de décision",
+            "order": 41,
+            "is_active": false,
+            "is_structuring": false,
+            "scope_list": [
+                "rms",
+                "m",
+                "ms",
+                "mc"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "EXEMEVALENVDELIB"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "15a4b029-abe7-4fb8-9d88-6cfb59160c54",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Phase de construction du rapport de présentation",
+            "order": 25,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "BUILDRP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "16ce9e3e-b659-4d60-8387-622a33a3818b",
+        "fields": {
+            "document_type": "CC",
+            "name": "Prise en compte de la note d'enjeux",
+            "order": 12,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "READNOTE"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "18684e73-5157-4766-8d6e-3ae0b3ac93b4",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Recrutement d'un bureau d'études",
+            "order": 8,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "RECRUITBE"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "1bc3c674-b206-44ee-a695-ad44aa2a6ced",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Phase de construction du document d'orientation et d'objectifs (DOO)",
+            "order": 26,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "BUILDDOO"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "1c47041e-beb9-46a7-99be-4e5bd178303e",
+        "fields": {
+            "document_type": "CC",
+            "name": "Réception de l'avis de la CDNPS",
+            "order": 27,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Avis de la CDNPS",
+            "sudocuh_code": "AVICDNPS"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "1e1ffff9-caee-400f-a916-2872eb830cec",
+        "fields": {
+            "document_type": "CC",
+            "name": "Transmission du porter à connaissance complémentaire",
+            "order": 13,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Transmission du porter à connaissance complémentaire",
+            "sudocuh_code": "PACCOMP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "1e8061e7-ca4e-456d-bebd-2707241edac6",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Réunion des PPA",
+            "order": 10,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Réunion des PPA",
+            "sudocuh_code": "REUPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "1ebbf52c-933e-43aa-a991-cc053512cb43",
+        "fields": {
+            "document_type": "CC",
+            "name": "Transmission du courrier d'association et de la lettre d'information régionale",
+            "order": 4,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "1f068566-66be-4e64-b7d7-c6b2383a94ed",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Transmission du porter-à-connaissance",
+            "order": 17,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "PAC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "1f6b51f7-ebdf-47cf-a4b4-38d4fcf68e2f",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Rapport et conclusions de l'enquête publique",
+            "order": 63,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m"
+            ],
+            "impact": "",
+            "sudocuh_name": "Rapport du commissaire enquêteur",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "1f9d4cac-d611-4db0-b489-53e80567e1ce",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Notification du projet ou demande de DUP (MECDU)",
+            "order": 6,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "mc"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Notification du projet ou demande de DUP (MECDU)",
+            "sudocuh_code": "NOTIFDUP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "209ba61b-9729-4e8c-bb18-1c6a28e0da2e",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Caractère exécutoire",
+            "order": 99,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "opposable",
+            "sudocuh_name": "Caractère exécutoire",
+            "sudocuh_code": "EXECUT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "227f6a10-75ad-4c52-b111-d807e26e3475",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Saisine de la CDPENAF pour avis",
+            "order": 37,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Consultation de la CDPENAF",
+            "sudocuh_code": "CONSCDPENAF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "22a44eeb-713c-4684-b346-a66215d0d772",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Saisine de l'Autorité environnementale pour avis",
+            "order": 50,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Consultation de l'autorité environnementale",
+            "sudocuh_code": "CONSENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "22e12aae-ab35-4c13-ae34-2538c93a5127",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Retrait de l'annulation totale",
+            "order": 106,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "opposable",
+            "sudocuh_name": "",
+            "sudocuh_code": "BACKANNUL"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "234dc526-a6ec-49db-b7d0-81b5843acd18",
+        "fields": {
+            "document_type": "CC",
+            "name": "Réunion des PPA",
+            "order": 6,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Réunion des PPA",
+            "sudocuh_code": "REUPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "257459c9-1280-487f-8137-b895f32f15e0",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Transmission du porter-à-connaissance",
+            "order": 13,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "PAC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "2676ca47-3199-4362-8038-0d6bc47a22f6",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Délibération de prescription du conseil métropolitain",
+            "order": 2,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "en cours",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "28041e37-40ba-406b-bb6c-9d59c92784c4",
+        "fields": {
+            "document_type": "CC",
+            "name": "Saisine de la CDNPS pour avis",
+            "order": 23,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Consultation de la CDNPS",
+            "sudocuh_code": "CONSCDNPS"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "288b4309-d660-4523-b577-a85f421b8d3e",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Exemption d'évaluation environnementale",
+            "order": 40,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "EXEMEVALENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "29688da0-a2d9-4584-b48e-cda732daeb0d",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Bilan à 3 ans sur le volet habitat",
+            "order": 108,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "BIL3ANSVH"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "29f0aabb-9adf-4004-bc0b-81a9542b629e",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Avis suite au contrôle de légalité",
+            "order": 93,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "2b8042a6-d511-4e7f-a713-b724e0f72f73",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Soumission à évaluation environnementale",
+            "order": 31,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "2be52d9e-7342-4f3a-8aba-072eb12c9d78",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Mise en demeure servitudes",
+            "order": 88,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "mj"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Mise en demeure servitudes",
+            "sudocuh_code": "MISDEM"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "2c5afb2d-ea62-4314-b206-e635c6ef65af",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Abandon",
+            "order": 87,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj"
+            ],
+            "scope_sugg": [],
+            "impact": "abandon",
+            "sudocuh_name": "Abandon",
+            "sudocuh_code": "ABAND"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "2d2870ba-0e25-45c0-909b-83b89e086de1",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Arrêté d'abrogation",
+            "order": 80,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Arrêté d'abrogation",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "2dbe3bfb-b851-4ebc-9838-bf79b5a16aec",
+        "fields": {
+            "document_type": "CC",
+            "name": "Annulation TA totale",
+            "order": 59,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "annulé",
+            "sudocuh_name": "",
+            "sudocuh_code": "ANNULTA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "32279e7b-a897-485a-8311-db3755f709fc",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Prise en compte du porter à connaissance dans le projet",
+            "order": 14,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "CHECKPAC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "338d8d2c-7864-4ce6-b256-68194726c010",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Consultation du comité régional de l'habitat et de l'hébergement",
+            "order": 39,
+            "is_active": false,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Consultation du comité régional de l'habitat et de l'hébergement",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "35beb581-65ff-4d2a-978f-41a5ad55f2f1",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Soumission à évaluation environnementale -> délibération de la décision",
+            "order": 42,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "361ec1d8-cac3-4b6c-a131-254660c671f5",
+        "fields": {
+            "document_type": "CC",
+            "name": "Saisine de l'Autorité environnementale pour avis",
+            "order": 22,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Consultation de l'autorité environnementale",
+            "sudocuh_code": "CONSENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "36511083-5540-447f-961e-1c068a6c965e",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Réunion de travail",
+            "order": 115,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "368fa464-b40d-4cd1-b65d-8fc04b926795",
+        "fields": {
+            "document_type": "CC",
+            "name": "Publicité préalable à l'ouverture de la PPVE",
+            "order": 33,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "383d0109-66ff-4586-9408-0db507304a87",
+        "fields": {
+            "document_type": "CC",
+            "name": "Réception de l'avis de l'autorité environnementale",
+            "order": 25,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Avis de l'autorité environnementale",
+            "sudocuh_code": "AVISENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "395f8bb4-efce-4e02-980c-ca6b2afc02d8",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Transmission du porter à connaissance complémentaire",
+            "order": 22,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Transmission du porter à connaissance complémentaire",
+            "sudocuh_code": "PACCOMP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "3bc1bfb6-5641-4ed6-b924-3b139fd706de",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Désistement recours gracieux de l’État",
+            "order": 84,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "3c2e904f-ecbe-4def-b320-291f35626027",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Réception de l'avis de la CDPENAF",
+            "order": 41,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Avis de la CDPENAF",
+            "sudocuh_code": "AVICDPENAF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "3e7b505e-cf18-4a3e-b9f0-8af552cc56e3",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Avis de la personne publique ou de l'EPCI en cas de modification d'une ZAC",
+            "order": 56,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "m"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "AVISZAC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "3f6c14ed-2540-4872-8f3a-83d511b6595b",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Délibération de prescription du conseil municipal ou communautaire",
+            "order": 1,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "en cours",
+            "sudocuh_name": "Prescription",
+            "sudocuh_code": "PRES"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "405eb3e6-4afd-4ce6-b710-b9559407791d",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Phase de construction du POA",
+            "order": 34,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "BUILDPOA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "423f33f5-46d8-40ad-aea3-878e13636d8a",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Délibération modalités de collaboration avec les communes",
+            "order": 11,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Délibération modalités de collaboration avec les communes",
+            "sudocuh_code": "DELMODCOM"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "431ecef2-adf4-4ffa-9fa7-0a38640345ca",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Demande de la note d'enjeux",
+            "order": 19,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "ASKNOTE"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "44ee3818-e0a3-4b1a-a761-0c19d54950c3",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Notification du projet ou demande de DUP",
+            "order": 5,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "mc"
+            ],
+            "scope_sugg": [
+                "mc"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "NOTPROJ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "45d8e510-3235-40bb-b156-4a8972690021",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Compte-rendu de réunion PPA",
+            "order": 95,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "46e75960-07ec-49a6-b65b-06657924ae20",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Désistement recours gracieux de l’État",
+            "order": 103,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DESISGRAC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "46e9a8a1-36c4-4138-a7a1-39c46d15c801",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Rapport d'artificialisation des sols",
+            "order": 109,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "RAPARTIF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "4777b931-bc94-4809-9084-aff1d1c7c329",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Consultation de l'autorité environnementale au cas par cas ad'hoc",
+            "order": 29,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "rms",
+                "m",
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "CONSENVCPC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "4799e940-47b1-4f10-a0e6-3e87b0dcbb7b",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Présentation du projet complet de SCoT finalisé aux PPA avant l'arrêt",
+            "order": 27,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "4820a626-d1db-4ae4-97ea-58bdfb257d3a",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Notification du dossier aux PPA et communes concernées",
+            "order": 45,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "NOTPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "492cac80-4da2-424c-b291-c03af07c4457",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Examen conjoint des PPA",
+            "order": 66,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "rms",
+                "mc"
+            ],
+            "scope_sugg": [
+                "rms",
+                "mc"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "EXAMPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "4a4be1dc-16ad-4dad-9698-2af039e24b29",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Délibération d'approbation",
+            "order": 66,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms"
+            ],
+            "impact": "opposable",
+            "sudocuh_name": "Délibération d'approbation",
+            "sudocuh_code": "DELAPP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "4be348e8-8374-4ef9-ad8f-67c22f69c7a1",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Réception de l'avis de l'État",
+            "order": 60,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Avis de l'État",
+            "sudocuh_code": "AVISETAT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "4ca5ab9b-6d7b-4646-a9b2-3cc8b69d6cce",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Intégration des retours suite au contrôle de légalité",
+            "order": 71,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "4fd3d90b-98c3-4cfa-93ed-db3526212426",
+        "fields": {
+            "document_type": "CC",
+            "name": "Fin de mise à disposition du public",
+            "order": 30,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ms"
+            ],
+            "scope_sugg": [
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "FININFO"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "4fee0d13-73a5-4951-bef8-a02825ed23d9",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Transmission au contrôle de légalité",
+            "order": 70,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Transmission au contrôle de légalité",
+            "sudocuh_code": "TRANSCONT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "500c78ec-b2cd-4668-b5d5-0adefd4e41a5",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Déclaration d'intérêt général",
+            "order": 92,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "mc"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Déclaration d'intérêt général",
+            "sudocuh_code": "DIG"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5068f251-cc8e-48d7-9cf7-edc7c3987dfa",
+        "fields": {
+            "document_type": "CC",
+            "name": "Arrêté d'enquête publique",
+            "order": 37,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "Arrêté d'enquête publique",
+            "sudocuh_code": "ARRENQ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5132842c-3b4f-4d62-afaf-2b7261040529",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Notification du projet ou demande de DUP",
+            "order": 4,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "mc"
+            ],
+            "scope_sugg": [
+                "mc"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "NOTPROJ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "532ce4a4-8488-4967-ac57-777483aabc9b",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Publicité sur mise à disposition du public",
+            "order": 69,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "57cd1ba5-b0bb-47b9-b21d-8fd6db9f5423",
+        "fields": {
+            "document_type": "CC",
+            "name": "Phase de construction du rapport de présentation",
+            "order": 16,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "BUILDRP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5898a1a1-bc61-49f1-8a19-369bd124e0ad",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Présentation du projet complet de PLU finalisé aux PPA avant l'arrêt",
+            "order": 35,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "SHOWPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "59de2c96-737c-4b20-bb0b-e159c2b517ac",
+        "fields": {
+            "document_type": "CC",
+            "name": "Approbation du préfet",
+            "order": 46,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "opposable",
+            "sudocuh_name": "",
+            "sudocuh_code": "APPPREF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5a07fa9a-adfb-4e00-87cc-abe517bb73d7",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Transmission de l'avis de l'État - défavorable",
+            "order": 46,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "m",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "AVISETAT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5a7dda37-4bfa-4555-a525-2e2412c711b8",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Saisine de la CDPENAF pour avis",
+            "order": 52,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Consultation de la CDPENAF",
+            "sudocuh_code": "CONSCDPENAF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5a83c9c8-eeca-4dce-bbae-4682c9c9d38c",
+        "fields": {
+            "document_type": "CC",
+            "name": "Recours gracieux de l'État",
+            "order": 54,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Recours gracieux de l'État",
+            "sudocuh_code": "RECGRAC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5a9705e4-56c2-45b2-9324-3112d0ea58b9",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Délibération du conseil communautaire qui arrête le projet de PLU",
+            "order": 49,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DELIBCONSARR"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5b49bc0b-97fd-4d6a-9fe6-7806697d841b",
+        "fields": {
+            "document_type": "CC",
+            "name": "Réunion de concertation grand public",
+            "order": 7,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Réunion de concertation grand public",
+            "sudocuh_code": "REUGP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5b88ba6a-307e-4693-8b7c-9df32f3841f2",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Début de la participation du public par voie électronique",
+            "order": 76,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5ba12b18-9321-436b-9c2a-4a29b789bf6d",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Fin d'enquête publique",
+            "order": 62,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m"
+            ],
+            "impact": "",
+            "sudocuh_name": "Fin d'enquête publique",
+            "sudocuh_code": "FINENQ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5bb55b9a-dba6-4496-b8a2-024d4cb37816",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Délibération décidant de la mise en compatibilité",
+            "order": 69,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "mc"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Délibération décidant de la mise en compatibilité",
+            "sudocuh_code": "DELMEC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5beaa89c-e105-4874-9549-5188708a36d4",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Phase de construction du projet d'aménagement stratégique (PAS)",
+            "order": 21,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "BUILDAMSTRAT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5bfe5a93-7246-4076-874d-03a71557a813",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Délibération ou arrêté définissant les objectifs et modalités concertation",
+            "order": 10,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Délibération ou arrêté définissant les objectifs et modalités concertation",
+            "sudocuh_code": "DELOMC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5c902621-a335-47d8-a2d4-fbacf57941fd",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Intégration des derniers retours sur le PLU",
+            "order": 36,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "PATCHLAST"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5ccf7899-5dcb-4a57-b39f-97f4d6b45529",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Fin de mise à disposition du public",
+            "order": 51,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "FININFO"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5ce6d769-7748-462a-81ef-77793fa31f24",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Affichage au siège de l'EPCI et dans toutes les communes",
+            "order": 97,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Affichage au siège de l'EPCI et dans toutes les communes",
+            "sudocuh_code": "AFFEPCI"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5d041895-cfb1-490f-b1df-481044df03bf",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Notification de la procédure aux PPA",
+            "order": 7,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "NOTMOD"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5ec3ad5f-8025-47d9-9916-8508460a03e5",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Arrêté de lancement de la procédure",
+            "order": 3,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "ARRLANC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "60246507-9460-49ef-81ad-9f0cccd65df3",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Rapport d'artificialisation des sols",
+            "order": 89,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "62114dfe-ccd6-4fbd-9150-9d9fd978cb72",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Annulation TA partielle",
+            "order": 104,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "ANNULTAP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "6273da3d-bf93-475a-a550-17014a62651e",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Présentation du diagnostic aux PPA",
+            "order": 19,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DIAGPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "629008c6-ed62-4928-9349-8254982a8e48",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Retrait de la délibération de prescription",
+            "order": 101,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "abandonné",
+            "sudocuh_name": "",
+            "sudocuh_code": "BACKPRESCR"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "62e37638-328f-42f3-ab90-6dea534e694d",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Fin de mise à disposition du public",
+            "order": 71,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "FININFO"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "637e0f43-a149-4e9c-934a-44f9a1516168",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Recours gracieux de l'État",
+            "order": 100,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Recours gracieux de l'État",
+            "sudocuh_code": "RECGRAC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "63b43806-71c0-46ed-8ed8-b17e6a082c6e",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Avis de l'Etat sur l'analyse de la consomation d'ENAF et la modération de cette consommation",
+            "order": 65,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "m"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "AVISENAF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "69e46270-8448-4e93-85d0-d98c469e283e",
+        "fields": {
+            "document_type": "CC",
+            "name": "Intégration des retours faits pendant l'enquête publique",
+            "order": 41,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "PATCHENQPUB"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "6a5a22eb-4780-4bc5-8970-6acadb8a7b08",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Phase de construction du règlement écrit et graphique",
+            "order": 32,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "BUILDREGLEG"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "6b73b01d-ff09-4895-bcba-191b0523d45a",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Transmission de la note d'enjeux",
+            "order": 20,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "NOTENJ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "70227ed7-2138-4d4c-85da-b01d3f3801d2",
+        "fields": {
+            "document_type": "CC",
+            "name": "Présentation du diagnostic aux PPA",
+            "order": 14,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DIAGPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "72239d04-8baa-4687-97e7-c2e52cef1367",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Avis suite à notification des PPA",
+            "order": 46,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "7264918e-732c-401e-aa82-a8835902ad25",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Transmission de l'avis de l'État - favorable",
+            "order": 45,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "m",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "AVISETAT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "747596d3-a490-49a4-a34a-da7241671971",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Publicité dans la presse",
+            "order": 95,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "impact": "",
+            "sudocuh_name": "Publicité dans la presse",
+            "sudocuh_code": "ADSPRESS"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "7496dafe-7665-45d6-b45b-0d256eacf2e4",
+        "fields": {
+            "document_type": "CC",
+            "name": "Délibération de bilan de la concertation",
+            "order": 21,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Délibération de bilan de la concertation",
+            "sudocuh_code": "DELBILAN"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "75526701-dfa5-4337-b524-bdd4faa24eda",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Affichage en commune",
+            "order": 96,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "ppi",
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "impact": "",
+            "sudocuh_name": "Affichage en commune",
+            "sudocuh_code": "AFF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "76cfda66-699d-4f64-b83e-f0c05ffeb12a",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Saisine de la CDNPS pour avis",
+            "order": 51,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "mc"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Consultation de la CDNPS",
+            "sudocuh_code": "CONSCDNPS"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "779fc62b-3eb1-4eec-8352-b2fa60143808",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Début d'enquête publique",
+            "order": 61,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m"
+            ],
+            "impact": "",
+            "sudocuh_name": "Début d'enquête publique",
+            "sudocuh_code": "DEBENQ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "781a9552-acab-483e-b88b-54f6650083e3",
+        "fields": {
+            "document_type": "CC",
+            "name": "Transmission au préfet pour approbation",
+            "order": 44,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "TRPREFAPP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "78c6cef9-45c0-4b05-8098-a0b8a4db7b25",
+        "fields": {
+            "document_type": "CC",
+            "name": "Transmission au contrôle de légalité",
+            "order": 48,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms",
+                "mj"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ms",
+                "mj"
+            ],
+            "impact": "",
+            "sudocuh_name": "Transmission au contrôle de légalité",
+            "sudocuh_code": "TRANSCONT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "7ac44abf-db1a-4e50-a9b6-627e4bf0adeb",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Intégration des derniers retours sur le SCoT",
+            "order": 28,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "7cb8bc3a-55fb-4ceb-91e2-bb2408f11b3b",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Dérogation au principe d'urbanisation limitée -> avis du préfet",
+            "order": 38,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DEROGULPREF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "7cfb46d8-a163-4125-8ab6-0e30b99be9ea",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Fin d'échéance",
+            "order": 1,
+            "is_active": false,
+            "is_structuring": false,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "caduc",
+            "sudocuh_name": "Fin d'échéance",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "7d87d700-5c46-4e49-b30e-4babd93937cd",
+        "fields": {
+            "document_type": "CC",
+            "name": "Transmission du porter-à-connaissance",
+            "order": 9,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "PAC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "7f8016a3-7028-4353-b840-e2ad02e60197",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Réception de l'avis de l'autorité environnementale",
+            "order": 57,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Avis de l'autorité environnementale",
+            "sudocuh_code": "AVISENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "81c6332e-19f8-41f6-9436-bf44bee15bf1",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Transmission de l'avis PPA - Région",
+            "order": 47,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "8270abca-bd23-47fb-977d-be6ce16810c5",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Prise en compte du porter à connaissance dans le projet",
+            "order": 18,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "CHECKPAC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "82de1400-6814-4fa3-b034-62981c20573a",
+        "fields": {
+            "document_type": "CC",
+            "name": "Soumission à évaluation environnementale",
+            "order": 20,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "SUBEVALENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "85b93916-a3eb-4114-96f0-6db1c7ef2f83",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Publication du SCoT sur le GPU",
+            "order": 75,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "PUB"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "87577597-bdcf-4722-8730-215fb4ee591b",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Décision de recourir à la participation du public par voie électronique (PPVE)",
+            "order": 53,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "87cf7b24-ef30-4ec3-bc66-808d8c4bff55",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Rapport et conclusions de l'enquête publique",
+            "order": 83,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "mc"
+            ],
+            "impact": "",
+            "sudocuh_name": "Rapport du commissaire enquêteur",
+            "sudocuh_code": "RAPCOMENQ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "87ed8ff1-da19-4b82-ba67-f3367c6e6c7a",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Présentation des OAP et règlement aux communes du territoire",
+            "order": 48,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "SHOWOAP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "899e0e2d-cae3-4cff-aee5-8269404b42bd",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Constitution et mise à disposition du dossier de PPVE",
+            "order": 74,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "89bd7396-a4d8-462a-a602-01923ad71832",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Présentation du PAS aux PPA",
+            "order": 22,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "SHOWPASPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "8b619b8c-bdd7-49ef-988b-57b70fcf368f",
+        "fields": {
+            "document_type": "CC",
+            "name": "Délibération de prescription du conseil municipal",
+            "order": 1,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ms"
+            ],
+            "impact": "en cours",
+            "sudocuh_name": "Prescription",
+            "sudocuh_code": "PRES"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "8ea3b6b4-ed3e-44aa-8ed8-0d08d804ce90",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Début de la participation du public par voie électronique",
+            "order": 56,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "8faa55c4-2bac-41ec-865c-580680b52076",
+        "fields": {
+            "document_type": "CC",
+            "name": "Retrait de la délibération de prescription",
+            "order": 55,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "abandonné",
+            "sudocuh_name": "",
+            "sudocuh_code": "BACKPRESCR"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "9035dc20-9086-4d2a-9eb6-265a4e0cd713",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Début de mise à disposition du public",
+            "order": 70,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DEBINFO"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "93c66466-4076-465c-ab66-e44482fbf2be",
+        "fields": {
+            "document_type": "CC",
+            "name": "Début de mise à disposition du public",
+            "order": 29,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ms"
+            ],
+            "scope_sugg": [
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DEBINFO"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "966570a1-bf99-4e8d-a4c6-15f42f4a8bb3",
+        "fields": {
+            "document_type": "CC",
+            "name": "Constitution et mise à disposition du dossier de PPVE",
+            "order": 32,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "96b07aa1-748e-45fe-b0e6-b01b364a0cc3",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Caractère exécutoire",
+            "order": 76,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "opposable",
+            "sudocuh_name": "Caractère exécutoire",
+            "sudocuh_code": "EXECUT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "979ac485-37cb-4322-a087-396e23ae875f",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Transmission au contrôle de légalité",
+            "order": 94,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "ppi",
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "impact": "",
+            "sudocuh_name": "Transmission au contrôle de légalité",
+            "sudocuh_code": "TRANSCONT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "9b1e3de3-8035-44f2-a386-7b3aeba200c0",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Délibération de l'établissement public qui prescrit",
+            "order": 3,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "m",
+                "ms"
+            ],
+            "impact": "en cours",
+            "sudocuh_name": "Délibération de l'Etablissement Public",
+            "sudocuh_code": "PRES"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "9b30034a-d9e0-4514-8466-0034c29e44c1",
+        "fields": {
+            "document_type": "CC",
+            "name": "Arrêté de mise à jour",
+            "order": 47,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "mj"
+            ],
+            "scope_sugg": [
+                "mj"
+            ],
+            "impact": "opposable",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "9b95e454-1aef-4f69-9a7f-a6e0f72564b8",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Demande de la note d'enjeux",
+            "order": 15,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "ASKNOTE"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "9bc86207-3daa-4146-9a22-a24b8a7a8c6c",
+        "fields": {
+            "document_type": "CC",
+            "name": "Fin de la participation du public par voie électronique",
+            "order": 35,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "9ceef031-c299-4467-b7ff-fcd7bcf54dc6",
+        "fields": {
+            "document_type": "CC",
+            "name": "Délibération communal ou communautaire d’abrogation de la carte communale",
+            "order": 62,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "9dc042fe-3395-42d7-9cfa-99bba3fe5cd1",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Saisine de la CDNPS pour avis",
+            "order": 36,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "mc"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Consultation de la CDNPS",
+            "sudocuh_code": "CONSCDNPS"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "9e50a2a2-4724-44ad-8320-06fd1f2e8d7f",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Arrêté d'enquête publique",
+            "order": 80,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "mc"
+            ],
+            "impact": "",
+            "sudocuh_name": "Arrêté d'enquête publique",
+            "sudocuh_code": "ARRENQ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "9e61b406-ce6f-4ae3-a9a3-b5df94009127",
+        "fields": {
+            "document_type": "CC",
+            "name": "Réception de l'avis CDPENAF",
+            "order": 26,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Avis de la CDPENAF",
+            "sudocuh_code": "AVICDPENAF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "9f7264cd-9140-4506-853e-e1948e6fa34a",
+        "fields": {
+            "document_type": "CC",
+            "name": "Retrait de l'annulation totale",
+            "order": 60,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "opposable",
+            "sudocuh_name": "",
+            "sudocuh_code": "BACKANNUL"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a049a8d7-0d18-4cd5-947e-d8057c6685b5",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Arrêté du Maire ou du Préfet ou de l'EPCI",
+            "order": 90,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "mj"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Arrêté du Maire ou du Préfet ou de l'EPCI",
+            "sudocuh_code": "ARRMP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a15aa546-96d4-423c-b786-0215c6ae6b7d",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Déclaration d'intérêt général",
+            "order": 88,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Déclaration d'intérêt général",
+            "sudocuh_code": "DIG"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a178eeb1-9b4f-497a-994c-0d42c83384a3",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Constitution et mise à disposition du dossier de PPVE",
+            "order": 54,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a2739de8-3bf9-4c46-9fa9-9fe49dda7340",
+        "fields": {
+            "document_type": "CC",
+            "name": "Début d'enquête publique",
+            "order": 38,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "Début d'enquête publique",
+            "sudocuh_code": "DEBENQ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a2832319-9017-4ec3-8f07-ecea75db37b3",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Délibération de bilan de la concertation",
+            "order": 32,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Délibération de bilan de la concertation",
+            "sudocuh_code": "DELBILAN"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a3676162-aac4-4143-a02b-73fd4eec3478",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Décision de recourir à la participation du public par voie électronique (PPVE)",
+            "order": 73,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a58d7ce2-aee5-47e6-877d-7068b74c36cf",
+        "fields": {
+            "document_type": "CC",
+            "name": "Annulation TA partielle",
+            "order": 58,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "ANNULTAP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a5f5dd81-e1f4-43f6-894f-69cea686ee48",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Recrutement d'un AMO",
+            "order": 9,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "RECRUITAMO"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a62e7481-a7dc-4984-9920-416f80513592",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Publicité dans la presse",
+            "order": 72,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Publicité dans la presse",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a657f56c-0477-4f8a-bbcb-b83eb4b8299c",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Fin de la participation du public par voie électronique",
+            "order": 57,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a707c599-688e-41ac-9d90-7fa71cec2d94",
+        "fields": {
+            "document_type": "CC",
+            "name": "Délibération d'approbation du conseil municipal ou communautaire",
+            "order": 43,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Délibération d'approbation",
+            "sudocuh_code": "DELAPPCM"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a79f5c34-7612-42ca-9a6d-c4d4c1c72a55",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Phase de construction du diagnostic",
+            "order": 16,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "CONSDIAG"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a850af3e-7b10-44bf-9e0f-850a73dc9b0d",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Transmission du courrier d'association et de la lettre d'information régionale",
+            "order": 7,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a8cd2574-1a90-4c2a-84c7-232172a49a5c",
+        "fields": {
+            "document_type": "CC",
+            "name": "Abrogation effective",
+            "order": 63,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "abrogé",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a93a35a7-d2b6-431a-b43b-4ed4ffd67de1",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Réunion des PPA",
+            "order": 14,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Réunion des PPA",
+            "sudocuh_code": "REUPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a9877f9d-26c8-43e7-a162-ae558fc86a50",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "DUP emportant mise en compatibilité",
+            "order": 67,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "mc"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "DUP emportant mise en compatibilité",
+            "sudocuh_code": "DUP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "aa6d5736-0b17-4824-81a1-c76865ecf085",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Transmission de l'avis de l'État - favorable",
+            "order": 62,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "m",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "AVISETAT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "aa6f6fc7-6cf1-4b43-8b86-7b8ff1c00763",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Soumission à évaluation environnementale",
+            "order": 43,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "SUBEVALENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "aeddd6a0-0423-4d0b-bf8e-732aac2fff26",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Arrêt de projet",
+            "order": 47,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "mc"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Arrêt de projet",
+            "sudocuh_code": "ARRPROJ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "afbb238f-ec29-4bba-81cd-a45f88f370e1",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Avis suite au contrôle de légalité",
+            "order": 112,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b0ef851b-3c63-4c2f-953a-c00b4965e5d5",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Intégration des retours faits pendant l'enquête publique",
+            "order": 84,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "mc"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "PATCHENQPUB"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b0f4ff86-e7c4-4124-8eae-4fe4dbebfb0a",
+        "fields": {
+            "document_type": "CC",
+            "name": "Lancement de l'évaluation environnementale du projet",
+            "order": 15,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "STARTEVALENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b1c125a4-d0c4-4b14-8b40-5cdae58b77c1",
+        "fields": {
+            "document_type": "CC",
+            "name": "Publicité sur mise à disposition du public",
+            "order": 28,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ms"
+            ],
+            "scope_sugg": [
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "ADSPUBLIC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b1c4ff31-10b3-44b7-a46b-e663a752bc27",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Début de mise à disposition du public",
+            "order": 50,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DEBINFO"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b1c71b14-af5b-4e93-96eb-31e4f23aeb51",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Prise en compte de la note d'enjeux dans le projet",
+            "order": 17,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "READNOTE"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b2fca691-1685-4de9-8f41-e7e1a5675a32",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Annulation TA totale",
+            "order": 105,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "annulé",
+            "sudocuh_name": "",
+            "sudocuh_code": "ANNULTA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b4a9cf38-2aa7-4e9c-bda4-9dd8fb134052",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Débat sur le PADD en conseil communautaire et en conseils communaux",
+            "order": 29,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DEBATEPADD"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b4b589bf-72fc-4372-8149-b5e9ccedcb14",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Phase de construction du projet de territoire (PADD)",
+            "order": 25,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "BUILDPADD"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b4fac91b-f2b8-49b4-8cee-a23e2c3f57fc",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Lancement de l'évaluation environnementale du projet",
+            "order": 24,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "STARTEVALENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b7e9fc72-523d-44a0-b929-c1759d7d4b4f",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Consultation des PPA",
+            "order": 53,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Consultation des PPA",
+            "sudocuh_code": "CONSPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b81a98b2-07a4-491c-8dec-9ec22df075d3",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Retrait de l'arrêt de projet",
+            "order": 113,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b834c58c-28bf-4dee-bc0c-84250b692ec4",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Retrait de l'annulation totale",
+            "order": 87,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "opposable",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b867a519-210a-4559-81ab-b4dd2af40504",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Caducité",
+            "order": 111,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "caduc",
+            "sudocuh_name": "Caducité",
+            "sudocuh_code": "CADUC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b9423423-8128-4598-b92b-49b8de809711",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Délibération d'approbation du conseil municipal ou communautaire",
+            "order": 89,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "impact": "opposable",
+            "sudocuh_name": "Délibération d'approbation",
+            "sudocuh_code": "DELAPP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b96fda7a-a5ad-40d3-901e-8aa639080420",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Abrogation",
+            "order": 107,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "abrogé",
+            "sudocuh_name": "Arrêté d'abrogation",
+            "sudocuh_code": "ARRABRO"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "b9b41f7d-9645-4a6f-b5d7-315da3957cdf",
+        "fields": {
+            "document_type": "CC",
+            "name": "Synthèse de la participation du public par voie électronique",
+            "order": 36,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "bbb9e987-d112-4da9-9f0b-9e0090fbdb6c",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Transmission de la note d'enjeux",
+            "order": 16,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "NOTENJ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "bc0cfed5-fcbc-4d94-b138-0500f0f24b9a",
+        "fields": {
+            "document_type": "CC",
+            "name": "Début de la participation du public par voie électronique",
+            "order": 34,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "bd04e08a-6a9d-4b23-a77f-0225b5841edb",
+        "fields": {
+            "document_type": "CC",
+            "name": "Transmission de la note d'enjeux",
+            "order": 11,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "NOTENJ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "bf5d5b07-dd11-4c24-8c8b-375bfd46b9a9",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Intégration des retours faits pendant l'enquête publique",
+            "order": 64,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "bff64bb5-7c3f-472f-93d2-609b87799997",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Réunion de concertation grand public",
+            "order": 11,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Réunion de concertation grand public",
+            "sudocuh_code": "REUGP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c1761f46-31d9-41f1-b27d-69a495e2d9d5",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Affichage au siège de l'EPCI et dans toutes les communes",
+            "order": 74,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Affichage au siège de l'EPCI et dans toutes les communes",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c1b52bfd-ed87-4702-b4a8-7d8a21a42e58",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Recours gracieux de l'État",
+            "order": 77,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Recours gracieux de l'État",
+            "sudocuh_code": "RECGRAC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c25ae6e3-fdba-437b-af46-2d11eef93637",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Saisine de l'Autorité environnementale pour avis",
+            "order": 35,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Consultation de l'autorité environnementale",
+            "sudocuh_code": "CONSENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c34af87e-a3e7-496c-b98e-ad461c4627d5",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Synthèse de la participation du public par voie électronique",
+            "order": 58,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c4dcac78-605f-490b-9d77-8466c8b86eaa",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Réception de l'avis de la CDNPS",
+            "order": 59,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "mc"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Avis de la CDNPS",
+            "sudocuh_code": "AVICDNPS"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c537183d-749b-48df-8531-18eace48dc6d",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Arrêté d'enquête publique",
+            "order": 60,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m"
+            ],
+            "impact": "",
+            "sudocuh_name": "Arrêté d'enquête publique",
+            "sudocuh_code": "ARRENQ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c561019e-17e2-44cf-a4b9-c26ecfa2a12c",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Délibération de définition du périmètre du SCoT par l'établissement public",
+            "order": 1,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c61d9ce8-45b4-474e-b908-837d6668bc15",
+        "fields": {
+            "document_type": "CC",
+            "name": "Rapport et conclusions de l'enquête publique",
+            "order": 40,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "Rapport du commissaire enquêteur",
+            "sudocuh_code": "RAPCOMENQ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c68c552b-6505-488f-8f27-f41e29364b2d",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Décision de recourir à la mise à disposition",
+            "order": 67,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c72f72ca-6402-42a7-8995-688fdc9a7d8b",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Débat sur le PADD en conseil municipal ou communautaire",
+            "order": 28,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "Débat sur le PADD ou PAS",
+            "sudocuh_code": "DEBPADD"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c7467ffd-6e10-4479-89c0-dc44635d1271",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Délibération sur les modalités de mise à disposition",
+            "order": 49,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c81fa644-45f8-49d6-998c-8a7e19cba6fc",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Phase de construction du diagnostic et état initial de l'environnement",
+            "order": 12,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c8cfadc4-0007-4853-b048-bcd2fa422bf0",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Lancement de l'évaluation environnementale du projet",
+            "order": 20,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "STARTEVALENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c9ed097c-3856-45a2-af57-e4b101a82efe",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Délibération qui arrête le projet de SCoT",
+            "order": 34,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Arrêt de projet",
+            "sudocuh_code": "ARRPROJ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "cbae7191-2b8e-4620-899b-f99964d1f291",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Réception avis de l'autorité environnementale",
+            "order": 40,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Avis de l'autorité environnementale",
+            "sudocuh_code": "AVISENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "ccdb0b75-efb0-4c45-bc12-78d36e8c573e",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Délibération qui justifie l'utilité de l'ouverture à l'urbanisation d'une zone",
+            "order": 9,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "m"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DELIBOPENZ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "cd934c6a-b23b-4c15-bd8f-da2b0ff1ed73",
+        "fields": {
+            "document_type": "CC",
+            "name": "Refus d'approbation du préfet",
+            "order": 45,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "REFAPPREF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "cda9c66c-3443-4560-ab14-082e93e7b583",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Intégration des retours sur le PAS",
+            "order": 23,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "PATCHPAS"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "ce6da12c-ba67-4fa5-afd2-1b2c0a8794ce",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Notification du dossier aux PPA et communes concernées",
+            "order": 33,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "m",
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "cea81716-1d6a-41e3-aadd-a33bd9918eea",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Transmission de l'avis de l'État - favorable avec réserves",
+            "order": 44,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "m",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "AVISETAT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "cfd76cd1-e733-4b08-8b7e-0eb6ab683c3e",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Abandon",
+            "order": 65,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj"
+            ],
+            "scope_sugg": [],
+            "impact": "abandon",
+            "sudocuh_name": "Abandon",
+            "sudocuh_code": "ABAND"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "d025c7bd-3ca1-47bb-8245-0f13249c18c3",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Prise en compte de la note d'enjeux dans le projet",
+            "order": 21,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "READNOTE"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "d085d15c-727f-49e5-8b41-e53cc2b513fc",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Synthèse de la participation du public par voie électronique",
+            "order": 78,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "d12a7cb8-f735-45c6-beb9-b8f053d52ada",
+        "fields": {
+            "document_type": "CC",
+            "name": "Saisine de la CDPENAF pour avis",
+            "order": 24,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Consultation de la CDPENAF",
+            "sudocuh_code": "CONSCDPENAF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "d6921504-9e2a-4933-b0d0-a0bbe0762dbd",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Réception de l'avis de la CDNPS",
+            "order": 42,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "mc"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Avis de la CDNPS",
+            "sudocuh_code": "AVICDNPS"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "d6d80007-5590-41f1-8450-79f09a8d75bd",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Délibération modalités de mise à disposition du public",
+            "order": 6,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ms"
+            ],
+            "scope_sugg": [
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DELIBDISPOPUB"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "d7df12a9-2566-4567-9e2e-1ed800baf9b2",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Fin d'enquête publique",
+            "order": 82,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "mc"
+            ],
+            "impact": "",
+            "sudocuh_name": "Fin d'enquête publique",
+            "sudocuh_code": "FINENQ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "d8514a67-aa09-4c96-9948-98d96a1d4315",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Décision de recourir à l'enquête publique",
+            "order": 79,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "d9b806b9-a703-49a3-b2a5-26822abaeafc",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Délibération décidant de la mise en compatibilité",
+            "order": 93,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "mc"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Délibération décidant de la mise en compatibilité",
+            "sudocuh_code": "DELMEC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "dbbc8477-11bc-4164-aa56-fce9506f2b98",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Transmission du courrier d'association et de la lettre d'information régionale",
+            "order": 8,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "dc02b35e-9463-4c84-a820-49aaff70468d",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Modification du périmètre",
+            "order": 78,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Modification du périmètre",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "dccd8ebd-15ae-48ff-a794-ab415d95e6a3",
+        "fields": {
+            "document_type": "CC",
+            "name": "Phase de construction de(s) réglement(s) graphique(s)",
+            "order": 17,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "BUILDREGLE"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "dceebb34-bb58-41f4-964f-1b7856659307",
+        "fields": {
+            "document_type": "CC",
+            "name": "Arrêté préfectoral d'abrogation de la carte communale",
+            "order": 61,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Arrêté d'abrogation",
+            "sudocuh_code": "ARRABRO"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "dd3cf99d-3247-438f-9345-a3baf0c0ac8d",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Consultation du comité régional de l'habitat et de l'hébergement",
+            "order": 54,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Consultation du comité régional de l'habitat et de l'hébergement",
+            "sudocuh_code": "CONSULTCOMREG"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "ddece4bc-0dab-4900-bd37-b96509c26a09",
+        "fields": {
+            "document_type": "CC",
+            "name": "Décision de recourir à la participation du public par voie électronique (PPVE)",
+            "order": 31,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "ddf41404-98ae-41f3-90d3-ee0deb0b6c66",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Retrait de la délibération d'approbation",
+            "order": 102,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "en cours",
+            "sudocuh_name": "",
+            "sudocuh_code": "BACKAPPROB"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "dfde92d4-757f-4fa7-9e90-3e47b414c2c6",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Avis de la commune sur le dossier de MC",
+            "order": 85,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "mc"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Avis de la commune sur le dossier de MC",
+            "sudocuh_code": "AVICOM"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "dfe117ba-c623-45dd-a6e4-9c83baa0d655",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Transmission de l'avis de l'État - favorable avec réserves",
+            "order": 61,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "m",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "AVISETAT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e082ce62-5ad0-40c9-b1bb-ad22d80424b1",
+        "fields": {
+            "document_type": "CC",
+            "name": "Notification au préfet",
+            "order": 2,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "mj"
+            ],
+            "scope_sugg": [
+                "mj"
+            ],
+            "impact": "en cours",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e1b6dfd5-455e-48d7-905b-d4f3aeceef63",
+        "fields": {
+            "document_type": "PLU",
+            "name": "DUP emportant mise en compatibilité",
+            "order": 91,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "mc"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "DUP emportant mise en compatibilité",
+            "sudocuh_code": "DUP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e20b70be-6df9-46c8-a523-7dfdf5026777",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Bilan de la mise à disposition",
+            "order": 52,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e2380fef-5c3f-425d-be41-9a7082a4a646",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Réception de l'avis de la CDPENAF",
+            "order": 58,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Avis de la CDPENAF",
+            "sudocuh_code": "AVICDPENAF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e3ac2b49-73be-4e94-8567-ed0d4f4a89db",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Transmission de l'avis de l'État - défavorable",
+            "order": 63,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "m",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "AVISETAT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e3c0d73c-0a4d-437a-8d9a-6586a2cc9e30",
+        "fields": {
+            "document_type": "CC",
+            "name": "Publication sur le GPU",
+            "order": 51,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms",
+                "mj"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ms",
+                "mj"
+            ],
+            "impact": "",
+            "sudocuh_name": "Publication du PLU sur le GPU",
+            "sudocuh_code": "PUB"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e466d255-5020-4c52-816f-433a26bcb533",
+        "fields": {
+            "document_type": "CC",
+            "name": "Affichage en commune",
+            "order": 50,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Affichage en commune",
+            "sudocuh_code": "AFF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e5196a59-b91f-4c08-b825-2b71c78c257c",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Recrutement d'un bureau d'études",
+            "order": 12,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "RECRUITBE"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e525fb85-484b-4875-84f9-07cc036a03c9",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Annulation TA totale",
+            "order": 86,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "annulé",
+            "sudocuh_name": "",
+            "sudocuh_code": "ANNULTA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e63d055a-061d-4f16-8b44-77529e88fc76",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Exemption automatique d'évaluation environnementale",
+            "order": 4,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e6999989-327b-4cdc-bea6-4df877184f55",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Retrait de la délibération d'approbation",
+            "order": 83,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "en cours",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e77a5f24-c1ab-495d-94f4-3fcbc1a64b62",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Avis de la commune sur le dossier de MC",
+            "order": 79,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Avis de la commune sur le dossier de MC",
+            "sudocuh_code": "AVICOM"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e77b3645-9b24-49a8-bade-0ea01bc38d4d",
+        "fields": {
+            "document_type": "CC",
+            "name": "Abandon",
+            "order": 42,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "abandonné",
+            "sudocuh_name": "Abandon",
+            "sudocuh_code": "ABAND"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "e8619321-87c9-4421-aec1-3d240c6e4b3e",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Publication du périmètre par le préfet",
+            "order": 2,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "PUBPERI"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "ea861f75-7367-4b52-949f-7a34eba2db08",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Bilan de la mise à disposition",
+            "order": 72,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "eb0b3823-0fdb-4d3c-b23f-1914d3dfc304",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Présentation du diagnostic aux PPA",
+            "order": 23,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "DIAGPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "eb0cd4e0-858b-4b46-9cb0-83ae38f0800e",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Réception de l'avis de l'État",
+            "order": 43,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Avis de l'État",
+            "sudocuh_code": "AVISETAT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "ebd1afda-4bee-4e1f-af8c-fdbbe7b2e6a6",
+        "fields": {
+            "document_type": "CC",
+            "name": "Consultation de l'autorité environnementale au cas par cas ad'hoc",
+            "order": 18,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "CONSENVCPC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "ed0cd7b3-fe94-4946-b7f8-39f7969ccfcf",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Transmission de l'avis PPA - Région",
+            "order": 64,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "ef68ef4c-2437-4287-8601-d4efcdeaaa4f",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Dérogation au principe d'urbanisation limitée -> consultation CDPENAF\n(délai 2 mois) et saisine Préfet pour avis (4 mois)",
+            "order": 37,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Dérogation au titre du L142-4 (ex L122-2)",
+            "sudocuh_code": "DEROG"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "efcbd581-87bf-4922-807a-c104e512bc8e",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Consultation de l'autorité environnementale au cas par cas ad'hoc",
+            "order": 39,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "rms",
+                "m",
+                "ms",
+                "mc"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "CONSENVCPC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "eff2854f-4563-4583-ae15-4a6c42389a8c",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Présentation du PADD aux PPA",
+            "order": 26,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "SHOWPADD"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "f1d132ea-425d-41bd-8bc8-2e4f50df1009",
+        "fields": {
+            "document_type": "CC",
+            "name": "Publication de la carte communale sur le GPU",
+            "order": 52,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms",
+                "mj"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "f2dc1806-09ef-41f1-8cce-47d37643135b",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Affichage",
+            "order": 73,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms"
+            ],
+            "impact": "",
+            "sudocuh_name": "Affichage",
+            "sudocuh_code": "AFF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "f34698ba-0fee-4c97-8134-50c184f853b8",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Consultation de l'Institut national de l'origine et de la qualité dans les zones d'appellation d'origine contrôlée et, le cas échéant, du Centre national de la propriété forestière",
+            "order": 55,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "CONSULTINQZ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "f38919ce-9792-4721-82c5-ffcb979ffe55",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Phase de construction des OAP",
+            "order": 33,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "BUILDOAP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "f3df84a9-2cee-4d9d-829b-ed4a4d082bb0",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Retrait de la délibération de prescription",
+            "order": 82,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "abandon",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "f3eb9aa5-03ca-45de-83b1-9e9b8ba1e1b5",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Début d'enquête publique",
+            "order": 81,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "mc"
+            ],
+            "impact": "",
+            "sudocuh_name": "Début d'enquête publique",
+            "sudocuh_code": "DEBENQ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "f61b3a81-7ad1-4aab-ae49-bd11679bc4d7",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Exemption d'évaluation environnementale",
+            "order": 30,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "EXEMEVALENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "f6ac977f-c9bc-4a6a-bc5f-693b50121bd6",
+        "fields": {
+            "document_type": "CC",
+            "name": "Retrait de la délibération d'approbation",
+            "order": 56,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp",
+                "ms"
+            ],
+            "scope_sugg": [],
+            "impact": "en cours",
+            "sudocuh_name": "",
+            "sudocuh_code": "BACKAPPROB"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "f6f01f92-db30-42c0-b5a8-ffb3548fdeac",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Fin de la participation du public par voie électronique",
+            "order": 77,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "f72c179e-6af1-42d2-bf7a-74c7988aab3d",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Conférence intercommunale",
+            "order": 86,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi"
+            ],
+            "scope_sugg": [
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Conférence intercommunale",
+            "sudocuh_code": "CONFINTERCO"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "f88d2bdf-cedf-4b80-b79d-b5cf8fe6af84",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Evaluation du SCoT au bout de 10 ans ou révision substantielle si besoin",
+            "order": 90,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "Autre",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "fa0d555b-752d-4a4a-9597-b7589a6ec322",
+        "fields": {
+            "document_type": "CC",
+            "name": "Exemption d'évaluation environnementale",
+            "order": 19,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "EXEMEVALENV"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "fba40ef8-ea28-43db-b8c8-6f74e04d03e4",
+        "fields": {
+            "document_type": "CC",
+            "name": "Fin d'enquête publique",
+            "order": 39,
+            "is_active": true,
+            "is_structuring": true,
+            "scope_list": [
+                "pp"
+            ],
+            "scope_sugg": [
+                "pp"
+            ],
+            "impact": "",
+            "sudocuh_name": "Fin d'enquête publique",
+            "sudocuh_code": "FINENQ"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "fbbc9a01-8bbe-4ed6-b7bf-17f6e630d9a1",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Décision de recourir à la mise à disposition",
+            "order": 48,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "fd4fd853-afb2-42c1-88da-b8133b3062d3",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Réunion de concertation grand public",
+            "order": 15,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "REUGP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "fdeca5c5-7c49-46f5-8fe1-d2c4f74a6526",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Délibération sur les modalités de mise à disposition",
+            "order": 68,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ms",
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "fe0dba6f-c40f-4d5b-aab2-13ccc453fd61",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Publication du PLU sur le GPU",
+            "order": 98,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "ppi",
+                "pp",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj",
+                "mlh"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi",
+                "rms",
+                "m",
+                "ms",
+                "mc",
+                "mj"
+            ],
+            "impact": "",
+            "sudocuh_name": "Publication du PLU sur le GPU",
+            "sudocuh_code": "PUB"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "fe3addbb-66fe-4e01-873f-80c52e2ee7e4",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Recrutement d'un AMO",
+            "order": 13,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "pp",
+                "ppi"
+            ],
+            "scope_sugg": [
+                "pp",
+                "ppi"
+            ],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": "RECRUITAMO"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "ff809173-3897-4edd-bc14-a4b7bbe8441d",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Décision de recourir à l'enquête publique",
+            "order": 59,
+            "is_active": true,
+            "is_structuring": false,
+            "scope_list": [
+                "mlh"
+            ],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
+    }
+]

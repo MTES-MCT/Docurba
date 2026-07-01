@@ -5,10 +5,11 @@ from django.urls import reverse
 from pytest_django.asserts import assertNumQueries
 from rest_framework.test import APIClient
 
-from docurba.core.models import TypeCollectivite
+from docurba.core.models import EventType, TypeCollectivite
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
+    EventTypeFactory,
 )
 
 BASE_QUERIES_COUNT = 1  # Count made by DRF for the pagination.
@@ -585,4 +586,134 @@ class TestCommunesAPI:
             "intitule": "Groupement 1",
             "regionCode": "93",
             "departementCode": "13",
+        }
+
+
+@pytest.mark.django_db
+class TestEventTypesAPI:
+    @pytest.mark.parametrize(
+        ("query_params", "expected_num_queries", "expected"),
+        [
+            pytest.param(
+                {},
+                BASE_QUERIES_COUNT + 1,
+                [
+                    {
+                        "id": "00000000-0000-0000-1111-000000000000",
+                        "documentType": "CC",
+                        "name": "Déroulement des plans de test",
+                        "scopeList": [],
+                        "scopeSugg": [],
+                        "isStructuring": False,
+                        "sudocuhName": "",
+                    },
+                    {
+                        "id": "00000000-0000-0000-2222-000000000000",
+                        "documentType": "PLU",
+                        "name": "Echec du déroulement des plans de test",
+                        "scopeList": [],
+                        "scopeSugg": [],
+                        "isStructuring": False,
+                        "sudocuhName": "",
+                    },
+                    {
+                        "id": "00000000-0000-0000-3333-000000000000",
+                        "documentType": "CC",
+                        "name": "Succès du déroulement des plans de test",
+                        "scopeList": ["pp"],
+                        "scopeSugg": ["pp", "ppi"],
+                        "isStructuring": False,
+                        "sudocuhName": "",
+                    },
+                ],
+                id="no_filter",
+            ),
+            pytest.param(
+                {"document_type": "CC"},
+                BASE_QUERIES_COUNT + 1,
+                [
+                    {
+                        "id": "00000000-0000-0000-1111-000000000000",
+                        "documentType": "CC",
+                        "name": "Déroulement des plans de test",
+                        "scopeList": [],
+                        "scopeSugg": [],
+                        "isStructuring": False,
+                        "sudocuhName": "",
+                    },
+                    {
+                        "id": "00000000-0000-0000-3333-000000000000",
+                        "documentType": "CC",
+                        "name": "Succès du déroulement des plans de test",
+                        "scopeList": ["pp"],
+                        "scopeSugg": ["pp", "ppi"],
+                        "isStructuring": False,
+                        "sudocuhName": "",
+                    },
+                ],
+                id="document_type",
+            ),
+        ],
+    )
+    def test_list(
+        self,
+        api_client: APIClient,
+        expected_num_queries: int,
+        query_params: dict,
+        expected: list,
+    ) -> None:
+        EventTypeFactory(
+            id="00000000-0000-0000-1111-000000000000",
+            document_type=EventType.DocumentType.CC,
+            name="Déroulement des plans de test",
+        )
+        EventTypeFactory(
+            id="00000000-0000-0000-2222-000000000000",
+            document_type=EventType.DocumentType.PLU,
+            name="Echec du déroulement des plans de test",
+        )
+        EventTypeFactory(
+            id="00000000-0000-0000-3333-000000000000",
+            document_type=EventType.DocumentType.CC,
+            name="Succès du déroulement des plans de test",
+            scope_list=[EventType.Scope.PP],
+            scope_sugg=[EventType.Scope.PP, EventType.Scope.PPI],
+        )
+        EventTypeFactory(
+            id="00000000-0000-0000-FFFF-000000000000",
+            document_type=EventType.DocumentType.CC,
+            name="Je suis invisible car désactivé",
+            is_active=False,
+        )
+        url = f"{reverse('internal_api:event_types-list')}?{urlencode(query_params, doseq=True)}"
+
+        with assertNumQueries(expected_num_queries):
+            response = api_client.get(url, format="json")
+
+        assert response.status_code == 200
+        assert response.json()["results"] == expected
+
+    def test_detail(self, api_client: APIClient) -> None:
+        event_type = EventTypeFactory(
+            id="00000000-0000-0000-1111-000000000000",
+            document_type=EventType.DocumentType.CC,
+            name="Déroulement des plans de test",
+            scope_list=[EventType.Scope.PP],
+            scope_sugg=[EventType.Scope.PP, EventType.Scope.PPI],
+        )
+
+        url = reverse("internal_api:event_types-detail", args=[event_type.pk])
+        with assertNumQueries(1):
+            response = api_client.get(url, format="json")
+
+        assert response.status_code == 200
+        assert response.json()
+        assert response.json() == {
+            "id": "00000000-0000-0000-1111-000000000000",
+            "documentType": "CC",
+            "name": "Déroulement des plans de test",
+            "scopeList": ["pp"],
+            "scopeSugg": ["pp", "ppi"],
+            "isStructuring": False,
+            "sudocuhName": "",
         }

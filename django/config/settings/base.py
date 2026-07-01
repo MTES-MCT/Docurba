@@ -10,6 +10,8 @@ env.smart_cast = False
 ############ Django settings ############
 #########################################
 
+ENVIRONMENT = env.str("DJANGO_SETTINGS_MODULE").rpartition(".")[2]
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 APPS_DIR = BASE_DIR / "docurba"
 EXPORTS_DIR = env.str("SCRIPT_EXPORT_PATH", default=f"{BASE_DIR}/exports")

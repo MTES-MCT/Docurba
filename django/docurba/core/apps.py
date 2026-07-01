@@ -14,6 +14,8 @@ class CoreAppConfig(AppConfig):
     def ready(self) -> None:
         super().ready()
         models.signals.post_migrate.connect(create_topics, sender=self)
+        if settings.ENVIRONMENT != "test":
+            models.signals.post_migrate.connect(create_event_types, sender=self)
 
 
 def create_topics(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # noqa: ARG001
@@ -26,6 +28,23 @@ def create_topics(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # n
         with transaction.atomic():
             for spec in admin_crits_spec:
                 Topic.objects.update_or_create(
+                    pk=spec["pk"],
+                    defaults=spec["fields"],
+                )
+
+
+def create_event_types(*args: list[str, Any], **kwargs: dict[str, Any]) -> None:  # noqa: ARG001
+    from docurba.core.models import EventType  # noqa: PLC0415
+
+    if EventType._meta.db_table in connection.introspection.table_names():  # noqa: SLF001
+        json_path = (
+            pathlib.Path(settings.APPS_DIR) / "core/data/create_event_types.json"
+        )
+        with json_path.open("rb") as fp:
+            admin_crits_spec = json.load(fp)
+        with transaction.atomic():
+            for spec in admin_crits_spec:
+                EventType.objects.update_or_create(
                     pk=spec["pk"],
                     defaults=spec["fields"],
                 )
