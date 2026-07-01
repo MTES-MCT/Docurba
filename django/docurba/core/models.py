@@ -1443,10 +1443,6 @@ class MaterializedViewFlatMembership(models.Model):
         related_name="flat_members_through",
         verbose_name="Groupement",
     )
-    level = models.IntegerField(verbose_name="Niveau")
-    path = ArrayField(
-        base_field=models.CharField(), verbose_name="Chemin vers la racine"
-    )
 
     objects = MaterializedViewFlatMembershipQuerySet.as_manager()
 
