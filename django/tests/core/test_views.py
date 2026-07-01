@@ -14,7 +14,6 @@ from docurba.core.models import (
     Topic,
     TypeCollectivite,
     TypeDocument,
-    ViewCommuneAdhesionsDeep,
 )
 from tests.core.factories import (
     CollectiviteFactory,
@@ -480,7 +479,6 @@ class TestAPIScots:
             with_members=True,
             with_members__list=perimetre_initial,
         )
-        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
 
         event = EventFactory(
             type=event_category,

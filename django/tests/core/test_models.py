@@ -22,7 +22,6 @@ from docurba.core.models import (
     Procedure,
     Topic,
     TypeDocument,
-    ViewCommuneAdhesionsDeep,
 )
 from tests.core.factories import (
     CollectiviteFactory,
@@ -99,6 +98,7 @@ class TestMaterializedViewFlatMembership:
             collectivite_children[0].flat_members.values_list("id", flat=True)
         ) == sorted([grand_child.pk])
 
+    # TODO: remove me
     @pytest.mark.django_db
     def test_communes_distinctes_quand_double_adhesion(
         self, django_assert_num_queries: DjangoAssertNumQueries
@@ -115,7 +115,7 @@ class TestMaterializedViewFlatMembership:
         commune_double_adherente.adhesions.add(collectivite_enfant)
         commune_double_adherente.adhesions.add(collectivite)
 
-        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        MaterializedViewFlatMembership.refresh()
 
         procedure = ProcedureFactory(
             collectivite_porteuse=collectivite,
@@ -193,8 +193,7 @@ class TestProcedureCommunesCounts:
 
         commune_grand_grand_enfant = CommuneFactory()
         commune_grand_grand_enfant.adhesions.add(collectivite_grand_enfant)
-
-        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        MaterializedViewFlatMembership.refresh()
 
         procedure_sectorielle = ProcedureFactory(
             collectivite_porteuse=collectivite,
@@ -229,7 +228,7 @@ class TestProcedureCommunesCounts:
         commune_grand_grand_enfant = CommuneFactory()
         commune_grand_grand_enfant.adhesions.add(collectivite_grand_enfant)
 
-        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        MaterializedViewFlatMembership.refresh()
 
         procedure_non_sectorielle = ProcedureFactory(
             collectivite_porteuse=collectivite,
@@ -260,7 +259,7 @@ class TestProcedureCommunesCounts:
 
         commune_deleguee = CommuneFactory(nouvelle=commune_enfant)
 
-        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        MaterializedViewFlatMembership.refresh()
 
         procedure = ProcedureFactory(
             collectivite_porteuse=collectivite,
@@ -279,7 +278,7 @@ class TestProcedureCommunesCounts:
     ) -> None:
         collectivite = CollectiviteFactory()
 
-        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        MaterializedViewFlatMembership.refresh()
 
         procedure = collectivite.procedure_set.create(doc_type=TypeDocument.PLU)
 
@@ -926,11 +925,7 @@ class TestProcedureTypeDocument:
             collectivite_porteuse=collectivite,
             with_perimetre=[commune_a, commune_b],
         )
-
-        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
-
         procedure = Procedure.objects.get(id=procedure.id)
-
         assert procedure.type_document == expected_doc_type
 
 
@@ -2151,7 +2146,7 @@ class TestCommuneCodeEtat:
                 commune = CommuneFactory()
                 commune.adhesions.add(collectivite_porteuse)
 
-            ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+        MaterializedViewFlatMembership.refresh()
 
         procedure = ProcedureFactory(
             collectivite_porteuse=collectivite_porteuse,
