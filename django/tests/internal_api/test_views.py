@@ -57,7 +57,7 @@ class TestCollectivitesAPI:
             ),
             pytest.param(
                 {"codes_siren": ["132435465", "987654321"]},
-                BASE_QUERIES_COUNT + 2,
+                BASE_QUERIES_COUNT + 1,
                 [
                     {
                         "code": "132435465",
@@ -392,7 +392,6 @@ class TestCommunesAPI:
             departement__code_insee="84",
             nom="Commune 3",
         )
-        CommuneFactory.refresh_cache()
         url = f"{reverse('internal_api:communes-list')}?{urlencode(query_params, doseq=True)}"
 
         with assertNumQueries(expected_num_queries):
