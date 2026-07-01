@@ -3,6 +3,7 @@
 import functools
 
 from django.db.models import Q, QuerySet
+from django.forms import MultipleChoiceField
 from django_filters import rest_framework as filters
 
 from docurba.core.models import (
@@ -42,9 +43,21 @@ COMPETENCES_CHOICES = (
 )
 
 
+class NoValidationMultipleField(MultipleChoiceField):
+    def validate(self, value: str) -> None:
+        pass
+
+
+class NoValidationMultipleFilter(filters.MultipleChoiceFilter):
+    field_class = NoValidationMultipleField
+
+
 class CollectiviteFilter(DepartementRegionFilterSet):
     type = filters.MultipleChoiceFilter(field_name="type", choices=TypeCollectivite)
-    codes_siren = filters.AllValuesMultipleFilter(field_name="code_insee_unique")
+    codes_siren = NoValidationMultipleFilter(
+        label="Codes SIREN",
+        field_name="code_insee_unique",
+    )
     without_communes = filters.BooleanFilter(
         label="Sans les communes", method="_without_communes"
     )
@@ -84,18 +97,11 @@ class CollectiviteFilter(DepartementRegionFilterSet):
         return queryset.exclude(type__in=commune_types)
 
 
-@functools.cache
-def get_insee_codes_choices():  # noqa: ANN201
-    return [(o, o) for o in Commune.objects.values_list("code_insee_unique", flat=True)]
-
-
 class CommuneFilter(DepartementRegionFilterSet):
     type = filters.MultipleChoiceFilter(
         field_name="type", choices=TypeCollectivite.communes()
     )
-    code = filters.MultipleChoiceFilter(
-        field_name="code_insee_unique", choices=get_insee_codes_choices
-    )
+    code = NoValidationMultipleFilter(field_name="code_insee_unique")
 
     class Meta:
         model = Commune
