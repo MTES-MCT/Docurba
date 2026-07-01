@@ -45,7 +45,7 @@ export default {
         this.opened = true
       } else {
         this.opened = false
-        if (consent === `${cookieConsentValue}-true`) {
+        if (consent === `${cookieConsentValue}-true` && !process.dev) {
           this.$gtag()
         }
       }
