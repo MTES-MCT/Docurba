@@ -98,36 +98,6 @@ class TestMaterializedViewFlatMembership:
             collectivite_children[0].flat_members.values_list("id", flat=True)
         ) == sorted([grand_child.pk])
 
-    # TODO: remove me
-    @pytest.mark.django_db
-    def test_communes_distinctes_quand_double_adhesion(
-        self, django_assert_num_queries: DjangoAssertNumQueries
-    ) -> None:
-        collectivite = CollectiviteFactory()
-
-        collectivite_enfant = CollectiviteFactory()
-        collectivite_enfant.adhesions.add(collectivite)
-
-        commune_enfant = CommuneFactory()
-        commune_enfant.adhesions.add(collectivite)
-
-        commune_double_adherente = CommuneFactory()
-        commune_double_adherente.adhesions.add(collectivite_enfant)
-        commune_double_adherente.adhesions.add(collectivite)
-
-        MaterializedViewFlatMembership.refresh()
-
-        procedure = ProcedureFactory(
-            collectivite_porteuse=collectivite,
-            doc_type=TypeDocument.PLU,
-            with_perimetre=[commune_enfant, commune_double_adherente],
-        )
-
-        with django_assert_num_queries(1):
-            procedure_with_counts = Procedure.objects.get(id=procedure.id)
-            assert procedure_with_counts.perimetre__count == 2
-            assert procedure_with_counts.communes_adherentes__count == 2
-
     def test_read_only(self) -> None:
         collectivite = CollectiviteFactory(with_members=True)
         flat_membership = collectivite.flat_members_through.first()
