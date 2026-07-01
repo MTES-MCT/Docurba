@@ -5,17 +5,20 @@ from functools import partial
 from unittest import mock
 
 import pytest
+from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from pytest_django import DjangoAssertNumQueries
 
 from docurba.core.enums import TypeCollectivite
 from docurba.core.models import (
     EVENT_CATEGORY_BY_DOC_TYPE,
+    Adhesion,
     CodeCompetencePerimetre,
     Collectivite,
     Commune,
     Event,
     EventCategory,
+    MaterializedViewFlatMembership,
     Procedure,
     Topic,
     TypeDocument,
@@ -32,6 +35,139 @@ from tests.core.factories import (
 class TestCollectivite:
     def test_code_insee(self) -> None:
         assert Commune(id="12345_COM").code_insee == "12345"
+
+
+@pytest.mark.django_db
+class TestMaterializedViewFlatMembership:
+    def test_through_memberships(
+        self,
+    ) -> None:
+        grand_parent = CollectiviteFactory(
+            with_flat_members=True,
+        )
+        parent = grand_parent.collectivites_adherentes.first()
+        node = parent.collectivites_adherentes.first()
+
+        CollectiviteFactory(
+            with_flat_members=True,
+        )
+        assert Adhesion.objects.count() == 4
+        assert MaterializedViewFlatMembership.objects.count() == 6
+
+        assert hasattr(grand_parent, "flat_members")
+        assert sorted(grand_parent.flat_members.values_list("id", flat=True)) == sorted(
+            [
+                parent.pk,
+                node.pk,
+            ]
+        )
+
+        assert hasattr(node, "flat_groups")
+        assert sorted(node.flat_groups.values_list("id", flat=True)) == sorted(
+            [
+                grand_parent.pk,
+                parent.pk,
+            ]
+        )
+
+    def test_denormalized_data(
+        self,
+    ) -> None:
+        collectivite = CollectiviteFactory(with_members=True)
+        members = collectivite.adhesions.all()
+        for member in members:
+            assert MaterializedViewFlatMembership.objects.filter(
+                member_id=member.id,
+                member_type=member.type,
+                group_id=collectivite.id,
+                group_type=collectivite.type,
+            ).exists()
+
+    @pytest.mark.django_db
+    def test_different_path_same_flat_membership(self) -> None:
+        # Two path should lead to only one flat membership.
+        # grand_child --> child 1 --> collectivite
+        # grand_child --> child 2 --> collectivite
+        collectivite = CollectiviteFactory()
+        collectivite_children = CollectiviteFactory.create_batch(2)
+        collectivite.collectivites_adherentes.add(*collectivite_children)
+        grand_child = CollectiviteFactory()
+        for child in collectivite_children:
+            grand_child.adhesions.add(*[child])
+
+        MaterializedViewFlatMembership().refresh()
+
+        assert Adhesion.objects.count() == 4
+        assert MaterializedViewFlatMembership.objects.count() == 5
+
+        assert sorted(collectivite.flat_members.values_list("id", flat=True)) == sorted(
+            [
+                collectivite_children[0].pk,
+                collectivite_children[1].pk,
+                grand_child.pk,
+            ]
+        )
+
+        assert sorted(
+            collectivite_children[0].flat_members.values_list("id", flat=True)
+        ) == sorted([grand_child.pk])
+
+    @pytest.mark.django_db
+    def test_communes_distinctes_quand_double_adhesion(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        collectivite = CollectiviteFactory()
+
+        collectivite_enfant = CollectiviteFactory()
+        collectivite_enfant.adhesions.add(collectivite)
+
+        commune_enfant = CommuneFactory()
+        commune_enfant.adhesions.add(collectivite)
+
+        commune_double_adherente = CommuneFactory()
+        commune_double_adherente.adhesions.add(collectivite_enfant)
+        commune_double_adherente.adhesions.add(collectivite)
+
+        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
+
+        procedure = ProcedureFactory(
+            collectivite_porteuse=collectivite,
+            doc_type=TypeDocument.PLU,
+            with_perimetre=[commune_enfant, commune_double_adherente],
+        )
+
+        with django_assert_num_queries(1):
+            procedure_with_counts = Procedure.objects.get(id=procedure.id)
+            assert procedure_with_counts.perimetre__count == 2
+            assert procedure_with_counts.communes_adherentes__count == 2
+
+    def test_read_only(self) -> None:
+        collectivite = CollectiviteFactory(with_members=True)
+        flat_membership = collectivite.flat_members_through.first()
+        flat_membership.group_id = CollectiviteFactory().pk
+        with pytest.raises(PermissionDenied):
+            flat_membership.save()
+
+        with pytest.raises(PermissionDenied):
+            flat_membership.delete()
+
+        with pytest.raises(PermissionDenied):
+            MaterializedViewFlatMembership.objects.create(
+                member_id=CollectiviteFactory().pk, group_id=CollectiviteFactory().pk
+            )
+
+        with pytest.raises(PermissionDenied):
+            MaterializedViewFlatMembership.objects.bulk_create()
+
+        memberships = MaterializedViewFlatMembership.objects.all()
+        for membership in memberships:
+            membership.group_id = CollectiviteFactory().pk
+
+        with pytest.raises(PermissionDenied):
+            memberships.bulk_update(memberships, fields=["group_id"])
+
+        with pytest.raises(PermissionDenied):
+            memberships.delete()
 
 
 class TestProcedureQuerySet:
@@ -125,35 +261,6 @@ class TestProcedureCommunesCounts:
             assert procedure_non_sectorielle_with_counts.perimetre__count == 3
             assert procedure_non_sectorielle_with_counts.communes_adherentes__count == 3
             assert not procedure_non_sectorielle_with_counts.is_sectoriel_consolide
-
-    @pytest.mark.django_db
-    def test_communes_distinctes_quand_double_adhesion(
-        self, django_assert_num_queries: DjangoAssertNumQueries
-    ) -> None:
-        collectivite = CollectiviteFactory()
-
-        collectivite_enfant = CollectiviteFactory()
-        collectivite_enfant.adhesions.add(collectivite)
-
-        commune_enfant = CommuneFactory()
-        commune_enfant.adhesions.add(collectivite)
-
-        commune_double_adherente = CommuneFactory()
-        commune_double_adherente.adhesions.add(collectivite_enfant)
-        commune_double_adherente.adhesions.add(collectivite)
-
-        ViewCommuneAdhesionsDeep._refresh_materialized_view()  # noqa: SLF001
-
-        procedure = ProcedureFactory(
-            collectivite_porteuse=collectivite,
-            doc_type=TypeDocument.PLU,
-            with_perimetre=[commune_enfant, commune_double_adherente],
-        )
-
-        with django_assert_num_queries(1):
-            procedure_with_counts = Procedure.objects.get(id=procedure.id)
-            assert procedure_with_counts.perimetre__count == 2
-            assert procedure_with_counts.communes_adherentes__count == 2
 
     @pytest.mark.django_db
     def test_exclut_commune_deleguee_du_perimetre_count(
@@ -820,11 +927,12 @@ class TestProcedureTypeDocument:
         commune_a = CommuneFactory()
         commune_b = CommuneFactory()
         collectivite = CollectiviteFactory(
-            with_collectivites_adherentes=[
+            with_members=True,
+            with_members__list=[
                 commune_a,
                 commune_b,
                 CommuneFactory(),
-            ]
+            ],
         )
         procedure = ProcedureFactory(
             doc_type=src_doc_type,

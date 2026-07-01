@@ -7,6 +7,7 @@ from typing import Self
 
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
+from django.core.exceptions import PermissionDenied
 from django.db import connection, models
 from django.db.models import Value
 from django.db.models.aggregates import StringAgg
@@ -993,6 +994,31 @@ class Departement(models.Model):
         return f"{self.code_insee} - {self.nom}"
 
 
+class Adhesion(models.Model):
+    from_collectivite = models.ForeignKey(
+        "core.Collectivite",
+        on_delete=models.CASCADE,
+        related_name="to_collectivite_through",
+        verbose_name="groupement",
+    )
+    to_collectivite = models.ForeignKey(
+        "core.Collectivite",
+        on_delete=models.RESTRICT,
+        related_name="from_collectivite_through",
+        verbose_name="membre",
+    )
+
+    class Meta:
+        verbose_name = "adhésion"
+        verbose_name_plural = "adhésions"
+        unique_together = ("from_collectivite", "to_collectivite")
+        # The many to many was first created without a manager.
+        db_table = "core_collectivite_adhesions"
+
+    def __str__(self) -> str:
+        return f"{self.pk}"
+
+
 class CollectiviteQuerySet(models.QuerySet):
     def portant_scot(self, avant: date | None = None) -> Self:
         return (
@@ -1035,12 +1061,24 @@ class Collectivite(models.Model):
         null=True,
         db_comment="Peut-être vide pour une COMD ayant le même code que sa commune parente",
     )
+    # NOTE(cms): this is a copy of `code_insee_unique` containing SIREN codes only.
+    # NOTE(cms): add a unique constraint when siren will not be in code_insee_unique anymore.
+    siren = models.CharField(blank=True, verbose_name="SIREN", max_length=9)
     type = models.CharField(choices=TypeCollectivite.choices)
     nom = models.CharField()
     competence_plan = models.BooleanField(db_default=False)
     competence_schema = models.BooleanField(db_default=False)
     adhesions = models.ManyToManyField(
-        "self", related_name="collectivites_adherentes", symmetrical=False
+        "self",
+        related_name="collectivites_adherentes",
+        symmetrical=False,
+        through="core.Adhesion",
+    )
+    flat_groups = models.ManyToManyField(
+        "self",
+        related_name="flat_members",
+        through="core.MaterializedViewFlatMembership",
+        symmetrical=False,
     )
     departement = models.ForeignKey(
         Departement, models.DO_NOTHING, related_name="collectivites"
@@ -1372,13 +1410,99 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
         ]
 
 
-class ViewCommuneAdhesionsDeep(models.Model):  # noqa: DJ008
+class MaterializedViewFlatMembershipQuerySet(models.QuerySet):
+    def create(self, *args: list, **kwargs: dict) -> Exception:  # noqa: ARG002
+        raise PermissionDenied(self.model.READ_ONLY_EXCEPTION_MSG)
+
+    def bulk_create(self, *args: list, **kwargs: dict) -> Exception:  # noqa: ARG002
+        raise PermissionDenied(self.model.READ_ONLY_EXCEPTION_MSG)
+
+    def bulk_update(self, *args: list, **kwargs: dict) -> Exception:  # noqa: ARG002
+        raise PermissionDenied(self.model.READ_ONLY_EXCEPTION_MSG)
+
+    def delete(self, *args: list, **kwargs: dict) -> Exception:  # noqa: ARG002
+        raise PermissionDenied(self.model.READ_ONLY_EXCEPTION_MSG)
+
+
+class MaterializedViewFlatMembership(models.Model):
+    READ_ONLY_EXCEPTION_MSG = (
+        "ViewCommuneAdhesionsDeep is read only because it is a materialized view."
+        "Refresh the table with ViewCommuneAdhesionsDeep.refresh()"
+    )
+
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID())
+    member = models.ForeignKey(
+        "core.Collectivite",
+        models.DO_NOTHING,
+        related_name="flat_groups_through",
+        verbose_name="Membre",
+    )
+    group = models.ForeignKey(
+        "core.Collectivite",
+        models.DO_NOTHING,
+        related_name="flat_members_through",
+        verbose_name="Groupement",
+    )
+    member_type = models.CharField(choices=TypeCollectivite.choices)
+    group_type = models.CharField(choices=TypeCollectivite.choices)
+
+    objects = MaterializedViewFlatMembershipQuerySet.as_manager()
+
+    class Meta:
+        db_table = "materialized_view_flat_memberships"
+        managed = False
+        indexes = (
+            models.Index(
+                "member",
+                name="member_id_idx",
+                include=("group_id",),
+            ),
+            models.Index(
+                "group",
+                name="group_id_idx",
+                include=("member_id",),
+            ),
+            models.Index(
+                fields=["group_id", "member_type"],
+                name="group_id_member_type_idx",
+                include=("member_id",),
+            ),
+            models.Index(
+                fields=["member_id", "group_type"],
+                name="member_id_group_type_idx",
+                include=("group_id",),
+            ),
+            models.Index(
+                "member_type",
+                name="member_type_idx",
+            ),
+        )
+
+    def __str__(self) -> str:
+        return str(self.id)
+
+    def save_base(self, *args: list, **kwargs: dict) -> Exception:  # noqa: ARG002
+        raise PermissionDenied(self.READ_ONLY_EXCEPTION_MSG)
+
+    def delete(self, *args: list, **kwargs: dict) -> Exception:  # noqa: ARG002
+        raise PermissionDenied(self.READ_ONLY_EXCEPTION_MSG)
+
+    @classmethod
+    def refresh(cls) -> None:
+        with connection.cursor() as cursor:
+            cursor.execute(f"REFRESH MATERIALIZED VIEW {cls._meta.db_table}")
+
+
+class ViewCommuneAdhesionsDeep(models.Model):
     commune = models.ForeignKey(Commune, models.DO_NOTHING, related_name="+")
     groupement = models.ForeignKey(Collectivite, models.DO_NOTHING, related_name="+")
 
     class Meta:
         db_table = "view_commune_adhesions_deep"
         managed = False
+
+    def __str__(self) -> str:
+        return f"{self.commune_id} - {self.groupement_id}"
 
     @classmethod
     def _refresh_materialized_view(cls) -> None:

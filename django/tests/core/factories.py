@@ -1,4 +1,5 @@
 import datetime
+import string
 from json import loads
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from docurba.core.models import (
     CommuneProcedure,
     Departement,
     Event,
+    MaterializedViewFlatMembership,
     Procedure,
     Project,
     Region,
@@ -113,8 +115,19 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ("code_insee_unique",)
         skip_postgeneration_save = True
 
+    class Params:
+        for_snapshot = factory.Trait(
+            type=TypeCollectivite.SMO,
+            nom="Syndicat mixte d'équipement de la commune de Beaucaire",
+            code_insee_unique="253000020",
+            siren="253000020",
+        )
+
     id = factory.LazyAttribute(lambda o: f"{o.code_insee_unique}_{o.type}")
-    code_insee_unique = factory.Faker("siren", locale="fr_FR")
+    code_insee_unique = factory.fuzzy.FuzzyText(
+        length=8, chars=string.digits, prefix="1"
+    )
+    siren = factory.LazyAttribute(lambda o: f"{o.code_insee_unique}")
     type = factory.fuzzy.FuzzyChoice(
         [
             type_groupement
@@ -132,16 +145,61 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
     departement = factory.SubFactory(DepartementFactory)
 
     @factory.post_generation
-    def with_collectivites_adherentes(
+    def with_members(
         self,
         create: bool,  # noqa: FBT001
         extracted: list[Collectivite] | None,
+        **extra: dict,
     ) -> None:
         if not create or not extracted:
             return
+        members_list = extra.get("list") or CollectiviteFactory.create_batch(2)
+        self.collectivites_adherentes.add(*members_list)
+        MaterializedViewFlatMembership.refresh()
 
-        for collectivite in extracted:
-            self.collectivites_adherentes.add(collectivite)
+    @factory.post_generation
+    def with_flat_members(self, create: bool, extracted: bool, **extra: dict) -> None:  # noqa: FBT001
+        if not create or not extracted:
+            return
+        child = None
+        grand_children = []
+        if extra.get("for_snapshot", False):
+            collectivite_attrs = (
+                (
+                    TypeCollectivite.CC,
+                    "CC Beaucaire Terre d'Argence",
+                    "243000585",
+                    "243000585",
+                ),
+                (TypeCollectivite.COM, "Beaucaire", "30032", ""),
+                (TypeCollectivite.COM, "Bellegarde", "30034", ""),
+                (TypeCollectivite.COM, "Fourques", "30117", ""),
+                (TypeCollectivite.COM, "Jonquières-Saint-Vincent", "30135", ""),
+                (TypeCollectivite.COM, "Vallabrègues", "30336", ""),
+            )
+            child = CollectiviteFactory(
+                type=collectivite_attrs[0][0],
+                departement__code_insee="30",
+                nom=collectivite_attrs[0][1],
+                code_insee_unique=collectivite_attrs[0][2],
+                siren=collectivite_attrs[0][3],
+            )
+            for attr in collectivite_attrs[1:]:
+                grand_child = CollectiviteFactory(
+                    type=attr[0],
+                    departement__code_insee="30",
+                    nom=attr[1],
+                    code_insee_unique=attr[2],
+                )
+                grand_children.append(grand_child)
+        else:
+            child = CollectiviteFactory(departement__code_insee="30")
+            grand_children.append(CollectiviteFactory(departement__code_insee="30"))
+
+        self.collectivites_adherentes.add(*[child])
+        child.collectivites_adherentes.add(*grand_children)
+
+        MaterializedViewFlatMembership.refresh()
 
 
 class ProjectFactory(factory.django.DjangoModelFactory):

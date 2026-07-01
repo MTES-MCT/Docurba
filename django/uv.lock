@@ -425,6 +425,7 @@ dev = [
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "ruff" },
+    { name = "syrupy" },
 ]
 
 [package.metadata]
@@ -456,6 +457,7 @@ dev = [
     { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "ruff" },
+    { name = "syrupy" },
 ]
 
 [[package]]
@@ -1316,6 +1318,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a9/b5/37e7a3706de436a8a2d75334711dad1afb4ddffab09f25e31d89e467542f/supervisor-4.3.0.tar.gz", hash = "sha256:4a2bf149adf42997e1bb44b70c43b613275ec9852c3edacca86a9166b27e945e", size = 468912, upload-time = "2025-08-23T18:25:02.418Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0e/65/5e726c372da8a5e35022a94388b12252710aad0c2351699c3d76ae8dba78/supervisor-4.3.0-py2.py3-none-any.whl", hash = "sha256:0bcb763fddafba410f35cbde226aa7f8514b9fb82eb05a0c85f6588d1c13f8db", size = 320736, upload-time = "2025-08-23T18:25:00.767Z" },
+]
+
+[[package]]
+name = "syrupy"
+version = "5.3.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/81/17/95753634cd02a892cbc74d8df9c15f5ad053885a913eb11aa6061f278344/syrupy-5.3.4.tar.gz", hash = "sha256:10f192655a2d42473ad5772653e64b281f6823fe5e30458d92f8ca8e882884c1", size = 87078, upload-time = "2026-06-26T10:55:42.522Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/00/7a/254f95860cebb6d51ddb3e815ee30085e8c8a3ba6df1f44ef4605b385621/syrupy-5.3.4-py3-none-any.whl", hash = "sha256:409348aa20afc4b7dab7c965331de0cd79ab46977877fb189014ce9294e947e5", size = 53103, upload-time = "2026-06-26T10:55:41.007Z" },
 ]
 
 [[package]]
