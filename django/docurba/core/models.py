@@ -1437,6 +1437,8 @@ class MaterializedViewFlatMembership(models.Model):
         related_name="flat_members_through",
         verbose_name="Groupement",
     )
+    member_type = models.CharField(choices=TypeCollectivite.choices)
+    group_type = models.CharField(choices=TypeCollectivite.choices)
 
     objects = MaterializedViewFlatMembershipQuerySet.as_manager()
 
@@ -1446,13 +1448,27 @@ class MaterializedViewFlatMembership(models.Model):
         indexes = (
             models.Index(
                 "member",
-                name="flat_memberships_member_id_idx",
+                name="member_id_idx",
                 include=("group_id",),
             ),
             models.Index(
                 "group",
-                name="flat_memberships_group_id_idx",
+                name="group_id_idx",
                 include=("member_id",),
+            ),
+            models.Index(
+                fields=["group_id", "member_type"],
+                name="group_id_member_type_idx",
+                include=("member_id",),
+            ),
+            models.Index(
+                fields=["member_id", "group_type"],
+                name="member_id_group_type_idx",
+                include=("group_id",),
+            ),
+            models.Index(
+                "member_type",
+                name="member_type_idx",
             ),
         )
 
