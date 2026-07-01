@@ -1,9 +1,8 @@
 import Vue from 'vue'
-import { groupBy, uniqBy, orderBy } from 'lodash'
-import axios from 'axios'
+import { groupBy, uniq, uniqBy, orderBy } from 'lodash'
 import { enrichProcedureWithEvents } from '@/plugins/procedure'
 
-export default ({ $supabase, $dayjs }, inject) => {
+export default ({ $djangoApi, $supabase, $dayjs }, inject) => {
   Vue.filter('docType', function (procedure) {
     if (procedure.doc_type === 'PLU') {
       let docType = procedure.doc_type
@@ -68,14 +67,15 @@ export default ({ $supabase, $dayjs }, inject) => {
       return procedures
     },
     async getProceduresPerimetre (procedures, collectiviteId) {
-      const collectivitesCodes = new Set(procedures.flatMap(p =>
-        p.procedures_perimetres.map(c => c.collectivite_code)
-      ))
-      collectivitesCodes.add(collectiviteId)
+      const collectivitesCodes = uniq([
+        ...procedures.flatMap(p =>
+          p.procedures_perimetres.map(c => c.collectivite_code)
+        ),
+        collectiviteId
+      ])
 
-      const { data: collectivites } = await axios({
-        url: '/api/geo/collectivites',
-        params: new URLSearchParams(collectivitesCodes.map(code => ['codes', code]))
+      const collectivites = await $djangoApi.get('/api-internes/collectivites/', {
+        codes_siren: collectivitesCodes
       })
 
       procedures.forEach((procedure) => {
@@ -122,7 +122,7 @@ export default ({ $supabase, $dayjs }, inject) => {
       return procedures
     },
     async getCollectiviteProcedures (collectiviteId) {
-      const { data: collectivite } = await axios(`/api/geo/collectivites/${collectiviteId}`)
+      const collectivite = await $djangoApi.get(`/api-internes/collectivites/${collectiviteId}/`)
       const collectivites = [collectivite]
       if (collectivite.membres) { collectivites.push(...collectivite.membres) }
 

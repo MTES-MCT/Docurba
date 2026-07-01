@@ -138,6 +138,27 @@ class TestCollectivitesAPI:
                 ],
                 id="many_types",
             ),
+            pytest.param(
+                {"codes_siren": ["132435465", "987654321"]},
+                BASE_QUERIES_COUNT + 1,
+                [
+                    {
+                        "code": "132435465",
+                        "type": "SMO",
+                        "intitule": "Groupement 3",
+                        "regionCode": "76",
+                        "departementCode": "30",
+                    },
+                    {
+                        "code": "987654321",
+                        "type": "CC",
+                        "intitule": "Groupement 1",
+                        "regionCode": "93",
+                        "departementCode": "13",
+                    },
+                ],
+                id="many_codes_siren",
+            ),
         ],
     )
     def test_list_filters(
@@ -392,7 +413,9 @@ class TestCollectivitesAPI:
             nom="Groupement 1",
         )
 
-        url = reverse("internal_api:collectivites-detail", args=[groupement.pk])
+        url = reverse(
+            "internal_api:collectivites-detail", args=[groupement.code_insee_unique]
+        )
         with assertNumQueries(1):
             response = api_client.get(url, format="json")
 
@@ -592,7 +615,6 @@ class TestCommunesAPI:
             departement__code_insee="84",
             nom="Commune 3",
         )
-        CommuneFactory.refresh_cache()
         url = f"{reverse('internal_api:communes-list')}?{urlencode(query_params, doseq=True)}"
 
         with assertNumQueries(expected_num_queries):
