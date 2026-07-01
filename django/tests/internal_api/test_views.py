@@ -229,6 +229,7 @@ class TestCollectivitesAPI:
         assert response.status_code == 200
         assert response.json() == {
             "code": "987654321",
+            "siren": "987654321",
             "type": "CC",
             "intitule": "Groupement 1",
             "regionCode": "93",
