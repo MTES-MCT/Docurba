@@ -29,14 +29,24 @@ class MemberSerializer(BaseCollectiviteSerializer):
 
 
 class CollectiviteSerializer(BaseCollectiviteSerializer):
-    membres = MemberSerializer(source="flat_members", many=True, read_only=True)
-    groupements = MemberSerializer(source="flat_groups", many=True, read_only=True)
+    membres_niveaux_inferieurs = MemberSerializer(
+        source="flat_members", many=True, read_only=True
+    )
+    membres = MemberSerializer(
+        source="collectivites_adherentes", many=True, read_only=True
+    )
+    groupements_niveaux_superieurs = MemberSerializer(
+        source="flat_groups", many=True, read_only=True
+    )
+    groupements = MemberSerializer(source="adhesions", many=True, read_only=True)
 
     class Meta:
         model = Collectivite
         fields = [
             *BaseCollectiviteSerializer.Meta.fields,
+            "membres_niveaux_inferieurs",
             "membres",
+            "groupements_niveaux_superieurs",
             "groupements",
         ]
         read_only_fields = fields
@@ -44,13 +54,21 @@ class CollectiviteSerializer(BaseCollectiviteSerializer):
     def __init__(self, *args: list, **kwargs: dict) -> None:
         super().__init__(*args, **kwargs)
 
-        with_members = self.context.get("with_members", False)
-        if not with_members:
-            self.fields.pop("membres")
+        with_flat_members = self.context.get("with_flat_members", False)
+        if not with_flat_members:
+            self.fields.pop("membres_niveaux_inferieurs")
+
+        with_flat_groups = self.context.get("with_flat_groups", False)
+        if not with_flat_groups:
+            self.fields.pop("groupements_niveaux_superieurs")
 
         with_groups = self.context.get("with_groups", False)
         if not with_groups:
             self.fields.pop("groupements")
+
+        with_members = self.context.get("with_members", False)
+        if not with_members:
+            self.fields.pop("membres")
 
 
 class CommuneSerializer(serializers.ModelSerializer):

@@ -14,17 +14,23 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_serializer_context(self) -> dict:
         context = super().get_serializer_context()
-        if "avec_membres" in self.request.query_params:
-            context["with_members"] = True
+        if "avec_membres_niveaux_inferieurs" in self.request.query_params:
+            context["with_flat_members"] = True
+
+        if "avec_groupements_niveaux_superieurs" in self.request.query_params:
+            context["with_flat_groups"] = True
 
         if "avec_groupements" in self.request.query_params:
             context["with_groups"] = True
+
+        if "avec_membres" in self.request.query_params:
+            context["with_members"] = True
 
         return context
 
     def get_queryset(self):  # noqa: ANN201
         qs = Collectivite.objects.select_related("departement", "departement__region")
-        if "with_members" in self.get_serializer_context():
+        if "with_flat_members" in self.get_serializer_context():
             qs = qs.prefetch_related(
                 models.Prefetch(
                     "flat_members",
@@ -33,10 +39,28 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
                     ).order_by("code_insee_unique"),
                 )
             )
-        if "with_groups" in self.get_serializer_context():
+        if "with_flat_groups" in self.get_serializer_context():
             qs = qs.prefetch_related(
                 models.Prefetch(
                     "flat_groups",
+                    queryset=Collectivite.objects.select_related(
+                        "departement", "departement__region"
+                    ).order_by("code_insee_unique"),
+                )
+            )
+        if "with_groups" in self.get_serializer_context():
+            qs = qs.prefetch_related(
+                models.Prefetch(
+                    "adhesions",
+                    queryset=Collectivite.objects.select_related(
+                        "departement", "departement__region"
+                    ).order_by("code_insee_unique"),
+                )
+            )
+        if "with_members" in self.get_serializer_context():
+            qs = qs.prefetch_related(
+                models.Prefetch(
+                    "collectivites_adherentes",
                     queryset=Collectivite.objects.select_related(
                         "departement", "departement__region"
                     ).order_by("code_insee_unique"),
