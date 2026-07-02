@@ -27,7 +27,7 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
 
     communes = Commune.objects.only(
         "id", "type", "departement"
-    ).with_procedures_principales(avant=avant, with_adhesions_count=False)
+    ).with_procedures_principales(avant=avant)
     if departement := request.GET.get("departement"):
         communes = communes.filter(departement__code_insee=departement)
 

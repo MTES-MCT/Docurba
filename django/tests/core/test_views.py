@@ -24,6 +24,26 @@ from tests.core.factories import (
 )
 
 
+@pytest.mark.parametrize(
+    "view_name",
+    ["api_perimetres", "api_scots", "api_communes"],
+)
+@pytest.mark.django_db
+# NOTE(cms): this should be refactored when Syrupy will be part of the project.
+def test_vaut_PLH_consolide(client: Client, view_name: str) -> None:  # noqa: N802
+    collectivite = CollectiviteFactory()
+    communes = CommuneFactory.create_batch(3)
+    collectivite.adhesions.add(*communes)
+    ProcedureFactory(
+        with_perimetre=communes[1:],
+        doc_type=TypeDocument.PLUIH,
+        with_event=True,
+        with_event__category=EventCategory.APPROUVE,
+    )
+    response = client.get(reverse(view_name))
+    assert response.status_code == 200
+
+
 class TestAPI:
     @pytest.mark.parametrize(
         ("invalid_avant", "path"),
@@ -44,8 +64,8 @@ class TestAPI:
         )
 
 
+@pytest.mark.django_db
 class TestAPIPerimetres:
-    @pytest.mark.django_db
     def test_format_csv(
         self, client: Client, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -81,7 +101,6 @@ class TestAPIPerimetres:
     @pytest.mark.parametrize(
         ("is_filtering", "expected_lignes"), [(False, 2), (True, 1)]
     )
-    @pytest.mark.django_db
     def test_filtre_par_department(
         self,
         is_filtering: bool,  # noqa: FBT001
@@ -109,7 +128,6 @@ class TestAPIPerimetres:
         reader = DictReader(response.content.decode().splitlines())
         assert len(list(reader)) == expected_lignes
 
-    @pytest.mark.django_db
     @pytest.mark.parametrize(
         ("avant", "opposable"),
         [
