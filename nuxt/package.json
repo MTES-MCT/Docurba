@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "20"
+    "node": "26"
   },
   "scripts": {
     "daily_dump": "node --experimental-json-modules daily_dump/index.mjs",
@@ -61,7 +61,7 @@
     "js-base64": "^3.7.5",
     "lodash": "^4.17.21",
     "nuxt": "^2.16",
-    "octokit": "^3.1",
+    "octokit": "^5.0.5",
     "pdfmake": "^0.2.7",
     "pipedrive": "^16.1.0",
     "postcss": "^8.4.21",
