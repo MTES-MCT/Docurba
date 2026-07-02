@@ -1,6 +1,8 @@
 # ruff: noqa: F405 F403
 from config.settings.base import *  # NOSONAR (S2208)
 
+DOCURBA_ENVIRONMENT = DocurbaEnvironment.TEST
+
 STORAGES["staticfiles"]["BACKEND"] = (
     "django.contrib.staticfiles.storage.StaticFilesStorage"
 )

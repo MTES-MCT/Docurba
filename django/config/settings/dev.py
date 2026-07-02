@@ -6,6 +6,7 @@ from config.settings.base import *  # NOSONAR (S2208)
 # Django settings
 # ---------------
 DEBUG = True
+DOCURBA_ENVIRONMENT = DocurbaEnvironment.DEV
 
 INSTALLED_APPS.extend(
     [
