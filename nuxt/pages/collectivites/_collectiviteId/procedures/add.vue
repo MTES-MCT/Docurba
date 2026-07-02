@@ -31,8 +31,12 @@ export default {
     }
   },
   async mounted () {
-    const collectivites = await this.$nuxt3api(`/api/geo/search/collectivites?code=${this.$route.params.collectiviteId}&populate=true`)
+    const collectivites = await this.$collectiviteApi.listFromCodes(new Array(this.$route.params.collectiviteId), {
+      avec_membres_niveaux_inferieurs: true,
+      avec_groupements: true
+    })
     this.collectivite = collectivites[0]
+    this.collectivite.membres = this.collectivite.membres_niveaux_inferieurs || this.collectivite.membres
 
     if (!this.$user.canCreateProcedure({ collectivite: this.collectivite })) {
       console.warn('Pas assez de droits pour créer une procédure sur ce périmètre')

@@ -171,7 +171,7 @@ export default {
           departement
         })
         const intercommunalites = await this.$collectiviteApi.list({
-          competence: ['plan', 'schema'],
+          trouvable: true,
           departement,
           without_communes: true
         })

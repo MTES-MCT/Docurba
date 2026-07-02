@@ -4,7 +4,7 @@ const { topology } = require('topojson-server')
 const { center } = require('@turf/turf')
 
 const communes = require('../Data/referentiels/communes.json')
-const intercommunalites = require('../Data/referentiels/groupements.json')
+const intercommunalites = require('../Data/referentiels/groupements.json') // Why this is not groupements_2024.json? Mystery.
 
 const departements = require('../Data/INSEE/departements.json')
 const regions = require('../Data/INSEE/regions.json')
