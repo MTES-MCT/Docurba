@@ -5,7 +5,7 @@ from functools import partial
 from unittest import mock
 
 import pytest
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.utils import timezone
 from pytest_django import DjangoAssertNumQueries
 
@@ -31,6 +31,7 @@ from tests.core.factories import (
     EventTypeFactory,
     ProcedureFactory,
 )
+from tests.users.factories import ProfileFactory
 
 
 class TestCollectivite:
@@ -1526,6 +1527,33 @@ class TestEvent:
         assert Event(procedure=procedure).date_evenement is None
 
     @pytest.mark.django_db
+    def test_event_archived(self) -> None:
+        profile = ProfileFactory()
+        event = EventFactory.build()
+        assert not event.is_archived
+
+        event = EventFactory.build(archived_at=timezone.now(), archived_by=profile)
+        assert event.is_archived
+
+        event = EventFactory.build(archived_at=timezone.now(), archived_by=None)
+        with pytest.raises(ValidationError) as error:
+            event.save()
+        assert error.value.messages == [
+            "Le champ “archived_by” doit être renseigné uniquement si le champ “archived_at” est renseigné"
+        ]
+
+        event = EventFactory.build(archived_at=None, archived_by=profile)
+        with pytest.raises(ValidationError) as error:
+            event.save()
+        assert error.value.messages == [
+            "Le champ “archived_by” doit être renseigné uniquement si le champ “archived_at” est renseigné"
+        ]
+
+        event = EventFactory.build()
+        event.archive(archived_by=profile)
+        assert event.is_archived
+
+    @pytest.mark.django_db
     def test_project_id(
         self,
         django_assert_num_queries: DjangoAssertNumQueries,
@@ -1611,6 +1639,24 @@ class TestEventManagers:
         for item in [*to_be_removed_fields, *heavy_fields]:
             with subtests.test(item, item=item):
                 assert item not in event.__dict__
+
+    @pytest.mark.django_db
+    def test_managers_archived_events(self) -> None:
+        event_not_archived = EventFactory(archived_at=None, archived_by=None)
+        EventFactory(archived_at=timezone.now(), archived_by=ProfileFactory())
+
+        queryset = Event.objects.all()
+        assert queryset.count() == 1
+        event = queryset.first()
+        assert event.id == event_not_archived.id
+
+        queryset = Event.full_objects.all()
+        assert queryset.count() == 2
+
+        queryset = Event.full_objects.without_archived()
+        assert queryset.count() == 1
+        event = queryset.first()
+        assert event.id == event_not_archived.id
 
     @pytest.mark.django_db
     def test_full_objects_manager(self, subtests: pytest.Subtests) -> None:

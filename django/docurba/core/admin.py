@@ -342,14 +342,16 @@ class EventAdmin(admin.ModelAdmin):
         "project",
         "attachements",
         "actors",
+        "archived_at",
+        "archived_by",
         # Data imported from Sudocuh
         "is_valid",
         "is_sudocuh_scot",
         "from_sudocuh_procedure_id",
     )
     raw_id_fields = ("procedure",)
-    list_display = ("pk", "created_at")
-    list_filter = ("code",)
+    list_display = ("pk", "created_at", "archived_at")
+    list_filter = ("archived_at", "code")
     search_fields = ("pk",)
     autocomplete_fields = ("profile",)
     historized_fields = (
@@ -377,7 +379,10 @@ class EventAdmin(admin.ModelAdmin):
         return super().has_change_permission(request, obj)
 
     def get_queryset(self, request) -> models.QuerySet:
-        queryset = super().get_queryset(request)
+        queryset = self.model.full_objects.defer_heavy_fields()
+        ordering = self.get_ordering(request)
+        if ordering:
+            queryset = queryset.order_by(*ordering)
         return (
             queryset.select_related("procedure")
             .select_related("procedure__collectivite_porteuse")

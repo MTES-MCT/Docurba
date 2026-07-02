@@ -7,7 +7,7 @@ from typing import Self
 
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.validators import MinValueValidator
 from django.db import connection, models
 from django.db.models import Value
@@ -19,6 +19,7 @@ from django.utils import timezone
 
 from docurba.core.enums import CommuneType, EventScope, TypeCollectivite, VisibilityType
 from docurba.core.utils import OversizedIndex
+from docurba.users.models import Profile
 
 logger = logging.getLogger(__name__)
 
@@ -950,12 +951,11 @@ class EventType(models.Model):
         return result["next_order"]
 
 
-class EventManager(models.Manager):
-    pass
+class EventQuerySet(models.QuerySet):
+    def without_archived(self) -> Self:
+        return self.filter(archived_at__isnull=True)
 
-
-class FastLoadingEventManager(EventManager):
-    def get_queryset(self) -> Self:
+    def defer_heavy_fields(self) -> Self:
         to_be_removed_fields = [
             "is_sudocuh_scot",
             "test",
@@ -968,7 +968,17 @@ class FastLoadingEventManager(EventManager):
             "attachements",
             "actors",
         ]
-        return super().get_queryset().defer(*to_be_removed_fields, *heavy_fields)
+        return self.defer(*to_be_removed_fields, *heavy_fields)
+
+
+class EventManager(models.Manager):
+    pass
+
+
+class FastLoadingEventManager(EventManager):
+    def get_queryset(self) -> Self:
+
+        return super().get_queryset().without_archived().defer_heavy_fields()
 
 
 class Event(models.Model):
@@ -1018,8 +1028,19 @@ class Event(models.Model):
         blank=True, null=True, verbose_name="from_sudocuh_procedure_id"
     )
 
-    objects = FastLoadingEventManager()
-    full_objects = EventManager()
+    # archived_at is the source of truth to know if an event is archived
+    archived_at = models.DateTimeField(blank=True, null=True, verbose_name="archivé le")
+    archived_by = models.ForeignKey(
+        "users.Profile",
+        models.DO_NOTHING,
+        blank=True,
+        null=True,
+        related_name="+",
+        verbose_name="archivé par",
+    )
+
+    objects = FastLoadingEventManager.from_queryset(EventQuerySet)()
+    full_objects = EventManager.from_queryset(EventQuerySet)()
 
     class Meta:
         verbose_name = "évènement"
@@ -1047,9 +1068,24 @@ class Event(models.Model):
         return self.type
 
     def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+        self.clean()
         if self.procedure:
             self.project_id = self.procedure.project_id
         super().save(*args, **kwargs)
+
+    def clean(self) -> None:
+        archive_fields = [self.is_archived, self.archived_by]
+        if any(archive_fields) and not all(archive_fields):
+            message = "Le champ “archived_by” doit être renseigné uniquement si le champ “archived_at” est renseigné"
+            raise ValidationError(message)
+
+    def archive(self, archived_by: Profile) -> None:
+        self.archived_by = archived_by
+        self.archived_at = timezone.now()
+
+    @property
+    def is_archived(self) -> bool:
+        return bool(self.archived_at)
 
     @property
     def category(self) -> EventCategory | None:
