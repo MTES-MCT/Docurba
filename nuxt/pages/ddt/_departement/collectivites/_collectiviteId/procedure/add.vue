@@ -32,7 +32,14 @@ export default {
     }
   },
   async mounted () {
-    const collectivites = await this.$nuxt3api(`/api/geo/search/collectivites?code=${this.$route.params.collectiviteId}&populate=true`)
+    // const collectivites = await this.$nuxt3api(`/api/geo/search/collectivites?code=${this.$route.params.collectiviteId}&populate=true`)
+
+    // TODO: check membership depth
+    const collectivites = await this.$djangoApi.get('/api-internes/collectivites/', {
+      code: this.$route.params.collectiviteId,
+      avec_membres:true,
+      avec_groupements: true,
+    })
     this.collectivite = collectivites[0]
 
     if (!this.$user.canCreateProcedure({ collectivite: this.collectivite })) {
