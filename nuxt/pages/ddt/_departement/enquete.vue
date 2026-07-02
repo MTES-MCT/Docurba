@@ -64,6 +64,7 @@
                           Les modifications simplifiées n’ayant aucun événement, si elles ont été créées après le 22 août 2020.
                         </li>
                         <li>
+                          <!-- eslint-disable-next-line no-irregular-whitespace -->
                           Les procédures contenant déjà l'objet « trajectoire ZAN », qu'elles répondent aux conditions précédentes, ou non.
                         </li>
                       </ul>
@@ -445,7 +446,15 @@ export default {
       this.$nuxt.context.redirect(302, '/')
     }
 
-    const collectivites = await this.$nuxt3api(`/api/geo/collectivites?departementCode=${this.$route.params.departement}`)
+    // Same as pages/ddt/_departement/collectivites/index.vue
+    // Communes as municipalities, not geographic towns.
+    const collectivites = await this.$collectiviteApi.list({
+      departement: this.$route.params.departement,
+      avec_membres_niveaux_inferieurs: true,
+      avec_groupements: true,
+      avec_membres: true,
+      trouvable: true
+    })
     const communes = []
     const groupements = []
 
@@ -454,7 +463,7 @@ export default {
         communes.push(c)
       }
 
-      if (c.code.length > 5) {
+      if (c.siren) {
         groupements.push(c)
       }
     })

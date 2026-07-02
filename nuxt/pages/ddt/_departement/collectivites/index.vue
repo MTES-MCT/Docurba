@@ -490,7 +490,14 @@ export default {
     }
   },
   async mounted () {
-    const collectivites = await this.$nuxt3api(`/api/geo/collectivites?departementCode=${this.$route.params.departement}`)
+    // Communes as municipalities, not geographic towns.
+    const collectivites = await this.$collectiviteApi.list({
+      departement: this.$route.params.departement,
+      avec_membres_niveaux_inferieurs: true,
+      avec_groupements: true,
+      avec_membres: true,
+      trouvable: true
+    })
     const communes = []
     const groupements = []
 
@@ -499,7 +506,7 @@ export default {
         communes.push(c)
       }
 
-      if (c.code.length > 5) {
+      if (c.siren) {
         groupements.push(c)
       }
     })
@@ -590,30 +597,12 @@ export default {
         }
       })
     },
-    findCommunes (membres, groupements) {
-      const communes = []
-
-      membres.forEach((m) => {
-        if (m.code.length > 5) {
-          const group = groupements.find(g => g.code === m.code)
-          if (group && group.membres) {
-            communes.push(...this.findCommunes(group.membres, groupements))
-          }
-        } else {
-          communes.push(m)
-        }
-      })
-
-      return communes
-    },
     parseGroupements (groupements, procedures) {
       return groupements.map((groupement) => {
-        const communesCodes = this.findCommunes(groupement.membres, groupements).map(m => m.code)
-
-        const collectivitesSet = new Set(communesCodes)
+        const communesCodes = groupement.membres_niveaux_inferieurs.map(m => m.code)
         const groupementProcedures = procedures.filter((procedure) => {
           return procedure.procedures_perimetres.map(p => p.collectivite_code).some((code) => {
-            return collectivitesSet.has(code)
+            return communesCodes.includes(code)
           })
         })
 

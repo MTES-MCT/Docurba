@@ -115,13 +115,13 @@ export default {
   },
   methods: {
     async getProcedures () {
-      const collectivites = await this.$nuxt3api(`/api/geo/collectivites?code=${this.$route.params.collectiviteId}`)
+      const collectivites = await this.$collectiviteApi.listFromCodes(new Array(this.$route.params.collectiviteId), {
+        avec_membres: true
+      })
       this.collectivite = collectivites[0]
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
       this.schemas = schemas
       this.plans = plans
-      console.log('schemas: ', schemas, ' plans: ', plans)
-      console.log('this.collectivite: ', this.collectivite.membres)
     }
   }
 }

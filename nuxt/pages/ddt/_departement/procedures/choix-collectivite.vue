@@ -95,7 +95,12 @@ export default {
     }
   },
   async mounted () {
-    this.collectivites = await this.$nuxt3api(`/api/geo/search/collectivites?departementCode=${this.$route.params.departement}`)
+    // Every collectivite, even those without jurisdiction and not "EPCI à fiscalité propre".
+    this.collectivites = await this.$collectiviteApi.list({
+      departement: this.$route.params.departement
+    })
+    this.collectivites = this.collectivites.filter((collectivite) => { return !['COMD', 'COMA', 'UNKWN'].includes(collectivite.type) })
+
     if (!this.$user.canCreateProcedure({ departement: this.$route.params.departement })) {
       console.warn('Pas assez de droits pour créer une procédure sur ce périmètre')
       this.$nuxt.context.redirect(302, '/')
