@@ -3,6 +3,8 @@ from pathlib import Path
 import sentry_sdk
 from environ import Env
 
+from docurba.utils.enums import DocurbaEnvironment
+
 env = Env()
 env.smart_cast = False
 
@@ -17,6 +19,8 @@ EXPORTS_DIR = env.str("SCRIPT_EXPORT_PATH", default=f"{BASE_DIR}/exports")
 SECRET_KEY = env.str("SECRET_KEY", default="local_secret_key")
 DEBUG = False
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
+
+DOCURBA_ENVIRONMENT = DocurbaEnvironment(env.str("DOCURBA_ENVIRONMENT", default="PROD"))
 
 # Application definition
 

@@ -307,6 +307,7 @@ jobs:
         django_secret_key=$(python -c "import secrets; print(secrets.token_hex(60))")
         echo "::add-mask::${django_secret_key}";
         scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" env-set \
+        DOCURBA_ENVIRONMENT="REVIEW-APP" \
         UPSTREAM_NUXT="${{ needs.prepare.outputs.NUXT_2_URL }}" \
         DATABASE_URL="${{ steps.db.outputs.POSTGRES_URL }}" \
         NUXT3_API_URL="${{ needs.prepare.outputs.NUXT_3_URL }}" \
