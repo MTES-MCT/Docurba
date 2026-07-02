@@ -322,10 +322,6 @@ class ProcedureQuerySet(models.QuerySet):
             ),
         )
 
-    def without_adhesions_count(self) -> Self:
-        self.query.annotations.pop("communes_adherentes__count")
-        return self
-
     def with_concatenated_topics_as_string(self) -> Self:
         return self.annotate(
             concatenated_topics_as_string=StringAgg(
@@ -995,6 +991,16 @@ class Departement(models.Model):
 
 class CollectiviteQuerySet(models.QuerySet):
     def portant_scot(self, avant: date | None = None) -> Self:
+        procedures_qs = (
+            Procedure.objects.with_events(avant=avant)
+            .with_concatenated_topics_as_string()
+            .order_by("created_at")
+            .filter(
+                doc_type="SCOT",
+                parente=None,
+                archived=False,
+            )
+        )
         return (
             self.distinct()
             .filter(
@@ -1006,15 +1012,7 @@ class CollectiviteQuerySet(models.QuerySet):
             .prefetch_related(
                 models.Prefetch(
                     "procedure_set",
-                    Procedure.objects.with_events(avant=avant)
-                    .with_concatenated_topics_as_string()
-                    .without_adhesions_count()
-                    .order_by("created_at")
-                    .filter(
-                        doc_type="SCOT",
-                        parente=None,
-                        archived=False,
-                    ),
+                    procedures_qs,
                     to_attr="scots",
                 ),
                 models.Prefetch(
@@ -1098,16 +1096,12 @@ class Collectivite(models.Model):
 
 
 class CommuneQuerySet(models.QuerySet):
-    def with_procedures_principales(
-        self, *, avant: date | None = None, with_adhesions_count: bool = True
-    ) -> Self:
+    def with_procedures_principales(self, *, avant: date | None = None) -> Self:
         procedures_principales = (
             Procedure.objects.with_concatenated_topics_as_string()
             .with_events(avant=avant)
             .filter(parente=None, archived=False)
         )
-        if not with_adhesions_count:
-            procedures_principales = procedures_principales.without_adhesions_count()
 
         return self.prefetch_related(
             models.Prefetch(
