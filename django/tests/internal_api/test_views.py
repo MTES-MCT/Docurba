@@ -127,24 +127,29 @@ class TestCollectivitesAPI:
         assert response.json()["results"] == snapshot()
 
     @pytest.mark.parametrize(
-        ("query_params", "expected_num_queries"),
+        ("query_params"),
         [
             pytest.param(
-                {"avec_membres": "true"},
-                3,
-                id="avec_membres",
+                {"avec_membres_niveaux_inferieurs": "true"},
+                id="avec_membres_niveaux_inferieurs",
+            ),
+            pytest.param(
+                {"avec_groupements_niveaux_superieurs": "true"},
+                id="avec_groupements_niveaux_superieurs",
             ),
             pytest.param(
                 {"avec_groupements": "true"},
-                3,
                 id="avec_groupements",
+            ),
+            pytest.param(
+                {"avec_membres": "true"},
+                id="avec_membres",
             ),
         ],
     )
     def test_with_groupements_and_members(
         self,
         api_client: APIClient,
-        expected_num_queries: int,
         query_params: dict,
         snapshot: Snapshot,
     ) -> None:
@@ -155,7 +160,7 @@ class TestCollectivitesAPI:
             departement__code_insee="30",
         )
         url = f"{reverse('internal_api:collectivites-list')}?{urlencode(query_params)}"
-        with assertNumQueries(expected_num_queries):
+        with assertNumQueries(3):
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200
