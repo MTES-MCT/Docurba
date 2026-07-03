@@ -4,7 +4,8 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
 
   env: {
-    DDT_ENQUETE_ENABLED: process.env.DDT_ENQUETE_ENABLED?.split(',') ?? [],
+    // TODO: clean me.
+    DDT_ENQUETE_ENABLED: true, // process.env.DDT_ENQUETE_ENABLED?.split(',') ?? [],
     DDT_PROCEDURE_SURVEY_ENABLED_DEPTS: process.env.DDT_PROCEDURE_SURVEY_ENABLED_DEPTS?.split(',') ?? [],
     NUXT3_API_URL: process.env.NUXT3_API_URL,
     DJANGO_API_BASE_URL: process.env.DJANGO_API_BASE_URL,
