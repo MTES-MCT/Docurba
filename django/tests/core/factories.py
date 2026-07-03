@@ -108,7 +108,7 @@ class DepartementFactory(factory.django.DjangoModelFactory):
 class CommuneFactory(factory.django.DjangoModelFactory):
     class Params:
         for_snapshot = factory.Trait(
-            code_insee_unique="30032",
+            code_insee="30032",
             type=CommuneType.COM,
             nom="Beaucaire",
             departement__for_snapshot=True,
@@ -129,9 +129,7 @@ class CommuneFactory(factory.django.DjangoModelFactory):
     departement = factory.SubFactory(
         DepartementFactory,
         code_insee=factory.LazyAttribute(
-            lambda o: COMMUNES[o.factory_parent.code_insee_unique][
-                "departement_insee_code"
-            ]
+            lambda o: COMMUNES[o.factory_parent.code_insee]["departement_insee_code"]
         ),
     )
 
