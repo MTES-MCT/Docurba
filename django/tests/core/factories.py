@@ -1,5 +1,6 @@
 import datetime
 import string
+import uuid
 from json import loads
 from pathlib import Path
 
@@ -68,6 +69,12 @@ COMMUNES = generate_communes()
 
 
 class RegionFactory(factory.django.DjangoModelFactory):
+    class Params:
+        for_snapshot = factory.Trait(
+            code_insee="76",
+            nom="Occitanie",
+        )
+
     class Meta:
         model = Region
         django_get_or_create = ("code_insee",)
@@ -77,6 +84,13 @@ class RegionFactory(factory.django.DjangoModelFactory):
 
 
 class DepartementFactory(factory.django.DjangoModelFactory):
+    class Params:
+        for_snapshot = factory.Trait(
+            code_insee="30",
+            nom="Gard",
+            region=factory.SubFactory(RegionFactory, for_snapshot=True),
+        )
+
     class Meta:
         model = Departement
         django_get_or_create = ("code_insee",)
@@ -92,6 +106,14 @@ class DepartementFactory(factory.django.DjangoModelFactory):
 
 
 class CommuneFactory(factory.django.DjangoModelFactory):
+    class Params:
+        for_snapshot = factory.Trait(
+            code_insee_unique="30032",
+            type=CommuneType.COM,
+            nom="Beaucaire",
+            departement__for_snapshot=True,
+        )
+
     class Meta:
         model = Commune
         django_get_or_create = ("code_insee_unique",)
@@ -122,9 +144,10 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
 
     class Params:
         for_snapshot = factory.Trait(
+            siren="253000020",
             type=TypeCollectivite.SMO,
             nom="Syndicat mixte d'équipement de la commune de Beaucaire",
-            siren="253000020",
+            departement__for_snapshot=True,
         )
 
     id = factory.LazyAttribute(lambda o: f"{o.code_insee_unique}_{o.type}")
@@ -206,6 +229,11 @@ class ProjectFactory(factory.django.DjangoModelFactory):
     collectivite_porteuse = factory.SubFactory(CollectiviteFactory)
     owner = factory.SubFactory(ProfileFactory)
 
+    class Params:
+        for_snapshot = factory.Trait(
+            name="Projet d'élaboration du PLU de Nantes",
+        )
+
     class Meta:
         model = Project
 
@@ -242,6 +270,13 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
                 doc_type=factory.SelfAttribute("..doc_type"),
                 collectivite_porteuse=factory.SelfAttribute("..collectivite_porteuse"),
             ),
+        )
+        for_snapshot = factory.Trait(
+            pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-5e1baf8d6f09"),
+            collectivite_porteuse__for_snapshot=True,
+            doc_type=TypeDocument.PLU,
+            name="Élaboration du PLU de Nantes",
+            project__for_snapshot=True,
         )
 
     @factory.post_generation
