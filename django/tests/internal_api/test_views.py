@@ -4,7 +4,7 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertNumQueries
 from rest_framework.test import APIClient
-from syrupy.data import Snapshot
+from syrupy import SnapshotAssertion
 
 from docurba.core.enums import EventScope
 from docurba.core.models import (
@@ -62,7 +62,7 @@ class TestCollectivitesAPI:
         api_client: APIClient,
         expected_num_queries: int,
         query_params: str,
-        snapshot: Snapshot,
+        snapshot: SnapshotAssertion,
     ) -> None:
         CollectiviteFactory(
             siren="987654321",
@@ -108,7 +108,7 @@ class TestCollectivitesAPI:
         ],
     )
     def test_without_communes_from_list(
-        self, api_client: APIClient, query_params: dict, snapshot: Snapshot
+        self, api_client: APIClient, query_params: dict, snapshot: SnapshotAssertion
     ) -> None:
         CollectiviteFactory(
             type=TypeCollectivite.COM,
@@ -154,7 +154,7 @@ class TestCollectivitesAPI:
         self,
         api_client: APIClient,
         query_params: dict,
-        snapshot: Snapshot,
+        snapshot: SnapshotAssertion,
     ) -> None:
         CollectiviteFactory(
             for_snapshot=True,
@@ -191,7 +191,7 @@ class TestCollectivitesAPI:
         ],
     )
     def test_competences_list(
-        self, api_client: APIClient, query_params: dict, snapshot: Snapshot
+        self, api_client: APIClient, query_params: dict, snapshot: SnapshotAssertion
     ) -> None:
         CollectiviteFactory(
             type=TypeCollectivite.CC,
@@ -314,7 +314,7 @@ class TestCommunesAPI:
         api_client: APIClient,
         expected_num_queries: int,
         query_params: dict,
-        snapshot: Snapshot,
+        snapshot: SnapshotAssertion,
     ) -> None:
         CommuneFactory(
             code_insee="13150",
