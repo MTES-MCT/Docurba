@@ -36,6 +36,7 @@ dev = [
     "pre-commit>=4.6.0", # https://github.com/pre-commit/pre-commit
     "factory-boy", # https://github.com/FactoryBoy/factory_boy
     "syrupy", # https://github.com/syrupy-project/syrupy
+    "freezegun", # https://github.com/spulec/freezegun
 ]
 
 [tool.pytest.ini_options]
