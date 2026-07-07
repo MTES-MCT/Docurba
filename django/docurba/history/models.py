@@ -22,6 +22,7 @@ EventSnapshot = create_event_model(
     ),
     fields=[
         "procedure",
+        "event_type",
         "type",
         "code",
         "date_evenement",
