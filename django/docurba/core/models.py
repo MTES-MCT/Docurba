@@ -991,6 +991,9 @@ class Event(models.Model):
     procedure = models.ForeignKey(
         "core.Procedure", models.DO_NOTHING, null=True, verbose_name="procédure"
     )
+    event_type = models.ForeignKey(
+        "core.EventType", models.DO_NOTHING, null=True, verbose_name="type"
+    )
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
     date_evenement = models.DateField(
         db_column="date_iso", blank=True, null=True, verbose_name="date"
