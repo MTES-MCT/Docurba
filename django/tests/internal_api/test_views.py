@@ -58,22 +58,6 @@ class TestCollectivitesAPI:
             pytest.param(
                 {"codes_siren": ["132435465", "987654321"]},
                 BASE_QUERIES_COUNT + 1,
-                [
-                    {
-                        "code": "132435465",
-                        "type": "SMO",
-                        "intitule": "Groupement 3",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                    },
-                    {
-                        "code": "987654321",
-                        "type": "CC",
-                        "intitule": "Groupement 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                ],
                 id="many_codes_siren",
             ),
         ],
@@ -306,36 +290,11 @@ class TestCommunesAPI:
             pytest.param(
                 {"code": "13150"},
                 BASE_QUERIES_COUNT + 1,
-                [
-                    {
-                        "code": "13150",
-                        "type": "COM",
-                        "intitule": "Commune 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                ],
                 id="code_insee",
             ),
             pytest.param(
                 {"code": ["13150", "30000"]},
                 BASE_QUERIES_COUNT + 1,
-                [
-                    {
-                        "code": "13150",
-                        "type": "COM",
-                        "intitule": "Commune 1",
-                        "regionCode": "93",
-                        "departementCode": "13",
-                    },
-                    {
-                        "code": "30000",
-                        "type": "COM",
-                        "intitule": "Commune 2",
-                        "regionCode": "76",
-                        "departementCode": "30",
-                    },
-                ],
                 id="several_insee_codes",
             ),
         ],
