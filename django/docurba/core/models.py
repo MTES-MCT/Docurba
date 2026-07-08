@@ -1184,6 +1184,10 @@ class Collectivite(models.Model):
     # NOTE(cms): this is a copy of `code_insee_unique` containing SIREN codes only.
     # NOTE(cms): add a unique constraint when siren will not be in code_insee_unique anymore.
     siren = models.CharField(blank=True, verbose_name="SIREN", max_length=9)
+    # NOTE(cms): this is a copy of `code_insee_unique` containing INSEE codes only.
+    # « Grands quartiers » can have up to 7 characters.
+    # https://fr.wikipedia.org/wiki/Code_Insee
+    code_insee = models.CharField(blank=True, verbose_name="code INSEE", max_length=7)
     type = models.CharField(choices=TypeCollectivite.choices)
     nom = models.CharField()
     competence_plan = models.BooleanField(db_default=False)
@@ -1209,9 +1213,14 @@ class Collectivite(models.Model):
     def __str__(self) -> str:
         return f"{self.nom} ({self.code_insee_unique})"
 
-    @property
-    def code_insee(self) -> str:
-        return self.id.split("_")[0]
+    def save(self, *args: list, **kwargs: dict) -> None:
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def clean(self) -> None:
+        if self.code_insee and not self.is_commune:
+            raise ValidationError("Seules les communes peuvent avoir un code INSEE.")  # noqa: EM101, TRY003
+        super().clean()
 
     @property
     def is_commune(self) -> bool:
