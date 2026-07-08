@@ -5689,5 +5689,325 @@
             "sudocuh_name": "",
             "sudocuh_code": ""
         }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "1053dc10-6f3a-48db-9e24-846c6baa8847",
+        "fields": {
+            "document_type": "CC",
+            "name": "Arrêté du Maire ou du Préfet ou de l'EPCI",
+            "order": 64,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Arrêté de mise à jour",
+            "sudocuh_code": "ARRMP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "2c18b460-a6d0-46e8-af91-382fe4f9bb8f",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Notification PPA",
+            "order": 96,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Notification PPA",
+            "sudocuh_code": "NOTPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "2ebbed78-bb41-40b1-a07d-d225142618d6",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Délibération de l'analyse",
+            "order": 97,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Délibération de l'analyse",
+            "sudocuh_code": "DELANA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "3b4804e4-ed3c-4c8a-8b6d-b1663ff78bcd",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Délibération de l'Etab Pub sur les modalités de concertation",
+            "order": 98,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Délibération ou arrêté définissant les objectifs et modalités concertation",
+            "sudocuh_code": "DELEPCONC"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "4f1e552a-3e06-4251-983b-f6cb96f294a7",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Modification périmètre",
+            "order": 99,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Modification du périmètre",
+            "sudocuh_code": "MODPER"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "5a5ed715-db30-425f-9046-80f66a6557dc",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Délibération modalités mise à disposition du public",
+            "order": 100,
+            "is_active": false,
+            "is_structuring": false,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Délibération sur les modalités de mise à disposition",
+            "sudocuh_code": "DELMODPUB"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "6da1aae8-d225-4691-88e3-e181afbfa6a6",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Délibération modalités mise à disposition du public",
+            "order": 116,
+            "is_active": false,
+            "is_structuring": false,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Délibération sur les modalités de mise à disposition",
+            "sudocuh_code": "DELMODPUB"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "70d3dc2c-fdef-4c41-84e6-223363f74c0c",
+        "fields": {
+            "document_type": "CC",
+            "name": "Diffusion",
+            "order": 65,
+            "is_active": false,
+            "is_structuring": false,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Diffusion",
+            "sudocuh_code": "DIF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "71e9e840-e95d-49ec-bd4e-76732e883633",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Transmission au préfet",
+            "order": 101,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Transmission au préfet",
+            "sudocuh_code": "TRPREF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "7aaba49f-9205-4348-a31d-8faba0e39fb1",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Transmission au préfet pour approbation",
+            "order": 117,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Transmission au préfet pour approbation",
+            "sudocuh_code": "TRPREFAPP"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "7d08fc74-4a67-41c3-988f-6eff187b796a",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Publication de l'analyse",
+            "order": 102,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Publication de l'analyse",
+            "sudocuh_code": "PUBANA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "8911979b-3633-4e87-8a2a-820e4f2e55d2",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Examen conjoint des PPA",
+            "order": 103,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Examen conjoint des PPA",
+            "sudocuh_code": "EXAMPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "8e5d7039-6b53-48b7-b1ab-8a31f58db4f6",
+        "fields": {
+            "document_type": "CC",
+            "name": "Mise en demeure servitudes",
+            "order": 66,
+            "is_active": false,
+            "is_structuring": false,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Mise en demeure servitudes",
+            "sudocuh_code": "MISDEM"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "8f5dec59-25db-458f-8b59-2f9317c2add5",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Diffusion",
+            "order": 118,
+            "is_active": false,
+            "is_structuring": false,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Diffusion",
+            "sudocuh_code": "DIF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "a739f600-71b7-4947-a3fd-308c070fa4e1",
+        "fields": {
+            "document_type": "PLU",
+            "name": "Approbation du préfet",
+            "order": 119,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Approbation du préfet",
+            "sudocuh_code": "APPPREF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "bb8f4340-0e40-4bec-a0e9-3dd4a32fa913",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Diffusion",
+            "order": 104,
+            "is_active": false,
+            "is_structuring": false,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Diffusion",
+            "sudocuh_code": "DIF"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "c1405a81-1a9e-4cf6-b715-bc8025d98dc8",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Délibération de maintien",
+            "order": 105,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Délibération de maintien",
+            "sudocuh_code": "DELMAINT"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "d0c53cf8-9ac2-42aa-bcd0-de3f7fbc287e",
+        "fields": {
+            "document_type": "CC",
+            "name": "Consultation des PPA",
+            "order": 67,
+            "is_active": false,
+            "is_structuring": false,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Consultation des PPA",
+            "sudocuh_code": "CONSPPA"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "d7682bed-5163-414e-8e41-5d16ed069476",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Réunion des PPA sur le diagnostic",
+            "order": 106,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "Présentation du diagnostic aux PPA",
+            "sudocuh_code": "PPADIAG"
+        }
+    },
+    {
+        "model": "core.eventtype",
+        "pk": "3c406bd0-026e-4733-ac7e-89de3291c252",
+        "fields": {
+            "document_type": "SCOT",
+            "name": "Evaluation du SCoT au bout de 6 ans ou révision substantielle si besoin",
+            "order": 96,
+            "is_active": false,
+            "is_structuring": true,
+            "scope_list": [],
+            "scope_sugg": [],
+            "impact": "",
+            "sudocuh_name": "",
+            "sudocuh_code": ""
+        }
     }
 ]
