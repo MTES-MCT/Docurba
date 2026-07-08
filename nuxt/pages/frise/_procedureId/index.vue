@@ -479,7 +479,7 @@ export default
     },
     async getEvents () {
       const { data: events, error: errorEvents } = await this.$supabase.from('doc_frise_events')
-        .select('*, profiles(*)')
+        .select('*, profiles!doc_frise_events_profile_id_fkey(*)')
         .eq('procedure_id', this.$route.params.procedureId)
         .order('date_iso', { ascending: false })
         .order('created_at', { ascending: false })
