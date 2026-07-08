@@ -1,5 +1,6 @@
 # ruff: noqa: FBT001, N803
 from collections.abc import Callable
+from contextlib import nullcontext as does_not_raise
 from datetime import date, timedelta
 from functools import partial
 from unittest import mock
@@ -27,6 +28,7 @@ from docurba.core.models import (
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
+    DepartementFactory,
     EventFactory,
     EventTypeFactory,
     ProcedureFactory,
@@ -276,6 +278,25 @@ class TestProcedureCommunesCounts:
 
 def test_tous_document_types_ont_event_category() -> None:
     assert list(TypeDocument) == list(EVENT_CATEGORY_BY_DOC_TYPE.keys())
+
+
+@pytest.mark.django_db
+class TestCollectivite:
+    def test_code_insee_integrity(self) -> None:
+        departement = DepartementFactory(code_insee="30")
+        collectivite = CollectiviteFactory.build(
+            type=TypeCollectivite.CC, code_insee="12345", departement=departement
+        )
+        with pytest.raises(
+            ValidationError, match=r"Seules les communes peuvent avoir un code INSEE."
+        ):
+            collectivite.save()
+
+        collectivite = CollectiviteFactory.build(
+            type=TypeCollectivite.COM, code_insee="12345", departement=departement
+        )
+        with does_not_raise():
+            collectivite.save()
 
 
 class TestCollectivitePortantScot:
