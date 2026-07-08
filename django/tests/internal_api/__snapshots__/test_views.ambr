@@ -2,7 +2,7 @@
 # name: TestCollectivitesAPI.test_competences_list[competence_plan]
   list([
     dict({
-      'code': '123456778',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 2',
       'regionCode': '93',
@@ -10,7 +10,7 @@
       'type': 'CC',
     }),
     dict({
-      'code': '987654321',
+      'codeInsee': '',
       'departementCode': '30',
       'intitule': 'Groupement 3',
       'regionCode': '76',
@@ -22,7 +22,7 @@
 # name: TestCollectivitesAPI.test_competences_list[competence_schema]
   list([
     dict({
-      'code': '123456789',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 1',
       'regionCode': '93',
@@ -30,7 +30,7 @@
       'type': 'CC',
     }),
     dict({
-      'code': '987654321',
+      'codeInsee': '',
       'departementCode': '30',
       'intitule': 'Groupement 3',
       'regionCode': '76',
@@ -42,7 +42,7 @@
 # name: TestCollectivitesAPI.test_competences_list[competence_schema_ou_plan]
   list([
     dict({
-      'code': '123456778',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 2',
       'regionCode': '93',
@@ -50,7 +50,7 @@
       'type': 'CC',
     }),
     dict({
-      'code': '123456789',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 1',
       'regionCode': '93',
@@ -58,7 +58,7 @@
       'type': 'CC',
     }),
     dict({
-      'code': '987654321',
+      'codeInsee': '',
       'departementCode': '30',
       'intitule': 'Groupement 3',
       'regionCode': '76',
@@ -70,7 +70,7 @@
 # name: TestCollectivitesAPI.test_competences_list[sans_competence]
   list([
     dict({
-      'code': '123456778',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 2',
       'regionCode': '93',
@@ -78,7 +78,7 @@
       'type': 'CC',
     }),
     dict({
-      'code': '123456789',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 1',
       'regionCode': '93',
@@ -86,7 +86,7 @@
       'type': 'CC',
     }),
     dict({
-      'code': '987654321',
+      'codeInsee': '',
       'departementCode': '30',
       'intitule': 'Groupement 3',
       'regionCode': '76',
@@ -98,7 +98,7 @@
 # name: TestCollectivitesAPI.test_list_filters[many_departments]
   list([
     dict({
-      'code': '123456789',
+      'codeInsee': '',
       'departementCode': '84',
       'intitule': 'Groupement 2',
       'regionCode': '93',
@@ -106,7 +106,7 @@
       'type': 'SIVOM',
     }),
     dict({
-      'code': '987654321',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 1',
       'regionCode': '93',
@@ -118,7 +118,7 @@
 # name: TestCollectivitesAPI.test_list_filters[many_types]
   list([
     dict({
-      'code': '132435465',
+      'codeInsee': '',
       'departementCode': '30',
       'intitule': 'Groupement 3',
       'regionCode': '76',
@@ -126,7 +126,7 @@
       'type': 'SMO',
     }),
     dict({
-      'code': '987654321',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 1',
       'regionCode': '93',
@@ -138,7 +138,7 @@
 # name: TestCollectivitesAPI.test_list_filters[no_filter]
   list([
     dict({
-      'code': '123456789',
+      'codeInsee': '',
       'departementCode': '84',
       'intitule': 'Groupement 2',
       'regionCode': '93',
@@ -146,7 +146,7 @@
       'type': 'SIVOM',
     }),
     dict({
-      'code': '132435465',
+      'codeInsee': '',
       'departementCode': '30',
       'intitule': 'Groupement 3',
       'regionCode': '76',
@@ -154,7 +154,7 @@
       'type': 'SMO',
     }),
     dict({
-      'code': '987654321',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 1',
       'regionCode': '93',
@@ -166,7 +166,7 @@
 # name: TestCollectivitesAPI.test_list_filters[one_department]
   list([
     dict({
-      'code': '123456789',
+      'codeInsee': '',
       'departementCode': '84',
       'intitule': 'Groupement 2',
       'regionCode': '93',
@@ -178,7 +178,7 @@
 # name: TestCollectivitesAPI.test_list_filters[region]
   list([
     dict({
-      'code': '123456789',
+      'codeInsee': '',
       'departementCode': '84',
       'intitule': 'Groupement 2',
       'regionCode': '93',
@@ -186,7 +186,7 @@
       'type': 'SIVOM',
     }),
     dict({
-      'code': '987654321',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 1',
       'regionCode': '93',
@@ -198,7 +198,7 @@
 # name: TestCollectivitesAPI.test_list_filters[region_and_type]
   list([
     dict({
-      'code': '987654321',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 1',
       'regionCode': '93',
@@ -210,11 +210,101 @@
 # name: TestCollectivitesAPI.test_with_groupements_and_members[avec_groupements]
   list([
     dict({
-      'code': '243000585',
+      'codeInsee': '30032',
       'departementCode': '30',
       'groupements': list([
         dict({
-          'code': '253000020',
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "CC Beaucaire Terre d'Argence",
+          'regionCode': '76',
+          'siren': '243000585',
+          'type': 'CC',
+        }),
+      ]),
+      'intitule': 'Beaucaire',
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30034',
+      'departementCode': '30',
+      'groupements': list([
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "CC Beaucaire Terre d'Argence",
+          'regionCode': '76',
+          'siren': '243000585',
+          'type': 'CC',
+        }),
+      ]),
+      'intitule': 'Bellegarde',
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30117',
+      'departementCode': '30',
+      'groupements': list([
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "CC Beaucaire Terre d'Argence",
+          'regionCode': '76',
+          'siren': '243000585',
+          'type': 'CC',
+        }),
+      ]),
+      'intitule': 'Fourques',
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30135',
+      'departementCode': '30',
+      'groupements': list([
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "CC Beaucaire Terre d'Argence",
+          'regionCode': '76',
+          'siren': '243000585',
+          'type': 'CC',
+        }),
+      ]),
+      'intitule': 'Jonquières-Saint-Vincent',
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30336',
+      'departementCode': '30',
+      'groupements': list([
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "CC Beaucaire Terre d'Argence",
+          'regionCode': '76',
+          'siren': '243000585',
+          'type': 'CC',
+        }),
+      ]),
+      'intitule': 'Vallabrègues',
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '',
+      'departementCode': '30',
+      'groupements': list([
+        dict({
+          'codeInsee': '',
           'departementCode': '30',
           'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
           'regionCode': '76',
@@ -228,7 +318,7 @@
       'type': 'CC',
     }),
     dict({
-      'code': '253000020',
+      'codeInsee': '',
       'departementCode': '30',
       'groupements': list([
       ]),
@@ -236,107 +326,147 @@
       'regionCode': '76',
       'siren': '253000020',
       'type': 'SMO',
-    }),
-    dict({
-      'code': '30032',
-      'departementCode': '30',
-      'groupements': list([
-        dict({
-          'code': '243000585',
-          'departementCode': '30',
-          'intitule': "CC Beaucaire Terre d'Argence",
-          'regionCode': '76',
-          'siren': '243000585',
-          'type': 'CC',
-        }),
-      ]),
-      'intitule': 'Beaucaire',
-      'regionCode': '76',
-      'siren': '30032',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30034',
-      'departementCode': '30',
-      'groupements': list([
-        dict({
-          'code': '243000585',
-          'departementCode': '30',
-          'intitule': "CC Beaucaire Terre d'Argence",
-          'regionCode': '76',
-          'siren': '243000585',
-          'type': 'CC',
-        }),
-      ]),
-      'intitule': 'Bellegarde',
-      'regionCode': '76',
-      'siren': '30034',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30117',
-      'departementCode': '30',
-      'groupements': list([
-        dict({
-          'code': '243000585',
-          'departementCode': '30',
-          'intitule': "CC Beaucaire Terre d'Argence",
-          'regionCode': '76',
-          'siren': '243000585',
-          'type': 'CC',
-        }),
-      ]),
-      'intitule': 'Fourques',
-      'regionCode': '76',
-      'siren': '30117',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30135',
-      'departementCode': '30',
-      'groupements': list([
-        dict({
-          'code': '243000585',
-          'departementCode': '30',
-          'intitule': "CC Beaucaire Terre d'Argence",
-          'regionCode': '76',
-          'siren': '243000585',
-          'type': 'CC',
-        }),
-      ]),
-      'intitule': 'Jonquières-Saint-Vincent',
-      'regionCode': '76',
-      'siren': '30135',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30336',
-      'departementCode': '30',
-      'groupements': list([
-        dict({
-          'code': '243000585',
-          'departementCode': '30',
-          'intitule': "CC Beaucaire Terre d'Argence",
-          'regionCode': '76',
-          'siren': '243000585',
-          'type': 'CC',
-        }),
-      ]),
-      'intitule': 'Vallabrègues',
-      'regionCode': '76',
-      'siren': '30336',
-      'type': 'COM',
     }),
   ])
 # ---
 # name: TestCollectivitesAPI.test_with_groupements_and_members[avec_groupements_niveaux_superieurs]
   list([
     dict({
-      'code': '243000585',
+      'codeInsee': '30032',
       'departementCode': '30',
       'groupements_niveaux_superieurs': list([
         dict({
-          'code': '253000020',
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "CC Beaucaire Terre d'Argence",
+          'regionCode': '76',
+          'siren': '243000585',
+          'type': 'CC',
+        }),
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+          'regionCode': '76',
+          'siren': '253000020',
+          'type': 'SMO',
+        }),
+      ]),
+      'intitule': 'Beaucaire',
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30034',
+      'departementCode': '30',
+      'groupements_niveaux_superieurs': list([
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "CC Beaucaire Terre d'Argence",
+          'regionCode': '76',
+          'siren': '243000585',
+          'type': 'CC',
+        }),
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+          'regionCode': '76',
+          'siren': '253000020',
+          'type': 'SMO',
+        }),
+      ]),
+      'intitule': 'Bellegarde',
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30117',
+      'departementCode': '30',
+      'groupements_niveaux_superieurs': list([
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "CC Beaucaire Terre d'Argence",
+          'regionCode': '76',
+          'siren': '243000585',
+          'type': 'CC',
+        }),
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+          'regionCode': '76',
+          'siren': '253000020',
+          'type': 'SMO',
+        }),
+      ]),
+      'intitule': 'Fourques',
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30135',
+      'departementCode': '30',
+      'groupements_niveaux_superieurs': list([
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "CC Beaucaire Terre d'Argence",
+          'regionCode': '76',
+          'siren': '243000585',
+          'type': 'CC',
+        }),
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+          'regionCode': '76',
+          'siren': '253000020',
+          'type': 'SMO',
+        }),
+      ]),
+      'intitule': 'Jonquières-Saint-Vincent',
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30336',
+      'departementCode': '30',
+      'groupements_niveaux_superieurs': list([
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "CC Beaucaire Terre d'Argence",
+          'regionCode': '76',
+          'siren': '243000585',
+          'type': 'CC',
+        }),
+        dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+          'regionCode': '76',
+          'siren': '253000020',
+          'type': 'SMO',
+        }),
+      ]),
+      'intitule': 'Vallabrègues',
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '',
+      'departementCode': '30',
+      'groupements_niveaux_superieurs': list([
+        dict({
+          'codeInsee': '',
           'departementCode': '30',
           'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
           'regionCode': '76',
@@ -350,7 +480,7 @@
       'type': 'CC',
     }),
     dict({
-      'code': '253000020',
+      'codeInsee': '',
       'departementCode': '30',
       'groupements_niveaux_superieurs': list([
       ]),
@@ -358,184 +488,104 @@
       'regionCode': '76',
       'siren': '253000020',
       'type': 'SMO',
-    }),
-    dict({
-      'code': '30032',
-      'departementCode': '30',
-      'groupements_niveaux_superieurs': list([
-        dict({
-          'code': '243000585',
-          'departementCode': '30',
-          'intitule': "CC Beaucaire Terre d'Argence",
-          'regionCode': '76',
-          'siren': '243000585',
-          'type': 'CC',
-        }),
-        dict({
-          'code': '253000020',
-          'departementCode': '30',
-          'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
-          'regionCode': '76',
-          'siren': '253000020',
-          'type': 'SMO',
-        }),
-      ]),
-      'intitule': 'Beaucaire',
-      'regionCode': '76',
-      'siren': '30032',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30034',
-      'departementCode': '30',
-      'groupements_niveaux_superieurs': list([
-        dict({
-          'code': '243000585',
-          'departementCode': '30',
-          'intitule': "CC Beaucaire Terre d'Argence",
-          'regionCode': '76',
-          'siren': '243000585',
-          'type': 'CC',
-        }),
-        dict({
-          'code': '253000020',
-          'departementCode': '30',
-          'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
-          'regionCode': '76',
-          'siren': '253000020',
-          'type': 'SMO',
-        }),
-      ]),
-      'intitule': 'Bellegarde',
-      'regionCode': '76',
-      'siren': '30034',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30117',
-      'departementCode': '30',
-      'groupements_niveaux_superieurs': list([
-        dict({
-          'code': '243000585',
-          'departementCode': '30',
-          'intitule': "CC Beaucaire Terre d'Argence",
-          'regionCode': '76',
-          'siren': '243000585',
-          'type': 'CC',
-        }),
-        dict({
-          'code': '253000020',
-          'departementCode': '30',
-          'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
-          'regionCode': '76',
-          'siren': '253000020',
-          'type': 'SMO',
-        }),
-      ]),
-      'intitule': 'Fourques',
-      'regionCode': '76',
-      'siren': '30117',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30135',
-      'departementCode': '30',
-      'groupements_niveaux_superieurs': list([
-        dict({
-          'code': '243000585',
-          'departementCode': '30',
-          'intitule': "CC Beaucaire Terre d'Argence",
-          'regionCode': '76',
-          'siren': '243000585',
-          'type': 'CC',
-        }),
-        dict({
-          'code': '253000020',
-          'departementCode': '30',
-          'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
-          'regionCode': '76',
-          'siren': '253000020',
-          'type': 'SMO',
-        }),
-      ]),
-      'intitule': 'Jonquières-Saint-Vincent',
-      'regionCode': '76',
-      'siren': '30135',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30336',
-      'departementCode': '30',
-      'groupements_niveaux_superieurs': list([
-        dict({
-          'code': '243000585',
-          'departementCode': '30',
-          'intitule': "CC Beaucaire Terre d'Argence",
-          'regionCode': '76',
-          'siren': '243000585',
-          'type': 'CC',
-        }),
-        dict({
-          'code': '253000020',
-          'departementCode': '30',
-          'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
-          'regionCode': '76',
-          'siren': '253000020',
-          'type': 'SMO',
-        }),
-      ]),
-      'intitule': 'Vallabrègues',
-      'regionCode': '76',
-      'siren': '30336',
-      'type': 'COM',
     }),
   ])
 # ---
 # name: TestCollectivitesAPI.test_with_groupements_and_members[avec_membres]
   list([
     dict({
-      'code': '243000585',
+      'codeInsee': '30032',
+      'departementCode': '30',
+      'intitule': 'Beaucaire',
+      'membres': list([
+      ]),
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30034',
+      'departementCode': '30',
+      'intitule': 'Bellegarde',
+      'membres': list([
+      ]),
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30117',
+      'departementCode': '30',
+      'intitule': 'Fourques',
+      'membres': list([
+      ]),
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30135',
+      'departementCode': '30',
+      'intitule': 'Jonquières-Saint-Vincent',
+      'membres': list([
+      ]),
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30336',
+      'departementCode': '30',
+      'intitule': 'Vallabrègues',
+      'membres': list([
+      ]),
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '',
       'departementCode': '30',
       'intitule': "CC Beaucaire Terre d'Argence",
       'membres': list([
         dict({
-          'code': '30032',
+          'codeInsee': '30032',
           'departementCode': '30',
           'intitule': 'Beaucaire',
           'regionCode': '76',
-          'siren': '30032',
+          'siren': '',
           'type': 'COM',
         }),
         dict({
-          'code': '30034',
+          'codeInsee': '30034',
           'departementCode': '30',
           'intitule': 'Bellegarde',
           'regionCode': '76',
-          'siren': '30034',
+          'siren': '',
           'type': 'COM',
         }),
         dict({
-          'code': '30117',
+          'codeInsee': '30117',
           'departementCode': '30',
           'intitule': 'Fourques',
           'regionCode': '76',
-          'siren': '30117',
+          'siren': '',
           'type': 'COM',
         }),
         dict({
-          'code': '30135',
+          'codeInsee': '30135',
           'departementCode': '30',
           'intitule': 'Jonquières-Saint-Vincent',
           'regionCode': '76',
-          'siren': '30135',
+          'siren': '',
           'type': 'COM',
         }),
         dict({
-          'code': '30336',
+          'codeInsee': '30336',
           'departementCode': '30',
           'intitule': 'Vallabrègues',
           'regionCode': '76',
-          'siren': '30336',
+          'siren': '',
           'type': 'COM',
         }),
       ]),
@@ -544,12 +594,12 @@
       'type': 'CC',
     }),
     dict({
-      'code': '253000020',
+      'codeInsee': '',
       'departementCode': '30',
       'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
       'membres': list([
         dict({
-          'code': '243000585',
+          'codeInsee': '',
           'departementCode': '30',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
@@ -560,104 +610,104 @@
       'regionCode': '76',
       'siren': '253000020',
       'type': 'SMO',
-    }),
-    dict({
-      'code': '30032',
-      'departementCode': '30',
-      'intitule': 'Beaucaire',
-      'membres': list([
-      ]),
-      'regionCode': '76',
-      'siren': '30032',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30034',
-      'departementCode': '30',
-      'intitule': 'Bellegarde',
-      'membres': list([
-      ]),
-      'regionCode': '76',
-      'siren': '30034',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30117',
-      'departementCode': '30',
-      'intitule': 'Fourques',
-      'membres': list([
-      ]),
-      'regionCode': '76',
-      'siren': '30117',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30135',
-      'departementCode': '30',
-      'intitule': 'Jonquières-Saint-Vincent',
-      'membres': list([
-      ]),
-      'regionCode': '76',
-      'siren': '30135',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30336',
-      'departementCode': '30',
-      'intitule': 'Vallabrègues',
-      'membres': list([
-      ]),
-      'regionCode': '76',
-      'siren': '30336',
-      'type': 'COM',
     }),
   ])
 # ---
 # name: TestCollectivitesAPI.test_with_groupements_and_members[avec_membres_niveaux_inferieurs]
   list([
     dict({
-      'code': '243000585',
+      'codeInsee': '30032',
+      'departementCode': '30',
+      'intitule': 'Beaucaire',
+      'membres_niveaux_inferieurs': list([
+      ]),
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30034',
+      'departementCode': '30',
+      'intitule': 'Bellegarde',
+      'membres_niveaux_inferieurs': list([
+      ]),
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30117',
+      'departementCode': '30',
+      'intitule': 'Fourques',
+      'membres_niveaux_inferieurs': list([
+      ]),
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30135',
+      'departementCode': '30',
+      'intitule': 'Jonquières-Saint-Vincent',
+      'membres_niveaux_inferieurs': list([
+      ]),
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '30336',
+      'departementCode': '30',
+      'intitule': 'Vallabrègues',
+      'membres_niveaux_inferieurs': list([
+      ]),
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+    dict({
+      'codeInsee': '',
       'departementCode': '30',
       'intitule': "CC Beaucaire Terre d'Argence",
       'membres_niveaux_inferieurs': list([
         dict({
-          'code': '30032',
+          'codeInsee': '30032',
           'departementCode': '30',
           'intitule': 'Beaucaire',
           'regionCode': '76',
-          'siren': '30032',
+          'siren': '',
           'type': 'COM',
         }),
         dict({
-          'code': '30034',
+          'codeInsee': '30034',
           'departementCode': '30',
           'intitule': 'Bellegarde',
           'regionCode': '76',
-          'siren': '30034',
+          'siren': '',
           'type': 'COM',
         }),
         dict({
-          'code': '30117',
+          'codeInsee': '30117',
           'departementCode': '30',
           'intitule': 'Fourques',
           'regionCode': '76',
-          'siren': '30117',
+          'siren': '',
           'type': 'COM',
         }),
         dict({
-          'code': '30135',
+          'codeInsee': '30135',
           'departementCode': '30',
           'intitule': 'Jonquières-Saint-Vincent',
           'regionCode': '76',
-          'siren': '30135',
+          'siren': '',
           'type': 'COM',
         }),
         dict({
-          'code': '30336',
+          'codeInsee': '30336',
           'departementCode': '30',
           'intitule': 'Vallabrègues',
           'regionCode': '76',
-          'siren': '30336',
+          'siren': '',
           'type': 'COM',
         }),
       ]),
@@ -666,119 +716,69 @@
       'type': 'CC',
     }),
     dict({
-      'code': '253000020',
+      'codeInsee': '',
       'departementCode': '30',
       'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
       'membres_niveaux_inferieurs': list([
         dict({
-          'code': '243000585',
+          'codeInsee': '30032',
+          'departementCode': '30',
+          'intitule': 'Beaucaire',
+          'regionCode': '76',
+          'siren': '',
+          'type': 'COM',
+        }),
+        dict({
+          'codeInsee': '30034',
+          'departementCode': '30',
+          'intitule': 'Bellegarde',
+          'regionCode': '76',
+          'siren': '',
+          'type': 'COM',
+        }),
+        dict({
+          'codeInsee': '30117',
+          'departementCode': '30',
+          'intitule': 'Fourques',
+          'regionCode': '76',
+          'siren': '',
+          'type': 'COM',
+        }),
+        dict({
+          'codeInsee': '30135',
+          'departementCode': '30',
+          'intitule': 'Jonquières-Saint-Vincent',
+          'regionCode': '76',
+          'siren': '',
+          'type': 'COM',
+        }),
+        dict({
+          'codeInsee': '30336',
+          'departementCode': '30',
+          'intitule': 'Vallabrègues',
+          'regionCode': '76',
+          'siren': '',
+          'type': 'COM',
+        }),
+        dict({
+          'codeInsee': '',
           'departementCode': '30',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
           'type': 'CC',
         }),
-        dict({
-          'code': '30032',
-          'departementCode': '30',
-          'intitule': 'Beaucaire',
-          'regionCode': '76',
-          'siren': '30032',
-          'type': 'COM',
-        }),
-        dict({
-          'code': '30034',
-          'departementCode': '30',
-          'intitule': 'Bellegarde',
-          'regionCode': '76',
-          'siren': '30034',
-          'type': 'COM',
-        }),
-        dict({
-          'code': '30117',
-          'departementCode': '30',
-          'intitule': 'Fourques',
-          'regionCode': '76',
-          'siren': '30117',
-          'type': 'COM',
-        }),
-        dict({
-          'code': '30135',
-          'departementCode': '30',
-          'intitule': 'Jonquières-Saint-Vincent',
-          'regionCode': '76',
-          'siren': '30135',
-          'type': 'COM',
-        }),
-        dict({
-          'code': '30336',
-          'departementCode': '30',
-          'intitule': 'Vallabrègues',
-          'regionCode': '76',
-          'siren': '30336',
-          'type': 'COM',
-        }),
       ]),
       'regionCode': '76',
       'siren': '253000020',
       'type': 'SMO',
-    }),
-    dict({
-      'code': '30032',
-      'departementCode': '30',
-      'intitule': 'Beaucaire',
-      'membres_niveaux_inferieurs': list([
-      ]),
-      'regionCode': '76',
-      'siren': '30032',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30034',
-      'departementCode': '30',
-      'intitule': 'Bellegarde',
-      'membres_niveaux_inferieurs': list([
-      ]),
-      'regionCode': '76',
-      'siren': '30034',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30117',
-      'departementCode': '30',
-      'intitule': 'Fourques',
-      'membres_niveaux_inferieurs': list([
-      ]),
-      'regionCode': '76',
-      'siren': '30117',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30135',
-      'departementCode': '30',
-      'intitule': 'Jonquières-Saint-Vincent',
-      'membres_niveaux_inferieurs': list([
-      ]),
-      'regionCode': '76',
-      'siren': '30135',
-      'type': 'COM',
-    }),
-    dict({
-      'code': '30336',
-      'departementCode': '30',
-      'intitule': 'Vallabrègues',
-      'membres_niveaux_inferieurs': list([
-      ]),
-      'regionCode': '76',
-      'siren': '30336',
-      'type': 'COM',
     }),
   ])
 # ---
 # name: TestCollectivitesAPI.test_without_communes_from_list[default_value]
   list([
     dict({
-      'code': '123456778',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 2',
       'regionCode': '93',
@@ -786,7 +786,7 @@
       'type': 'CC',
     }),
     dict({
-      'code': '123456789',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 1',
       'regionCode': '93',
@@ -798,7 +798,7 @@
 # name: TestCollectivitesAPI.test_without_communes_from_list[with_communes]
   list([
     dict({
-      'code': '123456778',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 2',
       'regionCode': '93',
@@ -806,7 +806,7 @@
       'type': 'CC',
     }),
     dict({
-      'code': '123456789',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 1',
       'regionCode': '93',
@@ -818,7 +818,7 @@
 # name: TestCollectivitesAPI.test_without_communes_from_list[without_communes]
   list([
     dict({
-      'code': '123456778',
+      'codeInsee': '',
       'departementCode': '13',
       'intitule': 'Groupement 2',
       'regionCode': '93',

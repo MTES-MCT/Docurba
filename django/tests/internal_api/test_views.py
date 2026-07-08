@@ -65,19 +65,19 @@ class TestCollectivitesAPI:
         snapshot: Snapshot,
     ) -> None:
         CollectiviteFactory(
-            code_insee_unique="987654321",
+            siren="987654321",
             type=TypeCollectivite.CC,
             departement__code_insee="13",
             nom="Groupement 1",
         )
         CollectiviteFactory(
-            code_insee_unique="123456789",
+            siren="123456789",
             type=TypeCollectivite.SIVOM,
             departement__code_insee="84",
             nom="Groupement 2",
         )
         CollectiviteFactory(
-            code_insee_unique="132435465",
+            siren="132435465",
             type=TypeCollectivite.SMO,
             departement__code_insee="30",
             nom="Groupement 3",
@@ -114,13 +114,13 @@ class TestCollectivitesAPI:
             type=TypeCollectivite.COM,
             departement__code_insee="13",
             nom="Groupement 1",
-            code_insee_unique="123456789",
+            siren="123456789",
         )
         CollectiviteFactory(
             type=TypeCollectivite.CC,
             departement__code_insee="13",
             nom="Groupement 2",
-            code_insee_unique="123456778",
+            siren="123456778",
         )
         url = f"{reverse('internal_api:collectivites-list')}?{urlencode(query_params)}"
         with assertNumQueries(BASE_QUERIES_COUNT + 1):
@@ -197,21 +197,21 @@ class TestCollectivitesAPI:
             type=TypeCollectivite.CC,
             departement__code_insee="13",
             nom="Groupement 1",
-            code_insee_unique="123456789",
+            siren="123456789",
             competence_schema=True,
         )
         CollectiviteFactory(
             type=TypeCollectivite.CC,
             departement__code_insee="13",
             nom="Groupement 2",
-            code_insee_unique="123456778",
+            siren="123456778",
             competence_plan=True,
         )
         CollectiviteFactory(
             type=TypeCollectivite.CC,
             departement__code_insee="30",
             nom="Groupement 3",
-            code_insee_unique="987654321",
+            siren="987654321",
             competence_plan=True,
             competence_schema=True,
         )
@@ -224,7 +224,7 @@ class TestCollectivitesAPI:
 
     def test_detail(self, api_client: APIClient) -> None:
         groupement = CollectiviteFactory(
-            code_insee_unique="987654321",
+            siren="987654321",
             type=TypeCollectivite.CC,
             departement__code_insee="13",
             nom="Groupement 1",
@@ -236,7 +236,7 @@ class TestCollectivitesAPI:
 
         assert response.status_code == 200
         assert response.json() == {
-            "code": "987654321",
+            "codeInsee": "",
             "siren": "987654321",
             "type": "CC",
             "intitule": "Groupement 1",
@@ -290,19 +290,19 @@ class TestCommunesAPI:
         snapshot: Snapshot,
     ) -> None:
         CommuneFactory(
-            code_insee_unique="13150",
+            code_insee="13150",
             type=TypeCollectivite.COM,
             departement__code_insee="13",
             nom="Commune 1",
         )
         CommuneFactory(
-            code_insee_unique="30000",
+            code_insee="30000",
             type=TypeCollectivite.COM,
             departement__code_insee="30",
             nom="Commune 2",
         )
         CommuneFactory(
-            code_insee_unique="84000",
+            code_insee="84000",
             type=TypeCollectivite.COMD,
             departement__code_insee="84",
             nom="Commune 3",
@@ -317,7 +317,7 @@ class TestCommunesAPI:
 
     def test_detail(self, api_client: APIClient) -> None:
         commune = CommuneFactory(
-            code_insee_unique="987654321",
+            code_insee="30840",
             type=TypeCollectivite.COM,
             departement__code_insee="13",
             nom="Groupement 1",
@@ -330,7 +330,7 @@ class TestCommunesAPI:
         assert response.status_code == 200
         assert response.json()
         assert response.json() == {
-            "code": "987654321",
+            "code": "30840",
             "type": "COM",
             "intitule": "Groupement 1",
             "regionCode": "93",

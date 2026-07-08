@@ -40,7 +40,7 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
                     "flat_members",
                     queryset=Collectivite.objects.select_related(
                         "departement", "departement__region"
-                    ).order_by("code_insee_unique"),
+                    ).order_by("siren", "code_insee"),
                 )
             )
         if "with_flat_groups" in self.get_serializer_context():
@@ -49,7 +49,7 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
                     "flat_groups",
                     queryset=Collectivite.objects.select_related(
                         "departement", "departement__region"
-                    ).order_by("code_insee_unique"),
+                    ).order_by("siren", "code_insee"),
                 )
             )
         if "with_groups" in self.get_serializer_context():
@@ -58,7 +58,7 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
                     "adhesions",
                     queryset=Collectivite.objects.select_related(
                         "departement", "departement__region"
-                    ).order_by("code_insee_unique"),
+                    ).order_by("siren", "code_insee"),
                 )
             )
         if "with_members" in self.get_serializer_context():
@@ -67,10 +67,10 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
                     "collectivites_adherentes",
                     queryset=Collectivite.objects.select_related(
                         "departement", "departement__region"
-                    ).order_by("code_insee_unique"),
+                    ).order_by("siren", "code_insee"),
                 )
             )
-        return qs.order_by("code_insee_unique").all()
+        return qs.order_by("siren", "code_insee").all()
 
 
 class CommuneViewSet(viewsets.ReadOnlyModelViewSet):

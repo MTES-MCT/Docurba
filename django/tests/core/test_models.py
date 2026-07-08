@@ -36,11 +36,6 @@ from tests.core.factories import (
 from tests.users.factories import ProfileFactory
 
 
-class TestCollectivite:
-    def test_code_insee(self) -> None:
-        assert Commune(id="12345_COM").code_insee == "12345"
-
-
 @pytest.mark.django_db
 class TestMaterializedViewFlatMembership:
     def test_through_memberships(
@@ -1863,7 +1858,7 @@ class TestCommune:
             )
 
         commune = Commune.objects.with_procedures_principales().first()
-        assert commune.collectivite_porteuse.code_insee == collectivite_attendue
+        assert commune.collectivite_porteuse.code_insee_unique == collectivite_attendue
 
 
 class TestCommuneOpposabilite:
