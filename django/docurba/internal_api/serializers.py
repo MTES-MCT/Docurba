@@ -6,7 +6,7 @@ from docurba.core.models import Collectivite, Commune, EventType
 
 
 class BaseCollectiviteSerializer(serializers.ModelSerializer):
-    code = serializers.CharField(source="code_insee_unique")
+    codeInsee = serializers.CharField(source="code_insee")
     intitule = serializers.CharField(source="nom")
     departementCode = serializers.CharField(source="departement.code_insee")
     regionCode = serializers.CharField(source="departement.region.code_insee")
@@ -14,7 +14,7 @@ class BaseCollectiviteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collectivite
         fields = [
-            "code",
+            "codeInsee",
             "siren",
             "type",
             "intitule",
@@ -72,7 +72,7 @@ class CollectiviteSerializer(BaseCollectiviteSerializer):
 
 
 class CommuneSerializer(serializers.ModelSerializer):
-    code = serializers.CharField(source="code_insee_unique")
+    code = serializers.CharField(source="code_insee")
     intitule = serializers.CharField(source="nom")
     departementCode = serializers.CharField(source="departement.code_insee")
     regionCode = serializers.CharField(source="departement.region.code_insee")

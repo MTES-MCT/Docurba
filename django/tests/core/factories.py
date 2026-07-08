@@ -97,7 +97,8 @@ class CommuneFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ("code_insee_unique",)
 
     id = factory.LazyAttribute(lambda o: f"{o.code_insee_unique}_{o.type}")
-    code_insee_unique = factory.fuzzy.FuzzyChoice(COMMUNES.keys())
+    code_insee_unique = factory.LazyAttribute(lambda o: f"{o.code_insee}")
+    code_insee = factory.fuzzy.FuzzyChoice(COMMUNES.keys())
     type = CommuneType.COM  # Don't mess with COMD and COMA
     nom = factory.LazyAttribute(lambda o: COMMUNES[o.code_insee_unique]["name"])
     competence_plan = False
@@ -123,15 +124,15 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
         for_snapshot = factory.Trait(
             type=TypeCollectivite.SMO,
             nom="Syndicat mixte d'équipement de la commune de Beaucaire",
-            code_insee_unique="253000020",
             siren="253000020",
         )
 
     id = factory.LazyAttribute(lambda o: f"{o.code_insee_unique}_{o.type}")
-    code_insee_unique = factory.fuzzy.FuzzyText(
-        length=8, chars=string.digits, prefix="1"
-    )
-    siren = factory.LazyAttribute(lambda o: f"{o.code_insee_unique}")
+    code_insee_unique = factory.LazyAttribute(lambda o: f"{o.siren}")
+    # NOTE(cms): don't add a code_insee attribute because we don't have
+    # communes as collectivite for the moment.
+    # We should create a child class but it should be reflected in models.
+    siren = factory.fuzzy.FuzzyText(length=8, chars=string.digits, prefix="1")
     type = factory.fuzzy.FuzzyChoice(
         [
             type_groupement
@@ -168,32 +169,25 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
         child = None
         grand_children = []
         if extra.get("for_snapshot", False):
-            collectivite_attrs = (
-                (
-                    TypeCollectivite.CC,
-                    "CC Beaucaire Terre d'Argence",
-                    "243000585",
-                    "243000585",
-                ),
-                (TypeCollectivite.COM, "Beaucaire", "30032", ""),
-                (TypeCollectivite.COM, "Bellegarde", "30034", ""),
-                (TypeCollectivite.COM, "Fourques", "30117", ""),
-                (TypeCollectivite.COM, "Jonquières-Saint-Vincent", "30135", ""),
-                (TypeCollectivite.COM, "Vallabrègues", "30336", ""),
-            )
             child = CollectiviteFactory(
-                type=collectivite_attrs[0][0],
+                type=TypeCollectivite.CC,
                 departement__code_insee="30",
-                nom=collectivite_attrs[0][1],
-                code_insee_unique=collectivite_attrs[0][2],
-                siren=collectivite_attrs[0][3],
+                nom="CC Beaucaire Terre d'Argence",
+                siren="243000585",
             )
-            for attr in collectivite_attrs[1:]:
-                grand_child = CollectiviteFactory(
+            communes_attrs = (
+                (TypeCollectivite.COM, "Beaucaire", "30032"),
+                (TypeCollectivite.COM, "Bellegarde", "30034"),
+                (TypeCollectivite.COM, "Fourques", "30117"),
+                (TypeCollectivite.COM, "Jonquières-Saint-Vincent", "30135"),
+                (TypeCollectivite.COM, "Vallabrègues", "30336"),
+            )
+            for attr in communes_attrs:
+                grand_child = CommuneFactory(
                     type=attr[0],
                     departement__code_insee="30",
                     nom=attr[1],
-                    code_insee_unique=attr[2],
+                    code_insee=attr[2],
                 )
                 grand_children.append(grand_child)
         else:

@@ -25,9 +25,11 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
             "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
         )
 
-    communes = Commune.objects.only(
-        "id", "type", "departement"
-    ).with_procedures_principales(avant=avant)
+    communes = (
+        Commune.objects.only("id", "type", "departement", "code_insee")
+        .select_related("collectivite_ptr__code_insee")
+        .with_procedures_principales(avant=avant)
+    )
     if departement := request.GET.get("departement"):
         communes = communes.filter(departement__code_insee=departement)
 
@@ -72,6 +74,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
 
     communes = (
         Commune.objects.filter(type=TypeCollectivite.COM)
+        .select_related("collectivite_ptr__code_insee")
         .with_procedures_principales(avant=avant)
         .csv_prefetch()
     )
