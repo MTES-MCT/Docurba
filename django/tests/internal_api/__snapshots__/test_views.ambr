@@ -105,6 +105,26 @@
     }),
   ])
 # ---
+# name: TestCollectivitesAPI.test_list_filters[many_codes_siren]
+  list([
+    dict({
+      'code': '132435465',
+      'departementCode': '30',
+      'intitule': 'Groupement 3',
+      'regionCode': '76',
+      'siren': '132435465',
+      'type': 'SMO',
+    }),
+    dict({
+      'code': '987654321',
+      'departementCode': '13',
+      'intitule': 'Groupement 1',
+      'regionCode': '93',
+      'siren': '987654321',
+      'type': 'CC',
+    }),
+  ])
+# ---
 # name: TestCollectivitesAPI.test_list_filters[many_departments]
   list([
     dict({
@@ -915,6 +935,17 @@
     }),
   ])
 # ---
+# name: TestCommunesAPI.test_list[code_insee]
+  list([
+    dict({
+      'code': '13150',
+      'departementCode': '13',
+      'intitule': 'Commune 1',
+      'regionCode': '93',
+      'type': 'COM',
+    }),
+  ])
+# ---
 # name: TestCommunesAPI.test_list[many_departments]
   list([
     dict({
@@ -1004,6 +1035,24 @@
       'intitule': 'Commune 3',
       'regionCode': '93',
       'type': 'COMD',
+    }),
+  ])
+# ---
+# name: TestCommunesAPI.test_list[several_insee_codes]
+  list([
+    dict({
+      'code': '13150',
+      'departementCode': '13',
+      'intitule': 'Commune 1',
+      'regionCode': '93',
+      'type': 'COM',
+    }),
+    dict({
+      'code': '30000',
+      'departementCode': '30',
+      'intitule': 'Commune 2',
+      'regionCode': '76',
+      'type': 'COM',
     }),
   ])
 # ---
