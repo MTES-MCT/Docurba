@@ -26,9 +26,10 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
         )
 
     communes = (
-        Commune.objects.only("id", "type", "departement", "code_insee")
-        .select_related("collectivite_ptr__code_insee")
+        Commune.objects.only("id", "type", "departement", "code_insee", "siren")
+        .select_related("collectivite_ptr__code_insee", "collectivite_ptr__siren")
         .with_procedures_principales(avant=avant)
+        .order_by("code_insee", "siren")
     )
     if departement := request.GET.get("departement"):
         communes = communes.filter(departement__code_insee=departement)
@@ -51,7 +52,7 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
     csv_writer.writerows(
         {
             "annee_cog": "2024",
-            "collectivite_code": commune.code_insee,
+            "collectivite_code": commune.code_insee or commune.siren,
             "collectivite_type": commune.type,
             "procedure_id": procedure.id,
             "type_document": procedure.type_document,
@@ -77,6 +78,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
         .select_related("collectivite_ptr__code_insee")
         .with_procedures_principales(avant=avant)
         .csv_prefetch()
+        .order_by("code_insee", "siren")
     )
     if departement := request.GET.get("departement"):
         communes = communes.filter(departement__code_insee=departement)
@@ -166,26 +168,23 @@ def api_communes(request: HttpRequest) -> HttpResponse:
     def format_row(commune: Commune) -> dict[str, str]:
         champs_commune = {
             "annee_cog": "2024",
-            "code_insee": commune.code_insee_unique,
+            "code_insee": commune.code_insee,
             "com_nom": commune.nom,
             "com_code_departement": commune.departement.code_insee,
             "com_nom_departement": commune.departement.nom,
             "com_code_region": commune.departement.region.code_insee,
             "com_nom_region": commune.departement.region.nom,
             "com_nouvelle": commune.is_nouvelle,
-            "collectivite_porteuse": commune.collectivite_porteuse.code_insee,
+            "collectivite_porteuse": commune.collectivite_porteuse.code_insee
+            or commune.collectivite_porteuse.siren,
             "cp_type": commune.collectivite_porteuse.type,
             "cp_code_region": commune.collectivite_porteuse.departement.region.code_insee,
             "cp_lib_region": commune.collectivite_porteuse.departement.region.nom,
             "cp_code_departement": commune.collectivite_porteuse.departement.code_insee,
             "cp_nom_departement": commune.collectivite_porteuse.departement.nom,
             "cp_nom": commune.collectivite_porteuse.nom,
-            "cp_siren": commune.collectivite_porteuse.code_insee
-            if not commune.collectivite_porteuse.is_commune
-            else "",
-            "cp_code_insee": commune.collectivite_porteuse.code_insee
-            if commune.collectivite_porteuse.is_commune
-            else "",
+            "cp_siren": commune.collectivite_porteuse.siren,
+            "cp_code_insee": commune.collectivite_porteuse.code_insee,
             "plan_code_etat_simplifie": commune.code_etat_simplifie,
             "plan_libelle_code_etat_simplifie": commune.libelle_code_etat_simplifie,
             "plan_code_etat_complet": commune.code_etat_complet,
@@ -201,7 +200,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
                 "epci_departement": intercommunalite.departement.nom,
                 "epci_type": intercommunalite.type,
                 "epci_nom": intercommunalite.nom,
-                "epci_siren": intercommunalite.code_insee,
+                "epci_siren": intercommunalite.siren,
             }
 
         champs_en_cours = {}
@@ -284,7 +283,10 @@ def api_scots(request: HttpRequest) -> HttpResponse:
             "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
         )
 
-    collectivites = Collectivite.objects.portant_scot(avant=avant)
+    collectivites = Collectivite.objects.portant_scot(avant=avant).order_by(
+        "code_insee", "siren"
+    )
+
     if departement := request.GET.get("departement"):
         collectivites = collectivites.filter(departement__code_insee=departement)
 
@@ -340,7 +342,7 @@ def api_scots(request: HttpRequest) -> HttpResponse:
             "scot_libelle_region": collectivite.departement.region.nom,
             "scot_code_departement": collectivite.departement.code_insee,
             "scot_lib_departement": collectivite.departement.nom,
-            "scot_codecollectivite": collectivite.code_insee,
+            "scot_codecollectivite": collectivite.code_insee or collectivite.siren,
             "scot_code_type_collectivite": collectivite.type,
             "scot_nom_collectivite": collectivite.nom,
         }
