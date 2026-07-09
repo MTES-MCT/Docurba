@@ -212,7 +212,8 @@ export default {
           Underline,
           Link,
           Image.configure({
-            allowBase64: true
+            allowBase64: true,
+            inline: true
           }),
           Resizable,
           Table,
