@@ -410,8 +410,10 @@ export default
 
       const perimetre = this.procedure.procedures_perimetres.filter(c => c.collectivite_type === 'COM')
       const collectiviteId = perimetre.length === 1 ? perimetre[0].collectivite_code : this.procedure.collectivite_porteuse_id
-      // TODO :: Migrate this once `intercommunaliteCode`, `membres` and `groupements` are available in `/api-internes/collectivites/`
-      this.collectivite = await this.$nuxtApi.get(`/api/geo/collectivites/${collectiviteId}`)
+      this.collectivite = await this.$collectiviteApi.get(collectiviteId, {
+        avec_groupements: true,
+        avec_membres: true
+      })
 
       this.events = await this.getEvents()
 
