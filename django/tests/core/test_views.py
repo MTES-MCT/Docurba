@@ -518,7 +518,8 @@ class TestAPIScots:
             "scot_libelle_region": collectivite_porteuse.departement.region.nom,
             "scot_code_departement": collectivite_porteuse.departement.code_insee,
             "scot_lib_departement": collectivite_porteuse.departement.nom,
-            "scot_codecollectivite": collectivite_porteuse.code_insee,
+            "scot_codecollectivite": collectivite_porteuse.code_insee
+            or collectivite_porteuse.siren,
             "scot_code_type_collectivite": collectivite_porteuse.type.value,
             "scot_nom_collectivite": scot.collectivite_porteuse.nom,
             # Approuvée
