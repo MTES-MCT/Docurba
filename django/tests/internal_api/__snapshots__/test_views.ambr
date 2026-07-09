@@ -4,6 +4,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 2',
       'regionCode': '93',
       'siren': '123456778',
@@ -12,6 +13,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 3',
       'regionCode': '76',
       'siren': '987654321',
@@ -24,6 +26,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 1',
       'regionCode': '93',
       'siren': '123456789',
@@ -32,6 +35,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 3',
       'regionCode': '76',
       'siren': '987654321',
@@ -44,6 +48,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 2',
       'regionCode': '93',
       'siren': '123456778',
@@ -52,6 +57,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 1',
       'regionCode': '93',
       'siren': '123456789',
@@ -60,6 +66,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 3',
       'regionCode': '76',
       'siren': '987654321',
@@ -72,6 +79,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 2',
       'regionCode': '93',
       'siren': '123456778',
@@ -80,6 +88,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 1',
       'regionCode': '93',
       'siren': '123456789',
@@ -88,6 +97,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 3',
       'regionCode': '76',
       'siren': '987654321',
@@ -100,6 +110,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '84',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 2',
       'regionCode': '93',
       'siren': '123456789',
@@ -108,6 +119,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 1',
       'regionCode': '93',
       'siren': '987654321',
@@ -120,6 +132,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 3',
       'regionCode': '76',
       'siren': '132435465',
@@ -128,6 +141,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 1',
       'regionCode': '93',
       'siren': '987654321',
@@ -140,6 +154,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '84',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 2',
       'regionCode': '93',
       'siren': '123456789',
@@ -148,6 +163,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 3',
       'regionCode': '76',
       'siren': '132435465',
@@ -156,6 +172,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 1',
       'regionCode': '93',
       'siren': '987654321',
@@ -168,6 +185,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '84',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 2',
       'regionCode': '93',
       'siren': '123456789',
@@ -180,6 +198,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '84',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 2',
       'regionCode': '93',
       'siren': '123456789',
@@ -188,6 +207,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 1',
       'regionCode': '93',
       'siren': '987654321',
@@ -200,6 +220,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 1',
       'regionCode': '93',
       'siren': '987654321',
@@ -216,12 +237,14 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
           'type': 'CC',
         }),
       ]),
+      'intercommunaliteCode': '',
       'intitule': 'Beaucaire',
       'regionCode': '76',
       'siren': '',
@@ -234,12 +257,14 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
           'type': 'CC',
         }),
       ]),
+      'intercommunaliteCode': '',
       'intitule': 'Bellegarde',
       'regionCode': '76',
       'siren': '',
@@ -252,12 +277,14 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
           'type': 'CC',
         }),
       ]),
+      'intercommunaliteCode': '',
       'intitule': 'Fourques',
       'regionCode': '76',
       'siren': '',
@@ -270,12 +297,14 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
           'type': 'CC',
         }),
       ]),
+      'intercommunaliteCode': '',
       'intitule': 'Jonquières-Saint-Vincent',
       'regionCode': '76',
       'siren': '',
@@ -288,12 +317,14 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
           'type': 'CC',
         }),
       ]),
+      'intercommunaliteCode': '',
       'intitule': 'Vallabrègues',
       'regionCode': '76',
       'siren': '',
@@ -306,12 +337,14 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
           'regionCode': '76',
           'siren': '253000020',
           'type': 'SMO',
         }),
       ]),
+      'intercommunaliteCode': '',
       'intitule': "CC Beaucaire Terre d'Argence",
       'regionCode': '76',
       'siren': '243000585',
@@ -322,6 +355,7 @@
       'departementCode': '30',
       'groupements': list([
       ]),
+      'intercommunaliteCode': '',
       'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
       'regionCode': '76',
       'siren': '253000020',
@@ -338,6 +372,7 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
@@ -346,12 +381,14 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
           'regionCode': '76',
           'siren': '253000020',
           'type': 'SMO',
         }),
       ]),
+      'intercommunaliteCode': '',
       'intitule': 'Beaucaire',
       'regionCode': '76',
       'siren': '',
@@ -364,6 +401,7 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
@@ -372,12 +410,14 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
           'regionCode': '76',
           'siren': '253000020',
           'type': 'SMO',
         }),
       ]),
+      'intercommunaliteCode': '',
       'intitule': 'Bellegarde',
       'regionCode': '76',
       'siren': '',
@@ -390,6 +430,7 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
@@ -398,12 +439,14 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
           'regionCode': '76',
           'siren': '253000020',
           'type': 'SMO',
         }),
       ]),
+      'intercommunaliteCode': '',
       'intitule': 'Fourques',
       'regionCode': '76',
       'siren': '',
@@ -416,6 +459,7 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
@@ -424,12 +468,14 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
           'regionCode': '76',
           'siren': '253000020',
           'type': 'SMO',
         }),
       ]),
+      'intercommunaliteCode': '',
       'intitule': 'Jonquières-Saint-Vincent',
       'regionCode': '76',
       'siren': '',
@@ -442,6 +488,7 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
@@ -450,12 +497,14 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
           'regionCode': '76',
           'siren': '253000020',
           'type': 'SMO',
         }),
       ]),
+      'intercommunaliteCode': '',
       'intitule': 'Vallabrègues',
       'regionCode': '76',
       'siren': '',
@@ -468,12 +517,14 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
           'regionCode': '76',
           'siren': '253000020',
           'type': 'SMO',
         }),
       ]),
+      'intercommunaliteCode': '',
       'intitule': "CC Beaucaire Terre d'Argence",
       'regionCode': '76',
       'siren': '243000585',
@@ -484,6 +535,7 @@
       'departementCode': '30',
       'groupements_niveaux_superieurs': list([
       ]),
+      'intercommunaliteCode': '',
       'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
       'regionCode': '76',
       'siren': '253000020',
@@ -496,6 +548,7 @@
     dict({
       'codeInsee': '30032',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Beaucaire',
       'membres': list([
       ]),
@@ -506,6 +559,7 @@
     dict({
       'codeInsee': '30034',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Bellegarde',
       'membres': list([
       ]),
@@ -516,6 +570,7 @@
     dict({
       'codeInsee': '30117',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Fourques',
       'membres': list([
       ]),
@@ -526,6 +581,7 @@
     dict({
       'codeInsee': '30135',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Jonquières-Saint-Vincent',
       'membres': list([
       ]),
@@ -536,6 +592,7 @@
     dict({
       'codeInsee': '30336',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Vallabrègues',
       'membres': list([
       ]),
@@ -546,11 +603,13 @@
     dict({
       'codeInsee': '',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': "CC Beaucaire Terre d'Argence",
       'membres': list([
         dict({
           'codeInsee': '30032',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Beaucaire',
           'regionCode': '76',
           'siren': '',
@@ -559,6 +618,7 @@
         dict({
           'codeInsee': '30034',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Bellegarde',
           'regionCode': '76',
           'siren': '',
@@ -567,6 +627,7 @@
         dict({
           'codeInsee': '30117',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Fourques',
           'regionCode': '76',
           'siren': '',
@@ -575,6 +636,7 @@
         dict({
           'codeInsee': '30135',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Jonquières-Saint-Vincent',
           'regionCode': '76',
           'siren': '',
@@ -583,6 +645,7 @@
         dict({
           'codeInsee': '30336',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Vallabrègues',
           'regionCode': '76',
           'siren': '',
@@ -596,11 +659,13 @@
     dict({
       'codeInsee': '',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
       'membres': list([
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
@@ -618,6 +683,7 @@
     dict({
       'codeInsee': '30032',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Beaucaire',
       'membres_niveaux_inferieurs': list([
       ]),
@@ -628,6 +694,7 @@
     dict({
       'codeInsee': '30034',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Bellegarde',
       'membres_niveaux_inferieurs': list([
       ]),
@@ -638,6 +705,7 @@
     dict({
       'codeInsee': '30117',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Fourques',
       'membres_niveaux_inferieurs': list([
       ]),
@@ -648,6 +716,7 @@
     dict({
       'codeInsee': '30135',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Jonquières-Saint-Vincent',
       'membres_niveaux_inferieurs': list([
       ]),
@@ -658,6 +727,7 @@
     dict({
       'codeInsee': '30336',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Vallabrègues',
       'membres_niveaux_inferieurs': list([
       ]),
@@ -668,11 +738,13 @@
     dict({
       'codeInsee': '',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': "CC Beaucaire Terre d'Argence",
       'membres_niveaux_inferieurs': list([
         dict({
           'codeInsee': '30032',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Beaucaire',
           'regionCode': '76',
           'siren': '',
@@ -681,6 +753,7 @@
         dict({
           'codeInsee': '30034',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Bellegarde',
           'regionCode': '76',
           'siren': '',
@@ -689,6 +762,7 @@
         dict({
           'codeInsee': '30117',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Fourques',
           'regionCode': '76',
           'siren': '',
@@ -697,6 +771,7 @@
         dict({
           'codeInsee': '30135',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Jonquières-Saint-Vincent',
           'regionCode': '76',
           'siren': '',
@@ -705,6 +780,7 @@
         dict({
           'codeInsee': '30336',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Vallabrègues',
           'regionCode': '76',
           'siren': '',
@@ -718,11 +794,13 @@
     dict({
       'codeInsee': '',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
       'membres_niveaux_inferieurs': list([
         dict({
           'codeInsee': '30032',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Beaucaire',
           'regionCode': '76',
           'siren': '',
@@ -731,6 +809,7 @@
         dict({
           'codeInsee': '30034',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Bellegarde',
           'regionCode': '76',
           'siren': '',
@@ -739,6 +818,7 @@
         dict({
           'codeInsee': '30117',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Fourques',
           'regionCode': '76',
           'siren': '',
@@ -747,6 +827,7 @@
         dict({
           'codeInsee': '30135',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Jonquières-Saint-Vincent',
           'regionCode': '76',
           'siren': '',
@@ -755,6 +836,7 @@
         dict({
           'codeInsee': '30336',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': 'Vallabrègues',
           'regionCode': '76',
           'siren': '',
@@ -763,6 +845,7 @@
         dict({
           'codeInsee': '',
           'departementCode': '30',
+          'intercommunaliteCode': '',
           'intitule': "CC Beaucaire Terre d'Argence",
           'regionCode': '76',
           'siren': '243000585',
@@ -780,6 +863,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 2',
       'regionCode': '93',
       'siren': '123456778',
@@ -788,6 +872,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 1',
       'regionCode': '93',
       'siren': '123456789',
@@ -800,6 +885,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 2',
       'regionCode': '93',
       'siren': '123456778',
@@ -808,6 +894,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 1',
       'regionCode': '93',
       'siren': '123456789',
@@ -820,6 +907,7 @@
     dict({
       'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 2',
       'regionCode': '93',
       'siren': '123456778',
@@ -832,6 +920,7 @@
     dict({
       'code': '13150',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 1',
       'regionCode': '93',
       'type': 'COM',
@@ -839,6 +928,7 @@
     dict({
       'code': '30000',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 2',
       'regionCode': '76',
       'type': 'COM',
@@ -850,6 +940,7 @@
     dict({
       'code': '13150',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 1',
       'regionCode': '93',
       'type': 'COM',
@@ -857,6 +948,7 @@
     dict({
       'code': '30000',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 2',
       'regionCode': '76',
       'type': 'COM',
@@ -864,6 +956,7 @@
     dict({
       'code': '84000',
       'departementCode': '84',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 3',
       'regionCode': '93',
       'type': 'COMD',
@@ -875,6 +968,7 @@
     dict({
       'code': '13150',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 1',
       'regionCode': '93',
       'type': 'COM',
@@ -886,6 +980,7 @@
     dict({
       'code': '13150',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 1',
       'regionCode': '93',
       'type': 'COM',
@@ -893,6 +988,7 @@
     dict({
       'code': '84000',
       'departementCode': '84',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 3',
       'regionCode': '93',
       'type': 'COMD',
@@ -904,6 +1000,7 @@
     dict({
       'code': '84000',
       'departementCode': '84',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 3',
       'regionCode': '93',
       'type': 'COMD',
@@ -915,6 +1012,7 @@
     dict({
       'code': '13150',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 1',
       'regionCode': '93',
       'type': 'COM',
@@ -922,6 +1020,7 @@
     dict({
       'code': '30000',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 2',
       'regionCode': '76',
       'type': 'COM',

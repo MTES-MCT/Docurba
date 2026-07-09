@@ -33,44 +33,38 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
         return context
 
     def get_queryset(self):  # noqa: ANN201
-        qs = Collectivite.objects.select_related("departement", "departement__region")
+        qs = Collectivite.objects.select_related(
+            "departement", "departement__region", "commune__intercommunalite"
+        ).order_by("siren", "code_insee")
         if "with_flat_members" in self.get_serializer_context():
             qs = qs.prefetch_related(
                 models.Prefetch(
                     "flat_members",
-                    queryset=Collectivite.objects.select_related(
-                        "departement", "departement__region"
-                    ).order_by("siren", "code_insee"),
+                    queryset=qs,
                 )
             )
         if "with_flat_groups" in self.get_serializer_context():
             qs = qs.prefetch_related(
                 models.Prefetch(
                     "flat_groups",
-                    queryset=Collectivite.objects.select_related(
-                        "departement", "departement__region"
-                    ).order_by("siren", "code_insee"),
+                    queryset=qs,
                 )
             )
         if "with_groups" in self.get_serializer_context():
             qs = qs.prefetch_related(
                 models.Prefetch(
                     "adhesions",
-                    queryset=Collectivite.objects.select_related(
-                        "departement", "departement__region"
-                    ).order_by("siren", "code_insee"),
+                    queryset=qs,
                 )
             )
         if "with_members" in self.get_serializer_context():
             qs = qs.prefetch_related(
                 models.Prefetch(
                     "collectivites_adherentes",
-                    queryset=Collectivite.objects.select_related(
-                        "departement", "departement__region"
-                    ).order_by("siren", "code_insee"),
+                    queryset=qs,
                 )
             )
-        return qs.order_by("siren", "code_insee").all()
+        return qs.all()
 
 
 class CommuneViewSet(viewsets.ReadOnlyModelViewSet):
@@ -80,8 +74,9 @@ class CommuneViewSet(viewsets.ReadOnlyModelViewSet):
         Commune.objects.select_related(
             "departement",
             "departement__region",
+            "intercommunalite",
         )
-        .order_by("code_insee_unique")
+        .order_by("code_insee")
         .all()
     )
     serializer_class = CommuneSerializer

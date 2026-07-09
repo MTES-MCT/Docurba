@@ -10,6 +10,7 @@ class BaseCollectiviteSerializer(serializers.ModelSerializer):
     intitule = serializers.CharField(source="nom")
     departementCode = serializers.CharField(source="departement.code_insee")
     regionCode = serializers.CharField(source="departement.region.code_insee")
+    intercommunaliteCode = serializers.SerializerMethodField()
 
     class Meta:
         model = Collectivite
@@ -20,8 +21,21 @@ class BaseCollectiviteSerializer(serializers.ModelSerializer):
             "intitule",
             "regionCode",
             "departementCode",
+            "intercommunaliteCode",
         ]
         read_only_fields = fields
+
+    def get_intercommunaliteCode(self, obj) -> str:  # noqa: ANN001, N802
+        # serializer.CharField(default="") does not return the default value
+        # because of the foreign key.
+        # This is a workaround to avoid returning None.
+        if (
+            obj.is_commune
+            and hasattr(obj, "commune")
+            and obj.commune.intercommunalite_id
+        ):
+            return obj.commune.intercommunalite.siren
+        return ""
 
 
 class MemberSerializer(BaseCollectiviteSerializer):
@@ -76,10 +90,20 @@ class CommuneSerializer(serializers.ModelSerializer):
     intitule = serializers.CharField(source="nom")
     departementCode = serializers.CharField(source="departement.code_insee")
     regionCode = serializers.CharField(source="departement.region.code_insee")
+    intercommunaliteCode = serializers.CharField(
+        source="intercommunalite.siren", allow_blank=True, default=""
+    )
 
     class Meta:
         model = Commune
-        fields = ["code", "type", "intitule", "departementCode", "regionCode"]
+        fields = [
+            "code",
+            "type",
+            "intitule",
+            "departementCode",
+            "regionCode",
+            "intercommunaliteCode",
+        ]
         read_only_fields = fields
 
 
