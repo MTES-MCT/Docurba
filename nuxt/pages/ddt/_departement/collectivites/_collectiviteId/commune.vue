@@ -58,7 +58,6 @@
 <script>
 
 import { mdiArrowLeft } from '@mdi/js'
-import axios from 'axios'
 
 export default {
   name: 'Collectivite',
@@ -79,9 +78,17 @@ export default {
   },
   methods: {
     async getProcedures () {
-      // TODO :: Migrate this once `intercommunaliteCode`, `membres` and `groupements` are available in `/api-internes/collectivites/`
-      // TODO :: Also get intercommunalite from `intercommunaliteCode`
-      this.collectivite = (await axios({ url: `/api/geo/collectivites/${this.$route.params.collectiviteId}` })).data
+      const collectivite = await this.$collectiviteApi.get(this.$route.params.collectiviteId, {
+        avec_groupements: true,
+        avec_membres: true
+      })
+      if (collectivite.intercommunaliteCode) {
+        collectivite.intercommunalite = await this.$collectiviteApi.get(collectivite.intercommunaliteCode, {
+          avec_groupements: true,
+          avec_membres: true
+        })
+      }
+      this.collectivite = collectivite
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
       this.schemas = schemas
       this.plans = plans
