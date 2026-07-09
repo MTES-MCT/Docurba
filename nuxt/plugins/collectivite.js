@@ -17,9 +17,18 @@ export async function listCollectivites (api, params) {
   return (await api.get('/api-internes/collectivites/', params)).map(parseCollectivite)
 }
 
-function parseCollectivite (collectivite) {
-  return {
-    ...collectivite,
-    code: collectivite.codeInsee || collectivite.siren
+function parseCollectivite (rawCollectivite) {
+  const collectivite = {
+    ...rawCollectivite,
+    code: rawCollectivite.codeInsee || rawCollectivite.siren
   }
+
+  if (collectivite.groupements) {
+    collectivite.groupements = collectivite.groupements.map(parseCollectivite)
+  }
+  if (collectivite.membres) {
+    collectivite.membres = collectivite.membres.map(parseCollectivite)
+  }
+
+  return collectivite
 }
