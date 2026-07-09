@@ -242,6 +242,33 @@ class TestCollectivitesAPI:
             "intitule": "Groupement 1",
             "regionCode": "93",
             "departementCode": "13",
+            "intercommunaliteCode": "",
+        }
+
+    def test_intercommunalite_code(self, api_client: APIClient) -> None:
+        intercommunalite = CollectiviteFactory(
+            type=TypeCollectivite.CC, siren="253000020"
+        )
+        commune = CommuneFactory(
+            code_insee="30840",
+            type=TypeCollectivite.COM,
+            departement__code_insee="30",
+            nom="Commune 1",
+            intercommunalite=intercommunalite,
+        )
+        url = reverse("internal_api:collectivites-detail", args=[commune.pk])
+        with assertNumQueries(1):
+            response = api_client.get(url, format="json")
+
+        assert response.status_code == 200
+        assert response.json() == {
+            "codeInsee": "30840",
+            "siren": "",
+            "type": "COM",
+            "intitule": "Commune 1",
+            "regionCode": "76",
+            "departementCode": "30",
+            "intercommunaliteCode": "253000020",
         }
 
 
@@ -328,13 +355,39 @@ class TestCommunesAPI:
             response = api_client.get(url, format="json")
 
         assert response.status_code == 200
-        assert response.json()
         assert response.json() == {
             "code": "30840",
             "type": "COM",
             "intitule": "Groupement 1",
             "regionCode": "93",
             "departementCode": "13",
+            "intercommunaliteCode": "",
+        }
+
+    def test_intercommunalite_code(self, api_client: APIClient) -> None:
+        intercommunalite = CollectiviteFactory(
+            type=TypeCollectivite.CC, siren="253000020"
+        )
+        commune = CommuneFactory(
+            code_insee="30840",
+            type=TypeCollectivite.COM,
+            departement__code_insee="13",
+            nom="Groupement 1",
+            intercommunalite=intercommunalite,
+        )
+
+        url = reverse("internal_api:communes-detail", args=[commune.pk])
+        with assertNumQueries(1):
+            response = api_client.get(url, format="json")
+
+        assert response.status_code == 200
+        assert response.json() == {
+            "code": "30840",
+            "type": "COM",
+            "intitule": "Groupement 1",
+            "regionCode": "93",
+            "departementCode": "13",
+            "intercommunaliteCode": "253000020",
         }
 
 
