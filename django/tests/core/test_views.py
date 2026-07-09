@@ -180,7 +180,7 @@ class TestAPICommunes:
             type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
-        with django_assert_num_queries(4):
+        with django_assert_num_queries(3):
             response = client.get(reverse("api_communes"))
 
         assert response.status_code == 200
@@ -275,7 +275,7 @@ class TestAPICommunes:
                 type="Prescription", date_evenement="2024-12-01"
             )
 
-            with django_assert_num_queries(4):
+            with django_assert_num_queries(3):
                 response = client.get(reverse("api_communes"))
 
         reader = DictReader(response.content.decode().splitlines())
@@ -331,7 +331,7 @@ class TestAPICommunes:
             topics = Topic.objects.filter(name__in=procedure_topics_to_add)
             procedure.topics.add(*topics)
 
-        with django_assert_num_queries(4):
+        with django_assert_num_queries(3):
             response = client.get(reverse("api_communes"))
 
         results = list(DictReader(response.content.decode().splitlines()))
@@ -381,7 +381,7 @@ class TestAPICommunes:
             date_evenement=datetime.date(2025, 11, 11),
             procedure=procedure,
         )
-        with django_assert_num_queries(4):
+        with django_assert_num_queries(3):
             response = client.get(reverse("api_communes"))
         results = list(DictReader(response.content.decode().splitlines()))
         assert results[0][expected_filled_key] == "2025-11-11"
@@ -430,7 +430,7 @@ class TestAPICommunes:
             date_evenement=datetime.date(2025, 11, 11),
             procedure=procedure,
         )
-        with django_assert_num_queries(4):
+        with django_assert_num_queries(3):
             response = client.get(reverse("api_communes"))
         results = list(DictReader(response.content.decode().splitlines()))
         assert results[0][expected_filled_key] == "2025-11-11"

@@ -1,6 +1,7 @@
 from csv import DictWriter
 from datetime import date
 
+from django.db import models
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_safe
 
@@ -26,7 +27,7 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
         )
 
     communes = (
-        Commune.objects.only("id", "type", "departement", "code_insee", "siren")
+        Commune.objects.only("type", "departement", "code_insee", "siren")
         .select_related("collectivite_ptr__code_insee", "collectivite_ptr__siren")
         .with_procedures_principales(avant=avant)
         .order_by("code_insee", "siren")
@@ -72,12 +73,20 @@ def api_communes(request: HttpRequest) -> HttpResponse:
         return HttpResponseBadRequest(
             "Le paramètre 'avant' doit être une date valide au format YYYY-MM-DD."
         )
-
     communes = (
         Commune.objects.filter(type=TypeCollectivite.COM)
-        .select_related("collectivite_ptr__code_insee")
+        .annotate(
+            is_nouvelle_annotation=models.Exists(
+                Commune.objects.filter(nouvelle_id=models.OuterRef("pk"))
+            )
+        )
         .with_procedures_principales(avant=avant)
-        .csv_prefetch()
+        .select_related(
+            "departement__region",
+            "intercommunalite__departement__region",
+            "collectivite_ptr__code_insee",
+            "collectivite_ptr__siren",
+        )
         .order_by("code_insee", "siren")
     )
     if departement := request.GET.get("departement"):
@@ -174,7 +183,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
             "com_nom_departement": commune.departement.nom,
             "com_code_region": commune.departement.region.code_insee,
             "com_nom_region": commune.departement.region.nom,
-            "com_nouvelle": commune.is_nouvelle,
+            "com_nouvelle": commune.is_nouvelle_annotation,
             "collectivite_porteuse": commune.collectivite_porteuse.code_insee
             or commune.collectivite_porteuse.siren,
             "cp_type": commune.collectivite_porteuse.type,
