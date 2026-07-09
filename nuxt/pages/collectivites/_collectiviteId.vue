@@ -51,10 +51,9 @@ export default {
   },
   methods: {
     async getProcedures () {
-      // TODO :: Migrate this to Django once `membres` is available in `/api-internes/collectivites/`
-      this.collectivite = await this.$nuxtApi.get(
-        `/api/geo/collectivites/${this.$route.params.collectiviteId}`
-      )
+      this.collectivite = await this.$collectiviteApi.get(this.$route.params.collectiviteId, {
+        avec_membres: true
+      })
       this.communes = this.isEpci ? this.collectivite.membres.filter(m => m.type.startsWith('COM')) : [this.collectivite]
 
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
