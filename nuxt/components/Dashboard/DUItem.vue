@@ -38,7 +38,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import dayjs from 'dayjs'
 
 export default {
@@ -69,9 +68,10 @@ export default {
       this.collectivite = this.procedure.procedures_perimetres[0]
     } else {
       try {
-        // TODO :: Migrate this to Django once `groupements` and `membres` are available in `/api-internes/collectivites/`
-        const { data: collectiviteData } = await axios(`/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}`)
-        this.collectivite = collectiviteData
+        this.collectivite = await this.$djangoApi.get(`/api-internes/collectivites/${this.procedure.collectivite_porteuse_id}/`, {
+          avec_groupements: true,
+          avec_membres: true
+        })
       } catch (err) {
         console.log('no coll', this.procedure, this.collectivite)
       }

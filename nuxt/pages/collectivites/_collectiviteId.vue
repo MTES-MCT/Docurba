@@ -24,8 +24,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   name: 'Collectivite',
   data () {
@@ -53,12 +51,9 @@ export default {
   },
   methods: {
     async getProcedures () {
-      // TODO :: Migrate this to Django once `membres` is available in `/api-internes/collectivites/`
-      const { data: collectivite } = await axios({
-        url: `/api/geo/collectivites/${this.$route.params.collectiviteId}`
+      this.collectivite = await this.$djangoApi.get(`/api-internes/collectivites/${this.$route.params.collectiviteId}`, {
+        avec_membres: true
       })
-
-      this.collectivite = collectivite
       this.communes = this.isEpci ? this.collectivite.membres.filter(m => m.type.startsWith('COM')) : [this.collectivite]
 
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
