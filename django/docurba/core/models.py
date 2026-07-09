@@ -280,7 +280,12 @@ class ProcedureStatusChoices(models.TextChoices):
 
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self, *, avant: date | None = None) -> Self:
-        events = Event.objects.exclude(date_evenement=None).defer("attachements")
+        events = Event.objects.exclude(date_evenement=None).only(
+            "type",
+            "date_evenement",
+            "is_valid",
+            "procedure_id",
+        )
         return self.annotate(
             date_pivot=models.Value(
                 avant or timezone.now().date(), output_field=models.DateField()
@@ -1277,11 +1282,6 @@ class CommuneQuerySet(models.QuerySet):
                 "procedures", procedures_principales, to_attr="procedures_principales"
             )
         )
-
-    def csv_prefetch(self) -> Self:
-        return self.select_related(
-            "departement__region", "intercommunalite__departement__region"
-        ).prefetch_related("deleguee")
 
     def with_scots(self, avant: date | None = None) -> Self:
         return self.prefetch_related(
