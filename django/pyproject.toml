@@ -39,7 +39,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--reuse-db -x --ds=config.settings.test"
+addopts = "--reuse-db --ds=config.settings.test"
 xfail_strict = true
 
 [tool.ruff.lint]
