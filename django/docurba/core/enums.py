@@ -15,6 +15,7 @@ class EventScope(models.TextChoices):
 class CommuneType(models.TextChoices):
     COM = "COM", "Commune"
     COMD = "COMD", "Commune déléguée"
+    COMA = "COMA", "Commune associée"
     UNKWN = "UNKWN", "Inconnu"
 
 
