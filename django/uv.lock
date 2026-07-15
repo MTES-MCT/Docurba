@@ -295,16 +295,16 @@ wheels = [
 
 [[package]]
 name = "django-datadog-logger"
-version = "0.9.0"
+version = "0.9.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "djangorestframework" },
     { name = "json-log-formatter" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/06/b2/36f165f1bf237ebffd1f14559b45133161e2a0570588adac43ec0db1b5c1/django_datadog_logger-0.9.0.tar.gz", hash = "sha256:502ccdf7684f29f4ca40c52ed1d03484236760abc71568f032d766aee42bc9bb", size = 73390, upload-time = "2026-03-18T11:07:58.841Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/72/7d/25e135e6190be7fd977c923bf4d9a43384ea6df19e46ef261e01f743a410/django_datadog_logger-0.9.1.tar.gz", hash = "sha256:ac97a03a673f2e56d032368080111a131624bc7ff9196eb6884fc28264e6a4e7", size = 75901, upload-time = "2026-07-08T10:05:01.332Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9c/f0/061da061fc91add12797cbc8c6a31a10407f631f12475f95b64103af8e6f/django_datadog_logger-0.9.0-py3-none-any.whl", hash = "sha256:8bdb40f5dc7c7a8095e301bbaf623dbdad4c141dadb4b9cdccfebc68df130f3a", size = 12779, upload-time = "2026-03-18T11:07:57.319Z" },
+    { url = "https://files.pythonhosted.org/packages/75/02/9905afe8ac7f1879063392217599cb20d8f5d1fed5415c1ee79771caba32/django_datadog_logger-0.9.1-py3-none-any.whl", hash = "sha256:76061776560ebd06b748d46b936e6678d0af457e8e41acd7c1bb43bf60a0a508", size = 13505, upload-time = "2026-07-08T10:04:59.725Z" },
 ]
 
 [[package]]
