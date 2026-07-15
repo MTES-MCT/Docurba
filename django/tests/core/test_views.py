@@ -1265,7 +1265,12 @@ class TestAPICommunes:
         assert results[0]["plan_libelle_code_etat_complet"]
 
     def test_code_3234(self, client: Client) -> None:
-        perimetre = [CommuneFactory()]
+        """
+        This code does not exist in CODE_ETAT_SIMPLIFIE_TO_LIBELLE
+        because the situation should not happen but it's used
+        by the DGALN to spot inconsistent data.
+        """  # noqa: D205
+        perimetre = [CommuneFactory(code_insee="30032")]
         collectivite_porteuse = CollectiviteFactory()
         ProcedureFactory(
             **self._default_procedure_factory_params(
@@ -1282,10 +1287,13 @@ class TestAPICommunes:
         response = client.get(reverse("api_communes"))
         results = csv_to_json_like(response.content)
         assert results[0]["plan_code_etat_complet"] == "3234"
-        assert results[0]["plan_libelle_code_etat_complet"]
+        assert results[0]["plan_libelle_code_etat_complet"] == ""
 
     def test_code_3214(self, client: Client) -> None:
-        perimetre = [CommuneFactory()]
+        # This code does not exist in CODE_ETAT_SIMPLIFIE_TO_LIBELLE
+        # because the situation should not happen but it's used
+        # by the DGALN to spot inconsistent data.
+        perimetre = [CommuneFactory(code_insee="30032")]
         collectivite_porteuse = CollectiviteFactory()
         ProcedureFactory(
             **self._default_procedure_factory_params(
@@ -1303,7 +1311,7 @@ class TestAPICommunes:
         response = client.get(reverse("api_communes"))
         results = csv_to_json_like(response.content)
         assert results[0]["plan_code_etat_complet"] == "3214"
-        assert results[0]["plan_libelle_code_etat_complet"]
+        assert results[0]["plan_libelle_code_etat_complet"] == ""
 
 
 @pytest.mark.django_db

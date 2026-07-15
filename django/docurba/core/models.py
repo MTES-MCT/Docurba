@@ -1440,15 +1440,7 @@ class Commune(Collectivite):
 
     @property
     def libelle_code_etat_complet(self) -> str:
-        try:
-            return CODE_ETAT_COMPLET_TO_LIBELLE[self.code_etat_complet]
-        except KeyError:
-            logger.exception(
-                "Code état (%s) incohérent pour %s",
-                self.code_etat_complet,
-                self.code_insee,
-            )
-            return ""
+        return CODE_ETAT_COMPLET_TO_LIBELLE.get(self.code_etat_complet, "")
 
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
