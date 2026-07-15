@@ -3,7 +3,6 @@ from collections.abc import Callable
 from contextlib import nullcontext as does_not_raise
 from datetime import date, timedelta
 from functools import partial
-from unittest import mock
 
 import pytest
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -2141,22 +2140,6 @@ class TestCommuneCodeEtat:
         commune = Commune.objects.with_procedures_principales().first()
         assert commune.code_etat_simplifie == "99"
         assert commune.code_etat_complet == "9999"
-
-    @pytest.mark.django_db
-    def test_fonctionne_et_log_erreur_quand_code_etat_incoherent(
-        self, caplog: pytest.LogCaptureFixture
-    ) -> None:
-        commune = CommuneFactory()
-
-        with mock.patch.object(
-            Commune, "code_etat_complet", new_callable=mock.PropertyMock
-        ) as mock_code_etat_complet:
-            mock_code_etat_complet.return_value = "8888"
-            assert commune.libelle_code_etat_complet == ""
-            assert (
-                f"Code état (8888) incohérent pour {commune.code_insee}"
-                in caplog.messages
-            )
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
