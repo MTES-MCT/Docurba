@@ -121,11 +121,11 @@ export default {
       if (this.selectedDepartement) {
         this.loading = true
         try {
-          const groupements = await this.$djangoApi.get('/collectivites/', {
+          const groupements = (await this.$djangoApi.get('/collectivites/', {
             departement: this.selectedDepartement.code_departement,
             without_communes: true,
-            competence: ['plan', 'schema'],
-          })
+            competence: ['plan', 'schema']
+          })).map(groupement => ({ ...groupement, code: groupement.codeInsee || groupement.siren }))
           const communes = await this.$djangoApi.get('/communes/', {
             departement: this.selectedDepartement.code_departement,
             type: 'COM'
