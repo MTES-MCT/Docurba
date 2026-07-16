@@ -1,4 +1,4 @@
-from pghistory import create_event_model
+from pghistory import ObjForeignKey, create_event_model
 from pghistory import models as pghistory_models
 
 from docurba.core import models as core_models
@@ -16,6 +16,10 @@ EventSnapshot = create_event_model(
     model_name="EventSnapshot",
     abstract=False,
     app_label="history",
+    obj_field=ObjForeignKey(
+        related_name="snapshots",
+        related_query_name="snapshots_qs",
+    ),
     fields=[
         "procedure",
         "type",

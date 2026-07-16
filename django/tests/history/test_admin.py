@@ -8,8 +8,9 @@ from tests.core.factories import EventFactory
 @pytest.mark.django_db
 class TestEventSnapshotAdmin:
     def test_eventssnapshot_changelist(self, admin_session_client: Client) -> None:
-        EventFactory()
+        event = EventFactory()
 
+        assert event.snapshots.count() == 1
         url = reverse("admin:history_eventsnapshot_changelist")
         response = admin_session_client.get(url)
         assert response.status_code == 200
