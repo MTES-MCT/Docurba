@@ -271,7 +271,8 @@ export default {
         competence: ['plan', 'schema']
       })
 
-      const [rawProcedures, communes, groupements] = await Promise.all([promProcedures, promCommunes, promGroupements])
+      const [rawProcedures, communes, rawGroupements] = await Promise.all([promProcedures, promCommunes, promGroupements])
+      const groupements = rawGroupements.map(groupement => ({ ...groupement, code: groupement.codeInsee || groupement.siren }))
       this.rawProcedures = rawProcedures.map((e) => {
         let collectivitePorteuse
         if (e.perimetre.length > 1) {
