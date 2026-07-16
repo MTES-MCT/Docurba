@@ -300,7 +300,9 @@ export default
       console.log('this.$user.profile: ', this.$user)
       if (this.$user.profile?.is_admin) { return true }
       if (this.procedure.shareable) {
-        return this.collaborators.some(e => e.email === this.$user.email) || this.$user.profile.is_admin
+        const userEmail = this.$user.email.toLowerCase()
+
+        return this.collaborators.some(e => e.email.toLowerCase() === userEmail) || this.$user.profile.is_admin
       } else {
         if (!this.$user.id || !this.$user.profile?.verified) { return false }
 
