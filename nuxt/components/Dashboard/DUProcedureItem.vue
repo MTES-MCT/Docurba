@@ -44,9 +44,7 @@
         <p v-if="procedure.topics">
           <ProceduresTopicChips :topics="procedure.topics" />
         </p>
-        <p v-if="procedure.topics__other__comment">
-          {{ procedure.topics__other__comment }}
-        </p>
+        <nuxt-content v-if="topicsOtherComment" :document="topicsOtherComment" />
       </v-col>
       <v-col v-if="procedure.comment_from_sudocuh && $user.canViewProcedureCommentFromSudocuh()" cols="12" class="pb-0">
         <v-divider />
@@ -156,6 +154,10 @@ export default {
   computed: {
     isCommunal () {
       return this.procedure.procedures_perimetres.length === 1
+    },
+    topicsOtherComment () {
+      return this.procedure.topics__other__comment &&
+        { body: this.$md.compile(this.procedure.topics__other__comment) }
     }
   },
   methods: {
