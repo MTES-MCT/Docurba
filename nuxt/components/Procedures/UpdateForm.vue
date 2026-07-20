@@ -26,7 +26,12 @@
         <v-row>
           <v-col v-if="topicOtherCommentSelected" cols="6" class="pt-0 pb-2">
             <validation-provider v-slot="{ errors }" name="Details de la procédure" rules="required">
-              <v-text-field v-model="topicOtherComment" :error-messages="errors" filled label="Description de l’objet de la procédure" />
+              <v-textarea
+                v-model="topicOtherComment"
+                :error-messages="errors"
+                filled
+                label="Description de l’objet de la procédure"
+              />
             </validation-provider>
           </v-col>
         </v-row>
