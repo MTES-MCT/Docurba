@@ -57,9 +57,7 @@
           </div>
         </v-card-title>
         <v-card-text>
-          <div v-if="event.commentaire || event.description">
-            {{ event.commentaire || event.description }}
-          </div>
+          <nuxt-content v-if="description" :document="description" />
 
           <div v-if="event.attachements?.length" class="mt-4">
             <v-chip
@@ -131,6 +129,11 @@ export default {
   computed: {
     creator () {
       return this.$utils.formatEventProfileToCreator(this.event)
+    },
+    description () {
+      const descriptionString = this.event.commentaire || this.event.description
+
+      return descriptionString && { body: this.$md.compile(descriptionString) }
     },
     formatDate () {
       return this.$dayjs(this.event.date_iso).format('DD/MM/YYYY')
