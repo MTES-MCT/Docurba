@@ -1221,9 +1221,13 @@ class TestAPICommunes:
         assert results[0]["plan_libelle_code_etat_complet"]
 
     def test_code_etat_sectoriel_competence_epci(self, client: Client) -> None:
-        perimetre = [CommuneFactory(), CommuneFactory()]
+        perimetre = [
+            CommuneFactory(code_insee="30032"),
+            CommuneFactory(code_insee="30033"),
+        ]
         collectivite_porteuse = CollectiviteFactory(
-            with_members=True, with_members__list=[*perimetre, CommuneFactory()]
+            with_members=True,
+            with_members__list=[*perimetre, CommuneFactory(code_insee="30189")],
         )
         ProcedureFactory(
             **self._default_procedure_factory_params(
