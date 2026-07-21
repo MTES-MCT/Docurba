@@ -23,7 +23,7 @@
 </template>
 <script>
 import FormInput from '@/mixins/FormInput.js'
-import { getDocumentTypeEvents, getProcedureEventsScope } from '@/plugins/event'
+import { getProcedureEventsScope } from '@/plugins/event'
 
 export default {
   mixins: [FormInput],
@@ -44,19 +44,16 @@ export default {
   data () {
     return {
       customEvent: null,
+      documentEvents: [],
       selectedEvent: null
     }
   },
   computed: {
-    documentEvents () {
-      return getDocumentTypeEvents(this.procedure.doc_type)
-    },
     internalProcedureType () {
       return getProcedureEventsScope(this.procedure)
     },
     filteredEvents () {
-      return this.documentEvents.filter(e => e.scope_liste.includes(this.internalProcedureType))
-        .sort((a, b) => a.order - b.order)
+      return this.documentEvents.filter(e => e.scopeList.includes(this.internalProcedureType))
         .map(event => event.name)
         .concat(['Autre'])
     },
@@ -74,15 +71,19 @@ export default {
       if (this.isOther) {
         this.$emit('input', this.customEvent)
       }
+    },
+    async procedure () {
+      this.documentEvents = await this.$procedureEvent.getTypes(this.procedure.doc_type)
     }
   },
-  mounted () {
+  async mounted () {
     console.log('this.eventType: ', this.eventType)
     const selectedEvent = this.documentEvents.find(event => event.name === this.eventType)
     console.log('selectedEvent: ', selectedEvent)
 
     this.customEvent = selectedEvent ? '' : this.eventType
     this.selectedEvent = selectedEvent ? selectedEvent.name : (this.eventType ? 'Autre' : '')
+    this.documentEvents = await this.$procedureEvent.getTypes(this.procedure.doc_type)
   }
 }
 </script>
