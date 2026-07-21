@@ -1589,7 +1589,7 @@ class TestEvent:
                 event.refresh_from_db()
                 assert event.project_id == new_procedure.project_id
 
-        event = EventFactory(procedure=None)
+        event = EventFactory(procedure__project=None)
         event.description = "Something new"
         event.save()
         event.refresh_from_db()
@@ -1640,15 +1640,12 @@ class TestEventManagers:
     def test_base_manager(self, subtests: pytest.Subtests) -> None:
         EventFactory()
         to_be_removed_fields = [
-            "is_sudocuh_scot",
-            "test",  # Still set in Nuxt code but not read.
             "code",
             "from_sudocuh_procedure_id",
         ]
         heavy_fields = [
             "description",
             "attachements",
-            "actors",
         ]
         event = Event.objects.earliest("id")
         for item in [*to_be_removed_fields, *heavy_fields]:
@@ -1677,15 +1674,12 @@ class TestEventManagers:
     def test_full_objects_manager(self, subtests: pytest.Subtests) -> None:
         EventFactory()
         to_be_removed_fields = [
-            "is_sudocuh_scot",
-            "test",
             "code",
             "from_sudocuh_procedure_id",
         ]
         heavy_fields = [
             "description",
             "attachements",
-            "actors",
         ]
         event = Event.full_objects.earliest("id")
         for item in [*to_be_removed_fields, *heavy_fields]:

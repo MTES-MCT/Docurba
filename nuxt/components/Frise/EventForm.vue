@@ -153,8 +153,7 @@ export default {
       event: Object.assign({}, defaultEvent, {
         description: this.$isDev ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' : '',
         project_id: this.procedure.project_id,
-        procedure_id: this.procedure.id,
-        test: !!this.$isDev
+        procedure_id: this.procedure.id
       }, this.value),
       attachements: this.value?.attachements ? this.value?.attachements : [],
       icons: { mdiTrashCan },
