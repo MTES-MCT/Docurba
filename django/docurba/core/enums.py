@@ -10,6 +10,8 @@ class EventScope(models.TextChoices):
     MC = "mc", "Mise en compatibilité"
     MJ = "mj", "Mise à jour"
     MLH = "mlh", "Modification (postérieur loi Huwart)"
+    PPLH = "pplh", "Procédure principale (postérieur loi Huwart)"
+    PPILH = "ppilh", "Procédure principale intercommunale (postérieur loi Huwart)"
 
 
 class CommuneType(models.TextChoices):

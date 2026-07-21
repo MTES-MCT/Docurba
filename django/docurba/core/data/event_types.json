@@ -382,7 +382,7 @@
             "is_active": true,
             "is_structuring": false,
             "scope_list": [
-                "pp",
+                "pplh",
                 "mlh"
             ],
             "scope_sugg": [],
@@ -401,8 +401,8 @@
             "is_active": true,
             "is_structuring": false,
             "scope_list": [
-                "ppi",
-                "pp",
+                "ppilh",
+                "pplh",
                 "mlh"
             ],
             "scope_sugg": [],
@@ -1864,8 +1864,8 @@
             "is_active": true,
             "is_structuring": true,
             "scope_list": [
-                "ppi",
-                "pp",
+                "ppilh",
+                "pplh",
                 "mlh"
             ],
             "scope_sugg": [],
@@ -2716,7 +2716,7 @@
             "is_active": true,
             "is_structuring": false,
             "scope_list": [
-                "pp",
+                "pplh",
                 "mlh"
             ],
             "scope_sugg": [],
@@ -2784,8 +2784,8 @@
             "is_active": true,
             "is_structuring": false,
             "scope_list": [
-                "ppi",
-                "pp",
+                "ppilh",
+                "pplh",
                 "mlh"
             ],
             "scope_sugg": [],
@@ -2844,7 +2844,7 @@
             "is_active": true,
             "is_structuring": true,
             "scope_list": [
-                "pp",
+                "pplh",
                 "mlh"
             ],
             "scope_sugg": [],
@@ -3220,7 +3220,7 @@
             "is_active": true,
             "is_structuring": false,
             "scope_list": [
-                "pp",
+                "pplh",
                 "mlh"
             ],
             "scope_sugg": [],
@@ -3281,8 +3281,8 @@
             "is_active": true,
             "is_structuring": false,
             "scope_list": [
-                "ppi",
-                "pp",
+                "ppilh",
+                "pplh",
                 "mlh"
             ],
             "scope_sugg": [],
@@ -3360,7 +3360,7 @@
             "is_active": true,
             "is_structuring": true,
             "scope_list": [
-                "pp",
+                "pplh",
                 "mlh"
             ],
             "scope_sugg": [],
@@ -4114,7 +4114,7 @@
             "is_active": true,
             "is_structuring": false,
             "scope_list": [
-                "pp",
+                "pplh",
                 "mlh"
             ],
             "scope_sugg": [],
@@ -4499,8 +4499,8 @@
             "is_active": true,
             "is_structuring": false,
             "scope_list": [
-                "ppi",
-                "pp",
+                "ppilh",
+                "pplh",
                 "mlh"
             ],
             "scope_sugg": [],
@@ -5470,8 +5470,8 @@
             "is_active": true,
             "is_structuring": true,
             "scope_list": [
-                "ppi",
-                "pp",
+                "ppilh",
+                "pplh",
                 "mlh"
             ],
             "scope_sugg": [],
