@@ -50,6 +50,7 @@ export default {
     { src: '~/plugins/githubRefs.js' },
     { src: '~/plugins/django-api.js', mode: 'client' }, // Need to be before urbanisator plugin
     { src: '~/plugins/collectivite.js', mode: 'client' },
+    { src: '~/plugins/event.js', mode: 'client' },
     { src: '~/plugins/urbanisator.js' },
     { src: '~/plugins/pdfMake.js', mode: 'client' },
     { src: '~/plugins/analytics.js' },
