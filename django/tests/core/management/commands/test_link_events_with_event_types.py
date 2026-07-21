@@ -51,16 +51,16 @@ MAPPINGS = [
 def clear_data() -> None:
     yield
     models = [
-        Collectivite,
-        Procedure,
+        EventSnapshot,
         Event,
-        User,
-        Profile,
+        Procedure,
         EventType,
         Commune,
+        Collectivite,
         Departement,
         Region,
-        EventSnapshot,
+        Profile,
+        User,
     ]
     for model in models:
         model.objects.all().delete()

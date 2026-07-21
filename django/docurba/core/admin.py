@@ -341,12 +341,10 @@ class EventAdmin(admin.ModelAdmin):
         "updated_at",
         "project",
         "attachements",
-        "actors",
         "archived_at",
         "archived_by",
         # Data imported from Sudocuh
         "is_valid",
-        "is_sudocuh_scot",
         "from_sudocuh_procedure_id",
     )
     raw_id_fields = ("procedure",)

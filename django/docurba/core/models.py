@@ -962,8 +962,6 @@ class EventQuerySet(models.QuerySet):
 
     def defer_heavy_fields(self) -> Self:
         to_be_removed_fields = [
-            "is_sudocuh_scot",
-            "test",
             "code",
             "from_sudocuh_procedure_id",
         ]
@@ -971,7 +969,6 @@ class EventQuerySet(models.QuerySet):
         heavy_fields = [
             "description",
             "attachements",
-            "actors",
         ]
         return self.defer(*to_be_removed_fields, *heavy_fields)
 
@@ -989,7 +986,7 @@ class FastLoadingEventManager(EventManager):
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
     procedure = models.ForeignKey(
-        "core.Procedure", models.DO_NOTHING, null=True, verbose_name="procédure"
+        "core.Procedure", models.DO_NOTHING, verbose_name="procédure"
     )
     event_type = models.ForeignKey(
         "core.EventType", models.DO_NOTHING, null=True, verbose_name="type"
@@ -1026,11 +1023,6 @@ class Event(models.Model):
     project = models.ForeignKey(
         "core.Project", blank=True, null=True, on_delete=models.SET_NULL
     )
-    actors = models.JSONField(blank=True, null=True, verbose_name="acteurs")
-    is_sudocuh_scot = models.BooleanField(
-        blank=True, null=True, verbose_name="is_sudocuh_scot"
-    )
-    test = models.BooleanField(blank=True, null=True)
     code = models.TextField(blank=True, null=True)  # noqa: DJ001
     from_sudocuh_procedure_id = models.IntegerField(
         blank=True, null=True, verbose_name="from_sudocuh_procedure_id"
@@ -1077,8 +1069,7 @@ class Event(models.Model):
 
     def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
         self.clean()
-        if self.procedure:
-            self.project_id = self.procedure.project_id
+        self.project_id = self.procedure.project_id
         super().save(*args, **kwargs)
 
     def clean(self) -> None:
