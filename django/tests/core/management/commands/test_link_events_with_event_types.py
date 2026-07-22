@@ -1,8 +1,18 @@
 import pytest
 from django.core.management import call_command
 
-from docurba.core.models import Event, EventType, TypeDocument
-from docurba.users.models import User
+from docurba.core.models import (
+    Collectivite,
+    Commune,
+    Departement,
+    Event,
+    EventType,
+    Procedure,
+    Region,
+    TypeDocument,
+)
+from docurba.history.models import EventSnapshot
+from docurba.users.models import Profile, User
 from tests.core.factories import EventFactory, EventTypeFactory
 
 MAPPINGS = [
@@ -39,15 +49,21 @@ MAPPINGS = [
 
 @pytest.fixture
 def clear_data() -> None:
-    call_command(
-        "flush",
-        verbosity=0,
-        interactive=False,
-        reset_sequences=False,
-        allow_cascade=True,
-        inhibit_post_migrate=True,
-    )
-    User.objects.all().delete()  # Why flush dont truncate user table ?
+    yield
+    models = [
+        Collectivite,
+        Procedure,
+        Event,
+        User,
+        Profile,
+        EventType,
+        Commune,
+        Departement,
+        Region,
+        EventSnapshot,
+    ]
+    for model in models:
+        model.objects.all().delete()
 
 
 def _event_types_args(mapping: tuple) -> tuple:
