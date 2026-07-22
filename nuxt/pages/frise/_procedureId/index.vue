@@ -300,7 +300,7 @@ export default
       console.log('this.$user.profile: ', this.$user)
       if (this.$user.profile?.is_admin) { return true }
       if (this.procedure.shareable) {
-        const userEmail = this.$user.email.toLowerCase()
+        const userEmail = this.$user.email && this.$user.email.toLowerCase()
 
         return this.collaborators.some(e => e.email.toLowerCase() === userEmail) || this.$user.profile.is_admin
       } else {
