@@ -17,7 +17,13 @@ from django.db.models.functions import Now
 from django.urls import reverse
 from django.utils import timezone
 
-from docurba.core.enums import CommuneType, EventScope, TypeCollectivite, VisibilityType
+from docurba.core.enums import (
+    CommuneType,
+    EventScope,
+    ProcedureType,
+    TypeCollectivite,
+    VisibilityType,
+)
 from docurba.core.utils import OversizedIndex
 from docurba.users.models import Profile
 
@@ -410,7 +416,7 @@ class Procedure(models.Model):
     )  # No reference in Nuxt's side but column is filled with different values.
     sudocu_secondary_procedure_of = models.IntegerField(blank=True, null=True)
     shareable = models.BooleanField(db_default=False)
-    type = models.CharField(blank=True, null=True)  # noqa: DJ001 # TextField in DB.
+    type = models.CharField(choices=ProcedureType, blank=True, null=True)  # noqa: DJ001 # TextField in DB.  # TODO: remove blank = True
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001 # TextField in DB.
     collectivite_porteuse = models.ForeignKey(
         "Collectivite",

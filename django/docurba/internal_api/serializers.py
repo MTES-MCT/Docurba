@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from docurba.core.models import Collectivite, Commune, EventType
+from docurba.core.models import Collectivite, Commune, EventType, Procedure
 
 
 class BaseCollectiviteSerializer(serializers.ModelSerializer):
@@ -127,5 +127,27 @@ class EventTypeSerializer(serializers.ModelSerializer):
             "scopeSugg",
             "isStructuring",  # TODO: remove  # noqa: FIX002
             "sudocuhName",  # TODO: remove  # noqa: FIX002
+        ]
+        read_only_fields = fields
+
+
+class ProcedureSerializer(serializers.ModelSerializer):
+    # code = serializers.CharField(source="code_insee")
+    # intitule = serializers.CharField(source="nom")
+    # departementCode = serializers.CharField(source="departement.code_insee")
+    # regionCode = serializers.CharField(source="departement.region.code_insee")
+    # intercommunaliteCode = serializers.CharField(
+    #     source="intercommunalite.siren", allow_blank=True, default=""
+    # )
+
+    class Meta:
+        model = Procedure
+        fields = [
+            # "doc_type",
+            # "vaut_SCoT",
+            # "vaut_PLH",
+            # "departementCode",
+            # "regionCode",
+            # "intercommunaliteCode",
         ]
         read_only_fields = fields

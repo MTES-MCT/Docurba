@@ -6,15 +6,22 @@ from pytest_django.asserts import assertNumQueries
 from rest_framework.test import APIClient
 from syrupy import SnapshotAssertion
 
-from docurba.core.enums import EventScope
+from docurba.core.enums import EventScope, ProcedureType
 from docurba.core.models import (
     EventType,
+    Procedure,
+    Topic,
     TypeCollectivite,
+    TypeDocument,
 )
+
+# Refactor
+from tests.conftest import SupabaseApiClient
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
     EventTypeFactory,
+    ProcedureFactory,
 )
 
 BASE_QUERIES_COUNT = 1  # Count made by DRF for the pagination.
@@ -516,3 +523,172 @@ class TestEventTypesAPI:
             "isStructuring": False,
             "sudocuhName": "",
         }
+
+
+# TODO: create a folder to split test_views and to create test_views_procedure.py
+
+
+@pytest.mark.django_db
+class TestProcedureCreation:
+    # InsertForm.vue
+    def test_principal_procedure(self, api_client_with_auth: SupabaseApiClient) -> None:
+        url = reverse("internal_api:procedures-list")
+        collectivite = CollectiviteFactory(
+            with_flat_members=True, with_flat_members__for_snapshot=True
+        )
+        perimetre = collectivite.flat_members.order_by("code_insee").values_list(
+            "code_insee", flat=True
+        )
+        topics = Topic.objects.filter(name__in=["zan", "coastline"])
+        assert Procedure.objects.count() == 0
+        data = {
+            # "shareable": True,
+            # "secondary_procedure_of": "",  # just in case of secondary procedure,
+            "type": ProcedureType.ABROGATION,  # this.typeProcedure
+            # collectivitePorteuseCode () {
+            #   if (this.collectivite[this.typeCompetence]) {
+            #     // return the collectivite if it has the competence
+            #     return this.collectivite.code
+            #   } else if (this.collectivite.intercommunalite) {
+            #     // return the interco if it exist.
+            #     return this.collectivite.intercommunalite.code
+            #   } else {
+            #     // Return the collectivite code if there is no groupement available.
+            #     // This can create an anomaly with Banatic but is better than nothing.
+            #     return this.collectivite.code
+            #   }
+            # },
+            "collectivite_porteuse_id": collectivite.pk,
+            # "is_principale": True,
+            # "status": "en cours",
+            # "is_sectoriel": None,
+            "is_scot": False,  # or True, this.typeDu
+            "is_pluih": False,  # or True, this.typeDu
+            "is_pdu": None,  # or True, this.typeDu
+            "current_perimetre": perimetre,  # oldFomattedPerimetre,
+            "doc_type": TypeDocument.PLUI,  # this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType,
+            # "departements": ["TODO"],  # departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
+            "numero": "",  # this.procedureCategory === 'principale' ? '1' : this.numberProcedure,
+            # "project_id": "TODO",  # project_id: insertedProject,
+            "name": "Computed name",  # TODO later: compute the name in Django.
+            # "owner_id": "TODO",  # this.$user.id
+            "started_before_huwart_law": False,  # this.startedBeforeHuwartLaw
+            # "testing": True,  # TODO: remove me
+            "topics_id": topics.values_list("id", flat=True),
+        }
+        response = api_client_with_auth.post(url, data=data)
+        assert response.status_code == 201
+        assert Procedure.objects.count() == 1
+        procedure = Procedure.objects.first()
+
+        # Check project creation
+        # Only for principal procedures.
+        assert procedure.project
+        # name: `${this.typeProcedure} ${this.typeDu}`,
+        # doc_type: this.typeDu,
+        # region: this.collectivite.regionCode,
+        # current_perimetre: oldFomattedPerimetre,
+        # collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
+        # collectivite_porteuse_id: this.collectivitePorteuseCode,
+        # test: true,
+        # owner: this.$user.id
+
+        #   shareable: true, # OK
+        assert procedure.shareable
+        #   secondary_procedure_of: this.procedureParent, # OK
+        assert not procedure.secondary_procedure_of
+        #   type: this.typeProcedure, # OK
+        assert procedure.type == "TODO"
+        #   collectivite_porteuse_id: this.collectivitePorteuseCode, # OK
+        assert procedure.collectivite_porteuse_id == collectivite.pk
+        #   is_principale: this.procedureCategory === 'principale', # OK
+        assert procedure.is_principale
+        #   status: 'en cours', # OK
+        assert procedure.status == "en cours"
+        #   is_sectoriel: null, # OK
+        assert procedure.is_sectoriel is None
+        #   is_scot: this.typeDu === 'SCOT', # OK
+        assert procedure.vaut_SCoT is False
+        #   is_pluih: this.typeDu === 'PLUiH', # OK
+        assert procedure.vaut_PLH is False
+        #   is_pdu: null, # OK
+        assert procedure.vaut_PDM is False
+        #   current_perimetre: oldFomattedPerimetre,  # OK
+        assert (
+            procedure.perimetre.order_by("code_insee").values_list(
+                "code_insee", flat=True
+            )
+            == perimetre
+        )
+        # [{"name": "Thoissey", "inseeCode": "01420"}]
+        assert procedure.current_perimetre == [
+            {"name": name, "inseeCode": code_insee}
+            for name, code_insee in procedure.perimetre.values("intitule", "code_insee")
+        ]
+        #   doc_type: this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType, # OK
+        assert procedure.doc_type == TypeDocument.PLUI
+        assert procedure.type_document == TypeDocument.PLUI
+        #   departements, # OK
+        assert sorted(procedure.departements) == sorted(
+            procedure.perimetre.values_list("departement__code", flat=True)
+        )  # check this
+        #   numero: this.procedureCategory === 'principale' ? '1' : this.numberProcedure, # OK
+        assert procedure.numero == "1"
+        #   project_id: insertedProject, # OK
+        assert procedure.project_id is not None
+        #   name: (this.baseName + ' ' + this.nameComplement).trim(), # OK
+        assert procedure.name == "Computed name"
+        #   owner_id: this.$user.id, # OK
+        assert procedure.owner_id == response.request.user.pk
+        #   started_before_huwart_law: this.startedBeforeHuwartLaw, # OK
+        assert procedure.started_before_huwart_law is False
+        #   testing: true # OK
+        #   TODO: remove me
+        assert procedure.testing is True
+
+        assert procedure.perimetre.all()
+        # const fomattedPerimetre = detailedPerimetre.map(e => ({ collectivite_code: e.code, collectivite_type: e.type, procedure_id: insertedProcedure[0].id, opposable: false, departement: e.departementCode }))
+        # List of selected municipalities in the intermunicipality area.
+        # await this.$supabase.from('procedures_perimetres').insert(fomattedPerimetre)
+        for commune_procedure in procedure.perimetre_through.select_related(
+            "departement"
+        ).all():
+            assert commune_procedure.collectivite_code == collectivite.siren
+            assert commune_procedure.collectivite_type == collectivite.type
+            assert (
+                commune_procedure.departement == commune_procedure.commune.departement
+            )
+            assert commune_procedure.opposable is False
+
+        assert procedure.topics.all() == topics.all()
+        # const topicsToInsert = this.topics.map((e) => {
+        #   return {
+        #     topic_id: e.value,
+        #     procedure_id: insertedProcedure[0].id,
+        #     comment: e.text === 'Autre' ? this.topicOtherComment : ''
+        #   }
+        # })
+        # await this.$supabase.from('core_proceduretopic').insert(topicsToInsert).select()
+
+    def test_secondary_procedure(self):
+        pass
+
+    def test_pp_not_allowed(self):
+        pass
+
+    def test_sp_not_allowed(self):
+        pass
+
+
+class TestProcedureList:
+    pass
+
+
+class TestProcedureDetail:
+    pass
+
+
+class TestReadOnly:
+    # Impossible to delete.
+    # Impossible to update.
+    pass

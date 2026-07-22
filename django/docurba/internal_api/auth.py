@@ -8,6 +8,7 @@ from supabase import AuthApiError, Client, ClientOptions, create_client
 from docurba.users.models import Session
 
 
+# Should be SessionAuthentication?
 class SupabaseAuthentication(authentication.BaseAuthentication):
     def __init__(self) -> None:
         self.supabase_client: Client = create_client(
