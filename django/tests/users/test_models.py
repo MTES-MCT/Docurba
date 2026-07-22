@@ -1,13 +1,13 @@
 import pytest
 from django.db import connection, transaction
 
-from docurba.users.models import Profile, User
+from docurba.users.models import Profile, SupabaseUser
 
-from .factories import ProfileFactory, UserFactory
+from .factories import ProfileFactory, SupabaseUserFactory
 
 
 @pytest.mark.django_db
-class TestUserModel:
+class TestSupabaseUserModel:
     def test_user_creation(self) -> None:
         """La table users n'est pas dans le schéma par défaut (public) mais dans `auth`.
 
@@ -17,11 +17,11 @@ class TestUserModel:
         Elle existe uniquement car Supabase l'utilise dans sa fonctionnalité SSO.
         Pour le moment, et uniquement pour les tests, créons un schéma `auth`.
         """
-        UserFactory()
-        assert User.objects.count() == 1
+        SupabaseUserFactory()
+        assert SupabaseUser.objects.count() == 1
 
     def test_update_password(self) -> None:
-        user = UserFactory()
+        user = SupabaseUserFactory()
         assert not user.encrypted_password
         password = "ARandomPassword"  # noqa: S105
         user.update_password(password=password)

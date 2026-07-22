@@ -7,7 +7,7 @@ from rest_framework import exceptions
 from rest_framework.test import APIRequestFactory
 
 from docurba.internal_api.auth import SupabaseAuthentication
-from tests.users.factories import ProfileFactory, SessionFactory, UserFactory
+from tests.users.factories import ProfileFactory, SessionFactory, SupabaseUserFactory
 
 fake = Faker()
 
@@ -116,7 +116,7 @@ class TestSupabaseAuthentication:
         create_client: MagicMock,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        user = UserFactory()
+        user = SupabaseUserFactory()
 
         supabase = create_client.return_value
         supabase.auth.get_claims.return_value = {

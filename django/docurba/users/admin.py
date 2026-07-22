@@ -8,7 +8,7 @@ from django.forms.widgets import TextInput
 from django.http import HttpResponse
 from django.utils.html import format_html
 
-from docurba.users.models import Profile, User
+from docurba.users.models import Profile, SupabaseUser
 
 
 @admin.register(Profile)
@@ -62,8 +62,8 @@ class ProfileAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+@admin.register(SupabaseUser)
+class SupabaseUserAdmin(admin.ModelAdmin):
     """Les données sont gérées par Supabase."""
 
     readonly_fields = (
@@ -78,7 +78,7 @@ class UserAdmin(admin.ModelAdmin):
     def response_change(self, request, obj) -> HttpResponse:
         """Add custom "actions" as buttons."""
         if "_update_user_password" in request.POST:
-            if request.user.has_perm("users.change_user"):
+            if request.user.has_perm("users.change_supabaseuser"):
                 password = obj.update_password()
                 self.message_user(
                     request, format_html("Nouveau mot de passe : {}", password)

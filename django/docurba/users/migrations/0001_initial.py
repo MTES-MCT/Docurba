@@ -22,7 +22,8 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "verbose_name": "utilisateur",
+                "verbose_name": "utilisateur supabase",
+                "verbose_name_plural": "utilisateurs supabase",
                 "managed": False,
                 "db_table": '"auth"."users"',
             },
