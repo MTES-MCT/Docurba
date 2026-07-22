@@ -1,11 +1,14 @@
 from django.db import models
 from rest_framework import viewsets
 
-from docurba.core.models import Collectivite, Commune, EventType
+from docurba.core.models import Collectivite, Commune, Event, EventType
 from docurba.internal_api import filters as custom_filters
 from docurba.internal_api.serializers import (
     CollectiviteSerializer,
     CommuneSerializer,
+    EventCreateSerializer,
+    EventDetailSerializer,
+    EventListSerializer,
     EventTypeSerializer,
 )
 
@@ -87,3 +90,28 @@ class EventTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = EventType.objects.all()
     serializer_class = EventTypeSerializer
     filterset_class = custom_filters.EventTypeFilter
+
+
+class EventViewSet(viewsets.ModelViewSet):
+    """Evenements en base."""
+
+    filterset_class = custom_filters.EventFilter
+
+    def get_queryset(self):  # noqa: ANN201
+        if self.action == "list":
+            return Event.objects.all()
+        return Event.full_objects.without_archived()
+
+    def get_serializer_class(self):  # noqa: ANN201
+        if self.action == "list":
+            return EventListSerializer
+        if self.action == "create":
+            return EventCreateSerializer
+        return EventDetailSerializer
+
+        return super().get_serializer_class()
+
+    def perform_destroy(self, instance: Event):  # noqa: ANN201
+        # instance.archive(archived_by=profile)
+        # instance.save()
+        pass

@@ -5,6 +5,7 @@ from json import loads
 from pathlib import Path
 
 import factory.fuzzy
+from django.utils import timezone
 from factory.random import randgen
 
 from docurba.core.enums import CommuneType
@@ -338,3 +339,11 @@ class EventFactory(factory.django.DjangoModelFactory):
     date_evenement = factory.fuzzy.FuzzyDate(datetime.date(1970, 1, 1))
     type = "Prescription"
     from_sudocuh = None
+
+    archived_at = None
+    archived_by = None
+
+    class Params:
+        archived = factory.Trait(
+            archived_at=timezone.now(), archived_by=factory.SubFactory(ProfileFactory)
+        )
