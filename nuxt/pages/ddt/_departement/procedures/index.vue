@@ -265,14 +265,13 @@ export default {
       const promCommunes = this.$djangoApi.get('/communes/', {
         departement: this.$route.params.departement
       })
-      const promGroupements = this.$djangoApi.get('/collectivites/', {
+      const promGroupements = this.$collectiviteApi.list({
         departement: this.$route.params.departement,
         without_communes: true,
         competence: ['plan', 'schema']
       })
 
-      const [rawProcedures, communes, rawGroupements] = await Promise.all([promProcedures, promCommunes, promGroupements])
-      const groupements = rawGroupements.map(groupement => ({ ...groupement, code: groupement.codeInsee || groupement.siren }))
+      const [rawProcedures, communes, groupements] = await Promise.all([promProcedures, promCommunes, promGroupements])
       this.rawProcedures = rawProcedures.map((e) => {
         let collectivitePorteuse
         if (e.perimetre.length > 1) {
