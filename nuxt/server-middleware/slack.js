@@ -6,6 +6,7 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+const { getCollectivite } = require('../plugins/collectivite.js')
 const sendgrid = require('./modules/sendgrid.js')
 const supabase = require('./modules/supabase.js')
 
@@ -167,7 +168,7 @@ async function collectiviteValidation (data, responseUrl) {
       .eq('user_id', data.user_id)
 
     const profile = profiles[0]
-    const collectivite = await djangoApi.get(`/api-internes/collectivites/${profile.collectivite_id}/`)
+    const collectivite = await getCollectivite(djangoApi, profile.collectivite_id)
 
     const sharedProcedureUrl = await sharing.latestProcedurePrincipaleSharedUrl(data.email)
     sendgrid.sendEmail({
