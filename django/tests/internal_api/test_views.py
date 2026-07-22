@@ -263,7 +263,9 @@ class TestCollectivitesAPI:
             nom="Commune 1",
             intercommunalite=intercommunalite,
         )
-        url = reverse("internal_api:collectivites-detail", args=[commune.pk])
+        url = reverse(
+            "internal_api:collectivites-detail", args=[commune.code_insee_unique]
+        )
         with assertNumQueries(1):
             response = api_client.get(url, format="json")
 
