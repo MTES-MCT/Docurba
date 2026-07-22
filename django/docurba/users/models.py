@@ -1,6 +1,7 @@
 import secrets
 import string
 
+from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import ArrayField
 from django.db import connection, models, transaction
 from django.db.models.functions import Now
@@ -200,3 +201,8 @@ class Profile(models.Model):
 
     def __str__(self) -> str:
         return f"{self.firstname} {self.lastname}"
+
+
+class DjangoUser(AbstractUser):
+    class Meta:
+        db_table = "auth_user"

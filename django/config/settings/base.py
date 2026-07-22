@@ -209,3 +209,5 @@ EVENT_TYPE_HELP_TEXT_URL = env.str("EVENT_TYPE_HELP_TEXT_URL", default="")
 
 SUPABASE_URL = env.str("SUPABASE_URL", default="http://127.0.0.1:54321")
 SUPABASE_ANON_KEY = env.str("SUPABASE_ANON_KEY", default="")
+
+AUTH_USER_MODEL = "users.DjangoUser"

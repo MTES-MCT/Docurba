@@ -8,7 +8,7 @@ from django.forms.widgets import TextInput
 from django.http import HttpResponse
 from django.utils.html import format_html
 
-from docurba.users.models import Profile, SupabaseUser
+from docurba.users.models import DjangoUser, Profile, SupabaseUser
 
 
 @admin.register(Profile)
@@ -94,3 +94,8 @@ class SupabaseUserAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request) -> Literal[False]:
         return False
+
+
+@admin.register(DjangoUser)
+class DjangoUserAdmin(admin.ModelAdmin):
+    pass
