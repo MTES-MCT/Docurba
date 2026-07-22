@@ -4,6 +4,7 @@ app.use(express.json())
 
 const _ = require('lodash')
 
+const { getCollectivite } = require('../plugins/collectivite.js')
 const djangoApi = require('./modules/django-api.js')
 const supabase = require('./modules/supabase.js')
 const sendgrid = require('./modules/sendgrid.js')
@@ -52,7 +53,7 @@ app.post('/notify/shared', (req, res) => {
       const { data: projects } = await supabase.from('projects').select('*').eq('id', sharing.project_id)
       const project = projects[0]
 
-      const collectivite = await djangoApi.get(`/api-internes/collectivites/${project.collectivite_id}/`)
+      const collectivite = await getCollectivite(djangoApi, project.collectivite_id)
 
       if (notification) {
         sendgrid.sendEmail({
