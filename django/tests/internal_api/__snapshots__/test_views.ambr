@@ -108,16 +108,18 @@
 # name: TestCollectivitesAPI.test_list_filters[many_codes_siren]
   list([
     dict({
-      'code': '132435465',
+      'codeInsee': '',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 3',
       'regionCode': '76',
       'siren': '132435465',
       'type': 'SMO',
     }),
     dict({
-      'code': '987654321',
+      'codeInsee': '',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Groupement 1',
       'regionCode': '93',
       'siren': '987654321',
@@ -940,6 +942,7 @@
     dict({
       'code': '13150',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 1',
       'regionCode': '93',
       'type': 'COM',
@@ -1043,6 +1046,7 @@
     dict({
       'code': '13150',
       'departementCode': '13',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 1',
       'regionCode': '93',
       'type': 'COM',
@@ -1050,6 +1054,7 @@
     dict({
       'code': '30000',
       'departementCode': '30',
+      'intercommunaliteCode': '',
       'intitule': 'Commune 2',
       'regionCode': '76',
       'type': 'COM',
