@@ -105,7 +105,7 @@ export default {
       const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
       this.project = projects ? projects[0] : {}
 
-      this.collectivite = await this.$djangoApi.get(`/api-internes/collectivites/${this.project.collectivite_id}/`)
+      this.collectivite = await this.$collectiviteApi.get(this.project.collectivite_id)
     }
 
     const { data: sections } = await axios({
