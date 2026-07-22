@@ -1,12 +1,20 @@
 export default ({ $djangoApi }, inject) => {
   inject('collectiviteApi', {
-    async get (id, params) {
-      return parseCollectivite(await $djangoApi.get(`/api-internes/collectivites/${id}/`, params))
+    get (id, params) {
+      return getCollectivite($djangoApi, id, params)
     },
-    async list (params) {
-      return (await $djangoApi.get('/api-internes/collectivites/', params)).map(parseCollectivite)
+    list (params) {
+      return listCollectivites($djangoApi, params)
     }
   })
+}
+
+export async function getCollectivite (api, id, params) {
+  return parseCollectivite(await api.get(`/api-internes/collectivites/${id}/`, params))
+}
+
+export async function listCollectivites (api, params) {
+  return (await api.get('/api-internes/collectivites/', params)).map(parseCollectivite)
 }
 
 function parseCollectivite (collectivite) {
