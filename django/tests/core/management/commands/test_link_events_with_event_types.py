@@ -2,7 +2,7 @@ import pytest
 from django.core.management import call_command
 
 from docurba.core.models import Event, EventType, TypeDocument
-from docurba.users.models import User
+from docurba.users.models import SupabaseUser
 from tests.core.factories import EventFactory, EventTypeFactory
 
 MAPPINGS = [
@@ -47,7 +47,7 @@ def clear_data() -> None:
         allow_cascade=True,
         inhibit_post_migrate=True,
     )
-    User.objects.all().delete()  # Why flush dont truncate user table ?
+    SupabaseUser.objects.all().delete()  # Why flush dont truncate user table ?
 
 
 def _event_types_args(mapping: tuple) -> tuple:
