@@ -3,7 +3,7 @@ import { groupBy, uniq, uniqBy, orderBy } from 'lodash'
 import axios from 'axios'
 import { enrichProcedureWithEvents } from '@/plugins/procedure'
 
-export default ({ $djangoApi, $supabase, $dayjs }, inject) => {
+export default ({ $collectiviteApi, $supabase, $dayjs }, inject) => {
   Vue.filter('docType', function (procedure) {
     if (procedure.doc_type === 'PLU') {
       let docType = procedure.doc_type
@@ -75,7 +75,7 @@ export default ({ $djangoApi, $supabase, $dayjs }, inject) => {
         collectiviteId
       ])
 
-      const collectivites = await $djangoApi.get('/api-internes/collectivites/', {
+      const collectivites = await $collectiviteApi.list({
         codes_siren: collectivitesCodes
       })
 
