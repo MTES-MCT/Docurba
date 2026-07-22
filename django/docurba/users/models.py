@@ -8,7 +8,7 @@ from django.db.models.functions import Now
 from docurba.users import enums as users_enums
 
 
-class User(models.Model):
+class SupabaseUser(models.Model):
     """L'authentification est gérée par la fonctionnalité SSO de Supabase.
 
     Le schéma de cette table est géré par Supabase. Seules les colonnes intéressantes sont
@@ -26,7 +26,8 @@ class User(models.Model):
     class Meta:
         managed = False
         db_table = '"auth"."users"'
-        verbose_name = "utilisateur"
+        verbose_name = "utilisateur supabase"
+        verbose_name_plural = "utilisateurs supabase"
 
     def __str__(self) -> str:
         return self.email
@@ -80,7 +81,7 @@ class Session(models.Model):
 
     id = models.UUIDField(primary_key=True)
     user = models.ForeignKey(
-        User,
+        SupabaseUser,
         models.CASCADE,
     )
 
@@ -96,7 +97,10 @@ class Profile(models.Model):
     """La table `users` étant gérée par Supabase, les informations supplémentaires concernant l'utilisateur sont conservées ici."""
 
     user = models.OneToOneField(
-        User, verbose_name="Utilisateur", on_delete=models.CASCADE, primary_key=True
+        SupabaseUser,
+        verbose_name="Utilisateur",
+        on_delete=models.CASCADE,
+        primary_key=True,
     )
     created_at = models.DateTimeField(
         verbose_name="Date de création", db_default=Now(), editable=False

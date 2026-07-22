@@ -12,7 +12,7 @@ from docurba.core.models import (
     TypeDocument,
 )
 from docurba.history.models import EventSnapshot
-from docurba.users.models import Profile, User
+from docurba.users.models import Profile, SupabaseUser
 from tests.core.factories import EventFactory, EventTypeFactory
 
 MAPPINGS = [
@@ -60,7 +60,7 @@ def clear_data() -> None:
         Departement,
         Region,
         Profile,
-        User,
+        SupabaseUser,
     ]
     for model in models:
         model.objects.all().delete()

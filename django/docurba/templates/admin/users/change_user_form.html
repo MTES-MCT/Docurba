@@ -2,7 +2,7 @@
 
 {% block submit_buttons_bottom %}
 
-    {% if perms.users.change_user %}
+    {% if perms.users.change_supabaseuser %}
         <div class="submit-row">
             <input class="danger with-confirm" type="submit" value="Créer un mot de passe par défaut" name="_update_user_password">
         </div>

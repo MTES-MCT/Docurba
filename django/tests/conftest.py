@@ -61,7 +61,7 @@ def staff_session_client(django_db_blocker: DjangoDbBlocker | None) -> Client:
         permissions = [
             (
                 "users",
-                "change_user",
+                "change_supabaseuser",
             ),  # users/test_admin.py::TestUserAdmin::test_update_password
         ]
         for app_label, codename in permissions:
