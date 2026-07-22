@@ -170,7 +170,7 @@ export default {
         const communes = await this.$djangoApi.get('/api-internes/communes/', {
           departement
         })
-        const intercommunalites = await this.$djangoApi.get('/api-internes/collectivites/', {
+        const intercommunalites = await this.$collectiviteApi.list({
           competence: ['plan', 'schema'],
           departement,
           without_communes: true
