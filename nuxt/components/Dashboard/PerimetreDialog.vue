@@ -77,7 +77,7 @@ export default {
   watch: {
     async dialog (newVal) {
       if (newVal) {
-        this.fullPerimetre = await this.$djangoApi.get('/api-internes/collectivites/', {
+        this.fullPerimetre = await this.$collectiviteApi.list({
           codes_siren: this.perimetre.map(y => y.collectivite_code)
         })
       }
