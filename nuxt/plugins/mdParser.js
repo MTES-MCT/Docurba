@@ -6,9 +6,23 @@ import rehypeSanitize from 'rehype-sanitize'
 import rehypeStringify from 'rehype-stringify'
 import rehypeParse from 'rehype-parse'
 import rehypeMinifyWhitespace from 'rehype-minify-whitespace'
+import visit from 'unist-util-visit'
 
 import jsonCompiler from '@nuxt/content/parsers/markdown/compilers/json.js'
 import { defaultSchema } from '@/assets/sanitizeSchema.js'
+
+function rehypeExternalLinks () {
+  return function (tree) {
+    visit(tree, 'element', function (node) {
+      if (node.tagName === 'a') {
+        Object.assign(node.properties, {
+          rel: 'nofollow noopener noreferrer',
+          target: '_blank'
+        })
+      }
+    })
+  }
+}
 
 // TODO: This pugin should be used to clean a lot of deplucated code.
 // ALso, this plugin should have 2 mode one that send a JSON content and an other that send an HTML String
@@ -18,6 +32,7 @@ export default (_, inject) => {
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
     .use(rehypeSanitize, defaultSchema)
+    .use(rehypeExternalLinks)
     .use(rehypeStringify)
     .use(jsonCompiler)
 
