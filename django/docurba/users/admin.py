@@ -100,7 +100,8 @@ class SupabaseUserAdmin(admin.ModelAdmin):
 
 @admin.register(DjangoUser)
 class DjangoUserAdmin(UserAdmin):
-    pass
-
-
-AUTH_USER_MODEL = "users.User"
+    autocomplete_fields = ("profile",)
+    fieldsets = (
+        *UserAdmin.fieldsets,
+        ("Profil Supabase", {"fields": ("profile",)}),
+    )
