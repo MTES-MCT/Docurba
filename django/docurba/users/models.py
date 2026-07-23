@@ -204,5 +204,13 @@ class Profile(models.Model):
 
 
 class DjangoUser(AbstractUser):
+    profile = models.OneToOneField(
+        Profile,
+        models.DO_NOTHING,
+        null=True,
+        to_field="user_id",
+        related_name="django_user",
+    )
+
     class Meta:
         db_table = "auth_user"
