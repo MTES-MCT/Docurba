@@ -1,7 +1,44 @@
 
-import CCEvents from '@/assets/data/events/CC_events.json'
-import PLUEvents from '@/assets/data/events/PLU_events.json'
-import SCoTEvents from '@/assets/data/events/SCOT_events.json'
+export default ({ $djangoApi }, inject) => {
+  const eventsTypesByDocumentType = {}
+
+  async function getEventTypesByDocumentType (documentType) {
+    if (!(documentType in eventsTypesByDocumentType)) {
+      eventsTypesByDocumentType[documentType] = (await $djangoApi.get('/types-evenement/', {
+        document_type: documentType
+      })).map((eventType, index) => ({
+        ...eventType,
+        order: index + 1,
+        structurant: eventType.isStructuring
+      }))
+    }
+
+    return eventsTypesByDocumentType[documentType]
+  }
+
+  inject('procedureEvent', {
+    getTypes (documentType) {
+      if (!documentType) {
+        return []
+      }
+      if (documentType.match(/i|H|M/)) {
+        return getEventTypesByDocumentType('PLU')
+      }
+      switch (documentType) {
+        case 'PLU':
+        case 'POS':
+          return getEventTypesByDocumentType('PLU')
+        case 'SCOT':
+        case 'SD':
+          return getEventTypesByDocumentType('SCOT')
+        case 'CC':
+          return getEventTypesByDocumentType('CC')
+        default:
+          return []
+      }
+    }
+  })
+}
 
 export function addFormattedDate (event) {
   return event && event.date_iso && !event.date_iso_formattee
@@ -22,27 +59,6 @@ export function getApprovalEvent (event) {
     'Délibération d\'approbation du conseil municipal ou communautaire',
     'DUP emportant mise en compatibilité'
   ].includes(event.type)
-}
-
-export function getDocumentTypeEvents (documentType) {
-  if (!documentType) {
-    return []
-  }
-  if (documentType.match(/i|H|M/)) {
-    return PLUEvents
-  }
-  switch (documentType) {
-    case 'PLU':
-    case 'POS':
-      return PLUEvents
-    case 'SCOT':
-    case 'SD':
-      return SCoTEvents
-    case 'CC':
-      return CCEvents
-    default:
-      return []
-  }
 }
 
 export function getLaunchEvent (eventType) {

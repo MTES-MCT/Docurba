@@ -264,7 +264,7 @@ import { mdiBookmark, mdiChevronLeft, mdiDotsVertical, mdiPaperclip, mdiSync } f
 import axios from 'axios'
 import _ from 'lodash'
 
-import { getDocumentTypeEvents, getProcedureEventsScope } from '@/plugins/event'
+import { getProcedureEventsScope } from '@/plugins/event'
 
 export default
 {
@@ -273,6 +273,7 @@ export default
     return {
       canShare: false,
       collectivite: null,
+      documentEvents: [],
       procedure: null,
       events: null,
       dialog: false,
@@ -322,9 +323,6 @@ export default
       }
       return this.isAdmin && !this.procedure.secondary_procedure_of
     },
-    documentEvents () {
-      return getDocumentTypeEvents(this.procedure?.doc_type)
-    },
     eventsStructurants () {
       return this.enrichedEvents.filter(e => e.structurant)
     },
@@ -333,7 +331,7 @@ export default
       return this.events.map((event) => {
         const ev = this.documentEvents.find(x =>
           // Matche le type d'événement en regardant le libellé Docurba ET le libellé Sudocuh
-          [x.name, x.name_sudocuh].includes(event.type)
+          [x.name, x.sudocuhName].includes(event.type)
         )
         return { ...event, structurant: !!ev?.structurant }
       }).filter((event) => {
@@ -359,19 +357,24 @@ export default
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     },
     recommendedEvent () {
-      const filteredDocumentEvents = this.documentEvents?.filter(e => e.scope_sugg.includes(this.internalProcedureType))
+      const filteredDocumentEvents = this.documentEvents?.filter(e => e.scopeSugg.includes(this.internalProcedureType))
       if (!filteredDocumentEvents) { return null }
 
       if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
       const lastEventType = this.events[0]
 
-      const lastEventOrder = this.documentEvents.find(e => [e.name, e.name_sudocuh].includes(lastEventType.type))
+      const lastEventOrder = this.documentEvents.find(e => [e.name, e.sudocuhName].includes(lastEventType.type))
 
       if (!lastEventOrder) { return filteredDocumentEvents[0] }
       return filteredDocumentEvents.find(e => _.gt(e.order, lastEventOrder.order))
     },
     internalProcedureType () {
       return getProcedureEventsScope(this.procedure)
+    }
+  },
+  watch: {
+    async procedure () {
+      this.documentEvents = await this.$procedureEvent.getTypes(this.procedure.doc_type)
     }
   },
   async mounted () {
@@ -420,6 +423,7 @@ export default
         const canShare = await this.$supabase.from('projects_sharing').select('id').eq('project_id', this.procedure.project_id).eq('user_email', this.$user.profile.email).eq('role', 'write_frise')
         this.canShare = canShare.data.length > 0
       }
+      this.documentEvents = await this.$procedureEvent.getTypes(this.procedure.doc_type)
 
       this.loaded = true
     } catch (error) {
