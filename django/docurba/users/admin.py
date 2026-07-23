@@ -2,7 +2,7 @@
 from typing import ClassVar, Literal
 
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as DjangoUserADmin
+from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import PermissionDenied
 from django.forms.widgets import TextInput
@@ -98,5 +98,9 @@ class SupabaseUserAdmin(admin.ModelAdmin):
 
 
 @admin.register(User)
-class UserAdmin(DjangoUserADmin):
-    pass
+class UserAdmin(DjangoUserAdmin):
+    autocomplete_fields = ("profile",)
+    fieldsets = (
+        *DjangoUserAdmin.fieldsets,
+        ("Profil Supabase", {"fields": ("profile",)}),
+    )
