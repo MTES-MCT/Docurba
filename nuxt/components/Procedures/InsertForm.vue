@@ -257,6 +257,7 @@ export default {
         'Mise à jour'
       ].map(item => typeof item === 'string' ? { text: item, value: item } : item)
     },
+    // # TODO: remove me and make this compute in djangoApi.
     collectivitePorteuseCode () {
       if (this.collectivite[this.typeCompetence]) {
         // return the collectivite if it has the competence
@@ -463,6 +464,7 @@ export default {
         const fomattedPerimetre = detailedPerimetre.map(e => ({ collectivite_code: e.code, collectivite_type: e.type, procedure_id: insertedProcedure[0].id, opposable: false, departement: e.departementCode }))
         await this.$supabase.from('procedures_perimetres').insert(fomattedPerimetre)
 
+        // Probably for later
         const sender = {
           user_email: this.$user.email,
           project_id: insertedProject ?? this.proceduresParents?.find(e => e.id === this.procedureParent)?.project_id,
@@ -476,6 +478,7 @@ export default {
         // console.log('this.proceduresParents?.find(e => e.id === this.procedureParent): ', this.proceduresParents?.find(e => e.id === this.procedureParent))
         // console.log('sender SHARING: ', sender)
 
+        // Probably for later
         const { error: errorInsertedCollabs } = await this.$supabase.from('projects_sharing').insert(sender)
 
         if (errorInsertedCollabs) {
