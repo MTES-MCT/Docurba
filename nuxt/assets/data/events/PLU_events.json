@@ -765,6 +765,24 @@
     "structurant": false
   },
   {
+    "code": "EXEMEVALENVDELIB",
+    "condition": null,
+    "impact": null,
+    "law": null,
+    "name": "Exemption d'évaluation environnementale -> délibération de décision",
+    "name_sudocuh": null,
+    "order": 41,
+    "phases": null,
+    "scope_liste": [
+      "rms",
+      "m",
+      "ms",
+      "mc"
+    ],
+    "scope_sugg": [],
+    "structurant": false
+  },
+  {
     "code": null,
     "condition": "Le cas échéant, dans ce cas bascule dans \"lancement de l'évaluation environnementale\"",
     "impact": null,
@@ -1171,7 +1189,7 @@
     "condition": null,
     "impact": null,
     "law": null,
-    "name": "Transmission de l'avis de l'État - défavorbale",
+    "name": "Transmission de l'avis de l'État - défavorable",
     "name_sudocuh": null,
     "order": 63,
     "phases": null,
@@ -1344,6 +1362,8 @@
     "order": 73,
     "phases": null,
     "scope_liste": [
+      "ppi",
+      "pp",
       "mlh"
     ],
     "scope_sugg": [],
@@ -1359,6 +1379,8 @@
     "order": 74,
     "phases": null,
     "scope_liste": [
+      "ppi",
+      "pp",
       "mlh"
     ],
     "scope_sugg": [],
@@ -1374,6 +1396,8 @@
     "order": 75,
     "phases": null,
     "scope_liste": [
+      "ppi",
+      "pp",
       "mlh"
     ],
     "scope_sugg": [],
@@ -1389,6 +1413,8 @@
     "order": 76,
     "phases": null,
     "scope_liste": [
+      "ppi",
+      "pp",
       "mlh"
     ],
     "scope_sugg": [],
@@ -1404,6 +1430,8 @@
     "order": 77,
     "phases": null,
     "scope_liste": [
+      "ppi",
+      "pp",
       "mlh"
     ],
     "scope_sugg": [],
@@ -1419,6 +1447,8 @@
     "order": 78,
     "phases": null,
     "scope_liste": [
+      "ppi",
+      "pp",
       "mlh"
     ],
     "scope_sugg": [],

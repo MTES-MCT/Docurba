@@ -717,7 +717,7 @@
     "condition": null,
     "impact": null,
     "law": null,
-    "name": "Transmission de l'avis de l'État - défavorbale",
+    "name": "Transmission de l'avis de l'État - défavorable",
     "name_sudocuh": null,
     "order": 46,
     "phases": null,
@@ -832,6 +832,7 @@
     "order": 53,
     "phases": null,
     "scope_liste": [
+      "ppi",
       "mlh"
     ],
     "scope_sugg": [],
@@ -847,6 +848,7 @@
     "order": 54,
     "phases": null,
     "scope_liste": [
+      "ppi",
       "mlh"
     ],
     "scope_sugg": [],
@@ -862,6 +864,7 @@
     "order": 55,
     "phases": null,
     "scope_liste": [
+      "ppi",
       "mlh"
     ],
     "scope_sugg": [],
@@ -877,6 +880,7 @@
     "order": 56,
     "phases": null,
     "scope_liste": [
+      "ppi",
       "mlh"
     ],
     "scope_sugg": [],
@@ -892,6 +896,7 @@
     "order": 57,
     "phases": null,
     "scope_liste": [
+      "ppi",
       "mlh"
     ],
     "scope_sugg": [],
@@ -907,6 +912,7 @@
     "order": 58,
     "phases": null,
     "scope_liste": [
+      "ppi",
       "mlh"
     ],
     "scope_sugg": [],
@@ -1275,6 +1281,7 @@
     "phases": null,
     "scope_liste": [
       "ppi",
+      "ppi",
       "rms",
       "m",
       "ms",
@@ -1452,7 +1459,7 @@
     "impact": null,
     "law": "L. 153-27 du CU",
     "name": "Evaluation du SCoT au bout de 10 ans ou révision substantielle si besoin",
-    "name_sudocuh": "Autre",
+    "name_sudocuh": null,
     "order": 90,
     "phases": "Bilan/évaluation",
     "scope_liste": [
