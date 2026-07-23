@@ -2,13 +2,15 @@
 from typing import ClassVar, Literal
 
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import PermissionDenied
 from django.forms.widgets import TextInput
 from django.http import HttpResponse
 from django.utils.html import format_html
 
-from docurba.users.models import Profile, User
+from docurba.users.models import Profile, SupabaseUser
+from docurba.users.models import User as DjangoUser
 
 
 @admin.register(Profile)
@@ -62,8 +64,8 @@ class ProfileAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+@admin.register(SupabaseUser)
+class SupabaseUserAdmin(admin.ModelAdmin):
     """Les données sont gérées par Supabase."""
 
     readonly_fields = (
@@ -78,7 +80,7 @@ class UserAdmin(admin.ModelAdmin):
     def response_change(self, request, obj) -> HttpResponse:
         """Add custom "actions" as buttons."""
         if "_update_user_password" in request.POST:
-            if request.user.has_perm("users.change_user"):
+            if request.user.has_perm("users.change_supabaseuser"):
                 password = obj.update_password()
                 self.message_user(
                     request, format_html("Nouveau mot de passe : {}", password)
@@ -94,3 +96,12 @@ class UserAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request) -> Literal[False]:
         return False
+
+
+@admin.register(DjangoUser)
+class DjangoUserAdmin(UserAdmin):
+    autocomplete_fields = ("profile",)
+    fieldsets = (
+        *UserAdmin.fieldsets,
+        ("Profil Supabase", {"fields": ("profile",)}),
+    )
