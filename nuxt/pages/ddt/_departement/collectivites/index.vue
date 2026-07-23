@@ -490,19 +490,28 @@ export default {
     }
   },
   async mounted () {
-    const collectivites = await this.$nuxt3api(`/api/geo/collectivites?departementCode=${this.$route.params.departement}`)
-    const communes = []
-    const groupements = []
+    // const collectivites = await this.$nuxt3api(`/api/geo/collectivites?departementCode=${this.$route.params.departement}`)
+    // const communes = []
+    // const groupements = []
 
-    collectivites.forEach((c) => {
-      if (c.type === 'COM') {
-        communes.push(c)
-      }
+    // collectivites.forEach((c) => {
+    //   if (c.type === 'COM') {
+    //     communes.push(c)
+    //   }
 
-      if (c.code.length > 5) {
-        groupements.push(c)
-      }
+    //   if (c.code.length > 5) {
+    //     groupements.push(c)
+    //   }
+    // })
+    // this.groupements = groupements
+
+    const promCommunes = this.$djangoApi.get('/communes/', {
+      departement: this.$route.params.departement
     })
+    const promGroupements = this.$djangoApi.get('/collectivites/', {
+      departement: this.$route.params.departement,
+    })
+    const [communes, groupements] = await Promise.all([promCommunes, promGroupements])
     this.groupements = groupements
 
     const procedures = await this.$urbanisator.getCollectivitesProcedures(communes.map(c => c.code))
