@@ -78,12 +78,12 @@ export default {
   },
   async mounted () {
     console.log('this.eventType: ', this.eventType)
+    this.documentEvents = await this.$procedureEvent.getTypes(this.procedure.doc_type)
     const selectedEvent = this.documentEvents.find(event => event.name === this.eventType)
     console.log('selectedEvent: ', selectedEvent)
 
     this.customEvent = selectedEvent ? '' : this.eventType
     this.selectedEvent = selectedEvent ? selectedEvent.name : (this.eventType ? 'Autre' : '')
-    this.documentEvents = await this.$procedureEvent.getTypes(this.procedure.doc_type)
   }
 }
 </script>
