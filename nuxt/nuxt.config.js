@@ -58,7 +58,8 @@ export default {
     { src: '~/plugins/enquete.js' },
     { src: '~/plugins/zanSurvey.js' },
     { src: '~/plugins/nuxt3api.js', mode: 'client' },
-    { src: '~/plugins/django-api.js', mode: 'client' }
+    { src: '~/plugins/django-api.js', mode: 'client' },
+    { src: '~/plugins/collectivite.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
