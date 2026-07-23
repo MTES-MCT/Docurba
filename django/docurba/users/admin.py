@@ -99,4 +99,8 @@ class SupabaseUserAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(DjangoUserADmin):
-    pass
+    autocomplete_fields = ("profile",)
+    fieldsets = (
+        *DjangoUserADmin.fieldsets,
+        ("Profil Supabase", {"fields": ("profile",)}),
+    )
