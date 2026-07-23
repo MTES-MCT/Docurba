@@ -111,7 +111,7 @@ export default ({ app, $supabase, $utils, $user, $analytics }, inject) => {
       console.log('collabsData: ', collabsData, ' procedure.project_id: ', procedure.project_id)
       const emails = _.uniqBy(collabsData, e => e.user_email).map(e => e.user_email)
 
-      const { data: profilesData, error: errorProfiles } = await $supabase.from('profiles').select('*').in('email', emails)
+      const { data: profilesData, error: errorProfiles } = await $supabase.from('profiles').select('*').ilikeAnyOf('email', emails)
       if (errorCollabs) { console.log('errorProfiles: ', errorProfiles) }
       const allCollaborators = [...profilesData ?? [], ...legacyCollabs ?? []]
       const formattedProfiles = allCollaborators.map((e) => {
@@ -121,7 +121,9 @@ export default ({ app, $supabase, $utils, $user, $analytics }, inject) => {
         return $utils.formatProfileToCreator(e)
       })
 
-      const noProfilesCollabs = emails.filter(e => !profilesData.find(prof => prof.email === e)).map(e => ($utils.formatProfileToCreator({ email: e })))
+      const profilesEmails = profilesData.map(profile => profile.email && profile.email.toLowerCase())
+      const noProfilesCollabs = emails.filter(e => !!e && !profilesEmails.includes(e.toLowerCase()))
+        .map(e => ($utils.formatProfileToCreator({ email: e })))
       const finalCollabs = [...noProfilesCollabs, ...formattedProfiles]
       const uniqFinalCollabs = _.uniqBy(finalCollabs, e => e.email)
       return uniqFinalCollabs
