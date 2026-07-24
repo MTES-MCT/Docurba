@@ -567,7 +567,18 @@ class Procedure(models.Model):
             return self.date_prescription < other.date_prescription
         return self.created_at < other.created_at
 
-    def get_absolute_url(self) -> str:
+    def clean(self) -> None:
+        super().clean()
+
+    def save(self, *args: list, **kwargs: dict) -> None:  # noqa: DJ012
+        self.clean()
+        if self.type in ProcedureType.principal():
+            self.is_principale = True
+            if self.type != ProcedureType.REVISION:
+                self.numero = 1
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self) -> str:  # noqa: DJ012
         return f"/frise/{self.pk}"
 
     _events_processed = False
