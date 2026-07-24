@@ -576,6 +576,8 @@ class Procedure(models.Model):
             self.is_principale = True
             if self.type != ProcedureType.REVISION:
                 self.numero = 1
+        if not self.status:
+            self.status = ProcedureStatusChoices.EN_COURS
         super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:  # noqa: DJ012
