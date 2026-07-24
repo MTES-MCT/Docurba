@@ -898,6 +898,34 @@ class TestProcedure:
         ):
             assert procedure.zone_name == "Argilliers"
 
+    @pytest.mark.django_db
+    def test_numero_principal_procedure(self) -> None:
+        procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.ABROGATION, numero=4, project=None
+        )
+        assert procedure.numero == "1"
+        assert procedure.is_principale is True
+        # Don't override the number when updating the object.
+        procedure.numero = "2"
+        procedure.save()
+        assert procedure.numero == "2"
+
+    @pytest.mark.django_db
+    def test_numero_secondary_procedure(self) -> None:
+        procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.MISE_A_JOUR, numero="4", project=None
+        )
+        assert procedure.numero == "4"
+        assert procedure.is_principale is False
+
+    @pytest.mark.django_db
+    def test_numero_prinipal_procedure__revision(self) -> None:
+        procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.REVISION, numero="4", project=None
+        )
+        assert procedure.numero == "4"
+        assert procedure.is_principale is True
+
 
 class TestProcedureDates:
     @pytest.mark.django_db

@@ -553,7 +553,13 @@ class Procedure(models.Model):
         self._cached_perimetre = kwargs.pop("cached_perimetre", None)
         super().__init__(*args, **kwargs)
 
-    def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+    def save(self, *args: list, **kwargs: dict) -> None:
+        if self.type in core_enums.ProcedureType.principal():
+            self.is_principale = True
+            # https://docs.djangoproject.com/en/6.1/ref/models/instances/#state
+            if self._state.adding and self.type != core_enums.ProcedureType.REVISION:
+                self.numero = "1"
+
         self.clean()
         super().save(*args, **kwargs)
 
@@ -567,6 +573,7 @@ class Procedure(models.Model):
         if not self.parente and not self.status:
             message = 'A main procedure must have a "status" filled in.'
             raise ValidationError(message)
+        super().clean()
 
     _events_processed = False
 
