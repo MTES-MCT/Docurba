@@ -25,7 +25,7 @@ deploy = [
 [dependency-groups]
 dev = [
     "django-browser-reload",
-    "django-debug-toolbar<7",
+    "django-debug-toolbar<8",
     "django-extensions",
     "django-cors-headers",
     "ptpython",
