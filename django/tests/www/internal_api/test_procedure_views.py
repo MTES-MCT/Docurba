@@ -154,7 +154,7 @@ class TestProcedureList:
             ),
             pytest.param(
                 {"is_principale": "false"},
-                id="is_principale",
+                id="is_not_principale",
             ),
             pytest.param(
                 {},
@@ -172,14 +172,14 @@ class TestProcedureList:
         collectivite, communes, logged_in_profile = (
             self._create_collectivite_perimetre_profile()
         )
-        core_factories.ProcedureFactory(
-            is_principale=True,
-            collectivite_porteuse=collectivite,
+        parente = core_factories.ProcedureFactory(
             with_perimetre=True,
             with_perimetre__list=communes,
+            type=core_enums.ProcedureType.ELABORATION,
         )
         core_factories.ProcedureFactory(
-            is_principale=False,
+            type=core_enums.ProcedureType.REVISION_ALLEGEE,
+            parente=parente,
             collectivite_porteuse=collectivite,
             with_perimetre=True,
             with_perimetre__list=communes,
@@ -543,7 +543,7 @@ class TestProcedureList:
         ):
             response = api_client.get(f"{self.url}")
         assert response.status_code == 200
-        assert response.json()["results"][0]["name"] == "Élaboration PLU Beaucaire"
+        assert response.json()["results"][0]["name"] == "Élaboration 1 PLU Beaucaire"
 
     def test_serializer_doc_type(
         self,

@@ -543,9 +543,16 @@ class Procedure(models.Model):
         self._cached_perimetre = kwargs.pop("cached_perimetre", None)
         super().__init__(*args, **kwargs)
 
-    def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
-        if not self.parente_id and not self.status:
-            self.status = self.INITIAL_STATUS
+    def save(self, *args: list, **kwargs: dict) -> None:
+        if not self.parente_id:
+            self.is_principale = True
+            # https://docs.djangoproject.com/en/6.1/ref/models/instances/#state
+            if self._state.adding:
+                if self.type != core_enums.ProcedureType.REVISION:
+                    self.numero = "1"
+                if not self.status:
+                    self.status = self.INITIAL_STATUS
+
         self.clean()
         self.update_denormalized_fields()
         super().save(*args, **kwargs)
@@ -557,6 +564,7 @@ class Procedure(models.Model):
         if self.parente_id and self.status:
             message = 'A secondary procedure must not have a "status".'
             raise ValidationError(message)
+        super().clean()
 
     _events_processed = False
 

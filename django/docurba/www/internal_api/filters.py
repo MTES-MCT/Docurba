@@ -144,6 +144,9 @@ class ProcedureFilter(filters.FilterSet):
         field_name="status",
         choices=core_enums.ProcedureStatusChoices,
     )
+    is_principale = filters.BooleanFilter(
+        label="procédures principales", method="_is_parent"
+    )
 
     class Meta:
         model = core_models.Procedure
@@ -176,3 +179,8 @@ class ProcedureFilter(filters.FilterSet):
             msg = "%s should be a list."
             raise TypeError(msg, codes_insee)
         return queryset.filter(perimetre__code_insee__in=codes_insee)
+
+    def _is_parent(self, queryset: QuerySet, name: str, value: bool) -> QuerySet:
+        if value is None:
+            return queryset
+        return queryset.filter(parente__isnull=value)

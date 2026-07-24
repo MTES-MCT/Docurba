@@ -449,16 +449,10 @@ class TestCollectivitePortantScot:
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         collectivite = CollectiviteFactory()
-        parent_procedure = ProcedureFactory(
-            collectivite_porteuse=collectivite,
-            base_doc_type=core_enums.BaseDocumentType.SCOT,
-            soft_delete=True,
-        )
-
         ProcedureFactory(
             collectivite_porteuse=collectivite,
             base_doc_type=core_enums.BaseDocumentType.SCOT,
-            parente=parent_procedure,
+            with_parente=True,
             archived=False,
         )
 
@@ -818,7 +812,7 @@ class TestProcedure:
 
         # With zone name
         expected_name = (
-            "Élaboration PLU Syndicat mixte d'équipement de la commune de Beaucaire"
+            "Élaboration 1 PLU Syndicat mixte d'équipement de la commune de Beaucaire"
         )
         procedure = ProcedureFactory(
             name="",
@@ -933,6 +927,37 @@ class TestProcedure:
             django_assert_num_queries(0),
         ):
             assert procedure.zone_name == "Argilliers"
+
+    @pytest.mark.django_db
+    def test_numero_principal_procedure(self) -> None:
+        procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.ABROGATION, numero=4, project=None
+        )
+        assert procedure.numero == "1"
+        assert procedure.is_principale is True
+        # Don't override the number when updating the object.
+        procedure.numero = "2"
+        procedure.save()
+        assert procedure.numero == "2"
+
+    @pytest.mark.django_db
+    def test_numero_secondary_procedure(self) -> None:
+        procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.MISE_A_JOUR,
+            numero="4",
+            project=None,
+            with_parente=True,
+        )
+        assert procedure.numero == "4"
+        assert procedure.is_principale is False
+
+    @pytest.mark.django_db
+    def test_numero_prinipal_procedure__revision(self) -> None:
+        procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.REVISION, numero="4", project=None
+        )
+        assert procedure.numero == "4"
+        assert procedure.is_principale is True
 
 
 @pytest.mark.django_db
@@ -1833,11 +1858,8 @@ class TestProcedureStatut:
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = CommuneFactory()
-        procedure_principale = ProcedureFactory(
-            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
-        )
         procedure_secondaire = ProcedureFactory(
-            parente=procedure_principale,
+            with_parente=True,
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
         )
@@ -2184,8 +2206,7 @@ class TestProcedureClean:
         assert procedure.status == core_enums.ProcedureStatusChoices.EN_COURS
 
     def test_secondaire_avec_status_null(self) -> None:
-        principale = ProcedureFactory()
-        procedure = ProcedureFactory(parente=principale, status=None)
+        procedure = ProcedureFactory(with_parente=True, status=None)
 
         assert procedure.status is None
 
@@ -2195,11 +2216,9 @@ class TestProcedureClean:
         assert procedure.status == core_enums.ProcedureStatusChoices.EN_PROJET
 
     def test_secondaire_avec_status_en_cours(self) -> None:
-        principale = ProcedureFactory()
-
         with pytest.raises(ValidationError) as error:
             ProcedureFactory(
-                parente=principale, status=core_enums.ProcedureStatusChoices.EN_COURS
+                with_parente=True, status=core_enums.ProcedureStatusChoices.EN_COURS
             )
 
         assert error.value.messages == [

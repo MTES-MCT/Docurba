@@ -175,9 +175,8 @@ class TestSynchronizeProcedureStatus:
         assert outdated_procedure.status == ProcedureStatusChoices.ANNULE
 
     def test_secondary_with_status_exported_and_nullified(self) -> None:
-        principale = ProcedureFactory()
         # We are going through an update here to bypass the new validation rules in Procedure.clean
-        secondaire = ProcedureFactory(parente=principale, status=None)
+        secondaire = ProcedureFactory(with_parente=True, status=None)
         Procedure.objects.filter(id=secondaire.id).update(
             status=ProcedureStatusChoices.OPPOSABLE
         )

@@ -623,10 +623,10 @@
 # name: TestProcedureList.test_filter_is_principale[default_value]
   2
 # ---
-# name: TestProcedureList.test_filter_is_principale[is_principale0]
+# name: TestProcedureList.test_filter_is_principale[is_not_principale]
   1
 # ---
-# name: TestProcedureList.test_filter_is_principale[is_principale1]
+# name: TestProcedureList.test_filter_is_principale[is_principale]
   1
 # ---
 # name: TestProcedureList.test_serializer_nominal_principal_procedure

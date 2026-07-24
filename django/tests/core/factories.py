@@ -263,6 +263,7 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
                 "tests.core.factories.ProcedureFactory",
                 collectivite_porteuse=factory.SelfAttribute("..collectivite_porteuse"),
             ),
+            type=factory.fuzzy.FuzzyChoice(core_enums.ProcedureType.secondary()),
         )
         with_doublon = factory.Trait(
             doublon_cache_de=factory.SubFactory(
