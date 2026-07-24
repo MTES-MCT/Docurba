@@ -552,7 +552,6 @@ class Procedure(models.Model):
                     self.numero = "1"
                 if not self.status:
                     self.status = self.INITIAL_STATUS
-
         self.clean()
         self.update_denormalized_fields()
         super().save(*args, **kwargs)
