@@ -926,6 +926,31 @@ class TestProcedure:
         assert procedure.numero == "4"
         assert procedure.is_principale is True
 
+    @pytest.mark.django_db
+    def test_default_status(self) -> None:
+        principal_procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.ELABORATION
+        )
+        secondary_procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.MISE_A_JOUR,
+            parente=principal_procedure,
+        )
+        assert principal_procedure.status == core_enums.ProcedureStatusChoices.EN_COURS
+        assert secondary_procedure.status is None
+
+        # An explicit status overrides the default value.
+        principal_procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.ELABORATION,
+            status=core_enums.ProcedureStatusChoices.ABANDON,
+        )
+        assert principal_procedure.status == core_enums.ProcedureStatusChoices.ABANDON
+
+        # Updating the status also works.
+        principal_procedure.status = core_enums.ProcedureStatusChoices.OPPOSABLE
+        principal_procedure.save()
+        principal_procedure.refresh_from_db()
+        assert principal_procedure.status == core_enums.ProcedureStatusChoices.OPPOSABLE
+
 
 class TestProcedureDates:
     @pytest.mark.django_db

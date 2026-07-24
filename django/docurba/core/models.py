@@ -557,9 +557,11 @@ class Procedure(models.Model):
         if self.type in core_enums.ProcedureType.principal():
             self.is_principale = True
             # https://docs.djangoproject.com/en/6.1/ref/models/instances/#state
-            if self._state.adding and self.type != core_enums.ProcedureType.REVISION:
-                self.numero = "1"
-
+            if self._state.adding:
+                if self.type != core_enums.ProcedureType.REVISION:
+                    self.numero = "1"
+                if not self.status:
+                    self.status = core_enums.ProcedureStatusChoices.EN_COURS
         self.clean()
         super().save(*args, **kwargs)
 
