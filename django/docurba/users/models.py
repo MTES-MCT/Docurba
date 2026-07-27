@@ -1,6 +1,8 @@
 import secrets
 import string
 
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import UserManager as DjangoUserManager
 from django.contrib.postgres.fields import ArrayField
 from django.db import connection, models, transaction
 from django.db.models.functions import Now
@@ -201,3 +203,15 @@ class Profile(models.Model):
 
     def __str__(self) -> str:
         return f"{self.firstname} {self.lastname}"
+
+
+class UserManager(DjangoUserManager):
+    pass
+
+
+class User(AbstractUser):
+    objects = UserManager()
+
+    class Meta:
+        verbose_name = "utilisateur django"
+        verbose_name_plural = "utilisateurs django"
