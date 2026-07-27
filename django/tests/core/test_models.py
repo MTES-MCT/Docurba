@@ -970,13 +970,67 @@ class TestProcedure:
         principal_procedure.refresh_from_db()
         assert principal_procedure.status == core_enums.ProcedureStatusChoices.OPPOSABLE
 
+    def test_get_collectivite_porteuse(self) -> None:
+        collectivite_without_jurisdiction = CollectiviteFactory(
+            type=core_enums.TypeCollectivite.CC,
+            competence_plan=False,
+            competence_schema=False,
+        )
+        collectivite_with_jurisdiction = CollectiviteFactory(
+            type=core_enums.TypeCollectivite.CC,
+            competence_plan=True,
+            competence_schema=True,
+        )
+        intermunicipality = CollectiviteFactory(
+            type=core_enums.TypeCollectivite.CC,
+            competence_plan=True,
+            competence_schema=True,
+        )
+        commune_with_jurisdiction = CommuneFactory(
+            type=core_enums.TypeCollectivite.COM,
+            competence_plan=True,
+            competence_schema=True,
+            intercommunalite=intermunicipality,
+        )
+        commune_without_jurisdiction = CommuneFactory(
+            type=core_enums.TypeCollectivite.COM,
+            competence_plan=False,
+            competence_schema=False,
+            intercommunalite=intermunicipality,
+        )
+        for doc_type in [core_enums.TypeDocument.PLU, core_enums.TypeDocument.SCOT]:
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=collectivite_without_jurisdiction, doc_type=doc_type
+                )
+                == collectivite_without_jurisdiction
+            )
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=collectivite_with_jurisdiction, doc_type=doc_type
+                )
+                == collectivite_with_jurisdiction
+            )
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=commune_with_jurisdiction, doc_type=doc_type
+                )
+                == commune_with_jurisdiction
+            )
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=commune_without_jurisdiction, doc_type=doc_type
+                )
+                == intermunicipality
+            )
+
 
 @pytest.mark.django_db
 class TestProcedureDenormalizedFields:
-    def test_has_inconsistent_denormalized_fields__doc_type(self) -> None:
+    def test_has_inconsistent_denormalized_fields(self) -> None:
         communes = [
-            CommuneFactory(code_insee="30188"),
-            CommuneFactory(code_insee="30189"),
+            CommuneFactory(nom="Ners", code_insee="30188"),
+            CommuneFactory(nom="Nîmes", code_insee="30189"),
         ]
         collectivite_porteuse = CollectiviteFactory(with_members=communes)
         procedure = ProcedureFactory.build(
@@ -992,6 +1046,11 @@ class TestProcedureDenormalizedFields:
             doc_type=core_enums.TypeDocument.PLUI,
             cached_perimetre=communes,
             collectivite_porteuse=collectivite_porteuse,
+            current_perimetre=[
+                {"name": "Ners", "inseeCode": "30188"},
+                {"name": "Nîmes", "inseeCode": "30189"},
+            ],
+            departements=["30"],
         )
         assert procedure.has_inconsistent_denormalized_fields() is False
 
@@ -1039,6 +1098,23 @@ class TestProcedureDenormalizedFields:
         procedure.save()
         assert procedure.has_inconsistent_denormalized_fields() is False
         assert procedure.doc_type == core_enums.TypeDocument.PLUIM
+
+    def test_update_on_save__current_perimetre_and_departements(self) -> None:
+        communes = [
+            CommuneFactory(nom="Aix-en-Provence", code_insee="13001"),
+            CommuneFactory(nom="Allauch", code_insee="13002"),
+            CommuneFactory(nom="Apt", code_insee="84003"),
+        ]
+        expected_current_perimetre = [
+            {"name": "Aix-en-Provence", "inseeCode": "13001"},
+            {"name": "Allauch", "inseeCode": "13002"},
+            {"name": "Apt", "inseeCode": "84003"},
+        ]
+        expected_departements = ["13", "84"]
+        procedure = ProcedureFactory(with_perimetre=communes)
+        procedure = core_models.Procedure.objects.get(pk=procedure.pk)
+        assert procedure.current_perimetre == expected_current_perimetre
+        assert sorted(procedure.departements) == expected_departements
 
 
 class TestProcedureDates:
