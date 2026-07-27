@@ -601,6 +601,18 @@ class Procedure(models.Model):
             return self._cached_perimetre
         return self.perimetre.all()
 
+    def update_perimetre_denormalized_fields(self, save: bool = False) -> None:  # noqa: FBT001,FBT002
+        # This method should disappear quite soon.
+        self.current_perimetre = [
+            {"name": commune.nom, "inseeCode": commune.code_insee}
+            for commune in self._perimetre
+        ]
+        self.departements = list(
+            set(self._perimetre.values_list("departement__code_insee", flat=True))
+        )
+        if save:
+            self.save()
+
     @property
     def computed_name(self) -> str:
         if self.name:
@@ -1717,7 +1729,6 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     )
     opposable = models.BooleanField(verbose_name="Est opposable", default=False)
     # Denormalized version of commune.departement.code_insee already existing in production.
-    # Real type is TextField but I used a Charfiel here for performance reasons.
     # This column is used in Nuxt side to retrieve procedures by departement.
     # See urbanizator.getProceduresForDept.
     # Unfortunately, there is a mismatch between commune.departement.code_insee and self.departement

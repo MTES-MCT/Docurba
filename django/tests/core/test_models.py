@@ -951,6 +951,36 @@ class TestProcedure:
         principal_procedure.refresh_from_db()
         assert principal_procedure.status == core_enums.ProcedureStatusChoices.OPPOSABLE
 
+    @pytest.mark.django_db
+    def test_update_perimetre_denormalized_fields(self) -> None:
+
+        # test procedure.save(update_perimetre_denormalized_fields=True)
+        communes = [
+            CommuneFactory(nom="Aix-en-Provence", code_insee="13001"),
+            CommuneFactory(nom="Allauch", code_insee="13002"),
+            CommuneFactory(nom="Apt", code_insee="84003"),
+        ]
+        expected_current_perimetre = [
+            {"name": "Aix-en-Provence", "inseeCode": "13001"},
+            {"name": "Allauch", "inseeCode": "13002"},
+            {"name": "Apt", "inseeCode": "84003"},
+        ]
+        expected_departements = ["13", "84"]
+        procedure = ProcedureFactory(with_perimetre=communes)
+        procedure = core_models.Procedure.objects.get(pk=procedure.pk)
+        assert procedure.current_perimetre is None
+        assert procedure.departements is None
+
+        procedure.update_perimetre_denormalized_fields(save=False)
+        procedure = core_models.Procedure.objects.get(pk=procedure.pk)
+        assert procedure.current_perimetre is None
+        assert procedure.departements is None
+
+        procedure.update_perimetre_denormalized_fields(save=True)
+        procedure = core_models.Procedure.objects.get(pk=procedure.pk)
+        assert procedure.current_perimetre == expected_current_perimetre
+        assert procedure.departements == expected_departements
+
 
 class TestProcedureDates:
     @pytest.mark.django_db
