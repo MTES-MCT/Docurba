@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [[ $ENABLE_MIGRATIONS != "true" ]]; then
+if [ "$ENABLE_MIGRATIONS" != "true" ]; then
     echo "migrations are skipped as ENABLE_MIGRATIONS is not true"
 elif ! ./manage.py showmigrations core | grep -q "\[X\] 0001_initial"; then
     echo "Migration core.0001_initial pas encore appliquée."
