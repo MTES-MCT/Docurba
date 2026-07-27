@@ -962,10 +962,10 @@ class TestProcedure:
 
 @pytest.mark.django_db
 class TestProcedureDenormalizedFields:
-    def test_has_inconsistent_denormalized_fields__doc_type(self) -> None:
+    def test_has_inconsistent_denormalized_fields(self) -> None:
         communes = [
-            CommuneFactory(code_insee="30188"),
-            CommuneFactory(code_insee="30189"),
+            CommuneFactory(nom="Ners", code_insee="30188"),
+            CommuneFactory(nom="Nîmes", code_insee="30189"),
         ]
         collectivite_porteuse = CollectiviteFactory(with_members=communes)
         procedure = ProcedureFactory.build(
@@ -981,6 +981,11 @@ class TestProcedureDenormalizedFields:
             doc_type=core_enums.TypeDocument.PLUI,
             cached_perimetre=communes,
             collectivite_porteuse=collectivite_porteuse,
+            current_perimetre=[
+                {"name": "Ners", "inseeCode": "30188"},
+                {"name": "Nîmes", "inseeCode": "30189"},
+            ],
+            departements=["30"],
         )
         assert procedure.has_inconsistent_denormalized_fields() is False
 
@@ -1028,6 +1033,23 @@ class TestProcedureDenormalizedFields:
         procedure.save()
         assert procedure.has_inconsistent_denormalized_fields() is False
         assert procedure.doc_type == core_enums.TypeDocument.PLUIM
+
+    def test_update_on_save__current_perimetre_and_departements(self) -> None:
+        communes = [
+            CommuneFactory(nom="Aix-en-Provence", code_insee="13001"),
+            CommuneFactory(nom="Allauch", code_insee="13002"),
+            CommuneFactory(nom="Apt", code_insee="84003"),
+        ]
+        expected_current_perimetre = [
+            {"name": "Aix-en-Provence", "inseeCode": "13001"},
+            {"name": "Allauch", "inseeCode": "13002"},
+            {"name": "Apt", "inseeCode": "84003"},
+        ]
+        expected_departements = ["13", "84"]
+        procedure = ProcedureFactory(with_perimetre=communes)
+        procedure = ProcedureFactory(with_perimetre=True, with_perimetre__list=communes)
+        assert procedure.current_perimetre == expected_current_perimetre
+        assert sorted(procedure.departements) == expected_departements
 
 
 class TestProcedureDates:

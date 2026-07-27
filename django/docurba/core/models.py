@@ -1,4 +1,5 @@
 import logging
+import operator
 from datetime import datetime
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
@@ -337,6 +338,8 @@ class FastLoadingProcedureManager(ProcedureManager):
 class Procedure(models.Model):
     DYNAMIC_TO_DENORMALIZED_FIELDS: ClassVar[dict[str:str]] = {
         "dynamic_doc_type": "doc_type",
+        "dynamic_departements": "departements",
+        "dynamic_current_perimetre": "current_perimetre",
     }
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
     test = models.BooleanField(db_default=False)
@@ -608,7 +611,29 @@ class Procedure(models.Model):
             self.save()
         return self
 
-    # NOTE(cms): rename me in dynamic_name?
+    @property
+    def dynamic_current_perimetre(self) -> list[dict[str:str]] | None:
+        # We should return an empty list but this is the way it's stored today.
+        if not self._perimetre:
+            return None
+        return sorted(
+            [
+                {"name": commune.nom, "inseeCode": commune.code_insee}
+                for commune in self._perimetre
+            ],
+            key=operator.itemgetter(
+                "inseeCode", "name"
+            ),  # faster than lambda o: (o["inseeCode"], o["name"])
+        )
+
+    @property
+    def dynamic_departements(self) -> list[str] | None:
+        # We should return an empty list but this is the way it's stored today.
+        if not self._perimetre:
+            return None
+
+        return sorted({commune.departement.code_insee for commune in self._perimetre})
+
     @property
     def computed_name(self) -> str:
         if self.name:
@@ -1790,7 +1815,6 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     )
     opposable = models.BooleanField(verbose_name="Est opposable", default=False)
     # Denormalized version of commune.departement.code_insee already existing in production.
-    # Real type is TextField but I used a Charfiel here for performance reasons.
     # This column is used in Nuxt side to retrieve procedures by departement.
     # See urbanizator.getProceduresForDept.
     # Unfortunately, there is a mismatch between commune.departement.code_insee and self.departement
