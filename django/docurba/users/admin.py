@@ -2,13 +2,14 @@
 from typing import ClassVar, Literal
 
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as DjangoUserADmin
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import PermissionDenied
 from django.forms.widgets import TextInput
 from django.http import HttpResponse
 from django.utils.html import format_html
 
-from docurba.users.models import Profile, SupabaseUser
+from docurba.users.models import Profile, SupabaseUser, User
 
 
 @admin.register(Profile)
@@ -94,3 +95,8 @@ class SupabaseUserAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request) -> Literal[False]:
         return False
+
+
+@admin.register(User)
+class UserAdmin(DjangoUserADmin):
+    pass
