@@ -3,6 +3,9 @@ from config.settings.base import *  # NOSONAR (S2208)
 
 DOCURBA_ENVIRONMENT = DocurbaEnvironment.TEST
 
+# Don't use json formatter in dev
+del LOGGING["handlers"]["console"]["formatter"]
+
 STORAGES["staticfiles"]["BACKEND"] = (
     "django.contrib.staticfiles.storage.StaticFilesStorage"
 )
