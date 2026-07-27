@@ -1530,7 +1530,6 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     )
     opposable = models.BooleanField(verbose_name="Est opposable", default=False)
     # Denormalized version of commune.departement.code_insee already existing in production.
-    # Real type is TextField but I used a Charfiel here for performance reasons.
     # This column is used in Nuxt side to retrieve procedures by departement.
     # See urbanizator.getProceduresForDept.
     # Unfortunately, there is a mismatch between commune.departement.code_insee and self.departement
@@ -1573,6 +1572,17 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
             # Remove me later.
             models.Index(name="test_idx", fields=["procedure_id", "collectivite_code"]),
         ]
+
+    def save(self, *args: list, **kwargs: dict) -> None:
+        super().save(*args, **kwargs)
+        self.procedure.current_perimetre = [
+            {"name": value["nom"], "inseeCode": value["code_insee"]}
+            for value in self.procedure.perimetre.values("nom", "code_insee")
+        ]
+        self.procedure.departements = list(
+            self.procedure.perimetre.values_list("departement__code_insee", flat=True)
+        )
+        self.procedure.save()
 
 
 class MaterializedViewFlatMembershipQuerySet(models.QuerySet):
