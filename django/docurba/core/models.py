@@ -1553,7 +1553,11 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
             for value in self.procedure.perimetre.values("nom", "code_insee")
         ]
         self.procedure.departements = list(
-            self.procedure.perimetre.values_list("departement__code_insee", flat=True)
+            set(
+                self.procedure.perimetre.values_list(
+                    "departement__code_insee", flat=True
+                )
+            )
         )
         self.procedure.save()
 

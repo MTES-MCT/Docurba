@@ -262,6 +262,7 @@ export default {
         'Mise à jour'
       ].map(item => typeof item === 'string' ? { text: item, value: item } : item)
     },
+    // # TODO: remove me and make this compute in djangoApi.
     collectivitePorteuseCode () {
       if (this.collectivite[this.typeCompetence]) {
         // return the collectivite if it has the competence
@@ -425,7 +426,7 @@ export default {
         const procedureId = responseData.id
         const projectId = responseData.project_id
 
-        // Probably for later
+        // Probably for later
         const sender = {
           user_email: this.$user.email,
           project_id: projectId ?? this.proceduresParents?.find(e => e.id === this.procedureParent)?.project_id,
