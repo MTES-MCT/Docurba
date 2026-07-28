@@ -3,12 +3,11 @@
 # ruff: noqa: RUF012
 from typing import Any
 
-from django.conf import settings
 from django.contrib import admin
 from django.db import models
-from django.forms.models import ModelForm
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils.html import format_html
 
 from docurba.core.enums import TypeCollectivite
@@ -242,7 +241,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         TopicsFilter,
     )
     inlines = [ProcedurePerimetreInline, EventsInline]
-    list_display = ("id", "__str__", "django_status")
+    list_display = ("id", "__str__", "django_status", "events")
     search_fields = ("pk",)
     fields = [
         *autocomplete_fields,
@@ -272,6 +271,13 @@ class ProcedureAdmin(admin.ModelAdmin):
     @admin.display(description="Statut selon Django")
     def django_status(self, obj) -> str:
         return obj.statut or "-"
+
+    @admin.display(description="Evènements")
+    def events(self, obj) -> str:
+        return format_html(
+            '<a href="{}" target="_blank">Voir</a>',
+            reverse("admin:core_event_changelist", query={"q": obj.id}),
+        )
 
 
 @admin.register(Topic)
@@ -336,7 +342,7 @@ class EventTypeAdmin(admin.ModelAdmin):
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     readonly_fields = (
-        "pk",
+        "id",
         "created_at",
         "updated_at",
         "project",
@@ -347,10 +353,20 @@ class EventAdmin(admin.ModelAdmin):
         "is_valid",
         "from_sudocuh_procedure_id",
     )
-    raw_id_fields = ("procedure",)
-    list_display = ("pk", "created_at", "archived_at")
+    raw_id_fields = ("event_type", "procedure")
+    list_display = (
+        "id",
+        "event_type__name",
+        "type",
+        "date_evenement",
+        "is_valid",
+        "visibility",
+        "from_sudocuh",
+        "created_at",
+        "archived_at",
+    )
     list_filter = ("archived_at", "code")
-    search_fields = ("pk",)
+    search_fields = ("id", "procedure__id")
     autocomplete_fields = ("profile",)
     historized_fields = (
         "type",
@@ -377,20 +393,5 @@ class EventAdmin(admin.ModelAdmin):
         return super().has_change_permission(request, obj)
 
     def get_queryset(self, request) -> models.QuerySet:
-        queryset = Event.full_objects.defer_heavy_fields()
-        ordering = self.get_ordering(request)
-        if ordering:
-            queryset = queryset.order_by(*ordering)
-        return (
-            queryset.select_related("procedure")
-            .select_related("procedure__collectivite_porteuse")
-            .prefetch_related("procedure__perimetre")
-        )
-
-    def get_form(self, request, obj=None, change=False, **kwargs) -> type[ModelForm]:  # noqa: ANN003, FBT002
-        form = super().get_form(request, obj=obj, change=change, **kwargs)
-        form.base_fields["type"].help_text = format_html(
-            """<a href="{}" target="_blank">Voir le tableau des types d'évènements</a>""",
-            settings.EVENT_TYPE_HELP_TEXT_URL,
-        )
-        return form
+        queryset = super().get_queryset(request)
+        return queryset.select_related("event_type")
