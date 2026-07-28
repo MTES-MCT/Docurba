@@ -568,6 +568,11 @@ class Procedure(models.Model):
                 self.numero = 1
         if not self.status:
             self.status = ProcedureStatusChoices.EN_COURS
+        self.vaut_SCoT = self.vaut_SCoT or self.doc_type == TypeDocument.SCOT
+        self.vaut_PLH = self.vaut_PLH or self.doc_type == TypeDocument.PLUIH
+        self.vaut_PDM = (
+            self.vaut_PDM or False
+        )  # TODO: remove me once the other PR is merged. https://github.com/MTES-MCT/Docurba/issues/2293
         super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:  # noqa: DJ012
