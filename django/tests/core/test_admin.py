@@ -103,7 +103,7 @@ class TestEventChange:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         event = EventFactory()
-        with django_assert_num_queries(8):
+        with django_assert_num_queries(7):
             response = admin_session_client.get(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk})
             )
@@ -111,7 +111,7 @@ class TestEventChange:
         assertContains(response, "Enregistrer et continuer les modifications")
 
         new_user = ProfileFactory()
-        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + 4):
+        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + 3):
             response = admin_session_client.post(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
                 data={
