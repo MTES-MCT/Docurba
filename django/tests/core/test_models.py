@@ -1698,6 +1698,54 @@ class TestEventQueryset:
         event = queryset.first()
         assert event.id == event_not_archived.id
 
+    @pytest.mark.django_db
+    def test_queryset_bulk_unarchive(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        event_not_archived = EventFactory(archived_at=None, archived_by=None)
+        event_archived = EventFactory(
+            archived_at=timezone.now(), archived_by=ProfileFactory()
+        )
+
+        with django_assert_num_queries(1):
+            updated = Event.objects.all().unarchive()
+            assert updated == 1
+
+        event_archived.refresh_from_db()
+        assert not event_archived.is_archived
+
+        event_not_archived.refresh_from_db()
+        assert not event_not_archived.is_archived
+
+    @pytest.mark.django_db
+    def test_queryset_bulk_archive(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        archived_by = ProfileFactory()
+        archived_at = timezone.now()
+        event_not_archived = EventFactory(archived_at=None, archived_by=None)
+        event_archived = EventFactory(
+            archived_at=archived_at, archived_by=ProfileFactory()
+        )
+
+        with pytest.raises(
+            ValidationError, match=r"Le champ “archived_by” doit être renseigné"
+        ):
+            Event.objects.all().archive(archived_by=None)
+
+        with django_assert_num_queries(1):
+            updated = Event.objects.all().archive(archived_by=archived_by)
+            assert updated == 1
+
+        event_archived.refresh_from_db()
+        assert event_archived.is_archived
+        assert str(event_archived.archived_by.pk) != archived_by.pk
+        assert event_archived.archived_at == archived_at
+
+        event_not_archived.refresh_from_db()
+        assert event_not_archived.is_archived
+        assert str(event_not_archived.archived_by.pk) == archived_by.pk
+
 
 class TestCommuneProceduresPrincipales:
     @pytest.mark.django_db

@@ -62,6 +62,10 @@ def staff_session_client(django_db_blocker: DjangoDbBlocker | None) -> Client:
                 "users",
                 "change_supabaseuser",
             ),  # users/test_admin.py::TestUserAdmin::test_update_password
+            (
+                "core",
+                "change_event",
+            ),  # core/test_admin.py::TestEventChange::test_[un]archive
         ]
         for app_label, codename in permissions:
             permission = Permission.objects.get(

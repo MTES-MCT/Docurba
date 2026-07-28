@@ -976,6 +976,23 @@ class EventQuerySet(models.QuerySet):
         ]
         return self.defer(*to_be_removed_fields, *heavy_fields)
 
+    def archive(self, archived_by: Profile) -> int:
+        if not archived_by:
+            msg = "Le champ “archived_by” doit être renseigné"
+            raise ValidationError(msg)
+        return self.without_archived().update(
+            archived_at=timezone.now(), archived_by=archived_by
+        )
+
+    archive.queryset_only = True
+
+    def unarchive(self) -> int:
+        return self.filter(archived_at__isnull=False).update(
+            archived_at=None, archived_by=None
+        )
+
+    unarchive.queryset_only = True
+
 
 class EventManager(models.Manager):
     pass

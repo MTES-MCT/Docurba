@@ -3,9 +3,10 @@
 # ruff: noqa: RUF012
 from typing import Any
 
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.html import format_html
@@ -276,7 +277,7 @@ class ProcedureAdmin(admin.ModelAdmin):
     def events(self, obj) -> str:
         return format_html(
             '<a href="{}" target="_blank">Voir</a>',
-            reverse("admin:core_event_changelist", query={"q": obj.id}),
+            reverse("admin:core_event_changelist", query={"procedure": obj.id}),
         )
 
 
@@ -382,6 +383,8 @@ class EventAdmin(admin.ModelAdmin):
         *historized_fields,
         *readonly_fields,
     ]
+    change_form_template = "admin/core/event/change_event_form.html"
+    actions = ["archive", "unarchive"]
 
     def has_add_permission(self, request: object) -> bool:
         return False
@@ -395,3 +398,45 @@ class EventAdmin(admin.ModelAdmin):
     def get_queryset(self, request) -> models.QuerySet:
         queryset = super().get_queryset(request)
         return queryset.select_related("event_type")
+
+    def response_change(self, request, obj) -> HttpResponse:
+        queryset = self.get_queryset(request).filter(pk=obj.pk)
+        if "_archive" in request.POST:
+            self.archive(request, queryset)
+            return HttpResponseRedirect(".")
+        if "_unarchive" in request.POST:
+            self.unarchive(request, queryset)
+            return HttpResponseRedirect(".")
+
+        return super().response_change(request, obj)
+
+    @admin.action(
+        permissions=["change"],
+        description="Archiver les évènements sélectionnés",
+    )
+    def archive(self, request, queryset) -> None:
+        try:
+            updated = queryset.archive(archived_by=request.user.profile)
+            self.message_user(
+                request,
+                f"{updated} évènements ont été archivés",
+                messages.SUCCESS,
+            )
+        except ValidationError:
+            self.message_user(
+                request,
+                "Seul un utilisateur ayant un profil valide peut archiver un évènement",
+                messages.ERROR,
+            )
+
+    @admin.action(
+        permissions=["change"],
+        description="Désarchiver les évènements sélectionnés",
+    )
+    def unarchive(self, request, queryset) -> None:
+        updated = queryset.unarchive()
+        self.message_user(
+            request,
+            f"{updated} évènements ont été désarchivés",
+            messages.SUCCESS,
+        )
