@@ -41,6 +41,20 @@ def test_procedure_change_page(
 
 @pytest.mark.django_db
 class TestProcedureList:
+    def test_nominal_case(
+        self,
+        admin_session_client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        procedure = ProcedureFactory()
+        with django_assert_num_queries(8):
+            response = admin_session_client.get(
+                reverse("admin:core_procedure_changelist")
+            )
+        assert response.status_code == 200
+        link = f'<a href="{reverse("admin:core_event_changelist", query={"procedure": procedure.id})}" target="_blank">Voir</a>'
+        assertContains(response, link)
+
     def test_topics_filter(self, admin_session_client: Client) -> None:
         topic = Topic.objects.first()
         procedure_with_topic = Procedure.objects.create()
@@ -96,6 +110,35 @@ class TestProcedureList:
 
 
 @pytest.mark.django_db
+class TestEventList:
+    def test_procedure_filter(
+        self,
+        admin_session_client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        procedure = ProcedureFactory()
+        event_p1 = EventFactory(procedure=procedure)
+        event_p2 = EventFactory()
+
+        response = admin_session_client.get(
+            f"{reverse('admin:core_event_changelist')}?q={procedure.id}"
+        )
+        assertNotContains(response, event_p2.pk)
+        assertContains(response, event_p1.pk)
+
+        response = admin_session_client.get(
+            f"{reverse('admin:core_event_changelist')}?procedure={procedure.id}"
+        )
+        assertNotContains(response, event_p2.pk)
+        assertContains(response, event_p1.pk)
+
+        with django_assert_num_queries(6):
+            response = admin_session_client.get(reverse("admin:core_event_changelist"))
+        assertContains(response, event_p1.pk)
+        assertContains(response, event_p2.pk)
+
+
+@pytest.mark.django_db
 class TestEventChange:
     def test_nominal_case(
         self,
@@ -121,3 +164,67 @@ class TestEventChange:
                 follow=True,
             )
         assert response.status_code == 200
+
+    def test_archive(
+        self,
+        staff_session_client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        event = EventFactory()
+        with django_assert_num_queries(8):
+            response = staff_session_client.get(
+                reverse("admin:core_event_change", kwargs={"object_id": event.pk})
+            )
+        assert response.status_code == 200
+        assertContains(response, "Archiver")
+
+        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + 7):
+            response = staff_session_client.post(
+                reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
+                data={
+                    "procedure": event.procedure.id,  # required field
+                    "_archive": "Archiver",
+                },
+            )
+        assert response.status_code == 302
+        event.refresh_from_db()
+        assert event.is_archived
+
+        with django_assert_num_queries(9):
+            response = staff_session_client.get(
+                reverse("admin:core_event_change", kwargs={"object_id": event.pk})
+            )
+        assert response.status_code == 200
+        assertContains(response, "Désarchiver")
+
+    def test_unarchive(
+        self,
+        staff_session_client: Client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        event = EventFactory(archived=True)
+        with django_assert_num_queries(9):
+            response = staff_session_client.get(
+                reverse("admin:core_event_change", kwargs={"object_id": event.pk})
+            )
+        assert response.status_code == 200
+        assertContains(response, "Désarchiver")
+
+        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + 7):
+            response = staff_session_client.post(
+                reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
+                data={
+                    "procedure": event.procedure.id,  # required field
+                    "_unarchive": "Désarchiver",
+                },
+            )
+        assert response.status_code == 302
+        event.refresh_from_db()
+        assert not event.is_archived
+
+        with django_assert_num_queries(8):
+            response = staff_session_client.get(
+                reverse("admin:core_event_change", kwargs={"object_id": event.pk})
+            )
+        assert response.status_code == 200
+        assertContains(response, "Archiver")
