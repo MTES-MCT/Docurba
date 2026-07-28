@@ -1,4 +1,4 @@
-# ruff: noqa: FBT001, N803
+# ruff: noqa: FBT001
 from collections.abc import Callable
 from contextlib import nullcontext as does_not_raise
 from datetime import date, timedelta
@@ -898,6 +898,62 @@ class TestProcedure:
         ):
             assert procedure.zone_name == "Argilliers"
 
+    @pytest.mark.django_db
+    def test_save_vaut_SCoT(self, subtests: pytest.Subtests) -> None:  # noqa: N802
+        valid_doc_types = [
+            core_enums.TypeDocument.SD,
+            core_enums.TypeDocument.SCOT,
+        ]
+        for doc_type in valid_doc_types:
+            with subtests.test(doc_type, item=doc_type):
+                procedure = ProcedureFactory(doc_type=doc_type)
+                assert procedure.vaut_SCoT is True
+
+        procedure = ProcedureFactory(
+            doc_type=core_enums.TypeDocument.PLU,
+            from_sudocuh=12345678,
+            vaut_SCoT=True,
+        )
+        assert procedure.vaut_SCoT is True
+        procedure = ProcedureFactory(
+            doc_type=core_enums.TypeDocument.PLU, from_sudocuh=None, vaut_SCoT=True
+        )
+        assert procedure.vaut_SCoT is False
+        procedure = ProcedureFactory(doc_type=core_enums.TypeDocument.PLU)
+        assert procedure.vaut_SCoT is False
+
+    @pytest.mark.django_db
+    def test_save_vaut_PLH(self, subtests: pytest.Subtests) -> None:  # noqa: N802
+        valid_doc_types = [
+            core_enums.TypeDocument.PLUIH,
+            core_enums.TypeDocument.PLUIHM,
+            core_enums.TypeDocument.PLUISH,
+            core_enums.TypeDocument.PLUISHM,
+        ]
+        for doc_type in valid_doc_types:
+            with subtests.test(doc_type, item=doc_type):
+                procedure = ProcedureFactory(doc_type=doc_type)
+                assert procedure.vaut_PLH is True
+
+        procedure = ProcedureFactory(doc_type=core_enums.TypeDocument.PLU)
+        assert procedure.vaut_PLH is False
+
+    @pytest.mark.django_db
+    def test_save_vaut_PDM(self, subtests: pytest.Subtests) -> None:  # noqa: N802
+        valid_doc_types = [
+            core_enums.TypeDocument.PLUIM,
+            core_enums.TypeDocument.PLUIHM,
+            core_enums.TypeDocument.PLUISM,
+            core_enums.TypeDocument.PLUISHM,
+        ]
+        for doc_type in valid_doc_types:
+            with subtests.test(doc_type, item=doc_type):
+                procedure = ProcedureFactory(doc_type=doc_type)
+                assert procedure.vaut_PDM is True
+
+        procedure = ProcedureFactory(doc_type=core_enums.TypeDocument.PLU)
+        assert procedure.vaut_PDM is False
+
 
 class TestProcedureDates:
     @pytest.mark.django_db
@@ -1038,163 +1094,6 @@ class TestProcedureDocTypeDocument:
             core_models.Procedure(doc_type=core_enums.TypeDocument.SD).type_document
             == core_enums.TypeDocument.SD
         )
-
-    @pytest.mark.django_db
-    @pytest.mark.parametrize(
-        "doc_type",
-        [
-            (core_enums.TypeDocument.PLU),
-            (core_enums.TypeDocument.PLUI),
-            (core_enums.TypeDocument.PLUIH),
-            (core_enums.TypeDocument.PLUIM),
-            (core_enums.TypeDocument.PLUIHM),
-        ],
-    )
-    def test_plu(
-        self,
-        doc_type: core_enums.TypeDocument,
-        django_assert_num_queries: DjangoAssertNumQueries,
-    ) -> None:
-        commune = CommuneFactory()
-        procedure = ProcedureFactory(
-            doc_type=doc_type, collectivite_porteuse=commune, with_perimetre=[commune]
-        )
-
-        with django_assert_num_queries(1):
-            procedure = core_models.Procedure.objects.get(id=procedure.id)
-            assert procedure.type_document == core_enums.TypeDocument.PLU
-            assert not procedure.vaut_PLH_consolide
-            assert not procedure.vaut_PDM_consolide
-
-    @pytest.mark.django_db
-    @pytest.mark.parametrize(
-        "doc_type",
-        [
-            (core_enums.TypeDocument.PLU),
-            (core_enums.TypeDocument.PLUI),
-        ],
-    )
-    def test_plui(
-        self,
-        doc_type: core_enums.TypeDocument,
-        django_assert_num_queries: DjangoAssertNumQueries,
-    ) -> None:
-        commune_a = CommuneFactory()
-        commune_b = CommuneFactory()
-
-        procedure = ProcedureFactory(
-            collectivite_porteuse=commune_a,
-            doc_type=doc_type,
-            with_perimetre=[commune_a, commune_b],
-        )
-
-        with django_assert_num_queries(1):
-            procedure = core_models.Procedure.objects.get(id=procedure.id)
-            assert procedure.type_document == core_enums.TypeDocument.PLUI
-            assert not procedure.vaut_PLH_consolide
-            assert not procedure.vaut_PDM_consolide
-
-    @pytest.mark.django_db
-    @pytest.mark.parametrize(
-        ("doc_type", "vaut_PLH"),
-        [
-            (core_enums.TypeDocument.PLU, True),
-            (core_enums.TypeDocument.PLUI, True),
-            (core_enums.TypeDocument.PLUIH, False),
-            (core_enums.TypeDocument.PLUIH, True),
-        ],
-    )
-    def test_pluih(
-        self,
-        doc_type: core_enums.TypeDocument,
-        vaut_PLH: bool,
-        django_assert_num_queries: DjangoAssertNumQueries,
-    ) -> None:
-        commune_a = CommuneFactory()
-        commune_b = CommuneFactory()
-
-        procedure = ProcedureFactory(
-            collectivite_porteuse=commune_a,
-            doc_type=doc_type,
-            vaut_PLH=vaut_PLH,
-            with_perimetre=[commune_a, commune_b],
-        )
-
-        with django_assert_num_queries(1):
-            procedure = core_models.Procedure.objects.get(id=procedure.id)
-            assert procedure.type_document == core_enums.TypeDocument.PLUIH
-            assert procedure.vaut_PLH_consolide
-            assert not procedure.vaut_PDM_consolide
-
-    @pytest.mark.django_db
-    @pytest.mark.parametrize(
-        ("doc_type", "vaut_PDM"),
-        [
-            (core_enums.TypeDocument.PLU, True),
-            (core_enums.TypeDocument.PLUI, True),
-            (core_enums.TypeDocument.PLUIM, False),
-            (core_enums.TypeDocument.PLUIM, True),
-        ],
-    )
-    def test_pluim(
-        self,
-        doc_type: core_enums.TypeDocument,
-        vaut_PDM: bool,
-        django_assert_num_queries: DjangoAssertNumQueries,
-    ) -> None:
-        commune_a = CommuneFactory()
-        commune_b = CommuneFactory()
-
-        procedure = ProcedureFactory(
-            collectivite_porteuse=commune_a,
-            doc_type=doc_type,
-            vaut_PDM=vaut_PDM,
-            with_perimetre=[commune_a, commune_b],
-        )
-
-        with django_assert_num_queries(1):
-            procedure = core_models.Procedure.objects.get(id=procedure.id)
-            assert procedure.type_document == core_enums.TypeDocument.PLUIM
-            assert not procedure.vaut_PLH_consolide
-            assert procedure.vaut_PDM_consolide
-
-    @pytest.mark.django_db
-    @pytest.mark.parametrize(
-        ("doc_type", "vaut_PLH", "vaut_PDM"),
-        [
-            (core_enums.TypeDocument.PLU, True, True),
-            (core_enums.TypeDocument.PLUI, True, True),
-            (core_enums.TypeDocument.PLUIH, True, True),
-            (core_enums.TypeDocument.PLUIM, True, True),
-            (core_enums.TypeDocument.PLUIHM, False, False),
-            (core_enums.TypeDocument.PLUIHM, False, True),
-            (core_enums.TypeDocument.PLUIHM, True, False),
-            (core_enums.TypeDocument.PLUIHM, True, True),
-        ],
-    )
-    def test_pluihm(
-        self,
-        doc_type: core_enums.TypeDocument,
-        vaut_PLH: bool,
-        vaut_PDM: bool,
-        django_assert_num_queries: DjangoAssertNumQueries,
-    ) -> None:
-        commune_a = CommuneFactory()
-        commune_b = CommuneFactory()
-
-        procedure = ProcedureFactory(
-            collectivite_porteuse=commune_a,
-            doc_type=doc_type,
-            vaut_PLH=vaut_PLH,
-            vaut_PDM=vaut_PDM,
-            with_perimetre=[commune_a, commune_b],
-        )
-
-        with django_assert_num_queries(1):
-            procedure = core_models.Procedure.objects.get(id=procedure.id)
-            assert procedure.type_document == core_enums.TypeDocument.PLUIHM
-            assert procedure.vaut_PLH_consolide
-            assert procedure.vaut_PDM_consolide
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
