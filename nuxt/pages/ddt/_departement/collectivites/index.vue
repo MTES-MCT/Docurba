@@ -657,7 +657,7 @@ export default {
       })
 
       this.exportingCommunes = true
-      const { data } = await this.$djangoApi.get('/api/communes', {
+      const data = await this.$djangoApi.get('/api/communes', {
         departement: departementCode
       })
 
