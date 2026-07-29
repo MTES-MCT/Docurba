@@ -632,7 +632,7 @@ class Procedure(models.Model):
             for commune in self._perimetre
         ]
         self.departements = list(
-            set(self._perimetre.values_list("departement__code_insee", flat=True))
+            {commune.departement.code_insee for commune in self._perimetre}
         )
         if save:
             self.save()

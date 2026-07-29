@@ -317,19 +317,26 @@ class ProcedureSerializer(serializers.ModelSerializer):
         # Remove these keys from `validated_data` because they are not Procedure attributes.
         topics_list = validated_data.pop("topicsList")
         other_topic_comment = validated_data.pop("otherTopicComment")
-        principal_procedure = validated_data.get("parente_id")
         if validated_data["type"] in ProcedureType.principal():
             doc_type = validated_data.pop("type_document")
             collectivite_code = validated_data.pop("collectiviteCode")
-            perimetre_codes = validated_data.pop("perimetreCodes")
             collectivite = (
                 Collectivite.objects.filter_by_code(collectivite_code)
+                .with_communes_adherentes_count()
+                .select_related(
+                    "commune__intercommunalite",
+                    "commune__intercommunalite__departement",
+                    "commune__departement",
+                    "departement",
+                    "departement__region",
+                )
                 .exclude(type__in=[CommuneType.COMA, CommuneType.COMD])
                 .get()
             )
             collectivite_porteuse = Procedure.get_collectivite_porteuse(
                 collectivite=collectivite, doc_type=doc_type
             )
+            perimetre_codes = validated_data.pop("perimetreCodes")
             instance_data = validated_data | {
                 "doc_type": doc_type,
                 "testing": True,
@@ -337,7 +344,9 @@ class ProcedureSerializer(serializers.ModelSerializer):
                 "collectivite_porteuse": collectivite_porteuse,
             }
         else:
-            principal_procedure = Procedure.objects.get(pk=validated_data["parente_id"])
+            principal_procedure = Procedure.objects.select_related(
+                "project", "collectivite_porteuse"
+            ).get(pk=validated_data.get("parente_id"))
             instance_data = {
                 "type": validated_data["type"],
                 "started_before_huwart_law": validated_data.get(
@@ -355,9 +364,11 @@ class ProcedureSerializer(serializers.ModelSerializer):
         instance = super().create(validated_data=instance_data)
 
         if validated_data["type"] in ProcedureType.principal():
-            perimetre = Commune.objects.filter(code_insee__in=perimetre_codes)
+            perimetre_qs = Commune.objects.filter(
+                code_insee__in=perimetre_codes
+            ).select_related("departement", "departement__region")
         else:
-            perimetre = principal_procedure.perimetre.all()
+            perimetre_qs = principal_procedure.perimetre.select_related("departement")
         communes_procedures = [
             CommuneProcedure(
                 commune=commune,
@@ -370,11 +381,13 @@ class ProcedureSerializer(serializers.ModelSerializer):
                 opposable=False,
                 departement=commune.departement.code_insee,
             )
-            for commune in perimetre
+            for commune in perimetre_qs
         ]
         CommuneProcedure.objects.bulk_create(communes_procedures)
+        instance._cached_perimetre = perimetre_qs  # noqa: SLF001
         instance.update_perimetre_denormalized_fields(save=False)
 
+        # Project
         if validated_data["type"] in ProcedureType.principal():
             project_collectivite = collectivite_porteuse
             if (

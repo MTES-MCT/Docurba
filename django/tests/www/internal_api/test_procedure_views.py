@@ -755,6 +755,34 @@ class TestProcedureName:
 
 @pytest.mark.django_db
 class TestPrincipalProcedureCreation:
+    # There is at least one N+1 hiding somewhere.
+    # We decided to ignore it for the following weeks because:
+    # - the procedure.type_document will be removed when procedure.doc_type will be cleaned
+    # - the procedure sectoriality should be stored in a column
+    # - procedure.current_perimetre and procedure.departements will be deleted soon.
+    PP_BASE_QUERIES = (
+        3  # for validating params. => OK
+        + 1  # for saving the procedure.
+        + 1  # to get the perimetre # 7
+        + 1  # to save the perimetre # 8
+        + 1  # to create the project # 9
+        + 1  # to list topics # 10
+        + 1  # to create procedure topics # 11
+        + 1  # to save it again # 12
+        + 7  # to serialize # 19
+    )
+    PS_BASE_QUERIES = (
+        3  # for validating params. => OK
+        + 1  # to fetch the principal procedure => OK
+        + 1  # for creating => OK # 5
+        + 3  # for saving the perimeter # 8
+        + 1  # for getting the topics # 9
+        + 1  # for saving ProcedureTopic # 10
+        + 1  # for computing procedure.doc_type for procedure.type_document # 11
+        + 1  # to save the instance again # 12
+        + 8  # to serialize the result # 20
+    )
+
     @property
     def url(self) -> str:
         return reverse("internal_api:procedures-list")
@@ -843,6 +871,7 @@ class TestPrincipalProcedureCreation:
     def test_collectivite_is_intermunicipality__nominal(
         self,
         api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         # This test assumes no one has the jurisdiction because
         # collectivite.competence_plan and collectivite.competence_schema
@@ -863,7 +892,10 @@ class TestPrincipalProcedureCreation:
             collectivite=collectivite, perimetre=perimetre_insee_codes
         )
         logged_in_profile = ProfileFactory(collectivite=collectivite)
-        with api_client_with_auth(logged_in_profile) as api_client:
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(self.PP_BASE_QUERIES + 8),
+        ):
             response = api_client.post(self.url, data=data)
         assert response.status_code == 201
 
@@ -882,7 +914,7 @@ class TestPrincipalProcedureCreation:
         assert sorted(
             procedure.perimetre.values_list("code_insee", flat=True)
         ) == sorted(perimetre_insee_codes)
-        assert procedure.current_perimetre == [
+        assert sorted(procedure.current_perimetre, key=lambda c: c["inseeCode"]) == [
             {"name": "Beaucaire", "inseeCode": "30032"},
             {"name": "Bellegarde", "inseeCode": "30034"},
             {"name": "Fourques", "inseeCode": "30117"},
@@ -902,7 +934,9 @@ class TestPrincipalProcedureCreation:
         assert project.collectivite_porteuse_id == collectivite.siren
 
     def test_collectivite_is_municipality__nominal(
-        self, api_client_with_auth: SupabaseApiTestClient
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         collectivite = core_factories.CommuneFactory(for_snapshot=True)
         logged_in_profile = ProfileFactory(collectivite=collectivite)
@@ -913,7 +947,10 @@ class TestPrincipalProcedureCreation:
             "collectiviteCode": collectivite.code_insee,
             "docType": core_enums.TypeDocument.PLU,
         }
-        with api_client_with_auth(profile=logged_in_profile) as api_client:
+        with (
+            api_client_with_auth(profile=logged_in_profile) as api_client,
+            django_assert_num_queries(self.PP_BASE_QUERIES - 1),
+        ):
             response = api_client.post(self.url, data=post_data)
         assert response.status_code == 201
         assert core_models.Procedure.objects.count() == 1
@@ -955,6 +992,7 @@ class TestPrincipalProcedureCreation:
     def test_collectivite_porteuse__is_municipality_with_intermunicipality_and_jurisdiction(
         self,
         api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         """The municipality has the jurisdiction, intermunicipality not.
         The selected collectivite is the municipality.
@@ -983,7 +1021,10 @@ class TestPrincipalProcedureCreation:
             "docType": core_enums.TypeDocument.PLU,
         }
         logged_in_profile = ProfileFactory(collectivite=commune)
-        with api_client_with_auth(logged_in_profile) as api_client:
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(self.PP_BASE_QUERIES),
+        ):
             response = api_client.post(self.url, data=post_data)
         assert response.status_code == 201
         assert core_models.Procedure.objects.count() == 1
@@ -1009,6 +1050,7 @@ class TestPrincipalProcedureCreation:
     def test_collectivite_porteuse__is_municipality_with_intermunicipality_and_jurisdiction_for_both(
         self,
         api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         """The municipality has the jurisdiction, intermunicipality too.
         The municipality stays the collectivite porteuse.
@@ -1038,7 +1080,10 @@ class TestPrincipalProcedureCreation:
             "docType": core_enums.TypeDocument.PLU,
         }
         logged_in_profile = ProfileFactory(collectivite=commune)
-        with api_client_with_auth(logged_in_profile) as api_client:
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(self.PP_BASE_QUERIES),
+        ):
             response = api_client.post(self.url, data=post_data)
         assert response.status_code == 201
         assert core_models.Procedure.objects.count() == 1
@@ -1064,6 +1109,7 @@ class TestPrincipalProcedureCreation:
     def test_collectivite_porteuse__is_municipality_with_intermunicipality_and_no_jurisdiction(
         self,
         api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         """The municipality does not have the jurisdiction.
         # It has been transfered to the intermunicipality.
@@ -1094,7 +1140,10 @@ class TestPrincipalProcedureCreation:
             "docType": core_enums.TypeDocument.PLU,
         }
         logged_in_profile = ProfileFactory(collectivite=commune)
-        with api_client_with_auth(logged_in_profile) as api_client:
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(self.PP_BASE_QUERIES),
+        ):
             response = api_client.post(self.url, data=post_data)
         assert response.status_code == 201
         assert core_models.Procedure.objects.count() == 1
@@ -1120,6 +1169,7 @@ class TestPrincipalProcedureCreation:
     def test_collectivite_porteuse__is_intermunicipality_without_jurisdiction(
         self,
         api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         """The municipalities has the jurisdiction, intermunicipality not.
         The collectivite porteuse is the intermunicipality.
@@ -1161,7 +1211,10 @@ class TestPrincipalProcedureCreation:
             "docType": core_enums.TypeDocument.PLUI,
         }
         logged_in_profile = ProfileFactory(collectivite=intercommunalite)
-        with api_client_with_auth(logged_in_profile) as api_client:
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(self.PP_BASE_QUERIES + 4),
+        ):
             response = api_client.post(self.url, data=post_data)
         assert response.status_code == 201
         assert core_models.Procedure.objects.count() == 1
@@ -1187,6 +1240,7 @@ class TestPrincipalProcedureCreation:
     def test_collectivite_porteuse__is_intermunicipality_with_jurisdiction(
         self,
         api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         """The intermunicipality has the jurisdiction.
         The selected collectivite is the intermunicipality.
@@ -1227,7 +1281,10 @@ class TestPrincipalProcedureCreation:
             "docType": core_enums.TypeDocument.PLU,
         }
         logged_in_profile = ProfileFactory(collectivite=intercommunalite)
-        with api_client_with_auth(logged_in_profile) as api_client:
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(self.PP_BASE_QUERIES),
+        ):
             response = api_client.post(self.url, data=post_data)
         assert response.status_code == 201
         assert core_models.Procedure.objects.count() == 1
@@ -1251,7 +1308,8 @@ class TestPrincipalProcedureCreation:
         assert project.collectivite_porteuse_id == intercommunalite.siren
 
     def test_no_other_topic_but_topic_comment(
-        self, api_client_with_auth: SupabaseApiTestClient
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
     ) -> None:
         collectivite = core_factories.CollectiviteFactory(
             for_snapshot=True,
@@ -1269,7 +1327,9 @@ class TestPrincipalProcedureCreation:
             "topicsList": ["zan", "coastline"],
             "otherTopicComment": "I love coastlines.",
         }
-        with api_client_with_auth(logged_in_profile) as api_client:
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+        ):
             response = api_client.post(self.url, data=data)
         assert response.status_code == 400
 
@@ -1384,6 +1444,7 @@ class TestPrincipalProcedureCreation:
     def test_procedure_interdepartment(
         self,
         api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         communes = [
             core_factories.CommuneFactory(code_insee="30032"),
@@ -1401,7 +1462,10 @@ class TestPrincipalProcedureCreation:
             collectivite=collectivite, perimetre=perimetre_insee_codes
         )
         logged_in_profile = ProfileFactory(collectivite=collectivite)
-        with api_client_with_auth(logged_in_profile) as api_client:
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(self.PP_BASE_QUERIES + 2),
+        ):
             response = api_client.post(self.url, data=data)
         assert response.status_code == 201
 
@@ -1439,7 +1503,11 @@ class TestPrincipalProcedureCreation:
         assert procedure.name_complement == expected_name_complement
         assert procedure.computed_name == response.json()["name"]
 
-    def test_sectoriel(self, api_client_with_auth: SupabaseApiTestClient) -> None:
+    def test_sectoriel(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
         communes = [
             core_factories.CommuneFactory(code_insee="30032"),
             core_factories.CommuneFactory(code_insee="30034"),
@@ -1456,7 +1524,10 @@ class TestPrincipalProcedureCreation:
         ) | {
             "docType": core_enums.TypeDocument.PLUI,
         }
-        with api_client_with_auth(profile=logged_in_profile) as api_client:
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(self.PP_BASE_QUERIES + 2),
+        ):
             response = api_client.post(self.url, data=post_data)
         assert response.status_code == 201
         assert core_models.Procedure.objects.count() == 1
@@ -1569,7 +1640,7 @@ class TestPrincipalProcedureCreation:
         logged_in_profile = ProfileFactory(collectivite=collectivite)
         with (
             api_client_with_auth(logged_in_profile) as api_client,
-            django_assert_num_queries(41),
+            django_assert_num_queries(self.PS_BASE_QUERIES),
         ):
             response = api_client.post(self.url, data=post_data)
         assert response.status_code == 201
