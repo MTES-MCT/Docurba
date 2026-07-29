@@ -8,7 +8,6 @@ import docurba.core.utils
 class Migration(migrations.Migration):
     dependencies = [
         ("core", "0030_make_events_managed"),
-        ("users", "0002_add_column_departements"),
     ]
 
     operations = [

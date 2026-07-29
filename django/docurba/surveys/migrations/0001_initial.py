@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("core", "0018_add_last_updated_by_id_to_procedures"),
-        ("users", "0002_add_column_departements"),
+        ("users", "0001_squashed_0006_user"),
     ]
 
     operations = [

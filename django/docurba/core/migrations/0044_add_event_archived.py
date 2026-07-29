@@ -7,7 +7,6 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     dependencies = [
         ("core", "0043_add_event_types"),
-        ("users", "0004_add_encrypted_password_to_users"),
     ]
 
     operations = [

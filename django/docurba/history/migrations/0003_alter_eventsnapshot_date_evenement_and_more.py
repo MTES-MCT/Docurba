@@ -7,7 +7,6 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     dependencies = [
         ("history", "0002_events_initial_snapshots"),
-        ("users", "0003_session"),
     ]
 
     operations = [

@@ -12,15 +12,6 @@ import docurba.users.models
 
 
 class Migration(migrations.Migration):
-    replaces = [
-        ("users", "0001_initial"),
-        ("users", "0002_add_column_departements"),
-        ("users", "0003_session"),
-        ("users", "0004_add_encrypted_password_to_users"),
-        ("users", "0005_rename_user_to_supabase_user"),
-        ("users", "0006_user"),
-    ]
-
     initial = True
 
     dependencies = [

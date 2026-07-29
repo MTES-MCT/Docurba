@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ("core", "0032_make_procedures_managed"),
         ("pghistory", "0007_auto_20250421_0444"),
-        ("users", "0003_session"),
+        ("users", "0001_squashed_0006_user"),
     ]
 
     operations = [
