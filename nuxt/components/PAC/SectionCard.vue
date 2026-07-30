@@ -19,7 +19,7 @@
                 </v-col>
                 <v-col cols="" class="p-relative">
                   <v-btn
-                    v-if="lastEditDate && editable"
+                    v-if="lastEditDetails"
                     absolute
                     text
                     disabled
@@ -27,7 +27,7 @@
                     class="text-caption text-right px-1"
                     :style="{left: '0px', bottom: '-20px'}"
                   >
-                    Modifié le: {{ lastEditDate }}
+                    {{ lastEditDetails }}
                   </v-btn>
                   <h2 class="d-flex align-center">
                     <v-text-field
@@ -280,6 +280,7 @@ import {
 } from '@mdi/js'
 import { encode } from 'js-base64'
 import { getCommitter } from '@/plugins/user'
+import { getUniquePropValues, keyBy } from '@/plugins/utils'
 
 export default {
   props: {
@@ -391,13 +392,6 @@ export default {
           )
       }
     },
-    lastEditDate () {
-      if (this.section.editDate) {
-        return this.$dayjs(this.section.editDate).format('DD MMM YYYY')
-      } else {
-        return ''
-      }
-    },
     ghostCount () {
       if (this.section.ghost) { return 0 }
 
@@ -418,6 +412,25 @@ export default {
       }
 
       return count
+    },
+    lastEditDetails () {
+      if (!this.editable || !this.section.lastEdit) {
+        return ''
+      }
+
+      const lastEdit = this.section.lastEdit
+      const lastEditDate = `Modifié le : ${this.$dayjs(lastEdit.date).format('DD MMM YYYY')}`
+
+      if (lastEdit.message.endsWith('for main from Docurba')) {
+        return `${lastEditDate} sur la trame nationale`
+      }
+      if (!lastEdit.author) {
+        return lastEditDate
+      }
+
+      return `${lastEditDate} par ${lastEdit.author.firstname} ${lastEdit.author.lastname}${
+        lastEdit.author.poste === 'dreal' ? ' DREAL' : ''
+      }`
     }
   },
   watch: {
@@ -433,7 +446,7 @@ export default {
           data: this.section
         })
 
-        if (!this.section.ghost && this.editable && this.section.children[0] && !this.section.children[0].editDate) {
+        if (!this.section.ghost && this.editable && this.section.children[0] && !this.section.children[0].lastEdit?.date) {
           this.fetchChildrenHistories()
         }
       }
@@ -508,12 +521,28 @@ export default {
           paths
         }
       })
+      const { data: profiles } = await this.$supabase
+        .from('profiles')
+        .select('*')
+        .ilikeAnyOf('email', getUniquePropValues(histories, h => h.commit?.author?.email))
+      const profilesByEmail = keyBy(profiles, profile => profile.email?.toLowerCase())
 
       // eslint-disable-next-line vue/no-mutating-props
       this.section.children = this.section.children.map((child) => {
+        const commit = histories.find(h => h.path.replace('/intro.md', '') === child.path)?.commit
+
+        if (!commit) {
+          return child
+        }
+
+        const email = commit.author?.email?.toLowerCase()
+
         return {
           ...child,
-          editDate: histories.find(h => h.path.replace('/intro.md', '') === child.path)?.commit?.date
+          lastEdit: {
+            ...commit,
+            author: email && profilesByEmail[email]
+          }
         }
       })
     },
@@ -581,8 +610,18 @@ export default {
           }
         })
 
-        // eslint-disable-next-line vue/no-mutating-props
-        this.section.editDate = history[0]?.commit?.date
+        if (history[0]) {
+          const { data: profiles } = await this.$supabase
+            .from('profiles')
+            .select('*')
+            .ilike('email', history[0].commit.author?.email?.toLowerCase())
+
+          // eslint-disable-next-line vue/no-mutating-props
+          this.section.lastEdit = {
+            ...history[0].commit,
+            author: profiles[0]
+          }
+        }
 
         if (this.project && this.project.id) {
           this.$notifications.notifyUpdate(this.project.id)
