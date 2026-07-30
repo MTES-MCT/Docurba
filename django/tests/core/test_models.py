@@ -154,6 +154,20 @@ class TestProcedureQuerySet:
         assert hasattr(procedure, "concatenated_topics_as_string")
         assert procedure.concatenated_topics_as_string == "Feu de forêt,Trajectoire ZAN"
 
+    @pytest.mark.django_db
+    def test_with_events_archived(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        procedure = ProcedureFactory()
+        event_not_archived = EventFactory(procedure=procedure)
+        EventFactory(procedure=procedure, archived=True)
+
+        with django_assert_num_queries(2):
+            procedure = Procedure.objects.with_events().get(pk=procedure.pk)
+
+        assert len(procedure.events_prefetched) == 1
+        assert procedure.events_prefetched[0].id == event_not_archived.id
+
 
 class TestProcedureCommunesCounts:
     @pytest.mark.django_db
@@ -1637,39 +1651,6 @@ class TestEventUpdate:
 
 @pytest.mark.django_db
 class TestEventManagers:
-    def test_base_manager(self, subtests: pytest.Subtests) -> None:
-        EventFactory()
-        to_be_removed_fields = [
-            "code",
-            "from_sudocuh_procedure_id",
-        ]
-        heavy_fields = [
-            "description",
-            "attachements",
-        ]
-        event = Event.objects.earliest("id")
-        for item in [*to_be_removed_fields, *heavy_fields]:
-            with subtests.test(item, item=item):
-                assert item not in event.__dict__
-
-    @pytest.mark.django_db
-    def test_managers_archived_events(self) -> None:
-        event_not_archived = EventFactory()
-        EventFactory(archived=True)
-
-        queryset = Event.objects.all()
-        assert queryset.count() == 1
-        event = queryset.first()
-        assert event.id == event_not_archived.id
-
-        queryset = Event.full_objects.all()
-        assert queryset.count() == 2
-
-        queryset = Event.full_objects.without_archived()
-        assert queryset.count() == 1
-        event = queryset.first()
-        assert event.id == event_not_archived.id
-
     @pytest.mark.django_db
     def test_full_objects_manager(self, subtests: pytest.Subtests) -> None:
         EventFactory()
@@ -1685,6 +1666,37 @@ class TestEventManagers:
         for item in [*to_be_removed_fields, *heavy_fields]:
             with subtests.test(item, item=item):
                 assert item in event.__dict__
+
+    def test_objects_manager(self, subtests: pytest.Subtests) -> None:
+        EventFactory()
+        to_be_removed_fields = [
+            "code",
+            "from_sudocuh_procedure_id",
+        ]
+        heavy_fields = [
+            "description",
+            "attachements",
+        ]
+        event = Event.objects.earliest("id")
+        for item in [*to_be_removed_fields, *heavy_fields]:
+            with subtests.test(item, item=item):
+                assert item not in event.__dict__
+
+
+@pytest.mark.django_db
+class TestEventQueryset:
+    @pytest.mark.django_db
+    def test_queryset_without_archived(self) -> None:
+        event_not_archived = EventFactory()
+        EventFactory(archived=True)
+
+        queryset = Event.objects.all()
+        assert queryset.count() == 2
+
+        queryset = Event.objects.without_archived()
+        assert queryset.count() == 1
+        event = queryset.first()
+        assert event.id == event_not_archived.id
 
 
 class TestCommuneProceduresPrincipales:
