@@ -377,7 +377,7 @@ class EventAdmin(admin.ModelAdmin):
         return super().has_change_permission(request, obj)
 
     def get_queryset(self, request) -> models.QuerySet:
-        queryset = self.model.full_objects.defer_heavy_fields()
+        queryset = Event.full_objects.defer_heavy_fields()
         ordering = self.get_ordering(request)
         if ordering:
             queryset = queryset.order_by(*ordering)

@@ -280,11 +280,15 @@ class ProcedureStatusChoices(models.TextChoices):
 
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self, *, avant: date | None = None) -> Self:
-        events = Event.objects.exclude(date_evenement=None).only(
-            "type",
-            "date_evenement",
-            "is_valid",
-            "procedure_id",
+        events = (
+            Event.objects.without_archived()
+            .exclude(date_evenement=None)
+            .only(
+                "type",
+                "date_evenement",
+                "is_valid",
+                "procedure_id",
+            )
         )
         return self.annotate(
             date_pivot=models.Value(
@@ -980,7 +984,7 @@ class EventManager(models.Manager):
 class FastLoadingEventManager(EventManager):
     def get_queryset(self) -> Self:
 
-        return super().get_queryset().without_archived().defer_heavy_fields()
+        return super().get_queryset().defer_heavy_fields()
 
 
 class Event(models.Model):
