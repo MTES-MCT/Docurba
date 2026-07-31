@@ -688,7 +688,6 @@ class TestProcedure:
             ProcedureType.MISE_EN_COMPATIBILITE,
             ProcedureType.MODIFICATION,
             ProcedureType.MODIFICATION_SIMPLIFIEE,
-            ProcedureType.REVISION,
             ProcedureType.REVISION_MS_RA,
             ProcedureType.REVISION_ALLEGEE,
             ProcedureType.REVISION_SIMPLIFIEE,
