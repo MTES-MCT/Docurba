@@ -5,6 +5,8 @@ from django.test import Client
 from pytest_django import DjangoDbBlocker
 from rest_framework.test import APIClient
 
+from tests.users.factories import ProfileFactory
+
 
 @pytest.fixture
 def api_client() -> APIClient:
@@ -21,16 +23,18 @@ def admin_session_client(django_db_blocker: DjangoDbBlocker | None) -> Client:
     client = Client()
     UserModel = get_user_model()  # noqa: N806
     email = "admin@test.com"
-    data = {
-        "email": email,
-        "password": "password",
-        "username": email,
-    }
 
     with django_db_blocker.unblock():
         try:
             user = UserModel.objects.get(email=email)
         except UserModel.DoesNotExist:
+            profile = ProfileFactory(email=email)
+            data = {
+                "email": email,
+                "password": "password",
+                "username": email,
+                "profile_id": profile.user_id,
+            }
             user = UserModel.objects.create_superuser(**data)
         client.force_login(user)
 
@@ -49,11 +53,6 @@ def staff_session_client(django_db_blocker: DjangoDbBlocker | None) -> Client:
     client = Client()
     UserModel = get_user_model()  # noqa: N806
     email = "staff@test.com"
-    data = {
-        "email": email,
-        "password": "password",
-        "username": email,
-    }
 
     with django_db_blocker.unblock():
         write_group, _ = Group.objects.get_or_create(name="write")
@@ -72,6 +71,13 @@ def staff_session_client(django_db_blocker: DjangoDbBlocker | None) -> Client:
         try:
             user = UserModel.objects.get(email=email)
         except UserModel.DoesNotExist:
+            profile = ProfileFactory(email=email)
+            data = {
+                "email": email,
+                "password": "password",
+                "username": email,
+                "profile_id": profile.user_id,
+            }
             user = UserModel.objects.create_user(**data, is_staff=True)
 
         user.groups.add(write_group)
