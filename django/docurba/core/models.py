@@ -557,7 +557,25 @@ class Procedure(models.Model):
             return self.date_prescription < other.date_prescription
         return self.created_at < other.created_at
 
-    def get_absolute_url(self) -> str:
+    def clean(self) -> None:
+        super().clean()
+
+    def save(self, *args: list, **kwargs: dict) -> None:  # noqa: DJ012
+        self.clean()
+        if self.type in ProcedureType.principal():
+            self.is_principale = True
+            if self.type != ProcedureType.REVISION:
+                self.numero = 1
+        if not self.status:
+            self.status = ProcedureStatusChoices.EN_COURS
+        self.vaut_SCoT = self.vaut_SCoT or self.doc_type == TypeDocument.SCOT
+        self.vaut_PLH = self.vaut_PLH or self.doc_type == TypeDocument.PLUIH
+        self.vaut_PDM = (
+            self.vaut_PDM or False
+        )  # TODO: remove me once the other PR is merged. https://github.com/MTES-MCT/Docurba/issues/2293
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self) -> str:  # noqa: DJ012
         return f"/frise/{self.pk}"
 
     _events_processed = False
@@ -1485,7 +1503,6 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     )
     opposable = models.BooleanField(verbose_name="Est opposable", default=False)
     # Denormalized version of commune.departement.code_insee already existing in production.
-    # Real type is TextField but I used a Charfiel here for performance reasons.
     # This column is used in Nuxt side to retrieve procedures by departement.
     # See urbanizator.getProceduresForDept.
     # Unfortunately, there is a mismatch between commune.departement.code_insee and self.departement
@@ -1528,6 +1545,21 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
             # Remove me later.
             models.Index(name="test_idx", fields=["procedure_id", "collectivite_code"]),
         ]
+
+    def save(self, *args: list, **kwargs: dict) -> None:
+        super().save(*args, **kwargs)
+        self.procedure.current_perimetre = [
+            {"name": value["nom"], "inseeCode": value["code_insee"]}
+            for value in self.procedure.perimetre.values("nom", "code_insee")
+        ]
+        self.procedure.departements = list(
+            set(
+                self.procedure.perimetre.values_list(
+                    "departement__code_insee", flat=True
+                )
+            )
+        )
+        self.procedure.save()
 
 
 class MaterializedViewFlatMembershipQuerySet(models.QuerySet):

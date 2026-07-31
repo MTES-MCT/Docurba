@@ -262,6 +262,7 @@ export default {
         'Mise à jour'
       ].map(item => typeof item === 'string' ? { text: item, value: item } : item)
     },
+    // # TODO: remove me and make this compute in djangoApi.
     collectivitePorteuseCode () {
       if (this.collectivite[this.typeCompetence]) {
         // return the collectivite if it has the competence
@@ -340,6 +341,7 @@ export default {
   },
   methods: {
     async getProcedures () {
+      // TODO: get procedures
       let query = this.$supabase.from('procedures').select('*, procedures_perimetres(*)').eq('is_principale', true).eq('status', 'opposable')
 
       if (this.collectivite.type !== 'COM') {
@@ -409,71 +411,25 @@ export default {
         } else {
           perimetre = this.perimetre
         }
-        const detailedPerimetre = await this.$djangoApi.get('/api-internes/communes/', {
-          code: perimetre
-        })
-        const oldFomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
-        const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
-        let insertedProject = null
-
-        if (this.procedureCategory === 'principale') {
-          const insertRet = await this.$supabase.from('projects').insert({
-            name: `${this.typeProcedure} ${this.typeDu}`,
-            doc_type: this.typeDu,
-            region: this.collectivite.regionCode,
-            current_perimetre: oldFomattedPerimetre,
-            collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
-            collectivite_porteuse_id: this.collectivitePorteuseCode,
-            test: true,
-            owner: this.$user.id
-          }).select()
-
-          insertedProject = insertRet.data && insertRet.data[0] ? insertRet.data[0].id : null
-          if (insertRet.error) { throw insertRet.error }
-        }
-
-        const { data: insertedProcedure, error: errorInsertedProcedure } = await this.$supabase.from('procedures').insert({
-          shareable: true,
-          secondary_procedure_of: this.procedureParent,
+        const responseData = await this.$djangoApi.post('/api-internes/procedures/', {
           type: this.typeProcedure,
-          collectivite_porteuse_id: this.collectivitePorteuseCode,
-          is_principale: this.procedureCategory === 'principale',
-          status: 'en cours',
-          is_sectoriel: null,
-          is_scot: this.typeDu === 'SCOT',
-          is_pluih: this.typeDu === 'PLUiH',
-          is_pdu: null,
-          current_perimetre: oldFomattedPerimetre,
-          doc_type: this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType,
-          departements,
-          numero: this.procedureCategory === 'principale' ? '1' : this.numberProcedure,
-          project_id: insertedProject,
+          collectiviteCode: this.collectivite.code,
+          perimetreCommunesCodes: perimetre,
+          docType: this.typeDu,
+          numero: this.numberProcedure,
           name: (this.baseName + ' ' + this.nameComplement).trim(),
-          owner_id: this.$user.id,
-          started_before_huwart_law: this.startedBeforeHuwartLaw,
-          testing: true
-        }).select()
-
-        if (errorInsertedProcedure) {
-          // eslint-disable-next-line no-console
-          console.log('errorInsertedProcedure: ', errorInsertedProcedure)
-        }
-
-        const topicsToInsert = this.topics.map((e) => {
-          return {
-            topic_id: e.value,
-            procedure_id: insertedProcedure[0].id,
-            comment: e.text === 'Autre' ? this.topicOtherComment : ''
-          }
+          startedBeforeHuwartLaw: this.startedBeforeHuwartLaw,
+          topics: this.topics.map(e => e.value),
+          otherTopicComment: this.topicOtherComment
         })
-        await this.$supabase.from('core_proceduretopic').insert(topicsToInsert).select()
+        // TODO: ask Etienne to handle 400 errors when the API returns validation errors.
+        const procedureId = responseData.id
+        const projectId = responseData.project_id
 
-        const fomattedPerimetre = detailedPerimetre.map(e => ({ collectivite_code: e.code, collectivite_type: e.type, procedure_id: insertedProcedure[0].id, opposable: false, departement: e.departementCode }))
-        await this.$supabase.from('procedures_perimetres').insert(fomattedPerimetre)
-
+        // Probably for later
         const sender = {
           user_email: this.$user.email,
-          project_id: insertedProject ?? this.proceduresParents?.find(e => e.id === this.procedureParent)?.project_id,
+          project_id: projectId ?? this.proceduresParents?.find(e => e.id === this.procedureParent)?.project_id,
           shared_by: this.$user.id,
           notified: false,
           role: 'write_frise',
@@ -481,9 +437,7 @@ export default {
           dev_test: true
         }
 
-        // console.log('this.proceduresParents?.find(e => e.id === this.procedureParent): ', this.proceduresParents?.find(e => e.id === this.procedureParent))
-        // console.log('sender SHARING: ', sender)
-
+        // Probably for later
         const { error: errorInsertedCollabs } = await this.$supabase.from('projects_sharing').insert(sender)
 
         if (errorInsertedCollabs) {
@@ -497,8 +451,7 @@ export default {
           value: (this.baseName + ' ' + this.nameComplement).trim()
         })
 
-        this.$router.push(`/frise/${insertedProcedure[0].id}/invite`)
-        // this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`)
+        this.$router.push(`/frise/${procedureId}/invite`)
       } catch (error) {
         this.error = error
         // eslint-disable-next-line no-console
@@ -508,14 +461,14 @@ export default {
       }
     },
     async getTopicItems () {
-      let { data: topics } = await this.$supabase.from('core_topic').select('id,display_name,ui_rank')
+      let { data: topics } = await this.$supabase.from('core_topic').select('name,display_name,ui_rank')
       topics = topics.sort((a, b) => {
         return a.ui_rank > b.ui_rank
       })
       // Push first item to the end.
       topics.push(topics.shift())
       return topics.map((e) => {
-        return { value: e.id, text: e.display_name }
+        return { value: e.name, text: e.display_name }
       })
     }
   }

@@ -28,6 +28,11 @@ export default ({ $axios, $user }, inject) => {
       }
 
       return results
+    },
+    async post (path, data) {
+      const headers = { 'Supabase-Authorization': $user.supabase_access_token }
+      const { data: responseData } = await djangoAxios.post(path, data, { headers })
+      return responseData
     }
   })
 }

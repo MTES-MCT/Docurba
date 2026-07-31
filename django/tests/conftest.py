@@ -1,14 +1,44 @@
+import contextlib
+from unittest.mock import patch
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
+from django.core.handlers.wsgi import WSGIRequest
 from django.test import Client
 from pytest_django import DjangoDbBlocker
 from rest_framework.test import APIClient
+
+from docurba.core.models import Profile
+from tests.users.factories import SessionFactory
+
+
+class SupabaseApiClient(APIClient):
+    def request(self, **kwargs: dict) -> WSGIRequest:
+        kwargs["HTTP_SUPABASE-AUTHORIZATION"] = "test-token"
+        return super().request(**kwargs)
 
 
 @pytest.fixture
 def api_client() -> APIClient:
     return APIClient()
+
+
+@pytest.fixture(name="api_client_with_auth")
+def api_client_with_auth_factory() -> None:
+
+    @contextlib.contextmanager
+    def api_client_with_auth(profile: Profile) -> None:
+        session = SessionFactory(user=profile.user)
+
+        with patch("docurba.internal_api.auth.create_client") as create_client:
+            supabase = create_client.return_value
+            supabase.auth.get_claims.return_value = {
+                "claims": {"session_id": session.id, "email": session.user.email}
+            }
+            yield SupabaseApiClient()
+
+    return api_client_with_auth
 
 
 @pytest.fixture(scope="session")
