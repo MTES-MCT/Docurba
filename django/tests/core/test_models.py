@@ -1654,8 +1654,8 @@ class TestEventManagers:
 
     @pytest.mark.django_db
     def test_managers_archived_events(self) -> None:
-        event_not_archived = EventFactory(archived_at=None, archived_by=None)
-        EventFactory(archived_at=timezone.now(), archived_by=ProfileFactory())
+        event_not_archived = EventFactory()
+        EventFactory(archived=True)
 
         queryset = Event.objects.all()
         assert queryset.count() == 1
