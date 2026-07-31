@@ -3,6 +3,7 @@ from django.test import Client
 from django.urls import reverse
 from pytest_django.asserts import assertContains
 
+from docurba.users.models import Profile, User
 from tests.users.factories import SupabaseUserFactory
 
 
@@ -29,3 +30,20 @@ class TestSupabaseUserAdmin:
             follow=True,
         )
         assertContains(response, "Nouveau mot de passe :")
+
+    # Make sure you remove the test database first
+    # because the Django user is not recreated between
+    # tests.
+    def test_staff_session_client(self, staff_session_client: Client) -> None:
+        django_user = User.objects.get(pk=staff_session_client.session["_auth_user_id"])
+        assert (
+            django_user.profile_id
+            == Profile.objects.get(email=django_user.email).user_id
+        )
+
+    def test_admin_session_client(self, admin_session_client: Client) -> None:
+        django_user = User.objects.get(pk=admin_session_client.session["_auth_user_id"])
+        assert (
+            django_user.profile_id
+            == Profile.objects.get(email=django_user.email).user_id
+        )
