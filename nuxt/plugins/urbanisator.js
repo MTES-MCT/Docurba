@@ -45,28 +45,6 @@ export default ({ $collectiviteApi, $supabase, $dayjs }, inject) => {
       const orderedProcedures = orderBy(uniqProcedures, e => e.last_event?.date_iso, ['desc'])
       return orderedProcedures
     },
-    async getCommuneProcedures (inseeCode) {
-      const { data: perimetre } = await $supabase.from('procedures_perimetres').select('*').eq('collectivite_code', inseeCode)
-      const { data: procedures } = await $supabase.from('procedures')
-        .select('*').eq('archived', false)
-        .in('id', perimetre.map(p => p.procedure_id))
-
-      procedures.forEach((procedure) => {
-        const perim = perimetre.find(p => p.procedure_id === procedure.id)
-        if (procedure.status === 'opposable' && !perim.opposable) {
-          procedure.status = 'precedent'
-        }
-      })
-
-      return procedures
-    },
-    async getIntercoProcedures (collectiviteId) {
-      const { data: procedures } = await $supabase.from('procedures')
-        .select('*').eq('archived', false)
-        .eq('collectivite_porteuse_id', collectiviteId)
-
-      return procedures
-    },
     async getProceduresPerimetre (procedures, collectiviteId) {
       const collectivitesCodes = uniq([
         ...procedures.flatMap(p =>
