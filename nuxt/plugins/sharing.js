@@ -109,7 +109,11 @@ export default ({ app, $supabase, $utils, $user, $analytics }, inject) => {
 
       if (errorCollabs) { console.log('errorCollabs: ', errorCollabs) }
       console.log('collabsData: ', collabsData, ' procedure.project_id: ', procedure.project_id)
-      const emails = _.uniqBy(collabsData, e => e.user_email).map(e => e.user_email)
+      const emails = _.uniq(collabsData.flatMap(
+        d => d.user_email
+          ? d.user_email.split(';').map(e => e.replaceAll('"', '').trim().toLowerCase())
+          : []
+      ))
 
       const { data: profilesData, error: errorProfiles } = await $supabase.from('profiles').select('*').ilikeAnyOf('email', emails)
       if (errorCollabs) { console.log('errorProfiles: ', errorProfiles) }
