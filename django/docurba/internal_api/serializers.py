@@ -2,7 +2,8 @@
 
 from rest_framework import serializers
 
-from docurba.core.models import Collectivite, Commune, EventType
+from docurba.core.enums import VisibilityType
+from docurba.core.models import Collectivite, Commune, Event, EventType, Procedure
 
 
 class BaseCollectiviteSerializer(serializers.ModelSerializer):
@@ -129,3 +130,45 @@ class EventTypeSerializer(serializers.ModelSerializer):
             "sudocuhName",  # TODO: remove  # noqa: FIX002
         ]
         read_only_fields = fields
+
+
+class EventListSerializer(serializers.ModelSerializer):
+    dateEvenement = serializers.DateField(source="date_evenement")
+    fromSudocuh = serializers.IntegerField(source="from_sudocuh", required=False)
+    isValid = serializers.BooleanField(source="is_valid", read_only=True)
+    visibility = serializers.ChoiceField(choices=VisibilityType)
+    procedureId = serializers.PrimaryKeyRelatedField(source="procedure", read_only=True)
+
+    class Meta:
+        model = Event
+        read_only_fields = ["id", "isValid", "fromSudocuh"]
+        fields = [
+            *read_only_fields,
+            "procedureId",
+            "type",
+            "dateEvenement",
+            "visibility",
+        ]
+
+
+class EventAttachementSerializer(serializers.Serializer):
+    id = serializers.CharField(required=True)
+    name = serializers.CharField(required=True)
+    type = serializers.ChoiceField(required=False, choices=["file", "link"])
+
+
+class EventDetailSerializer(EventListSerializer):
+    attachements = EventAttachementSerializer(many=True, required=False, default=list)
+
+    class Meta(EventListSerializer.Meta):
+        fields = [
+            *EventListSerializer.Meta.fields,
+            "description",
+            "attachements",  # TODO: Use specific endpoint for attachements # noqa: FIX002
+        ]
+
+
+class EventCreateSerializer(EventDetailSerializer):
+    procedureId = serializers.PrimaryKeyRelatedField(
+        queryset=Procedure.objects.all(), source="procedure"
+    )

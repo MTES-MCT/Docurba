@@ -344,5 +344,5 @@ class EventFactory(factory.django.DjangoModelFactory):
 
     class Params:
         archived = factory.Trait(
-            archived_by=factory.SubFactory(ProfileFactory), archived_at=timezone.now()
+            archived_at=timezone.now(), archived_by=factory.SubFactory(ProfileFactory)
         )
