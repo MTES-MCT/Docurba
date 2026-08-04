@@ -263,13 +263,30 @@ export default {
       .select('*')
       .in('ref', this.$options.filters.allHeadRefs(this.gitRef, this.project))
 
-    const { data: histories } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
-      params: {
-        paths: sections
-          .filter(s => !s.ghost)
-          .map(s => s.type === 'file' ? s.path : (s.path + '/intro.md'))
-      }
-    })
+    const historiesPromises = []
+    const selfPaths = sections
+      .filter(s => !s.ghost)
+      .map(s => s.type === 'file' ? s.path : (s.path + '/intro.md'))
+    const headPaths = sections
+      .filter(s => s.ghost)
+      .map(s => s.type === 'file' ? s.path : (s.path + '/intro.md'))
+
+    if (selfPaths.length) {
+      historiesPromises.push(axios.get(`/api/trames/tree/${this.gitRef}/history`, {
+        params: {
+          paths: selfPaths
+        }
+      }))
+    }
+    if (headPaths.length) {
+      historiesPromises.push(axios.get(`/api/trames/tree/${this.headRef}/history`, {
+        params: {
+          paths: headPaths
+        }
+      }))
+    }
+
+    const histories = (await Promise.all(historiesPromises)).flatMap(({ data }) => data)
 
     // This code should prevent using multiple value when parsing.
     const groupedSupSections = groupBy(supSections, s => s.path)
