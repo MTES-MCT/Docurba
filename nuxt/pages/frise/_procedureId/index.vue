@@ -493,6 +493,7 @@ export default
       const { data: events, error: errorEvents } = await this.$supabase.from('doc_frise_events')
         .select('*, profiles!doc_frise_events_profile_id_fkey(*)')
         .eq('procedure_id', this.$route.params.procedureId)
+        .is('archived_at', null)
         .order('date_iso', { ascending: false })
         .order('created_at', { ascending: false })
 
