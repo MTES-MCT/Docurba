@@ -434,22 +434,24 @@ export default {
     }
   },
   watch: {
+    editable () {
+      this.fetchChildrenHistoriesIfNeeded()
+    },
     editEnabled () {
       this.$emit('editing', this.section.path, this.editEnabled)
     },
     isOpen () {
-      if (this.isOpen) {
-        this.$analytics({
-          category: 'pac',
-          name: 'open section',
-          value: this.section.name,
-          data: this.section
-        })
-
-        if (!this.section.ghost && this.editable && this.section.children[0] && !this.section.children[0].lastEdit?.date) {
-          this.fetchChildrenHistories()
-        }
+      if (!this.isOpen) {
+        return
       }
+
+      this.$analytics({
+        category: 'pac',
+        name: 'open section',
+        value: this.section.name,
+        data: this.section
+      })
+      this.fetchChildrenHistoriesIfNeeded()
     },
     isSelected () {
       this.$analytics({
@@ -488,23 +490,20 @@ export default {
     async fetchSectionContent () {
       const path = `${this.section.path}${this.section.type === 'dir' ? '/intro.md' : ''}`
 
-      const { data: sectionContent } = await axios({
-        method: 'get',
-        url: '/api/trames/file',
-        params: {
-          path,
-          ref: this.section.ghost ? this.headRef : this.gitRef
-        }
-      })
-
-      // console.log(sectionContent)
       try {
+        const { data: sectionContent } = await axios({
+          method: 'get',
+          url: '/api/trames/file',
+          params: {
+            path,
+            ref: this.section.ghost ? this.headRef : this.gitRef
+          }
+        })
         this.sectionText = sectionContent.replace(/---([\s\S]*)---/, '')
-        // this.sectionContent.body = this.$md.compile(this.sectionText)
         this.sectionMarkdown = this.$md.parse(this.sectionText)
       } catch (err) {
         // eslint-disable-next-line no-console
-        console.log(err, sectionContent)
+        console.log(err)
       }
     },
     async fetchChildrenHistories () {
@@ -561,6 +560,17 @@ export default {
           }
         }
       })
+    },
+    fetchChildrenHistoriesIfNeeded () {
+      if (
+        this.editable &&
+        this.isOpen &&
+        !this.section.ghost &&
+        this.section.children[0] &&
+        !this.section.children[0].lastEdit
+      ) {
+        this.fetchChildrenHistories()
+      }
     },
     async fetchDataAttachments () {
       const { data } = await this.$supabase.from('pac_sections_data').select('*').match({
