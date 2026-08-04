@@ -45,7 +45,7 @@ export default {
     if (errorProcedure) { throw errorProcedure }
     this.procedure = procedure[0]
 
-    const { data: event, error: errorEvent } = await this.$supabase.from('doc_frise_events').select('*').eq('id', this.$route.params.eventId)
+    const { data: event, error: errorEvent } = await this.$supabase.from('doc_frise_events').select('*').eq('id', this.$route.params.eventId).is('archived_at', null)
     if (errorEvent) { throw errorEvent }
     this.event = event[0]
     console.log('this.event: ', event)
