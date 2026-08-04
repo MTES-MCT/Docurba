@@ -508,19 +508,35 @@ export default {
       }
     },
     async fetchChildrenHistories () {
-      const paths = this.section.children
+      const selfPaths = this.section.children
         .filter(child => !child.ghost)
         .map(child => child.type === 'file' ? child.path : (child.path + '/intro.md'))
+      const headPaths = this.section.children
+        .filter(child => child.ghost)
+        .map(child => child.type === 'file' ? child.path : (child.path + '/intro.md'))
 
-      if (!paths.length) {
+      if (!selfPaths.length && !headPaths.length) {
         return
       }
 
-      const { data: histories } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
-        params: {
-          paths
-        }
-      })
+      const historiesPromises = []
+
+      if (selfPaths.length) {
+        historiesPromises.push(axios.get(`/api/trames/tree/${this.gitRef}/history`, {
+          params: {
+            paths: selfPaths
+          }
+        }))
+      }
+      if (headPaths.length) {
+        historiesPromises.push(axios.get(`/api/trames/tree/${this.headRef}/history`, {
+          params: {
+            paths: headPaths
+          }
+        }))
+      }
+
+      const histories = (await Promise.all(historiesPromises)).flatMap(({ data }) => data)
       const { data: profiles } = await this.$supabase
         .from('profiles')
         .select('*')
