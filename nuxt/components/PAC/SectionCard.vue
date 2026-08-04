@@ -720,9 +720,27 @@ export default {
         this.section.introSha = this.section.sha
       }
     },
-    sectionAdded (newSection) {
+    async sectionAdded (newSection) {
       // This could probably go into parent with an event. But it's not a big issue to have it here.
       // A Section card could also use a computed based on children length to determine if it's a dir or a file and adapt its path accordingly.
+      const { data: history } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
+        params: {
+          paths: [newSection.path]
+        }
+      })
+
+      if (history[0]) {
+        const { data: profiles } = await this.$supabase
+          .from('profiles')
+          .select('*')
+          .ilike('email', history[0].commit.author?.email?.toLowerCase())
+
+        newSection.lastEdit = {
+          ...history[0].commit,
+          author: profiles[0]
+        }
+      }
+
       // eslint-disable-next-line vue/no-mutating-props
       this.section.children.push(newSection)
       this.$emit('changeOrder', newSection, 0)
