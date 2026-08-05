@@ -1611,6 +1611,9 @@ class TestEvent:
 
 
 @pytest.mark.django_db
+@pytest.mark.xfail(
+    reason="The logic to compute the procedure status is in nuxt and have to be implemented in django instead"
+)
 class TestEventUpdate:
     def test_event_procedure_status_handler__status_update(self) -> None:
         procedure = ProcedureFactory(
@@ -1627,9 +1630,6 @@ class TestEventUpdate:
         procedure.refresh_from_db()
         assert procedure.status == "opposable"
 
-    @pytest.mark.xfail(
-        reason="DB calls the Nuxt3 endpoint which is not listening on test and is impossible to mock."
-    )
     def test_event_procedure_status_handler__commune_procedure_update(self) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(

@@ -189,7 +189,6 @@ PGHISTORY_ADMIN_MODEL = "history.Change"
 ##########################################
 
 UPSTREAM_NUXT = env.str("UPSTREAM_NUXT", default="http://localhost:3000")
-NUXT3_API_URL = env.str("NUXT3_API_URL", default="http://localhost:4000")
 CREATE_UNMANAGED_TABLES = False
 REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
