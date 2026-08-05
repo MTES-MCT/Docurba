@@ -9,6 +9,8 @@ export default ({ $djangoApi }, inject) => {
       })).map((eventType, index) => ({
         ...eventType,
         order: index + 1,
+        scopeList: parseEventTypeScope(eventType.scopeList),
+        scopeSugg: parseEventTypeScope(eventType.scopeSugg),
         structurant: eventType.isStructuring
       }))
     }
@@ -91,7 +93,11 @@ export function getProcedureEventsScope (procedure) {
   switch (procedure.type) {
     case 'Elaboration':
     case 'Révision':
-      return procedure.current_perimetre.length > 1 && procedure.doc_type !== 'CC' ? 'ppi' : 'pp'
+      return `pp${
+        procedure.current_perimetre.length > 1 && procedure.doc_type !== 'CC' ? 'i' : ''
+      }${
+        procedure.started_before_huwart_law ? '' : 'lh'
+      }`
     case 'Mise à jour':
       return 'mj'
     case 'Mise en compatibilité':
@@ -114,4 +120,12 @@ export function getStopEvent (event) {
     'Délibération du conseil communautaire qui arrête le projet de PLU',
     'Délibération qui arrête le projet de SCoT'
   ].includes(event.type)
+}
+
+function parseEventTypeScope (scope) {
+  return [
+    ...scope,
+    ...(!scope.includes('pplh') && scope.includes('pp') ? ['pplh'] : []),
+    ...(!scope.includes('ppilh') && scope.includes('ppi') ? ['ppilh'] : [])
+  ]
 }
