@@ -26,5 +26,3 @@ DATABASES = {
         },
     },
 }
-
-NUXT3_API_URL = "http://fake-nuxt3.com"

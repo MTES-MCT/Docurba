@@ -153,7 +153,7 @@ jobs:
         NODE_OPTIONS="--max-old-space-size=4096"
 
     - name: Déploiement de l'application
-      run: scalingo --app "${{ needs.prepare.outputs.NUXT_3_REVIEW_APP_NAME }}" integration-link-manual-deploy main
+      run: scalingo --app "${{ needs.prepare.outputs.NUXT_3_REVIEW_APP_NAME }}" integration-link-manual-deploy ${{ env.NUXT3_BRANCH }}
 
 
   create_nuxt2:
@@ -310,7 +310,6 @@ jobs:
         DOCURBA_ENVIRONMENT="REVIEW-APP" \
         UPSTREAM_NUXT="${{ needs.prepare.outputs.NUXT_2_URL }}" \
         DATABASE_URL="${{ steps.db.outputs.POSTGRES_URL }}" \
-        NUXT3_API_URL="${{ needs.prepare.outputs.NUXT_3_URL }}" \
         SECRET_KEY="${django_secret_key}"
 
     - name: Déploiement de l'application
@@ -362,4 +361,4 @@ jobs:
         # La connexion PG doit être libérée avant de pouvoir passer les migrations
         # mais on ne sait jamais combien de temps Supabase met à le faire.
         sleep 5m
-        scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" run 'django-admin update_nuxt3_trigger && django-admin migrate'
+        scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" run 'django-admin migrate'
