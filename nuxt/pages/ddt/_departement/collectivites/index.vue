@@ -511,7 +511,9 @@ export default {
     const enrichedGroups = this.parseGroupements(groupements, procedures)
 
     this.referentiel = [...enrichedGroups, ...enrichedCommunes]
-    await this.fetchValidation()
+    if (this.hasValidationEnabled) {
+      await this.fetchValidation()
+    }
   },
   methods: {
     formatDate (date) {
