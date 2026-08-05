@@ -4,13 +4,11 @@ from django.conf import settings
 from django.db import migrations
 
 DISABLE_TRIGGER = """
-    ALTER TABLE doc_frise_events
-        DISABLE TRIGGER trigger_event_procedure_status_handler;
+    ALTER TABLE doc_frise_events DISABLE TRIGGER USER;
 """
 
 ENABLE_TRIGGER = """
-    ALTER TABLE doc_frise_events
-        ENABLE TRIGGER trigger_event_procedure_status_handler;
+    ALTER TABLE doc_frise_events DISABLE TRIGGER USER;
 """
 
 
