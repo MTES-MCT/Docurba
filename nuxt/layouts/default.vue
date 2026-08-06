@@ -2,6 +2,7 @@
   <v-app>
     <LayoutsAppBar :flat="$route.name === 'index'" />
     <v-main>
+      <LayoutsHolidayBanner />
       <LayoutsLoginBanner />
       <nuxt />
     </v-main>
