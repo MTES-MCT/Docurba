@@ -9,8 +9,6 @@ export default ({ $djangoApi }, inject) => {
       })).map((eventType, index) => ({
         ...eventType,
         order: index + 1,
-        scopeList: parseEventTypeScope(eventType.scopeList),
-        scopeSugg: parseEventTypeScope(eventType.scopeSugg),
         structurant: eventType.isStructuring
       }))
     }
@@ -120,12 +118,4 @@ export function getStopEvent (event) {
     'Délibération du conseil communautaire qui arrête le projet de PLU',
     'Délibération qui arrête le projet de SCoT'
   ].includes(event.type)
-}
-
-function parseEventTypeScope (scope) {
-  return [
-    ...scope,
-    ...(!scope.includes('pplh') && scope.includes('pp') ? ['pplh'] : []),
-    ...(!scope.includes('ppilh') && scope.includes('ppi') ? ['ppilh'] : [])
-  ]
 }
