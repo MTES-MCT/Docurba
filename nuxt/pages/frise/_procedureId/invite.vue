@@ -86,7 +86,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import _ from 'lodash'
 import { mdiBookmark, mdiPaperclip, mdiChevronLeft, mdiDotsVertical } from '@mdi/js'
 
@@ -157,12 +156,10 @@ export default
       const perimetre = this.procedure.procedures_perimetres.filter(c => c.type === 'COM')
       const collectiviteId = perimetre.length === 1 ? perimetre[0].code : this.procedure.collectivite_porteuse_id
 
-      // TODO :: Migrate this once `intercommunaliteCode`, `membres` and `groupements` are available in `/api-internes/collectivites/`
-      const { data: collectivite } = await axios({
-        url: `/api/geo/collectivites/${collectiviteId}`
+      this.collectivite = await this.$collectiviteApi.get(collectiviteId, {
+        avec_groupements: true,
+        avec_membres: true
       })
-
-      this.collectivite = collectivite
 
       this.collaborators = await this.$sharing.getSuggestedCollaborators(this.collectivite)
       this.existingCollaboratorstoInvite = this.collaborators.filter((collab) => {
