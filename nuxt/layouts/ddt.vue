@@ -65,6 +65,7 @@
       </v-tabs>
     </LayoutsAppBar>
     <v-main class="beige">
+      <LayoutsHolidayBanner />
       <v-container v-if="isLoading" class="fill-height">
         <v-row justify="center" align="center">
           <v-col cols="12">
