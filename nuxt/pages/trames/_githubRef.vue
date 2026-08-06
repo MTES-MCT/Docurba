@@ -140,6 +140,7 @@ import axios from 'axios'
 import { groupBy } from 'lodash'
 import { mdiDotsVertical, mdiCheck, mdiClose } from '@mdi/js'
 import orderSections from '@/mixins/orderSections.js'
+import { getUniquePropValues, keyBy } from '@/plugins/utils'
 
 export default {
   mixins: [orderSections],
@@ -262,13 +263,30 @@ export default {
       .select('*')
       .in('ref', this.$options.filters.allHeadRefs(this.gitRef, this.project))
 
-    const { data: histories } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
-      params: {
-        paths: sections
-          .filter(s => !s.ghost)
-          .map(s => s.type === 'file' ? s.path : (s.path + '/intro.md'))
-      }
-    })
+    const historiesPromises = []
+    const selfPaths = sections
+      .filter(s => !s.ghost)
+      .map(s => s.type === 'file' ? s.path : (s.path + '/intro.md'))
+    const headPaths = sections
+      .filter(s => s.ghost)
+      .map(s => s.type === 'file' ? s.path : (s.path + '/intro.md'))
+
+    if (selfPaths.length) {
+      historiesPromises.push(axios.get(`/api/trames/tree/${this.gitRef}/history`, {
+        params: {
+          paths: selfPaths
+        }
+      }))
+    }
+    if (headPaths.length) {
+      historiesPromises.push(axios.get(`/api/trames/tree/${this.headRef}/history`, {
+        params: {
+          paths: headPaths
+        }
+      }))
+    }
+
+    const histories = (await Promise.all(historiesPromises)).flatMap(({ data }) => data)
 
     // This code should prevent using multiple value when parsing.
     const groupedSupSections = groupBy(supSections, s => s.path)
@@ -312,10 +330,29 @@ export default {
       }, section)
     }
 
+    const { data: profiles } = await this.$supabase
+      .from('profiles')
+      .select('*')
+      .ilikeAnyOf('email', getUniquePropValues(histories, h => h.commit?.author?.email))
+    const profilesByEmail = keyBy(profiles, profile => profile.email?.toLowerCase())
+
     this.sections = sections.map((section) => {
       const s = parseSection(section, supSections)
-      s.editDate = histories.find(h => h.path.replace('/intro.md', '') === s.path)?.commit?.date
-      return s
+      const commit = histories.find(h => h.path.replace('/intro.md', '') === s.path)?.commit
+
+      if (!commit) {
+        return s
+      }
+
+      const email = commit?.author?.email?.toLowerCase()
+
+      return {
+        ...s,
+        lastEdit: {
+          ...commit,
+          author: email && profilesByEmail[email]
+        }
+      }
     })
 
     this.loading = false
