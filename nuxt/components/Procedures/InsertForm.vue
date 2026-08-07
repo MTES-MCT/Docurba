@@ -442,7 +442,7 @@ export default {
           is_sectoriel: null,
           is_scot: this.typeDu === 'SCOT',
           is_pluih: this.typeDu === 'PLUiH',
-          is_pdu: null,
+          is_pdu: false,
           current_perimetre: oldFomattedPerimetre,
           doc_type: this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType,
           departements,
