@@ -1,3 +1,5 @@
+import { uniqBy, omit } from 'lodash'
+
 export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inject) => {
   const enquete = {
     VALIDATED_SINCE: '2025-06-01',
@@ -43,13 +45,18 @@ export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inj
     },
     async getValidatedCollectivitesForDepartement (departement) {
       const { data, error } = await $supabase
-        .rpc('validated_collectivites', {
-          since: this.VALIDATED_SINCE,
-          departement
-        })
+        .from('procedures_validations')
+        .select('collectivite_code, created_at, profile_id, profiles!inner (email)')
+        .eq('departement', departement)
+        .gt('created_at', this.VALIDATED_SINCE)
+        .order('collectivite_code')
+        .order('created_at')
+
+      let validations = uniqBy(data, 'collectivite_code')
+      validations = validations.map(i => ({ ...omit(i, ['profiles']), email: i.profiles.email }))
       return {
         success: !error,
-        data,
+        data: validations,
         error
       }
     },

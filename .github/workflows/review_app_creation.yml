@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NUXT3_REPO_HTTPS: https://github.com/betagouv/docurba-nuxt3/
-      NUXT3_BRANCH: main
+      NUXT3_BRANCH: romaint/2182-remove-sql-logic # TODO: replace by main
 
     steps:
     - name: 🛠️ Installation de la CLI Scalingo
@@ -153,7 +153,7 @@ jobs:
         NODE_OPTIONS="--max-old-space-size=4096"
 
     - name: Déploiement de l'application
-      run: scalingo --app "${{ needs.prepare.outputs.NUXT_3_REVIEW_APP_NAME }}" integration-link-manual-deploy main
+      run: scalingo --app "${{ needs.prepare.outputs.NUXT_3_REVIEW_APP_NAME }}" integration-link-manual-deploy ${{ env.NUXT3_BRANCH }}
 
 
   create_nuxt2:
@@ -362,4 +362,4 @@ jobs:
         # La connexion PG doit être libérée avant de pouvoir passer les migrations
         # mais on ne sait jamais combien de temps Supabase met à le faire.
         sleep 5m
-        scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" run 'django-admin update_nuxt3_trigger && django-admin migrate'
+        scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" run 'django-admin migrate'

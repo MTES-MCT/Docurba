@@ -113,7 +113,7 @@
 import axios from 'axios'
 import { mdiTrashCan } from '@mdi/js'
 import FormInput from '@/mixins/FormInput.js'
-import { getLaunchEvent } from '@/plugins/event'
+import { getLaunchEvent, getEventImpact } from '@/plugins/event'
 
 export default {
   mixins: [FormInput],
@@ -202,10 +202,13 @@ export default {
 
         const upsertEvent = { ...this.event, profile_id: this.$user.id }
         if (this.eventId) {
-          await this.$supabase.from('doc_frise_events').update(upsertEvent).eq('id', this.eventId)
+          const payload = { ...upsertEvent, updated_at: new Date().toISOString() }
+          await this.$supabase.from('doc_frise_events').update(payload).eq('id', this.eventId)
+          await this.eventProcedureStatusHandler()
           await this.saveAttachements(this.eventId)
         } else {
           const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(upsertEvent).select()
+          await this.eventProcedureStatusHandler()
           await this.saveAttachements(savedEvents[0].id)
         }
         if (this.overrideHuwartField) {
@@ -239,7 +242,33 @@ export default {
     async deleteEvent () {
       this.saveAttachements(this.eventId)
       await this.$supabase.from('doc_frise_events').delete().eq('id', this.eventId)
+      await this.eventProcedureStatusHandler()
       this.$router.push({ name: 'frise-procedureId', params: { procedureId: this.procedure.id }, query: this.$route.query })
+    },
+    async computeProcedureStatus (procedure) {
+      const { data: events } = await this.$supabase.from('doc_frise_events')
+        .select('id, type')
+        .eq('procedure_id', procedure.id)
+        .or('is_valid.eq.true, type.eq.Abandon')
+        .order('date_iso', { ascending: false })
+        .order('type')
+
+      for (const event of events) {
+        const impact = getEventImpact(event.type, procedure.doc_type)
+        if (impact) {
+          return impact
+        }
+      }
+
+      return 'en cours'
+    },
+    async setProcedureStatus () {
+      const newStatus = await this.computeProcedureStatus(this.procedure)
+      await this.$supabase.from('procedures').update({ status: newStatus }).eq('id', this.procedure.id)
+    },
+    async eventProcedureStatusHandler () {
+      await this.setProcedureStatus()
+      await axios(`${process.env.NUXT3_API_URL}/api/urba/procedures/${this.procedure.id}/update`)
     }
   }
 }
