@@ -445,19 +445,28 @@ export default {
       this.$nuxt.context.redirect(302, '/')
     }
 
-    const collectivites = await this.$nuxt3api(`/api/geo/collectivites?departementCode=${this.$route.params.departement}`)
-    const communes = []
-    const groupements = []
-
-    collectivites.forEach((c) => {
-      if (c.type === 'COM') {
-        communes.push(c)
-      }
-
-      if (c.code.length > 5) {
-        groupements.push(c)
-      }
+    const promCommunes = this.$djangoApi.get('/communes/', {
+      departement: this.$route.params.departement
     })
+    const promGroupements = this.$djangoApi.get('/collectivites/', {
+      departement: this.$route.params.departement,
+    })
+
+    const [communes, groupements] = await Promise.all([promCommunes, promGroupements])
+
+    // const collectivites = await this.$nuxt3api(`/api/geo/collectivites?departementCode=${this.$route.params.departement}`)
+    // const communes = []
+    // const groupements = []
+
+    // collectivites.forEach((c) => {
+    //   if (c.type === 'COM') {
+    //     communes.push(c)
+    //   }
+
+    //   if (c.code.length > 5) {
+    //     groupements.push(c)
+    //   }
+    // })
     this.groupements = groupements
 
     const { data: surveyProcedures } = await this.$zanSurvey.getProcedures(this.$route.params.departement)

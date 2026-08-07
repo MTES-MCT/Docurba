@@ -31,7 +31,40 @@ export default {
     }
   },
   async mounted () {
-    const collectivites = await this.$nuxt3api(`/api/geo/search/collectivites?code=${this.$route.params.collectiviteId}&populate=true`)
+    // const collectivites = await this.$nuxt3api(`/api/geo/search/collectivites?code= ${this.$route.params.collectiviteId}&populate=true`)
+
+        // {
+        // "type": "CA",
+        // "intitule": "Haut - Bugey Agglomération",
+        // "siren": "200042935",
+        // "code": "200042935",
+        // "regionCode": "84",
+        // "departementCode": "01",
+        // "competencePLU": true,
+        // "competenceSCOT": true,
+        // "membres": [
+        //               {
+        //         "type": "COM",
+        //         "intitule": "Bellignat",
+        //         "siren": "210100319",
+        //         "code": "01031"
+        //     },
+        // ],
+        // "groupements": [
+        //     {
+        //         "type": "SMF",
+        //         "intitule": "SIVU de la Combe de Vaux",
+        //         "siren": "200052041",
+        //         "code": "200052041"
+        //     },
+        //   ]
+        // TODO: check if it's flat or one-level only.
+
+    const collectivites = await this.$djangoApi.get('/api-internes/collectivites/', {
+      code: this.$route.params.collectiviteId,
+      avec_membres:true,
+      avec_groupements: true,
+    })
     this.collectivite = collectivites[0]
 
     if (!this.$user.canCreateProcedure({ collectivite: this.collectivite })) {
