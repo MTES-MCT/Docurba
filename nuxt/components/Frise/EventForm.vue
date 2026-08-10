@@ -111,10 +111,9 @@
 
 <script>
 import axios from 'axios'
-import { groupBy, chunk, orderBy } from 'lodash'
 import { mdiTrashCan } from '@mdi/js'
 import FormInput from '@/mixins/FormInput.js'
-import { getLaunchEvent, getEventImpact } from '@/plugins/event'
+import { getLaunchEvent } from '@/plugins/event'
 
 export default {
   mixins: [FormInput],
@@ -205,11 +204,11 @@ export default {
         if (this.eventId) {
           const payload = { ...upsertEvent, updated_at: new Date().toISOString() }
           await this.$supabase.from('doc_frise_events').update(payload).eq('id', this.eventId)
-          await this.eventProcedureStatusHandler()
+          await this.updateProcedureStatus()
           await this.saveAttachements(this.eventId)
         } else {
           const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(upsertEvent).select()
-          await this.eventProcedureStatusHandler()
+          await this.updateProcedureStatus()
           await this.saveAttachements(savedEvents[0].id)
         }
         if (this.overrideHuwartField) {
@@ -243,172 +242,12 @@ export default {
     async deleteEvent () {
       this.saveAttachements(this.eventId)
       await this.$supabase.from('doc_frise_events').delete().eq('id', this.eventId)
-      await this.eventProcedureStatusHandler()
+      await this.updateProcedureStatus()
       this.$router.push({ name: 'frise-procedureId', params: { procedureId: this.procedure.id }, query: this.$route.query })
     },
-    async computeProcedureStatus (procedure) {
-      const { data: events } = await this.$supabase.from('doc_frise_events')
-        .select('id, type')
-        .eq('procedure_id', procedure.id)
-        .or('is_valid.eq.true, type.eq.Abandon')
-        .order('date_iso', { ascending: false })
-        .order('type')
-
-      for (const event of events) {
-        const impact = getEventImpact(event.type, procedure.doc_type)
-        if (impact) {
-          return impact
-        }
-      }
-
-      return 'en cours'
-    },
-    async setProcedureStatus () {
-      const newStatus = await this.computeProcedureStatus(this.procedure)
-      await this.$supabase.from('procedures').update({ status: newStatus }).eq('id', this.procedure.id)
-    },
-    async eventProcedureStatusHandler () {
-      await this.setProcedureStatus()
-      await this.nuxt3UpdateStatus(this.procedure.id)
-    },
-    async nuxt3FetchCommunesProcedures (inseeCodes) {
-      const { data: procedures } = await this.$supabase
-        .from('procedures')
-        .select('*, procedures_perimetres!inner ()')
-        .eq('is_principale', true)
-        .neq('doc_type', 'SD')
-        .in('status', ['opposable', 'en cours'])
-        .in('procedures_perimetres.collectivite_code', inseeCodes)
-        .throwOnError()
-
-      const proceduresIds = procedures.map(p => p.id)
-
-      const { data: perimetres } = await this.$supabase
-        .from('procedures_perimetres')
-        .select()
-        .in('procedure_id', proceduresIds)
-        .throwOnError()
-
-      const perimetresByProcedureId = groupBy(perimetres, 'procedure_id')
-
-      const { data: events } = await this.$supabase
-        .from('doc_frise_events')
-        .select()
-        .in('procedure_id', proceduresIds)
-        .throwOnError()
-
-      const eventsByProcedureId = groupBy(
-        orderBy(events, e => this.$dayjs(e.date_iso), 'desc'),
-        'procedure_id'
-      )
-
-      procedures.forEach((p) => {
-        p.events = eventsByProcedureId[p.id] || [] // left join doc_frise_events e on e.procedure_id = procedure.id
-        p.procedures_perimetres = perimetresByProcedureId[p.id] || [] // left join procedures_perimetres pp on pp.procedure_id = procedure.id
-      })
-
-      return procedures
-    },
-    sortByApprobationEvent (procedures) {
-      return procedures.sort((a, b) => {
-        const dateA = a.approbation ? +this.$dayjs(a.approbation.date_iso) : 0
-        const dateB = b.approbation ? +this.$dayjs(b.approbation.date_iso) : 0
-
-        return dateB - dateA
-      })
-    },
-    async nuxt3UpdatePerimetreStatus (communes, procedures) {
-      console.log('UPDATE - opposable=false :')
-      // Mark all procedures for communes as not opposable
-      const communesByType = groupBy(communes, 'type')
-      for (const [collectivityType, communesOfType] of Object.entries(communesByType)) {
-        console.log(`${collectivityType}: ${JSON.stringify(communesOfType.map(c => c.code))}`)
-        await this.$supabase
-          .from('procedures_perimetres')
-          .update({ opposable: false })
-          .eq('opposable', true)
-          .eq('collectivite_type', collectivityType)
-          .in(
-            'collectivite_code',
-            communesOfType.map(c => c.code)
-          )
-          .throwOnError()
-      }
-
-      // Recompute opposability
-      const updatesToPerform = []
-      for (const commune of communes) {
-        const communeProcedures = procedures.filter(p =>
-          p.procedures_perimetres.some(c =>
-            c.collectivite_code === commune.code && c.collectivite_type === commune.type
-          )
-        )
-
-        const plan = this.sortByApprobationEvent(communeProcedures.filter(p => p.doc_type !== 'SCOT' && p.status === 'opposable'))[0]
-        const scot = this.sortByApprobationEvent(communeProcedures.filter(p => p.doc_type === 'SCOT' && p.status === 'opposable'))[0]
-
-        const proceduresOpposableForThisCommune = []
-        if (plan) {
-          proceduresOpposableForThisCommune.push(plan.id)
-        }
-        if (scot) {
-          proceduresOpposableForThisCommune.push(scot.id)
-        }
-
-        if (proceduresOpposableForThisCommune.length) {
-          updatesToPerform.push({
-            collectivite_code: commune.code,
-            collectivite_type: commune.type,
-            procedure_ids: proceduresOpposableForThisCommune
-          })
-        }
-      }
-
-      // Update opposability, 30 at a time
-      console.log('UPDATE - opposable=true :')
-      console.log(JSON.stringify(updatesToPerform))
-      for (const [, chunkedUpdates] of chunk(updatesToPerform, 30).entries()) {
-        const promisedUpdates = chunkedUpdates.map(
-          // eslint-disable-next-line
-          ({ collectivite_code, collectivite_type, procedure_ids }) => {
-            return this.$supabase
-              .from('procedures_perimetres')
-              .update({ opposable: true })
-              .match({ collectivite_code, collectivite_type })
-              .in('procedure_id', procedure_ids)
-              .throwOnError()
-          }
-        )
-        await Promise.all(promisedUpdates)
-      }
-    },
-    async nuxt3UpdateStatus (procedureId) {
-      const APPROBATION_EVENT_TYPES = ["Délibération d'approbation", "Arrêté d'abrogation", "Arrêté du Maire ou du Préfet ou de l'EPCI", 'Approbation du préfet', "Délibération d'approbation du conseil municipal ou communautaire"]
-
-      const { data: procedurePerim } = await this.$supabase
-        .from('procedures_perimetres')
-        .select('*')
-        .eq('procedure_id', procedureId)
-        .throwOnError()
-
-      if (!procedurePerim.length) {
-        return
-      }
-
-      let procedures = await this.nuxt3FetchCommunesProcedures(
-        procedurePerim.map(c => c.collectivite_code)
-      )
-      procedures = procedures.filter(p => !p.archived) // why at this step and not in fetchCommunesProcedures ?
-
-      procedures = procedures.map(p => ({
-        ...p,
-        approbation: p.events.find(e => APPROBATION_EVENT_TYPES.includes(e.type)),
-        communesPerimetres: p.procedures_perimetres.filter(c => c.collectivite_type === 'COM')
-      }))
-
-      const communes = procedurePerim.map(p => ({ code: p.collectivite_code, type: p.collectivite_type }))
-
-      await this.nuxt3UpdatePerimetreStatus(communes, procedures)
+    async updateProcedureStatus () {
+      await this.$procedure.updateStatus(this.procedure)
+      await this.$procedure.updateOpposability(this.procedure.id)
     }
   }
 }
