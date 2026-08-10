@@ -102,6 +102,17 @@ class TypeCollectivite(models.TextChoices):
         return {member.value: member for member in cls if member in enums}
 
     @classmethod
+    def epci_fiscalite_propre(cls: models.TextChoices) -> dict:
+        enums = [
+            cls.CC,
+            cls.CA,
+            cls.CU,
+            cls.MET69,
+            cls.METRO,
+        ]
+        return {member.value: member for member in cls if member in enums}
+
+    @classmethod
     def communes(cls: models.TextChoices) -> dict:
         enums = [
             cls.COM,

@@ -71,6 +71,7 @@ class CollectiviteFilter(DepartementRegionFilterSet):
         method="_filter_competences",
         choices=COMPETENCES_CHOICES,
     )
+    trouvable = filters.BooleanFilter(label="trouvable", method="_searchable")
 
     class Meta:
         model = Collectivite
@@ -101,6 +102,21 @@ class CollectiviteFilter(DepartementRegionFilterSet):
             return queryset
         commune_types = TypeCollectivite.communes()
         return queryset.exclude(type__in=commune_types)
+
+    def _searchable(self, queryset: QuerySet, name: str, value: str) -> QuerySet:
+        # NOTE(cms): this logic is borrowed from the convertCSVInputsToReferentiels.js script,
+        # in the docurba-geo repository,
+        # which was used to create the JSON files overused everywhere in the project.
+        # https://github.com/MTES-MCT/docurba-geo/blob/main/convertCSVInputsToReferentiels.js#L248-L263
+        # I think it may be called `Collectivite.can_create_procedure` but I'm not sure yet
+        # if it's the right name. That's why it's here for the moment, and not in the model.
+        if not value:
+            return queryset
+        return queryset.filter(
+            Q(competence_plan=True)
+            | Q(competence_schema=True)
+            | Q(type__in=["COM", *TypeCollectivite.epci_fiscalite_propre()])
+        )
 
 
 class CommuneFilter(DepartementRegionFilterSet):
