@@ -1,3 +1,5 @@
+import functools
+import random
 from urllib.parse import urlencode
 
 import pytest
@@ -139,6 +141,47 @@ class TestCollectivitesAPI:
 
         assert response.status_code == 200
         assert response.json()["results"] == snapshot()
+
+    @pytest.mark.parametrize(
+        ("factory_params"),
+        [
+            pytest.param(
+                {"type": TypeCollectivite.COM},
+                id="commune",
+            ),
+            pytest.param(
+                {
+                    "type": functools.partial(
+                        random.choice,
+                        seq=list(TypeCollectivite.epci_fiscalite_propre()),
+                    )
+                },
+                id="epci_fiscalite_propre",
+            ),
+            pytest.param(
+                {"type": TypeCollectivite.SIVOM, "competence_plan": True},
+                id="competence_plan",
+            ),
+            pytest.param(
+                {"type": TypeCollectivite.SIVOM, "competence_schema": True},
+                id="competence_schema",
+            ),
+        ],
+    )
+    def test_trouvable(self, factory_params: dict, api_client: APIClient) -> None:
+        collectivite = CollectiviteFactory(
+            **factory_params,
+        )
+        CollectiviteFactory(
+            competence_plan=False, competence_schema=False, type=TypeCollectivite.SIVOM
+        )
+        url = f"{reverse('internal_api:collectivites-list')}?{urlencode({'trouvable': 'true'})}"
+        with assertNumQueries(BASE_QUERIES_COUNT + 1):
+            response = api_client.get(url, format="json")
+
+        assert response.status_code == 200
+        assert len(response.json()["results"]) == 1
+        assert response.json()["results"][0]["siren"] == collectivite.siren
 
     @pytest.mark.parametrize(
         ("query_params"),
