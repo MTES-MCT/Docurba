@@ -501,7 +501,7 @@ export default
     },
     async syncProcedure () {
       this.syncLoading = true
-      await axios(`${process.env.NUXT3_API_URL}/api/urba/procedures/${this.$route.params.procedureId}/update`)
+      await this.$procedure.updateOpposability(this.$route.params.procedureId)
       this.syncLoading = false
     }
   }
