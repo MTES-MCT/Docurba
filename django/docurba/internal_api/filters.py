@@ -57,7 +57,7 @@ class CollectiviteFilter(DepartementRegionFilterSet):
     type = filters.MultipleChoiceFilter(field_name="type", choices=TypeCollectivite)
     codes_siren = NoValidationMultipleFilter(
         label="Codes SIREN",
-        field_name="code_insee_unique",
+        field_name="siren",
     )
     without_communes = filters.BooleanFilter(
         label="Sans les communes", method="_without_communes"
@@ -102,7 +102,7 @@ class CommuneFilter(DepartementRegionFilterSet):
     type = filters.MultipleChoiceFilter(
         field_name="type", choices=TypeCollectivite.communes()
     )
-    code = NoValidationMultipleFilter(field_name="code_insee_unique")
+    code = NoValidationMultipleFilter(field_name="code_insee")
 
     class Meta:
         model = Commune
