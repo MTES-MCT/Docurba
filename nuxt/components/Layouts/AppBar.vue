@@ -6,6 +6,7 @@
     class="app-bar"
     height="94px"
   >
+    <LayoutsEnvBanner />
     <div class="app-bar-title">
       <img src="@/assets/images/republique-francaise.svg" class="app-bar-title__logo">
       <img src="@/assets/images/republique-francaise-short.svg" class="app-bar-title__logo--short">
