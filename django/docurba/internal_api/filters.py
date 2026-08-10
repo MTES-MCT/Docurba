@@ -59,6 +59,10 @@ class CollectiviteFilter(DepartementRegionFilterSet):
         label="Codes SIREN",
         field_name="siren",
     )
+    codes_insee = NoValidationMultipleFilter(
+        label="Codes INSEE",
+        field_name="code_insee",
+    )
     without_communes = filters.BooleanFilter(
         label="Sans les communes", method="_without_communes"
     )
@@ -73,6 +77,7 @@ class CollectiviteFilter(DepartementRegionFilterSet):
         fields = (
             "type",
             "codes_siren",
+            "codes_insee",
             "competence",
             *DepartementRegionFilterSet.fields,
         )
