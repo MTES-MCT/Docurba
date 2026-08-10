@@ -105,6 +105,19 @@
     }),
   ])
 # ---
+# name: TestCollectivitesAPI.test_list_filters[codes_insee]
+  list([
+    dict({
+      'codeInsee': '30032',
+      'departementCode': '30',
+      'intercommunaliteCode': '',
+      'intitule': 'Beaucaire',
+      'regionCode': '76',
+      'siren': '',
+      'type': 'COM',
+    }),
+  ])
+# ---
 # name: TestCollectivitesAPI.test_list_filters[many_codes_siren]
   list([
     dict({

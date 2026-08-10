@@ -60,6 +60,11 @@ class TestCollectivitesAPI:
                 BASE_QUERIES_COUNT + 1,
                 id="many_codes_siren",
             ),
+            pytest.param(
+                {"codes_insee": ["30032"]},
+                BASE_QUERIES_COUNT + 1,
+                id="codes_insee",
+            ),
         ],
     )
     def test_list_filters(
