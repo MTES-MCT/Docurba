@@ -87,6 +87,7 @@ class TestCollectivitesAPI:
             departement__code_insee="30",
             nom="Groupement 3",
         )
+        CommuneFactory(for_snapshot=True)
 
         url = f"{reverse('internal_api:collectivites-list')}?{urlencode(query_params, doseq=True)}"
         with assertNumQueries(expected_num_queries):
