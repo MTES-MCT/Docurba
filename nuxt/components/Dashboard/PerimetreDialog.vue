@@ -77,9 +77,8 @@ export default {
   watch: {
     async dialog (newVal) {
       if (newVal) {
-        this.fullPerimetre = await this.$collectiviteApi.list({
-          codes_siren: this.perimetre.map(y => y.collectivite_code)
-        })
+        this.fullPerimetre = await this.$collectiviteApi
+          .listFromCodes(this.perimetre.map(y => y.collectivite_code))
       }
     }
   }
