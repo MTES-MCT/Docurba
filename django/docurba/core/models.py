@@ -384,11 +384,17 @@ class Procedure(models.Model):
     doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001 # TextField in DB.
     doc_type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
     type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
-    vaut_SCoT = models.BooleanField(db_column="is_scot", blank=True, null=True)  # noqa: N815
+    vaut_SCoT = models.BooleanField(  # noqa: N815
+        db_column="is_scot", blank=True, null=True, verbose_name="is_scot"
+    )
     # Programme Local de l'Habitat
-    vaut_PLH = models.BooleanField(db_column="is_pluih", blank=True, null=True)  # noqa: N815
+    vaut_PLH = models.BooleanField(  # noqa: N815
+        db_column="is_pluih", blank=True, null=True, verbose_name="is_pluih"
+    )
     # Plan De Mobilité (anciennement Plan de Déplacements Urbains)
-    vaut_PDM = models.BooleanField(db_column="is_pdu", blank=True, null=True)  # noqa: N815
+    vaut_PDM = models.BooleanField(  # noqa: N815
+        db_column="is_pdu", blank=True, null=True, verbose_name="is_pdu"
+    )
     obligation_PDU = models.BooleanField(  # noqa: N815
         db_column="mandatory_pdu", blank=True, null=True
     )
