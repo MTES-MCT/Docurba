@@ -968,6 +968,7 @@ class EventQuerySet(models.QuerySet):
         to_be_removed_fields = [
             "code",
             "from_sudocuh_procedure_id",
+            "actors",
         ]
         # Text, Array or JSON fields.
         heavy_fields = [
