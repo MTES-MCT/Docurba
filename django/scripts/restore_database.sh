@@ -73,6 +73,12 @@ if [[ ${BACKUPS_DELETE_URL_IN_DUMP_FILE} == "True" ]]; then
 fi
 
 echo "Début de la restauration."
+# Malgré le --clean passé au pg_dump, la base n'est pas bien nettoyée avant
+# d'être restaurée. Assurons-nous qu'elle est vide avant la restauration.
+psql \
+  --command 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;' \
+  --dbname ${database_restoration_url}
+
 # Comme décrit dans la documentation de Supabase.
 # J'ai supprimé l'option `--variable ON_ERROR_STOP=1` pour restaurer malgré des erreurs.
 # `session_replication_role` est déjà ajouté lors de la sauvegarde je ne souhaite
