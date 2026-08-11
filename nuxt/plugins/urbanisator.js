@@ -53,9 +53,7 @@ export default ({ $collectiviteApi, $supabase, $dayjs }, inject) => {
         collectiviteId
       ])
 
-      const collectivites = await $collectiviteApi.list({
-        codes_siren: collectivitesCodes
-      })
+      const collectivites = await $collectiviteApi.listFromCodes(collectivitesCodes)
 
       procedures.forEach((procedure) => {
         procedure.procedures_perimetres = procedure.procedures_perimetres.map((p) => {
