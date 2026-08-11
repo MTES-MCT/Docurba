@@ -140,7 +140,7 @@ import axios from 'axios'
 import { groupBy } from 'lodash'
 import { mdiDotsVertical, mdiCheck, mdiClose } from '@mdi/js'
 import orderSections from '@/mixins/orderSections.js'
-import { getUniquePropValues, keyBy } from '@/plugins/utils'
+import { getUniquePropValues } from '@/plugins/utils'
 
 export default {
   mixins: [orderSections],
@@ -330,11 +330,9 @@ export default {
       }, section)
     }
 
-    const { data: profiles } = await this.$supabase
-      .from('profiles')
-      .select('*')
-      .ilikeAnyOf('email', getUniquePropValues(histories, h => h.commit?.author?.email))
-    const profilesByEmail = keyBy(profiles, profile => profile.email?.toLowerCase())
+    const authorsByEmail = await this.$PAC.getAuthorsFromEmails(
+      getUniquePropValues(histories, h => h.commit?.author?.email)
+    )
 
     this.sections = sections.map((section) => {
       const s = parseSection(section, supSections)
@@ -350,7 +348,7 @@ export default {
         ...s,
         lastEdit: {
           ...commit,
-          author: email && profilesByEmail[email]
+          author: email && authorsByEmail[email]
         }
       }
     })
