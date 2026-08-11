@@ -227,6 +227,9 @@ class ProcedureAdmin(admin.ModelAdmin):
         "is_principale",
         "started_before_huwart_law",
         "archived",
+        "vaut_PDM",
+        "vaut_SCoT",
+        "vaut_PLH",
     )
     raw_id_fields = ("project",)
     autocomplete_fields = (
@@ -237,12 +240,23 @@ class ProcedureAdmin(admin.ModelAdmin):
         ("parente", admin.EmptyFieldListFilter),
         ("name", admin.EmptyFieldListFilter),
         "doc_type",
+        "vaut_PDM",
+        "vaut_SCoT",
+        "vaut_PLH",
         "started_before_huwart_law",
         CollectiviteTypeFilter,
         TopicsFilter,
     )
     inlines = [ProcedurePerimetreInline, EventsInline]
-    list_display = ("id", "__str__", "django_status", "events")
+    list_display = (
+        "id",
+        "__str__",
+        "django_status",
+        "events",
+        "vaut_PDM",
+        "vaut_SCoT",
+        "vaut_PLH",
+    )
     search_fields = ("pk",)
     fields = [
         *autocomplete_fields,
