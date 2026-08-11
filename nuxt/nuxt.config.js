@@ -8,8 +8,9 @@ export default {
     DDT_PROCEDURE_SURVEY_ENABLED_DEPTS: process.env.DDT_PROCEDURE_SURVEY_ENABLED_DEPTS?.split(',') ?? [],
     NUXT3_API_URL: process.env.NUXT3_API_URL,
     DJANGO_API_BASE_URL: process.env.DJANGO_API_BASE_URL,
+    DEV_EMAILS: process.env.DEV_EMAILS?.split(',') ?? [],
     SUPABASE_URL: process.env.SUPABASE_URL,
-    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY
   },
   head: {
     titleTemplate: '%s - Docurba',

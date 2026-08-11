@@ -280,7 +280,7 @@ import {
 } from '@mdi/js'
 import { encode } from 'js-base64'
 import { getCommitter } from '@/plugins/user'
-import { getUniquePropValues, keyBy } from '@/plugins/utils'
+import { getUniquePropValues } from '@/plugins/utils'
 
 export default {
   props: {
@@ -536,11 +536,9 @@ export default {
       }
 
       const histories = (await Promise.all(historiesPromises)).flatMap(({ data }) => data)
-      const { data: profiles } = await this.$supabase
-        .from('profiles')
-        .select('*')
-        .ilikeAnyOf('email', getUniquePropValues(histories, h => h.commit?.author?.email))
-      const profilesByEmail = keyBy(profiles, profile => profile.email?.toLowerCase())
+      const authorsByEmail = await this.$PAC.getAuthorsFromEmails(
+        getUniquePropValues(histories, h => h.commit?.author?.email)
+      )
 
       // eslint-disable-next-line vue/no-mutating-props
       this.section.children = this.section.children.map((child) => {
@@ -556,7 +554,7 @@ export default {
           ...child,
           lastEdit: {
             ...commit,
-            author: email && profilesByEmail[email]
+            author: email && authorsByEmail[email]
           }
         }
       })
@@ -637,15 +635,12 @@ export default {
         })
 
         if (history[0]) {
-          const { data: profiles } = await this.$supabase
-            .from('profiles')
-            .select('*')
-            .ilike('email', history[0].commit.author?.email?.toLowerCase())
+          const author = await this.$PAC.getAuthorFromEmail(history[0].commit.author?.email?.toLowerCase())
 
           // eslint-disable-next-line vue/no-mutating-props
           this.section.lastEdit = {
             ...history[0].commit,
-            author: profiles[0]
+            author
           }
         }
 
@@ -730,14 +725,11 @@ export default {
       })
 
       if (history[0]) {
-        const { data: profiles } = await this.$supabase
-          .from('profiles')
-          .select('*')
-          .ilike('email', history[0].commit.author?.email?.toLowerCase())
+        const author = await this.$PAC.getAuthorFromEmail(history[0].commit.author?.email?.toLowerCase())
 
         newSection.lastEdit = {
           ...history[0].commit,
-          author: profiles[0]
+          author
         }
       }
 
