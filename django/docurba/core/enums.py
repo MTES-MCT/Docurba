@@ -48,7 +48,7 @@ class ProcedureType(models.TextChoices):
 
     @classmethod
     def principal(cls: models.TextChoices) -> dict:
-        enums = [cls.ABROGATION, cls.ELABORATION]
+        enums = [cls.ABROGATION, cls.ELABORATION, cls.REVISION]
         return {member.value: member for member in cls if member in enums}
 
     @classmethod
@@ -58,7 +58,6 @@ class ProcedureType(models.TextChoices):
             cls.MISE_EN_COMPATIBILITE,
             cls.MODIFICATION,
             cls.MODIFICATION_SIMPLIFIEE,
-            cls.REVISION,
             cls.REVISION_MS_RA,
             cls.REVISION_ALLEGEE,
             cls.REVISION_SIMPLIFIEE,

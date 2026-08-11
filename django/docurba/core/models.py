@@ -17,7 +17,13 @@ from django.db.models.functions import Now
 from django.urls import reverse
 from django.utils import timezone
 
-from docurba.core.enums import CommuneType, EventScope, TypeCollectivite, VisibilityType
+from docurba.core.enums import (
+    CommuneType,
+    EventScope,
+    ProcedureType,
+    TypeCollectivite,
+    VisibilityType,
+)
 from docurba.core.utils import OversizedIndex
 from docurba.users.models import Profile
 
@@ -384,11 +390,17 @@ class Procedure(models.Model):
     doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001 # TextField in DB.
     doc_type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
     type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
-    vaut_SCoT = models.BooleanField(db_column="is_scot", blank=True, null=True)  # noqa: N815
+    # No mention on Nuxt side of procedure.is_scot but vaut_SCoT is used in the Commune API.
+    vaut_SCoT = models.BooleanField(db_column="is_scot", default=False)  # noqa: N815
+    # Used in Nuxt to compute procedure.docType and procedure.name.
+    # Also used in the zanSurvey.
+    # See plugins/urbanitor.js, formatProcedureName and zanSurvey.js
     # Programme Local de l'Habitat
-    vaut_PLH = models.BooleanField(db_column="is_pluih", blank=True, null=True)  # noqa: N815
+    vaut_PLH = models.BooleanField(db_column="is_pluih", default=False)  # noqa: N815
+    # Used in Nuxt to compute procedure.docType.
+    # See plugins/urbanisator.js
     # Plan De Mobilité (anciennement Plan de Déplacements Urbains)
-    vaut_PDM = models.BooleanField(db_column="is_pdu", blank=True, null=True)  # noqa: N815
+    vaut_PDM = models.BooleanField(db_column="is_pdu", default=False)  # noqa: N815
     obligation_PDU = models.BooleanField(  # noqa: N815
         db_column="mandatory_pdu", blank=True, null=True
     )
@@ -407,14 +419,16 @@ class Procedure(models.Model):
     commentaire = models.TextField(blank=True, null=True)  # noqa: DJ001
     comment_from_sudocuh = models.TextField(blank=True)
     comment_dgd = models.TextField(blank=True, null=True)  # noqa: DJ001
-    is_principale = models.BooleanField(blank=True, null=True)
+    is_principale = models.BooleanField(default=False)
     is_sectoriel = models.BooleanField(blank=True, null=True)
     is_sudocuh_scot = models.BooleanField(
         blank=True, null=True
     )  # No reference in Nuxt's side but column is filled with different values.
     sudocu_secondary_procedure_of = models.IntegerField(blank=True, null=True)
-    shareable = models.BooleanField(db_default=False)
-    type = models.CharField(blank=True, null=True)  # noqa: DJ001 # TextField in DB.
+    shareable = models.BooleanField(db_default=True)
+    type = models.CharField(
+        choices=ProcedureType, default=ProcedureType.ELABORATION
+    )  # TextField in DB.
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001 # TextField in DB.
     collectivite_porteuse = models.ForeignKey(
         "Collectivite",
