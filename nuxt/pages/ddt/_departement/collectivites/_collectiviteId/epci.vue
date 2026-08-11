@@ -115,10 +115,9 @@ export default {
   },
   methods: {
     async getProcedures () {
-      const collectivites = await this.$collectiviteApi.listFromCodes(new Array(this.$route.params.collectiviteId), {
+      this.collectivite = await this.$collectiviteApi.getFromCode(this.$route.params.collectiviteId, {
         avec_membres: true
       })
-      this.collectivite = collectivites[0]
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
       this.schemas = schemas
       this.plans = plans
