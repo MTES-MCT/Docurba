@@ -31,11 +31,10 @@ export default {
     }
   },
   async mounted () {
-    const collectivites = await this.$collectiviteApi.listFromCodes(new Array(this.$route.params.collectiviteId), {
+    this.collectivite = await this.$collectiviteApi.getFromCode(this.$route.params.collectiviteId, {
       avec_membres_niveaux_inferieurs: true,
       avec_groupements: true
     })
-    this.collectivite = collectivites[0]
     this.collectivite.membres = this.collectivite.membres_niveaux_inferieurs || this.collectivite.membres
 
     if (!this.$user.canCreateProcedure({ collectivite: this.collectivite })) {
