@@ -11,6 +11,8 @@ from docurba.core.models import (
     Commune,
     Departement,
     EventType,
+    Procedure,
+    ProcedureStatusChoices,
     Region,
     TypeCollectivite,
 )
@@ -134,3 +136,50 @@ class EventTypeFilter(filters.FilterSet):
     class Meta:
         model = EventType
         fields = ("document_type",)
+
+
+class ProcedureFilter(filters.FilterSet):
+    communes_perimetre = NoValidationMultipleFilter(
+        label="communes du périmètre", method="_communes_perimetre"
+    )
+    collectivites_porteuses = NoValidationMultipleFilter(
+        label="collectivités porteuses", method="_collectivites_porteuses"
+    )
+    status = filters.MultipleChoiceFilter(
+        label="Statut selon Nuxt",
+        field_name="status",
+        choices=ProcedureStatusChoices,
+    )
+
+    class Meta:
+        model = Procedure
+        fields = (
+            "is_principale",
+            "status",
+            "communes_perimetre",
+            "collectivites_porteuses",
+        )
+
+    def _collectivites_porteuses(
+        self, queryset: QuerySet, name: str, sirens: list
+    ) -> QuerySet:
+        if not sirens:
+            return queryset
+        if not isinstance(sirens, list):
+            raise ValueError(("%s should be a list.", sirens))  # noqa: TRY004
+        return queryset.filter(
+            Q(collectivite_porteuse__siren__in=sirens)
+            | Q(collectivite_porteuse__code_insee__in=sirens)
+        )
+
+    def _communes_perimetre(
+        self, queryset: QuerySet, name: str, codes_insee: str
+    ) -> QuerySet:
+        if not codes_insee:
+            return queryset
+        if not isinstance(codes_insee, list):
+            raise ValueError(("%s should be a list.", codes_insee))  # noqa: TRY004
+        # Should search in the JSON but we'd like to search several keys.
+        # The actual search only works when there is only one element in the list.
+        #     query = query.contains('current_perimetre', `[{ "inseeCode": "${this.collectivite.code}" }]`)
+        return queryset.filter(perimetre__code_insee__in=codes_insee)
