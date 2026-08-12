@@ -410,6 +410,9 @@ class Procedure(models.Model):
         null=True,
     )
     name = models.TextField(blank=True, null=True)  # noqa: DJ001
+    name_complement = models.CharField(
+        blank=True, default="", db_default="", verbose_name="complément du nom"
+    )
     commentaire = models.TextField(blank=True, null=True)  # noqa: DJ001
     comment_from_sudocuh = models.TextField(blank=True)
     comment_dgd = models.TextField(blank=True, null=True)  # noqa: DJ001
