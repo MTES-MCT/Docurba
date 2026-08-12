@@ -1,15 +1,22 @@
 # ruff: noqa: N815, RUF012
-
-
 from django.db import models
 from rest_framework import serializers
 
-from docurba.core.enums import CommuneType, ProcedureType, TypeDocument
+from docurba.core.enums import (
+    CommuneType,
+    ProcedureType,
+    ProjectSharingRoleType,
+    TypeDocument,
+)
 from docurba.core.models import (
     Collectivite,
     Commune,
+    CommuneProcedure,
     EventType,
     Procedure,
+    ProcedureTopic,
+    Project,
+    ProjectSharing,
     Topic,
 )
 
@@ -278,37 +285,283 @@ class ProcedureNameSerializer(serializers.ModelSerializer):
 
 
 class ProcedureSerializer(serializers.ModelSerializer):
-    id = serializers.CharField()
-    parentId = serializers.UUIDField(source="parente_id")
-    collectivite_porteuse = CollectiviteSerializer()
-    docType = serializers.ChoiceField(choices=TypeDocument, source="dynamic_doc_type")
+    # Read only fields
+    id = serializers.CharField(read_only=True)
+    collectivite_porteuse = CollectiviteSerializer(read_only=True)
+    topics = TopicSerializer(read_only=True, many=True)
+    perimetre = CommuneSerializer(read_only=True, many=True)
+    name = serializers.CharField(read_only=True, source="computed_name")
+    approval_date = serializers.DateTimeField(read_only=True, source="date_approbation")
+    projectId = serializers.CharField(read_only=True, source="project_id")
+    # Write only fields
+    perimetreCommunesCodes = serializers.ListField(
+        write_only=True,
+        required=False,
+        child=serializers.CharField(required=False, allow_blank=True),
+    )
+    collectiviteCode = serializers.CharField(
+        write_only=True,
+        allow_blank=True,
+        required=False,
+    )
+    topicsList = serializers.ListField(
+        write_only=True, child=serializers.CharField(), allow_empty=True
+    )
+    otherTopicComment = serializers.CharField(
+        required=False, allow_blank=True, write_only=True
+    )
+    nameComplement = serializers.CharField(
+        required=False, allow_blank=True, write_only=True, source="name_complement"
+    )
+    # Both
+    parentId = serializers.UUIDField(
+        source="parente_id", required=False, allow_null=True
+    )
+    docType = serializers.ChoiceField(
+        choices=TypeDocument,
+        source="doc_type",
+        required=False,
+        allow_blank=True,
+    )
     startedBeforeHuwartLaw = serializers.BooleanField(
         source="started_before_huwart_law", default=False
     )
-    topics = TopicSerializer(many=True)
-    perimetre = CommuneSerializer(many=True)
-    name = serializers.CharField(source="computed_name")
-    approval_date = serializers.DateTimeField(source="date_approbation")
+
+    def create(self, validated_data: dict) -> Procedure:
+        owner_id = self.context["request"].user.username
+        # Remove these keys from `validated_data` because they are not Procedure attributes.
+        topics_list = validated_data.pop("topicsList")
+        other_topic_comment = validated_data.pop("otherTopicComment")
+        if validated_data["type"] in ProcedureType.principal():
+            doc_type = validated_data.pop("doc_type")
+            collectivite_code = validated_data.pop("collectiviteCode")
+            base_doc_type = Procedure.dynamic_doc_type_to_base_doc_type(doc_type)
+            vaut_PLH = doc_type in TypeDocument.plh_variations()  # noqa: N806
+            vaut_PDM = doc_type in TypeDocument.pdm_variations()  # noqa: N806
+            collectivite = (
+                Collectivite.objects.filter_by_code(collectivite_code)
+                .with_communes_adherentes_count()
+                .select_related(
+                    "commune__intercommunalite",
+                    "commune__intercommunalite__departement",
+                    "commune__departement",
+                    "departement",
+                    "departement__region",
+                )
+                .exclude(type__in=[CommuneType.COMA, CommuneType.COMD])
+                .get()
+            )
+            collectivite_porteuse = Procedure.get_collectivite_porteuse(
+                collectivite=collectivite, doc_type=doc_type
+            )
+            perimetre_codes = validated_data.pop("perimetreCodes")
+            instance_data = validated_data | {
+                "base_doc_type": base_doc_type,
+                "vaut_PLH": vaut_PLH,
+                "vaut_PDM": vaut_PDM,
+                "testing": True,
+                "owner_id": owner_id,
+                "collectivite_porteuse": collectivite_porteuse,
+            }
+        else:
+            principal_procedure = (
+                Procedure.objects.select_related("project", "collectivite_porteuse")
+                .prefetch_related(
+                    models.Prefetch(
+                        "perimetre",
+                        Commune.objects.select_related(
+                            "departement", "departement__region"
+                        ),
+                    ),
+                )
+                .get(pk=validated_data.get("parente_id"))
+            )
+            instance_data = {
+                "type": validated_data["type"],
+                "started_before_huwart_law": validated_data.get(
+                    "started_before_huwart_law", False
+                ),
+                "parente": principal_procedure,
+                "base_doc_type": principal_procedure.base_doc_type,
+                "vaut_PDM": principal_procedure.vaut_PDM,
+                "vaut_PLH": principal_procedure.vaut_PLH,
+                "collectivite_porteuse": principal_procedure.collectivite_porteuse,
+                "testing": True,
+                "owner_id": owner_id,
+                "name_complement": validated_data.get("name_complement"),
+                "numero": validated_data.get("numero", ""),
+            }
+
+        instance = super().create(validated_data=instance_data)
+
+        if validated_data["type"] in ProcedureType.principal():
+            perimetre_qs = Commune.objects.filter(
+                code_insee__in=perimetre_codes
+            ).select_related("departement", "departement__region")
+        else:
+            perimetre_qs = principal_procedure.perimetre.select_related("departement")
+        communes_procedures = [
+            CommuneProcedure(
+                commune=commune,
+                procedure=instance,
+                opposable=False,
+            )
+            for commune in perimetre_qs
+        ]
+        for cp in communes_procedures:
+            cp.update_denormalized_fields(save=False)
+        CommuneProcedure.objects.bulk_create(communes_procedures)
+        instance._cached_perimetre = perimetre_qs  # noqa: SLF001
+
+        # Project
+        if validated_data["type"] in ProcedureType.principal():
+            project_collectivite = collectivite_porteuse
+            if (
+                collectivite.type in CommuneType
+                and collectivite.commune.intercommunalite
+            ):
+                project_collectivite = collectivite.commune.intercommunalite
+
+            project = Project.objects.create(
+                name=f"{validated_data['type']} {doc_type}",
+                doc_type=doc_type,
+                region=collectivite.departement.region.code_insee,
+                collectivite_id=project_collectivite.siren
+                or project_collectivite.code_insee,
+                collectivite_porteuse_id=collectivite_porteuse.siren
+                or collectivite_porteuse.code_insee,
+                test=True,  # will be deleted during the big refactoring.
+                owner_id=owner_id,
+                current_perimetre=instance.dynamic_current_perimetre,
+            )
+        else:
+            project = principal_procedure.project
+        instance.project_id = project.pk
+
+        # Topics
+        topics_by_name = {
+            topic["name"]: topic["id"] for topic in Topic.objects.values("name", "id")
+        }
+
+        procedure_topics = [
+            ProcedureTopic(
+                procedure_id=instance.pk,
+                topic_id=topics_by_name[topic],
+                comment=other_topic_comment if topic == "other" else "",
+            )
+            for topic in topics_list
+        ]
+        ProcedureTopic.objects.bulk_create(procedure_topics)
+
+        # Invitations
+        ProjectSharing.objects.create(
+            user_email=self.context["request"].user.email,
+            shared_by_id=owner_id,
+            notified=False,
+            role=ProjectSharingRoleType.WRITE_FRISE,
+            archived=False,
+            project_id=project.pk,
+        )
+        instance.save()
+        return instance
+
+    def validate_collectiviteCode(self, value: str) -> str:  # noqa: N802
+        if value and (
+            not Collectivite.objects.filter_by_code(value)
+            .exclude(type__in=[CommuneType.COMA, CommuneType.COMD])
+            .exists()
+        ):
+            raise serializers.ValidationError("Collectivité not found")  # noqa:EM101,TRY003
+        return value
+
+    def validate_parentId(self, value: str) -> str:  # noqa: N802
+        if value and (not Procedure.objects.filter(pk=value).exists()):
+            raise serializers.ValidationError("Principal procedure not found.")  # noqa:EM101,TRY003
+        return value
+
+    def validate_perimetreCodes(self, values: str) -> str:  # noqa: N802
+        values = [value for value in values if value != ""]
+        if values:
+            found_communes = Commune.objects.filter(code_insee__in=values).values_list(
+                "code_insee", flat=True
+            )
+            not_found = [code for code in values if code not in found_communes]
+            if not_found:
+                raise serializers.ValidationError(
+                    (f"Following communes have not been found: {not_found}.",),
+                )
+        return values
+
+    def validate(self, data: dict) -> dict:
+        error_msg = None
+        if len(data["perimetreCodes"]) == 1 and data["doc_type"] in [
+            "PLUi",
+            "PLUiH",
+            "PLUiM",
+            "PLUiHM",
+            "SCOT",
+        ]:
+            error_msg = f"{data['doc_type']} is an intermunicipality document but only one town has been selected."
+
+        if len(data["perimetreCodes"]) > 1 and data["doc_type"] in [
+            "CC",
+            "PLU",
+        ]:
+            error_msg = f"{data['doc_type']} is a municipality document but many towns have been selected."
+
+        other_topic_comment = data.get("otherTopicComment")
+        if other_topic_comment and "other" not in data.get("topicsList", []):
+            error_msg = (
+                "Un commentaire Autre ne peut être enregistré que pour l'objet Autre."
+            )
+        if "other" in data.get("topicsList", []) and not other_topic_comment:
+            error_msg = (
+                "Un commentaire est obligatoire car l'objet Autre a été sélectionné."
+            )
+        principal_procedure_required_fields = [
+            "collectiviteCode",
+            "perimetreCodes",
+            "doc_type",
+        ]
+        if not data.get("parente_id") and not all(
+            field in data for field in principal_procedure_required_fields
+        ):
+            raise serializers.ValidationError(
+                (
+                    f"Missing principal procedure required field. Mandatory fields are: {principal_procedure_required_fields}",
+                ),
+            )
+
+        if error_msg:
+            raise serializers.ValidationError(error_msg)
+        return data
 
     class Meta:
         model = Procedure
         read_only_fields = [
             "id",
+            "collectivite_porteuse",
+            "topics",
+            "perimetre",
+            "name",
+            "approval_date",
             "project_id",
+            "status",  # Nuxt one
+        ]
+        write_only_fields = [
+            "perimetreCodes",
+            "collectiviteCode",
+            "topicsList",
+            "otherTopicComment",
+            "nameComplement",
         ]
         fields = [
             *read_only_fields,
-            "collectivite_porteuse",
-            "project_id",
-            "perimetre",
+            *write_only_fields,
+            "parentId",
             "docType",
             "startedBeforeHuwartLaw",
             "type",
             "numero",
-            "name",
-            "status",
-            "topics",
-            "approval_date",
-            "parentId",
         ]
         depth = 4

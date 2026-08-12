@@ -1,4 +1,5 @@
 import logging
+import operator
 from datetime import datetime
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
@@ -402,7 +403,7 @@ class Procedure(models.Model):
         blank=True, null=True
     )  # No reference in Nuxt's side but column is filled with different values.
     sudocu_secondary_procedure_of = models.IntegerField(blank=True, null=True)
-    shareable = models.BooleanField(db_default=True)
+    shareable = models.BooleanField(db_default=True, default=True)
     type = models.CharField(
         choices=core_enums.ProcedureType, default=core_enums.ProcedureType.ELABORATION
     )  # TextField in DB.
@@ -635,22 +636,24 @@ class Procedure(models.Model):
 
     @property
     def dynamic_current_perimetre(self) -> list[dict[str:str]]:
-        return (
+        if not self._perimetre:
+            return None
+        return sorted(
             [
                 {"name": commune.nom, "inseeCode": commune.code_insee}
                 for commune in self._perimetre
-            ]
-            if self._perimetre
-            else None
+            ],
+            key=operator.itemgetter(
+                "inseeCode", "name"
+            ),  # faster than lambda o: (o["inseeCode"], o["name"])
         )
 
     @property
     def dynamic_departements(self) -> list[str]:
-        return (
-            list({commune.departement.code_insee for commune in self._perimetre})
-            if self._perimetre
-            else None
-        )
+        if not self._perimetre:
+            return None
+
+        return sorted({commune.departement.code_insee for commune in self._perimetre})
 
     @property
     def computed_name(self) -> str:

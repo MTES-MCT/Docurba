@@ -52,7 +52,7 @@ class TestProcessDenormalizedProcedureFields:
         output = capsys.readouterr()
 
         # No procedure to update
-        expected_csv = "procedure_id,dynamic_doc_type,doc_type\n"
+        expected_csv = "procedure_id,dynamic_doc_type,doc_type,dynamic_departements,departements,dynamic_current_perimetre,current_perimetre\n"
         assert expected_csv == output.out
         assert caplog.messages[-1] == "0 inconsistent procedures"
 
@@ -72,8 +72,12 @@ class TestProcessDenormalizedProcedureFields:
 
         expected_csv = {
             "procedure_id": "fb48c069-33c6-4ed2-9db3-054e99ea7981",
-            "doc_type": "",
             "dynamic_doc_type": "PLUiM",
+            "doc_type": "",
+            "dynamic_departements": "['30']",
+            "departements": "",
+            "dynamic_current_perimetre": "[{'name': 'Ners', 'inseeCode': '30188'}, {'name': 'Nîmes', 'inseeCode': '30189'}]",
+            "current_perimetre": "",
         }
 
         # Check by default.

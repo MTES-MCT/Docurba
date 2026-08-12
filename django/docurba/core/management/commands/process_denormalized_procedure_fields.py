@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand, CommandParser
 from django.db import models, transaction
 from django.utils import timezone
 
-from docurba.core.models import Procedure
+from docurba.core.models import Commune, Procedure
 from docurba.utils.slack import send_slack_message
 
 BATCH_SIZE = 2000
@@ -64,7 +64,15 @@ class Command(BaseCommand):
             logger.info("Checking up to %d procedures (%d/%d).", BATCH_SIZE, i, batches)
             qs = (
                 Procedure.objects.filter(pk__in=batch_pks)
-                .prefetch_related("perimetre")
+                .prefetch_related(
+                    models.Prefetch(
+                        "perimetre",
+                        queryset=Commune.objects.select_related(
+                            "departement", "collectivite_ptr"
+                        ),
+                    )
+                )
+                .defer(None)
                 .select_related("collectivite_porteuse")
             )
             inconsistent_procedures = [

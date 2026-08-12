@@ -838,6 +838,26 @@ class TestProcedure:
         )
         assert procedure.computed_name == expected_name
 
+        # With a "sectoriel" PLU.
+        expected_name = (
+            "Élaboration PLUiS Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+        communes = CommuneFactory.create_batch(3)
+        collectivite_porteuse = CollectiviteFactory(
+            nom="Syndicat mixte d'équipement de la commune de Beaucaire",
+            with_members=True,
+            with_members__list=communes,
+        )
+        procedure = ProcedureFactory(
+            name="",
+            collectivite_porteuse=collectivite_porteuse,
+            with_perimetre=communes[:2],
+            base_doc_type=core_enums.TypeDocument.PLU,
+        )
+        procedure = core_models.Procedure.objects.get(pk=procedure.pk)
+        assert procedure.computed_name == expected_name
+
+    @pytest.mark.django_db
     def test_zone_name(self, django_assert_num_queries: DjangoAssertNumQueries) -> None:
         collectivite_porteuse = CollectiviteFactory(
             nom="CC de la Terre d'Argence", type=core_enums.TypeCollectivite.CC
@@ -969,60 +989,6 @@ class TestProcedure:
         principal_procedure.save()
         principal_procedure.refresh_from_db()
         assert principal_procedure.status == core_enums.ProcedureStatusChoices.OPPOSABLE
-
-    def test_get_collectivite_porteuse(self) -> None:
-        collectivite_without_jurisdiction = CollectiviteFactory(
-            type=core_enums.TypeCollectivite.CC,
-            competence_plan=False,
-            competence_schema=False,
-        )
-        collectivite_with_jurisdiction = CollectiviteFactory(
-            type=core_enums.TypeCollectivite.CC,
-            competence_plan=True,
-            competence_schema=True,
-        )
-        intermunicipality = CollectiviteFactory(
-            type=core_enums.TypeCollectivite.CC,
-            competence_plan=True,
-            competence_schema=True,
-        )
-        commune_with_jurisdiction = CommuneFactory(
-            type=core_enums.TypeCollectivite.COM,
-            competence_plan=True,
-            competence_schema=True,
-            intercommunalite=intermunicipality,
-        )
-        commune_without_jurisdiction = CommuneFactory(
-            type=core_enums.TypeCollectivite.COM,
-            competence_plan=False,
-            competence_schema=False,
-            intercommunalite=intermunicipality,
-        )
-        for doc_type in [core_enums.TypeDocument.PLU, core_enums.TypeDocument.SCOT]:
-            assert (
-                core_models.Procedure.get_collectivite_porteuse(
-                    collectivite=collectivite_without_jurisdiction, doc_type=doc_type
-                )
-                == collectivite_without_jurisdiction
-            )
-            assert (
-                core_models.Procedure.get_collectivite_porteuse(
-                    collectivite=collectivite_with_jurisdiction, doc_type=doc_type
-                )
-                == collectivite_with_jurisdiction
-            )
-            assert (
-                core_models.Procedure.get_collectivite_porteuse(
-                    collectivite=commune_with_jurisdiction, doc_type=doc_type
-                )
-                == commune_with_jurisdiction
-            )
-            assert (
-                core_models.Procedure.get_collectivite_porteuse(
-                    collectivite=commune_without_jurisdiction, doc_type=doc_type
-                )
-                == intermunicipality
-            )
 
     @pytest.mark.django_db
     def test_get_collectivite_porteuse(self) -> None:
@@ -1169,7 +1135,7 @@ class TestProcedureDenormalizedFields:
         procedure = ProcedureFactory(with_perimetre=communes)
         procedure = core_models.Procedure.objects.get(pk=procedure.pk)
         assert procedure.current_perimetre == expected_current_perimetre
-        assert sorted(procedure.departements) == expected_departements
+        assert procedure.departements == expected_departements
 
 
 class TestProcedureDates:
