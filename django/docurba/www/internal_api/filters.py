@@ -180,7 +180,7 @@ class ProcedureFilter(filters.FilterSet):
             raise TypeError(msg, codes_insee)
         return queryset.filter(perimetre__code_insee__in=codes_insee)
 
-    def _is_parent(self, queryset: QuerySet, name: str, value: bool) -> QuerySet:
+    def _is_parent(self, queryset: QuerySet, name: str, value: bool) -> QuerySet:  # noqa: FBT001
         if value is None:
             return queryset
         return queryset.filter(parente__isnull=value)

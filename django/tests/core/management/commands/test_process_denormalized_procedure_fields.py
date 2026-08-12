@@ -72,12 +72,12 @@ class TestProcessDenormalizedProcedureFields:
 
         expected_csv = {
             "procedure_id": "fb48c069-33c6-4ed2-9db3-054e99ea7981",
+            "dynamic_doc_type": "PLUiM",
             "doc_type": "",
             "dynamic_departements": "['30']",
             "departements": "",
             "dynamic_current_perimetre": "[{'name': 'Ners', 'inseeCode': '30188'}, {'name': 'Nîmes', 'inseeCode': '30189'}]",
             "current_perimetre": "",
-            "dynamic_doc_type": "PLUiM",
         }
 
         # Check by default.

@@ -213,9 +213,17 @@ class ProcedureViewSet(viewsets.ModelViewSet):
         if self.action == "synchronize_status":
             queryset = procedures_qs.prefetch_related(
                 models.Prefetch(
+                    "perimetre",
+                    core_models.Commune.objects.select_related(
+                        "departement",
+                        "departement__region",
+                        "intercommunalite",
+                    ),
+                ),
+                models.Prefetch(
                     "event_set",
                     queryset=core_models.Event.objects.filter_impactful(),
-                )
+                ),
             )
         return queryset
 
@@ -275,9 +283,6 @@ class ProcedureViewSet(viewsets.ModelViewSet):
             core_models.CommuneProcedure.objects.bulk_update(
                 perimetre_lines_to_update, ["opposable"], batch_size=1000
             )
-
-    def create(self) -> Response:
-        return NotImplementedError
 
     def update(self) -> Response:
         return NotImplementedError
