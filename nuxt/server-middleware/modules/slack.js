@@ -7,6 +7,10 @@ const preposition = userEnvironment.messageProposition() + ' '
 
 module.exports = {
   shareProcedure ({ from, to, type, procedure, pac }) {
+    if (!process.env.SLACK_WEBHOOK )  {
+      console.log('The SLACK_WEBHOOK environment variable is not defined.')
+      return
+    }
     return axios({
       url: process.env.SLACK_WEBHOOK,
       method: 'post',
@@ -38,6 +42,10 @@ module.exports = {
     })
   },
   requestDepotActe (userData) {
+    if (!process.env.SLACK_WEBHOOK )  {
+      console.log('The SLACK_WEBHOOK environment variable is not defined.')
+      return
+    }
     return axios({
       url: process.env.SLACK_WEBHOOK,
       method: 'post',
@@ -63,6 +71,10 @@ module.exports = {
     })
   },
   requestCollectiviteAccess (userData) {
+    if (!process.env.SLACK_WEBHOOK )  {
+      console.log('The SLACK_WEBHOOK environment variable is not defined.')
+      return
+    }
     // See '/webhook/interactivity' to see fields needed by the webhook (action_id == 'collectivite_validation')
     const payload = _.pick(userData, ['user_id', 'email', 'firstname', 'lastname', 'collectivite_id'])
     return axios({
@@ -108,6 +120,10 @@ module.exports = {
     })
   },
   requestStateAgentAccess (userData) {
+    if (!process.env.SLACK_WEBHOOK )  {
+      console.log('The SLACK_WEBHOOK environment variable is not defined.')
+      return
+    }
     let textContent = ''
     if (userData.poste === 'ddt') {
       textContent = `- departement: ${userData.departement.nom_departement} - ${userData.departement.code_departement} \n - email: ${userData.email}`
@@ -159,6 +175,10 @@ module.exports = {
     })
   },
   requestPAC (userData, pacData) {
+    if (!process.env.SLACK_WEBHOOK )  {
+      console.log('The SLACK_WEBHOOK environment variable is not defined.')
+      return
+    }
     // eslint-disable-next-line camelcase
     const { user_metadata } = userData
 
@@ -201,6 +221,10 @@ module.exports = {
     userData,
     procedureData
   }) {
+    if (!process.env.SLACK_EVENT_CTBE) {
+      console.log('The SLACK_EVENT_CTBE environment variable is not defined.')
+      return
+    }
     const collectivitePorteuse = geo.getCollectivite(procedureData.collectivite_porteuse_id)
 
     const { data: procedures } = await supabase.from('procedures').select('*')
