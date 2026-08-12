@@ -268,7 +268,7 @@ export default {
       const promGroupements = this.$collectiviteApi.list({
         departement: this.$route.params.departement,
         without_communes: true,
-        trouvable: true
+        competence: ['plan', 'schema']
       })
 
       const [rawProcedures, communes, groupements] = await Promise.all([promProcedures, promCommunes, promGroupements])

@@ -124,7 +124,7 @@ export default {
           const groupements = await this.$collectiviteApi.list({
             departement: this.selectedDepartement.code_departement,
             without_communes: true,
-            trouvable: true
+            competence: ['plan', 'schema']
           })
           const communes = await this.$djangoApi.get('/api-internes/communes/', {
             departement: this.selectedDepartement.code_departement,
