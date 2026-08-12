@@ -23,6 +23,7 @@ from docurba.core.models import (
     ProcedureStatusChoices,
     Project,
     Region,
+    Topic,
     TypeCollectivite,
     TypeDocument,
 )
@@ -230,6 +231,7 @@ class ProjectFactory(factory.django.DjangoModelFactory):
 
     class Params:
         for_snapshot = factory.Trait(
+            id=uuid.UUID("fb48c069-33c6-4ed2-9db3-054e99ea7981"),
             name="Projet d'élaboration du PLU de Nantes",
         )
 
@@ -301,6 +303,14 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
             ][0]
 
         EventFactory(procedure=self, type=event_type, **extra)
+
+    @factory.post_generation
+    def with_topics(self, create: bool, extracted: bool, **extra: dict) -> None:  # noqa: FBT001
+        if not create or not extracted:
+            return
+
+        topics = extra.pop("list", None) or Topic.objects.all()[:2]
+        self.topics.add(*topics)
 
 
 class CommuneProcedureFactory(factory.django.DjangoModelFactory):
