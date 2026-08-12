@@ -63,7 +63,6 @@ async function magicLinkSignIn ({ email, redirectBasePath }) {
     })
 
     if (error) {
-      console.log('ERROR magicLinkSignIn: ', error)
       throw error
     }
 
@@ -75,7 +74,6 @@ async function magicLinkSignIn ({ email, redirectBasePath }) {
           redirectURL: properties.action_link,
           firstname: profile.firstname,
           lastname: profile.lastname
-          // dashboard_url: `https://docurba.beta.gouv.fr/collectivites/${profile.collectivite_id}/`
         }
       })
     }
@@ -124,7 +122,6 @@ app.post('/signupCollectivite', async (req, res) => {
     }).select()
 
     if (errorInsertProfile) {
-      // console.log('Error in profile creation', errorInsertProfile)
       throw errorInsertProfile
     }
 

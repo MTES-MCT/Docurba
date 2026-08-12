@@ -5,6 +5,10 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 module.exports = {
   sendEmail (message) {
+    if (!process.env.SENDGRID_API_KEY) {
+      console.log('The SENDGRID_API_KEY environment variable is not defined.')
+      return
+    }
     message.dynamic_template_data["subject_preposition"] = userEnvironment.messageProposition()
     return sgMail.send(Object.assign({
       from: {

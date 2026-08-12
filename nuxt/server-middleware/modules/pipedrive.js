@@ -116,10 +116,18 @@ module.exports = {
     }
   },
   async getPersonDeals (idPerson) {
+    if (!process.env.PIPEDRIVE_API_KEY) {
+      console.log('The PIPEDRIVE_API_KEY environment variable is not defined.')
+      return
+    }
     const { data: personDeals } = await personsApi.getPersonDeals(idPerson)
     return personDeals
   },
   async findOrganization (departementNumber) {
+    if (!process.env.PIPEDRIVE_API_KEY) {
+      console.log('The PIPEDRIVE_API_KEY environment variable is not defined.')
+      return
+    }
     const {
       data: organizationsData,
       success: successOrg
@@ -147,6 +155,10 @@ module.exports = {
     } else { console.log('organizationsError') }
   },
   async addOrganization (departementNumber) {
+    if (!process.env.PIPEDRIVE_API_KEY) {
+      console.log('The PIPEDRIVE_API_KEY environment variable is not defined.')
+      return
+    }
     const newOrganization = pipedrive.NewOrganization.constructFromObject({
       name: `DDT ${departementNumber}`
     })
@@ -158,6 +170,10 @@ module.exports = {
     } else { console.log(error) }
   },
   async findPerson (email) {
+    if (!process.env.PIPEDRIVE_API_KEY) {
+      console.log('The PIPEDRIVE_API_KEY environment variable is not defined.')
+      return
+    }
     try {
       const { data: personsData, error: personsError } = await personsApi.searchPersons(email, {
         fields: 'email',
@@ -192,7 +208,10 @@ module.exports = {
     }
   },
   async addPerson (userData) {
-    // console.log(' addPerson userData: ', userData)
+    if (!process.env.PIPEDRIVE_API_KEY) {
+      console.log('The PIPEDRIVE_API_KEY environment variable is not defined.')
+      return
+    }
     const personData = pipedrive.NewPerson.constructFromObject({
       name: `${userData.firstname} ${userData.lastname}`,
       phone: [{
@@ -218,6 +237,10 @@ module.exports = {
     } else { console.log('error', error) }
   },
   updatePerson (personId, data) {
+    if (!process.env.PIPEDRIVE_API_KEY) {
+      console.log('The PIPEDRIVE_API_KEY environment variable is not defined.')
+      return
+    }
     const personData = { '2a0f1211cad87a393283f3167a72832c53ed7966': '' }
     _.forEach(data, (val, key) => {
       const pipedriveFiel = fieldsMap[key]
@@ -247,22 +270,37 @@ module.exports = {
     return personsApi.updatePerson(personId, newPersonData)
   },
   async searchDeal (term) {
+    if (!process.env.PIPEDRIVE_API_KEY) {
+      console.log('The PIPEDRIVE_API_KEY environment variable is not defined.')
+      return
+    }
     const { data: { items } } = await dealsApi.searchDeals(term)
     console.log('ITEMS SEARCHED: ', items)
     return items
   },
   async addDeal (dealData) {
+    if (!process.env.PIPEDRIVE_API_KEY) {
+      console.log('The PIPEDRIVE_API_KEY environment variable is not defined.')
+      return
+    }
     const newDealData = pipedrive.NewDeal.constructFromObject(dealData)
     const { success, data } = await dealsApi.addDeal(newDealData)
     console.log(' success: ', success, 'data: ', data)
     return { data, success }
   },
   updateDeal (dealId, data) {
+    if (!process.env.PIPEDRIVE_API_KEY) {
+      console.log('The PIPEDRIVE_API_KEY environment variable is not defined.')
+      return
+    }
     const newDealData = pipedrive.UpdateDealRequest.constructFromObject(data)
     return dealsApi.updateDeal(dealId, newDealData)
   },
   async signupCollectivite (data) {
-    console.log('-- SIGNUP COLLECTIVITE PIPEDRIVE --')
+    if (!process.env.PIPEDRIVE_API_KEY) {
+      console.log('The PIPEDRIVE_API_KEY environment variable is not defined.')
+      return
+    }
     let { person } = await this.findPerson(data.email)
     if (!person) {
       console.log('Person not found, creating one')
@@ -277,6 +315,10 @@ module.exports = {
     }
   },
   async movePersonDealTo (email, from, to) {
+    if (!process.env.PIPEDRIVE_API_KEY) {
+      console.log('The PIPEDRIVE_API_KEY environment variable is not defined.')
+      return
+    }
     const { person } = await this.findPerson(email)
     const personDeals = await this.getPersonDeals(person.id)
     // console.log('personDeals: ', personDeals)
@@ -285,6 +327,10 @@ module.exports = {
     if (dealIdToUpdate) { await this.updateDeal(dealIdToUpdate, { stage_id: to }) }
   },
   async signupStateAgent (userData) {
+    if (!process.env.PIPEDRIVE_API_KEY) {
+      console.log('The PIPEDRIVE_API_KEY environment variable is not defined.')
+      return
+    }
     try {
       console.log('-- SIGNUP STATE AGENT PIPEDRIVE --')
       const self = this
