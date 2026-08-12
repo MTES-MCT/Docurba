@@ -23,6 +23,7 @@ class SessionFactory(factory.django.DjangoModelFactory):
 class ProfileFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Profile
+        skip_postgeneration_save = True
 
     user = factory.SubFactory(
         SupabaseUserFactory, email=factory.SelfAttribute("..email")
@@ -32,3 +33,13 @@ class ProfileFactory(factory.django.DjangoModelFactory):
     lastname = factory.Faker("last_name", locale="fr_FR")
     poste = factory.fuzzy.FuzzyChoice(PosteType)
     other_poste: factory.List([])
+
+    @factory.post_generation
+    def with_collectivite(self, create: bool, extracted: bool, **extra: dict) -> None:  # noqa: FBT001
+        if not create or not extracted:
+            return
+
+        # avoid circular import
+        from tests.core.factories import CollectiviteFactory  # noqa: PLC0415
+
+        self.collectivite = extra.pop("collectivite", CollectiviteFactory())
