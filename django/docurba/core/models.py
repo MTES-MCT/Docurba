@@ -298,7 +298,7 @@ class ProcedureQuerySet(models.QuerySet):
                 "procedure_id",
             )
         )
-        qs = self.annotate(
+        return self.annotate(
             with_events__date_pivot=models.Value(
                 avant or timezone.now().date(), output_field=models.DateField()
             )

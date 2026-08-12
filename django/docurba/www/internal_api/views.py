@@ -6,18 +6,16 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import models
 from rest_framework import generics, status, viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sendgrid_backend.mail import HTTPError
 
-from docurba.core.models import Collectivite, Commune, EventType
-from docurba.users.models import Profile
+from docurba.api.auth import SupabaseAuthentication
+from docurba.core import models as core_models
+from docurba.users import models as users_models
 from docurba.utils.api.views import PublicAPIView
 from docurba.www.internal_api import filters as custom_filters
-from docurba.www.internal_api.serializers import (
-    CollectiviteSerializer,
-    CommuneSerializer,
-    EventTypeSerializer,
-)
+from docurba.www.internal_api import serializers as core_serializers
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +23,7 @@ logger = logging.getLogger(__name__)
 class CollectiviteViewSet(PublicAPIView, viewsets.ReadOnlyModelViewSet):
     """Collectivités en base."""
 
-    serializer_class = CollectiviteSerializer
+    serializer_class = core_serializers.CollectiviteSerializer
     filterset_class = custom_filters.CollectiviteFilter
     lookup_field = "code_insee_unique"
 
@@ -46,7 +44,7 @@ class CollectiviteViewSet(PublicAPIView, viewsets.ReadOnlyModelViewSet):
         return context
 
     def get_queryset(self):  # noqa: ANN201
-        qs = Collectivite.objects.select_related(
+        qs = core_models.Collectivite.objects.select_related(
             "departement", "departement__region", "commune__intercommunalite"
         ).order_by("siren", "code_insee")
         if "with_flat_members" in self.get_serializer_context():
@@ -84,7 +82,7 @@ class CommuneViewSet(PublicAPIView, viewsets.ReadOnlyModelViewSet):
     """Communes en base."""
 
     queryset = (
-        Commune.objects.select_related(
+        core_models.Commune.objects.select_related(
             "departement",
             "departement__region",
             "intercommunalite",
@@ -92,14 +90,14 @@ class CommuneViewSet(PublicAPIView, viewsets.ReadOnlyModelViewSet):
         .order_by("code_insee")
         .all()
     )
-    serializer_class = CommuneSerializer
+    serializer_class = core_serializers.CommuneSerializer
     filterset_class = custom_filters.CommuneFilter
 
 
 # NOTE(cms): this should not be public. Make it private.
 class EventTypeViewSet(PublicAPIView, viewsets.ReadOnlyModelViewSet):
-    queryset = EventType.active_objects.all()
-    serializer_class = EventTypeSerializer
+    queryset = core_models.EventType.active_objects.all()
+    serializer_class = core_serializers.EventTypeSerializer
     filterset_class = custom_filters.EventTypeFilter
 
 
@@ -107,7 +105,7 @@ class UserMustUpdatePasswordView(PublicAPIView, generics.GenericAPIView):
     def get(self, request: Request, *args, **kwargs) -> Response:  # noqa: ANN002, ANN003, ARG002
         must_update_password = (
             "email" in request.GET
-            and Profile.objects.filter(
+            and users_models.Profile.objects.filter(
                 email=request.GET.get("email"), must_update_password=True
             ).exists()
         )
@@ -157,3 +155,41 @@ class UserPassword(generics.GenericAPIView):
         return Response(
             {"message": "Mot de passe mis à jour."}, status=status.HTTP_201_CREATED
         )
+
+
+class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = (
+        core_models.Procedure.objects.all()
+        .select_related(
+            "collectivite_porteuse",
+            "collectivite_porteuse__commune",
+            "parente",
+            "parente__collectivite_porteuse",
+            "parente__collectivite_porteuse__commune",
+        )
+        .prefetch_related(
+            "topics",
+            models.Prefetch(
+                "perimetre",
+                core_models.Commune.objects.select_related(
+                    "departement",
+                    "departement__region",
+                    "intercommunalite",
+                ),
+            ),
+            "parente__topics",
+            models.Prefetch(
+                "parente__perimetre",
+                core_models.Commune.objects.select_related(
+                    "departement",
+                    "departement__region",
+                    "intercommunalite",
+                ),
+            ),
+        )
+        .order_by("id")
+    )
+    authentication_classes = [SupabaseAuthentication]  # noqa: RUF012
+    permission_classes = [IsAuthenticated]  # noqa: RUF012
+    serializer_class = core_serializers.ProcedureSerializer
+    filterset_class = custom_filters.ProcedureFilter
