@@ -414,7 +414,7 @@ class Procedure(models.Model):
         blank=True, null=True
     )  # No reference in Nuxt's side but column is filled with different values.
     sudocu_secondary_procedure_of = models.IntegerField(blank=True, null=True)
-    shareable = models.BooleanField(db_default=True)
+    shareable = models.BooleanField(db_default=True, default=True)
     type = models.CharField(
         choices=core_enums.ProcedureType, default=core_enums.ProcedureType.ELABORATION
     )  # TextField in DB.

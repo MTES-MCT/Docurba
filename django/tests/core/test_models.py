@@ -815,6 +815,25 @@ class TestProcedure:
         )
         assert procedure.computed_name == expected_name
 
+        # With a "sectoriel" PLU.
+        expected_name = (
+            "Élaboration PLUiS Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+        communes = CommuneFactory.create_batch(3)
+        collectivite_porteuse = CollectiviteFactory(
+            nom="Syndicat mixte d'équipement de la commune de Beaucaire",
+            with_members=True,
+            with_members__list=communes,
+        )
+        procedure = ProcedureFactory(
+            name="",
+            collectivite_porteuse=collectivite_porteuse,
+            with_perimetre=communes[:2],
+            doc_type=core_enums.TypeDocument.PLU,
+        )
+        procedure = core_models.Procedure.objects.get(pk=procedure.pk)
+        assert procedure.computed_name == expected_name
+
     @pytest.mark.django_db
     def test_zone_name(self, django_assert_num_queries: DjangoAssertNumQueries) -> None:
         collectivite_porteuse = CollectiviteFactory(

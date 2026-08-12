@@ -1,15 +1,16 @@
 # ruff: noqa: N815, RUF012
-
-
 from django.db import models
 from rest_framework import serializers
 
-from docurba.core.enums import ProcedureType, TypeDocument
+from docurba.core.enums import CommuneType, ProcedureType, TypeDocument
 from docurba.core.models import (
     Collectivite,
     Commune,
+    CommuneProcedure,
     EventType,
     Procedure,
+    ProcedureTopic,
+    Project,
     Topic,
 )
 
@@ -268,37 +269,255 @@ class ProcedureNameSerializer(serializers.ModelSerializer):
 
 
 class ProcedureSerializer(serializers.ModelSerializer):
-    id = serializers.CharField()
-    parentId = serializers.UUIDField(source="parente_id")
-    collectivite_porteuse = CollectiviteSerializer()
-    docType = serializers.ChoiceField(choices=TypeDocument, source="type_document")
+    # Read only fields
+    id = serializers.CharField(read_only=True)
+    collectivite_porteuse = CollectiviteSerializer(read_only=True)
+    topics = TopicSerializer(read_only=True, many=True)
+    perimetre = CommuneSerializer(read_only=True, many=True)
+    name = serializers.CharField(read_only=True, source="computed_name")
+    approval_date = serializers.DateField(read_only=True, source="date_approbation")
+    project_id = serializers.CharField(read_only=True)
+    # Write only fields
+    perimetreCommunesCodes = serializers.ListField(
+        write_only=True,
+        required=False,
+        child=serializers.CharField(required=False, allow_blank=True),
+    )
+    collectiviteCode = serializers.CharField(
+        write_only=True,
+        allow_blank=True,
+        required=False,
+    )
+    topicsList = serializers.ListField(
+        write_only=True, child=serializers.CharField(), allow_empty=True
+    )
+    otherTopicComment = serializers.CharField(
+        required=False, allow_blank=True, write_only=True
+    )
+    nameComplement = serializers.CharField(
+        required=False, allow_blank=True, write_only=True, source="name_complement"
+    )
+    # Both
+    parentId = serializers.UUIDField(
+        source="parente_id", required=False, allow_null=True
+    )
+    docType = serializers.ChoiceField(
+        choices=TypeDocument,
+        source="type_document",
+        required=False,
+        allow_blank=True,
+    )
     startedBeforeHuwartLaw = serializers.BooleanField(
         source="started_before_huwart_law", default=False
     )
-    topics = TopicSerializer(many=True)
-    perimetre = CommuneSerializer(many=True)
-    name = serializers.CharField(source="computed_name")
-    approval_date = serializers.DateField(source="date_approbation")
+
+    def create(self, validated_data: dict) -> Procedure:
+        owner_id = self.context["request"].user.username
+        # Remove these keys from `validated_data` because they are not Procedure attributes.
+        topics_list = validated_data.pop("topicsList")
+        other_topic_comment = validated_data.pop("otherTopicComment")
+        principal_procedure = validated_data.get("parente_id")
+        if validated_data["type"] in ProcedureType.principal():
+            doc_type = validated_data.pop("type_document")
+            collectivite_code = validated_data.pop("collectiviteCode")
+            perimetre_codes = validated_data.pop("perimetreCodes")
+            collectivite = (
+                Collectivite.objects.filter_by_code(collectivite_code)
+                .exclude(type__in=[CommuneType.COMA, CommuneType.COMD])
+                .get()
+            )
+            collectivite_porteuse = Procedure.get_collectivite_porteuse(
+                collectivite=collectivite, doc_type=doc_type
+            )
+            instance_data = validated_data | {
+                "doc_type": doc_type,
+                "testing": True,
+                "owner_id": owner_id,
+                "collectivite_porteuse": collectivite_porteuse,
+            }
+        else:
+            principal_procedure = Procedure.objects.get(pk=validated_data["parente_id"])
+            instance_data = {
+                "type": validated_data["type"],
+                "started_before_huwart_law": validated_data.get(
+                    "started_before_huwart_law", False
+                ),
+                "parente": principal_procedure,
+                "doc_type": principal_procedure.doc_type,
+                "collectivite_porteuse": principal_procedure.collectivite_porteuse,
+                "testing": True,
+                "owner_id": owner_id,
+                "name_complement": validated_data.get("name_complement"),
+                "numero": validated_data.get("numero", ""),
+            }
+
+        instance = super().create(validated_data=instance_data)
+
+        if validated_data["type"] in ProcedureType.principal():
+            perimetre = Commune.objects.filter(code_insee__in=perimetre_codes)
+        else:
+            perimetre = principal_procedure.perimetre.all()
+        communes_procedures = [
+            CommuneProcedure(
+                commune=commune,
+                procedure=instance,
+                commune_id=f"{commune.code_insee}_{commune.type}",
+                # Always a code_insee, never a SIREN.
+                collectivite_code=commune.code_insee,
+                # In enums.CommuneType only
+                collectivite_type=commune.type,
+                opposable=False,
+                departement=commune.departement.code_insee,
+            )
+            for commune in perimetre
+        ]
+        CommuneProcedure.objects.bulk_create(communes_procedures)
+        instance.update_perimetre_denormalized_fields(save=False)
+
+        if validated_data["type"] in ProcedureType.principal():
+            project_collectivite = collectivite_porteuse
+            if (
+                collectivite.type in CommuneType
+                and collectivite.commune.intercommunalite
+            ):
+                project_collectivite = collectivite.commune.intercommunalite
+
+            # The test column will be deleted during the big refactoring.
+            project = Project.objects.create(
+                name=f"{validated_data['type']} {doc_type}",
+                doc_type=doc_type,
+                region=collectivite.departement.region.code_insee,
+                collectivite_id=project_collectivite.siren
+                or project_collectivite.code_insee,
+                collectivite_porteuse_id=collectivite_porteuse.siren
+                or collectivite_porteuse.code_insee,
+                test=True,
+                owner_id=owner_id,
+                current_perimetre=instance.current_perimetre,
+            )
+        else:
+            project = principal_procedure.project
+        instance.project_id = project.pk
+
+        topics_by_name = {
+            topic["name"]: topic["id"] for topic in Topic.objects.values("name", "id")
+        }
+
+        procedure_topics = [
+            ProcedureTopic(
+                procedure_id=instance.pk,
+                topic_id=topics_by_name[topic],
+                comment=other_topic_comment if topic == "other" else "",
+            )
+            for topic in topics_list
+        ]
+        ProcedureTopic.objects.bulk_create(procedure_topics)
+        # The selected doc type does not include the S information and is sometimes wrong.
+        # Setting it in the instance.save method would make the code
+        # really complicated and would had unexpected side effects.
+        # Until we clean every procedure.doc_type, and remove the
+        # Procedure.type_document method, set the doc_type here.
+        instance.doc_type = instance.type_document
+        instance.save()
+        return instance
+
+    def validate_collectiviteCode(self, value: str) -> str:  # noqa: N802
+        if value and (
+            not Collectivite.objects.filter_by_code(value)
+            .exclude(type__in=[CommuneType.COMA, CommuneType.COMD])
+            .exists()
+        ):
+            raise serializers.ValidationError("Collectivité not found")  # noqa:EM101,TRY003
+        return value
+
+    def validate_parentId(self, value: str) -> str:  # noqa: N802
+        if value and (not Procedure.objects.filter(pk=value).exists()):
+            raise serializers.ValidationError("Principal procedure not found.")  # noqa:EM101,TRY003
+        return value
+
+    def validate_perimetreCodes(self, values: str) -> str:  # noqa: N802
+        values = [value for value in values if value != ""]
+        if values:
+            found_communes = Commune.objects.filter(code_insee__in=values).values_list(
+                "code_insee", flat=True
+            )
+            not_found = [code for code in values if code not in found_communes]
+            if not_found:
+                raise serializers.ValidationError(
+                    (f"Following communes have not been found: {not_found}.",),
+                )
+        return values
+
+    def validate(self, data: dict) -> dict:
+        error_msg = None
+        if len(data["perimetreCodes"]) == 1 and data["type_document"] in [
+            "PLUi",
+            "PLUiH",
+            "PLUiM",
+            "PLUiHM",
+            "SCOT",
+        ]:
+            error_msg = f"{data['type_document']} is an intermunicipality document but only one town has been selected."
+
+        if len(data["perimetreCodes"]) > 1 and data["type_document"] in [
+            "CC",
+            "PLU",
+        ]:
+            error_msg = f"{data['type_document']} is a municipality document but many towns have been selected."
+
+        other_topic_comment = data.get("otherTopicComment")
+        if other_topic_comment and "other" not in data.get("topicsList", []):
+            error_msg = (
+                "Un commentaire Autre ne peut être enregistré que pour l'objet Autre."
+            )
+        if "other" in data.get("topicsList", []) and not other_topic_comment:
+            error_msg = (
+                "Un commentaire est obligatoire car l'objet Autre a été sélectionné."
+            )
+        principal_procedure_required_fields = [
+            "collectiviteCode",
+            "perimetreCodes",
+            "type_document",
+        ]
+        if not data.get("parente_id") and not all(
+            field in data for field in principal_procedure_required_fields
+        ):
+            raise serializers.ValidationError(
+                (
+                    f"Missing principal procedure required field. Mandatory fields are: {principal_procedure_required_fields}",
+                ),
+            )
+
+        if error_msg:
+            raise serializers.ValidationError(error_msg)
+        return data
 
     class Meta:
         model = Procedure
         read_only_fields = [
             "id",
+            "collectivite_porteuse",
+            "topics",
+            "perimetre",
+            "name",
+            "approval_date",
             "project_id",
+            "status",  # Nuxt one
+        ]
+        write_only_fields = [
+            "perimetreCodes",
+            "collectiviteCode",
+            "topicsList",
+            "otherTopicComment",
+            "nameComplement",
         ]
         fields = [
             *read_only_fields,
-            "collectivite_porteuse",
-            "project_id",
-            "perimetre",
+            *write_only_fields,
+            "parentId",
             "docType",
             "startedBeforeHuwartLaw",
             "type",
             "numero",
-            "name",
-            "status",
-            "topics",
-            "approval_date",
-            "parentId",
         ]
         depth = 4
