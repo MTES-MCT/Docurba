@@ -51,12 +51,14 @@ ignore = [
     "E501",   # Line too long
     "TD",     # Todos
     "PLR0913", # Too many arguments in function definition
+    "CPY001", # Missing copyright notice at top of file
     # "ERA001", # Commented out code
 ]
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**.py" = [
     "S101",    # asserts allowed in tests...
     "PLR2004", # Magic value used in comparison
+    "PLR0917", # Too many positional arguments
 ]
 "**/migrations/**.py" = [
     "RUF012", # Mutable default values in class attributes

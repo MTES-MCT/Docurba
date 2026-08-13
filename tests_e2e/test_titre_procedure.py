@@ -7,6 +7,8 @@ import pytest
 from dotenv import load_dotenv
 from playwright.sync_api import Page, expect
 
+logger = logging.getLogger(__name__)
+
 ORIGIN = "http://localhost:3000"
 ROOT_DIR = Path(__file__).parent
 
@@ -15,17 +17,17 @@ load_dotenv(ROOT_DIR / ".env.pytest")
 
 @pytest.fixture
 def page(new_context):
-    logging.warning(Path(__file__).parent)
+    logger.warning(Path(__file__).parent)
 
     storage_state = Path(ROOT_DIR / "playwright_state.json")
 
     if storage_state.exists():
-        logging.warning("Reusing login state")
+        logger.warning("Reusing login state")
         page = new_context(storage_state=storage_state).new_page()
         # page.set_default_timeout(5_000)
         yield page
     else:
-        logging.warning("Generating login state")
+        logger.warning("Generating login state")
         context = new_context()
         page = context.new_page()
         login(page)
