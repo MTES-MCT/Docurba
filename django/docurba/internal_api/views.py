@@ -1,12 +1,15 @@
 from django.db import models
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 
-from docurba.core.models import Collectivite, Commune, EventType
+from docurba.core.models import Collectivite, Commune, EventType, Procedure
 from docurba.internal_api import filters as custom_filters
+from docurba.internal_api.auth import SupabaseAuthentication
 from docurba.internal_api.serializers import (
     CollectiviteSerializer,
     CommuneSerializer,
     EventTypeSerializer,
+    ProcedureSerializer,
 )
 
 
@@ -88,3 +91,15 @@ class EventTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = EventType.objects.all()
     serializer_class = EventTypeSerializer
     filterset_class = custom_filters.EventTypeFilter
+
+
+class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Procedure.objects.all().order_by("id")
+    authentication_classes = [SupabaseAuthentication]  # noqa: RUF012
+    # https://github.com/django-guardian/django-guardian
+    # https://docs.djangoproject.com/en/6.0/ref/contrib/contenttypes/ for user class
+    permission_classes = [IsAuthenticated]  # noqa: RUF012
+    serializer_class = ProcedureSerializer
+    filterset_class = custom_filters.ProcedureFilter
+
+    # Because the get_object() method is not called, object level permissions from the has_object_permission() method are not applied when creating objects. In order to restrict object creation you need to implement the permission check either in your Serializer class or override the perform_create() method of your ViewSet class.
