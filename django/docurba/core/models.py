@@ -588,6 +588,25 @@ class Procedure(models.Model):
     def get_absolute_url(self) -> str:  # noqa: DJ012
         return f"/frise/{self.pk}"
 
+    # We need it to create the procedure.
+    @classmethod
+    def get_collectivite_porteuse(
+        cls,
+        collectivite,  # noqa: ANN001
+        doc_type: TypeDocument,
+    ):
+        collectivite_intercommunalite = (
+            collectivite.intercommunalite if collectivite.type in CommuneType else None
+        )
+
+        collectivite_porteuse = collectivite
+        if (
+            (doc_type == TypeDocument.SCOT and not collectivite.competence_schema)
+            or (doc_type != TypeDocument.SCOT and not collectivite.competence_plan)
+        ) and collectivite_intercommunalite:
+            collectivite_porteuse = collectivite_intercommunalite
+        return collectivite_porteuse
+
     _events_processed = False
 
     def _process_events(self) -> None:
