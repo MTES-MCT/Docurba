@@ -172,31 +172,27 @@ class BaseProcedureSerializer(serializers.ModelSerializer):
         owner_id = self.context["request"].user.username
 
         collectivite_code = validated_data["collectiviteCode"]
+        # As long as the code_insee is not in Collectivite,
+        # we have two classes.
         if len(collectivite_code) == 5:  # noqa: PLR2004
-            collectivite_qs = Commune.objects.filter(code_insee=collectivite_code)
+            collectivite_qs = Commune.objects.filter(
+                code_insee=collectivite_code
+            ).select_related("intercommunalite")
         else:
             collectivite_qs = Collectivite.objects.filter(siren=collectivite_code)
         collectivite = get_object_or_404(collectivite_qs)
-        collectivite_intercommunalite = (
-            collectivite.intercommunalite if collectivite.type in CommuneType else None
+        collectivite_porteuse = Procedure.get_collectivite_porteuse(
+            collectivite=collectivite, doc_type=validated_data["doc_type"]
         )
-
-        collectivite_porteuse = collectivite
-        if (
-            (
-                validated_data["doc_type"] == TypeDocument.SCOT
-                and not collectivite.competence_schema
-            )
-            or (
-                validated_data["doc_type"] != TypeDocument.SCOT
-                and not collectivite.competence_plan
-            )
-        ) and collectivite_intercommunalite:
-            collectivite_porteuse = collectivite_intercommunalite
 
         if validated_data["type"] in ProcedureType.principal():
             name = f"{validated_data['type']} {validated_data['doc_type']}"
-            collectivite_id = (
+            collectivite_intercommunalite = (
+                collectivite.intercommunalite
+                if collectivite.type in CommuneType
+                else None
+            )
+            project_collectivite_id = (
                 collectivite_intercommunalite.code_insee_unique
                 if collectivite_intercommunalite
                 else collectivite_porteuse.code_insee_unique
@@ -205,7 +201,7 @@ class BaseProcedureSerializer(serializers.ModelSerializer):
                 name=name,
                 doc_type=validated_data["doc_type"],
                 region=collectivite.departement.region.code_insee,
-                collectivite_id=collectivite_id,
+                collectivite_id=project_collectivite_id,
                 collectivite_porteuse_id=collectivite_porteuse.code_insee_unique,
                 test=True,
                 owner_id=owner_id,
