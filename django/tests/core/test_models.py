@@ -981,6 +981,61 @@ class TestProcedure:
         assert procedure.current_perimetre == expected_current_perimetre
         assert procedure.departements == expected_departements
 
+    @pytest.mark.django_db
+    def test_get_collectivite_porteuse(self) -> None:
+        collectivite_without_jurisdiction = CollectiviteFactory(
+            type=core_enums.TypeCollectivite.CC,
+            competence_plan=False,
+            competence_schema=False,
+        )
+        collectivite_with_jurisdiction = CollectiviteFactory(
+            type=core_enums.TypeCollectivite.CC,
+            competence_plan=True,
+            competence_schema=True,
+        )
+        intermunicipality = CollectiviteFactory(
+            type=core_enums.TypeCollectivite.CC,
+            competence_plan=True,
+            competence_schema=True,
+        )
+        commune_with_jurisdiction = CommuneFactory(
+            type=core_enums.TypeCollectivite.COM,
+            competence_plan=True,
+            competence_schema=True,
+            intercommunalite=intermunicipality,
+        )
+        commune_without_jurisdiction = CommuneFactory(
+            type=core_enums.TypeCollectivite.COM,
+            competence_plan=False,
+            competence_schema=False,
+            intercommunalite=intermunicipality,
+        )
+        for doc_type in [core_enums.TypeDocument.PLU, core_enums.TypeDocument.SCOT]:
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=collectivite_without_jurisdiction, doc_type=doc_type
+                )
+                == collectivite_without_jurisdiction
+            )
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=collectivite_with_jurisdiction, doc_type=doc_type
+                )
+                == collectivite_with_jurisdiction
+            )
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=commune_with_jurisdiction, doc_type=doc_type
+                )
+                == commune_with_jurisdiction
+            )
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=commune_without_jurisdiction, doc_type=doc_type
+                )
+                == intermunicipality
+            )
+
 
 class TestProcedureDates:
     @pytest.mark.django_db

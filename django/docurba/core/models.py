@@ -577,6 +577,30 @@ class Procedure(models.Model):
             raise ValidationError(message)
         super().clean()
 
+    # We need it to create the procedure.
+    @classmethod
+    def get_collectivite_porteuse(  # noqa: ANN206
+        cls,
+        collectivite,  # noqa: ANN001
+        doc_type: core_enums.TypeDocument,
+    ):
+        if (
+            (
+                (
+                    doc_type == core_enums.TypeDocument.SCOT
+                    and not collectivite.competence_schema
+                )
+                or (
+                    doc_type != core_enums.TypeDocument.SCOT
+                    and not collectivite.competence_plan
+                )
+            )
+            and collectivite.type in core_enums.CommuneType
+            and collectivite.commune.intercommunalite
+        ):
+            collectivite = collectivite.commune.intercommunalite
+        return collectivite
+
     _events_processed = False
 
     def _process_events(self) -> None:
