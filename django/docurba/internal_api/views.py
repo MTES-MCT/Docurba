@@ -85,6 +85,6 @@ class CommuneViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class EventTypeViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = EventType.objects.all()
+    queryset = EventType.active_objects.all()
     serializer_class = EventTypeSerializer
     filterset_class = custom_filters.EventTypeFilter

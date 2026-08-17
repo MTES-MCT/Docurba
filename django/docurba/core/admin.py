@@ -348,7 +348,7 @@ class EventTypeAdmin(admin.ModelAdmin):
     search_fields = ("name", "sudocuh_name", "sudocuh_code")
 
     def get_queryset(self, request) -> models.QuerySet:
-        return self.model.all_objects.get_queryset()
+        return self.model.objects.get_queryset()
 
     def has_delete_permission(self, request, obj=None) -> bool:
         return False
