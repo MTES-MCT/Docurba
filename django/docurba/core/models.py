@@ -422,6 +422,9 @@ class Procedure(models.Model):
     shareable = models.BooleanField(db_default=False)
     type = models.CharField(blank=True, null=True)  # noqa: DJ001 # TextField in DB.
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001 # TextField in DB.
+    # collectivite_porteuse should be non null and reference an unique non nullable column
+    # As code_insee_unique is nullable and non unique, the integrity is not ensured
+    # see django/docurba/core/management/commands/list_inconsistencies_procedure_collectivite_porteuse_inexisting.py
     collectivite_porteuse = models.ForeignKey(
         "Collectivite",
         models.DO_NOTHING,
