@@ -95,9 +95,6 @@ if [[ ${BACKUPS_SUPABASE_MODIFY_TRIGGERS} == "True" ]]; then
   echo "Activation des extensions"
   psql --dbname ${database_restoration_url} --file ${script_folder_path}/activate_extensions.sql
 
-  if [[ ! -n ${NUXT3_API_URL} ]]; then
-    echo "Impossible de modifier les déclencheurs car la variable NUXT3_API_URL n'est pas définie."
-  fi
   echo "Suppression et modification des déclencheurs."
   psql --dbname ${database_restoration_url} --file ${script_folder_path}/drop_update_triggers.sql
 fi
