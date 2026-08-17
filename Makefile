@@ -36,27 +36,14 @@ START_NUXT_CMD := . ${HOME}/.nvm/nvm.sh && cd nuxt && nvm use && direnv exec . n
 start_nuxt:
 	$(START_NUXT_CMD)
 
-# Nuxt3
-NUXT3_PATH ?= "../docurba-nuxt3"
-
-clean_nuxt3:
-	rm -Rf ${NUXT3_PATH}/{.nuxt,node_modules}
-
-install_nuxt3:
-	. ${HOME}/.nvm/nvm.sh && cd ${NUXT3_PATH} && nvm install && nvm use && npm install
-
-START_NUXT3_CMD := . ${HOME}/.nvm/nvm.sh && cd ${NUXT3_PATH} && nvm use && direnv exec . npm run dev
-start_nuxt3:
-	$(START_NUXT3_CMD)
-
 
 # All
-clean: clean_django clean_nuxt clean_nuxt3
+clean: clean_django clean_nuxt
 
-install: install_django install_nuxt install_nuxt3
+install: install_django install_nuxt
 
 start: start_supabase
-	@trap 'kill $$DJANGO_PID $$NUXT_PID $$NUXT3_PID 2>/dev/null; exit 1' SIGINT SIGTERM; \
+	@trap 'kill $$DJANGO_PID $$NUXT_PID 2>/dev/null; exit 1' SIGINT SIGTERM; \
 	echo "=== Starting Development Environment ==="; \
 	\
 	echo "Starting django..."; \
@@ -69,14 +56,9 @@ start: start_supabase
 	NUXT_PID=$$!; \
 	echo "nuxt running with PID: $$NUXT_PID"; \
 	\
-	echo "Starting nuxt3..."; \
-	( $(START_NUXT3_CMD) 2>&1 | sed 's/^/[nuxt3] /' ) & \
-	NUXT3_PID=$$!; \
-	echo "nuxt3 running with PID: $$NUXT3_PID"; \
-	\
-	wait $$DJANGO_PID $$NUXT_PID $$NUXT3_PID; \
+	wait $$DJANGO_PID $$NUXT_PID; \
 	echo "=== One process exited. Cleaning up ==="; \
-	kill $$DJANGO_PID $$NUXT_PID $$NUXT3_PID 2>/dev/null; \
+	kill $$DJANGO_PID $$NUXT_PID 2>/dev/null; \
 	exit 0
 
 database_restore: start_supabase
