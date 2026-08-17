@@ -13,7 +13,7 @@ export default {
       return ENVIRONMENT_LABEL[process.env.USER_ENVIRONMENT]
     },
     visible () {
-      return this.environment !== ENVIRONMENT.PRODUCTION
+      return process.env.USER_ENVIRONMENT !== ENVIRONMENT.PRODUCTION
     }
   }
 }
