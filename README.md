@@ -58,14 +58,6 @@ sudo dnf install uv direnv postgresql https://github.com/supabase/cli/releases/d
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
 ```
 
-### Cloner le dépôt Nuxt 3
-
-- Clôner [le dépôt Nuxt 3](https://github.com/betagouv/docurba-nuxt3/) et renseigner la variable d'environnement NUXT3_PATH avec le chemin du dépôt clôné :
-
-```
-cd .. && git clone git@github.com:betagouv/docurba-nuxt3.git && cd -
-```
-
 ### Configuration direnv
 
 Copier les fichiers `.env.example` vers `.envrc` et autoriser direnv à y accéder :
@@ -73,7 +65,6 @@ Copier les fichiers `.env.example` vers `.envrc` et autoriser direnv à y accéd
 ```
 cd nuxt && cp .env.example .envrc && direnv allow && cd -
 cd django && cp .env.example .envrc && direnv allow && cd -
-cd ${NUXT3_PATH} && cp .env.example .envrc && direnv allow && cd -
 ```
 
 Pour éviter d'avoir à utiliser `direnv allow` à chaque modification de `.envrc`, modifier la config direnv comme suit :
@@ -82,7 +73,7 @@ Pour éviter d'avoir à utiliser `direnv allow` à chaque modification de `.envr
 mkdir -p ~/.config/direnv
 cat >> ~/.config/direnv/direnv.toml <<EOF
 [whitelist]
-prefix = [ "/path/to/docurba-nuxt3", "/path/to/Docurba" ]
+prefix = [ "/path/to/Docurba" ]
 EOF
 ```
 

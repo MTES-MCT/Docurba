@@ -19,5 +19,4 @@ jobs:
     - name: ⏰ Réveil des apps de prod
       run: |
         scalingo --app docurba integration-link-manual-deploy main
-        scalingo --app docurba-nuxt3 integration-link-manual-deploy main
         scalingo --app docurba-django integration-link-manual-deploy main
