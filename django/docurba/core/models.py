@@ -941,8 +941,8 @@ class EventType(models.Model):
         verbose_name="mis à jour le", auto_now=True, null=True
     )
 
-    objects = ActiveEventTypeManager()
-    all_objects = EventTypeManager()
+    objects = EventTypeManager()
+    active_objects = ActiveEventTypeManager()
 
     class Meta:
         verbose_name = "type d'évènement"
