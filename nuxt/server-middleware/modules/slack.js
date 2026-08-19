@@ -3,7 +3,12 @@ const axios = require('axios')
 const _ = require('lodash')
 const geo = require('./geo.js')
 const supabase = require('./supabase.js')
-const preposition = userEnvironment.messageProposition() + ' '
+
+function getPreposition() {
+  const preposition = userEnvironment.messageProposition()
+  return preposition ? preposition + ' ' : ''
+}
+const preposition = getPreposition()
 
 module.exports = {
   shareProcedure ({ from, to, type, procedure, pac }) {
