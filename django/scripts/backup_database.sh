@@ -44,6 +44,16 @@ echo "Réception de la base Supabase."
 # L'export est réalisé en SQL et non en suivant un format dédié
 # (plain sql au lieu de --format c) pour garder le même format que
 # celui de la base de données téléchargeable sur l'interface web de Supabase.
+#
+# Transformation de certaines commandes en commentaires SQL (`--`) sur les conseils
+# de l'équipe Support de Supabase.
+# Je suppose que c'est dû au fait que ces schémas et ce rôle sont gérés par Supabase directement.
+#
+# La 1ere expression de sed est nécessaire pour éviter de lancer les déclencheurs (triggers) lors de la restauration.
+# https://www.postgresql.org/docs/15/runtime-config-client.html
+# L'expression commence par 1 pour indiquer à sed d'exécuter la commande seulement
+# sur la première ligne du fichier.
+# https://www.gnu.org/software/sed/manual/sed.html#sed-addresses
 ${HOME}/bin/pg_dump \
   --verbose \
   --dbname "${database_url}" \
@@ -53,28 +63,16 @@ ${HOME}/bin/pg_dump \
   --no-owner \
   --no-privileges \
   --exclude-schema 'extensions|graphql|graphql_public|net|tiger|pgbouncer|vault|realtime|supabase_functions|storage|pg*|information_schema'\
-  --schema '*' > ${backup_file_name}
-
-echo "Réception réalisée."
-
-# Transformation de certaines commandes en commentaires SQL (`--`) sur les conseils
-# de l'équipe Support de Supabase.
-# Je suppose que c'est dû au fait que ces schémas et ce rôle sont gérés par Supabase directement.
-sed --expression 's/^DROP SCHEMA IF EXISTS "auth";$/-- DROP SCHEMA IF EXISTS "auth";/'\
+  --schema '*' |
+sed --expression '1s/^/SET session_replication_role = replica;\n/'\
+    --expression 's/^DROP SCHEMA IF EXISTS "auth";$/-- DROP SCHEMA IF EXISTS "auth";/'\
     --expression 's/^DROP SCHEMA IF EXISTS "storage";$/-- DROP SCHEMA IF EXISTS "storage";/'\
     --expression 's/^CREATE SCHEMA "auth";$/-- CREATE SCHEMA "auth";/'\
     --expression 's/^CREATE SCHEMA "storage";$/-- CREATE SCHEMA "storage";/'\
-    --expression 's/^ALTER DEFAULT PRIVILEGES FOR ROLE "supabase_admin"/-- ALTER DEFAULT PRIVILEGES FOR ROLE "supabase_admin"/'\
- --in-place ${backup_file_name}
-# Nécessaire pour éviter de lancer les déclencheurs (triggers) lors de la restauration.
-# https://www.postgresql.org/docs/15/runtime-config-client.html
-# L'expression commence par 1 pour indiquer à sed d'exécuter la commande seulement
-# sur la première ligne du fichier.
-# https://www.gnu.org/software/sed/manual/sed.html#sed-addresses
-sed --expression '1s/^/SET session_replication_role = replica;\n/' --in-place ${backup_file_name}
+    --expression 's/^ALTER DEFAULT PRIVILEGES FOR ROLE "supabase_admin"/-- ALTER DEFAULT PRIVILEGES FOR ROLE "supabase_admin"/' |
+gzip --best - --stdout > ${backup_file_name}.gz
 
-# La compression supprime le fichier d'origine.
-gzip --verbose --best ${backup_file_name}
+echo "Réception réalisée."
 
 # La condition suivante ne fonctionne pas systématiquement.
 # voir https://github.com/MTES-MCT/Docurba/issues/1632
