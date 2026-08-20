@@ -17,7 +17,6 @@ jobs:
     outputs:
       app_matrix: ${{ steps.config.outputs.apps }}
       SUPABASE_REVIEW_APP_NAME: ${{ steps.config.outputs.SUPABASE_REVIEW_APP_NAME }}
-      NUXT_3_REVIEW_APP_NAME: ${{ steps.config.outputs.NUXT_3_REVIEW_APP_NAME }}
 
     steps:
       - name: Get configuration
@@ -28,7 +27,6 @@ jobs:
           NUXT_2_REVIEW_APP_NAME=docurba-nuxt-demo-pr${PR_ID}
           DJANGO_REVIEW_APP_NAME=docurba-django-demo-pr${PR_ID}
 
-          echo "NUXT_3_REVIEW_APP_NAME=docurba-nuxt3-pr${PR_ID}" >> $GITHUB_OUTPUT
           echo "SUPABASE_REVIEW_APP_NAME=supabase-pr${PR_ID}" >> $GITHUB_OUTPUT
 
           # APP MATRIX
@@ -61,26 +59,6 @@ jobs:
         then
           echo "Arrêt de l'environnement ${{matrix.app.name}}"
           scalingo --app "${{matrix.app.name}}" scale web:0
-        fi
-
-
-  delete_nuxt3:
-    needs: prepare
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: 🛠️ Installation de la CLI de Scalingo
-      uses: scalingo-community/setup-scalingo@87fe86eedc708ffb9d232c756b21f6a5784f6c8a # v0.1.1
-      with:
-        api_token: ${{ secrets.SCALINGO_API_TOKEN }}
-        region: 'osc-fr1'
-
-    - name: 🚮 Suppression de l'application
-      run: |
-        if scalingo apps-info --app ${{ needs.prepare.outputs.NUXT_3_REVIEW_APP_NAME }}
-        then
-          echo "Suppression de l'environnement ${{ needs.prepare.outputs.NUXT_3_REVIEW_APP_NAME }}"
-          scalingo destroy --app "${{ needs.prepare.outputs.NUXT_3_REVIEW_APP_NAME }}" --force
         fi
 
   delete_supabase:
