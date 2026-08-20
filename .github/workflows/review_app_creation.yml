@@ -354,6 +354,22 @@ jobs:
         api_token: ${{ secrets.SCALINGO_API_TOKEN }}
         region: 'osc-fr1'
 
+    - name: 🛠️ Installation de la CLI Supabase
+      uses: supabase/setup-cli@b60b5899c73b63a2d2d651b1e90db8d4c9392f51
+      with:
+        version: latest
+
+    - name: 🛠️ Remise a zero du schema de la BDD
+      id: db
+      env:
+        SUPABASE_ACCESS_TOKEN: ${{ secrets.TEST_SUPABASE_ACCESS_TOKEN }}
+        SUPABASE_PROJECT_ID: ${{ secrets.TEST_SUPABASE_PROJECT_ID }}
+      run: |
+        DB_SECRETS=$(supabase branches get ${{ needs.prepare.outputs.SUPABASE_REVIEW_APP_NAME }} -o json)
+
+        POSTGRES_URL=$(echo $DB_SECRETS | jq -r '.POSTGRES_URL')
+        supabase db reset --yes --no-seed --db-url "$POSTGRES_URL"
+
     - name: 🔂 Génération des données
       run: scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" run './scripts/restore_database.sh ${DATABASE_URL}' &> /dev/null
 
