@@ -61,6 +61,7 @@ export default ({ $collectiviteApi, $supabase, $dayjs }, inject) => {
           return Object.assign({}, collectivite, p)
         })
 
+        // WHAT?!
         procedure.current_perimetre = procedure.procedures_perimetres.filter(c => c.collectivite_type === 'COM').map((p) => {
           const commune = collectivites.find(com => com.code === p.collectivite_code)
 
