@@ -51,9 +51,10 @@ export default {
   },
   methods: {
     async getProcedures () {
-      this.collectivite = await this.$collectiviteApi.get(this.$route.params.collectiviteId, {
-        avec_membres: true
-      })
+      this.collectivite = await this.$collectiviteApi.getFromCode(
+        this.$route.params.collectiviteId,
+        { avec_membres: true }
+      )
       this.communes = this.isEpci ? this.collectivite.membres.filter(m => m.type.startsWith('COM')) : [this.collectivite]
 
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
