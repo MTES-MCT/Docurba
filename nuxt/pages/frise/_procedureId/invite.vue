@@ -154,12 +154,15 @@ export default
       this.procedure.project_id = this.procedure.project_id ?? this.procedure.secondary_procedure_of.project_id
       console.log('this.procedure.project_id  :::: ', this.procedure.project_id)
       const perimetre = this.procedure.procedures_perimetres.filter(c => c.type === 'COM')
-      const collectiviteId = perimetre.length === 1 ? perimetre[0].code : this.procedure.collectivite_porteuse_id
-
-      this.collectivite = await this.$collectiviteApi.get(collectiviteId, {
-        avec_groupements: true,
-        avec_membres: true
-      })
+      this.collectivite = await this.$collectiviteApi.getFromCode(
+        perimetre.length === 1
+          ? perimetre[0].code
+          : this.procedure.collectivite_porteuse_id,
+        {
+          avec_groupements: true,
+          avec_membres: true
+        }
+      )
 
       this.collaborators = await this.$sharing.getSuggestedCollaborators(this.collectivite)
       this.existingCollaboratorstoInvite = this.collaborators.filter((collab) => {

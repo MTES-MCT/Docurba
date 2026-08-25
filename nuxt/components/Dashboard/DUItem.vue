@@ -68,10 +68,13 @@ export default {
       this.collectivite = this.procedure.procedures_perimetres[0]
     } else {
       try {
-        this.collectivite = await this.$collectiviteApi.get(this.procedure.collectivite_porteuse_id, {
-          avec_groupements: true,
-          avec_membres: true
-        })
+        this.collectivite = await this.$collectiviteApi.getFromCode(
+          this.procedure.collectivite_porteuse_id,
+          {
+            avec_groupements: true,
+            avec_membres: true
+          }
+        )
       } catch (err) {
         console.log('no coll', this.procedure, this.collectivite)
       }
