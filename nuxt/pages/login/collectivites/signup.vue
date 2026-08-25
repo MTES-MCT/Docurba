@@ -30,6 +30,9 @@
                       </validation-provider>
                     </v-col>
                     <v-col cols="12">
+                      <InputsPasswordTextField v-model="userData.password" optional />
+                    </v-col>
+                    <v-col cols="12">
                       <div class="text-h2">
                         Qui êtes vous ?
                       </div>

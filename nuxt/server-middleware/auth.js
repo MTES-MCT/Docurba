@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+const _ = require('lodash')
 const express = require('express')
 const app = express()
 app.use(express.json())
@@ -108,15 +109,19 @@ app.post('/signinCollectivite', async (req, res) => {
 
 app.post('/signupCollectivite', async (req, res) => {
   try {
-    const { data: { user }, error: creationError } = await supabase.auth.admin.createUser({
-      email: req.body.userData.email
-    })
+    const email = req.body.userData.email
+    const password = req.body.userData.password
+    const { data: { user }, error: creationError } = await (
+      password
+        ? supabase.auth.signUp({ email, password })
+        : supabase.auth.admin.createUser({ email })
+    )
 
     if (creationError) { throw creationError }
 
     // Insert new profile
     const { data: insertedProfile, error: errorInsertProfile } = await supabase.from('profiles').insert({
-      ...req.body.userData,
+      ..._.omit(req.body.userData, ['password']),
       side: 'collectivite',
       user_id: user.id
     }).select()
