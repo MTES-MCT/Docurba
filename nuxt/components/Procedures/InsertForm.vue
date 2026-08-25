@@ -187,7 +187,7 @@
 
 <script>
 import { mdiInformationOutline, mdiOpenInNew } from '@mdi/js'
-import { uniqBy } from 'lodash'
+import { uniq, uniqBy } from 'lodash'
 import FormInput from '@/mixins/FormInput.js'
 
 export default {
@@ -357,16 +357,16 @@ export default {
         return []
       }
 
-      const collectiviteCodes = new Set(procedures.flatMap(p => [
-        p.collectivite_porteuse_id,
-        ...p.procedures_perimetres.map(c => c.collectivite_code)
-      ]))
-
-      const collectivites = await this.$collectiviteApi.list({
-        avec_groupements: true,
-        avec_membres: true,
-        codes_siren: Array.from(collectiviteCodes)
-      })
+      const collectivites = await this.$collectiviteApi.listFromCodes(
+        uniq(procedures.flatMap(p => [
+          p.collectivite_porteuse_id,
+          ...p.procedures_perimetres.map(c => c.collectivite_code)
+        ])),
+        {
+          avec_groupements: true,
+          avec_membres: true
+        }
+      )
 
       const enrichedProcedures = procedures.map((p) => {
         const comd = p.procedures_perimetres.find(c => c.collectivite_type === 'COMD')

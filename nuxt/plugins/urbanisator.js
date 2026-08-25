@@ -98,7 +98,7 @@ export default ({ $collectiviteApi, $supabase, $dayjs }, inject) => {
       return procedures
     },
     async getCollectiviteProcedures (collectiviteId) {
-      const collectivite = await $collectiviteApi.get(collectiviteId, {
+      const collectivite = await $collectiviteApi.getFromCode(collectiviteId, {
         avec_membres: true
       })
       const collectivites = [collectivite]

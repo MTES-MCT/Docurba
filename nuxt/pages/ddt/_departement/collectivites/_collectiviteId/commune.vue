@@ -78,15 +78,21 @@ export default {
   },
   methods: {
     async getProcedures () {
-      const collectivite = await this.$collectiviteApi.get(this.$route.params.collectiviteId, {
-        avec_groupements: true,
-        avec_membres: true
-      })
-      if (collectivite.intercommunaliteCode) {
-        collectivite.intercommunalite = await this.$collectiviteApi.get(collectivite.intercommunaliteCode, {
+      const collectivite = await this.$collectiviteApi.getFromCode(
+        this.$route.params.collectiviteId,
+        {
           avec_groupements: true,
           avec_membres: true
-        })
+        }
+      )
+      if (collectivite.intercommunaliteCode) {
+        collectivite.intercommunalite = await this.$collectiviteApi.getFromCode(
+          collectivite.intercommunaliteCode,
+          {
+            avec_groupements: true,
+            avec_membres: true
+          }
+        )
       }
       this.collectivite = collectivite
       const { plans, schemas } = await this.$urbanisator.getProjects(this.$route.params.collectiviteId)
