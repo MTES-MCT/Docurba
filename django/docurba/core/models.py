@@ -566,23 +566,7 @@ class Procedure(models.Model):
         )
 
     def __str__(self) -> str:
-        if self.name:
-            if (
-                self.name_complement
-                and not self.name.endswith(
-                    self.name_complement
-                )  # do not display twice the name_complement when the name already includes it (old procedures)
-            ):
-                return f"{self.name} - {self.name_complement}"
-            return self.name
-        numero = f" {self.numero}" if self.numero else ""
-        name_complement = f" - {self.name_complement}" if self.name_complement else ""
-        name_zone = (
-            f" {self.collectivite_porteuse}" if self.collectivite_porteuse else ""
-        )
-        return (
-            f"🤖 {self.type}{numero} {self.type_document}{name_zone}{name_complement}"
-        )
+        return ("🤖 " if not self.name else "") + self.computed_name
 
     def __lt__(self, other: Self) -> bool:
         if self.date_approbation and other.date_approbation:
@@ -611,6 +595,42 @@ class Procedure(models.Model):
             ):
                 setattr(self, event.category, event)
         self._events_processed = True
+
+    @property
+    def computed_name(self) -> str:
+        if self.name:
+            if (
+                self.name_complement
+                and not self.name.endswith(
+                    self.name_complement
+                )  # do not display twice the name_complement when the name already includes it (old procedures)
+            ):
+                return f"{self.name} - {self.name_complement}"
+            return self.name
+
+        return " ".join(
+            part
+            for part in [
+                self.type,
+                self.numero or "",
+                self.type_document,
+                self.zone_name,
+                f"- {self.name_complement}" if self.name_complement else "",
+            ]
+            if part
+        )
+
+    @property
+    def zone_name(self) -> str:
+        # If a prefetch has been made, use it here to avoid N+1 queries.
+        perimetre_qs = (
+            self._prefetched_objects_cache.get("perimetre", self.perimetre.all())
+            if hasattr(self, "_prefetched_objects_cache")
+            else self.perimetre.all()
+        )
+        if perimetre_qs.count() == 1:
+            return perimetre_qs[0].nom
+        return self.collectivite_porteuse.nom if self.collectivite_porteuse else ""
 
     @cached_property
     def dernier_event_impactant(self) -> "Event | None":

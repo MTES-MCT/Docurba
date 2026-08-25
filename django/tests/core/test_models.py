@@ -9,7 +9,12 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.utils import timezone
 from pytest_django import DjangoAssertNumQueries
 
-from docurba.core.enums import ProcedureType, ProjectSharingRoleType, TypeCollectivite
+from docurba.core.enums import (
+    CommuneType,
+    ProcedureType,
+    ProjectSharingRoleType,
+    TypeCollectivite,
+)
 from docurba.core.models import (
     EVENT_CATEGORY_BY_DOC_TYPE,
     Adhesion,
@@ -696,6 +701,102 @@ class TestProcedure:
     )
     def test_secondary_type(self, procedure_type: ProcedureType) -> None:
         assert Procedure(type=procedure_type).type in ProcedureType.secondary()
+
+    @pytest.mark.django_db
+    def test_computed_name(self) -> None:
+        expected_name = "Procedure name"
+        procedure = ProcedureFactory(name=expected_name)
+        assert procedure.computed_name == expected_name
+
+        expected_name = "Procedure name - with complement"
+        procedure = ProcedureFactory(
+            name="Procedure name", name_complement="with complement"
+        )
+        assert procedure.computed_name == expected_name
+
+        expected_name = "Procedure name with complement"
+        procedure = ProcedureFactory(
+            name=expected_name, name_complement="with complement"
+        )
+        assert procedure.computed_name == expected_name
+
+        # With zone name
+        expected_name = (
+            "Élaboration PLU Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+        procedure = ProcedureFactory(
+            name="",
+            collectivite_porteuse__for_snapshot=True,
+            doc_type=TypeDocument.PLU,
+        )
+        assert procedure.computed_name == expected_name
+
+        # With zone name and numero
+        expected_name = (
+            "Élaboration 1 PLU Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+        procedure = ProcedureFactory(
+            name="",
+            numero="1",
+            collectivite_porteuse__for_snapshot=True,
+            doc_type=TypeDocument.PLU,
+        )
+        assert procedure.computed_name == expected_name
+
+        # With zone name, numero and name complement
+        expected_name = "Élaboration 1 PLU Syndicat mixte d'équipement de la commune de Beaucaire - en cours"
+        procedure = ProcedureFactory(
+            name="",
+            numero="1",
+            name_complement="en cours",
+            collectivite_porteuse__for_snapshot=True,
+            doc_type=TypeDocument.PLU,
+        )
+        assert procedure.computed_name == expected_name
+
+    @pytest.mark.django_db
+    def test_zone_name(self) -> None:
+        collectivite_porteuse = CollectiviteFactory(
+            nom="CC de la Terre d'Argence", type=TypeCollectivite.CC
+        )
+
+        # Zone composed of one town.
+        procedure = ProcedureFactory(
+            with_perimetre=[CommuneFactory(nom="Beaucaire")],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.zone_name == "Beaucaire"
+
+        # Zone composed of two towns.
+        procedure = ProcedureFactory(
+            with_perimetre=[
+                CommuneFactory(nom="Beaucaire"),
+                CommuneFactory(nom="Argilliers"),
+            ],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.zone_name == "CC de la Terre d'Argence"
+
+        # Zone composed of two towns but only one is active.
+        procedure = ProcedureFactory(
+            with_perimetre=[
+                CommuneFactory(nom="Beaucaire"),
+                CommuneFactory(nom="Argilliers", type=CommuneType.COMD),
+            ],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.zone_name == "CC de la Terre d'Argence"
+
+        # Zone has a delegated town.
+        procedure = ProcedureFactory(
+            with_perimetre=[
+                CommuneFactory(nom="Beaucaire"),
+                CommuneFactory(nom="Nîmes"),
+                CommuneFactory(nom="Argilliers", type=CommuneType.COMD),
+            ],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.zone_name == "CC de la Terre d'Argence"
 
 
 class TestProcedureDates:
