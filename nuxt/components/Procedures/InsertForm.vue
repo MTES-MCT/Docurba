@@ -95,10 +95,10 @@
                   :items="proceduresParents"
                 >
                   <template #selection="{item}">
-                    {{ item.label }}
+                    {{ item.name }}
                   </template>
                   <template #item="{item}">
-                    {{ item.label }}
+                    {{ item.name }}
                   </template>
                 </v-select>
               </validation-provider>
@@ -205,7 +205,6 @@
 
 <script>
 import { mdiInformationOutline, mdiOpenInNew } from '@mdi/js'
-import axios from 'axios'
 import { uniqBy } from 'lodash'
 import FormInput from '@/mixins/FormInput.js'
 import { enrichProcedureWithEvents } from '@/plugins/procedure'
@@ -332,7 +331,7 @@ export default {
       return this.proceduresParents?.find(e => e.id === this.procedureParent)
     },
     procedureParentDocType () {
-      return this.proceduresParents?.find(e => e.id === this.procedureParent)?.doc_type
+      return this.proceduresParents?.find(e => e.id === this.procedureParent)?.docType
     },
     isLoaded () {
       return this.loaded && (this.procedureCategory === 'principale' || (this.procedureCategory === 'secondaire' && this.proceduresParents !== null))
@@ -341,7 +340,14 @@ export default {
       return (this.collectivite.type === 'COM' && this.perimetre.length > 1) || (this.collectivite.type !== 'COM' && this.perimetre.length < this.communes.length) ? 'S' : ''
     },
     baseName () {
-      return `${this.typeProcedure} ${this.numberProcedure} de ${(this.procedureParent ? this.procedureParentDocType : this.typeDu) + this.postfixSectoriel} ${this.collectivite.intitule}`.replace(/\s+/g, ' ').trim()
+      let name
+      if (this.procedureParentObj) {
+        const regexp = new RegExp(`${this.procedureParentDocType} (.*)`)
+        name = this.procedureParentObj.name.match(regexp)[0].replace(/\s+/g, ' ').trim()
+      } else {
+        name = `${(this.typeDu) + this.postfixSectoriel} ${this.collectivite.intitule}`
+      }
+      return `${this.typeProcedure} ${this.numberProcedure} de ${name}`.replace(/\s+/g, ' ').trim()
     },
     communes () {
       const coms = this.collectivite.membres || this.collectivite.intercommunalite.membres
@@ -393,90 +399,32 @@ export default {
   },
   methods: {
     async getProcedures () {
-      let query = this.$supabase.from('procedures').select('*, procedures_perimetres(*), doc_frise_events(*)').eq('is_principale', true).eq('status', 'opposable')
+      const payload = {
+        is_principale: true,
+        status: ['opposable']
+      }
 
       if (this.collectivite.type !== 'COM') {
-        query = query.eq('collectivite_porteuse_id', this.collectivite.code)
+        payload.collectivites_porteuses = [this.collectivite.code]
       } else {
-        query = query.contains('current_perimetre', `[{ "inseeCode": "${this.collectivite.code}" }]`)
+        payload.communes_perimetre = [this.collectivite.code]
       }
 
-      const { data: procedures, error } = await query
-
-      if (error) {
-        // eslint-disable-next-line no-console
-        console.log('error getProcedures', error)
-      }
-      if (procedures.length === 0) {
-        return []
-      }
-
-      const collectiviteCodes = new Set(procedures.flatMap(p => [
-        p.collectivite_porteuse_id,
-        ...p.procedures_perimetres.map(c => c.collectivite_code)
-      ]))
-
-      // TODO :: Migrate this to Django once `groupements` and `membres` are available in `/api-internes/collectivites/`
-      const { data: collectivites } = await axios({
-        url: '/api/geo/collectivites',
-        params: new URLSearchParams(collectiviteCodes.map(code => ['codes', code]))
-      })
-
-      const enrichedProcedures = procedures.map((p) => {
-        const comd = p.procedures_perimetres.find(c => c.collectivite_type === 'COMD')
-
-        const collectivite = collectivites.find((c) => {
-          if (comd) {
-            return c.code === comd.collectivite_code && c.type === 'COMD'
-          } else if (p.procedures_perimetres.length === 1) {
-            return c.code === p.procedures_perimetres[0].collectivite_code
-          } else { return c.code === p.collectivite_porteuse_id }
-        })
-
-        if (collectivite && comd) {
-          collectivite.intitule += ' COMD'
-        }
-
-        const approvalEvent = enrichProcedureWithEvents(p).approval_event
-        const enrichedProcedure = {
-          collectivite,
-          porteuse: collectivites.find(c => c.code === p.collectivite_porteuse_id),
-          ...p
-        }
-
-        return {
-          ...enrichedProcedure,
-          label: `${
-            this.$utils.formatProcedureName(enrichedProcedure, enrichedProcedure.porteuse)
-          }${
-            approvalEvent
-              ? ` - ${approvalEvent.date_iso_formattee}`
-              : ''
-          }`
-        }
-      })
-
-      if (this.collectivite.type !== 'COM') {
-        return enrichedProcedures.filter(e =>
-          e.current_perimetre && e.current_perimetre.length > 1
-        )
-      } else {
-        return enrichedProcedures
-      }
+      return await this.$djangoApi.get('/api-internes/procedures/', payload)
     },
     async createProcedure () {
       this.loadingSave = true
 
       try {
-        let perimetre
+        let detailedPerimetre
         if (this.procedureParent) {
-          perimetre = this.procedureParentObj.procedures_perimetres.map(perim => perim.collectivite_code)
+          detailedPerimetre = this.procedureParentObj.perimetre
         } else {
-          perimetre = this.perimetre
+          detailedPerimetre = await this.$djangoApi.get('/api-internes/communes/', {
+            code: this.perimetre,
+            type: 'COM'
+          })
         }
-        const detailedPerimetre = await this.$djangoApi.get('/api-internes/communes/', {
-          code: perimetre
-        })
         const oldFomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
         const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
         let insertedProject = null
@@ -546,9 +494,6 @@ export default {
           archived: false,
           dev_test: true
         }
-
-        // console.log('this.proceduresParents?.find(e => e.id === this.procedureParent): ', this.proceduresParents?.find(e => e.id === this.procedureParent))
-        // console.log('sender SHARING: ', sender)
 
         const { error: errorInsertedCollabs } = await this.$supabase.from('projects_sharing').insert(sender)
 
