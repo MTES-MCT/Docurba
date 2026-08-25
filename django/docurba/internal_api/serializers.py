@@ -154,6 +154,7 @@ class BaseProcedureSerializer(serializers.ModelSerializer):
     )
     topics = TopicSerializer(many=True)
     perimetre = CommuneSerializer(many=True)
+    name = serializers.CharField(source="computed_name")
 
     class Meta:
         model = Procedure

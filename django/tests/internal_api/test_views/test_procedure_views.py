@@ -349,6 +349,90 @@ class TestProcedureList:
         assert response.status_code == 200
         assert response.json()["results"][0]["topics"] == [{"name": "zan"}]
 
+    def test_procedure_name__one_commune(
+        self,
+        api_client_with_auth: SupabaseApiClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        collectivite, communes, logged_in_profile = (
+            self._create_collectivite_perimetre_profile()
+        )
+        ProcedureFactory(
+            name="",
+            collectivite_porteuse=collectivite,
+            with_perimetre=communes[:1],
+            id=uuid.UUID("11111111-7027-4aa5-8d19-222222222222"),
+            for_snapshot=True,
+        )
+        ProcedureFactory(name="", id=uuid.UUID("22222222-7027-4aa5-8d19-222222222222"))
+        ProcedureFactory(name="", id=uuid.UUID("33333333-7027-4aa5-8d19-333333333333"))
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(BASE_QUERIES),
+        ):
+            response = api_client.get(f"{self.url}")
+        assert response.status_code == 200
+        assert response.json()["results"][0]["name"] == "Élaboration PLU Beaucaire"
+
+    def test_procedure_name__comd(
+        self,
+        api_client_with_auth: SupabaseApiClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        collectivite, communes, logged_in_profile = (
+            self._create_collectivite_perimetre_profile()
+        )
+        ProcedureFactory(
+            name="",
+            collectivite_porteuse=collectivite,
+            with_perimetre=[
+                communes[0],
+                CommuneFactory(nom="Argilliers", type=CommuneType.COMD),
+            ],
+            id=uuid.UUID("11111111-7027-4aa5-8d19-222222222222"),
+            for_snapshot=True,
+        )
+        ProcedureFactory(name="", id=uuid.UUID("22222222-7027-4aa5-8d19-222222222222"))
+        ProcedureFactory(name="", id=uuid.UUID("33333333-7027-4aa5-8d19-333333333333"))
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(BASE_QUERIES),
+        ):
+            response = api_client.get(f"{self.url}")
+        assert response.status_code == 200
+        assert (
+            response.json()["results"][0]["name"]
+            == "Élaboration PLUiS Beaucaire (COM), Argilliers (COMD)"
+        )
+
+    def test_procedure_name__collectivite_porteuse(
+        self,
+        api_client_with_auth: SupabaseApiClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        collectivite, communes, logged_in_profile = (
+            self._create_collectivite_perimetre_profile()
+        )
+        ProcedureFactory(
+            name="",
+            collectivite_porteuse=collectivite,
+            with_perimetre=communes,
+            id=uuid.UUID("11111111-7027-4aa5-8d19-222222222222"),
+            for_snapshot=True,
+        )
+        ProcedureFactory(name="", id=uuid.UUID("22222222-7027-4aa5-8d19-222222222222"))
+        ProcedureFactory(name="", id=uuid.UUID("33333333-7027-4aa5-8d19-333333333333"))
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(BASE_QUERIES),
+        ):
+            response = api_client.get(f"{self.url}")
+        assert response.status_code == 200
+        assert (
+            response.json()["results"][0]["name"]
+            == "Élaboration PLUi Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+
     def test_nominal_principal_procedure_serializer(
         self,
         api_client_with_auth: SupabaseApiClient,
