@@ -156,6 +156,19 @@
           v-model="perimetre"
           :communes="communes"
         />
+        <v-row v-if="communeLink">
+          <v-col cols="12">
+            <p class="mb-0">
+              Vous ne pouvez pas créer de procédure concernant une seule commune depuis une EPCI.
+              <template v-if="communeLink.value">
+                Pour créer une procédure concernant uniquement {{ communeLink.label }},
+                <nuxt-link :to="communeLink.value">
+                  cliquez ici
+                </nuxt-link>.
+              </template>
+            </p>
+          </v-col>
+        </v-row>
         <v-row>
           <v-col cols="12" class="d-flex mt-8">
             <v-btn
@@ -163,7 +176,7 @@
               color="primary"
               depressed
               :loading="loadingSave"
-              :disabled="invalid"
+              :disabled="invalid || communeLink"
             >
               Créer la procédure
             </v-btn>
@@ -223,6 +236,25 @@ export default {
     }
   },
   computed: {
+    communeLink () {
+      if (this.communes.length === 1 || !this.perimetre || this.perimetre.length > 1) {
+        return null
+      }
+
+      const commune = this.communes.find(c => c.code === this.perimetre[0])
+
+      return commune
+        ? {
+            label: `${commune.intitule} (${commune.code})`,
+            value: {
+              params: {
+                ...this.$route.params,
+                collectiviteId: commune.code
+              }
+            }
+          }
+        : {}
+    },
     typeCompetence () {
       return this.typeDu === 'SCOT' ? 'competenceSCOT' : 'competencePLU'
     },
