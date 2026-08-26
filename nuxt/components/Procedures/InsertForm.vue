@@ -404,13 +404,19 @@ export default {
 
       try {
         let perimetre
+        let perimetreType
         if (this.procedureParent) {
           perimetre = this.procedureParentObj.procedures_perimetres.map(perim => perim.collectivite_code)
+          // Parent procedures can have COMA or COMD towns in their area
+          // whereas new procedure can't.
+          perimetreType = this.procedureParentObj.procedures_perimetres.map(perim => perim.collectivite_type)
         } else {
           perimetre = this.perimetre
+          perimetreType = ['COM']
         }
         const detailedPerimetre = await this.$djangoApi.get('/api-internes/communes/', {
-          code: perimetre
+          code: perimetre,
+          type: perimetreType
         })
         const oldFomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
         const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
