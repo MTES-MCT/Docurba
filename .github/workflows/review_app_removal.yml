@@ -70,7 +70,7 @@ jobs:
 
     steps:
     - name: 🛠️ Installation de la CLI de Scalingo
-      uses: scalingo-community/setup-scalingo@87fe86eedc708ffb9d232c756b21f6a5784f6c8a # v0.1.1
+      uses: scalingo-community/setup-scalingo@87fe86eedc708ffb9d232c756b21f6a5784f6c8a
       with:
         api_token: ${{ secrets.SCALINGO_API_TOKEN }}
         region: 'osc-fr1'
