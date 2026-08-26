@@ -406,10 +406,11 @@ export default {
         let perimetre
         let perimetreType
         if (this.procedureParent) {
-          perimetre = this.procedureParentObj.procedures_perimetres.map(perim => perim.collectivite_code)
+          perimetre = this.procedureParentObj.procedures_perimetres.filter(perim => perim.opposable).map(perim => perim.collectivite_code)
+          console.log('perimetre:', perimetre)
           // Parent procedures can have COMA or COMD towns in their area
           // whereas new procedure can't.
-          perimetreType = this.procedureParentObj.procedures_perimetres.map(perim => perim.collectivite_type)
+          perimetreType = this.procedureParentObj.procedures_perimetres.filter(perim => perim.opposable).map(perim => perim.collectivite_type)
         } else {
           perimetre = this.perimetre
           perimetreType = ['COM']
