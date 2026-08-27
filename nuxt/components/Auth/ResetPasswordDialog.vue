@@ -34,17 +34,18 @@ export default {
       dialog: false
     }
   },
-  mounted () {
-    this.$supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        const params = new URLSearchParams(this.$route.hash.split('#')[1])
-
-        this.resetToken = params.get('access_token')
-        this.dialog = true
-      } else {
-        // console.log('other event', event)
-      }
-    })
+  computed: {
+    isRecoveryRoute () {
+      return this.$route.query.type === 'recovery'
+    }
+  },
+  watch: {
+    isRecoveryRoute: {
+      handler (value) {
+        this.dialog = value
+      },
+      immediate: true
+    }
   },
   methods: {
     async resetPassword () {
