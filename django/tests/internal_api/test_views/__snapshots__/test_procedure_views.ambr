@@ -1,0 +1,664 @@
+# serializer version: 1
+# name: TestProcedureList.test_collectivites_porteuses[default_value]
+  list([
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '30001',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': 'Aigaliers',
+        'regionCode': '76',
+        'siren': '',
+        'type': 'COM',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-222222222222',
+      'name': "Révision du PLU d'Aigaliers",
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30001',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Aigaliers',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': '1cd65b57-7027-4aa5-8d19-333333333333',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '30002',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': 'Aigremont',
+        'regionCode': '76',
+        'siren': '',
+        'type': 'COM',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-444444444444',
+      'name': "Révision du PLU d'Aigremont",
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30002',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Aigremont',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': '1cd65b57-7027-4aa5-8d19-555555555555',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+        'regionCode': '76',
+        'siren': '253000020',
+        'type': 'SMO',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'name': 'Élaboration du PLU de Nantes',
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30032',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Beaucaire',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+  ])
+# ---
+# name: TestProcedureList.test_collectivites_porteuses[not_found]
+  list([
+  ])
+# ---
+# name: TestProcedureList.test_collectivites_porteuses[one_collectivite_porteuse_code_insee]
+  list([
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '30001',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': 'Aigaliers',
+        'regionCode': '76',
+        'siren': '',
+        'type': 'COM',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-222222222222',
+      'name': "Révision du PLU d'Aigaliers",
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30001',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Aigaliers',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': '1cd65b57-7027-4aa5-8d19-333333333333',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+  ])
+# ---
+# name: TestProcedureList.test_collectivites_porteuses[one_collectivite_porteuse_siren]
+  list([
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+        'regionCode': '76',
+        'siren': '253000020',
+        'type': 'SMO',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'name': 'Élaboration du PLU de Nantes',
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30032',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Beaucaire',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+  ])
+# ---
+# name: TestProcedureList.test_collectivites_porteuses[several_collectivites_porteuses]
+  list([
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '30001',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': 'Aigaliers',
+        'regionCode': '76',
+        'siren': '',
+        'type': 'COM',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-222222222222',
+      'name': "Révision du PLU d'Aigaliers",
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30001',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Aigaliers',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': '1cd65b57-7027-4aa5-8d19-333333333333',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+        'regionCode': '76',
+        'siren': '253000020',
+        'type': 'SMO',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'name': 'Élaboration du PLU de Nantes',
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30032',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Beaucaire',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+  ])
+# ---
+# name: TestProcedureList.test_communes_perimetre[default_value]
+  list([
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+        'regionCode': '76',
+        'siren': '253000020',
+        'type': 'SMO',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-222222222222',
+      'name': 'Seconde procédure',
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30034',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Bellegarde',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+        'regionCode': '76',
+        'siren': '253000020',
+        'type': 'SMO',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-333333333333',
+      'name': 'Troisième procédure',
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30117',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Fourques',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+        'regionCode': '76',
+        'siren': '253000020',
+        'type': 'SMO',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'name': 'Élaboration du PLU de Nantes',
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30032',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Beaucaire',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+  ])
+# ---
+# name: TestProcedureList.test_communes_perimetre[not_found]
+  list([
+  ])
+# ---
+# name: TestProcedureList.test_communes_perimetre[one_commune]
+  list([
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+        'regionCode': '76',
+        'siren': '253000020',
+        'type': 'SMO',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'name': 'Élaboration du PLU de Nantes',
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30032',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Beaucaire',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+  ])
+# ---
+# name: TestProcedureList.test_communes_perimetre[several_communes]
+  list([
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+        'regionCode': '76',
+        'siren': '253000020',
+        'type': 'SMO',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-222222222222',
+      'name': 'Seconde procédure',
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30034',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Bellegarde',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+    dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+        'regionCode': '76',
+        'siren': '253000020',
+        'type': 'SMO',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'name': 'Élaboration du PLU de Nantes',
+      'numero': '1',
+      'parent': None,
+      'perimetre': list([
+        dict({
+          'code': '30032',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Beaucaire',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+  ])
+# ---
+# name: TestProcedureList.test_is_principale_filter[default_value]
+  2
+# ---
+# name: TestProcedureList.test_is_principale_filter[is_principale0]
+  1
+# ---
+# name: TestProcedureList.test_is_principale_filter[is_principale1]
+  1
+# ---
+# name: TestProcedureList.test_nominal_principal_procedure_serializer
+  dict({
+    'count': 1,
+    'next': None,
+    'num_pages': 1,
+    'previous': None,
+    'results': list([
+      dict({
+        'collectivite_porteuse': dict({
+          'codeInsee': '',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+          'regionCode': '76',
+          'siren': '253000020',
+          'type': 'SMO',
+        }),
+        'docType': 'PLU',
+        'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+        'name': 'Élaboration du PLU de Nantes',
+        'numero': '1',
+        'parent': None,
+        'perimetre': list([
+          dict({
+            'code': '30032',
+            'departementCode': '30',
+            'intercommunaliteCode': '',
+            'intitule': 'Beaucaire',
+            'regionCode': '76',
+            'type': 'COM',
+          }),
+          dict({
+            'code': '30034',
+            'departementCode': '30',
+            'intercommunaliteCode': '',
+            'intitule': 'Bellegarde',
+            'regionCode': '76',
+            'type': 'COM',
+          }),
+          dict({
+            'code': '30117',
+            'departementCode': '30',
+            'intercommunaliteCode': '',
+            'intitule': 'Fourques',
+            'regionCode': '76',
+            'type': 'COM',
+          }),
+          dict({
+            'code': '30135',
+            'departementCode': '30',
+            'intercommunaliteCode': '',
+            'intitule': 'Jonquières-Saint-Vincent',
+            'regionCode': '76',
+            'type': 'COM',
+          }),
+          dict({
+            'code': '30336',
+            'departementCode': '30',
+            'intercommunaliteCode': '',
+            'intitule': 'Vallabrègues',
+            'regionCode': '76',
+            'type': 'COM',
+          }),
+        ]),
+        'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
+        'startedBeforeHuwartLaw': False,
+        'status': 'en cours',
+        'topics': list([
+        ]),
+        'type': 'Élaboration',
+      }),
+    ]),
+  })
+# ---
+# name: TestProcedureList.test_nominal_secondary_procedure_serializer
+  dict({
+    'collectivite_porteuse': dict({
+      'codeInsee': '',
+      'departementCode': '30',
+      'intercommunaliteCode': '',
+      'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+      'regionCode': '76',
+      'siren': '253000020',
+      'type': 'SMO',
+    }),
+    'docType': 'PLU',
+    'id': '1cd65b57-7027-4aa5-8d19-222222222222',
+    'name': 'Révision du PLU de Nantes',
+    'numero': '1',
+    'parent': dict({
+      'collectivite_porteuse': dict({
+        'codeInsee': '',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
+        'regionCode': '76',
+        'siren': '253000020',
+        'type': 'SMO',
+      }),
+      'docType': 'PLU',
+      'id': '1cd65b57-7027-4aa5-8d19-111111111111',
+      'name': 'Élaboration du PLU de Nantes',
+      'numero': '1',
+      'perimetre': list([
+        dict({
+          'code': '30032',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Beaucaire',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+        dict({
+          'code': '30034',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Bellegarde',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+        dict({
+          'code': '30117',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Fourques',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+        dict({
+          'code': '30135',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Jonquières-Saint-Vincent',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+        dict({
+          'code': '30336',
+          'departementCode': '30',
+          'intercommunaliteCode': '',
+          'intitule': 'Vallabrègues',
+          'regionCode': '76',
+          'type': 'COM',
+        }),
+      ]),
+      'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
+      'startedBeforeHuwartLaw': False,
+      'status': 'en cours',
+      'topics': list([
+      ]),
+      'type': 'Élaboration',
+    }),
+    'perimetre': list([
+      dict({
+        'code': '30032',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': 'Beaucaire',
+        'regionCode': '76',
+        'type': 'COM',
+      }),
+      dict({
+        'code': '30034',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': 'Bellegarde',
+        'regionCode': '76',
+        'type': 'COM',
+      }),
+      dict({
+        'code': '30117',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': 'Fourques',
+        'regionCode': '76',
+        'type': 'COM',
+      }),
+      dict({
+        'code': '30135',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': 'Jonquières-Saint-Vincent',
+        'regionCode': '76',
+        'type': 'COM',
+      }),
+      dict({
+        'code': '30336',
+        'departementCode': '30',
+        'intercommunaliteCode': '',
+        'intitule': 'Vallabrègues',
+        'regionCode': '76',
+        'type': 'COM',
+      }),
+    ]),
+    'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
+    'startedBeforeHuwartLaw': False,
+    'status': 'en cours',
+    'topics': list([
+    ]),
+    'type': 'Élaboration',
+  })
+# ---

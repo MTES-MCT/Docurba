@@ -541,10 +541,7 @@ class Procedure(models.Model):
         )
 
     def __str__(self) -> str:
-        return (
-            self.name
-            or f"🤖 {self.type} {self.numero or ''} {self.type_document} {self.collectivite_porteuse}"
-        )
+        return self.name or f"🤖 {self.computed_name}"
 
     def __lt__(self, other: Self) -> bool:
         if self.date_approbation and other.date_approbation:
@@ -555,6 +552,39 @@ class Procedure(models.Model):
 
     def get_absolute_url(self) -> str:
         return f"/frise/{self.pk}"
+
+    @property
+    def computed_name(self) -> str:
+        return self.name or " ".join(
+            part
+            for part in [
+                self.type,
+                self.numero or "",
+                self.type_document,
+                self.perimetre_name,
+            ]
+            if part
+        )
+
+    @property
+    def perimetre_name(self) -> str:
+        # If a prefetch has been made, use it here to avoid N+1 queries.
+        perimetre_qs = (
+            self._prefetched_objects_cache.get("perimetre", self.perimetre.all())
+            if hasattr(self, "_prefetched_objects_cache")
+            else self.perimetre.all()
+        )
+        if perimetre_qs.count() == 1:
+            return perimetre_qs[0].nom
+        if (
+            perimetre_qs.count() > 1
+            and [town.type for town in perimetre_qs].count(CommuneType.COM) == 1
+        ):
+            return ", ".join(
+                f"{town.nom} ({town.type})"
+                for town in sorted(perimetre_qs, key=lambda town: town.type)
+            )
+        return self.collectivite_porteuse.nom if self.collectivite_porteuse else ""
 
     _events_processed = False
 

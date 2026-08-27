@@ -9,7 +9,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.utils import timezone
 from pytest_django import DjangoAssertNumQueries
 
-from docurba.core.enums import TypeCollectivite
+from docurba.core.enums import CommuneType, TypeCollectivite
 from docurba.core.models import (
     EVENT_CATEGORY_BY_DOC_TYPE,
     Adhesion,
@@ -623,6 +623,72 @@ class TestProcedure:
         )
 
         assert procedure.perimetre.through.objects.count() == 1
+
+    @pytest.mark.django_db
+    def test_computed_name(self) -> None:
+        expected_name = "Procedure name"
+        procedure = ProcedureFactory(name=expected_name)
+        assert procedure.computed_name == expected_name
+
+        expected_name = (
+            "Élaboration 1 PLU Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+        procedure = ProcedureFactory(
+            name="",
+            numero="1",
+            collectivite_porteuse__for_snapshot=True,
+            doc_type=TypeDocument.PLU,
+        )
+        assert procedure.computed_name == expected_name
+
+        expected_name = (
+            "Élaboration PLU Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+        procedure = ProcedureFactory(
+            name="",
+            collectivite_porteuse__for_snapshot=True,
+            doc_type=TypeDocument.PLU,
+        )
+        assert procedure.computed_name == expected_name
+
+    @pytest.mark.django_db
+    def test_perimetre_name(self) -> None:
+        collectivite_porteuse = CollectiviteFactory(
+            nom="CC de la Terre d'Argence", type=TypeCollectivite.CC
+        )
+        procedure = ProcedureFactory(
+            with_perimetre=[CommuneFactory(nom="Beaucaire")],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.perimetre_name == "Beaucaire"
+
+        procedure = ProcedureFactory(
+            with_perimetre=[
+                CommuneFactory(nom="Beaucaire"),
+                CommuneFactory(nom="Argilliers"),
+            ],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.perimetre_name == "CC de la Terre d'Argence"
+
+        procedure = ProcedureFactory(
+            with_perimetre=[
+                CommuneFactory(nom="Beaucaire"),
+                CommuneFactory(nom="Argilliers", type=CommuneType.COMD),
+            ],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.perimetre_name == "Beaucaire (COM), Argilliers (COMD)"
+
+        procedure = ProcedureFactory(
+            with_perimetre=[
+                CommuneFactory(nom="Beaucaire"),
+                CommuneFactory(nom="Nîmes"),
+                CommuneFactory(nom="Argilliers", type=CommuneType.COMD),
+            ],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.perimetre_name == "CC de la Terre d'Argence"
 
 
 class TestProcedureDates:
