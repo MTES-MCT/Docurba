@@ -194,6 +194,9 @@ class Profile(models.Model):
     is_staff = models.BooleanField(
         verbose_name="Staff", default=False, help_text="Cache le compte"
     )
+    must_update_password = models.BooleanField(
+        verbose_name="mise à jour du mot de passe requise", default=False
+    )
 
     class Meta:
         # Table created by a pre_migrate signal in apps.py.
