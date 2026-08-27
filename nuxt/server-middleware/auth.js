@@ -34,7 +34,7 @@ app.post('/password', async (req, res) => {
       to: req.body.email,
       template_id: 'd-06e865fdc30d42a398fdc6bc532deb82',
       dynamic_template_data: {
-        redirectURL: properties.action_link,
+        redirectURL: `${properties.action_link}%3Ftype=recovery`,
         firstname: profile?.firstname,
         lastname: profile?.lastname
       }

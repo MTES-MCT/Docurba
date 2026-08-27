@@ -9,7 +9,7 @@ const defaultUser = {
   scope: null,
   isReady: false,
   user_metadata: {},
-  supabase_access_token: null,
+  supabase_access_token: null
 }
 
 function shouldRedirect (event) {
@@ -35,6 +35,11 @@ function handleRedirect ($supabase, event, user, router) {
   if (!shouldRedirect(event)) {
     return
   }
+
+  const query = router.currentRoute.query.type === 'recovery'
+    ? { type: 'recovery' }
+    : {}
+
   switch (user.profile.side) {
     case 'etat':
       if (user.profile.poste === 'dreal') {
@@ -45,14 +50,14 @@ function handleRedirect ($supabase, event, user, router) {
           return `${scopes[poste]}-${code}`
         }
 
-        router.push({ name: 'trames-githubRef', params: { githubRef: trameRef(user) } })
+        router.push({ name: 'trames-githubRef', params: { githubRef: trameRef(user) }, query })
       } else if (user.profile.poste === 'ddt') {
-        router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
+        router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement }, query })
       }
       break
 
     case 'ppa':
-      router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement } })
+      router.push({ name: 'ddt-departement-collectivites', params: { departement: user.profile.departement }, query })
       break
 
     case 'collectivite':
@@ -61,7 +66,7 @@ function handleRedirect ($supabase, event, user, router) {
         method: 'post',
         data: { userData: { email: user.email } }
       })
-      router.push({ name: 'collectivites-collectiviteId', params: { collectiviteId: user.profile.collectivite_id } })
+      router.push({ name: 'collectivites-collectiviteId', params: { collectiviteId: user.profile.collectivite_id }, query })
       break
     default:
       break

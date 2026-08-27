@@ -61,7 +61,9 @@ export default {
     if (typeof this.$user.isReady === 'function') {
       await this.$user.isReady.then((resolve, reject) => {
         if (this.$route.path === '/' && this.$user.profile.poste === 'ddt') {
-          this.$router.push(`ddt/${this.$user.profile.departement}/collectivites`)
+          this.$router.push(`ddt/${this.$user.profile.departement}/collectivites${
+            this.$route.query.type === 'recovery' ? '?type=recovery' : ''
+          }`)
         }
       })
     }
