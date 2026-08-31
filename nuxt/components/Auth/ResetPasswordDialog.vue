@@ -1,31 +1,38 @@
 <template>
   <v-dialog v-model="dialog" width="400" persistent>
     <v-card>
-      <v-card-title>
-        Changement de mot de passe
-      </v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col>
-            <InputsPasswordTextField v-model="password" :input-props="{label: 'Nouveau mot de passe'}" />
-          </v-col>
-        </v-row>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn depressed tile :loading="loading" color="primary" @click="resetPassword">
-          Valider
-        </v-btn>
-        <v-btn depressed tile text @click="dialog = false">
-          Annuler
-        </v-btn>
-      </v-card-actions>
+      <validation-observer ref="observerResetPassword" v-slot="{ handleSubmit }">
+        <form @submit.prevent="handleSubmit(resetPassword)">
+          <v-card-title>
+            Changement de mot de passe
+          </v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col cols="12">
+                <InputsPasswordTextField v-model="password" :input-props="{label: 'Nouveau mot de passe'}" />
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn depressed tile :loading="loading" color="primary" type="submit">
+              Valider
+            </v-btn>
+            <v-btn depressed tile text @click="signOut()">
+              Annuler
+            </v-btn>
+          </v-card-actions>
+        </form>
+      </validation-observer>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import FormInput from '@/mixins/FormInput.js'
+
 export default {
+  mixins: [FormInput],
   data () {
     return {
       password: '',
@@ -56,6 +63,15 @@ export default {
 
       this.loading = false
       this.dialog = false
+    },
+    async signOut () {
+      const { error } = await this.$supabase.auth.signOut()
+
+      if (error) {
+        return
+      }
+
+      this.$router.push('/')
     }
   }
 }
