@@ -49,7 +49,13 @@ class ProfileAdmin(admin.ModelAdmin):
         ("side", "poste", "other_poste"),
         ("collectivite", "departement", "region", "departements"),
         "tel",
-        ("no_signup", "successfully_logged_once", "optin", "updated_pipedrive"),
+        (
+            "no_signup",
+            "successfully_logged_once",
+            "optin",
+            "updated_pipedrive",
+            "must_update_password",
+        ),
     )
     formfield_overrides: ClassVar = {
         ArrayField: {"widget": TextInput(attrs={"size": "40"})}
