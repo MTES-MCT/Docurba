@@ -1,3 +1,4 @@
+from django.urls import path
 from rest_framework import routers
 
 from docurba.internal_api import views
@@ -9,4 +10,11 @@ router.register(r"collectivites", views.CollectiviteViewSet, basename="collectiv
 router.register(r"communes", views.CommuneViewSet, basename="communes")
 router.register(r"types-evenement", views.EventTypeViewSet, basename="event_types")
 
-urlpatterns = router.urls
+urlpatterns = [
+    path(
+        "users/user_must_update_password",
+        views.UserMustUpdatePasswordView.as_view(),
+        name="user_must_update_password",
+    ),
+    *router.urls,
+]

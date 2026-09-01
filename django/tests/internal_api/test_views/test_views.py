@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 
 import pytest
 from django.urls import reverse
+from pytest_django import DjangoAssertNumQueries
 from pytest_django.asserts import assertNumQueries
 from rest_framework.test import APIClient
 from syrupy import SnapshotAssertion
@@ -18,6 +19,7 @@ from tests.core.factories import (
     CommuneFactory,
     EventTypeFactory,
 )
+from tests.users.factories import ProfileFactory
 
 BASE_QUERIES_COUNT = 1  # Count made by DRF for the pagination.
 
@@ -584,3 +586,52 @@ class TestEventTypesAPI:
             "isStructuring": False,
             "sudocuhName": "",
         }
+
+
+@pytest.mark.django_db
+class TestUserAPI:
+    def test_must_update_password(
+        self, api_client: APIClient, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        # Account does not exists.
+        with django_assert_num_queries(1):
+            response = api_client.get(
+                reverse("internal_api:user_must_update_password"),
+                data={"email": "simone.signoret@actrices.com"},
+            )
+        assert response.status_code == 200
+        assert response.data["must_update_password"] is False
+
+        # Email not provided.
+        with django_assert_num_queries(0):
+            response = api_client.get(
+                reverse("internal_api:user_must_update_password"),
+            )
+        assert response.status_code == 200
+        assert response.data["must_update_password"] is False
+
+        # Account exists but password should not be updated.
+        profile = ProfileFactory(
+            email="claudia.cardinale@actrices.com", must_update_password=False
+        )
+        with django_assert_num_queries(1):
+            response = api_client.get(
+                reverse("internal_api:user_must_update_password"),
+                data={"email": profile.email},
+            )
+        assert response.status_code == 200
+        assert response.data["must_update_password"] is False
+        profile.delete()
+
+        # All True
+        profile = ProfileFactory(
+            email="arletty@actrices.com", must_update_password=True
+        )
+        with django_assert_num_queries(1):
+            response = api_client.get(
+                reverse("internal_api:user_must_update_password"),
+                data={"email": profile.email},
+            )
+        profile.delete()
+        assert response.status_code == 200
+        assert response.data["must_update_password"] is True
