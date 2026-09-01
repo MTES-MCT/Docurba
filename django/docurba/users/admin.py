@@ -21,12 +21,11 @@ class ProfileAdmin(admin.ModelAdmin):
 
     list_display = (
         "__str__",
+        "created_at",
+        "verified",
         "side",
         "departement",
         "collectivite",
-        "verified",
-        "is_staff",
-        "is_admin",
         "email",
     )
     list_select_related = ("departement", "collectivite")

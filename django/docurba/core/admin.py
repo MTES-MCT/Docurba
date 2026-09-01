@@ -251,6 +251,8 @@ class ProcedureAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "__str__",
+        "created_at",
+        "last_updated_at",
         "django_status",
         "events",
         "vaut_PDM",
