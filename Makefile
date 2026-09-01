@@ -90,3 +90,14 @@ copy_exports_from_outscale:
 
 move_exports_from_outscale:
 	cd django && direnv exec . rclone --config scripts/rclone.conf move --s3-chunk-size=20M docurba_exports:/docurba-exports exports/
+
+update_snapshots:
+	@find django/tests -name '*.ambr' | sort | while read -r ambr; do \
+		py=$$(printf '%s' "$$ambr" | sed 's#/__snapshots__/#/#; s#\.ambr$$#.py#'); \
+		if [ -f "$$py" ]; then \
+			printf '%s\n' "$$py"; \
+		else \
+			printf '⚠ orphaned snapshot, no test module: %s\n' "$$ambr" >&2; \
+		fi; \
+	done | sort -u | xargs --no-run-if-empty \
+		pytest --snapshot-update
