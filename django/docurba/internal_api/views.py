@@ -1,5 +1,8 @@
+from urllib.request import Request
+
 from django.db import models
-from rest_framework import viewsets
+from rest_framework import generics, viewsets
+from rest_framework.response import Response
 
 from docurba.core.models import Collectivite, Commune, EventType
 from docurba.internal_api import filters as custom_filters
@@ -8,6 +11,7 @@ from docurba.internal_api.serializers import (
     CommuneSerializer,
     EventTypeSerializer,
 )
+from docurba.users.models import Profile
 
 
 class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
@@ -88,3 +92,14 @@ class EventTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = EventType.active_objects.all()
     serializer_class = EventTypeSerializer
     filterset_class = custom_filters.EventTypeFilter
+
+
+class UserMustUpdatePasswordView(generics.GenericAPIView):
+    def get(self, request: Request, *args, **kwargs) -> Response:  # noqa: ANN002, ANN003, ARG002
+        must_update_password = (
+            "email" in request.GET
+            and Profile.objects.filter(
+                email=request.GET.get("email"), must_update_password=True
+            ).exists()
+        )
+        return Response({"must_update_password": must_update_password})
