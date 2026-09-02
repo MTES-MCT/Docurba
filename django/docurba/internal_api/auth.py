@@ -3,18 +3,24 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest
 from rest_framework import authentication, exceptions
-from supabase import AuthApiError, Client, ClientOptions, create_client
+from supabase import Client, ClientOptions, create_client
+from supabase_auth.errors import AuthApiError, AuthSessionMissingError, UserDoesntExist
 
-from docurba.users.models import Session
+from docurba.users.models import Profile
 
 
-class SupabaseAuthentication(authentication.BaseAuthentication):
-    def __init__(self) -> None:
-        self.supabase_client: Client = create_client(
+class SupabaseClient:
+    def __init__(self) -> Client:
+        self.client = create_client(
             settings.SUPABASE_URL,
             settings.SUPABASE_ANON_KEY,
             options=ClientOptions(persist_session=False),
         )
+
+
+class SupabaseAuthentication(authentication.BaseAuthentication):
+    def __init__(self) -> None:
+        self.supabase_client = SupabaseClient().client
 
     def authenticate(self, request: HttpRequest):  # noqa: ANN201
         access_key = request.headers.get("Supabase-Authorization")
@@ -22,26 +28,30 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
             return None
 
         try:
-            response = self.supabase_client.auth.get_claims(access_key)
-            session_id = response["claims"]["session_id"]
-            email = response["claims"]["email"]
-
-            session = Session.objects.select_related("user__profile").get(
-                pk=session_id, user__email=email
+            self.supabase_client.auth.set_session(
+                access_token=access_key, refresh_token=""
             )
+            session = self.supabase_client.auth.get_session()
 
-        except (AuthApiError, ObjectDoesNotExist) as exc:
+        except (
+            AuthApiError,
+            ObjectDoesNotExist,
+            AuthSessionMissingError,
+            UserDoesntExist,
+        ) as exc:
             raise exceptions.AuthenticationFailed from exc
 
-        if hasattr(session.user, "profile"):
+        profile_qs = Profile.objects.filter(user_id=session.user.id)
+        if profile_qs.exists():
+            profile = profile_qs.get()
             user = User(
                 username=str(session.user.id),
                 email=session.user.email,
-                last_name=session.user.profile.lastname,
-                first_name=session.user.profile.firstname,
-                is_superuser=session.user.profile.is_admin,
-                is_staff=session.user.profile.is_staff,
-                date_joined=session.user.profile.created_at,
+                last_name=profile.lastname,
+                first_name=profile.firstname,
+                is_superuser=profile.is_admin,
+                is_staff=profile.is_staff,
+                date_joined=profile.created_at,
                 last_login=session.user.last_sign_in_at,
             )
         else:
@@ -49,4 +59,5 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
                 username=str(session.user.id),
                 email=session.user.email,
             )
+        user.supabase_client = self.supabase_client
         return (user, None)

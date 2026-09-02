@@ -14,6 +14,7 @@ from docurba.core.models import (
     EventType,
     TypeCollectivite,
 )
+from tests.conftest import SupabaseApiTestClient
 from tests.core.factories import (
     CollectiviteFactory,
     CommuneFactory,
@@ -635,3 +636,40 @@ class TestUserAPI:
         profile.delete()
         assert response.status_code == 200
         assert response.data["must_update_password"] is True
+
+
+@pytest.mark.django_db
+class TestUserpassword:
+    @property
+    def url(self) -> str:
+        return reverse("internal_api:user-password")
+
+    def test_post(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        logged_in_profile = ProfileFactory(user__encrypted_password="")
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(2),
+        ):
+            response = api_client.post(self.url, data={"password": "VeryHardPassw0rd!"})
+        assert response.status_code == 201
+        # Password update is hard to test because it relies on Supabase integration.
+
+    def test_post_unauthenticated(self, api_client: APIClient) -> None:
+        response = api_client.post(self.url, data={"password": "PASSWORD"})
+        assert response.status_code == 403
+
+    def test_post_authenticated_no_password(
+        self, api_client_with_auth: APIClient
+    ) -> None:
+        logged_in_profile = ProfileFactory(user__encrypted_password="")
+        with api_client_with_auth(logged_in_profile) as api_client:
+            response = api_client.post(self.url, data={"password": ""})
+        assert response.status_code == 400
+        assert response.data["errors"] == [
+            "Ce mot de passe est trop court. Il doit contenir au minimum 16 caractères.",
+            "Le mot de passe doit contenir au moins 3 des 4 types suivants : majuscules, minuscules, chiffres, caractères spéciaux.",  # noqa: RUF001
+        ]

@@ -74,27 +74,6 @@ class SupabaseUser(models.Model):
         return password
 
 
-class Session(models.Model):
-    """L'authentification est gérée par la fonctionnalité SSO de Supabase.
-
-    Le schéma de cette table est géré par Supabase. Seules les colonnes intéressantes sont
-    référencées ici.
-    """
-
-    id = models.UUIDField(primary_key=True)
-    user = models.ForeignKey(
-        SupabaseUser,
-        models.CASCADE,
-    )
-
-    class Meta:
-        managed = False
-        db_table = '"auth"."sessions"'
-
-    def __str__(self) -> str:
-        return self.id
-
-
 class Profile(models.Model):
     """La table `users` étant gérée par Supabase, les informations supplémentaires concernant l'utilisateur sont conservées ici."""
 
