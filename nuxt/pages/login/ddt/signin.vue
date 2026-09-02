@@ -4,7 +4,14 @@
       <v-col cols="12">
         <div>
           <v-alert v-if="error" type="error">
-            {{ error }}
+            <div v-if="mustUpdatePassword">
+              Les mots de passe ont été réinitialisés suite à un incident par mesure de sécurité.<br>
+              Un lien de modification de mot de passe vient de vous être envoyé par email.<br>
+              Pour plus d'informations, vous pouvez consulter <a class="white--text" href="https://docurba.crisp.help/fr/article/incident-de-securite-30flk9/" target="_blank">cet article</a>.
+            </div>
+            <div v-else>
+              {{ error }}
+            </div>
           </v-alert>
           <div class="mb-2">
             <nuxt-link :to="{name: 'login'}">
@@ -119,7 +126,8 @@ export default {
         text: '',
         val: false
       },
-      error: null
+      error: null,
+      mustUpdatePassword: false
     }
   },
   computed: {
@@ -133,6 +141,9 @@ export default {
   },
   methods: {
     async signIn () {
+      this.error = null
+      this.mustUpdatePassword = false
+
       try {
         const { error } = await this.$auth.signIn({
           email: this.email,
@@ -140,6 +151,15 @@ export default {
         })
         if (error) { throw error }
       } catch (error) {
+        const data = await this.$djangoApi.get('/api-internes/users/user_must_update_password', {
+          email: this.email
+        })
+        this.mustUpdatePassword = !!data?.must_update_password
+
+        if (this.mustUpdatePassword) {
+          await this.sendResetPassword()
+        }
+
         this.error = 'Email ou mot de passe incorrect.'
       }
     },
