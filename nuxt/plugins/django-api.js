@@ -5,13 +5,19 @@ export default ({ $axios, $user }, inject) => {
     baseURL: process.env.DJANGO_API_BASE_URL,
     paramsSerializer: params => Qs.stringify(params, { arrayFormat: 'repeat', encode: false })
   })
+
+  function getRequestHeaders () {
+    return $user.supabase_access_token
+      ? { 'Supabase-Authorization': $user.supabase_access_token }
+      : undefined
+  }
+
   inject('djangoApi', {
-    async get (path, parameters) {
-      const requestOpts = { params: parameters }
-      if ($user.supabase_access_token) {
-        requestOpts.headers = { 'Supabase-Authorization': $user.supabase_access_token }
-      }
-      const { data: responseData } = await djangoAxios.get(path, requestOpts)
+    async get (path, params) {
+      const { data: responseData } = await djangoAxios.get(path, {
+        headers: getRequestHeaders(),
+        params
+      })
       if (responseData.results === undefined) {
         return responseData
       }
@@ -28,6 +34,13 @@ export default ({ $axios, $user }, inject) => {
       }
 
       return results
+    },
+    async post (path, params) {
+      const { data } = await djangoAxios.post(path, params, {
+        headers: getRequestHeaders()
+      })
+
+      return data
     }
   })
 }

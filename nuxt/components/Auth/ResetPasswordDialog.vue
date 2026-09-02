@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import FormInput from '@/mixins/FormInput.js'
 
 export default {
@@ -58,11 +59,25 @@ export default {
     async resetPassword () {
       this.loading = true
 
-      await this.$supabase.auth
-        .updateUser({ password: this.password })
+      await this.$djangoApi.post('/api-internes/users/password', {
+        password: this.password
+      })
+      await axios({
+        method: 'post',
+        url: '/api/auth/password/updated',
+        data: {
+          email: this.$user.profile.email,
+          firstname: this.$user.profile.firstname,
+          lastname: this.$user.profile.lastname
+        }
+      })
 
       this.loading = false
       this.dialog = false
+      this.$router.push({
+        name: this.$route.name,
+        params: this.$route.params
+      })
     },
     async signOut () {
       const { error } = await this.$supabase.auth.signOut()
