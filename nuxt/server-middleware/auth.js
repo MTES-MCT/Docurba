@@ -47,6 +47,19 @@ app.post('/password', async (req, res) => {
   }
 })
 
+app.post('/password/updated', (req, res) => {
+  sendgrid.sendEmail({
+    to: req.body.email,
+    template_id: 'd-66f9aa1bc37c4ac7a523da021d23d026',
+    dynamic_template_data: {
+      firstname: req.body.firstname,
+      lastname: req.body.lastname
+    }
+  })
+
+  res.status(200).send('OK')
+})
+
 async function magicLinkSignIn ({ email, redirectBasePath }) {
   const { data: profiles } = await supabase.from('profiles').select('firstname, lastname, successfully_logged_once, collectivite_id').eq('email', email)
   const profile = profiles[0]
