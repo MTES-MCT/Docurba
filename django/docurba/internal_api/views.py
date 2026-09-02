@@ -1,11 +1,16 @@
 from urllib.request import Request
 
+import supabase_auth.errors as supabase_errors
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.db import models
-from rest_framework import generics, viewsets
+from rest_framework import generics, status, viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from docurba.core.models import Collectivite, Commune, EventType
 from docurba.internal_api import filters as custom_filters
+from docurba.internal_api.auth import SupabaseAuthentication
 from docurba.internal_api.serializers import (
     CollectiviteSerializer,
     CommuneSerializer,
@@ -103,3 +108,39 @@ class UserMustUpdatePasswordView(generics.GenericAPIView):
             ).exists()
         )
         return Response({"must_update_password": must_update_password})
+
+
+class UserPassword(generics.GenericAPIView):
+    authentication_classes = [SupabaseAuthentication]  # noqa: RUF012
+    permission_classes = [IsAuthenticated]  # noqa: RUF012
+
+    def post(self, request: Request, *args, **kwargs) -> Response:  # noqa: ANN002, ANN003, ARG002
+        if "password" not in request.data:
+            return Response(
+                {"errors": ["Il n'y a pas de mot de passe."]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        password = request.data.get("password")
+        try:
+            validate_password(password=password)
+        except ValidationError as errors:
+            return Response(
+                {"errors": list(errors)}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            request.user.supabase_client.auth.update_user({"password": password})
+        except (
+            supabase_errors.AuthApiError,
+            supabase_errors.AuthError,
+            supabase_errors.AuthSessionMissingError,
+            supabase_errors.AuthUnknownError,
+            supabase_errors.AuthWeakPasswordError,
+        ) as errors:
+            return Response(
+                {"errors": list(errors)}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return Response(
+            {"message": "Mot de passe mis à jour."}, status=status.HTTP_201_CREATED
+        )

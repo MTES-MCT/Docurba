@@ -6,11 +6,15 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.core.handlers.wsgi import WSGIRequest
 from django.test import Client
+from django.utils import timezone
 from pytest_django import DjangoDbBlocker
 from rest_framework.test import APIClient
+from supabase_auth import AuthResponse
+from supabase_auth import Session as SupabaseAuthSession
+from supabase_auth import User as SupabaseAuthUser
 
 from docurba.users.models import Profile
-from tests.users.factories import ProfileFactory, SessionFactory
+from tests.users.factories import ProfileFactory
 
 
 class SupabaseApiTestClient(APIClient):
@@ -29,13 +33,30 @@ def api_client_with_auth_factory() -> None:
 
     @contextlib.contextmanager
     def api_client_with_auth(profile: Profile) -> None:
-        session = SessionFactory(user=profile.user)
-
         with patch("docurba.internal_api.auth.create_client") as create_client:
             supabase = create_client.return_value
-            supabase.auth.get_claims.return_value = {
-                "claims": {"session_id": session.id, "email": session.user.email}
-            }
+            supabase_auth_user = SupabaseAuthUser(
+                id=profile.user_id,
+                email=profile.email,
+                app_metadata={},
+                user_metadata={},
+                aud="",
+                created_at=timezone.now(),
+                is_anonymous=False,
+                is_sso_user=False,
+            )
+            supabase_session = SupabaseAuthSession(
+                access_token="aa.bb",  # noqa: S106
+                refresh_token="",
+                expires_in=11111,
+                token_type="",
+                user=supabase_auth_user,
+            )
+            supabase.auth.set_session.return_value = AuthResponse(
+                session=supabase_session,
+                user=supabase_auth_user,
+            )
+            supabase.auth.get_session.return_value = supabase_session
             yield SupabaseApiTestClient()
 
     return api_client_with_auth

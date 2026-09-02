@@ -16,5 +16,10 @@ urlpatterns = [
         views.UserMustUpdatePasswordView.as_view(),
         name="user_must_update_password",
     ),
+    path(
+        "users/password",
+        views.UserPassword.as_view(),
+        name="user-password",
+    ),
     *router.urls,
 ]
