@@ -1,5 +1,5 @@
 <template>
-  <validation-provider v-slot="{ errors }" name="Mot de passe" rules="required|min:6">
+  <validation-provider v-slot="{ errors }" name="Mot de passe" :rules="rules">
     <v-text-field
       v-model="password"
       filled
@@ -31,6 +31,10 @@ export default {
           label: 'Mot de passe'
         }
       }
+    },
+    optional: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -38,6 +42,11 @@ export default {
       icons: { mdiEye, mdiEyeOff },
       showPassword: false,
       password: ''
+    }
+  },
+  computed: {
+    rules () {
+      return `${this.optional ? '' : 'required|'}min:6`
     }
   },
   watch: {
