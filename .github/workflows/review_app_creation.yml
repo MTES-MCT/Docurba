@@ -230,9 +230,6 @@ jobs:
     - name: Déploiement de l'application
       run: scalingo --app "${{ needs.prepare.outputs.NUXT_2_REVIEW_APP_NAME }}" integration-link-manual-deploy "${{ env.BRANCH }}"  &> /dev/null
 
-    - name: Démarrage de l'application
-      run: scalingo --app "${{ needs.prepare.outputs.NUXT_2_REVIEW_APP_NAME }}" scale web:1:M
-
     - name: Attente du démarrage réussi de l'application
       run: |
         until scalingo apps | grep "${{ needs.prepare.outputs.NUXT_2_REVIEW_APP_NAME }}" | grep --quiet 'running' &> /dev/null
@@ -323,9 +320,6 @@ jobs:
         UPSTREAM_NUXT="${{ needs.prepare.outputs.NUXT_2_URL }}" \
         DATABASE_URL="${{ steps.db.outputs.POSTGRES_URL }}" \
         SECRET_KEY="${django_secret_key}"
-
-    - name: Démarrage de l'application
-      run: scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" scale web:1:M
 
     - name: Déploiement de l'application
       run: scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" integration-link-manual-deploy "${{ env.BRANCH }}" &> /dev/null
