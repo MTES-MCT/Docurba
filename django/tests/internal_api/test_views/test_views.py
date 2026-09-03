@@ -658,6 +658,24 @@ class TestUserpassword:
         assert response.status_code == 201
         # Password update is hard to test because it relies on Supabase integration.
 
+    def test_post_must_update_password(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        logged_in_profile = ProfileFactory(
+            user__encrypted_password="", must_update_password=True
+        )
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(3),
+        ):
+            response = api_client.post(self.url, data={"password": "VeryHardPassw0rd!"})
+        assert response.status_code == 201
+        # Password update is hard to test because it relies on Supabase integration.
+        logged_in_profile.refresh_from_db()
+        assert logged_in_profile.must_update_password is False
+
     def test_post_unauthenticated(self, api_client: APIClient) -> None:
         response = api_client.post(self.url, data={"password": "PASSWORD"})
         assert response.status_code == 403
