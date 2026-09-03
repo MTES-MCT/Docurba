@@ -19,6 +19,20 @@ extend('min', {
   message: '{_field_} doit contenir au moins {length} caractères.'
 })
 
+extend('complex', {
+  validate (value) {
+    const normalizedValue = value.normalize('NFKD')
+
+    return [
+      /[a-z]/.test(normalizedValue), // Lowercase
+      /[A-Z]/.test(normalizedValue), // Uppercase
+      /[0-9]/.test(normalizedValue), // Digit
+      /[^A-Za-z0-9]/.test(value) // Special
+    ].reduce((count, value) => count + Number(value), 0) >= 3
+  },
+  message: 'Le mot de passe doit contenir au moins 3 des 4 types suivants : majuscules, minuscules, chiffres, caractères spéciaux.'
+})
+
 extend('needToBeOui', {
   params: ['target'],
   validate (value, { target }) {
