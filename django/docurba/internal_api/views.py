@@ -140,6 +140,10 @@ class UserPassword(generics.GenericAPIView):
             return Response(
                 {"errors": list(errors)}, status=status.HTTP_400_BAD_REQUEST
             )
+        profile = request.user.profile
+        if profile and profile.must_update_password:
+            profile.must_update_password = False
+            profile.save()
 
         return Response(
             {"message": "Mot de passe mis à jour."}, status=status.HTTP_201_CREATED

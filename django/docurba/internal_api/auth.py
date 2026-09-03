@@ -42,6 +42,7 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed from exc
 
         profile_qs = Profile.objects.filter(user_id=session.user.id)
+        profile = None
         if profile_qs.exists():
             profile = profile_qs.get()
             user = User(
@@ -59,5 +60,6 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
                 username=str(session.user.id),
                 email=session.user.email,
             )
+        user.profile = profile
         user.supabase_client = self.supabase_client
         return (user, None)
