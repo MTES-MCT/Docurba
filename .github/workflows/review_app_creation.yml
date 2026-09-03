@@ -187,7 +187,9 @@ jobs:
         echo "::add-mask::$SUPABASE_URL"
         echo "SUPABASE_URL=$SUPABASE_URL" >> "$GITHUB_OUTPUT"
 
-        SUPABASE_SERVICE_ROLE_KEY=$(echo $DB_SECRETS | jq -r '.SUPABASE_DEFAULT_KEY')
+        # We can't retrieve the SUPABASE_DEFAULT_KEY in clear for the moment.
+        # See https://github.com/supabase/cli/issues/3088
+        SUPABASE_SERVICE_ROLE_KEY=$(echo $DB_SECRETS | jq -r '.SUPABASE_SERVICE_ROLE_KEY')
         echo "::add-mask::$SUPABASE_SERVICE_ROLE_KEY"
         echo "SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY" >> "$GITHUB_OUTPUT"
 
