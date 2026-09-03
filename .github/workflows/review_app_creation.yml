@@ -283,6 +283,15 @@ jobs:
         echo "::add-mask::$POSTGRES_URL"
         echo "POSTGRES_URL=$POSTGRES_URL" >> "$GITHUB_OUTPUT"
 
+        SUPABASE_URL=$(echo $DB_SECRETS | jq -r '.SUPABASE_URL')
+        echo "::add-mask::$SUPABASE_URL"
+        echo "SUPABASE_URL=$SUPABASE_URL" >> "$GITHUB_OUTPUT"
+
+        SUPABASE_ANON_KEY=$(echo $DB_SECRETS | jq -r '.SUPABASE_PUBLISHABLE_KEY')
+        echo "::add-mask::$SUPABASE_ANON_KEY"
+        echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> "$GITHUB_OUTPUT"
+
+
     - name: Vérification de l'existence de l'application
       id: exists
       run: |
