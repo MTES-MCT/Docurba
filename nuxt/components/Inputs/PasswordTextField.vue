@@ -1,9 +1,9 @@
 <template>
-  <validation-provider v-slot="{ errors }" name="Mot de passe" rules="required|min:6">
+  <validation-provider v-slot="{ errors: validationErrors }" name="Mot de passe" :rules="rules">
     <v-text-field
       v-model="password"
       filled
-      :error-messages="errors"
+      :error-messages="[...validationErrors, ...errors]"
       :type="showPassword ? 'text' : 'password'"
       :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
       v-bind="inputProps"
@@ -20,6 +20,14 @@ export default {
     ValidationProvider
   },
   props: {
+    creation: {
+      type: Boolean,
+      default: false
+    },
+    errors: {
+      type: Array,
+      default: () => []
+    },
     value: {
       type: String,
       default: ''
@@ -38,6 +46,17 @@ export default {
       icons: { mdiEye, mdiEyeOff },
       showPassword: false,
       password: ''
+    }
+  },
+  computed: {
+    rules () {
+      const rules = ['required']
+
+      if (this.creation) {
+        rules.push('complex', 'min:16')
+      }
+
+      return rules.join('|')
     }
   },
   watch: {

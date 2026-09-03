@@ -6,7 +6,7 @@
       </validation-provider>
     </v-col>
     <v-col cols="12">
-      <InputsPasswordTextField v-model="userData.password" />
+      <InputsPasswordTextField v-model="userData.password" creation />
     </v-col>
     <v-col cols="6">
       <validation-provider v-slot="{ errors }" name="Prénom" rules="required">
@@ -101,6 +101,6 @@ export default {
         this.$emit('input', this.userData)
       }
     }
-  },
+  }
 }
 </script>

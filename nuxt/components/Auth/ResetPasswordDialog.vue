@@ -9,7 +9,12 @@
           <v-card-text>
             <v-row>
               <v-col cols="12">
-                <InputsPasswordTextField v-model="password" :input-props="{label: 'Nouveau mot de passe'}" />
+                <InputsPasswordTextField
+                  v-model="password"
+                  creation
+                  :errors="errors"
+                  :input-props="{ label: 'Nouveau mot de passe' }"
+                />
               </v-col>
             </v-row>
           </v-card-text>
@@ -36,6 +41,7 @@ export default {
   mixins: [FormInput],
   data () {
     return {
+      errors: [],
       password: '',
       resetToken: '',
       loading: false,
@@ -53,15 +59,28 @@ export default {
         this.dialog = value
       },
       immediate: true
+    },
+    password () {
+      if (this.errors.length) {
+        this.errors = []
+      }
     }
   },
   methods: {
     async resetPassword () {
       this.loading = true
 
-      await this.$djangoApi.post('/api-internes/users/password', {
-        password: this.password
-      })
+      try {
+        await this.$djangoApi.post('/api-internes/users/password', {
+          password: this.password
+        })
+      } catch (error) {
+        this.errors = error.response?.data?.errors ?? []
+        this.loading = false
+
+        return
+      }
+
       await axios({
         method: 'post',
         url: '/api/auth/password/updated',
