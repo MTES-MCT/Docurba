@@ -152,7 +152,7 @@ export default {
         if (error) { throw error }
       } catch (error) {
         const data = await this.$djangoApi.get('/api-internes/users/user_must_update_password', {
-          email: this.email
+          email: encodeURIComponent(this.email)
         })
         this.mustUpdatePassword = !!data?.must_update_password
 
