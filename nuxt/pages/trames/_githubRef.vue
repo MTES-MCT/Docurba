@@ -246,7 +246,7 @@ export default {
       const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
       this.project = projects ? projects[0] : null
 
-      this.collectivite = await this.$collectiviteApi.get(this.project.collectivite_id)
+      this.collectivite = await this.$collectiviteApi.getFromCode(this.project.collectivite_id)
     }
 
     const { data: sections } = await axios({
