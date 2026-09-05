@@ -324,9 +324,6 @@ jobs:
         DATABASE_URL="${{ steps.db.outputs.POSTGRES_URL }}" \
         SECRET_KEY="${django_secret_key}"
 
-    - name: Démarrage de l'application
-      run: scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" scale web:1:M
-
     - name: Déploiement de l'application
       run: scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" integration-link-manual-deploy "${{ env.BRANCH }}" &> /dev/null
 
