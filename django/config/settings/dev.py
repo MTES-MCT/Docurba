@@ -49,3 +49,18 @@ CORS_ALLOW_HEADERS = [
     *default_headers,
     "supabase-authorization",
 ]
+
+if bool(env.str("SENDGRID_API_KEY", default="")):
+    MAILERS = {
+        "default": {
+            "BACKEND": ("sendgrid_backend.SendgridBackend"),
+        },
+    }
+    # Send emails for real.
+    SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+else:
+    MAILERS = {
+        "default": {
+            "BACKEND": ("django.core.mail.backends.console.EmailBackend"),
+        },
+    }

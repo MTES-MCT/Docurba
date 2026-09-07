@@ -169,6 +169,14 @@ LOGGING = {
     },
 }
 
+SENDGRID_API_KEY = env.str("SENDGRID_API_KEY", default="")
+
+MAILERS = {
+    "default": {
+        "BACKEND": "sendgrid_backend.SendgridBackend",
+    },
+}
+
 #####################################################
 ############ External libraries settings ############
 #####################################################
