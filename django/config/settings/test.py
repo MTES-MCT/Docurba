@@ -26,3 +26,11 @@ DATABASES = {
         },
     },
 }
+
+SENDGRID_API_KEY = "black_hole"
+
+MAILERS = {
+    "default": {
+        "BACKEND": "django.core.mail.backends.locmem.EmailBackend",
+    },
+}
