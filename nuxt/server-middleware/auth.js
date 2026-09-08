@@ -107,16 +107,15 @@ app.post('/signinCollectivite', async (req, res) => {
   try {
     const path = await getRedirectPath(req.body.email)
 
-    const user = await magicLinkSignIn({
+    await magicLinkSignIn({
       email: req.body.email,
       redirectBasePath: req.body.redirectTo + path
     })
-
-    res.status(200).send(user)
   } catch (error) {
     console.log('ERROR /auth/signinCollectivite : ', error.message)
-    res.status(500).send({ message: error.message })
   }
+
+  res.status(200).send('OK')
 })
 
 app.post('/signupCollectivite', async (req, res) => {
