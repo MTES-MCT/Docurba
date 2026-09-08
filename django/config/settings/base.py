@@ -176,6 +176,9 @@ MAILERS = {
         "BACKEND": "sendgrid_backend.SendgridBackend",
     },
 }
+DEFAULT_FROM_EMAIL = env.str(
+    "DEFAULT_FROM_EMAIL", default="contact@docurba.beta.gouv.fr"
+)
 
 #####################################################
 ############ External libraries settings ############
