@@ -663,7 +663,7 @@ class TestUserpassword:
         assert mailoutbox[0].to == [logged_in_profile.email]
         assert (
             mailoutbox[0].dynamic_template_data["subject_preposition"]
-            == "(Test en test) "  # noqa: RUF001
+            == "(Test en test) "
         )
         assert (
             mailoutbox[0].dynamic_template_data["firstname"]
@@ -716,7 +716,7 @@ class TestUserpassword:
         assert len(mailoutbox) == 0
         assert response.data["errors"] == [
             "Ce mot de passe est trop court. Il doit contenir au minimum 16 caractères.",
-            "Le mot de passe doit contenir au moins 3 des 4 types suivants : majuscules, minuscules, chiffres, caractères spéciaux.",  # noqa: RUF001
+            "Le mot de passe doit contenir au moins 3 des 4 types suivants : majuscules, minuscules, chiffres, caractères spéciaux.",
         ]
 
     def test_post_sendgrid_http_error(

@@ -15,7 +15,7 @@ class SendgridEmailMessage(mail.EmailMessage):
         prefix = (
             ""
             if settings.DOCURBA_ENVIRONMENT == DocurbaEnvironment.PROD
-            else f"(Test en {settings.DOCURBA_ENVIRONMENT.label}) "  # noqa: RUF001
+            else f"(Test en {settings.DOCURBA_ENVIRONMENT.label}) "
         )
         self.dynamic_template_data = {
             "subject_preposition": prefix,
