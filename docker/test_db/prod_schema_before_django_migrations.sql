@@ -927,13 +927,6 @@ CREATE POLICY "Users Can Insert" ON public.prescriptions FOR INSERT WITH CHECK (
 
 
 --
--- Name: profiles Users Can Insert; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Users Can Insert" ON public.profiles FOR INSERT WITH CHECK (true);
-
-
---
 -- Name: pac_sections Users Can read; Type: POLICY; Schema: public; Owner: -
 --
 
