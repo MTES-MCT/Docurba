@@ -12,7 +12,7 @@ module.exports = {
     message.dynamic_template_data["subject_preposition"] = userEnvironment.messageProposition()
     return sgMail.send(Object.assign({
       from: {
-        email: 'equipe@docurba.beta.gouv.fr',
+        email: 'contact@docurba.beta.gouv.fr',
         name: 'L‘équipe docurba'
       },
       replyTo: {
