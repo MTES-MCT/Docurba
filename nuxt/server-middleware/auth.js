@@ -65,7 +65,7 @@ async function magicLinkSignIn ({ email, redirectBasePath }) {
   const profile = profiles[0]
 
   if (!profile) {
-    throw new Error('Vous devez créer un compte avant de pouvoir vous connecter.')
+    throw new Error('KO')
   } else {
     const { data: { user, properties }, error } = await supabase.auth.admin.generateLink({
       type: 'magiclink',
@@ -98,7 +98,7 @@ async function magicLinkSignIn ({ email, redirectBasePath }) {
 async function getRedirectPath (emailProfile) {
   const { data: rawProfile, error: errorProfile } = await supabase.from('profiles').select().eq('email', emailProfile)
   if (errorProfile) { throw errorProfile }
-  if (rawProfile.length < 1) { throw new Error("Nous n'avons pas trouvé d'utilisateur enregistré avec cette adresse email. Veuillez créer un compte.") }
+  if (rawProfile.length < 1) { throw new Error('KO') }
   const profile = rawProfile[0]
   return `/collectivites/${profile.collectivite_id}`
 }
