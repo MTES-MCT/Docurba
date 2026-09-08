@@ -26,7 +26,7 @@ class CnilCompositionPasswordValidator:
     SPECIAL_CHARS = string.punctuation
 
     HELP_MSG = (
-        "Le mot de passe doit contenir au moins 3 des 4 types suivants : "  # noqa: RUF001
+        "Le mot de passe doit contenir au moins 3 des 4 types suivants : "
         "majuscules, minuscules, chiffres, caractères spéciaux."
     )
 

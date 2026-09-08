@@ -39,7 +39,7 @@ MAPPINGS = [
     (
         "CC",
         "Abrogation : délibération communautaire",
-        "Délibération communal ou communautaire d’abrogation de la carte communale",  # noqa: RUF001
+        "Délibération communal ou communautaire d’abrogation de la carte communale",
     ),
     ("PLU", "Avis Etat", "Réception de l'avis de l'État"),
     ("PLU", "Bilan de la concertation", "Délibération de bilan de la concertation"),

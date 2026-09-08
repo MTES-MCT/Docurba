@@ -71,7 +71,7 @@ INSERT INTO "history_eventsnapshot"
     SELECT "code", "date_iso", "description", "event_type_id", "from_sudocuh", "procedure_id", "profile_id", "type", _pgh_attach_context(), NOW(), 'update', "id"
 from updated_events;
 ;
-"""  # noqa: RUF001
+"""
 
 
 class Command(BaseCommand):

@@ -54,6 +54,7 @@ ignore = [
     "PLR0913", # Too many arguments in function definition
     "CPY001", # Missing copyright notice at top of file
     # "ERA001", # Commented out code
+    "RUF001", # NO-BREAK SPACE
 ]
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**.py" = [
