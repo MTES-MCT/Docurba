@@ -15,7 +15,7 @@ class SendgridEmailMessage(mail.EmailMessage):
         prefix = (
             ""
             if settings.DOCURBA_ENVIRONMENT == DocurbaEnvironment.PROD
-            else f"[{settings.DOCURBA_ENVIRONMENT}] "
+            else f"(Test en {settings.DOCURBA_ENVIRONMENT.label}) "  # noqa: RUF001
         )
         self.dynamic_template_data = {
             "subject_preposition": prefix,
@@ -37,7 +37,7 @@ def get_email_message(  # noqa: PLR0917
     # when SENDGRID_API_KEY is not set. But every email has been configured in Sendgrid as templates and it would be
     # a development too big to implement this alternative right now.
     return SendgridEmailMessage(
-        from_email=from_email,
+        from_email=f"L'équipe Docurba <{from_email}>",
         reply_to=[from_email],
         to=to,
         cc=cc,

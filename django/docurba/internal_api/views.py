@@ -140,9 +140,11 @@ class UserPassword(generics.GenericAPIView):
             supabase_errors.AuthSessionMissingError,
             supabase_errors.AuthUnknownError,
             supabase_errors.AuthWeakPasswordError,
-        ) as errors:
+        ):
+            logger.exception("Supabase error")
             return Response(
-                {"errors": list(errors)}, status=status.HTTP_400_BAD_REQUEST
+                {"errors": ["Merci d'essayer un autre mot de passe."]},
+                status=status.HTTP_400_BAD_REQUEST,
             )
         profile = request.user.profile
         if profile and profile.must_update_password:

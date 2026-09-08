@@ -662,6 +662,10 @@ class TestUserpassword:
         assert len(mailoutbox) == 1
         assert mailoutbox[0].to == [logged_in_profile.email]
         assert (
+            mailoutbox[0].dynamic_template_data["subject_preposition"]
+            == "(Test en test) "  # noqa: RUF001
+        )
+        assert (
             mailoutbox[0].dynamic_template_data["firstname"]
             == logged_in_profile.firstname
         )
