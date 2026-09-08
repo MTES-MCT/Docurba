@@ -1,5 +1,6 @@
 import functools
 import random
+from unittest import mock
 from urllib.parse import urlencode
 
 import pytest
@@ -7,6 +8,7 @@ from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 from pytest_django.asserts import assertNumQueries
 from rest_framework.test import APIClient
+from sendgrid_backend.mail import HTTPError
 from syrupy import SnapshotAssertion
 
 from docurba.core.enums import EventScope
@@ -648,6 +650,7 @@ class TestUserpassword:
         self,
         api_client_with_auth: SupabaseApiTestClient,
         django_assert_num_queries: DjangoAssertNumQueries,
+        mailoutbox: list | None,
     ) -> None:
         logged_in_profile = ProfileFactory(user__encrypted_password="")
         with (
@@ -656,12 +659,23 @@ class TestUserpassword:
         ):
             response = api_client.post(self.url, data={"password": "VeryHardPassw0rd!"})
         assert response.status_code == 201
+        assert len(mailoutbox) == 1
+        assert mailoutbox[0].to == [logged_in_profile.email]
+        assert (
+            mailoutbox[0].dynamic_template_data["firstname"]
+            == logged_in_profile.firstname
+        )
+        assert (
+            mailoutbox[0].dynamic_template_data["lastname"]
+            == logged_in_profile.lastname
+        )
         # Password update is hard to test because it relies on Supabase integration.
 
     def test_post_must_update_password(
         self,
         api_client_with_auth: SupabaseApiTestClient,
         django_assert_num_queries: DjangoAssertNumQueries,
+        mailoutbox: list | None,
     ) -> None:
         logged_in_profile = ProfileFactory(
             user__encrypted_password="", must_update_password=True
@@ -672,22 +686,50 @@ class TestUserpassword:
         ):
             response = api_client.post(self.url, data={"password": "VeryHardPassw0rd!"})
         assert response.status_code == 201
+        assert len(mailoutbox) == 1
         # Password update is hard to test because it relies on Supabase integration.
         logged_in_profile.refresh_from_db()
         assert logged_in_profile.must_update_password is False
 
-    def test_post_unauthenticated(self, api_client: APIClient) -> None:
+    def test_post_unauthenticated(
+        self,
+        api_client: APIClient,
+        mailoutbox: list | None,
+    ) -> None:
         response = api_client.post(self.url, data={"password": "PASSWORD"})
         assert response.status_code == 403
+        assert len(mailoutbox) == 0
 
     def test_post_authenticated_no_password(
-        self, api_client_with_auth: APIClient
+        self,
+        api_client_with_auth: APIClient,
+        mailoutbox: list | None,
     ) -> None:
         logged_in_profile = ProfileFactory(user__encrypted_password="")
         with api_client_with_auth(logged_in_profile) as api_client:
             response = api_client.post(self.url, data={"password": ""})
         assert response.status_code == 400
+        assert len(mailoutbox) == 0
         assert response.data["errors"] == [
             "Ce mot de passe est trop court. Il doit contenir au minimum 16 caractères.",
             "Le mot de passe doit contenir au moins 3 des 4 types suivants : majuscules, minuscules, chiffres, caractères spéciaux.",  # noqa: RUF001
         ]
+
+    def test_post_sendgrid_http_error(
+        self,
+        api_client_with_auth: APIClient,
+        mailoutbox: list | None,
+        caplog: list | None,
+    ) -> None:
+        logged_in_profile = ProfileFactory(user__encrypted_password="")
+        with (
+            mock.patch(
+                "docurba.utils.emails.SendgridEmailMessage.send",
+                side_effect=HTTPError(503, "Service unavailable", "", ""),
+            ),
+            api_client_with_auth(logged_in_profile) as api_client,
+        ):
+            response = api_client.post(self.url, data={"password": "VeryHardPassw0rd!"})
+        assert response.status_code == 201
+        assert len(mailoutbox) == 0
+        assert caplog.messages == ["Sendgrid error", "HTTP 201 Created"]
