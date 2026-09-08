@@ -1,9 +1,9 @@
-import enum
+from django.db import models
 
 
-class DocurbaEnvironment(enum.StrEnum):
-    PROD = "PROD"
-    DEMO = "DEMO"
-    REVIEW_APP = "REVIEW-APP"
-    TEST = "TEST"
-    DEV = "DEV"
+class DocurbaEnvironment(models.TextChoices):
+    PROD = "PROD", "production"
+    DEMO = "DEMO", "démo"
+    REVIEW_APP = "REVIEW-APP", "recette jetable"
+    TEST = "TEST", "test"
+    DEV = "DEV", "dev"
