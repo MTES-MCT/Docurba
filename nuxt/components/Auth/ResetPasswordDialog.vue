@@ -81,16 +81,6 @@ export default {
         return
       }
 
-      await axios({
-        method: 'post',
-        url: '/api/auth/password/updated',
-        data: {
-          email: this.$user.profile.email,
-          firstname: this.$user.profile.firstname,
-          lastname: this.$user.profile.lastname
-        }
-      })
-
       this.loading = false
       this.dialog = false
       this.$router.push({

@@ -1,3 +1,4 @@
+import logging
 from urllib.request import Request
 
 import supabase_auth.errors as supabase_errors
@@ -7,6 +8,7 @@ from django.db import models
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from sendgrid_backend.mail import HTTPError
 
 from docurba.core.models import Collectivite, Commune, EventType
 from docurba.internal_api import filters as custom_filters
@@ -17,6 +19,8 @@ from docurba.internal_api.serializers import (
     EventTypeSerializer,
 )
 from docurba.users.models import Profile
+
+logger = logging.getLogger(__name__)
 
 
 class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
@@ -144,6 +148,12 @@ class UserPassword(generics.GenericAPIView):
         if profile and profile.must_update_password:
             profile.must_update_password = False
             profile.save()
+
+        if profile:
+            try:
+                profile.update_password_email().send()
+            except HTTPError:
+                logger.exception("Sendgrid error")
 
         return Response(
             {"message": "Mot de passe mis à jour."}, status=status.HTTP_201_CREATED

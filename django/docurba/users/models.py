@@ -8,6 +8,7 @@ from django.db import connection, models, transaction
 from django.db.models.functions import Now
 
 from docurba.users import enums as users_enums
+from docurba.utils.emails import SendgridEmailMessage, get_email_message
 
 
 class SupabaseUser(models.Model):
@@ -185,6 +186,16 @@ class Profile(models.Model):
 
     def __str__(self) -> str:
         return f"{self.firstname} {self.lastname}"
+
+    def update_password_email(self) -> SendgridEmailMessage:
+        return get_email_message(
+            to=[self.email],
+            template_id="d-66f9aa1bc37c4ac7a523da021d23d026",
+            template_context={
+                "firstname": self.firstname,
+                "lastname": self.lastname,
+            },
+        )
 
 
 class UserManager(DjangoUserManager):
