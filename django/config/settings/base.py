@@ -205,6 +205,12 @@ CREATE_UNMANAGED_TABLES = False
 REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     "DEFAULT_PAGINATION_CLASS": "docurba.internal_api.paginators.DocurbaPagination",
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "docurba.internal_api.auth.SupabaseAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
     "PAGE_SIZE": 200,
 }
 
