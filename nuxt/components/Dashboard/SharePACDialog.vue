@@ -85,8 +85,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
 export default {
@@ -165,7 +163,7 @@ export default {
         value: this.project.name
       })
 
-      axios.post('/api/projects/notify/shared', {
+      this.$nuxtApi.post('/api/projects/notify/shared', {
         sharings: newSharings,
         sharedByData: this.$user.user_metadata
       })

@@ -5,6 +5,7 @@ app.use(express.json())
 const _ = require('lodash')
 
 const { getCollectivite } = require('../plugins/collectivite.js')
+const { requireStateAgent } = require('./modules/auth.js')
 const djangoApi = require('./modules/django-api.js')
 const supabase = require('./modules/supabase.js')
 const sendgrid = require('./modules/sendgrid.js')
@@ -33,7 +34,13 @@ const day = hour * 24
 //   }
 // })
 
-app.post('/notify/shared', (req, res) => {
+app.post('/notify/shared', async (req, res) => {
+  try {
+    await requireStateAgent(req, profile => profile.poste === 'ddt')
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
+
   const { sharings, sharedByData } = req.body
 
   sharings.forEach(async (sharing) => {
@@ -84,6 +91,12 @@ app.post('/notify/shared', (req, res) => {
 })
 
 app.post('/notify/update', async (req, res) => {
+  try {
+    await requireStateAgent(req, profile => profile.poste === 'ddt')
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
+
   const projectId = req.body.projectId
   const minDate = Date.now() - day
 
