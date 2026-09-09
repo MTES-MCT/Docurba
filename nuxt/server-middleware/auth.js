@@ -197,14 +197,10 @@ app.post('/signupStateAgent', async (req, res) => {
 
   try {
     // Create user
-    const { data: { user }, error: signupError } = await supabase.auth.signUp({
+    const { data: { user }, error: signupError } = await supabase.auth.admin.createUser({
       email: userData.email,
+      email_confirm: true,
       password: req.body.userData.password
-    }, {
-      data: {
-        firstname: userData.firstname,
-        lastname: userData.lastname
-      }
     })
 
     if (signupError) {
