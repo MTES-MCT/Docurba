@@ -6,24 +6,23 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import models
 from rest_framework import generics, status, viewsets
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sendgrid_backend.mail import HTTPError
 
 from docurba.core.models import Collectivite, Commune, EventType
 from docurba.internal_api import filters as custom_filters
-from docurba.internal_api.auth import SupabaseAuthentication
 from docurba.internal_api.serializers import (
     CollectiviteSerializer,
     CommuneSerializer,
     EventTypeSerializer,
 )
 from docurba.users.models import Profile
+from docurba.utils.api.views import PublicAPIView
 
 logger = logging.getLogger(__name__)
 
 
-class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
+class CollectiviteViewSet(PublicAPIView, viewsets.ReadOnlyModelViewSet):
     """Collectivités en base."""
 
     serializer_class = CollectiviteSerializer
@@ -81,7 +80,7 @@ class CollectiviteViewSet(viewsets.ReadOnlyModelViewSet):
         return qs.all()
 
 
-class CommuneViewSet(viewsets.ReadOnlyModelViewSet):
+class CommuneViewSet(PublicAPIView, viewsets.ReadOnlyModelViewSet):
     """Communes en base."""
 
     queryset = (
@@ -97,13 +96,14 @@ class CommuneViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_class = custom_filters.CommuneFilter
 
 
-class EventTypeViewSet(viewsets.ReadOnlyModelViewSet):
+# NOTE(cms): this should not be public. Make it private.
+class EventTypeViewSet(PublicAPIView, viewsets.ReadOnlyModelViewSet):
     queryset = EventType.active_objects.all()
     serializer_class = EventTypeSerializer
     filterset_class = custom_filters.EventTypeFilter
 
 
-class UserMustUpdatePasswordView(generics.GenericAPIView):
+class UserMustUpdatePasswordView(PublicAPIView, generics.GenericAPIView):
     def get(self, request: Request, *args, **kwargs) -> Response:  # noqa: ANN002, ANN003, ARG002
         must_update_password = (
             "email" in request.GET
@@ -115,9 +115,6 @@ class UserMustUpdatePasswordView(generics.GenericAPIView):
 
 
 class UserPassword(generics.GenericAPIView):
-    authentication_classes = [SupabaseAuthentication]  # noqa: RUF012
-    permission_classes = [IsAuthenticated]  # noqa: RUF012
-
     def post(self, request: Request, *args, **kwargs) -> Response:  # noqa: ANN002, ANN003, ARG002
         if "password" not in request.data:
             return Response(
