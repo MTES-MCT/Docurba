@@ -18,7 +18,7 @@ def _avant(request: HttpRequest) -> date | None:
 
 
 @require_safe
-def api_perimetres(request: HttpRequest) -> HttpResponse:
+def perimetres(request: HttpRequest) -> HttpResponse:
     try:
         avant = _avant(request)
     except ValueError:
@@ -66,7 +66,7 @@ def api_perimetres(request: HttpRequest) -> HttpResponse:
 
 
 @require_safe
-def api_communes(request: HttpRequest) -> HttpResponse:
+def communes(request: HttpRequest) -> HttpResponse:
     try:
         avant = _avant(request)
     except ValueError:
@@ -284,7 +284,7 @@ def api_communes(request: HttpRequest) -> HttpResponse:
 
 
 @require_safe
-def api_scots(request: HttpRequest) -> HttpResponse:
+def scots(request: HttpRequest) -> HttpResponse:
     try:
         avant = _avant(request)
     except ValueError:

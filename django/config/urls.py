@@ -2,14 +2,10 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 
-from docurba.core import views as core_views
-
 urlpatterns = [
     path("_admin/", admin.site.urls),
-    path("api/perimetres", core_views.api_perimetres, name="api_perimetres"),
-    path("api/communes", core_views.api_communes, name="api_communes"),
-    path("api/scots", core_views.api_scots, name="api_scots"),
     path("api-internes/", include("docurba.internal_api.urls")),
+    path("api/", include("docurba.api.urls")),
 ]
 
 if settings.DEBUG:
