@@ -19,9 +19,6 @@ server {
 
     charset utf-8;
 
-    # TODO: Remove
-    limit_req_dry_run on;
-
     location /static/ {
         alias <%= ENV["HOME"] %>/static/collected/;
         limit_req zone=per_ip burst=20 delay=10;
