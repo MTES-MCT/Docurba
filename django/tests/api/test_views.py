@@ -33,7 +33,7 @@ def csv_to_json_like(content: bytes) -> list[dict[str | Any, str | Any]]:
     return list(DictReader(content.decode().splitlines()))
 
 
-@pytest.mark.parametrize("view_name", ["api_perimetres", "api_communes", "api_scots"])
+@pytest.mark.parametrize("view_name", ["api:perimetres", "api:communes", "api:scots"])
 @pytest.mark.django_db
 class TestEveryAPI:
     @pytest.mark.parametrize(
@@ -57,7 +57,7 @@ class TestEveryAPI:
 
 @pytest.mark.parametrize(
     "view_name",
-    ["api_perimetres", "api_communes"],
+    ["api:perimetres", "api:communes"],
 )
 @pytest.mark.django_db
 class TestApiPerimetresAndCommunes:
@@ -154,7 +154,7 @@ class TestApiPerimetresAndCommunes:
             assert (
                 results[0][
                     "collectivite_code"
-                    if view_name == "api_perimetres"
+                    if view_name == "api:perimetres"
                     else "code_insee"
                 ]
                 == commune_a.code_insee
@@ -232,7 +232,7 @@ class TestAPIPerimetres:
 
         with django_assert_num_queries(3):
             response = client.get(
-                reverse("api_perimetres"),
+                reverse("api:perimetres"),
             )
 
         assert response.status_code == 200
@@ -254,7 +254,7 @@ class TestAPIPerimetres:
         ProcedureFactory(
             **self._default_procedure_factory_params(procedure_status=procedure_status)
         )
-        response = client.get(reverse("api_perimetres"))
+        response = client.get(reverse("api:perimetres"))
         results = csv_to_json_like(response.content)
         assert results[0]["opposable"] == expected_result
 
@@ -290,7 +290,7 @@ class TestAPIPerimetres:
             with_perimetre=[commune],
             doublon_cache_de=principal_procedure,
         )
-        response = client.get(reverse("api_perimetres"))
+        response = client.get(reverse("api:perimetres"))
         results = csv_to_json_like(response.content)
         assert len(results) == 1
         assert results[0]["procedure_id"] == str(principal_procedure.pk)
@@ -307,7 +307,7 @@ class TestAPIPerimetres:
             **self._default_procedure_factory_params(perimetre=[commune]),
             for_snapshot=True,
         )
-        response = client.get(reverse("api_perimetres"))
+        response = client.get(reverse("api:perimetres"))
         assert csv_to_json_like(response.content) == snapshot()
 
     @pytest.mark.parametrize(
@@ -345,7 +345,7 @@ class TestAPIPerimetres:
             with_event__date_evenement=approval_date,
         )
         with django_assert_num_queries(3):
-            response = client.get(f"{reverse('api_perimetres')}?avant={avant_value}")
+            response = client.get(f"{reverse('api:perimetres')}?avant={avant_value}")
         results = csv_to_json_like(response.content)
         assert len(results) == 1
         assert results[0]["opposable"] == expected_opposable_value
@@ -402,7 +402,7 @@ class TestAPICommunes:
     ) -> None:
         perimetre = [CommuneFactory(type=commune_type)]
         ProcedureFactory(**self._default_procedure_factory_params(perimetre=perimetre))
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         assert bool(csv_to_json_like(response.content)) == is_expected_in_results
 
     def test_nominal(
@@ -482,7 +482,7 @@ class TestAPICommunes:
             date=datetime.date(2025, 5, 5),
         )
 
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         assert response.status_code == 200
         assert response["content-type"] == "text/csv;charset=utf-8"
         results = csv_to_json_like(response.content)
@@ -494,7 +494,7 @@ class TestAPICommunes:
         for _ in range(2):
             ProcedureFactory(**self._default_procedure_factory_params())
             with django_assert_num_queries(3):
-                response = client.get(reverse("api_communes"))
+                response = client.get(reverse("api:communes"))
         assert response.status_code == 200
 
     def test_is_nouvelle(
@@ -516,7 +516,7 @@ class TestAPICommunes:
         ProcedureFactory(
             **self._default_procedure_factory_params(perimetre=[commune_deleguee]),
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
         assert len(results) == 1
         assert results[0]["com_nouvelle"] == "True"
@@ -561,7 +561,7 @@ class TestAPICommunes:
                 with_event__category=procedure_status,
                 with_event__date_evenement=datetime.date(2025, 2, 2),
             )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
         assert len(results) == 1
         assert results == snapshot()
@@ -586,7 +586,7 @@ class TestAPICommunes:
             **self._default_procedure_factory_params(procedure_status=procedure_status),
             from_sudocuh="12345",
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         assert response.status_code == 200
         results = csv_to_json_like(response.content)
         if procedure_status == EventCategory.PUBLICATION_PERIMETRE:
@@ -619,7 +619,7 @@ class TestAPICommunes:
                 perimetre=perimetre,
             ),
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         assert response.status_code == 200
         results = csv_to_json_like(response.content)
         if procedure_status == EventCategory.PUBLICATION_PERIMETRE:
@@ -651,7 +651,7 @@ class TestAPICommunes:
                 "nomprestaexterne": "Groupement des béliers",
             },
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         assert response.status_code == 200
         results = csv_to_json_like(response.content)
         if procedure_status == EventCategory.PUBLICATION_PERIMETRE:
@@ -689,7 +689,7 @@ class TestAPICommunes:
                 "nomprestaexterne": None,
             },
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         assert response.status_code == 200
         results = csv_to_json_like(response.content)
         if procedure_status == EventCategory.PUBLICATION_PERIMETRE:
@@ -722,7 +722,7 @@ class TestAPICommunes:
             ),
             vaut_PLH=True,
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         assert response.status_code == 200
         results = csv_to_json_like(response.content)
         if procedure_status == EventCategory.PUBLICATION_PERIMETRE:
@@ -758,7 +758,7 @@ class TestAPICommunes:
                 collectivite_porteuse=collectivite_porteuse,
             ),
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         assert response.status_code == 200
         results = csv_to_json_like(response.content)
         if procedure_status == EventCategory.PUBLICATION_PERIMETRE:
@@ -789,7 +789,7 @@ class TestAPICommunes:
             ),
             vaut_PDM=True,
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         assert response.status_code == 200
         results = csv_to_json_like(response.content)
         if procedure_status == EventCategory.PUBLICATION_PERIMETRE:
@@ -817,7 +817,7 @@ class TestAPICommunes:
             **self._default_procedure_factory_params(procedure_status=procedure_status),
             obligation_PDU=True,
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         assert response.status_code == 200
         results = csv_to_json_like(response.content)
         if procedure_status == EventCategory.PUBLICATION_PERIMETRE:
@@ -845,7 +845,7 @@ class TestAPICommunes:
             **self._default_procedure_factory_params(procedure_status=procedure_status),
             vaut_SCoT=True,
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         assert response.status_code == 200
         results = csv_to_json_like(response.content)
         if procedure_status == EventCategory.PUBLICATION_PERIMETRE:
@@ -861,7 +861,7 @@ class TestAPICommunes:
         """
         commune = CommuneFactory(intercommunalite=None)
         ProcedureFactory(**self._default_procedure_factory_params(perimetre=[commune]))
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         assert response.status_code == 200
         results = csv_to_json_like(response.content)
         assert len(results) == 1
@@ -907,7 +907,7 @@ class TestAPICommunes:
             procedure.topics.add(*topics)
 
         with django_assert_num_queries(3):
-            response = client.get(reverse("api_communes"))
+            response = client.get(reverse("api:communes"))
 
         results = csv_to_json_like(response.content)
         assert results[0]["pc_objets"] == (
@@ -968,7 +968,7 @@ class TestAPICommunes:
             date_evenement=datetime.date(2025, 11, 11),
             procedure=procedure,
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = list(DictReader(response.content.decode().splitlines()))
         assert results[0][f"pc_{date_key}"] == (
             "2025-11-11"
@@ -1011,7 +1011,7 @@ class TestAPICommunes:
             date_evenement=datetime.date(2025, 11, 11),
             procedure=procedure,
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = list(DictReader(response.content.decode().splitlines()))
         assert results[0][f"pa_{date_key}"] == "2025-11-11"
 
@@ -1042,7 +1042,7 @@ class TestAPICommunes:
             date_evenement=datetime.date(2025, 11, 11),
             procedure=procedure,
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = list(DictReader(response.content.decode().splitlines()))
         assert results[0][f"pc_{date_key}"] == "2025-11-11"
 
@@ -1084,7 +1084,7 @@ class TestAPICommunes:
             date_evenement=approval_date,  # 2026-07-04
         )
         with django_assert_num_queries(3):
-            response = client.get(f"{reverse('api_communes')}?avant={avant_value}")
+            response = client.get(f"{reverse('api:communes')}?avant={avant_value}")
         results = csv_to_json_like(response.content)
         assert len(results) == 1
         if expected_procedure_is_approved:
@@ -1153,7 +1153,7 @@ class TestAPICommunes:
                 )
                 | {"doc_type": doc_type},
             )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
         if with_approved:
             assert results[0]["plan_code_etat_simplifie"][0] == expected_code
@@ -1173,7 +1173,7 @@ class TestAPICommunes:
 
     def test_code_etat_complet_pas_procedure(self, client: Client) -> None:
         CommuneFactory()
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
         assert results[0]["plan_code_etat_complet"][1] == "9"
         assert results[0]["plan_code_etat_complet"][3] == "9"
@@ -1193,7 +1193,7 @@ class TestAPICommunes:
                 procedure_status=EventCategory.APPROUVE,
             )
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
         assert results[0]["plan_code_etat_complet"][1] == "1"
         assert results[0]["plan_code_etat_complet"][3] == "1"
@@ -1214,7 +1214,7 @@ class TestAPICommunes:
                 procedure_status=EventCategory.APPROUVE,
             )
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
         assert results[0]["plan_code_etat_complet"][1] == "2"
         assert results[0]["plan_code_etat_complet"][3] == "2"
@@ -1241,7 +1241,7 @@ class TestAPICommunes:
                 procedure_status=EventCategory.APPROUVE,
             )
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
         assert results[0]["plan_code_etat_complet"][1] == "3"
         assert results[0]["plan_code_etat_complet"][3] == "3"
@@ -1262,7 +1262,7 @@ class TestAPICommunes:
                 procedure_status=EventCategory.APPROUVE,
             )
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
         assert results[0]["plan_code_etat_complet"][1] == "4"
         assert results[0]["plan_code_etat_complet"][3] == "4"
@@ -1288,7 +1288,7 @@ class TestAPICommunes:
                 collectivite_porteuse=collectivite_porteuse, perimetre=perimetre
             )
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
         assert results[0]["plan_code_etat_complet"] == "3234"
         assert results[0]["plan_libelle_code_etat_complet"] == ""
@@ -1312,7 +1312,7 @@ class TestAPICommunes:
             )
             | {"doc_type": TypeDocument.CC}
         )
-        response = client.get(reverse("api_communes"))
+        response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
         assert results[0]["plan_code_etat_complet"] == "3214"
         assert results[0]["plan_libelle_code_etat_complet"] == ""
@@ -1410,7 +1410,7 @@ class TestAPIScots:
             date=datetime.date(2025, 11, 11),
         )
 
-        response = client.get(reverse("api_scots"))
+        response = client.get(reverse("api:scots"))
         assert csv_to_json_like(response.content) == snapshot()
 
     def test_nb_queries(
@@ -1419,7 +1419,7 @@ class TestAPIScots:
         for _ in range(2):
             ProcedureFactory(**self._default_procedure_factory_params())
             with django_assert_num_queries(6):
-                response = client.get(reverse("api_scots"))
+                response = client.get(reverse("api:scots"))
         assert response.status_code == 200
 
     @pytest.mark.xfail(
@@ -1440,7 +1440,7 @@ class TestAPIScots:
             type=EventCategory.APPROUVE,
             date=datetime.date(2025, 11, 11),
         )
-        response = client.get(f"{reverse('api_scots')}")
+        response = client.get(f"{reverse('api:scots')}")
         results = csv_to_json_like(response.content)
         assert results[0]["pa_date_fin_echeance"] == "2025-10-10"
 
@@ -1467,7 +1467,7 @@ class TestAPIScots:
         )
 
         with django_assert_num_queries(6 if nb_communes else 4):
-            response = client.get(reverse("api_scots"))
+            response = client.get(reverse("api:scots"))
         result = csv_to_json_like(response.content)
         if procedure_status == EventCategory.APPROUVE and nb_communes != 0:
             assert result[0]["pa_nombre_communes"] == str(nb_communes)
@@ -1491,7 +1491,7 @@ class TestAPIScots:
             from_sudocuh="12345",
         )
 
-        response = client.get(reverse("api_scots"))
+        response = client.get(reverse("api:scots"))
         result = csv_to_json_like(response.content)
         if procedure_status == EventCategory.APPROUVE:
             assert result[0]["pa_noserie_procedure"] == "12345"
@@ -1520,7 +1520,7 @@ class TestAPIScots:
             ),
         )
 
-        response = client.get(reverse("api_scots"))
+        response = client.get(reverse("api:scots"))
         result = csv_to_json_like(response.content)
         if procedure_status == EventCategory.APPROUVE:
             assert result[0]["pa_scot_interdepartement"] == "True"
@@ -1578,7 +1578,7 @@ class TestAPIScots:
             procedure.topics.add(*topics)
 
         with django_assert_num_queries(6):
-            response = client.get(reverse("api_scots"))
+            response = client.get(reverse("api:scots"))
 
         results = csv_to_json_like(response.content)
         assert results[0][expected_filled_key] == expected_result
@@ -1594,7 +1594,7 @@ class TestAPIScots:
         procedure = ProcedureFactory(
             **self._default_procedure_factory_params(perimetre=perimetre),
         )
-        response = client.get(reverse("api_scots"))
+        response = client.get(reverse("api:scots"))
         results = csv_to_json_like(response.content)
         assert len(results) == 1
         assert (
@@ -1641,7 +1641,7 @@ class TestAPIScots:
         filtre = {}
         if with_filter:
             filtre = {"departement": collectivite_porteuse_a.departement.code_insee}
-        response = client.get(reverse("api_scots"), filtre)
+        response = client.get(reverse("api:scots"), filtre)
         results = csv_to_json_like(response.content)
         assert len(results) == expected_lines
         if with_filter:
@@ -1684,7 +1684,7 @@ class TestAPIScots:
             date_evenement=approval_date,  # 2026-07-04
         )
         with django_assert_num_queries(6):
-            response = client.get(f"{reverse('api_scots')}?avant={avant_value}")
+            response = client.get(f"{reverse('api:scots')}?avant={avant_value}")
         results = csv_to_json_like(response.content)
         assert len(results) == 1
         if expected_procedure_is_approved:
