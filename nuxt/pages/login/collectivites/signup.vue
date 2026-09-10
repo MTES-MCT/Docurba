@@ -5,8 +5,8 @@
         <v-row>
           <v-col cols="12">
             <div>
-              <v-alert v-if="error" type="info">
-                {{ error }}
+              <v-alert v-if="error" type="error">
+                Une erreur s'est produite. Vérifiez que cette adresse email n'est pas déjà associée à un compte ou essayez de nouveau dans quelques minutes.
               </v-alert>
               <div class="mb-2">
                 <nuxt-link :to="{name: 'login'}">
@@ -160,13 +160,15 @@ export default {
         text: '',
         val: false
       },
-      error: null
+      error: false
     }
   },
   methods: {
     async signUp () {
+      this.error = false
+      this.loading = true
+
       try {
-        this.loading = true
         this.userData.other_poste = this.userData.other_poste ? [this.userData.other_poste] : null
         await axios({
           method: 'post',
@@ -187,13 +189,11 @@ export default {
           query: { collectivite_id: this.selectedCollectivite.code }
         })
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log(error)
-        this.error = error.response.data.message
+        this.error = true
         this.$vuetify.goTo(0)
-      } finally {
-        this.loading = false
       }
+
+      this.loading = false
     }
   }
 }
