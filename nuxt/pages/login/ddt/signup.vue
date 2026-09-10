@@ -4,7 +4,14 @@
       <v-col cols="12">
         <div>
           <v-alert v-if="error" type="error">
-            {{ error }}
+            <template v-if="error === 'signin'">
+              Cette adresse email est déjà utilisée, <nuxt-link class="white--text" :to="{ name: 'login-ddt-signin' }">
+                connectez-vous
+              </nuxt-link> à la place
+            </template>
+            <template v-else>
+              {{ error }}
+            </template>
           </v-alert>
           <div class="mb-2">
             <nuxt-link :to="{name: 'login'}">
@@ -97,7 +104,10 @@ export default {
         })
         this.$router.push({ name: 'login-ddt-explain' })
       } catch (error) {
-        this.error = error.message
+        const message = error.response?.data?.message ?? error.message
+        this.error = message === 'A user with this email address has already been registered'
+          ? 'signin'
+          : message
         this.$vuetify.goTo(0)
       } finally {
         this.loading = false
