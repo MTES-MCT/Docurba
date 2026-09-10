@@ -5,7 +5,7 @@
         <v-col cols="auto">
           <nuxt-link
             class="text-decoration-none d-flex align-center"
-            :to="`/ddt/${$route.params.departement}/collectivites/${$route.params.collectiviteId}/${$route.params.collectiviteId.length > 5 ? 'epci' : 'commune'}`"
+            :to="`/ddt/${$route.params.departement}/collectivites/${collectiviteCode}/${collectiviteCode.length > 5 ? 'epci' : 'commune'}`"
           >
             <v-icon color="primary" small class="mr-2">
               {{ icons.mdiChevronLeft }}
@@ -31,16 +31,31 @@ export default {
       icons: { mdiChevronLeft }
     }
   },
-  async mounted () {
-    this.collectivite = await this.$collectiviteApi.getFromCode(this.$route.params.collectiviteId, {
-      avec_membres_niveaux_inferieurs: true,
-      avec_groupements: true
-    })
-    this.collectivite.membres = this.collectivite.membres_niveaux_inferieurs || this.collectivite.membres
+  computed: {
+    collectiviteCode () {
+      return this.$route.params.collectiviteId
+    }
+  },
+  watch: {
+    collectiviteCode () {
+      this.onMountedOrChange()
+    }
+  },
+  mounted () {
+    this.onMountedOrChange()
+  },
+  methods: {
+    async onMountedOrChange () {
+      this.collectivite = await this.$collectiviteApi.getFromCode(this.collectiviteCode, {
+        avec_membres_niveaux_inferieurs: true,
+        avec_groupements: true
+      })
+      this.collectivite.membres = this.collectivite.membres_niveaux_inferieurs || this.collectivite.membres
 
-    if (!this.$user.canCreateProcedure({ collectivite: this.collectivite })) {
-      console.warn('Pas assez de droits pour créer une procédure sur ce périmètre')
-      this.$nuxt.context.redirect(302, `/collectivites/${this.$route.params.collectiviteId}`)
+      if (!this.$user.canCreateProcedure({ collectivite: this.collectivite })) {
+        console.warn('Pas assez de droits pour créer une procédure sur ce périmètre')
+        this.$nuxt.context.redirect(302, `/collectivites/${this.collectiviteCode}`)
+      }
     }
   }
 }
