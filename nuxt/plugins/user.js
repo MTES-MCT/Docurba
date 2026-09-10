@@ -136,6 +136,12 @@ export default async ({ $supabase, app }, inject) => {
       // console.log('onAuthStateChange', event, session)
 
       if (session) {
+        // Prevent infinite sessions
+        if (!session.expires_at || !session.expires_in) {
+          $supabase.auth.signOut()
+
+          return app.router.push('/')
+        }
         // console.log('update user with session')
         if (event === 'INITIAL_SESSION ' || !currentSession) {
           const user = await updateUser(session)
