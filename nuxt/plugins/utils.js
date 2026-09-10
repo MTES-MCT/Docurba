@@ -133,3 +133,39 @@ export default ({ app }, inject) => {
   }
   inject('utils', utils)
 }
+
+export function getUniquePropValues (arr, propOrGetter) {
+  const getValue = typeof propOrGetter === 'string' ? item => item[propOrGetter] : propOrGetter
+  const values = []
+  const existingValues = {}
+
+  arr.forEach((item) => {
+    const value = getValue(item)
+
+    if (!value || existingValues[value]) {
+      return
+    }
+
+    existingValues[value] = true
+    values.push(value)
+  })
+
+  return values
+}
+
+export function keyBy (values, propOrGetter) {
+  const getKey = typeof propOrGetter === 'string' ? item => item[propOrGetter] : propOrGetter
+  const valuesByKey = {}
+
+  values.forEach((value) => {
+    const key = getKey(value)
+
+    if (!key) {
+      return
+    }
+
+    valuesByKey[key] = value
+  })
+
+  return valuesByKey
+}

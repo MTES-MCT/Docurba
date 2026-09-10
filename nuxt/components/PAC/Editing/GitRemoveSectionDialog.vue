@@ -35,6 +35,7 @@
 <script>
 import axios from 'axios'
 import { mdiDelete } from '@mdi/js'
+import { getCommitter } from '@/plugins/user'
 
 export default {
   props: {
@@ -77,6 +78,7 @@ export default {
           data: {
             userId: this.$user.id,
             commit: {
+              committer: getCommitter(this.$user),
               path: section.path,
               sha: section.sha
             }
@@ -89,6 +91,7 @@ export default {
           data: {
             userId: this.$user.id,
             commit: {
+              committer: getCommitter(this.$user),
               path: `${section.path}/intro.md`,
               sha: section.introSha
             }

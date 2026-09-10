@@ -266,7 +266,12 @@ module.exports = {
               .map(path => `${'hash_' + hash(path)}: blame(path: "${path.replaceAll('"', '\\"')}") {
                 ranges {
                   commit {
+                    author {
+                      email
+                      name
+                    }
                     committedDate
+                    message
                   }
                 }
               }`)
@@ -289,7 +294,9 @@ module.exports = {
       return {
         path,
         commit: {
-          date: commit.committedDate
+          author: commit.author,
+          date: commit.committedDate,
+          message: commit.message
         }
       }
     })

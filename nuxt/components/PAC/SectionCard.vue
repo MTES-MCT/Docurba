@@ -19,7 +19,7 @@
                 </v-col>
                 <v-col cols="" class="p-relative">
                   <v-btn
-                    v-if="lastEditDate && editable"
+                    v-if="lastEditDetails"
                     absolute
                     text
                     disabled
@@ -27,7 +27,7 @@
                     class="text-caption text-right px-1"
                     :style="{left: '0px', bottom: '-20px'}"
                   >
-                    Modifié le: {{ lastEditDate }}
+                    {{ lastEditDetails }}
                   </v-btn>
                   <h2 class="d-flex align-center">
                     <v-text-field
@@ -280,6 +280,7 @@ import {
 } from '@mdi/js'
 import { encode } from 'js-base64'
 import { getCommitter } from '@/plugins/user'
+import { getUniquePropValues } from '@/plugins/utils'
 
 export default {
   props: {
@@ -391,13 +392,6 @@ export default {
           )
       }
     },
-    lastEditDate () {
-      if (this.section.editDate) {
-        return this.$dayjs(this.section.editDate).format('DD MMM YYYY')
-      } else {
-        return ''
-      }
-    },
     ghostCount () {
       if (this.section.ghost) { return 0 }
 
@@ -418,25 +412,46 @@ export default {
       }
 
       return count
+    },
+    lastEditDetails () {
+      if (!this.editable || !this.section.lastEdit) {
+        return ''
+      }
+
+      const lastEdit = this.section.lastEdit
+      const lastEditDate = `Modifié le : ${this.$dayjs(lastEdit.date).format('DD MMM YYYY')}`
+
+      if (lastEdit.message.endsWith('for main from Docurba')) {
+        return `${lastEditDate} sur la trame nationale`
+      }
+      if (!lastEdit.author) {
+        return lastEditDate
+      }
+
+      return `${lastEditDate} par ${lastEdit.author.firstname} ${lastEdit.author.lastname}${
+        lastEdit.author.poste === 'dreal' ? ' DREAL' : ''
+      }`
     }
   },
   watch: {
+    editable () {
+      this.fetchChildrenHistoriesIfNeeded()
+    },
     editEnabled () {
       this.$emit('editing', this.section.path, this.editEnabled)
     },
     isOpen () {
-      if (this.isOpen) {
-        this.$analytics({
-          category: 'pac',
-          name: 'open section',
-          value: this.section.name,
-          data: this.section
-        })
-
-        if (!this.section.ghost && this.editable && this.section.children[0] && !this.section.children[0].editDate) {
-          this.fetchChildrenHistories()
-        }
+      if (!this.isOpen) {
+        return
       }
+
+      this.$analytics({
+        category: 'pac',
+        name: 'open section',
+        value: this.section.name,
+        data: this.section
+      })
+      this.fetchChildrenHistoriesIfNeeded()
     },
     isSelected () {
       this.$analytics({
@@ -475,47 +490,85 @@ export default {
     async fetchSectionContent () {
       const path = `${this.section.path}${this.section.type === 'dir' ? '/intro.md' : ''}`
 
-      const { data: sectionContent } = await axios({
-        method: 'get',
-        url: '/api/trames/file',
-        params: {
-          path,
-          ref: this.section.ghost ? this.headRef : this.gitRef
-        }
-      })
-
-      // console.log(sectionContent)
       try {
+        const { data: sectionContent } = await axios({
+          method: 'get',
+          url: '/api/trames/file',
+          params: {
+            path,
+            ref: this.section.ghost ? this.headRef : this.gitRef
+          }
+        })
         this.sectionText = sectionContent.replace(/---([\s\S]*)---/, '')
-        // this.sectionContent.body = this.$md.compile(this.sectionText)
         this.sectionMarkdown = this.$md.parse(this.sectionText)
       } catch (err) {
         // eslint-disable-next-line no-console
-        console.log(err, sectionContent)
+        console.log(err)
       }
     },
     async fetchChildrenHistories () {
-      const paths = this.section.children
+      const selfPaths = this.section.children
         .filter(child => !child.ghost)
         .map(child => child.type === 'file' ? child.path : (child.path + '/intro.md'))
+      const headPaths = this.section.children
+        .filter(child => child.ghost)
+        .map(child => child.type === 'file' ? child.path : (child.path + '/intro.md'))
 
-      if (!paths.length) {
+      if (!selfPaths.length && !headPaths.length) {
         return
       }
 
-      const { data: histories } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
-        params: {
-          paths
-        }
-      })
+      const historiesPromises = []
+
+      if (selfPaths.length) {
+        historiesPromises.push(axios.get(`/api/trames/tree/${this.gitRef}/history`, {
+          params: {
+            paths: selfPaths
+          }
+        }))
+      }
+      if (headPaths.length) {
+        historiesPromises.push(axios.get(`/api/trames/tree/${this.headRef}/history`, {
+          params: {
+            paths: headPaths
+          }
+        }))
+      }
+
+      const histories = (await Promise.all(historiesPromises)).flatMap(({ data }) => data)
+      const authorsByEmail = await this.$PAC.getAuthorsFromEmails(
+        getUniquePropValues(histories, h => h.commit?.author?.email)
+      )
 
       // eslint-disable-next-line vue/no-mutating-props
       this.section.children = this.section.children.map((child) => {
+        const commit = histories.find(h => h.path.replace('/intro.md', '') === child.path)?.commit
+
+        if (!commit) {
+          return child
+        }
+
+        const email = commit.author?.email?.toLowerCase()
+
         return {
           ...child,
-          editDate: histories.find(h => h.path.replace('/intro.md', '') === child.path)?.commit?.date
+          lastEdit: {
+            ...commit,
+            author: email && authorsByEmail[email]
+          }
         }
       })
+    },
+    fetchChildrenHistoriesIfNeeded () {
+      if (
+        this.editable &&
+        this.isOpen &&
+        !this.section.ghost &&
+        this.section.children[0] &&
+        !this.section.children[0].lastEdit
+      ) {
+        this.fetchChildrenHistories()
+      }
     },
     async fetchDataAttachments () {
       const { data } = await this.$supabase.from('pac_sections_data').select('*').match({
@@ -581,8 +634,15 @@ export default {
           }
         })
 
-        // eslint-disable-next-line vue/no-mutating-props
-        this.section.editDate = history[0]?.commit?.date
+        if (history[0]) {
+          const author = await this.$PAC.getAuthorFromEmail(history[0].commit.author?.email?.toLowerCase())
+
+          // eslint-disable-next-line vue/no-mutating-props
+          this.section.lastEdit = {
+            ...history[0].commit,
+            author
+          }
+        }
 
         if (this.project && this.project.id) {
           this.$notifications.notifyUpdate(this.project.id)
@@ -655,9 +715,24 @@ export default {
         this.section.introSha = this.section.sha
       }
     },
-    sectionAdded (newSection) {
+    async sectionAdded (newSection) {
       // This could probably go into parent with an event. But it's not a big issue to have it here.
       // A Section card could also use a computed based on children length to determine if it's a dir or a file and adapt its path accordingly.
+      const { data: history } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
+        params: {
+          paths: [newSection.path]
+        }
+      })
+
+      if (history[0]) {
+        const author = await this.$PAC.getAuthorFromEmail(history[0].commit.author?.email?.toLowerCase())
+
+        newSection.lastEdit = {
+          ...history[0].commit,
+          author
+        }
+      }
+
       // eslint-disable-next-line vue/no-mutating-props
       this.section.children.push(newSection)
       this.$emit('changeOrder', newSection, 0)
