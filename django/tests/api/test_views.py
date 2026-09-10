@@ -292,6 +292,7 @@ class TestAPIPerimetres:
         )
         response = client.get(reverse("api:perimetres"))
         results = csv_to_json_like(response.content)
+        # This is a test.
         assert len(results) == 1
         assert results[0]["procedure_id"] == str(principal_procedure.pk)
 
