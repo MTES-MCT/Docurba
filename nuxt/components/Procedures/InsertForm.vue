@@ -187,8 +187,7 @@
 
 <script>
 import { mdiInformationOutline, mdiOpenInNew } from '@mdi/js'
-import axios from 'axios'
-import { uniqBy } from 'lodash'
+import { uniq, uniqBy } from 'lodash'
 import FormInput from '@/mixins/FormInput.js'
 
 export default {
@@ -358,16 +357,16 @@ export default {
         return []
       }
 
-      const collectiviteCodes = new Set(procedures.flatMap(p => [
-        p.collectivite_porteuse_id,
-        ...p.procedures_perimetres.map(c => c.collectivite_code)
-      ]))
-
-      // TODO :: Migrate this to Django once `groupements` and `membres` are available in `/api-internes/collectivites/`
-      const { data: collectivites } = await axios({
-        url: '/api/geo/collectivites',
-        params: new URLSearchParams(collectiviteCodes.map(code => ['codes', code]))
-      })
+      const collectivites = await this.$collectiviteApi.listFromCodes(
+        uniq(procedures.flatMap(p => [
+          p.collectivite_porteuse_id,
+          ...p.procedures_perimetres.map(c => c.collectivite_code)
+        ])),
+        {
+          avec_groupements: true,
+          avec_membres: true
+        }
+      )
 
       const enrichedProcedures = procedures.map((p) => {
         const comd = p.procedures_perimetres.find(c => c.collectivite_type === 'COMD')

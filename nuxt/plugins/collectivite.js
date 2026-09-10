@@ -1,8 +1,5 @@
 export default ({ $djangoApi }, inject) => {
   inject('collectiviteApi', {
-    get (id, params) {
-      return getCollectivite($djangoApi, id, params)
-    },
     getFromCode (code, params) {
       return getCollectiviteFromCode($djangoApi, code, params)
     },
@@ -13,10 +10,6 @@ export default ({ $djangoApi }, inject) => {
       return listCollectivitesFromCodes($djangoApi, codes, params)
     }
   })
-}
-
-export async function getCollectivite (api, id, params) {
-  return parseCollectivite(await api.get(`/api-internes/collectivites/${id}/`, params))
 }
 
 export async function getCollectiviteFromCode (api, code, params) {

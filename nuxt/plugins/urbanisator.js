@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import { groupBy, uniq, uniqBy, orderBy } from 'lodash'
-import axios from 'axios'
 import { enrichProcedureWithEvents } from '@/plugins/procedure'
 
 export default ({ $collectiviteApi, $supabase, $dayjs }, inject) => {
@@ -99,8 +98,9 @@ export default ({ $collectiviteApi, $supabase, $dayjs }, inject) => {
       return procedures
     },
     async getCollectiviteProcedures (collectiviteId) {
-      // TODO :: Migrate this once `membres` is available in `/api-internes/collectivites/`
-      const { data: collectivite } = await axios(`/api/geo/collectivites/${collectiviteId}/`)
+      const collectivite = await $collectiviteApi.getFromCode(collectiviteId, {
+        avec_membres: true
+      })
       const collectivites = [collectivite]
       if (collectivite.membres) { collectivites.push(...collectivite.membres) }
 
