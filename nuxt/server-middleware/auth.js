@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+const _ = require('lodash')
 const express = require('express')
 const app = express()
 app.use(express.json())
@@ -106,57 +107,73 @@ app.post('/signinCollectivite', async (req, res) => {
 })
 
 app.post('/signupCollectivite', async (req, res) => {
+  const userData = _.pick(req.body.userData, [
+    'collectivite_id',
+    'departement',
+    'email',
+    'firstname',
+    'lastname',
+    'optin',
+    'other_poste',
+    'poste',
+    'region',
+    'tel'
+  ])
+
   try {
+    // Create user
     const { data: { user }, error: creationError } = await supabase.auth.admin.createUser({
-      email: req.body.userData.email
+      email: userData.email
     })
 
-    if (creationError) { throw creationError }
+    if (creationError) {
+      throw creationError
+    }
 
-    // Insert new profile
-    const { data: insertedProfile, error: errorInsertProfile } = await supabase.from('profiles').insert({
-      ...req.body.userData,
+    // Insert profile
+    const { data: profile, error: profileInsertionError } = await supabase.from('profiles').insert({
+      ...userData,
       side: 'collectivite',
       user_id: user.id
-    }).select()
+    }).select().limit(1).single()
 
-    if (errorInsertProfile) {
-      throw errorInsertProfile
+    if (profileInsertionError) {
+      throw profileInsertionError
     }
 
-    const profile = insertedProfile[0]
-
+    // Subscribe to newsletter
     const listMap = {
-      be: 21,
+      agence_urba: 21,
       autre: 34,
-      employe_mairie: 22,
+      be: 21,
       elu: 22,
-      agence_urba: 21
+      employe_mairie: 22
     }
 
-    sibApi.optinNewsLetter(req.body.userData.email, req.body.userData.optin, [
-      listMap[profile.poste]
-    ])
+    sibApi.optinNewsLetter(userData.email, userData.optin, [listMap[profile.poste]])
 
-    // Send email to connect
+    // Send magic link
     await magicLinkSignIn({
-      email: req.body.userData.email,
-      redirectBasePath: req.body.redirectTo + `/collectivites/${profile.collectivite_id}`
+      email: userData.email,
+      redirectBasePath: `${req.body.redirectTo}/collectivites/${profile.collectivite_id}`
     })
 
-    slack.requestCollectiviteAccess(insertedProfile[0])
-
-    // SI pas de recovery_sent_at et pas de email_confirmed_at -> first co
-    // if (!connectionUser.email_confirmed_at && !connectionUser.recovery_sent_at) {
-    //   slack.requestCollectiviteAccess(insertedProfile[0])
-    // } else {
-    //   throw new Error('Vous avez déjà un compte associé à cette adresse email. Nous vous avons renvoyé un email de connexion.')
-    // }
+    // Send access request to slack
+    slack.requestCollectiviteAccess(profile)
 
     // Update pipedrive
-    await pipedrive.signupCollectivite({
-      ...req.body.userData,
-      detailsCollectivite: req.body.detailsCollectivite
+    pipedrive.signupCollectivite({
+      ...userData,
+      detailsCollectivite: _.pick(req.body.detailsCollectivite, [
+        'code',
+        'codeInsee',
+        'departementCode',
+        'intercommunaliteCode',
+        'intitule',
+        'regionCode',
+        'siren',
+        'type'
+      ])
     })
 
     res.status(200).send(user)
@@ -166,17 +183,66 @@ app.post('/signupCollectivite', async (req, res) => {
   }
 })
 
-app.post('/hooksSignupStateAgent', async (req, res) => {
-  await slack.requestStateAgentAccess(req.body)
+app.post('/signupStateAgent', async (req, res) => {
+  const userData = _.pick(req.body.userData, [
+    'departement',
+    'email',
+    'firstname',
+    'lastname',
+    'optin',
+    'other_poste',
+    'poste',
+    'region'
+  ])
 
-  sibApi.optinNewsLetter(req.body.email, req.body.optin, [33])
-  // Push in the good pipedrive
-  // TODO: Attention au changement de nom dept / departement dans Signin() (pipedrive.js) & dans la fonction updateUserRole() (admin.js)
-  // Verifier le validation Slack par la suite
-  console.log('hooksSignupStateAgent: ', req.body)
-  await pipedrive.signupStateAgent(req.body)
+  try {
+    // Create user
+    const { data: { user }, error: signupError } = await supabase.auth.admin.createUser({
+      email: userData.email,
+      email_confirm: true,
+      password: req.body.userData.password
+    })
 
-  res.status(200).send('OK')
+    if (signupError) {
+      throw signupError
+    }
+
+    // Insert profile
+    const { data: profile, error: profileInsertionError } = await supabase.from('profiles').insert({
+      ...userData,
+      side: 'etat',
+      user_id: user.id
+    }).select().limit(1).single()
+
+    if (profileInsertionError) {
+      throw profileInsertionError
+    }
+
+    // Set github roles
+    if (profile.poste === 'ddt') {
+      await supabase.from('github_ref_roles').insert([{
+        ref: `dept-${profile.departement}`,
+        role: 'user',
+        user_id: user.id
+      }])
+    }
+
+    // Subscribe to newsletter
+    sibApi.optinNewsLetter(userData.email, userData.optin, [33])
+
+    const profileAndUserData = { ...profile, ...userData }
+
+    // Send access request to slack
+    slack.requestStateAgentAccess(profileAndUserData)
+
+    // Update pipedrive
+    pipedrive.signupStateAgent(profileAndUserData)
+
+    res.status(200).send(user)
+  } catch (error) {
+    console.log('ERROR /auth/signupStateAgent : ', error.message)
+    res.status(500).send({ message: error.message })
+  }
 })
 
 module.exports = app
