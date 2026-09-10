@@ -179,7 +179,7 @@ app.post('/signupCollectivite', async (req, res) => {
     res.status(200).send(user)
   } catch (error) {
     console.log('ERROR /auth/signupCollectivite : ', error.message)
-    res.status(500).send({ message: error.message })
+    res.status(500).send('KO')
   }
 })
 
@@ -241,7 +241,7 @@ app.post('/signupStateAgent', async (req, res) => {
     res.status(200).send(user)
   } catch (error) {
     console.log('ERROR /auth/signupStateAgent : ', error.message)
-    res.status(500).send({ message: error.message })
+    res.status(500).send('KO')
   }
 })
 

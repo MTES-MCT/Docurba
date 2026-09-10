@@ -4,7 +4,7 @@
       <v-col cols="12">
         <div>
           <v-alert v-if="error" type="error">
-            {{ error }}
+            Une erreur s'est produite. Vérifiez que cette adresse email n'est pas déjà associée à un compte ou essayez de nouveau dans quelques minutes.
           </v-alert>
           <div class="mb-2">
             <nuxt-link :to="{name: 'login'}">
@@ -77,13 +77,15 @@ export default {
         region: null,
         optin: false
       },
-      error: null
+      error: false
     }
   },
   methods: {
     async signUp () {
+      this.error = false
+      this.loading = true
+
       try {
-        this.loading = true
         await axios({
           method: 'post',
           url: '/api/auth/signupStateAgent',
@@ -97,11 +99,11 @@ export default {
         })
         this.$router.push({ name: 'login-ddt-explain' })
       } catch (error) {
-        this.error = error.message
+        this.error = true
         this.$vuetify.goTo(0)
-      } finally {
-        this.loading = false
       }
+
+      this.loading = false
     }
   }
 }
