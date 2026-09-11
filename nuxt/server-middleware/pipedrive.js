@@ -3,10 +3,17 @@ const express = require('express')
 const app = express()
 app.use(express.json())
 
+const { requireAuthenticated } = require('./modules/auth')
 const supabase = require('./modules/supabase.js')
 const pipedrive = require('./modules/pipedrive.js')
 
 app.post('/collectivite_inscrite', async (req, res) => {
+  try {
+    await requireAuthenticated(req)
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
+
   console.log('-- COLLECTIVITE INSCRITE PIPEDRIVE --')
   const userData = req.body.userData
   await pipedrive.movePersonDealTo(userData.email, pipedrive.COLLECTIVITE_DEAL.TRY_INSCRIPTION, pipedrive.COLLECTIVITE_DEAL.INSCRIT)

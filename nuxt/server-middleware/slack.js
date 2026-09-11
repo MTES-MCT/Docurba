@@ -12,6 +12,7 @@ const supabase = require('./modules/supabase.js')
 
 // modules
 const admin = require('./modules/admin.js')
+const { requireProcedureSharable } = require('./modules/auth.js')
 const djangoApi = require('./modules/django-api.js')
 const slack = require('./modules/slack.js')
 const sharing = require('./modules/sharing.js')
@@ -69,6 +70,11 @@ app.post('/notify/admin', (req, res) => {
 })
 
 app.post('/notify/frp_shared', async (req, res) => {
+  try {
+    await requireProcedureSharable(req)
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
   try {
     // Send notification to Slack
     const slackRes = await slack.shareProcedure(req.body)
