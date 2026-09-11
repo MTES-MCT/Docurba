@@ -1,4 +1,5 @@
 from corsheaders.defaults import default_headers
+from django.db import models
 
 # ruff: noqa: F405 F403
 from config.settings.base import *  # NOSONAR (S2208)
@@ -64,3 +65,5 @@ else:
             "BACKEND": ("django.core.mail.backends.console.EmailBackend"),
         },
     }
+
+DEFAULT_FETCH_MODE = models.FETCH_RAISE
