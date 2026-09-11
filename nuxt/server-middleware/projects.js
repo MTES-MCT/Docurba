@@ -11,31 +11,16 @@ const sendgrid = require('./modules/sendgrid.js')
 const hour = 1000 * 60 * 60
 const day = hour * 24
 
-// app.post('/notify/shared/frp', async (req, res) => {
-//   const { sharings } = req.body
-//   console.log('sharings: ', sharings)
-//   try {
-//     await sendgrid.sendEmail({
-//       to: sharings.to,
-//       template_id: 'd-3d7eb5e8a8c441d48246cce0c751f812',
-//       dynamic_template_data: {
-//         sender_email: sharings.sender_email,
-//         sender_firstname: sharings.sender_firstname || '',
-//         sender_lastname: sharings.sender_lastname || '',
-//         url_frp: 'https://docurba.beta.gouv.fr/frise/' + sharings.procedure_id || '',
-//         procedure_name: sharings.procedure_name || ''
-//       }
-//     })
-//     res.status(200).send('OK')
-//   } catch (error) {
-//     console.log('error: ', error)
-//     res.status(400).send('Email Sharing FRP failed')
-//   }
-// })
 
 app.post('/notify/shared', (req, res) => {
-  const { sharings, sharedByData } = req.body
+  const { sharings } = req.body
+          // user_email: email.toLowerCase().trim(),
+          // project_id: this.project.id,
+          // shared_by: this.$user.id,
+          // role: this.rightInput
 
+  // TODO: don't loop.
+  // TODO: move this to Django?
   sharings.forEach(async (sharing) => {
     const { data: notifications, error } = await supabase.from('projects_sharing').select('notified, shared_by').match({
       user_email: sharing.user_email,
