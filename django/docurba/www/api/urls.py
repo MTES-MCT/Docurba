@@ -1,6 +1,6 @@
 from django.urls import path
 
-from docurba.api import views
+from docurba.www.api import views
 
 app_name = "api"
 

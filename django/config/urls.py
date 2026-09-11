@@ -4,8 +4,8 @@ from django.urls import include, path
 
 urlpatterns = [
     path("_admin/", admin.site.urls),
-    path("api-internes/", include("docurba.internal_api.urls")),
-    path("api/", include("docurba.api.urls")),
+    path("api-internes/", include("docurba.www.internal_api.urls")),
+    path("api/", include("docurba.www.api.urls")),
 ]
 
 if settings.DEBUG:

@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 
 
-class ApiConfig(AppConfig):
-    name = "api"
+class InternalApiConfig(AppConfig):
+    name = "docurba.api"
+    verbose_name = "API"
