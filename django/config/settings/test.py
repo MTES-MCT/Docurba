@@ -1,4 +1,6 @@
 # ruff: noqa: F405 F403
+from django.db import models
+
 from config.settings.base import *  # NOSONAR (S2208)
 
 DOCURBA_ENVIRONMENT = DocurbaEnvironment.TEST
@@ -34,3 +36,5 @@ MAILERS = {
         "BACKEND": "django.core.mail.backends.locmem.EmailBackend",
     },
 }
+
+DEFAULT_FETCH_MODE = models.FETCH_RAISE
