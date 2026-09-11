@@ -274,9 +274,9 @@ class ProcedureAdmin(admin.ModelAdmin):
         return False
 
     def get_queryset(self, request) -> models.QuerySet:
-        queryset = super().get_queryset(request)
         return (
-            queryset.with_events()  # mandatory to set the status.
+            self.model.full_objects.get_queryset()
+            .with_events()  # mandatory to set the status.
             .select_related("collectivite_porteuse")
             .prefetch_related("perimetre")
         )
