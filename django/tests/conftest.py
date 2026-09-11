@@ -33,7 +33,7 @@ def api_client_with_auth_factory() -> None:
 
     @contextlib.contextmanager
     def api_client_with_auth(profile: Profile) -> None:
-        with patch("docurba.internal_api.auth.create_client") as create_client:
+        with patch("docurba.api.auth.create_client") as create_client:
             supabase = create_client.return_value
             supabase_auth_user = SupabaseAuthUser(
                 id=profile.user_id,

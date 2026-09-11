@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "docurba.core",
     "docurba.surveys",
     "docurba.users",
-    "docurba.internal_api",
+    "docurba.api",
     "docurba.history",
 ]
 
@@ -204,9 +204,9 @@ UPSTREAM_NUXT = env.str("UPSTREAM_NUXT", default="http://localhost:3000")
 CREATE_UNMANAGED_TABLES = False
 REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
-    "DEFAULT_PAGINATION_CLASS": "docurba.internal_api.paginators.DocurbaPagination",
+    "DEFAULT_PAGINATION_CLASS": "docurba.api.paginators.DocurbaPagination",
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "docurba.internal_api.auth.SupabaseAuthentication",
+        "docurba.api.auth.SupabaseAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
