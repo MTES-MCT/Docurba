@@ -6,6 +6,7 @@ urlpatterns = [
     path("_admin/", admin.site.urls),
     path("api-internes/", include("docurba.www.internal_api.urls")),
     path("api/", include("docurba.www.api.urls")),
+    path("", include("docurba.www.security.urls")),
 ]
 
 if settings.DEBUG:
