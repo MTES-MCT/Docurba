@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework import routers
 
-from docurba.internal_api import views
+from docurba.www.internal_api import views
 
 app_name = "internal_api"
 

@@ -11,14 +11,14 @@ from supabase_auth import AuthResponse
 from supabase_auth import Session as SupabaseAuthSession
 from supabase_auth import User as SupabaseAuthUser
 
-from docurba.internal_api.auth import SupabaseAuthentication
+from docurba.api.auth import SupabaseAuthentication
 from tests.users.factories import ProfileFactory, SupabaseUserFactory
 
 fake = Faker()
 
 
 @pytest.mark.django_db
-@patch("docurba.internal_api.auth.create_client")
+@patch("docurba.api.auth.create_client")
 class TestSupabaseAuthentication:
     def test_valid_with_profile(
         self,

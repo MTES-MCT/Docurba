@@ -4,7 +4,7 @@ import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from docurba.internal_api.paginators import DocurbaPagination
+from docurba.api.paginators import DocurbaPagination
 from tests.core.factories import CollectiviteFactory
 
 

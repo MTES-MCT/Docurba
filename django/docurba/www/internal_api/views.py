@@ -10,14 +10,14 @@ from rest_framework.response import Response
 from sendgrid_backend.mail import HTTPError
 
 from docurba.core.models import Collectivite, Commune, EventType
-from docurba.internal_api import filters as custom_filters
-from docurba.internal_api.serializers import (
+from docurba.users.models import Profile
+from docurba.utils.api.views import PublicAPIView
+from docurba.www.internal_api import filters as custom_filters
+from docurba.www.internal_api.serializers import (
     CollectiviteSerializer,
     CommuneSerializer,
     EventTypeSerializer,
 )
-from docurba.users.models import Profile
-from docurba.utils.api.views import PublicAPIView
 
 logger = logging.getLogger(__name__)
 
