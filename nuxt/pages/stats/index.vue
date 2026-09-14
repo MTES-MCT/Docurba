@@ -14,48 +14,6 @@
   </v-container>
 </template>
 
-<script>
-import axios from 'axios'
-
-export default {
-  data () {
-    return {
-      diffs: null
-    }
-  },
-  mounted () {
-    this.getPACsDiff()
-  },
-  methods: {
-    async getPACsDiff () {
-      const { data: diffs } = await axios({
-        url: '/api/stats/diff',
-        method: 'get'
-      })
-
-      this.diffs = diffs
-
-      // console.log(diffs)
-
-      // const ARA = depts.filter((dept) => {
-      //   return dept.code_region === 84
-      // })
-
-      // const ARAprojects = { total: 0 }
-
-      // ARA.forEach((dept) => {
-      //   const nbProjects = diffs[dept.code_departement]
-
-      //   ARAprojects[dept.nom_departement] = nbProjects
-      //   ARAprojects.total += nbProjects
-      // })
-
-      // console.log(JSON.stringify(ARAprojects, null, 2))
-    }
-  }
-}
-</script>
-
 <style scoped>
 .iframe-container {
   position: relative;
