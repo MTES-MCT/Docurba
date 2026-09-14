@@ -197,6 +197,113 @@ class Profile(models.Model):
             },
         )
 
+    def verified_collectivite_user_email(self) -> SendgridEmailMessage:
+        # Collectivite
+        #     sendgrid.sendEmail({
+        #       to: profile.email,
+        #       template_id: 'd-0143010573f6497b86abbd4e4c96f46e',
+        #       dynamic_template_data: Object.assign({
+        #         collectivite_name: collectivite.intitule, # profile.collectivite_id
+        #         shared_procedure_url: sharedProcedureUrl ?? false,
+        #         base_url: process.env.APP_URL
+        #       }, profile),
+        #       send_at: Math.round((Date.now() / 1000)) + (60 * 5)
+        #     })
+        # TODO: why this send_at in 5 minutes?
+
+        shared_procedure_url = None
+        return get_email_message(
+            to=[self.email],
+            template_id="d-0143010573f6497b86abbd4e4c96f46e"
+            if self.poste == "ddt"
+            else "d-3d9f4b96863d4c6e8d4c9489f6d8eb6e",
+            template_context={
+                "collectivite_name": self.collectivite.nom,
+                "base_url": "TODO",
+                "shared_procedure_url": shared_procedure_url,
+            },
+        )
+
+    def verified_etat_user_email(self) -> SendgridEmailMessage:
+        # TODO: Create ProjectSharing model
+        #     const { data: latestSharing } = await supabase
+        #       .from('projects_sharing')
+        #       .select('id, projects!inner(id, procedures!inner(id))')
+        #       .eq('user_email', email)
+        #       .eq('role', 'write_frise')
+        #       .eq('projects.procedures.is_principale', true)
+        #       .order('created_at', { ascending: false })
+        #       .limit(1)
+        #       .maybeSingle()
+
+        #     const latestProcedurePrincipaleShared = latestSharing.projects.procedures[0]
+        #     const sharedProcedureUrl = `${process.env.APP_URL}/frise/${latestProcedurePrincipaleShared.id}`
+
+        shared_procedure_url = None
+
+        # DDT
+        #       sendgrid.sendEmail({
+        #         to: userData.email,
+        #         template_id: profile.poste === 'ddt' ? 'd-939bd4723dd04edcad17e6584b7641f3' : 'd-3d9f4b96863d4c6e8d4c9489f6d8eb6e',
+        #         dynamic_template_data: {
+        #           firstname,
+        #           lastname,
+        #           departement: departement || '',
+        #           regionName: regionData?.intitule || '',
+        #           region: (+region).toString(),
+        #           shared_procedure_url: sharedProcedureUrl ?? false
+        #         }
+        #       })
+        return get_email_message(
+            to=[self.email],
+            template_id="d-939bd4723dd04edcad17e6584b7641f3"
+            if self.poste == "ddt"
+            else "d-3d9f4b96863d4c6e8d4c9489f6d8eb6e",
+            template_context={
+                "firstname": self.firstname,
+                "lastname": self.lastname,
+                "departement": self.departement.name,
+                "regionName": self.departement.region.name,
+                "region": self.departement.region.code_insee,
+                "shared_procedure_url": shared_procedure_url,
+            },
+        )
+
+    def verify(self) -> None:
+        self.verified = True
+        self.save()
+        # TODO: delete me?
+        #     const { data, error } = await supabase.from('github_ref_roles').update({ role }).match({
+        #       user_id: userData.user_id,
+        #       ref: `dept-${userData.departement}`
+        #     }).select()
+
+        self.verified_user_email().send()
+
+        # Update Pipedrive
+
+    # if (action.action_id === 'ddt_validation') {
+
+
+#       // Update deal status in Pipedrive.
+#       const { deals } = pipedrive.findOrganization(userData.departement)
+
+#       if (deals && deals.length) {
+#         const deal = deals.find((d) => {
+#           return d.stage_id === 10 || d.stage_id === 11 || d.stage_id === 12
+#         })
+
+#         if (deal) {
+#           pipedrive.updateDeal(deal.id, {
+#             stage_id: 13
+#           })
+#         }
+#       }
+#     }
+
+#     return { data, error }
+#   },
+
 
 class UserManager(DjangoUserManager):
     pass
