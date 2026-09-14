@@ -228,15 +228,6 @@ app.post('/signupStateAgent', async (req, res) => {
       throw profileInsertionError
     }
 
-    // Set github roles
-    if (profile.poste === 'ddt') {
-      await supabase.from('github_ref_roles').insert([{
-        ref: `dept-${profile.departement}`,
-        role: 'user',
-        user_id: user.id
-      }])
-    }
-
     // Subscribe to newsletter
     sibApi.optinNewsLetter(userData.email, userData.optin, [33])
 
