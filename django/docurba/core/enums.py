@@ -1,6 +1,12 @@
 from django.db import models
 
 
+class ProjectSharingRoleType(models.TextChoices):
+    WRITE_FRISE = "write_frise", "Écriture frise"
+    WRITE = "write", "Écriture"
+    READ = "read", "Lecture"
+
+
 class EventScope(models.TextChoices):
     PP = "pp", "Procédure principale"
     PPI = "ppi", "Procédure principale intercommunale"
