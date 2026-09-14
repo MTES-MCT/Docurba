@@ -80,7 +80,6 @@ module.exports = {
       console.log('The SLACK_WEBHOOK environment variable is not defined.')
       return
     }
-    // See '/webhook/interactivity' to see fields needed by the webhook (action_id == 'collectivite_validation')
     const payload = _.pick(userData, ['user_id', 'email', 'firstname', 'lastname', 'collectivite_id'])
     return axios({
       url: process.env.SLACK_WEBHOOK,
@@ -135,7 +134,6 @@ module.exports = {
     } else if (userData.poste === 'dreal') {
       textContent = `- region: ${userData.region.name} - ${userData.region.code} \n - email: ${userData.email}`
     }
-    // See '/webhook/interactivity' to see fields needed by the webhook (action_id == 'ddt_validation')
     const payload = _.pick(userData, ['user_id', 'email', 'departement'])
     return axios({
       url: process.env.SLACK_WEBHOOK,
