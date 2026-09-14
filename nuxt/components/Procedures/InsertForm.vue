@@ -95,10 +95,10 @@
                   :items="proceduresParents"
                 >
                   <template #selection="{item}">
-                    {{ $utils.formatProcedureName(item, item.porteuse) }}
+                    {{ item.label }}
                   </template>
                   <template #item="{item}">
-                    {{ $utils.formatProcedureName(item, item.porteuse) }}
+                    {{ item.label }}
                   </template>
                 </v-select>
               </validation-provider>
@@ -190,6 +190,7 @@ import { mdiInformationOutline, mdiOpenInNew } from '@mdi/js'
 import axios from 'axios'
 import { uniqBy } from 'lodash'
 import FormInput from '@/mixins/FormInput.js'
+import { enrichProcedureWithEvents } from '@/plugins/procedure'
 
 export default {
   name: 'AddProcedureForm',
@@ -340,7 +341,7 @@ export default {
   },
   methods: {
     async getProcedures () {
-      let query = this.$supabase.from('procedures').select('*, procedures_perimetres(*)').eq('is_principale', true).eq('status', 'opposable')
+      let query = this.$supabase.from('procedures').select('*, procedures_perimetres(*), doc_frise_events(*)').eq('is_principale', true).eq('status', 'opposable')
 
       if (this.collectivite.type !== 'COM') {
         query = query.eq('collectivite_porteuse_id', this.collectivite.code)
@@ -384,10 +385,19 @@ export default {
           collectivite.intitule += ' COMD'
         }
 
+        const approvalEvent = enrichProcedureWithEvents(p).approval_event
+
         return {
           porteuse: collectivites.find(c => c.code === p.collectivite_porteuse_id),
           collectivite,
-          ...p
+          ...p,
+          label: `${
+            this.$utils.formatProcedureName(p, p.porteuse)
+          }${
+            approvalEvent
+              ? ` - ${approvalEvent.date_iso_formattee}`
+              : ''
+          }`
         }
       })
 
