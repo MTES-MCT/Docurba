@@ -9,7 +9,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.utils import timezone
 from pytest_django import DjangoAssertNumQueries
 
-from docurba.core.enums import TypeCollectivite
+from docurba.core.enums import ProjectSharingRoleType, TypeCollectivite
 from docurba.core.models import (
     EVENT_CATEGORY_BY_DOC_TYPE,
     Adhesion,
@@ -31,6 +31,7 @@ from tests.core.factories import (
     EventFactory,
     EventTypeFactory,
     ProcedureFactory,
+    ProjectSharingFactory,
 )
 from tests.users.factories import ProfileFactory
 
@@ -139,8 +140,8 @@ class TestMaterializedViewFlatMembership:
             memberships.delete()
 
 
+@pytest.mark.django_db
 class TestProcedureQuerySet:
-    @pytest.mark.django_db
     def test_with_concatenated_topics_as_string(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -154,7 +155,6 @@ class TestProcedureQuerySet:
         assert hasattr(procedure, "concatenated_topics_as_string")
         assert procedure.concatenated_topics_as_string == "Feu de forêt,Trajectoire ZAN"
 
-    @pytest.mark.django_db
     def test_with_events_archived(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -167,6 +167,57 @@ class TestProcedureQuerySet:
 
         assert len(procedure.events_prefetched) == 1
         assert procedure.events_prefetched[0].id == event_not_archived.id
+
+    def test_most_recently_shared_to_profile_email(self) -> None:
+        guest = ProfileFactory()
+        # Old sharing
+        ProjectSharingFactory(
+            user_email=guest.email,
+            project__with_procedure=True,
+            project__with_procedure__is_principale=True,
+            role=ProjectSharingRoleType.WRITE_FRISE,
+            created_at=timezone.now() - timedelta(days=2),
+        )
+        sharing = ProjectSharingFactory(
+            user_email=guest.email,
+            project__with_procedure=True,
+            project__with_procedure__is_principale=True,
+            role=ProjectSharingRoleType.WRITE_FRISE,
+            created_at=timezone.now(),
+        )
+        expected_procedure = sharing.project.procedures.order_by("created_at").last()
+        # Procedure is not principal.
+        ProjectSharingFactory(
+            user_email=guest.email,
+            project__with_procedure=True,
+            project__with_procedure__is_principale=False,
+            role="write_frise",
+        )
+        # Project without procedure.
+        ProjectSharingFactory(
+            user_email=guest.email,
+            role="write_frise",
+        )
+        # Wrong role
+        ProjectSharingFactory(
+            user_email=guest.email,
+            project__with_procedure=True,
+            project__with_procedure__is_principale=False,
+            role="read",
+        )
+
+        # Other user
+        ProjectSharingFactory(
+            user_email="marthe@tarascon.com",
+            project__with_procedure=True,
+            project__with_procedure__is_principale=False,
+            role="write_frise",
+        )
+        result = Procedure.objects.most_recently_shared_to_profile_email(
+            email=guest.email
+        )
+        assert isinstance(result, Procedure) is True
+        assert result == expected_procedure
 
 
 class TestProcedureCommunesCounts:
