@@ -17,9 +17,15 @@ from django.db.models.functions import Now
 from django.urls import reverse
 from django.utils import timezone
 
-from docurba.core.enums import CommuneType, EventScope, TypeCollectivite, VisibilityType
+from docurba.core.enums import (
+    CommuneType,
+    EventScope,
+    ProjectSharingRoleType,
+    TypeCollectivite,
+    VisibilityType,
+)
 from docurba.core.utils import OversizedIndex
-from docurba.users.models import Profile
+from docurba.users import models as users_models
 from docurba.utils import urls as utils_urls
 
 logger = logging.getLogger(__name__)
@@ -343,6 +349,20 @@ class ProcedureQuerySet(models.QuerySet):
                 delimiter=Value(","),
                 order_by="topics__display_name",
             ),
+        )
+
+    def most_recently_shared_to_profile_email(self, email: str) -> Self:
+        subquery = ProjectSharing.objects.filter(
+            user_email=email, role=ProjectSharingRoleType.WRITE_FRISE
+        ).order_by("-created_at")
+
+        return (
+            self.filter(
+                project_id=models.Subquery(subquery.values("project_id")[:1]),
+                is_principale=True,
+            )
+            .order_by("-created_at")
+            .first()
         )
 
 
@@ -903,7 +923,10 @@ class ProjectSharing(models.Model):
     )
     user_email = models.TextField(verbose_name="email utilisateur")
     project = models.ForeignKey(
-        "core.Project", on_delete=models.DO_NOTHING, verbose_name="projet"
+        "core.Project",
+        on_delete=models.DO_NOTHING,
+        related_name="sharings",
+        verbose_name="projet",
     )
     shared_by = models.ForeignKey(
         "users.Profile",
@@ -1049,7 +1072,7 @@ class EventQuerySet(models.QuerySet):
         ]
         return self.defer(*to_be_removed_fields, *heavy_fields)
 
-    def archive(self, archived_by: Profile) -> int:
+    def archive(self, archived_by: users_models.Profile) -> int:
         if not archived_by:
             msg = "Le champ “archived_by” doit être renseigné"
             raise ValidationError(msg)
@@ -1172,7 +1195,7 @@ class Event(models.Model):
             message = "Le champ “archived_by” doit être renseigné uniquement si le champ “archived_at” est renseigné"
             raise ValidationError(message)
 
-    def archive(self, archived_by: Profile) -> None:
+    def archive(self, archived_by: users_models.Profile) -> None:
         self.archived_by = archived_by
         self.archived_at = timezone.now()
 

@@ -236,6 +236,7 @@ class ProjectFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Project
+        skip_postgeneration_save = True
 
     @factory.post_generation
     def with_procedure(self, create: bool, extracted: bool, **extra: dict) -> None:  # noqa: FBT001
