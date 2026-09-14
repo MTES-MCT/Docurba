@@ -23,17 +23,7 @@ export default ({ $supabase, $user }, inject) => {
 
         if (errorInsertProfile) { throw errorInsertProfile }
 
-        const newProfile = profile[0]
-
-        if (newProfile.poste === 'ddt') {
-          await $supabase.from('github_ref_roles').insert([{
-            role: 'user',
-            ref: `dept-${newProfile.departement}`,
-            user_id: user.id
-          }])
-        }
-
-        return { user, profile: newProfile }
+        return { user, profile: profile[0] }
       } catch (error) {
         if (error.message === 'User already registered') {
           throw new Error('Cet email est déjà enregistré. Cliquez plutôt sur “J’ai déjà un compte” ou réinitialisez votre mot de passe si vous l’avez oublié.')
