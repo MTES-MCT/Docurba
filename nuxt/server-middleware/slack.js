@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-const axios = require('axios')
 const express = require('express')
 const app = express()
 
@@ -11,8 +10,6 @@ const sendgrid = require('./modules/sendgrid.js')
 const supabase = require('./modules/supabase.js')
 
 // modules
-const admin = require('./modules/admin.js')
-const djangoApi = require('./modules/django-api.js')
 const slack = require('./modules/slack.js')
 const sharing = require('./modules/sharing.js')
 
@@ -146,87 +143,6 @@ app.post('/notify/frp', (req, res) => {
     console.log('Slack catch', err.response.data)
     res.status(500).send(err.response.data)
   })
-})
-
-async function collectiviteValidation (data, responseUrl) {
-  try {
-    console.log('collectiviteValidation data: ', data)
-    const { error: errorUpdateProfile } = await supabase.from('profiles')
-      .update({ verified: true }).eq('user_id', data.user_id)
-    if (errorUpdateProfile) { throw errorUpdateProfile }
-
-    axios({
-      url: responseUrl,
-      method: 'post',
-      data: {
-        text: `${data.firstname} ${data.lastname} (${data.email})
-        pour la collectivité de code INSEE ${data.collectivite_id} est vérifié et validé.`
-      }
-    })
-
-    const { data: profiles } = await supabase.from('profiles').select('*')
-      .eq('user_id', data.user_id)
-
-    const profile = profiles[0]
-    const collectivite = await getCollectivite(djangoApi, profile.collectivite_id)
-
-    const sharedProcedureUrl = await sharing.latestProcedurePrincipaleSharedUrl(data.email)
-    sendgrid.sendEmail({
-      to: profile.email,
-      template_id: 'd-0143010573f6497b86abbd4e4c96f46e',
-      dynamic_template_data: Object.assign({
-        collectivite_name: collectivite.intitule,
-        shared_procedure_url: sharedProcedureUrl ?? false,
-        base_url: process.env.APP_URL
-      }, profile),
-      send_at: Math.round((Date.now() / 1000)) + (60 * 5)
-    })
-  } catch (error) {
-    console.log('collectiviteValidation', error)
-  }
-}
-
-// Webhook  from slack
-app.post('/webhook/interactivity', async (req, res) => {
-  const payload = JSON.parse(req.body.payload)
-
-  // eslint-disable-next-line no-console
-  console.log('slack payload: ', payload)
-
-  const responseUrl = payload.response_url
-
-  if (payload.actions && payload.actions.length) {
-    const action = payload.actions[0]
-
-    // eslint-disable-next-line no-console
-    console.log('slack action: ', action)
-    const userData = JSON.parse(action.value)
-
-    if (action.action_id === 'ddt_validation') {
-      // eslint-disable-next-line no-console
-      console.log('userData:', userData)
-
-      const { data, error } = await admin.updateUserRole(userData, 'admin')
-      const { error: errorUpdateProfile } = await supabase.from('profiles').update({ verified: true }).eq('user_id', userData.user_id)
-      if (errorUpdateProfile) { throw errorUpdateProfile }
-      if (data && !error) {
-        res.status(200).send('OK')
-        axios({
-          url: responseUrl,
-          method: 'post',
-          data: {
-            text: `Role DDT/DEAL validé pour ${userData.email}`
-          }
-        })
-      } else {
-        // eslint-disable-next-line no-console
-        console.log('err updating role', error)
-      }
-    } else if (action.action_id === 'collectivite_validation') {
-      console.log('collectivite_validation')
-      collectiviteValidation(userData, responseUrl)
-    }
-  }
 })
 
 module.exports = app

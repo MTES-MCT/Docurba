@@ -171,7 +171,7 @@ app.post('/hooksSignupStateAgent', async (req, res) => {
 
   sibApi.optinNewsLetter(req.body.email, req.body.optin, [33])
   // Push in the good pipedrive
-  // TODO: Attention au changement de nom dept / departement dans Signin() (pipedrive.js) & dans la fonction updateUserRole() (admin.js)
+  // TODO: Attention au changement de nom dept / departement dans Signin() (pipedrive.js)
   // Verifier le validation Slack par la suite
   console.log('hooksSignupStateAgent: ', req.body)
   await pipedrive.signupStateAgent(req.body)
