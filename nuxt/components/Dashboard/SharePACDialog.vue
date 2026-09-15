@@ -167,7 +167,6 @@ export default {
 
       axios.post('/api/projects/notify/shared', {
         sharings: newSharings,
-        sharedByData: this.$user.user_metadata
       })
 
       this.emailsInput = []
