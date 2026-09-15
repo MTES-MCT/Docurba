@@ -6,14 +6,6 @@ const sharing = require('./sharing.js')
 
 module.exports = {
   async updateUserRole (userData, role) {
-    const { data, error } = await supabase.from('github_ref_roles').update({ role }).match({
-      user_id: userData.user_id,
-      ref: `dept-${userData.departement}`
-    }).select()
-
-    // eslint-disable-next-line no-console
-    console.log('updateUserRole', data, error)
-
     if (role === 'admin' && !error) {
       const { data: profiles } = await supabase.from('profiles').select('firstname, lastname, departement, region, poste').eq('email', userData.email)
       const profile = profiles[0]
