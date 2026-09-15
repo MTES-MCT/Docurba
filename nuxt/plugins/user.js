@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import axios from 'axios'
 
 const defaultUser = {
   id: null,
@@ -31,7 +30,7 @@ function shouldRedirect (event) {
   return !!hashObject.access_token && hashObject.type === 'recovery'
 }
 
-function handleRedirect ($supabase, event, user, router) {
+function handleRedirect ({ event, nuxtApi, router, user }) {
   if (!shouldRedirect(event)) {
     return
   }
@@ -61,10 +60,10 @@ function handleRedirect ($supabase, event, user, router) {
       break
 
     case 'collectivite':
-      axios({
-        url: '/api/pipedrive/collectivite_inscrite',
-        method: 'post',
-        data: { userData: { email: user.email } }
+      nuxtApi.post('/api/pipedrive/collectivite_inscrite', {
+        userData: {
+          email: user.email
+        }
       })
       router.push({ name: 'collectivites-collectiviteId', params: { collectiviteId: user.profile.collectivite_id }, query })
       break
@@ -75,7 +74,7 @@ function handleRedirect ($supabase, event, user, router) {
 
 // Mandatory for SonarQube
 // eslint-disable-next-line import/no-anonymous-default-export
-export default async ({ $supabase, app }, inject) => {
+export default async ({ $nuxtApi, $supabase, app }, inject) => {
   let user = Vue.observable({ ...defaultUser })
 
   async function updateUser (session, retry = true) {
@@ -148,7 +147,12 @@ export default async ({ $supabase, app }, inject) => {
           user.supabase_access_token = session.access_token
 
           // console.log('user updated')
-          handleRedirect($supabase, event, user, app.router)
+          handleRedirect({
+            event,
+            nuxtApi: $nuxtApi,
+            router: app.router,
+            user
+          })
         }
 
         currentSession = session

@@ -271,7 +271,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import {
   mdiPlus, mdiPencil, mdiContentSave,
   mdiClose, mdiFileCompare,
@@ -504,13 +503,9 @@ export default {
       const path = `${this.section.path}${this.section.type === 'dir' ? '/intro.md' : ''}`
 
       try {
-        const { data: sectionContent } = await axios({
-          method: 'get',
-          url: '/api/trames/file',
-          params: {
-            path,
-            ref: this.section.ghost ? this.headRef : this.gitRef
-          }
+        const sectionContent = await this.$nuxtApi.get('/api/trames/file', {
+          path,
+          ref: this.section.ghost ? this.headRef : this.gitRef
         })
         this.sectionText = sectionContent.replace(/---([\s\S]*)---/, '')
         this.sectionMarkdown = this.$md.parse(this.sectionText)
@@ -534,21 +529,17 @@ export default {
       const historiesPromises = []
 
       if (selfPaths.length) {
-        historiesPromises.push(axios.get(`/api/trames/tree/${this.gitRef}/history`, {
-          params: {
-            paths: selfPaths
-          }
+        historiesPromises.push(this.$nuxtApi.get(`/api/trames/tree/${this.gitRef}/history`, {
+          paths: selfPaths
         }))
       }
       if (headPaths.length) {
-        historiesPromises.push(axios.get(`/api/trames/tree/${this.headRef}/history`, {
-          params: {
-            paths: headPaths
-          }
+        historiesPromises.push(this.$nuxtApi.get(`/api/trames/tree/${this.headRef}/history`, {
+          paths: headPaths
         }))
       }
 
-      const histories = (await Promise.all(historiesPromises)).flatMap(({ data }) => data)
+      const histories = (await Promise.all(historiesPromises)).flat()
       const authorsByEmail = await this.$PAC.getAuthorsFromEmails(
         getUniquePropValues(histories, h => h.commit?.author?.email)
       )
@@ -606,30 +597,22 @@ export default {
 
         const { path, type, name } = this.section
 
-        await axios({
-          method: 'post',
-          url: `/api/trames/tree/${this.gitRef}`,
-          data: {
-            section: { path, type, name },
-            newName: this.sectionName
-          }
+        await this.$nuxtApi.post(`/api/trames/tree/${this.gitRef}`, {
+          section: { path, type, name },
+          newName: this.sectionName
         })
 
         this.$emit('changeTree', this.section, this.sectionName)
       }
 
       try {
-        const { data: { data: { content: savedFile } } } = await axios({
-          method: 'post',
-          url: `/api/trames/${this.gitRef}`,
-          data: {
-            userId: this.$user.id,
-            commit: {
-              committer: getCommitter(this.$user),
-              path: filePath,
-              content: encode(this.sectionMarkdown),
-              sha: this.section.type === 'dir' ? this.section.introSha : this.section.sha
-            }
+        const { data: { content: savedFile } } = await this.$nuxtApi.post(`/api/trames/${this.gitRef}`, {
+          userId: this.$user.id,
+          commit: {
+            committer: getCommitter(this.$user),
+            path: filePath,
+            content: encode(this.sectionMarkdown),
+            sha: this.section.type === 'dir' ? this.section.introSha : this.section.sha
           }
         })
 
@@ -641,10 +624,8 @@ export default {
           this.section.sha = savedFile.sha
         }
 
-        const { data: history } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
-          params: {
-            paths: [filePath]
-          }
+        const history = await this.$nuxtApi.get(`/api/trames/tree/${this.gitRef}/history`, {
+          paths: [filePath]
         })
 
         if (history[0]) {
@@ -684,13 +665,9 @@ export default {
     async copyGhostSection () {
       this.saving = true
 
-      await axios({
-        method: 'put',
-        url: `/api/trames/${this.gitRef}/copy`,
-        data: {
-          ghostRef: this.fromMain ? 'main' : this.headRef,
-          path: this.section.path
-        }
+      await this.$nuxtApi.put(`/api/trames/${this.gitRef}/copy`, {
+        ghostRef: this.fromMain ? 'main' : this.headRef,
+        path: this.section.path
       })
 
       // eslint-disable-next-line vue/no-mutating-props
@@ -766,10 +743,8 @@ export default {
         return c.path !== section.path
       })
 
-      const { data } = await axios.get(`/api/trames/tree/${this.headRef}`, {
-        params: {
-          path: this.section.path // parent section path
-        }
+      const data = await this.$nuxtApi.get(`/api/trames/tree/${this.headRef}`, {
+        path: this.section.path // parent section path
       })
 
       const ghostSection = data.find(s => s.name === section.name)
@@ -793,13 +768,9 @@ export default {
       try {
         const type = this.section.parentType ?? this.section.type
 
-        const { data: diffSectionContent } = await axios({
-          method: 'get',
-          url: '/api/trames/file',
-          params: {
-            path: type === 'dir' ? `${this.section.path}/intro.md` : this.section.path,
-            ref: this.headRef
-          }
+        const diffSectionContent = await this.$nuxtApi.get('/api/trames/file', {
+          path: type === 'dir' ? `${this.section.path}/intro.md` : this.section.path,
+          ref: this.headRef
         })
 
         this.diff.body = this.$md.compile(diffSectionContent.replace(/---([\s\S]*)---/, ''))

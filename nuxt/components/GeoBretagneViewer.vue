@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   props: {
     collectiviteCode: {
@@ -25,9 +23,9 @@ export default {
     }
   },
   async created () {
-    const centerRes = await axios.get(`/api/geo/collectivites/${this.collectiviteCode}/center`)
+    const centerRes = await this.$nuxtApi.get(`/api/geo/collectivites/${this.collectiviteCode}/center`)
 
-    const [x4326, y4326] = centerRes.data.coordinates
+    const [x4326, y4326] = centerRes.coordinates
 
     const { x, y } = this.epsg4326toEpsg3857(x4326, y4326)
 
