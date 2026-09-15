@@ -107,9 +107,9 @@ export default {
       })
     )
 
-    const centerRes = await axios.get(`/api/geo/collectivites/${this.collectivite.code}/center`)
+    const centerRes = await this.$nuxtApi.get(`/api/geo/collectivites/${this.collectivite.code}/center`)
 
-    const [x, y] = centerRes.data.coordinates
+    const [x, y] = centerRes.coordinates
 
     this.documents = responses.flat().map((doc) => {
       if (doc.type === 'SUP') {

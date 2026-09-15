@@ -1,14 +1,8 @@
-import axios from 'axios'
-
-export default (_, inject) => {
+export default ({ $nuxtApi }, inject) => {
   inject('notifications', {
     notifyUpdate (projectId) {
-      return axios({
-        method: 'post',
-        url: '/api/projects/notify/update',
-        data: {
-          projectId
-        }
+      return $nuxtApi.post('/api/projects/notify/update', {
+        projectId
       })
     }
   })
