@@ -358,7 +358,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import dayjs from 'dayjs'
 import { partition } from 'lodash'
 
@@ -670,7 +669,9 @@ export default {
       })
 
       this.exportingSCoTs = true
-      const { data } = await axios(`/api/scots?departement=${departementCode}`)
+      const data = await this.$nuxtApi.get('/api/scots', {
+        departement: departementCode
+      })
 
       const a = document.createElement('a')
       const blob = new Blob([data], { type: 'text/csv' })

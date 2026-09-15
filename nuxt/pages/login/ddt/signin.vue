@@ -105,7 +105,6 @@
 <script>
 import { mdiEye, mdiEyeOff, mdiArrowLeft } from '@mdi/js'
 
-import axios from 'axios'
 import FormInput from '@/mixins/FormInput.js'
 
 export default {
@@ -164,19 +163,17 @@ export default {
       }
     },
     async sendResetPassword () {
-      const response = await axios({
-        method: 'post',
-        url: '/api/auth/password',
-        validateStatus: () => true,
-        data: {
+      let snackbarMessage = `Un email de changement de mot de passe à été envoyé à ${this.email}`
+
+      try {
+        await this.$nuxtApi.post('/api/auth/password', {
           email: this.email,
           redirectTo: window.location.origin
-        }
-      })
-      let snackbarMessage = `Un email de changement de mot de passe à été envoyé à ${this.email}`
-      if (response.status !== 200) {
+        })
+      } catch (error) {
         snackbarMessage = 'Une erreur est survenue.'
       }
+
       this.snackbar = {
         val: true,
         text: snackbarMessage

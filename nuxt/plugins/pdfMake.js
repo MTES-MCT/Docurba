@@ -1,4 +1,3 @@
-import axios from 'axios'
 import pdfMake from 'pdfmake/build/pdfmake'
 import { A4 } from 'pdfmake/src/standardPageSizes'
 import mixin from '@/mixins/orderSections.js'
@@ -22,7 +21,7 @@ const COLUMN_GAP = 12
 
 const NARROW_NOBREAK_SPACE = ' '
 
-export default ({ $md, $supabase }, inject) => {
+export default ({ $md, $nuxtApi, $supabase }, inject) => {
   const baseUrl = location.origin
 
   // see https://github.com/MTES-MCT/Docurba/issues/61#issuecomment-1781502206
@@ -87,9 +86,8 @@ export default ({ $md, $supabase }, inject) => {
     },
     // fetchGithubRef could go into its own plugin/mixin.
     async fetchGithubRef (githubRef, project) {
-      const { data: sections } = await axios({
-        method: 'get',
-        url: `${baseUrl}/api/trames/tree/${githubRef}?content=all`
+      const sections = await $nuxtApi.get(`${baseUrl}/api/trames/tree/${githubRef}`, {
+        content: 'all'
       })
 
       const { data: supSections } = await $supabase.from('pac_sections')
