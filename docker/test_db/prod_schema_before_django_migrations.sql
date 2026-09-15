@@ -239,26 +239,6 @@ CREATE TABLE public.profiles (
     departements text[]
 );
 
-
---
--- Name: check_project_sharing_permission(uuid, text); Type: FUNCTION; Schema: public; Owner: -
---
-
-CREATE FUNCTION public.check_project_sharing_permission(project_id uuid, user_email text) RETURNS boolean
-    LANGUAGE plpgsql SECURITY DEFINER
-    AS $$
-BEGIN
-  RETURN EXISTS (
-    SELECT 1
-    FROM projects_sharing ps
-    WHERE ps.project_id = check_project_sharing_permission.project_id
-      AND ps.role = 'write_frise'
-      AND ps.user_email = check_project_sharing_permission.user_email
-  );
-END;
-$$;
-
-
 --
 -- Name: check_user_access(); Type: FUNCTION; Schema: public; Owner: -
 --
@@ -520,33 +500,6 @@ COMMENT ON COLUMN public.profiles.no_signup IS 'Si l''utilisateur passe par un d
 COMMENT ON COLUMN public.profiles.is_admin IS 'super admin bypass';
 
 --
--- Name: projects_sharing; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.projects_sharing (
-    id uuid DEFAULT extensions.uuid_generate_v4() NOT NULL,
-    created_at timestamp with time zone DEFAULT now(),
-    user_email text NOT NULL,
-    project_id uuid NOT NULL,
-    shared_by uuid,
-    notified boolean DEFAULT false NOT NULL,
-    last_update_notification timestamp without time zone DEFAULT now() NOT NULL,
-    role character varying DEFAULT 'read'::character varying,
-    archived boolean DEFAULT false NOT NULL,
-    dev_test boolean DEFAULT false,
-    inserted_script boolean DEFAULT false,
-    email_notified boolean DEFAULT false NOT NULL
-);
-
-
---
--- Name: COLUMN projects_sharing.last_update_notification; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.projects_sharing.last_update_notification IS 'Timestamp of last notification';
-
-
---
 -- Name: regions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -723,29 +676,12 @@ ALTER TABLE ONLY public.procedures_validations
 ALTER TABLE ONLY public.profiles
     ADD CONSTRAINT profiles_pkey PRIMARY KEY (user_id);
 
-
---
--- Name: projects_sharing projectsSharing_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.projects_sharing
-    ADD CONSTRAINT "projectsSharing_pkey" PRIMARY KEY (id);
-
-
 --
 -- Name: regions regions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.regions
     ADD CONSTRAINT regions_pkey PRIMARY KEY (code);
-
---
--- Name: projects_sharing unique_project_sharing; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.projects_sharing
-    ADD CONSTRAINT unique_project_sharing UNIQUE (user_email, project_id, role);
-
 
 --
 -- Name: versements versements_from_sudocu_unique; Type: CONSTRAINT; Schema: public; Owner: -
@@ -835,14 +771,6 @@ ALTER TABLE ONLY public.github_ref_roles
 ALTER TABLE ONLY public.profiles
     ADD CONSTRAINT public_profiles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
-
---
--- Name: projects_sharing public_projects_sharing_shared_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.projects_sharing
-    ADD CONSTRAINT public_projects_sharing_shared_by_fkey FOREIGN KEY (shared_by) REFERENCES public.profiles(user_id) ON UPDATE CASCADE ON DELETE CASCADE;
-
 --
 -- Name: procedures_validations Enable delete for users based on user_id; Type: POLICY; Schema: public; Owner: -
 --
@@ -878,13 +806,6 @@ CREATE POLICY "Enable insert to all users" ON public.news_letter_emails FOR INSE
 --
 
 CREATE POLICY "Insert user request" ON public.admin_users_dept FOR INSERT WITH CHECK (((auth.uid() = user_id) AND (auth.email() = user_email) AND (role = 'user'::text)));
-
-
---
--- Name: projects_sharing Read; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY "Read" ON public.projects_sharing FOR SELECT USING ((public.is_admin(auth.uid()) OR public.check_user_access()));
 
 
 --
@@ -1111,12 +1032,6 @@ ALTER TABLE public.procedures_validations ENABLE ROW LEVEL SECURITY;
 --
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-
---
--- Name: projects_sharing; Type: ROW SECURITY; Schema: public; Owner: -
---
-
-ALTER TABLE public.projects_sharing ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: regions; Type: ROW SECURITY; Schema: public; Owner: -
@@ -1518,15 +1433,6 @@ GRANT SELECT(is_staff) ON TABLE public.profiles TO authenticated;
 
 
 --
--- Name: TABLE projects_sharing; Type: ACL; Schema: public; Owner: -
---
-
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.projects_sharing TO anon;
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.projects_sharing TO authenticated;
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.projects_sharing TO service_role;
-
-
---
 -- Name: TABLE regions; Type: ACL; Schema: public; Owner: -
 --
 
@@ -1580,19 +1486,6 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT SELECT,INSERT,
 --
 
 -- CREATE TRIGGER "Pipedrive Update" AFTER INSERT OR UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION supabase_functions.http_request('pipedrive/profiles', 'POST', '{"Content-type":"application/json"}', '{}', '1000');
-
---
--- Name: projects_sharing Pipedrive Sharing Update; Type: TRIGGER; Schema: public; Owner: -
---
-
--- CREATE TRIGGER "Pipedrive Sharing Update" AFTER INSERT ON public.projects_sharing FOR EACH ROW EXECUTE FUNCTION supabase_functions.http_request('pipedrive/sharing', 'POST', '{"Content-type":"application/json"}', '{}', '10000');
-
--- The `auth.jwt()` function does not exist. It is installed by the `auth` Supabase service.
--- See https://github.com/supabase/auth/blob/master/migrations/00_init_auth_schema.up.sql
---
--- Name: projects_sharing Delete; Type: POLICY; Schema: public; Owner: -
---
-
 
 
 -- The `procedures_duplicate` seems to have been deleted. Remove me from the prod DB.

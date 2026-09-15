@@ -43,13 +43,6 @@ CREATE POLICY "Enable update for users verified" ON public.projects FOR UPDATE U
   WHERE (auth.uid() = profiles.user_id)));
 
 
-CREATE POLICY "Update" ON public.projects_sharing FOR UPDATE USING (((auth.uid() = shared_by) AND (auth.uid() = ( SELECT projects.owner
-   FROM public.projects
-  WHERE (projects.id = projects_sharing.project_id))))) WITH CHECK (((auth.uid() = shared_by) AND (auth.uid() = ( SELECT projects.owner
-   FROM public.projects
-  WHERE (projects.id = projects_sharing.project_id)))));
-
-
 ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
 GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.projects TO anon;
 GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE public.projects TO authenticated;
@@ -90,6 +83,3 @@ ALTER TABLE ONLY public.pac_sections_project
 
 ALTER TABLE ONLY public.prescriptions
     ADD CONSTRAINT prescriptions_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id);
-
-ALTER TABLE ONLY public.projects_sharing
-    ADD CONSTRAINT "projectsSharing_project_id_fkey" FOREIGN KEY (project_id) REFERENCES public.projects(id);

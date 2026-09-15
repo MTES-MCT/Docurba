@@ -19,6 +19,7 @@ from docurba.core.models import (
     EventType,
     Procedure,
     Project,
+    ProjectSharing,
     Topic,
 )
 
@@ -207,6 +208,25 @@ class ProjectAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None) -> bool:
         return False
+
+
+@admin.register(ProjectSharing)
+class ProjectSharingAdmin(admin.ModelAdmin):
+    search_fields = [
+        "id",
+    ]
+
+    def has_add_permission(self, request: object) -> bool:
+        return False
+
+    def has_change_permission(self, request, obj=None) -> bool:
+        return False
+
+    def has_delete_permission(self, request, obj=None) -> bool:
+        return False
+
+    def get_queryset(self, request) -> models.QuerySet:
+        return super().get_queryset(request).select_related("project")
 
 
 @admin.register(Procedure)
