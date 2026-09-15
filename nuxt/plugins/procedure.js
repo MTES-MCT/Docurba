@@ -6,6 +6,7 @@ export default ({ $supabase, $dayjs }, inject) => {
     const { data: events } = await $supabase.from('doc_frise_events')
       .select('id, type')
       .eq('procedure_id', procedure.id)
+      .is('archived_at', null)
       .or('is_valid.eq.true, type.eq.Abandon')
       .order('date_iso', { ascending: false })
       .order('type')
@@ -43,6 +44,7 @@ export default ({ $supabase, $dayjs }, inject) => {
     const { data: events } = await $supabase
       .from('doc_frise_events')
       .select()
+      .is('archived_at', null)
       .in('procedure_id', proceduresIds)
       .throwOnError()
 
@@ -172,16 +174,19 @@ export function enrichProcedureWithEvents (procedure) {
   if (!events) {
     return procedure
   }
+  // This filter is necessary here because the rpc 'procedures_by_collectivites' don't filter out archived events
+  // and will be removed when using internal_apis/events
+  const activeEvents = events.filter(event => !event.archived_at)
 
   const now = new Date()
   const lastEvent = maxBy(
     // Remove future events
-    events.filter(event => new Date(event.date_iso) <= now),
+    activeEvents.filter(event => new Date(event.date_iso) <= now),
     'date_iso'
   )
   let approvalEvent, prescriptionEvent, stopEvent
 
-  for (const event of orderBy(events, 'date_iso', 'desc')) {
+  for (const event of orderBy(activeEvents, 'date_iso', 'desc')) {
     const eventWithFormattedDate = addFormattedDate(event)
 
     if (!approvalEvent && getApprovalEvent(event)) {

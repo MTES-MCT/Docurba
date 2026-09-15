@@ -86,7 +86,7 @@
                           <v-btn color="primary" outlined @click="deleteModal = false">
                             Annuler
                           </v-btn>
-                          <v-btn color="error" @click="deleteEvent">
+                          <v-btn color="error" @click="archiveEvent">
                             <v-icon>{{ icons.mdiTrashCan }}</v-icon> Supprimer
                           </v-btn>
                         </v-card-actions>
@@ -239,9 +239,11 @@ export default {
         console.log(error)
       }
     },
-    async deleteEvent () {
+    async archiveEvent () {
       this.saveAttachements(this.eventId)
-      await this.$supabase.from('doc_frise_events').delete().eq('id', this.eventId)
+      const now = new Date().toISOString()
+      const payload = { archived_by_id: this.$user.id, archived_at: now, updated_at: now }
+      await this.$supabase.from('doc_frise_events').update(payload).eq('id', this.eventId)
       await this.updateProcedureStatus()
       this.$router.push({ name: 'frise-procedureId', params: { procedureId: this.procedure.id }, query: this.$route.query })
     },
