@@ -1,4 +1,5 @@
 const express = require('express')
+const { requireDDT, requireStateAgent } = require('./modules/auth.js')
 const github = require('./modules/github/github.js')
 const tree = require('./modules/github/tree.js')
 const { getFileContent, getFiles, addGhostSections } = require('./modules/github/files.js')
@@ -17,6 +18,12 @@ app.use(express.json())
 */
 
 app.post('/projects/:parentRef', async (req, res) => {
+  try {
+    await requireDDT(req)
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
+
   const { parentRef } = req.params
   const { userId, projectId } = req.body
 
@@ -37,6 +44,12 @@ app.post('/projects/:parentRef', async (req, res) => {
 })
 
 app.put('/:ref/copy', async (req, res) => {
+  try {
+    await requireStateAgent(req)
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
+
   const { path, ghostRef } = req.body
   // test should be replaced by region code.
   try {
@@ -49,6 +62,11 @@ app.put('/:ref/copy', async (req, res) => {
 
 app.get('/:ref/head', async (req, res) => {
   try {
+    await requireStateAgent(req)
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
+  try {
     const { data: head } = await github('GET /repos/{owner}/{repo}/git/ref/heads/{ref}', { ref: req.params.ref })
 
     res.status(200).send({
@@ -60,6 +78,12 @@ app.get('/:ref/head', async (req, res) => {
 })
 
 app.post('/:ref', async (req, res) => {
+  try {
+    await requireStateAgent(req)
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
+
   const { ref } = req.params
   const { commit } = req.body
 
@@ -85,6 +109,12 @@ app.post('/:ref', async (req, res) => {
 })
 
 app.delete('/:ref', async (req, res) => {
+  try {
+    await requireStateAgent(req)
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
+
   const { ref } = req.params
   const { userId, commit } = req.body
 
@@ -122,6 +152,12 @@ app.get('/tree/:ref', async (req, res) => {
 })
 
 app.post('/tree/:ref', async (req, res) => {
+  try {
+    await requireStateAgent(req)
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
+
   const { section, newName } = req.body
 
   try {
@@ -159,6 +195,11 @@ app.get('/tree/:ref/history', async (req, res) => {
 })
 
 app.get('/compare', async (req, res) => {
+  try {
+    await requireStateAgent(req)
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
   try {
     const { basehead } = req.query
 
