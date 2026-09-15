@@ -46,7 +46,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import qs from 'qs'
 
 export default {
@@ -83,12 +82,8 @@ export default {
     }
     // console.log(this.$route.query)
     if (this.$route.query.contact) {
-      axios({
-        url: '/api/pipedrive/contacted',
-        method: 'post',
-        data: {
-          email: this.$route.query.contact
-        }
+      this.$nuxtApi.post('/api/pipedrive/contacted', {
+        email: this.$route.query.contact
       })
     }
   }

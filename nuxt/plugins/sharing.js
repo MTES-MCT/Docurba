@@ -1,7 +1,6 @@
 import _ from 'lodash'
-import axios from 'axios'
 
-export default ({ app, $supabase, $utils, $user, $analytics }, inject) => {
+export default ({ $supabase, $utils, $user, $analytics, $nuxtApi }, inject) => {
   const sharing = {
     async  addToCollabs (procedure, collabs, collectivite) {
       let toInsert = collabs.map(e => ({
@@ -39,29 +38,25 @@ export default ({ app, $supabase, $utils, $user, $analytics }, inject) => {
       let title = 'Invitation à collaborer sur Docurba'
       if ($user.profile.departement && $user.profile.side === 'etat') { title = `La DDT (M) du ${$user.profile.departement} vous invite à collaborer sur Docurba` }
       if (collectivite?.intitule && $user.profile.side === 'collectivite') { title = `La collectivité ${collectivite?.intitule} vous invite à collaborer sur Docurba` }
-      await axios({
-        url: '/api/slack/notify/frp_shared',
-        method: 'post',
-        data: {
-          from: {
-            email: $user.email,
-            firstname: $user.profile.firstname,
-            lastname: $user.profile.lastname,
-            poste: `${$user.profile.poste ?? ''} ${$user.profile.other_poste ?? ''}`
-          },
-          to: {
-            emailsFormatted: toInsert.map(e => e.user_email).reduce((acc, curr) => acc + ', ' + curr, '').slice(2),
-            emails: toInsert.map(e => e.user_email)
-          },
-          type: 'frp',
-          procedure: {
-            id: procedure.id,
-            project_id: procedure.project_id,
-            url: `/frise/${procedure.id}`,
-            name: $utils.formatProcedureName(procedure, collectivite)
-          },
-          title
-        }
+      await $nuxtApi.post('/api/slack/notify/frp_shared', {
+        from: {
+          email: $user.email,
+          firstname: $user.profile.firstname,
+          lastname: $user.profile.lastname,
+          poste: `${$user.profile.poste ?? ''} ${$user.profile.other_poste ?? ''}`
+        },
+        to: {
+          emailsFormatted: toInsert.map(e => e.user_email).reduce((acc, curr) => acc + ', ' + curr, '').slice(2),
+          emails: toInsert.map(e => e.user_email)
+        },
+        type: 'frp',
+        procedure: {
+          id: procedure.id,
+          project_id: procedure.project_id,
+          url: `/frise/${procedure.id}`,
+          name: $utils.formatProcedureName(procedure, collectivite)
+        },
+        title
       })
     },
     async getSuggestedCollaborators (collectivite) {

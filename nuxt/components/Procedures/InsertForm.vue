@@ -205,7 +205,6 @@
 
 <script>
 import { mdiInformationOutline, mdiOpenInNew } from '@mdi/js'
-import axios from 'axios'
 import { uniqBy } from 'lodash'
 import FormInput from '@/mixins/FormInput.js'
 
@@ -416,10 +415,10 @@ export default {
       ]))
 
       // TODO :: Migrate this to Django once `groupements` and `membres` are available in `/api-internes/collectivites/`
-      const { data: collectivites } = await axios({
-        url: '/api/geo/collectivites',
-        params: new URLSearchParams(collectiviteCodes.map(code => ['codes', code]))
-      })
+      const collectivites = await this.$nuxtApi.get(
+        '/api/geo/collectivites',
+        new URLSearchParams(collectiviteCodes.map(code => ['codes', code]))
+      )
 
       const enrichedProcedures = procedures.map((p) => {
         const comd = p.procedures_perimetres.find(c => c.collectivite_type === 'COMD')

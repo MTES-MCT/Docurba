@@ -48,7 +48,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { mdiPlus } from '@mdi/js'
 import { encode } from 'js-base64'
 
@@ -101,51 +100,35 @@ export default {
       const dir = parentWasFile ? this.parent.path.replace('.md', '') : this.parent.path
 
       if (parentWasFile) {
-        const { data: parentContent } = await axios({
-          method: 'get',
-          url: '/api/trames/file',
-          params: {
+        const parentContent = await this.$nuxtApi.get('/api/trames/file', {
+          path: this.parent.path,
+          ref: this.gitRef
+        })
+
+        this.$nuxtApi.delete(`/api/trames/${this.gitRef}`, {
+          userId: this.$user.id,
+          commit: {
             path: this.parent.path,
-            ref: this.gitRef
+            sha: this.parent.sha
           }
         })
 
-        axios({
-          method: 'delete',
-          url: `/api/trames/${this.gitRef}`,
-          data: {
-            userId: this.$user.id,
-            commit: {
-              path: this.parent.path,
-              sha: this.parent.sha
-            }
-          }
-        })
-
-        await axios({
-          method: 'post',
-          url: `/api/trames/${this.gitRef}`,
-          data: {
-            userId: this.$user.id,
-            commit: {
-              path: `${dir}/intro.md`,
-              content: encode(parentContent)
-            }
+        await this.$nuxtApi.post(`/api/trames/${this.gitRef}`, {
+          userId: this.$user.id,
+          commit: {
+            path: `${dir}/intro.md`,
+            content: encode(parentContent)
           }
         })
 
         this.$emit('introCreated')
       }
 
-      const { data: { data: { content: file } } } = await axios({
-        method: 'post',
-        url: `/api/trames/${this.gitRef}`,
-        data: {
-          userId: this.$user.id,
-          commit: {
-            path: `${dir}/${this.sectionName}.md`,
-            content: encode('Nouvelle section')
-          }
+      const { data: { content: file } } = await this.$nuxtApi.post(`/api/trames/${this.gitRef}`, {
+        userId: this.$user.id,
+        commit: {
+          path: `${dir}/${this.sectionName}.md`,
+          content: encode('Nouvelle section')
         }
       })
 
