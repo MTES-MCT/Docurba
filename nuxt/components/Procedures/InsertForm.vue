@@ -156,6 +156,24 @@
           v-model="perimetre"
           :communes="communes"
         />
+        <v-row v-if="communesError.value">
+          <v-col cols="12">
+            <p class="mb-0">
+              <template v-if="communesError.count">
+                Vous ne pouvez pas créer de procédure concernant une seule commune depuis un EPCI.
+                <template v-if="communesError.link">
+                  Pour créer une procédure concernant uniquement {{ communesError.label }},
+                  <nuxt-link :to="communesError.link">
+                    cliquez ici
+                  </nuxt-link>.
+                </template>
+              </template>
+              <template v-else>
+                Vous ne pouvez pas créer de procédure ne concernant aucune commune.
+              </template>
+            </p>
+          </v-col>
+        </v-row>
         <v-row>
           <v-col cols="12" class="d-flex mt-8">
             <v-btn
@@ -163,7 +181,7 @@
               color="primary"
               depressed
               :loading="loadingSave"
-              :disabled="invalid"
+              :disabled="invalid || communesError"
             >
               Créer la procédure
             </v-btn>
@@ -223,6 +241,40 @@ export default {
     }
   },
   computed: {
+    communesError () {
+      if (
+        !this.communes.length ||
+        !this.perimetre ||
+        (this.communes.length === 1 && this.perimetre.length === 1) ||
+        (this.communes.length > 1 && this.perimetre.length > 1)
+      ) {
+        return { value: false }
+      }
+      if (!this.perimetre.length) {
+        return {
+          count: 0,
+          value: true
+        }
+      }
+
+      const commune = this.communes.find(c => c.code === this.perimetre[0])
+      const error = {
+        count: 1,
+        value: true
+      }
+
+      if (commune) {
+        error.label = `${commune.intitule} (${commune.code})`
+        error.link = {
+          params: {
+            ...this.$route.params,
+            collectiviteId: commune.code
+          }
+        }
+      }
+
+      return error
+    },
     typeCompetence () {
       return this.typeDu === 'SCOT' ? 'competenceSCOT' : 'competencePLU'
     },
