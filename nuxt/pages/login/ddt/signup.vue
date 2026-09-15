@@ -51,7 +51,6 @@
 <script>
 import { mdiEye, mdiEyeOff, mdiArrowLeft } from '@mdi/js'
 import { ValidationObserver } from 'vee-validate'
-import axios from 'axios'
 
 export default {
   name: 'SignupStateAgent',
@@ -86,15 +85,11 @@ export default {
       this.loading = true
 
       try {
-        await axios({
-          method: 'post',
-          url: '/api/auth/signupStateAgent',
-          data: {
-            userData: {
-              ...this.userData,
-              departement: this.userData.departement?.code_departement.toString().padStart(2, '0'),
-              region: this.userData.region?.code.padStart(2, '0') || this.userData.departement?.code_region.toString().padStart(2, '0')
-            }
+        await this.$nuxtApi.post('/api/auth/signupStateAgent', {
+          userData: {
+            ...this.userData,
+            departement: this.userData.departement?.code_departement.toString().padStart(2, '0'),
+            region: this.userData.region?.code.padStart(2, '0') || this.userData.departement?.code_region.toString().padStart(2, '0')
           }
         })
         this.$router.push({ name: 'login-ddt-explain' })

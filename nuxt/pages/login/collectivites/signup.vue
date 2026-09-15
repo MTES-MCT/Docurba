@@ -131,7 +131,6 @@ Promis, seul un contenu court et pertinent vous sera envoyÃ© une fois par mois ð
 
 <script>
 import { mdiArrowLeft } from '@mdi/js'
-import axios from 'axios'
 
 import FormInput from '@/mixins/FormInput.js'
 
@@ -170,19 +169,15 @@ export default {
 
       try {
         this.userData.other_poste = this.userData.other_poste ? [this.userData.other_poste] : null
-        await axios({
-          method: 'post',
-          url: '/api/auth/signupCollectivite',
-          data: {
-            userData: {
-              ...this.userData,
-              collectivite_id: this.selectedCollectivite.code,
-              departement: this.selectedCollectivite.departementCode,
-              region: this.selectedCollectivite.regionCode
-            },
-            detailsCollectivite: this.selectedCollectivite,
-            redirectTo: window.location.origin
-          }
+        await this.$nuxtApi.post('/api/auth/signupCollectivite', {
+          userData: {
+            ...this.userData,
+            collectivite_id: this.selectedCollectivite.code,
+            departement: this.selectedCollectivite.departementCode,
+            region: this.selectedCollectivite.regionCode
+          },
+          detailsCollectivite: this.selectedCollectivite,
+          redirectTo: window.location.origin
         })
         this.$router.push({
           name: 'login-collectivites-explain',

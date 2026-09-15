@@ -15,8 +15,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   data () {
     return {
@@ -28,12 +26,7 @@ export default {
   },
   methods: {
     async getPACsDiff () {
-      const { data: diffs } = await axios({
-        url: '/api/stats/diff',
-        method: 'get'
-      })
-
-      this.diffs = diffs
+      this.diffs = await this.$nuxtApi.get('/api/stats/diff')
 
       // console.log(diffs)
 
