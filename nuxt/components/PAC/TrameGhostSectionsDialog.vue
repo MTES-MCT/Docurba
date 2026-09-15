@@ -31,7 +31,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import departements from '@/assets/data/departements-france.json'
 
 const IGNORED_SHA_LOCAL_STORAGE_KEY = 'ignoredUpperTrameCommitSha'
@@ -69,10 +68,7 @@ export default {
   },
   methods: {
     async checkIfTrameHasGhostSections () {
-      const { data: upperTrameHead } = await axios({
-        method: 'get',
-        url: `/api/trames/${this.upperTrameRef}/head`
-      })
+      const upperTrameHead = await this.$nuxtApi.get(`/api/trames/${this.upperTrameRef}/head`)
 
       this.upperTrameLastCommitSha = upperTrameHead.sha
       const ignoredUpperTrameCommitSha = localStorage.getItem(IGNORED_SHA_LOCAL_STORAGE_KEY)
@@ -81,12 +77,8 @@ export default {
         return
       }
 
-      const { data: trameSections } = await axios({
-        method: 'get',
-        url: `/api/trames/tree/${this.trameRef}`,
-        params: {
-          ghostRef: this.upperTrameRef
-        }
+      const trameSections = await this.$nuxtApi.get(`/api/trames/tree/${this.trameRef}`, {
+        ghostRef: this.upperTrameRef
       })
 
       function hasGhost (sections) {

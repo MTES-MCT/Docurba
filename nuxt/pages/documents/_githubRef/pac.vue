@@ -55,7 +55,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import orderSections from '@/mixins/orderSections.js'
 
 export default {
@@ -108,10 +107,7 @@ export default {
       this.collectivite = await this.$collectiviteApi.get(this.project.collectivite_id)
     }
 
-    const { data: sections } = await axios({
-      method: 'get',
-      url: `/api/trames/tree/${this.gitRef}`
-    })
+    const sections = await this.$nuxtApi.get(`/api/trames/tree/${this.gitRef}`)
 
     const { data: supSections } = await this.$supabase.from('pac_sections').select('*').in('ref', [
         `projet-${this.project.id}`,

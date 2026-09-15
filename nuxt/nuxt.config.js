@@ -48,11 +48,12 @@ export default {
     { src: '~/plugins/mdParser.js' },
     { src: '~/plugins/print.js', mode: 'client' },
     { src: '~/plugins/rules.js' },
-    { src: '~/plugins/notifications.js', mode: 'client' },
     { src: '~/plugins/githubRefs.js' },
     { src: '~/plugins/django-api.js', mode: 'client' }, // Need to be before urbanisator plugin
+    { src: '~/plugins/nuxt-api.js', mode: 'client' },
     { src: '~/plugins/collectivite.js', mode: 'client' },
     { src: '~/plugins/event.js', mode: 'client' },
+    { src: '~/plugins/notifications.js', mode: 'client' },
     { src: '~/plugins/procedure.js', mode: 'client' },
     { src: '~/plugins/urbanisator.js' },
     { src: '~/plugins/pdfMake.js', mode: 'client' },
