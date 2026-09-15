@@ -1,6 +1,6 @@
 import Qs from 'qs'
 
-export default ({ $axios }, inject) => {
+export default ({ $axios, $user }, inject) => {
   const nuxtAxios = $axios.create({
     paramsSerializer: params => Qs.stringify(params, {
       arrayFormat: 'repeat',
@@ -38,7 +38,13 @@ export default ({ $axios }, inject) => {
       })
     },
     async request (path, config = {}) {
-      const { data, error } = await nuxtAxios(path, config)
+      const { data, error } = await nuxtAxios(path, {
+        ...config,
+        headers: {
+          'Supabase-Authorization': $user.supabase_access_token || undefined,
+          ...(config.headers ?? {})
+        }
+      })
 
       if (error) {
         throw error
