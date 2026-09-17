@@ -20,12 +20,18 @@
                 Inscription agent de l'Etat
               </div>
             </v-card-title>
+            <v-alert v-if="disabled" dense text type="info" class="ma-4">
+              Les créations de compte sont temporairement indisponibles. En nous excusant pour la gêne occasionnée, merci de bien vouloir nous écrire à <a href="mailto:contact@docurba.beta.gouv.fr?subject=Inscription" target="_blank" rel="noopener noreferrer">contact@docurba.beta.gouv.fr</a> : nous pourrons ainsi vous informer lors du rétablissement du service.
+            </v-alert>
             <validation-observer ref="observerSignupEtat" v-slot="{ handleSubmit }">
               <form @submit.prevent="handleSubmit(signUp)">
                 <v-card-text>
                   <v-row justify="center">
                     <v-col cols="12">
-                      <OnboardingSignupForm v-model="userData" />
+                      <OnboardingSignupForm
+                        v-model="userData"
+                        :disabled="disabled"
+                      />
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -34,8 +40,14 @@
                   <v-btn class="no-text-transform" outlined tile color="primary" :to="{name: 'login-ddt-signin'}">
                     J'ai déjà un compte
                   </v-btn>
-                  <!-- @click="signUp()" -->
-                  <v-btn depressed tile color="primary" :loading="loading" type="submit">
+                  <v-btn
+                    depressed
+                    tile
+                    color="primary"
+                    :loading="loading"
+                    type="submit"
+                    :disabled="disabled"
+                  >
                     Créer mon compte
                   </v-btn>
                 </v-card-actions>
@@ -77,7 +89,8 @@ export default {
         region: null,
         optin: false
       },
-      error: false
+      error: false,
+      disabled: true
     }
   },
   methods: {

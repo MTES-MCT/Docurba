@@ -13,6 +13,9 @@ const sendgrid = require('./modules/sendgrid.js')
 const pipedrive = require('./modules/pipedrive.js')
 const slack = require('./modules/slack.js')
 
+// Temporarily disable signup.
+SIGNUP_DISABLED = true
+
 app.post('/password', async (req, res) => {
   // console.log('/password body', req.body)
 
@@ -107,6 +110,9 @@ app.post('/signinCollectivite', async (req, res) => {
 })
 
 app.post('/signupCollectivite', async (req, res) => {
+  if (SIGNUP_DISABLED === true) {
+    res.status(500).send('KO')
+  }
   const userData = _.pick(req.body.userData, [
     'collectivite_id',
     'departement',
@@ -184,6 +190,10 @@ app.post('/signupCollectivite', async (req, res) => {
 })
 
 app.post('/signupStateAgent', async (req, res) => {
+  if (SIGNUP_DISABLED === true) {
+    res.status(500).send('KO')
+  }
+
   const userData = _.pick(req.body.userData, [
     'departement',
     'email',

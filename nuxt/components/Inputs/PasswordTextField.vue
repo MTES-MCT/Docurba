@@ -8,6 +8,7 @@
       :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
       v-bind="inputProps"
       @click:append="showPassword = !showPassword"
+      :disabled="disabled"
     />
   </validation-provider>
 </template>
@@ -39,6 +40,10 @@ export default {
           label: 'Mot de passe'
         }
       }
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
