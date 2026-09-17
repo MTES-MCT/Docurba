@@ -22,6 +22,7 @@ from docurba.core.models import (
     Procedure,
     ProcedureStatusChoices,
     Project,
+    ProjectSharing,
     Region,
     TypeCollectivite,
     TypeDocument,
@@ -235,6 +236,21 @@ class ProjectFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Project
+
+    @factory.post_generation
+    def with_procedure(self, create: bool, extracted: bool, **extra: dict) -> None:  # noqa: FBT001
+        if not create or not extracted:
+            return
+
+        ProcedureFactory(project=self, **extra)
+
+
+class ProjectSharingFactory(factory.django.DjangoModelFactory):
+    project = factory.SubFactory(ProjectFactory)
+    shared_by = factory.SubFactory(ProfileFactory)
+
+    class Meta:
+        model = ProjectSharing
 
 
 class ProcedureFactory(factory.django.DjangoModelFactory):
