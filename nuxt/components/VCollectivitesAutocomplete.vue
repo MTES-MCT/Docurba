@@ -12,6 +12,7 @@
         :dense="!large"
         @blur="$emit('blur')"
         @change="fetchCollectivites"
+        :disabled="disabled"
       />
     </v-col>
     <v-col cols="12" :md="colsTown">
@@ -30,6 +31,7 @@
           placeholder="Commune ou EPCI"
           :loading="loading"
           :dense="!large"
+          :disabled="disabled"
         />
       </validation-provider>
     </v-col>
@@ -73,6 +75,10 @@ export default {
       default: null
     },
     hideDept: {
+      type: Boolean,
+      default: false
+    },
+    disabled: {
       type: Boolean,
       default: false
     }

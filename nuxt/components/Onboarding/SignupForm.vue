@@ -2,20 +2,20 @@
   <v-row>
     <v-col cols="12">
       <validation-provider v-slot="{ errors }" name="Email" rules="required|email">
-        <v-text-field v-model="userData.email" :error-messages="errors" filled label="Email" />
+        <v-text-field v-model="userData.email" :error-messages="errors" filled label="Email" :disabled="disabled" />
       </validation-provider>
     </v-col>
     <v-col cols="12">
-      <InputsPasswordTextField v-model="userData.password" creation />
+      <InputsPasswordTextField v-model="userData.password" creation :disabled="disabled" />
     </v-col>
     <v-col cols="6">
       <validation-provider v-slot="{ errors }" name="Prénom" rules="required">
-        <v-text-field v-model="userData.firstname" filled label="Prénom" :error-messages="errors" />
+        <v-text-field v-model="userData.firstname" filled label="Prénom" :error-messages="errors" :disabled="disabled" />
       </validation-provider>
     </v-col>
     <v-col cols="6">
       <validation-provider v-slot="{ errors }" name="Nom" rules="required">
-        <v-text-field v-model="userData.lastname" filled label="Nom" :error-messages="errors" />
+        <v-text-field v-model="userData.lastname" filled label="Nom" :error-messages="errors" :disabled="disabled" />
       </validation-provider>
     </v-col>
     <v-col cols="6">
@@ -26,38 +26,41 @@
           :items="postes"
           filled
           label="Administration"
-        />
-      </validation-provider>
-    </v-col>
-    <v-col v-if="userData.poste === 'ddt'" cols="6">
-      <validation-provider v-slot="{ errors }" name="Rôle(s)" rules="required">
-        <v-select
+          :disabled="disabled"
+          />
+        </validation-provider>
+      </v-col>
+      <v-col v-if="userData.poste === 'ddt'" cols="6">
+        <validation-provider v-slot="{ errors }" name="Rôle(s)" rules="required">
+          <v-select
           v-model="userData.other_poste"
           multiple
           :error-messages="errors"
           :items="roles"
           filled
           label="Rôle(s)"
-        />
-      </validation-provider>
-    </v-col>
-    <v-col v-if="userData.poste === 'ddt'" cols="12">
-      <validation-provider v-slot="{ errors }" name="Département" rules="required">
-        <VDeptAutocomplete v-model="userData.departement" :error-messages="errors" />
-      </validation-provider>
-    </v-col>
-    <v-col v-if="userData.poste === 'dreal'" cols="12">
-      <validation-provider v-slot="{ errors }" name="Région" rules="required">
-        <VRegionAutocomplete v-model="userData.region" label="Votre region" :error-messages="errors" />
-      </validation-provider>
-    </v-col>
-    <v-col cols="12">
-      <v-checkbox
+          :disabled="disabled"
+          />
+        </validation-provider>
+      </v-col>
+      <v-col v-if="userData.poste === 'ddt'" cols="12">
+        <validation-provider v-slot="{ errors }" name="Département" rules="required">
+          <VDeptAutocomplete v-model="userData.departement" :error-messages="errors" :disabled="disabled" />
+        </validation-provider>
+      </v-col>
+      <v-col v-if="userData.poste === 'dreal'" cols="12">
+        <validation-provider v-slot="{ errors }" name="Région" rules="required">
+          <VRegionAutocomplete v-model="userData.region" label="Votre region" :error-messages="errors" :disabled="disabled" />
+        </validation-provider>
+      </v-col>
+      <v-col cols="12">
+        <v-checkbox
         v-model="userData.optin"
         label="Cochez cette case afin de recevoir nos lettres d'informations mensuelles pour ne rien louper aux dernières actualités de Docurba.
-Promis, seul un contenu court et pertinent vous sera envoyé une fois par mois 🌎"
+        Promis, seul un contenu court et pertinent vous sera envoyé une fois par mois 🌎"
         color="primary"
         hide-details
+        :disabled="disabled"
       />
     </v-col>
   </v-row>
@@ -77,6 +80,10 @@ export default {
     value: {
       type: Object,
       default () { return {} }
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
