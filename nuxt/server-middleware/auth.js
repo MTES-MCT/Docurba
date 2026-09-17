@@ -14,7 +14,7 @@ const pipedrive = require('./modules/pipedrive.js')
 const slack = require('./modules/slack.js')
 
 // Temporarily disable signup.
-SIGNUP_DISABLED = false
+SIGNUP_DISABLED = true
 
 app.post('/password', async (req, res) => {
   // console.log('/password body', req.body)
