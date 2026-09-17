@@ -22,11 +22,14 @@
                     Inscription Collectivité
                   </div>
                 </v-card-title>
+                <v-alert v-if="disabled" dense text type="info" class="ma-4">
+                  Les créations de compte sont temporairement indisponibles. En nous excusant pour la gêne occasionnée, merci de bien vouloir nous écrire à <a href="mailto:contact@docurba.beta.gouv.fr?subject=Inscription" target="_blank" rel="noopener noreferrer">contact@docurba.beta.gouv.fr</a> : nous pourrons ainsi vous informer lors du rétablissement du service.
+                </v-alert>
                 <v-card-text>
                   <v-row>
                     <v-col cols="12">
                       <validation-provider v-slot="{ errors }" name="Email" rules="required|email">
-                        <v-text-field v-model="userData.email" :error-messages="errors" filled label="Email" />
+                        <v-text-field v-model="userData.email" :error-messages="errors" filled label="Email" :disabled="disabled" />
                       </validation-provider>
                     </v-col>
                     <v-col cols="12">
@@ -36,12 +39,12 @@
                     </v-col>
                     <v-col cols="6">
                       <validation-provider v-slot="{ errors }" name="Prénom" rules="required">
-                        <v-text-field v-model="userData.firstname" :error-messages="errors" filled label="Prénom" />
+                        <v-text-field v-model="userData.firstname" :error-messages="errors" filled label="Prénom" :disabled="disabled" />
                       </validation-provider>
                     </v-col>
                     <v-col cols="6">
                       <validation-provider v-slot="{ errors }" name="Nom" rules="required">
-                        <v-text-field v-model="userData.lastname" :error-messages="errors" filled label="Nom" />
+                        <v-text-field v-model="userData.lastname" :error-messages="errors" filled label="Nom" :disabled="disabled" />
                       </validation-provider>
                     </v-col>
                     <v-col cols="6">
@@ -52,6 +55,7 @@
                           :items="postes"
                           filled
                           label="Poste"
+                          :disabled="disabled"
                         />
                       </validation-provider>
                     </v-col>
@@ -63,12 +67,13 @@
                           :error-messages="errors"
                           filled
                           label="Intitulé"
+                          :disabled="disabled"
                         />
                       </validation-provider>
                     </v-col>
                     <v-col cols="6">
                       <validation-provider v-slot="{ errors }" name="Téléphone professionel" rules="required">
-                        <v-text-field v-model="userData.tel" :error-messages="errors" filled label="Téléphone professionel" />
+                        <v-text-field v-model="userData.tel" :error-messages="errors" filled label="Téléphone professionel" :disabled="disabled" />
                       </validation-provider>
                     </v-col>
                     <v-col cols="12">
@@ -86,6 +91,7 @@
                         :input-props="{
                           filled: true
                         }"
+                        :disabled="disabled"
                       />
                       <span v-if="userData.poste === 'be' || userData.poste === 'agence_urba'">
                         *Notez qu’il sera toujours possible d’élargir et modifier votre périmètre par la suite
@@ -100,6 +106,7 @@
 Promis, seul un contenu court et pertinent vous sera envoyé une fois par mois 🌎"
                         color="primary"
                         hide-details
+                        :disabled="disabled"
                       />
                     </v-col>
                   </v-row>
@@ -109,7 +116,14 @@ Promis, seul un contenu court et pertinent vous sera envoyé une fois par mois �
                   <v-btn text tile color="primary" :to="{name: 'login-collectivites-signin'}">
                     J'ai déjà un compte
                   </v-btn>
-                  <v-btn depressed tile color="primary" :loading="loading" type="submit">
+                  <v-btn
+                    depressed
+                    tile
+                    color="primary"
+                    type="submit"
+                    :loading="loading"
+                    :disabled="disabled"
+                  >
                     Créer mon compte
                   </v-btn>
                 </v-card-actions>
@@ -160,7 +174,8 @@ export default {
         text: '',
         val: false
       },
-      error: false
+      error: false,
+      disabled: false
     }
   },
   methods: {
