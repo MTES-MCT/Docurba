@@ -131,7 +131,6 @@ export default {
   serverMiddleware: [
     '~/server-middleware/redirects.js',
     { path: '/api/auth', handler: '~/server-middleware/auth.js' },
-    { path: '/api/data', handler: '~/server-middleware/data.js' },
     { path: '/api/geoide', handler: '~/server-middleware/geoide.js' },
     { path: '/api/georisques', handler: '~/server-middleware/georisques.js' },
     { path: '/api/pdf', handler: '~/server-middleware/pdf.js' },
