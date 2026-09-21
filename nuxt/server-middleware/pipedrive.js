@@ -77,56 +77,6 @@ app.post('/contacted', async (req, res) => {
   res.status(200).send('OK')
 })
 
-app.post('/deals', async (req, res) => {
-  const project = req.body.record
-  const ownerId = project.owner
-
-  const { data: owner, error } = await supabase.auth.admin.getUserById(ownerId)
-
-  console.log(owner)
-
-  if (!error) {
-    const email = owner.user.email
-
-    let { person } = await pipedrive.findPerson(email)
-
-    if (!person) {
-      person = await pipedrive.addPerson({
-        email,
-        firstname: 'New',
-        lastname: 'User'
-      })
-    }
-
-    try {
-      const deal = await pipedrive.addDeal({
-        title: `Nouvelle procedure: ${project.doc_type} - ${project.name}`,
-        personId: person.id,
-        // StageWithPipelineInfo
-        //   id: 37,
-        //   order_nr: 1,
-        //   name: 'Intentions',
-        //   active_flag: true,
-        //   deal_probability: 100,
-        //   pipeline_id: 7,
-        //   rotten_flag: false,
-        //   rotten_days: null,
-        //   add_time: '2023-04-27 09:01:51',
-        //   update_time: '2023-06-27 07:16:34',
-        //   pipeline_name: 'Procédures',
-        //   pipeline_deal_probability: false
-        stageId: 37
-      })
-
-      console.log('Created Deal', deal)
-      res.status(200).send(deal)
-    } catch (err) {
-      console.log('Err creating Deal', err)
-      res.status(400).send(err)
-    }
-  }
-})
-
 // Test
 // async function testProfileUpdate () {
 //   await supabase.from('profiles').update({
@@ -153,6 +103,7 @@ app.post('/deals', async (req, res) => {
 
 // testPipedrive()
 
+// ROUTE used by supabase webhook on insert in profiles
 app.post('/profiles', async (req, res) => {
   const { record: profile } = req.body
 
@@ -196,18 +147,6 @@ async function updateSharing (sharingRecord) {
   return update
 }
 
-// TEST ROUTE
-app.get('/sharing', async (req, res) => {
-  const { data: sharings } = await supabase.from('projects_sharing').select('*')
-    .eq('user_email', 'fabien@quantedsquare.com')
-
-  const update = await updateSharing(sharings[0])
-
-  console.log(update)
-
-  res.status(200).send('OK')
-})
-
 // ROUTE used by supabase webhook on insert in projects_sharing
 app.post('/sharing', async (req, res) => {
   const { record: sharing } = req.body
@@ -221,16 +160,6 @@ app.post('/sharing', async (req, res) => {
     console.log('Error updating person', update)
     res.status(500).send(update)
   }
-})
-
-app.get('/person', async (req, res) => {
-  const { email } = req.query
-
-  const { person } = await pipedrive.findPerson(email)
-
-  console.log('person', person)
-
-  res.status(200).send('OK')
 })
 
 module.exports = app
