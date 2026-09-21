@@ -21,6 +21,8 @@ DEBUG = False
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
 DOCURBA_ENVIRONMENT = DocurbaEnvironment(env.str("DOCURBA_ENVIRONMENT", default="PROD"))
+DOCURBA_PROTOCOL = "https"
+DOCURBA_FQDN = env.str("DOCURBA_FQDN", default="docurba.beta.gouv.fr")
 
 # Application definition
 

@@ -20,6 +20,7 @@ from django.utils import timezone
 from docurba.core.enums import CommuneType, EventScope, TypeCollectivite, VisibilityType
 from docurba.core.utils import OversizedIndex
 from docurba.users.models import Profile
+from docurba.utils import urls as utils_urls
 
 logger = logging.getLogger(__name__)
 
@@ -554,7 +555,7 @@ class Procedure(models.Model):
         return self.created_at < other.created_at
 
     def get_absolute_url(self) -> str:
-        return f"/frise/{self.pk}"
+        return utils_urls.get_absolute_url(path=f"/frise/{self.pk}")
 
     _events_processed = False
 

@@ -22,6 +22,7 @@ jobs:
       NUXT_2_URL: ${{ steps.config.outputs.NUXT_2_URL }}
       DJANGO_REVIEW_APP_NAME: ${{ steps.config.outputs.DJANGO_REVIEW_APP_NAME }}
       DJANGO_URL: ${{ steps.config.outputs.DJANGO_URL }}
+      DJANGO_DOMAIN_NAME: ${{ steps.config.outputs.DJANGO_DOMAIN_NAME }}
 
     steps:
       - name: Get configuration
@@ -36,6 +37,7 @@ jobs:
           DJANGO_REVIEW_APP_NAME=docurba-django-demo-pr${{ env.PR_ID }}
           echo "DJANGO_REVIEW_APP_NAME=${DJANGO_REVIEW_APP_NAME}" >> $GITHUB_OUTPUT
           echo "DJANGO_URL=https://${DJANGO_REVIEW_APP_NAME}.${DOMAIN}" >> $GITHUB_OUTPUT
+          echo "DJANGO_DOMAIN_NAME=${DJANGO_REVIEW_APP_NAME}.${DOMAIN}" >> $GITHUB_OUTPUT
 
           echo "SUPABASE_REVIEW_APP_NAME=supabase-pr${{ env.PR_ID }}" >> $GITHUB_OUTPUT
 
@@ -251,7 +253,8 @@ jobs:
         DATABASE_URL="${{ steps.db.outputs.POSTGRES_URL }}" \
         SECRET_KEY="${django_secret_key}" \
         SUPABASE_URL="${{ steps.db.outputs.SUPABASE_URL }}" \
-        SUPABASE_ANON_KEY="${{ steps.db.outputs.SUPABASE_ANON_KEY }}"
+        SUPABASE_ANON_KEY="${{ steps.db.outputs.SUPABASE_ANON_KEY }}" \
+        DOCURBA_FQDN="${{ needs.prepare.outputs.DJANGO_DOMAIN_NAME }}"
 
     - name: Déploiement de l'application
       run: scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" integration-link-manual-deploy "${{ env.BRANCH }}" &> /dev/null
