@@ -7,6 +7,8 @@ from config.settings.base import *  # NOSONAR (S2208)
 # ---------------
 DEBUG = True
 DOCURBA_ENVIRONMENT = DocurbaEnvironment.DEV
+DOCURBA_PROTOCOL = "http"
+DOCURBA_FQDN = "localhost:8000"
 
 INSTALLED_APPS.extend(
     [
