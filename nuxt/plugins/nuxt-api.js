@@ -2,6 +2,7 @@ import Qs from 'qs'
 
 export default ({ $axios, $user }, inject) => {
   const nuxtAxios = $axios.create({
+    baseURL: process.env.APP_URL,
     paramsSerializer: params => Qs.stringify(params, {
       arrayFormat: 'repeat',
       encode: false
