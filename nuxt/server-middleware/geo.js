@@ -5,16 +5,6 @@ app.use(express.json())
 
 const geo = require('./modules/geo.js')
 
-app.get('/communes', (req, res) => {
-  const communes = geo.getCommunes(req.query)
-  res.status(200).send(communes)
-})
-
-app.get('/intercommunalites', (req, res) => {
-  const intercommunalites = geo.getIntercommunalites(req.query)
-  res.status(200).send(intercommunalites)
-})
-
 app.get('/collectivites', (req, res) => {
   const collectivites = geo.getCollectivites(req.query)
   // console.log('collectivitesSEND: ', collectivites)
@@ -48,42 +38,6 @@ app.get('/collectivites/:code/center', (req, res) => {
     res.status(200).send(geo.getIntercommunaliteCenter(req.params.code))
   } else {
     res.status(200).send(geo.getCommuneCenter(req.params.code))
-  }
-})
-
-app.get('/geojson/:locality', (req, res) => {
-  try {
-    let geojson
-    if (req.params.locality === 'communes') {
-      geojson = geo.getCommunesGeoJson(req.query.codes)
-    } else if (req.params.locality === 'departements') {
-      geojson = geo.getDepartementsGeoJson(req.query.codes)
-    } else if (req.params.locality === 'regions') {
-      geojson = geo.getRegionsGeoJson(req.query.codes)
-    } else {
-      throw new Error('Type de localité invalide')
-    }
-    res.status(200).send(geojson)
-  } catch (error) {
-    res.status(400).send({ message: error.message })
-  }
-})
-
-app.get('/topojson/:locality', (req, res) => {
-  try {
-    let topojson
-    if (req.params.locality === 'communes') {
-      topojson = geo.getCommunesTopoJson(req.query.codes)
-    } else if (req.params.locality === 'departements') {
-      topojson = geo.getDepartementsTopoJson(req.query.codes)
-    } else if (req.params.locality === 'regions') {
-      topojson = geo.getRegionsTopoJson(req.query.codes)
-    } else {
-      throw new Error('Type de localité invalide')
-    }
-    res.status(200).send(topojson)
-  } catch (error) {
-    res.status(400).send({ message: error.message })
   }
 })
 
