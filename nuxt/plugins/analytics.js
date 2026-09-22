@@ -1,7 +1,6 @@
-import axios from 'axios'
 import departements from '@/assets/data/INSEE/departements_small.json'
 
-export default ({ $supabase, $user, app }, inject) => {
+export default ({ $supabase, $user, $collectiviteApi, app }, inject) => {
   async function sendEvent (event) {
     const route = app.router.currentRoute
 
@@ -30,7 +29,7 @@ export default ({ $supabase, $user, app }, inject) => {
 
     if (collectiviteId) {
       try {
-        const { data: collectivite } = await axios(`${process.env.NUXT3_API_URL}/api/geo/search/collectivites?code=${collectiviteId}`)
+        const collectivite = await $collectiviteApi.getFromCode(collectiviteId)
         dept = collectivite.departementCode
       } catch (err) {
         // eslint-disable-next-line no-console
