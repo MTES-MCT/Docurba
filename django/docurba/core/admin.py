@@ -4,9 +4,10 @@
 from typing import Any
 
 from django.contrib import admin, messages
+from django.contrib.admin import ActionLocation
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.html import format_html
@@ -399,7 +400,6 @@ class EventAdmin(admin.ModelAdmin):
         *historized_fields,
         *readonly_fields,
     ]
-    change_form_template = "admin/core/event/change_event_form.html"
     actions = ["archive", "unarchive"]
 
     def has_add_permission(self, request: object) -> bool:
@@ -415,20 +415,11 @@ class EventAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         return queryset.select_related("event_type")
 
-    def response_change(self, request, obj) -> HttpResponse:
-        queryset = self.get_queryset(request).filter(pk=obj.pk)
-        if "_archive" in request.POST:
-            self.archive(request, queryset)
-            return HttpResponseRedirect(".")
-        if "_unarchive" in request.POST:
-            self.unarchive(request, queryset)
-            return HttpResponseRedirect(".")
-
-        return super().response_change(request, obj)
-
     @admin.action(
+        location=[ActionLocation.CHANGE_FORM, ActionLocation.CHANGE_LIST],
         permissions=["change"],
-        description="Archiver les évènements sélectionnés",
+        description="Archiver",
+        description_plural="Archiver les évènements sélectionnés",
     )
     def archive(self, request, queryset) -> None:
         try:
@@ -446,8 +437,10 @@ class EventAdmin(admin.ModelAdmin):
             )
 
     @admin.action(
+        location=[ActionLocation.CHANGE_FORM, ActionLocation.CHANGE_LIST],
         permissions=["change"],
-        description="Désarchiver les évènements sélectionnés",
+        description="Désarchiver",
+        description_plural="Désarchiver les évènements sélectionnés",
     )
     def unarchive(self, request, queryset) -> None:
         updated = queryset.unarchive()
