@@ -181,7 +181,7 @@
               color="primary"
               depressed
               :loading="loadingSave"
-              :disabled="invalid || communesError"
+              :disabled="invalid || communesError.value"
             >
               Créer la procédure
             </v-btn>
