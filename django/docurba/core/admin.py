@@ -400,7 +400,8 @@ class EventAdmin(admin.ModelAdmin):
         *historized_fields,
         *readonly_fields,
     ]
-    actions = ["archive", "unarchive"]
+    # TODO: re-enable these actions after moving logic for computing procedure status in django  # noqa: FIX002
+    # actions = ["archive", "unarchive"]  # noqa: ERA001
 
     def has_add_permission(self, request: object) -> bool:
         return False
