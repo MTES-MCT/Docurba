@@ -146,7 +146,7 @@ class TestEventChange:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         event = EventFactory()
-        with django_assert_num_queries(7):
+        with django_assert_num_queries(5):
             response = admin_session_client.get(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk})
             )
@@ -154,7 +154,7 @@ class TestEventChange:
         assertContains(response, "Enregistrer et continuer les modifications")
 
         new_user = ProfileFactory()
-        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + 3):
+        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + 1):
             response = admin_session_client.post(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
                 data={
@@ -171,14 +171,14 @@ class TestEventChange:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         event = EventFactory()
-        with django_assert_num_queries(8):
+        with django_assert_num_queries(6):
             response = staff_session_client.get(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk})
             )
         assert response.status_code == 200
         assertContains(response, "Archiver")
 
-        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + 7):
+        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + 6):
             response = staff_session_client.post(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
                 data={
@@ -190,7 +190,7 @@ class TestEventChange:
         event.refresh_from_db()
         assert event.is_archived
 
-        with django_assert_num_queries(9):
+        with django_assert_num_queries(6):
             response = staff_session_client.get(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk})
             )
@@ -203,14 +203,14 @@ class TestEventChange:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         event = EventFactory(archived=True)
-        with django_assert_num_queries(9):
+        with django_assert_num_queries(6):
             response = staff_session_client.get(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk})
             )
         assert response.status_code == 200
         assertContains(response, "Désarchiver")
 
-        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + 7):
+        with django_assert_num_queries(UPDATE_BASE_EXPECTED_NUM_QUERIES + 5):
             response = staff_session_client.post(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk}),
                 data={
@@ -222,7 +222,7 @@ class TestEventChange:
         event.refresh_from_db()
         assert not event.is_archived
 
-        with django_assert_num_queries(8):
+        with django_assert_num_queries(6):
             response = staff_session_client.get(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk})
             )
