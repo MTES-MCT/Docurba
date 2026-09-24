@@ -1609,27 +1609,25 @@ class TestEvent:
     @pytest.mark.django_db
     def test_event_archived(self) -> None:
         profile = ProfileFactory()
-        event = EventFactory.build()
+        event = EventFactory()
         assert not event.is_archived
 
-        event = EventFactory.build(archived_at=timezone.now(), archived_by=profile)
+        event = EventFactory(archived_at=timezone.now(), archived_by=profile)
         assert event.is_archived
 
-        event = EventFactory.build(archived_at=timezone.now(), archived_by=None)
         with pytest.raises(ValidationError) as error:
-            event.save()
+            event = EventFactory(archived_at=timezone.now(), archived_by=None)
         assert error.value.messages == [
             "Le champ “archived_by” doit être renseigné uniquement si le champ “archived_at” est renseigné"
         ]
 
-        event = EventFactory.build(archived_at=None, archived_by=profile)
         with pytest.raises(ValidationError) as error:
-            event.save()
+            event = EventFactory(archived_at=None, archived_by=profile)
         assert error.value.messages == [
             "Le champ “archived_by” doit être renseigné uniquement si le champ “archived_at” est renseigné"
         ]
 
-        event = EventFactory.build()
+        event = EventFactory()
         event.archive(archived_by=profile)
         assert event.is_archived
 

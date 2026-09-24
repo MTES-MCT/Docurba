@@ -565,9 +565,22 @@ class Procedure(models.Model):
         )
 
     def __str__(self) -> str:
+        if self.name:
+            if (
+                self.name_complement
+                and not self.name.endswith(
+                    self.name_complement
+                )  # do not display twice the name_complement when the name already includes it (old procedures)
+            ):
+                return f"{self.name} - {self.name_complement}"
+            return self.name
+        numero = f" {self.numero}" if self.numero else ""
+        name_complement = f" - {self.name_complement}" if self.name_complement else ""
+        name_zone = (
+            f" {self.collectivite_porteuse}" if self.collectivite_porteuse else ""
+        )
         return (
-            self.name
-            or f"🤖 {self.type} {self.numero or ''} {self.type_document} {self.collectivite_porteuse}"
+            f"🤖 {self.type}{numero} {self.type_document}{name_zone}{name_complement}"
         )
 
     def __lt__(self, other: Self) -> bool:
