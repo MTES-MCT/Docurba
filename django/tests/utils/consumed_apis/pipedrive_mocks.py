@@ -1,0 +1,117 @@
+SEARCH_ORGANIZATIONS_BY_NAME = (
+    "https://fake-pipedrive.fr/organizations/search?term=DDT+30&fields=name",
+    {
+        "success": True,
+        "data": {
+            "items": [
+                {
+                    "result_score": 0.35513002,
+                    "item": {
+                        "id": 1,
+                        "type": "organization",
+                        "name": "DDT 13",
+                        "address": None,
+                        "visible_to": 3,
+                        "owner": {"id": 123456789},
+                        "custom_fields": ["AuRA"],
+                        "notes": ["Some personal notes"],
+                    },
+                }
+            ]
+        },
+        "additional_data": {"next_cursor": None},
+    },
+)
+
+GET_DEAL_ORG_ID_1 = (
+    "https://fake-pipedrive.fr/deals?org_id=1",
+    {
+        "success": True,
+        "data": [
+            {
+                "id": 51,
+                "title": "🌐 📝 01 Ain",
+                "creator_user_id": 123456789,
+                "value": 0.0,
+                "person_id": 1111,
+                "org_id": 1,
+                "stage_id": 77,
+                "currency": "EUR",
+                "add_time": "2024-08-18T13:39:22Z",
+                "update_time": "2026-07-01T16:28:13Z",
+                "status": "open",
+                "probability": None,
+                "lost_reason": None,
+                "visible_to": 3,
+                "close_time": None,
+                "pipeline_id": 8,
+                "won_time": None,
+                "lost_time": None,
+                "stage_change_time": "2025-10-16T14:06:23Z",
+                "local_won_date": None,
+                "local_lost_date": None,
+                "local_close_date": None,
+                "expected_close_date": None,
+                "custom_fields": {
+                    "62964f49dba625be71f3a403652d37c8fa1b93f6": None,
+                    "51228cc35804435b6db33c9860c9445bee15b206": None,
+                },
+                "owner_id": 123456789,
+                "label_ids": [],
+                "is_deleted": False,
+                "origin": "ManuallyCreated",
+                "origin_id": None,
+                "channel": None,
+                "channel_id": None,
+                "acv": None,
+                "arr": None,
+                "mrr": None,
+                "is_archived": False,
+                "archive_time": None,
+            }
+        ],
+        "additional_data": {"next_cursor": None},
+    },
+)
+
+PATCH_DEAL_ID_1 = (
+    "https://fake-pipedrive.fr/deals/1",
+    {
+        "success": True,
+        "data": {
+            "id": 1,
+            "title": "DDT Test",
+            "creator_user_id": 34070131,
+            "value": 0.0,
+            "person_id": 1,
+            "org_id": 1,
+            "stage_id": 3,
+            "currency": "EUR",
+            "add_time": "2026-09-25T09:36:04Z",
+            "update_time": "2026-09-25T09:42:23Z",
+            "status": "open",
+            "probability": None,
+            "lost_reason": None,
+            "visible_to": 3,
+            "close_time": None,
+            "pipeline_id": 1,
+            "won_time": None,
+            "lost_time": None,
+            "stage_change_time": "2026-09-25T09:42:23Z",
+            "local_won_date": None,
+            "local_lost_date": None,
+            "local_close_date": None,
+            "expected_close_date": None,
+            "custom_fields": None,
+            "owner_id": 34070131,
+            "label_ids": [],
+            "is_deleted": False,
+            "origin": "ManuallyCreated",
+            "origin_id": None,
+            "channel": None,
+            "channel_id": None,
+            "is_archived": None,
+            "archive_time": None,
+        },
+    },
+)
