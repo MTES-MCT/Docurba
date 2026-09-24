@@ -544,10 +544,9 @@ class Procedure(models.Model):
         )
 
     def __str__(self) -> str:
-        return (
-            self.name
-            or f"🤖 {self.type} {self.numero or ''} {self.type_document} {self.collectivite_porteuse}"
-        )
+        numero = f" {self.numero}" if self.numero else ""
+        name_complement = f" {self.name_complement}" if self.name_complement else ""
+        return f"🤖 {self.type}{numero} {self.type_document} {self.collectivite_porteuse}{name_complement}"
 
     def __lt__(self, other: Self) -> bool:
         if self.date_approbation and other.date_approbation:

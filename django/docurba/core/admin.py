@@ -219,7 +219,6 @@ class ProcedureAdmin(admin.ModelAdmin):
         "type",
         "numero",
         "parente",
-        "name",
         "nuxt_status",
         "django_status",
         "commentaire",
@@ -264,6 +263,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         *autocomplete_fields,
         *readonly_fields,
         *raw_id_fields,
+        "name_complement",
         "soft_delete",
     ]
 

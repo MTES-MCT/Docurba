@@ -2,11 +2,7 @@ import regions from '@/assets/data/Regions.json'
 
 export default ({ app }, inject) => {
   const utils = {
-    formatProcedureName (procedure, collectivite) {
-      if (procedure.name) {
-        return procedure.name
-      }
-
+    formatProcedureName(procedure, collectivite) {
       const isInter = procedure?.procedures_perimetres?.length > 1
 
       let collectivitePorteuse = collectivite
@@ -26,7 +22,8 @@ export default ({ app }, inject) => {
         procedure.numero,
         procedure.doc_type +
           (procedure.is_pluih ? 'H' : ''),
-        collectivitePorteuse?.intitule ?? ''
+        collectivitePorteuse?.intitule ?? '',
+        procedure.name_complement,
       ].filter(Boolean)
       return parts.join(' ')
     },
