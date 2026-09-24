@@ -27,6 +27,7 @@ export default ({ $collectiviteApi, $supabase, $dayjs }, inject) => {
         .select('*, procedures!inner(*, doc_frise_events(*))')
         .eq('departement', departementCode)
         .is('procedures.archived', false)
+        .is('procedures.doc_frise_events.archived_at', null)
         .throwOnError()
       const groupedProceduresPerim = groupBy(data, e => e.procedure_id)
       const procedures = data.map((e) => {
