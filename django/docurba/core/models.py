@@ -20,6 +20,7 @@ from django.utils import timezone
 from docurba.core.enums import CommuneType, EventScope, TypeCollectivite, VisibilityType
 from docurba.core.utils import OversizedIndex
 from docurba.users.models import Profile
+from docurba.utils.models import ManagerWithFetchMode
 
 logger = logging.getLogger(__name__)
 
@@ -345,7 +346,7 @@ class ProcedureQuerySet(models.QuerySet):
         )
 
 
-class ProcedureManager(models.Manager):
+class ProcedureManager(ManagerWithFetchMode):
     def get_queryset(self) -> ProcedureQuerySet:
         return (
             super()
@@ -791,8 +792,9 @@ class Topic(models.Model):
         return self.name
 
 
-class ProjectManager(models.Manager):
-    pass
+class ProjectManager(ManagerWithFetchMode):
+    def get_queryset(self) -> Self:
+        return super().get_queryset()
 
 
 class FastLoadingProjectManager(ProjectManager):
@@ -882,8 +884,9 @@ class Project(models.Model):
         return f"{self.pk} - {self.name}"
 
 
-class EventTypeManager(models.Manager):
-    pass
+class EventTypeManager(ManagerWithFetchMode):
+    def get_queryset(self) -> Self:
+        return super().get_queryset()
 
 
 class ActiveEventTypeManager(EventTypeManager):
@@ -1000,13 +1003,13 @@ class EventQuerySet(models.QuerySet):
     unarchive.queryset_only = True
 
 
-class EventManager(models.Manager):
-    pass
+class EventManager(ManagerWithFetchMode):
+    def get_queryset(self) -> Self:
+        return super().get_queryset()
 
 
 class FastLoadingEventManager(EventManager):
     def get_queryset(self) -> Self:
-
         return super().get_queryset().defer_heavy_fields()
 
 

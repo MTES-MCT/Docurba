@@ -1737,12 +1737,16 @@ class TestEventQueryset:
             updated = Event.objects.all().archive(archived_by=archived_by)
             assert updated == 1
 
-        event_archived.refresh_from_db()
+        event_archived.refresh_from_db(
+            from_queryset=Event.objects.select_related("archived_by")
+        )
         assert event_archived.is_archived
         assert str(event_archived.archived_by.pk) != archived_by.pk
         assert event_archived.archived_at == archived_at
 
-        event_not_archived.refresh_from_db()
+        event_not_archived.refresh_from_db(
+            from_queryset=Event.objects.select_related("archived_by")
+        )
         assert event_not_archived.is_archived
         assert str(event_not_archived.archived_by.pk) == archived_by.pk
 

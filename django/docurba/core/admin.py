@@ -274,9 +274,9 @@ class ProcedureAdmin(admin.ModelAdmin):
         return False
 
     def get_queryset(self, request) -> models.QuerySet:
-        queryset = super().get_queryset(request)
         return (
-            queryset.with_events()  # mandatory to set the status.
+            self.model.full_objects.get_queryset()
+            .with_events()  # mandatory to set the status.
             .select_related("collectivite_porteuse")
             .prefetch_related("perimetre")
         )
@@ -412,8 +412,8 @@ class EventAdmin(admin.ModelAdmin):
         return super().has_change_permission(request, obj)
 
     def get_queryset(self, request) -> models.QuerySet:
-        queryset = super().get_queryset(request)
-        return queryset.select_related("event_type")
+        queryset = self.model.full_objects.get_queryset()
+        return queryset.select_related("event_type", "project", "archived_by")
 
     def response_change(self, request, obj) -> HttpResponse:
         queryset = self.get_queryset(request).filter(pk=obj.pk)

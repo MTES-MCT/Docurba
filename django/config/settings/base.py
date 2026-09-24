@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import sentry_sdk
+from django.db import models
 from environ import Env
 
 from docurba.utils.enums import DocurbaEnvironment
@@ -179,6 +180,10 @@ MAILERS = {
 DEFAULT_FROM_EMAIL = env.str(
     "DEFAULT_FROM_EMAIL", default="contact@docurba.beta.gouv.fr"
 )
+
+# Default value.
+# https://docs.djangoproject.com/en/6.1/topics/db/fetch-modes/
+DEFAULT_FETCH_MODE = models.FETCH_ONE
 
 #####################################################
 ############ External libraries settings ############
