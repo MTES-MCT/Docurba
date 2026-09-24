@@ -224,3 +224,10 @@ SUPABASE_URL = env.str("SUPABASE_URL", default="http://127.0.0.1:54321")
 SUPABASE_ANON_KEY = env.str("SUPABASE_ANON_KEY", default="dumb_key")
 
 AUTH_USER_MODEL = "users.User"
+
+####################################################
+############ External services settings ############
+####################################################
+
+PIPEDRIVE_TOKEN = env.str("PIPEDRIVE_TOKEN", default="")
+PIPEDRIVE_URL = env.str("PIPEDRIVE_URL", default="https://api.pipedrive.com/api/v2")

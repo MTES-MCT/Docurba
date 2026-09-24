@@ -10,6 +10,7 @@ from django.db.models.functions import Now
 
 from docurba.core import models as core_models
 from docurba.users import enums as users_enums
+from docurba.utils.consumed_apis import pipedrive
 from docurba.utils.emails import SendgridEmailMessage, get_email_message
 
 logger = logging.getLogger(__name__)
@@ -248,6 +249,46 @@ class Profile(models.Model):
             },
         )
 
+    # TODO: toggle
+    def verify(self) -> None:
+        self.verified = True
+        self.save()
+        self.verified_user_email().send()
+
+        # if ddt_validation
+        #       // Update deal status in Pipedrive.
+        with pipedrive.client() as client:
+            # TODO: handle exceptions.
+            organization = client.find_organization_by_name(f"DDT {self.departement}")
+            if organization:
+                deals = client.get_organization_deals(organization.id)
+                for deal in deals:
+                    if deal["stage_id"] in ["10", "11", "12"]:
+                        client.update_deal(deal_id=deal["id"], stage_id=13)
+
+        # Update Pipedrive
+
+    # if (action.action_id === 'ddt_validation') {
+
+
+#       const { deals } = pipedrive.findOrganization(userData.departement)
+
+#       if (deals && deals.length) {
+#         const deal = deals.find((d) => {
+#           return d.stage_id === 10 || d.stage_id === 11 || d.stage_id === 12
+#         })
+
+#         if (deal) {
+#           pipedrive.updateDeal(deal.id, {
+#             stage_id: 13
+#           })
+#         }
+#       }
+#     }
+
+#     return { data, error }
+#   },
+
 
 class UserManager(DjangoUserManager):
     pass
@@ -267,3 +308,6 @@ class User(AbstractUser):
     class Meta:
         verbose_name = "utilisateur django"
         verbose_name_plural = "utilisateurs django"
+
+
+pipedrive
