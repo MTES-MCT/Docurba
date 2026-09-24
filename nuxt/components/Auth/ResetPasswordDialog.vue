@@ -34,7 +34,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import FormInput from '@/mixins/FormInput.js'
 
 export default {

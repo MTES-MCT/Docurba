@@ -38,7 +38,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import dayjs from 'dayjs'
 
 export default {
@@ -70,8 +69,7 @@ export default {
     } else {
       try {
         // TODO :: Migrate this to Django once `groupements` and `membres` are available in `/api-internes/collectivites/`
-        const { data: collectiviteData } = await axios(`/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}`)
-        this.collectivite = collectiviteData
+        this.collectivite = await this.$nuxtApi.get(`/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}`)
       } catch (err) {
         console.log('no coll', this.procedure, this.collectivite)
       }

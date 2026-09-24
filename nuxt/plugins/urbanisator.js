@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import { groupBy, uniq, uniqBy, orderBy } from 'lodash'
-import axios from 'axios'
 import { enrichProcedureWithEvents } from '@/plugins/procedure'
 
-export default ({ $collectiviteApi, $supabase, $dayjs }, inject) => {
+export default ({ $collectiviteApi, $nuxtApi, $supabase, $dayjs }, inject) => {
   Vue.filter('docType', function (procedure) {
     if (procedure.doc_type === 'PLU') {
       let docType = procedure.doc_type
@@ -100,7 +99,7 @@ export default ({ $collectiviteApi, $supabase, $dayjs }, inject) => {
     },
     async getCollectiviteProcedures (collectiviteId) {
       // TODO :: Migrate this once `membres` is available in `/api-internes/collectivites/`
-      const { data: collectivite } = await axios(`/api/geo/collectivites/${collectiviteId}/`)
+      const collectivite = await $nuxtApi.get(`/api/geo/collectivites/${collectiviteId}/`)
       const collectivites = [collectivite]
       if (collectivite.membres) { collectivites.push(...collectivite.membres) }
 

@@ -5,11 +5,11 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-const { getCollectivite } = require('../plugins/collectivite.js')
 const sendgrid = require('./modules/sendgrid.js')
 const supabase = require('./modules/supabase.js')
 
 // modules
+const { requireProcedureSharable, requireStateAgent } = require('./modules/auth.js')
 const slack = require('./modules/slack.js')
 const sharing = require('./modules/sharing.js')
 
@@ -46,6 +46,11 @@ app.post('/notify/admin/acte', (req, res) => {
 })
 
 app.post('/notify/frp_shared', async (req, res) => {
+  try {
+    await requireProcedureSharable(req)
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
   try {
     // Send notification to Slack
     const slackRes = await slack.shareProcedure(req.body)
@@ -113,7 +118,13 @@ app.post('/notify/frp_shared', async (req, res) => {
   }
 })
 
-app.post('/notify/frp', (req, res) => {
+app.post('/notify/frp', async (req, res) => {
+  try {
+    await requireStateAgent(req)
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
+
   slack.notifyFrpEvent(req.body).then((res) => {
     // eslint-disable-next-line no-console
     console.log('Slack then: ', res.data)

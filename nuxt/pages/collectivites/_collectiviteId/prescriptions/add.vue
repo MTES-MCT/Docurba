@@ -242,7 +242,6 @@
 
 <script>
 import { mdiUpload, mdiPencil, mdiCheck, mdiAccountSearchOutline, mdiDelete, mdiInformationOutline } from '@mdi/js'
-import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 import FormInput from '@/mixins/FormInput.js'
 
@@ -422,16 +421,12 @@ export default {
           attachements: prescription.attachments || [{ name: 'lien', url: prescription.link_url }]
         }
 
-        await axios({
-          url: '/api/slack/notify/admin/acte',
-          method: 'post',
-          data: { userData }
+        await this.$nuxtApi.post('/api/slack/notify/admin/acte', {
+          userData
         })
 
-        axios({
-          url: '/api/pipedrive/depot_acte',
-          method: 'post',
-          data: { userData }
+        this.$nuxtApi.post('/api/pipedrive/depot_acte', {
+          userData
         })
         // console.log('REDIRECT')
 

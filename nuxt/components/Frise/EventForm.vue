@@ -110,7 +110,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { mdiTrashCan } from '@mdi/js'
 import FormInput from '@/mixins/FormInput.js'
 import { getLaunchEvent } from '@/plugins/event'
@@ -223,14 +222,10 @@ export default {
           value: this.event.type
         })
 
-        axios({
-          url: '/api/slack/notify/frp',
-          method: 'post',
-          data: {
-            userData: this.$user.profile,
-            eventData: upsertEvent,
-            procedureData: this.procedure
-          }
+        this.$nuxtApi.post('/api/slack/notify/frp', {
+          userData: this.$user.profile,
+          eventData: upsertEvent,
+          procedureData: this.procedure
         })
 
         this.saving = false

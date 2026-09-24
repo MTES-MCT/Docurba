@@ -33,7 +33,6 @@
   </v-dialog>
 </template>
 <script>
-import axios from 'axios'
 import { mdiDelete } from '@mdi/js'
 
 export default {
@@ -71,27 +70,19 @@ export default {
     async deleteSection (section) {
       // Todo, this could use git API tree to avoid making a call for each children.
       if (section.type === 'file') {
-        await axios({
-          method: 'delete',
-          url: `/api/trames/${this.gitRef}`,
-          data: {
-            userId: this.$user.id,
-            commit: {
-              path: section.path,
-              sha: section.sha
-            }
+        await this.$nuxtApi.delete(`/api/trames/${this.gitRef}`, {
+          userId: this.$user.id,
+          commit: {
+            path: section.path,
+            sha: section.sha
           }
         })
       } else if (section.type === 'dir') {
-        await axios({
-          method: 'delete',
-          url: `/api/trames/${this.gitRef}`,
-          data: {
-            userId: this.$user.id,
-            commit: {
-              path: `${section.path}/intro.md`,
-              sha: section.introSha
-            }
+        await this.$nuxtApi.delete(`/api/trames/${this.gitRef}`, {
+          userId: this.$user.id,
+          commit: {
+            path: `${section.path}/intro.md`,
+            sha: section.introSha
           }
         })
 
