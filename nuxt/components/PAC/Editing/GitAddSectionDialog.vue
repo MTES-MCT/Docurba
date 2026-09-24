@@ -51,6 +51,7 @@
 import axios from 'axios'
 import { mdiPlus } from '@mdi/js'
 import { encode } from 'js-base64'
+import { getCommitter } from '@/plugins/user'
 
 export default {
   props: {
@@ -116,6 +117,7 @@ export default {
           data: {
             userId: this.$user.id,
             commit: {
+              committer: getCommitter(this.$user),
               path: this.parent.path,
               sha: this.parent.sha
             }
@@ -128,6 +130,7 @@ export default {
           data: {
             userId: this.$user.id,
             commit: {
+              committer: getCommitter(this.$user),
               path: `${dir}/intro.md`,
               content: encode(parentContent)
             }
@@ -143,6 +146,7 @@ export default {
         data: {
           userId: this.$user.id,
           commit: {
+            committer: getCommitter(this.$user),
             path: `${dir}/${this.sectionName}.md`,
             content: encode('Nouvelle section')
           }
