@@ -4,12 +4,17 @@ export default ({ app }, inject) => {
   const utils = {
     formatProcedureName (procedure, collectivite) {
       if (procedure.name) {
+        if (procedure.name_complement
+          && !procedure.name.endsWith(procedure.name_complement) // do not display twice the name_complement when the name already includes it (old procedures)
+        ) {
+          return procedure.name + ' - ' + procedure.name_complement
+        }
         return procedure.name
       }
-
       const isInter = procedure?.procedures_perimetres?.length > 1
 
       let collectivitePorteuse = collectivite
+
       if (
         isInter &&
         collectivite &&
@@ -25,10 +30,16 @@ export default ({ app }, inject) => {
         procedure.type,
         procedure.numero,
         procedure.doc_type +
-          (procedure.is_pluih ? 'H' : ''),
+        (procedure.is_pluih && !procedure.doc_type.includes('H') ? 'H' : ''),
         collectivitePorteuse?.intitule ?? ''
       ].filter(Boolean)
-      return parts.join(' ')
+      const name = parts.join(' ')
+
+      if (procedure.name_complement) {
+        return name + ' - ' + procedure.name_complement
+      }
+
+      return name
     },
     formatEventProfileToCreator (event) {
       if (event.profiles) {
