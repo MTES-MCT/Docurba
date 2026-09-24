@@ -500,7 +500,8 @@ export default {
           departements,
           numero: this.procedureCategory === 'principale' ? '1' : this.numberProcedure,
           project_id: insertedProject,
-          name: (this.baseName + ' ' + this.nameComplement).trim(),
+          name: this.baseName,
+          name_complement: this.nameComplement.trim(),
           owner_id: this.$user.id,
           started_before_huwart_law: this.startedBeforeHuwartLaw,
           testing: true
