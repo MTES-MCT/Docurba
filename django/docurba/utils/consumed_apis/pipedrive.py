@@ -59,6 +59,10 @@ class PipedriveApiClient:
     def _request(
         self, route: str, params: dict, *, method: str = "GET"
     ) -> httpx.Response:
+        params = params if method == "GET" else ""
+        data = params if method != "GET" else ""
+        logger.info("DATA")
+        logger.info(data)
         try:
             response = self.client.request(
                 method, route, params=params, timeout=httpx.Timeout(5, read=60)
