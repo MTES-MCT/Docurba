@@ -1,15 +1,17 @@
 # ruff: noqa: ANN001, ARG002
 from typing import ClassVar, Literal
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import PermissionDenied
+from django.db.models import QuerySet
 from django.forms.widgets import TextInput
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.utils.html import format_html
 
 from docurba.users.models import Profile, SupabaseUser, User
+from docurba.utils.consumed_apis import pipedrive
 
 
 @admin.register(Profile)
@@ -18,6 +20,7 @@ class ProfileAdmin(admin.ModelAdmin):
         "user",
         "email",  # email doit correspondre à celui connu par Supabase Auth donc on désactive l'édition
     )
+    actions = ["verify"]
 
     list_display = (
         "__str__",
@@ -66,6 +69,27 @@ class ProfileAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None) -> Literal[False]:
         return False
+
+    @admin.action(
+        permissions=["change"],
+        description="Vérifier",
+        location=admin.ActionLocation.CHANGE_FORM,
+    )
+    def verify(self: Profile, request: HttpRequest, queryset: QuerySet) -> None:
+        obj = queryset.get()
+        try:
+            obj.verify()
+            self.log_change(request, obj, "Vérification de l'utilisateur")
+        except pipedrive.PipedriveHTTPError:
+            self.message_user(
+                request,
+                "Erreur lors de la connexion avec Pipedrive. Merci de réessayer.",
+                level=messages.ERROR,
+            )
+        except ValueError:
+            self.message_user(
+                request, "Erreur de récupération des données.", level=messages.ERROR
+            )
 
 
 @admin.register(SupabaseUser)

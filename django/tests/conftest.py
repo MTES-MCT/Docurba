@@ -112,6 +112,10 @@ def staff_session_client(django_db_blocker: DjangoDbBlocker | None) -> Client:
                 "change_supabaseuser",
             ),  # users/test_admin.py::TestUserAdmin::test_update_password
             (
+                "users",
+                "change_profile",
+            ),  # users/test_admin.py::TestProfileAdmin
+            (
                 "core",
                 "change_event",
             ),  # core/test_admin.py::TestEventChange::test_[un]archive

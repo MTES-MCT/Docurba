@@ -65,15 +65,15 @@ class PipedriveApiClient:
         logger.info(data)
         try:
             response = self.client.request(
-                method, route, params=params, timeout=httpx.Timeout(5, read=60)
-            ).raise_for_status()
-        except httpx.HTTPError as exc:
-            logger.exception("Pipedrive exception")
                 method,
                 route,
                 params=params,
                 data=data,
                 timeout=httpx.Timeout(5, read=60),
+            ).raise_for_status()
+        except httpx.HTTPError as exc:
+            logger.exception("Pipedrive exception")
+            raise PipedriveHTTPError from exc
 
         return response
 
