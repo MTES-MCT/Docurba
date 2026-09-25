@@ -2,6 +2,8 @@
 from config.settings.base import *  # NOSONAR (S2208)
 
 DOCURBA_ENVIRONMENT = DocurbaEnvironment.TEST
+DOCURBA_PROTOCOL = "http"
+DOCURBA_FQDN = "localhost:8000"
 
 # Don't use json formatter in dev
 del LOGGING["handlers"]["console"]["formatter"]
@@ -27,10 +29,15 @@ DATABASES = {
     },
 }
 
-SENDGRID_API_KEY = "black_hole"
-
 MAILERS = {
     "default": {
         "BACKEND": "django.core.mail.backends.locmem.EmailBackend",
     },
 }
+
+####################################################
+############ External services settings ############
+####################################################
+SENDGRID_API_KEY = "black_hole"
+PIPEDRIVE_URL = "https://fake-pipedrive.fr/"
+PIPEDRIVE_TOKEN = "123456789"

@@ -15,6 +15,7 @@ dependencies = [
     "djangorestframework",
     "supabase>=2.31.0",
     "django-sendgrid-v5", # https://github.com/sklarsa/django-sendgrid-v5
+    "httpx", # https://github.com/encode/httpx
 ]
 
 [project.optional-dependencies]
@@ -38,6 +39,7 @@ dev = [
     "factory-boy", # https://github.com/FactoryBoy/factory_boy
     "syrupy", # https://github.com/syrupy-project/syrupy
     "freezegun", # https://github.com/spulec/freezegun
+    "respx", # https://github.com/lundberg/respx
 ]
 
 [tool.pytest.ini_options]

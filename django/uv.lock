@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.13"
 
 [[package]]
@@ -460,6 +460,7 @@ dependencies = [
     { name = "django-sendgrid-v5" },
     { name = "djangorestframework" },
     { name = "gunicorn", extra = ["gevent"] },
+    { name = "httpx" },
     { name = "psycopg", extra = ["binary", "pool"] },
     { name = "sentry-sdk", extra = ["django"] },
     { name = "supabase" },
@@ -483,6 +484,7 @@ dev = [
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
+    { name = "respx" },
     { name = "ruff" },
     { name = "syrupy" },
 ]
@@ -497,6 +499,7 @@ requires-dist = [
     { name = "django-sendgrid-v5" },
     { name = "djangorestframework" },
     { name = "gunicorn", extras = ["gevent"] },
+    { name = "httpx" },
     { name = "psycopg", extras = ["binary", "pool"] },
     { name = "sentry-sdk", extras = ["django"] },
     { name = "supabase", specifier = ">=2.31.0" },
@@ -517,6 +520,7 @@ dev = [
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-cov" },
     { name = "pytest-django" },
+    { name = "respx" },
     { name = "ruff" },
     { name = "syrupy" },
 ]
@@ -1402,6 +1406,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/df/34/54a1eaaefa24db5cb12596fd74792e08efa53ed30dc5bce2c0a68ded6146/realtime-2.31.0.tar.gz", hash = "sha256:9e641cb4d77ca0fe768515f8cf9f83550c79f49ce1550a95afc2dc0e252be8c9", size = 18716, upload-time = "2026-06-04T13:37:22.089Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/13/60/164246615e8b059f6d53d34648a0784260421ec98a07eb1e45160f063221/realtime-2.31.0-py3-none-any.whl", hash = "sha256:f6e494b53d6a6e80b6efcee6711c8dd40413a52e766271de1bce8ced6c36cc1d", size = 22374, upload-time = "2026-06-04T13:37:21.162Z" },
+]
+
+[[package]]
+name = "respx"
+version = "0.23.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/43/98/4e55c9c486404ec12373708d015ebce157966965a5ebe7f28ff2c784d41b/respx-0.23.1.tar.gz", hash = "sha256:242dcc6ce6b5b9bf621f5870c82a63997e8e82bc7c947f9ffe272b8f3dd5a780", size = 29243, upload-time = "2026-04-08T14:37:16.008Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1d/4a/221da6ca167db45693d8d26c7dc79ccfc978a440251bf6721c9aaf251ac0/respx-0.23.1-py2.py3-none-any.whl", hash = "sha256:b18004b029935384bccfa6d7d9d74b4ec9af73a081cc28600fffc0447f4b8c1a", size = 25557, upload-time = "2026-04-08T14:37:14.613Z" },
 ]
 
 [[package]]

@@ -17,9 +17,16 @@ from django.db.models.functions import Now
 from django.urls import reverse
 from django.utils import timezone
 
-from docurba.core.enums import CommuneType, EventScope, TypeCollectivite, VisibilityType
+from docurba.core.enums import (
+    CommuneType,
+    EventScope,
+    ProjectSharingRoleType,
+    TypeCollectivite,
+    VisibilityType,
+)
 from docurba.core.utils import OversizedIndex
-from docurba.users.models import Profile
+from docurba.users import models as users_models
+from docurba.utils import urls as utils_urls
 
 logger = logging.getLogger(__name__)
 
@@ -344,6 +351,20 @@ class ProcedureQuerySet(models.QuerySet):
             ),
         )
 
+    def most_recently_shared_to_profile_email(self, email: str) -> Self:
+        subquery = ProjectSharing.objects.filter(
+            user_email=email, role=ProjectSharingRoleType.WRITE_FRISE
+        ).order_by("-created_at")
+
+        return (
+            self.filter(
+                project_id=models.Subquery(subquery.values("project_id")[:1]),
+                is_principale=True,
+            )
+            .order_by("-created_at")
+            .first()
+        )
+
 
 class ProcedureManager(models.Manager):
     def get_queryset(self) -> ProcedureQuerySet:
@@ -554,7 +575,7 @@ class Procedure(models.Model):
         return self.created_at < other.created_at
 
     def get_absolute_url(self) -> str:
-        return f"/frise/{self.pk}"
+        return utils_urls.get_absolute_url(path=f"/frise/{self.pk}")
 
     _events_processed = False
 
@@ -882,6 +903,75 @@ class Project(models.Model):
         return f"{self.pk} - {self.name}"
 
 
+class ProjectSharingManager(models.Manager):
+    pass
+
+
+class FastLoadingProjectSharingManager(ProjectManager):
+    def get_queryset(self) -> Self:
+        # There is no mention of these fields on Nuxt side.
+        to_be_removed_fields = [
+            "dev_test",
+        ]
+        return super().get_queryset().defer(*to_be_removed_fields)
+
+
+class ProjectSharing(models.Model):
+    id = models.UUIDField(primary_key=True, db_default=RandomUUID())
+    created_at = models.DateTimeField(
+        blank=True, null=True, verbose_name="date de création", db_default=Now()
+    )
+    user_email = models.TextField(verbose_name="email utilisateur")
+    project = models.ForeignKey(
+        "core.Project",
+        on_delete=models.DO_NOTHING,
+        related_name="sharings",
+        verbose_name="projet",
+    )
+    shared_by = models.ForeignKey(
+        "users.Profile",
+        # in the DB: on_update=models.CASCADE (but impossible to import here).
+        on_delete=models.CASCADE,
+        db_column="shared_by",
+        blank=True,
+        null=True,
+        verbose_name="partagé par",
+    )
+    notified = models.BooleanField(verbose_name="notifié", db_default=False)
+    last_update_notification = models.DateTimeField(
+        db_comment="Timestamp of last notification",
+        verbose_name="date de modification",
+        db_default=Now(),
+    )
+    role = models.CharField(  # noqa: DJ001
+        blank=True,
+        null=True,  # TODO: make me non nullable
+        choices=ProjectSharingRoleType,
+        verbose_name="rôle",
+        db_default=ProjectSharingRoleType.READ,
+    )
+    archived = models.BooleanField(verbose_name="archivé", db_default=False)
+    dev_test = models.BooleanField(blank=True, null=True, db_default=False)
+    inserted_script = models.BooleanField(
+        blank=True,
+        null=True,
+        verbose_name="script inséré",
+        db_default=False,
+    )
+    email_notified = models.BooleanField(
+        verbose_name="notifié par email", db_default=False
+    )
+
+    class Meta:
+        db_table = "projects_sharing"
+        verbose_name = "projet partagé"
+        verbose_name_plural = "projets partagés"
+        unique_together = (("user_email", "project", "role"),)
+
+    def __str__(self) -> Self:
+        return str(self.id)
+
+
 class EventTypeManager(models.Manager):
     pass
 
@@ -982,7 +1072,7 @@ class EventQuerySet(models.QuerySet):
         ]
         return self.defer(*to_be_removed_fields, *heavy_fields)
 
-    def archive(self, archived_by: Profile) -> int:
+    def archive(self, archived_by: users_models.Profile) -> int:
         if not archived_by:
             msg = "Le champ “archived_by” doit être renseigné"
             raise ValidationError(msg)
@@ -1105,7 +1195,7 @@ class Event(models.Model):
             message = "Le champ “archived_by” doit être renseigné uniquement si le champ “archived_at” est renseigné"
             raise ValidationError(message)
 
-    def archive(self, archived_by: Profile) -> None:
+    def archive(self, archived_by: users_models.Profile) -> None:
         self.archived_by = archived_by
         self.archived_at = timezone.now()
 

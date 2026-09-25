@@ -1,3 +1,4 @@
+import logging
 import secrets
 import string
 
@@ -7,8 +8,12 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import connection, models, transaction
 from django.db.models.functions import Now
 
+from docurba.core import models as core_models
 from docurba.users import enums as users_enums
+from docurba.utils.consumed_apis import pipedrive
 from docurba.utils.emails import SendgridEmailMessage, get_email_message
+
+logger = logging.getLogger(__name__)
 
 
 class SupabaseUser(models.Model):
@@ -196,6 +201,101 @@ class Profile(models.Model):
                 "lastname": self.lastname,
             },
         )
+
+    def verified_collectivite_user_email(self) -> SendgridEmailMessage:
+        if not self.collectivite_id:
+            logger.error("User %s should have a collectivite", self.user_id)
+            return False
+
+        procedure = core_models.Procedure.objects.most_recently_shared_to_profile_email(
+            self.email
+        )
+        shared_procedure_url = False
+        if procedure:
+            shared_procedure_url = procedure.get_absolute_url()
+        return get_email_message(
+            to=[self.email],
+            template_id="d-0143010573f6497b86abbd4e4c96f46e",
+            template_context={
+                "collectivite_name": self.collectivite.nom,
+                "shared_procedure_url": shared_procedure_url,
+            },
+        )
+
+    def verified_etat_user_email(self) -> SendgridEmailMessage:
+        if not self.departement_id:
+            logger.error("User %s should have a departement", self.user_id)
+            return False
+        template_id = "d-3d9f4b96863d4c6e8d4c9489f6d8eb6e"
+        if self.poste == users_enums.PosteType.DDT:
+            template_id = "d-939bd4723dd04edcad17e6584b7641f3"
+
+        procedure = core_models.Procedure.objects.most_recently_shared_to_profile_email(
+            self.email
+        )
+        shared_procedure_url = False
+        if procedure:
+            shared_procedure_url = procedure.get_absolute_url()
+        return get_email_message(
+            to=[self.email],
+            template_id=template_id,
+            template_context={
+                "firstname": self.firstname,
+                "lastname": self.lastname,
+                "departement": self.departement.nom,
+                "regionName": self.departement.region.nom,
+                "region": self.departement.region.code_insee,
+                "shared_procedure_url": shared_procedure_url,
+            },
+        )
+
+    def verify(self) -> None:
+        self.verified = True
+        self.save()
+
+        # TODO: verify logic is the same as in Nuxt.
+        if self.poste == users_enums.PosteType.DDT:
+            self.verified_etat_user_email().send()
+            with pipedrive.PipedriveApiClient() as client:
+                try:
+                    # This should be stored in a column, eg Collectivite.pipedrive_organization_id
+                    organization = client.find_organization_by_name(
+                        f"DDT {self.departement.code_insee}"
+                    )
+                    if organization:
+                        deals = client.get_organization_deals(organization["id"])
+                        # Can we have more than one deal per organization?
+                        # If a deal is a user, we should store it in a column, eg. User.pipedrive_deal_id
+                        logger.info("Calling the Pipedrive API 1")
+                        for deal in deals:
+                            logger.info("DEAL")
+                            logger.info(deal["stage_id"])
+                            if deal["stage_id"] in [10, 11, 12]:
+                                logger.info("update deal")
+                                client.update_deal(deal_id=deal["id"], stage_id=13)
+                    else:
+                        logger.error(
+                            "Pipedrive: organization DDT %s not found", self.departement
+                        )
+
+                # For the moment, we copy the existing behaviour which does not retry in case of HTTP error
+                # nor tries to create an organization or a deal if not found.
+                # Not sure what we should do if an organization or a deal is not found (which returns a 400 code, not a 404).
+                # We could use tenacity to quickly retry without the hassle of configuring a dedicated tasks backend
+                # but I'm not sure yet if it's the right choice for the moment.
+                # Anyway, don't block the process but monitor it.
+                except pipedrive.PipedriveHTTPError:
+                    logger.exception(
+                        "PipedriveHTTPError for user verification id %s",
+                        self.user_id,
+                    )
+                except ValueError:
+                    logger.exception(
+                        "Pipedrive ValueError for user verification id %s",
+                        self.user_id,
+                    )
+        elif self.side == "etat":
+            self.verified_collectivite_user_email().send()
 
 
 class UserManager(DjangoUserManager):

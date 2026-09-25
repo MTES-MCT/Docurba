@@ -22,11 +22,12 @@ from docurba.core.models import (
     Procedure,
     ProcedureStatusChoices,
     Project,
+    ProjectSharing,
     Region,
     TypeCollectivite,
     TypeDocument,
 )
-from tests.users.factories import ProfileFactory
+from tests.users import factories as users_factories
 
 REGIONS = {
     "76": "Occitanie",
@@ -226,7 +227,7 @@ class ProjectFactory(factory.django.DjangoModelFactory):
     name = factory.Faker("sentence")
     collectivite = factory.SubFactory(CollectiviteFactory)
     collectivite_porteuse = factory.SubFactory(CollectiviteFactory)
-    owner = factory.SubFactory(ProfileFactory)
+    owner = factory.SubFactory(users_factories.ProfileFactory)
 
     class Params:
         for_snapshot = factory.Trait(
@@ -235,6 +236,22 @@ class ProjectFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Project
+        skip_postgeneration_save = True
+
+    @factory.post_generation
+    def with_procedure(self, create: bool, extracted: bool, **extra: dict) -> None:  # noqa: FBT001
+        if not create or not extracted:
+            return
+
+        ProcedureFactory(project=self, **extra)
+
+
+class ProjectSharingFactory(factory.django.DjangoModelFactory):
+    project = factory.SubFactory(ProjectFactory)
+    shared_by = factory.SubFactory(users_factories.ProfileFactory)
+
+    class Meta:
+        model = ProjectSharing
 
 
 class ProcedureFactory(factory.django.DjangoModelFactory):
@@ -344,5 +361,6 @@ class EventFactory(factory.django.DjangoModelFactory):
 
     class Params:
         archived = factory.Trait(
-            archived_by=factory.SubFactory(ProfileFactory), archived_at=timezone.now()
+            archived_by=factory.SubFactory(users_factories.ProfileFactory),
+            archived_at=timezone.now(),
         )

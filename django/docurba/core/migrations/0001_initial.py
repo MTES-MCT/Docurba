@@ -30,6 +30,10 @@ class Migration(migrations.Migration):
                     reverse_sql=read_sql_from_file("drop_table_projects.sql"),
                 ),
                 migrations.RunSQL(
+                    sql=read_sql_from_file("create_table_projects_sharing.sql"),
+                    reverse_sql=read_sql_from_file("drop_table_projects_sharing.sql"),
+                ),
+                migrations.RunSQL(
                     sql=read_sql_from_file("create_table_procedures.sql"),
                     reverse_sql=read_sql_from_file("drop_table_procedures.sql"),
                 ),
@@ -145,6 +149,113 @@ class Migration(migrations.Migration):
                         "verbose_name": "projet",
                         "db_table": "projects",
                         "base_manager_name": "objects",
+                    },
+                ),
+                migrations.CreateModel(
+                    name="ProjectSharing",
+                    fields=[
+                        (
+                            "id",
+                            models.UUIDField(
+                                db_default=django.contrib.postgres.functions.RandomUUID(),
+                                primary_key=True,
+                                serialize=False,
+                            ),
+                        ),
+                        (
+                            "created_at",
+                            models.DateTimeField(
+                                blank=True,
+                                db_default=django.db.models.functions.datetime.Now(),
+                                null=True,
+                                verbose_name="date de création",
+                            ),
+                        ),
+                        (
+                            "user_email",
+                            models.TextField(verbose_name="email utilisateur"),
+                        ),
+                        (
+                            "notified",
+                            models.BooleanField(
+                                db_default=False, verbose_name="notifié"
+                            ),
+                        ),
+                        (
+                            "last_update_notification",
+                            models.DateTimeField(
+                                db_comment="Timestamp of last notification",
+                                db_default=django.db.models.functions.datetime.Now(),
+                                verbose_name="date de modification",
+                            ),
+                        ),
+                        (
+                            "role",
+                            models.CharField(
+                                blank=True,
+                                choices=[
+                                    ("write_frise", "Écriture frise"),
+                                    ("write", "Écriture"),
+                                    ("read", "Lecture"),
+                                ],
+                                db_default="read",
+                                null=True,
+                                verbose_name="rôle",
+                            ),
+                        ),
+                        (
+                            "archived",
+                            models.BooleanField(
+                                db_default=False, verbose_name="archivé"
+                            ),
+                        ),
+                        (
+                            "dev_test",
+                            models.BooleanField(
+                                blank=True, db_default=False, null=True
+                            ),
+                        ),
+                        (
+                            "inserted_script",
+                            models.BooleanField(
+                                blank=True,
+                                db_default=False,
+                                null=True,
+                                verbose_name="script inséré",
+                            ),
+                        ),
+                        (
+                            "email_notified",
+                            models.BooleanField(
+                                db_default=False, verbose_name="notifié par email"
+                            ),
+                        ),
+                        (
+                            "project",
+                            models.ForeignKey(
+                                on_delete=django.db.models.deletion.DO_NOTHING,
+                                related_name="sharings",
+                                to="core.project",
+                                verbose_name="projet",
+                            ),
+                        ),
+                        (
+                            "shared_by",
+                            models.ForeignKey(
+                                blank=True,
+                                db_column="shared_by",
+                                null=True,
+                                on_delete=django.db.models.deletion.CASCADE,
+                                to="users.profile",
+                                verbose_name="partagé par",
+                            ),
+                        ),
+                    ],
+                    options={
+                        "verbose_name": "projet partagé",
+                        "verbose_name_plural": "projets partagés",
+                        "db_table": "projects_sharing",
+                        "unique_together": {("user_email", "project", "role")},
                     },
                 ),
                 migrations.CreateModel(
