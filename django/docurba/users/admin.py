@@ -1,15 +1,18 @@
 # ruff: noqa: ANN001, ARG002
 from typing import ClassVar, Literal
 
-from django.contrib import admin
+import tenacity
+from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import PermissionDenied
+from django.db.models import QuerySet
 from django.forms.widgets import TextInput
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.utils.html import format_html
 
 from docurba.users.models import Profile, SupabaseUser, User
+from docurba.utils.consumed_apis import pipedrive
 
 
 @admin.register(Profile)
@@ -17,12 +20,12 @@ class ProfileAdmin(admin.ModelAdmin):
     readonly_fields = (
         "user",
         "email",  # email doit correspondre à celui connu par Supabase Auth donc on désactive l'édition
+        "verified",
     )
-
+    actions: ClassVar = ["verify", "unverify"]
     list_display = (
         "__str__",
         "created_at",
-        "verified",
         "side",
         "departement",
         "collectivite",
@@ -43,7 +46,8 @@ class ProfileAdmin(admin.ModelAdmin):
     save_on_top = True
     radio_fields: ClassVar = {"side": admin.VERTICAL}
     fields = (
-        ("verified", "is_staff", "is_admin"),
+        "verified",
+        ("is_staff", "is_admin"),
         "email",
         ("firstname", "lastname"),
         ("side", "poste", "other_poste"),
@@ -66,6 +70,52 @@ class ProfileAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None) -> Literal[False]:
         return False
+
+    @admin.action(
+        permissions=["change"],
+        description="Vérifier",
+        location=admin.ActionLocation.CHANGE_FORM,
+    )
+    def verify(self: Profile, request: HttpRequest, queryset: QuerySet) -> None:
+        obj = queryset.get()
+        try:
+            obj.verify()
+            self.log_change(request, obj, "Vérification de l'utilisateur")
+        except tenacity.RetryError:
+            self.message_user(
+                request,
+                "Pipedrive est injoignable. Merci de réessayer dans quelques minutes.",
+                level=messages.ERROR,
+            )
+        except pipedrive.PipedriveNotFoundError as exc:
+            self.message_user(
+                request,
+                f"Information manquante dans Pipedrive. Détails de l'erreur : « {exc} ».",
+                level=messages.ERROR,
+            )
+        except pipedrive.PipedriveFieldValidationdError as exc:
+            self.message_user(
+                request,
+                f"Mauvais paramètres envoyés à Pipedrive. Détails de l'erreur : « {exc} ».",
+                level=messages.ERROR,
+            )
+        except pipedrive.PipedriveHTTPError:
+            self.message_user(
+                request,
+                "Autre erreur Pipedrive",
+                level=messages.ERROR,
+            )
+
+    @admin.action(
+        permissions=["change"],
+        description="Dé-vérifier",
+        location=admin.ActionLocation.CHANGE_FORM,
+    )
+    def unverify(self: Profile, request: HttpRequest, queryset: QuerySet) -> None:
+        obj = queryset.get()
+        obj.verified = False
+        obj.save()
+        self.log_change(request, obj, "Dé-vérification de l'utilisateur")
 
 
 @admin.register(SupabaseUser)
