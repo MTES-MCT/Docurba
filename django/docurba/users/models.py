@@ -249,45 +249,41 @@ class Profile(models.Model):
             },
         )
 
-    # TODO: toggle
     def verify(self) -> None:
         self.verified = True
         self.save()
         self.verified_user_email().send()
 
-        # if ddt_validation
-        #       // Update deal status in Pipedrive.
-        with pipedrive.client() as client:
-            # TODO: handle exceptions.
-            organization = client.find_organization_by_name(f"DDT {self.departement}")
-            if organization:
-                deals = client.get_organization_deals(organization.id)
-                for deal in deals:
-                    if deal["stage_id"] in ["10", "11", "12"]:
-                        client.update_deal(deal_id=deal["id"], stage_id=13)
-
-        # Update Pipedrive
-
-    # if (action.action_id === 'ddt_validation') {
-
-
-#       const { deals } = pipedrive.findOrganization(userData.departement)
-
-#       if (deals && deals.length) {
-#         const deal = deals.find((d) => {
-#           return d.stage_id === 10 || d.stage_id === 11 || d.stage_id === 12
-#         })
-
-#         if (deal) {
-#           pipedrive.updateDeal(deal.id, {
-#             stage_id: 13
-#           })
-#         }
-#       }
-#     }
-
-#     return { data, error }
-#   },
+        if self.poste == users_enums.PosteType.DDT:
+            with pipedrive.client() as client:
+                try:
+                    # This should be stored in a column, eg Collectivite.pipedrive_organization_id
+                    organization = client.find_organization_by_name(
+                        f"DDT {self.departement}"
+                    )
+                    if organization:
+                        deals = client.get_organization_deals(organization.id)
+                        # Can we have more than one deal per organization?
+                        # If a deal is a user, we should store it in a column, eg. User.pipedrive_deal_id
+                        for deal in deals:
+                            if deal["stage_id"] in ["10", "11", "12"]:
+                                client.update_deal(deal_id=deal["id"], stage_id=13)
+                # For the moment, we copy the existing behaviour which does not retry in case of HTTP error
+                # nor tries to create an organization or a deal if not found.
+                # Not sure what we should do if an organization or a deal is not found (which returns a 400 code, not a 404).
+                # We could use tenacity to quickly retry without the hassle of configuring a dedicated tasks backend
+                # but I'm not sure yet if it's the right choice for the moment.
+                # Anyway, don't block the process but monitor it.
+                except pipedrive.PipedriveHTTPError:
+                    logger.exception(
+                        "PipedriveHTTPError for user verification id %s",
+                        self.id,
+                    )
+                except ValueError:
+                    logger.exception(
+                        "Pipedrive ValueError for user verification id %s",
+                        self.id,
+                    )
 
 
 class UserManager(DjangoUserManager):
@@ -308,6 +304,3 @@ class User(AbstractUser):
     class Meta:
         verbose_name = "utilisateur django"
         verbose_name_plural = "utilisateurs django"
-
-
-pipedrive
