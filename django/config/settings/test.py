@@ -39,5 +39,5 @@ MAILERS = {
 ############ External services settings ############
 ####################################################
 SENDGRID_API_KEY = "black_hole"
-PIPEDRIVE_BASE_URL = "https://fake-pipedrive.fr/"
+PIPEDRIVE_URL = "https://fake-pipedrive.fr/"
 PIPEDRIVE_TOKEN = "123456789"

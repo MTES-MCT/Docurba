@@ -252,7 +252,6 @@ class Profile(models.Model):
     def verify(self) -> None:
         self.verified = True
         self.save()
-        self.verified_user_email().send()
 
         if self.poste == users_enums.PosteType.DDT:
             with pipedrive.client() as client:

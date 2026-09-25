@@ -45,7 +45,7 @@ class Deal:
 class PipedriveApiClient:
     def __init__(self) -> None:
         self.client = httpx.Client(
-            base_url=settings.PIPEDRIVE_BASE_URL,
+            base_url=settings.PIPEDRIVE_URL,
             headers={"x-api-token": settings.PIPEDRIVE_TOKEN},
         )
 
@@ -65,7 +65,11 @@ class PipedriveApiClient:
             ).raise_for_status()
         except httpx.HTTPError as exc:
             logger.exception("Pipedrive exception")
-            raise PipedriveHTTPError from exc
+                method,
+                route,
+                params=params,
+                data=data,
+                timeout=httpx.Timeout(5, read=60),
 
         return response
 
