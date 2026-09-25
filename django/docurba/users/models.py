@@ -253,20 +253,31 @@ class Profile(models.Model):
         self.verified = True
         self.save()
 
+        # TODO: verify logic is the same as in Nuxt.
         if self.poste == users_enums.PosteType.DDT:
-            with pipedrive.client() as client:
+            self.verified_etat_user_email().send()
+            with pipedrive.PipedriveApiClient() as client:
                 try:
                     # This should be stored in a column, eg Collectivite.pipedrive_organization_id
                     organization = client.find_organization_by_name(
-                        f"DDT {self.departement}"
+                        f"DDT {self.departement.code_insee}"
                     )
                     if organization:
-                        deals = client.get_organization_deals(organization.id)
+                        deals = client.get_organization_deals(organization["id"])
                         # Can we have more than one deal per organization?
                         # If a deal is a user, we should store it in a column, eg. User.pipedrive_deal_id
+                        logger.info("Calling the Pipedrive API 1")
                         for deal in deals:
-                            if deal["stage_id"] in ["10", "11", "12"]:
+                            logger.info("DEAL")
+                            logger.info(deal["stage_id"])
+                            if deal["stage_id"] in [10, 11, 12]:
+                                logger.info("update deal")
                                 client.update_deal(deal_id=deal["id"], stage_id=13)
+                    else:
+                        logger.error(
+                            "Pipedrive: organization DDT %s not found", self.departement
+                        )
+
                 # For the moment, we copy the existing behaviour which does not retry in case of HTTP error
                 # nor tries to create an organization or a deal if not found.
                 # Not sure what we should do if an organization or a deal is not found (which returns a 400 code, not a 404).
@@ -276,13 +287,15 @@ class Profile(models.Model):
                 except pipedrive.PipedriveHTTPError:
                     logger.exception(
                         "PipedriveHTTPError for user verification id %s",
-                        self.id,
+                        self.user_id,
                     )
                 except ValueError:
                     logger.exception(
                         "Pipedrive ValueError for user verification id %s",
-                        self.id,
+                        self.user_id,
                     )
+        elif self.side == "etat":
+            self.verified_collectivite_user_email().send()
 
 
 class UserManager(DjangoUserManager):
