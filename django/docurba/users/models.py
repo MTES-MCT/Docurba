@@ -10,6 +10,8 @@ from django.db.models.functions import Now
 
 from docurba.core import models as core_models
 from docurba.users import enums as users_enums
+from docurba.utils import urls as utils_urls
+from docurba.utils.consumed_apis import pipedrive
 from docurba.utils.emails import SendgridEmailMessage, get_email_message
 
 logger = logging.getLogger(__name__)
@@ -256,6 +258,36 @@ class Profile(models.Model):
             template_id=template_id,
             template_context=template_context,
         )
+
+    def verify(self) -> None:
+        self.verified = True
+        self.save()
+
+        if self.side == users_enums.ProfileSideType.ETAT and self.poste in [
+            users_enums.PosteType.DDT,
+            users_enums.PosteType.DREAL,
+        ]:
+            self.verified_etat_user_email().send()
+            with pipedrive.PipedriveApiClient() as client:
+                # This should be stored in a column, eg Collectivite.pipedrive_organization_id
+                name = f"DDT {self.departement.code_insee}"
+                organization = client.find_organization_by_name(name)
+                if not organization:
+                    message = f"organization {name} non trouvée"
+                    raise pipedrive.PipedriveNotFoundError(message)
+                # Can we have more than one deal per organization?
+                # If a deal is a user, we should store it in a column, eg. User.pipedrive_deal_id
+                deals = client.get_organization_deals(organization["id"])
+                if deals:
+                    for deal in deals:
+                        if deal["stage_id"] in [10, 11, 12]:
+                            client.update_deal(deal_id=deal["id"], stage_id=13)
+                else:
+                    message = f"Organisation {name} non trouvée"
+                    raise pipedrive.PipedriveNotFoundError(message)
+
+        elif self.side == users_enums.ProfileSideType.COLLECTIVITE:
+            self.verified_collectivite_user_email().send()
 
 
 class UserManager(DjangoUserManager):
