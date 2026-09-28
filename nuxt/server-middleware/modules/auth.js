@@ -50,12 +50,38 @@ export async function requireProcedureSharable (req, validate = () => true) {
   }
 
   const { data: procedure, error: procedureError } = await supabase.from('procedures')
-    .select('collectivite_porteuse_id,procedures_perimetres(collectivite_code,collectivite_type)')
+    .select([
+      'collectivite_porteuse_id',
+      'procedures_perimetres(collectivite_code,collectivite_type)',
+      'project_id',
+      'shareable'
+    ].join(','))
     .eq('id', procedureId)
     .limit(1)
     .maybeSingle()
 
-  if (procedureError || !procedure || ((
+  if (procedureError || !procedure) {
+    throw new Error('Authentication failed')
+  }
+  if (procedure.shareable) {
+    const { data: sharings, error: sharingsError } = await supabase.from('projects_sharing')
+      .select('user_email')
+      .eq('project_id', procedure.project_id)
+      .eq('role', 'write_frise')
+
+    if (sharingsError) {
+      throw new Error('Authentication failed')
+    }
+
+    const email = profile.email.toLowerCase()
+
+    if (sharings.every(sharing =>
+      !sharing.user_email ||
+      !sharing.user_email.split(';').map(e => e.replaceAll('"', '').trim().toLowerCase()).includes(email)
+    )) {
+      throw new Error('Authentication failed')
+    }
+  } else if ((
     profile.side !== 'etat' ||
     procedure.procedures_perimetres.every(
       ({ departement }) => departement !== profile.departement
@@ -69,7 +95,7 @@ export async function requireProcedureSharable (req, validate = () => true) {
         perimetre.collectivite_code !== profile.collectivite_id
       )
     )
-  ))) {
+  )) {
     throw new Error('Authentication failed')
   }
 
