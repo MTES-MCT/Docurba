@@ -186,7 +186,12 @@ app.get('/file', async (req, res) => {
 
 app.get('/tree/:ref/history', async (req, res) => {
   try {
-    const historiesByPath = await tree.getHistories(req.params.ref, req.query.paths)
+    const historiesByPath = await tree.getHistories(
+      req.params.ref,
+      typeof req.query.paths === 'string'
+        ? [req.query.paths]
+        : req.query.paths
+    )
     res.status(200).send(historiesByPath)
   } catch (err) {
     console.log('error getting history', err)
