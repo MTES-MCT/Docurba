@@ -15,6 +15,7 @@ dependencies = [
     "djangorestframework",
     "supabase>=2.31.0",
     "django-sendgrid-v5", # https://github.com/sklarsa/django-sendgrid-v5
+    "tenacity", # https://github.com/jd/tenacity
 ]
 
 [project.optional-dependencies]
