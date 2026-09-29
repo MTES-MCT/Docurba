@@ -349,6 +349,19 @@ export default {
     }
   },
   computed: {
+    fromMain () {
+      return (
+        this.editable &&
+        !!this.section.lastEdit &&
+        (
+          this.section.lastEdit.message.endsWith('for main from Docurba') ||
+          (
+            this.section.lastEdit.message.startsWith('Copy') &&
+            this.section.lastEdit.message.endsWith('from main')
+          )
+        )
+      )
+    },
     headRef () {
       return this.$options.filters.headRef(this.gitRef, this.project)
     },
@@ -421,10 +434,7 @@ export default {
       const lastEdit = this.section.lastEdit
       const lastEditDate = `Modifié le : ${this.$dayjs(lastEdit.date).format('DD MMM YYYY')}`
 
-      if (
-        lastEdit.message.endsWith('for main from Docurba') ||
-        (lastEdit.message.startsWith('Copy') && lastEdit.message.endsWith('from main'))
-      ) {
+      if (this.fromMain) {
         return `${lastEditDate} sur la trame nationale`
       }
       if (!lastEdit.author) {
@@ -678,7 +688,7 @@ export default {
         method: 'put',
         url: `/api/trames/${this.gitRef}/copy`,
         data: {
-          ghostRef: this.headRef,
+          ghostRef: this.fromMain ? 'main' : this.headRef,
           path: this.section.path
         }
       })
