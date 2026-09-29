@@ -62,7 +62,7 @@ def api_client_with_auth_factory() -> None:
     return api_client_with_auth
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def admin_session_client(django_db_blocker: DjangoDbBlocker | None) -> Client:
     """Overide of the official pytest's admin_client fixture.
 
@@ -90,7 +90,7 @@ def admin_session_client(django_db_blocker: DjangoDbBlocker | None) -> Client:
     return client
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def staff_session_client(django_db_blocker: DjangoDbBlocker | None) -> Client:
     """Overide of the official pytest's admin_client fixture.
 
