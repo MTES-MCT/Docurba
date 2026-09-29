@@ -919,11 +919,11 @@ class ProjectSharing(models.Model):
         verbose_name="date de modification",
         db_default=Now(),
     )
-    role = models.CharField(  # noqa: DJ001
+    role = models.CharField(
         blank=True,
-        null=True,  # TODO: make me non nullable
         choices=ProjectSharingRoleType,
         verbose_name="rôle",
+        default=ProjectSharingRoleType.READ,
         db_default=ProjectSharingRoleType.READ,
     )
     archived = models.BooleanField(verbose_name="archivé", db_default=False)
