@@ -195,10 +195,41 @@ class CollectiviteTypeFilter(admin.SimpleListFilter):
         return queryset.filter(collectivite_porteuse__type=self.value())
 
 
+class ProjectSharingInline(admin.TabularInline):
+    show_change_link = True
+    model = ProjectSharing
+    readonly_fields = (
+        "created_at",
+        "user_email",
+        "shared_by",
+    )
+    fields = [
+        *readonly_fields,
+    ]
+
+    def get_queryset(self, request) -> models.QuerySet:
+        queryset = super().get_queryset(request)
+        return queryset.select_related(
+            "shared_by",
+        )
+
+    def has_add_permission(self, *args: list, **kwargs: dict) -> bool:
+        return False
+
+    def has_delete_permission(self, *args: list, **kwargs: dict) -> bool:
+        return False
+
+    def has_change_permission(self, *args: list, **kwargs: dict) -> bool:
+        return False
+
+
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     search_fields = [
         "id",
+    ]
+    inlines = [
+        ProjectSharingInline,
     ]
 
     def has_add_permission(self, request: object) -> bool:
@@ -219,6 +250,7 @@ class ProjectSharingAdmin(admin.ModelAdmin):
         "user_email",
         "project__id",
     ]
+    list_display = ("created_at", "user_email", "shared_by", "project")
 
     def has_add_permission(self, request: object) -> bool:
         return False
@@ -226,11 +258,8 @@ class ProjectSharingAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None) -> bool:
         return False
 
-    def has_delete_permission(self, request, obj=None) -> bool:
-        return False
-
     def get_queryset(self, request) -> models.QuerySet:
-        return super().get_queryset(request).select_related("project")
+        return super().get_queryset(request).select_related("project", "shared_by")
 
 
 @admin.register(Procedure)
