@@ -145,6 +145,10 @@ export default ({ app }, inject) => {
   inject('utils', utils)
 }
 
+export function getSortableText (value) {
+  return value.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]/g, '')
+}
+
 export function getUniquePropValues (arr, propOrGetter) {
   const getValue = typeof propOrGetter === 'string' ? item => item[propOrGetter] : propOrGetter
   const values = []
