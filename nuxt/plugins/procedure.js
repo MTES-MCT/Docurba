@@ -1,7 +1,25 @@
-import { maxBy, orderBy, groupBy, chunk } from 'lodash'
+// interface Procedure {
+//   approvalDate: string | null
+//   creationDate: string | null
+//   documentType: string
+//   id: string
+//   number: string | null
+//   prescriptionDate: string | null
+//   procedures: Omit<Procedure, 'procedures'>[]
+//   status: string
+//   territorialAuthority: TerritorialAuthority | null
+//   towns: Town[]
+//   type: string
+// }
+// interface Town {
+//   inseeCode: string
+//   name: string
+// }
+
+import { maxBy, orderBy, groupBy, chunk, uniq } from 'lodash'
 import { addFormattedDate, getApprovalEvent, getPrescriptionEvent, getStopEvent, getEventImpact } from '@/plugins/event'
 
-export default ({ $supabase, $dayjs }, inject) => {
+export default ({ $supabase, $dayjs, $territorialAuthorityApi }, inject) => {
   async function computeProcedureStatus (procedure) {
     const { data: events } = await $supabase.from('doc_frise_events')
       .select('id, type')
@@ -166,6 +184,41 @@ export default ({ $supabase, $dayjs }, inject) => {
       await $supabase.from('procedures').update({ status: newStatus }).eq('id', procedure.id)
     }
   })
+
+  inject('procedureApi', {
+    async listForTerritorialAuthorities (territorialAuthorityCodes) {
+      const { data: rawProcedures } = await $supabase.rpc('procedures_by_collectivites', {
+        codes: territorialAuthorityCodes
+      })
+      const territorialAuthorities = await $territorialAuthorityApi.list({
+        codes: uniq(rawProcedures.map(rawProcedure => rawProcedure.collectivite_porteuse_id))
+      })
+
+      return _parseProcedures(rawProcedures, territorialAuthorities)
+    }
+  })
+}
+
+export function displayProcedure (procedure) {
+  const displayedProcedure = {
+    approvalDate: procedure.approvalDate?.split('T')[0].split('-').reverse().join('/') ?? '',
+    creationDate: procedure.creationDate?.split('T')[0].split('-').reverse().join('/') ?? '',
+    documentType: procedure.documentType,
+    id: procedure.id,
+    number: procedure.number === null ? '' : procedure.number,
+    prescriptionDate: procedure.prescriptionDate?.split('T')[0].split('-').reverse().join('/') ?? '',
+    status: procedure.status,
+    territorialAuthorityName: procedure.territorialAuthority?.name ?? '',
+    townName: procedure.towns[0]?.name ?? '',
+    type: procedure.type
+  }
+
+  return 'procedures' in procedure
+    ? {
+        ...displayedProcedure,
+        procedures: procedure.procedures.map(displayProcedure)
+      }
+    : displayedProcedure
 }
 
 export function enrichProcedureWithEvents (procedure) {
@@ -225,4 +278,128 @@ export function getProcedureTypeLabel (procedure) {
         : ''
     }`
     : ''
+}
+
+function _parseProcedure (rawProcedure, territorialAuthorities) {
+  let approvalDate = null
+  let prescriptionDate = null
+
+  for (const event of orderBy(
+    rawProcedure.doc_frise_events?.filter(e => !e.archived_at) ?? [],
+    'date_iso',
+    'desc'
+  )) {
+    if (!approvalDate && getApprovalEvent(event)) {
+      approvalDate = event.date_iso
+    }
+    if (!prescriptionDate && getPrescriptionEvent(event)) {
+      prescriptionDate = event.date_iso
+    }
+    if (approvalDate && prescriptionDate) {
+      break
+    }
+  }
+
+  return {
+    approvalDate,
+    creationDate: rawProcedure.created_at?.split('T')[0] ?? null,
+    documentType: rawProcedure.is_scot
+      ? 'SCoT'
+      : `PLU${rawProcedure.procedures_perimetres.length === 1 ? '' : 'i'}`,
+    id: rawProcedure.id,
+    number: rawProcedure.numero,
+    prescriptionDate,
+    status: _parseProcedureStatus(rawProcedure.status),
+    territorialAuthority: rawProcedure.collectivite_porteuse_id
+      ? territorialAuthorities.find(({ sirenCode }) => sirenCode === rawProcedure.collectivite_porteuse_id)
+      : null,
+    towns: rawProcedure.current_perimetre ?? [],
+    type: _parseProcedureType(rawProcedure.type)
+  }
+}
+
+function _parseProcedureStatus (rawStatus) {
+  switch (rawStatus) {
+    case 'abandon':
+      return 'Abandonné'
+    case 'abrogé':
+      return 'Abrogé'
+    case 'annulé':
+      return 'Annulé'
+    case 'approuvé':
+      return 'Approuvé'
+    case 'caduc':
+      return 'Caduc'
+    case 'en cours':
+      return 'En cours'
+    case 'en projet':
+      return 'En projet'
+    case 'opposable':
+      return 'Opposable'
+    case 'précédent':
+      return 'Précédent'
+    default:
+      return null
+  }
+}
+
+function _parseProcedureType (rawType) {
+  return rawType === 'Elaboration' ? 'Élaboration' : rawType
+}
+
+function _parseProcedures (rawProcedures, territorialAuthorities) {
+  const procedures = []
+  const procedureIndexById = {}
+
+  for (const rawProcedure of rawProcedures) {
+    const procedure = _parseProcedure(rawProcedure, territorialAuthorities)
+
+    if (rawProcedure.secondary_procedure_of) {
+      if (rawProcedure.secondary_procedure_of in procedureIndexById) {
+        procedures[
+          procedureIndexById[
+            rawProcedure.secondary_procedure_of
+          ]
+        ].procedures.push(procedure)
+      } else {
+        procedureIndexById[rawProcedure.secondary_procedure_of] = procedures.length
+        procedures.push({ procedures: [procedure] })
+      }
+    } else if (procedureIndexById[procedure.id]) {
+      procedures[procedureIndexById[procedure.id]] = {
+        ...procedure,
+        procedures: procedures[procedureIndexById[procedure.id]].procedures
+      }
+    } else {
+      procedureIndexById[procedure.id] = procedures.length
+      procedures.push({
+        ...procedure,
+        procedures: []
+      })
+    }
+  }
+
+  return orderBy(
+    procedures
+      .filter(procedure => 'id' in procedure)
+      .map(procedure => ({
+        ...procedure,
+        procedures: orderBy(
+          procedure.procedures,
+          ['prescriptionDate', 'creationDate', 'approvalDate'],
+          ['desc', 'desc', 'desc']
+        )
+      })),
+    [({ status }) => {
+      switch (status) {
+        case 'En cours':
+          return 1
+        case 'Opposable':
+          return 2
+        default:
+          return 3
+      }
+    }, 'prescriptionDate', 'creationDate', 'approvalDate'],
+    ['asc', 'desc', 'desc', 'desc']
+  )
 }
