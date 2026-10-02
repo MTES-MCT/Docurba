@@ -56,7 +56,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js'
 
 export default {
@@ -87,14 +86,10 @@ export default {
   },
   methods: {
     sendChangeRequest () {
-      axios({
-        url: '/api/admin/help/pac',
-        method: 'post',
-        data: Object.assign({
-          path: this.section.path,
-          ref: this.gitRef
-        }, this.change)
-      })
+      this.$nuxtApi.post('/api/admin/help/pac', Object.assign({
+        path: this.section.path,
+        ref: this.gitRef
+      }, this.change))
 
       this.change = {
         email: this.$user.email,

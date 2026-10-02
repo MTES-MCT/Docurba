@@ -94,8 +94,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   name: 'DdtLayout',
   data () {
@@ -151,12 +149,8 @@ export default {
     // }
 
     if (this.$route.query.contact) {
-      axios({
-        url: '/api/pipedrive/contacted',
-        method: 'post',
-        data: {
-          email: this.$route.query.contact
-        }
+      this.$nuxtApi.post('/api/pipedrive/contacted', {
+        email: this.$route.query.contact
       })
     }
   }

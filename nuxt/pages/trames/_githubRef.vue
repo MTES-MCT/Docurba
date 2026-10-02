@@ -136,7 +136,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { groupBy } from 'lodash'
 import { mdiDotsVertical, mdiCheck, mdiClose } from '@mdi/js'
 import orderSections from '@/mixins/orderSections.js'
@@ -249,12 +248,8 @@ export default {
       this.collectivite = await this.$collectiviteApi.get(this.project.collectivite_id)
     }
 
-    const { data: sections } = await axios({
-      method: 'get',
-      url: `/api/trames/tree/${this.gitRef}`,
-      params: {
-        ghostRef: this.headRef
-      }
+    const sections = await this.$nuxtApi.get(`/api/trames/tree/${this.gitRef}`, {
+      ghostRef: this.headRef
     })
 
     let { data: supSections } = await this.$supabase
@@ -262,12 +257,10 @@ export default {
       .select('*')
       .in('ref', this.$options.filters.allHeadRefs(this.gitRef, this.project))
 
-    const { data: histories } = await axios.get(`/api/trames/tree/${this.gitRef}/history`, {
-      params: {
-        paths: sections
-          .filter(s => !s.ghost)
-          .map(s => s.type === 'file' ? s.path : (s.path + '/intro.md'))
-      }
+    const histories = await this.$nuxtApi.get(`/api/trames/tree/${this.gitRef}/history`, {
+      paths: sections
+        .filter(s => !s.ghost)
+        .map(s => s.type === 'file' ? s.path : (s.path + '/intro.md'))
     })
 
     // This code should prevent using multiple value when parsing.
@@ -328,8 +321,8 @@ export default {
     },
     async getDiff (supSections) {
       // https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits
-      const { data } = await axios({
-        url: `/api/trames/compare?basehead=${this.gitRef}...${this.headRef}`
+      const data = await this.$nuxtApi.get('/api/trames/compare', {
+        basehead: `${this.gitRef}...${this.headRef}`
       })
 
       const diffFiles = data.files.filter((file) => {

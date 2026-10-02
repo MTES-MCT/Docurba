@@ -1,7 +1,7 @@
 import axios from 'axios'
 import GEORISQUES_MAP from '@/assets/data/GeoRisquesMap.json'
 
-export default ({ route }, inject) => {
+export default ({ route, $nuxtApi }, inject) => {
   // MAP permet d'afficher les onglet de source
   const sourceMap = {
     // eslint-disable-next-line quote-props
@@ -70,22 +70,19 @@ export default ({ route }, inject) => {
       // TODO: ATTENTION, le max de join est de 10. Le faire autrement dans un cas de caumunauté de commune + grand
       // Ou le faire coté back ?
       if (Array.isArray(insee)) { insee = insee.join(',') }
-      const { data } = await axios({
-        url: '/api/georisques/q',
-        method: 'get',
-        params: { dataset, insee }
+      const { data } = await $nuxtApi.get('/api/georisques/q', {
+        dataset,
+        insee
       })
-      return { dataset, data: data.data }
+      return { dataset, data }
     },
     // search arg should be `commune/${codeInsee}` or `departement/${codeDepartement}` or `region/${codeRegion}`
     async getGeoIDE (search, platform) {
-      const { data } = await axios({
-        url: '/api/geoide/q',
-        method: 'get',
-        params: { any: search, platform }
+      const { metadata, summary } = await $nuxtApi.get('/api/geoide/q', {
+        any: search,
+        platform
       })
 
-      const { metadata, summary } = data
       let cards = []
 
       if (metadata) {
