@@ -17,14 +17,7 @@ from django.db.models.functions import Now
 from django.urls import reverse
 from django.utils import timezone
 
-from docurba.core.enums import (
-    CommuneType,
-    EventScope,
-    ProcedureType,
-    ProjectSharingRoleType,
-    TypeCollectivite,
-    VisibilityType,
-)
+from docurba.core import enums as core_enums
 from docurba.core.utils import OversizedIndex
 from docurba.users import models as users_models
 from docurba.utils import urls as utils_urls
@@ -316,7 +309,7 @@ class ProcedureQuerySet(models.QuerySet):
                 models.Subquery(
                     MaterializedViewFlatMembership.objects.filter(
                         group=models.OuterRef("collectivite_porteuse__id"),
-                        member_type=TypeCollectivite.COM,
+                        member_type=core_enums.TypeCollectivite.COM,
                     )
                     .values("group")
                     .annotate(
@@ -354,7 +347,7 @@ class ProcedureQuerySet(models.QuerySet):
 
     def most_recently_shared_to_profile_email(self, email: str) -> Self:
         subquery = ProjectSharing.objects.filter(
-            user_email=email, role=ProjectSharingRoleType.WRITE_FRISE
+            user_email=email, role=core_enums.ProjectSharingRoleType.WRITE_FRISE
         ).order_by("-created_at")
 
         return (
@@ -452,7 +445,7 @@ class Procedure(models.Model):
     sudocu_secondary_procedure_of = models.IntegerField(blank=True, null=True)
     shareable = models.BooleanField(db_default=True)
     type = models.CharField(
-        choices=ProcedureType, default=ProcedureType.ELABORATION
+        choices=core_enums.ProcedureType, default=core_enums.ProcedureType.ELABORATION
     )  # TextField in DB.
     numero = models.CharField(blank=True, null=True)  # noqa: DJ001 # TextField in DB.
     collectivite_porteuse = models.ForeignKey(
@@ -970,10 +963,10 @@ class ProjectSharing(models.Model):
     )
     role = models.CharField(
         blank=True,
-        choices=ProjectSharingRoleType,
+        choices=core_enums.ProjectSharingRoleType,
         verbose_name="rôle",
-        default=ProjectSharingRoleType.READ,
-        db_default=ProjectSharingRoleType.READ,
+        default=core_enums.ProjectSharingRoleType.READ,
+        db_default=core_enums.ProjectSharingRoleType.READ,
     )
     archived = models.BooleanField(verbose_name="archivé", db_default=False)
     dev_test = models.BooleanField(blank=True, null=True, db_default=False)
@@ -1030,14 +1023,14 @@ class EventType(models.Model):
     )
     scope_list = ArrayField(
         verbose_name="liste des scopes",
-        base_field=models.CharField(choices=EventScope),
+        base_field=models.CharField(choices=core_enums.EventScope),
         blank=True,
         default=list,
         db_default="{}",
     )
     scope_sugg = ArrayField(
         verbose_name="Scopes suggérés",
-        base_field=models.CharField(choices=EventScope),
+        base_field=models.CharField(choices=core_enums.EventScope),
         blank=True,
         default=list,
         db_default="{}",
@@ -1144,7 +1137,7 @@ class Event(models.Model):
         blank=True,
         null=True,
         db_default="public",
-        choices=VisibilityType,
+        choices=core_enums.VisibilityType,
         verbose_name="visibilité",
     )
     description = models.TextField(blank=True, null=True)  # noqa: DJ001
@@ -1331,7 +1324,7 @@ class Collectivite(models.Model):
     # « Grands quartiers » can have up to 7 characters.
     # https://fr.wikipedia.org/wiki/Code_Insee
     code_insee = models.CharField(blank=True, verbose_name="code INSEE", max_length=7)
-    type = models.CharField(choices=TypeCollectivite.choices)
+    type = models.CharField(choices=core_enums.TypeCollectivite.choices)
     nom = models.CharField()
     competence_plan = models.BooleanField(db_default=False)
     competence_schema = models.BooleanField(db_default=False)
@@ -1368,9 +1361,9 @@ class Collectivite(models.Model):
     @property
     def is_commune(self) -> bool:
         return self.type in (
-            TypeCollectivite.COM,
-            TypeCollectivite.COMA,
-            TypeCollectivite.COMD,
+            core_enums.TypeCollectivite.COM,
+            core_enums.TypeCollectivite.COMA,
+            core_enums.TypeCollectivite.COMD,
         )
 
     @cached_property
@@ -1610,8 +1603,8 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     )
     collectivite_type = models.TextField(
         verbose_name="Type de collectivité",
-        choices=CommuneType,
-        default=CommuneType.COM,
+        choices=core_enums.CommuneType,
+        default=core_enums.CommuneType.COM,
     )
     opposable = models.BooleanField(verbose_name="Est opposable", default=False)
     # Denormalized version of commune.departement.code_insee already existing in production.
@@ -1693,8 +1686,8 @@ class MaterializedViewFlatMembership(models.Model):
         related_name="flat_members_through",
         verbose_name="Groupement",
     )
-    member_type = models.CharField(choices=TypeCollectivite.choices)
-    group_type = models.CharField(choices=TypeCollectivite.choices)
+    member_type = models.CharField(choices=core_enums.TypeCollectivite.choices)
+    group_type = models.CharField(choices=core_enums.TypeCollectivite.choices)
 
     objects = MaterializedViewFlatMembershipQuerySet.as_manager()
 
