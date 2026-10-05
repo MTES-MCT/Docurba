@@ -25,36 +25,15 @@ from docurba.utils import urls as utils_urls
 logger = logging.getLogger(__name__)
 
 
-# NOTE(cms): These TextChoices should be moved to enums.py
-
-
-class TypeDocument(models.TextChoices):
-    CC = "CC"
-    SCOT = "SCOT"
-    SD = "SD"
-    PLU = "PLU"
-    POS = "POS"
-
-    PLUI = "PLUi"
-    PLUIH = "PLUiH"
-    PLUIHM = "PLUiHM"
-    PLUIM = "PLUiM"
-
-    PLUIS = "PLUiS"
-    PLUISH = "PLUiSH"
-    PLUISHM = "PLUiSHM"
-    PLUISM = "PLUiSM"
-
-
 PLU_LIKE = (
-    TypeDocument.PLUI,
-    TypeDocument.PLUIH,
-    TypeDocument.PLUIHM,
-    TypeDocument.PLUIM,
-    TypeDocument.PLUIS,
-    TypeDocument.PLUISH,
-    TypeDocument.PLUISHM,
-    TypeDocument.PLUISM,
+    core_enums.TypeDocument.PLUI,
+    core_enums.TypeDocument.PLUIH,
+    core_enums.TypeDocument.PLUIHM,
+    core_enums.TypeDocument.PLUIM,
+    core_enums.TypeDocument.PLUIS,
+    core_enums.TypeDocument.PLUISH,
+    core_enums.TypeDocument.PLUISHM,
+    core_enums.TypeDocument.PLUISM,
 )
 
 
@@ -67,17 +46,17 @@ class CodeCompetencePerimetre(IntEnum):
 
 
 TYPE_DOCUMENT_TO_CODE = {
-    TypeDocument.CC: 1,
-    TypeDocument.POS: 2,
-    TypeDocument.PLU: 3,
-    TypeDocument.PLUI: 3,
-    TypeDocument.PLUIH: 3,
-    TypeDocument.PLUIM: 3,
-    TypeDocument.PLUIHM: 3,
-    TypeDocument.PLUIS: 3,
-    TypeDocument.PLUISH: 3,
-    TypeDocument.PLUISHM: 3,
-    TypeDocument.PLUISM: 3,
+    core_enums.TypeDocument.CC: 1,
+    core_enums.TypeDocument.POS: 2,
+    core_enums.TypeDocument.PLU: 3,
+    core_enums.TypeDocument.PLUI: 3,
+    core_enums.TypeDocument.PLUIH: 3,
+    core_enums.TypeDocument.PLUIM: 3,
+    core_enums.TypeDocument.PLUIHM: 3,
+    core_enums.TypeDocument.PLUIS: 3,
+    core_enums.TypeDocument.PLUISH: 3,
+    core_enums.TypeDocument.PLUISHM: 3,
+    core_enums.TypeDocument.PLUISM: 3,
 }
 
 CODE_ETAT_SIMPLIFIE_TO_LIBELLE = {
@@ -161,7 +140,7 @@ EVENT_CATEGORY_PRIORISES = (
 
 # https://docs.google.com/spreadsheets/d/1NEcWazdx7LvpnydcyP4pBdFWl9fI_Iu9zy9AQcDtll0/edit?gid=637043323#gid=637043323
 EVENT_CATEGORY_BY_DOC_TYPE = {
-    TypeDocument.CC: {
+    core_enums.TypeDocument.CC: {
         "Prescription": EventCategory.PRESCRIPTION,
         "Délibération de prescription du conseil municipal": EventCategory.PRESCRIPTION,
         "Approbation du préfet": EventCategory.APPROUVE,
@@ -182,7 +161,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
         "Fin d'échéance": EventCategory.FIN_ECHEANCE,  # Deleted 11/28/25
     },
-    TypeDocument.SCOT: {
+    core_enums.TypeDocument.SCOT: {
         "Prescription": EventCategory.PRESCRIPTION,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Délibération de l'Etablissement Public": EventCategory.PRESCRIPTION,
         "Délibération de l'établissement public qui prescrit": EventCategory.PRESCRIPTION,
@@ -205,7 +184,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
         "Fin d'échéance": EventCategory.FIN_ECHEANCE,  # Deleted 11/28/25
     },
-    TypeDocument.SD: {
+    core_enums.TypeDocument.SD: {
         "Prescription": EventCategory.PRESCRIPTION,
         "Délibération de l'établissement public qui prescrit": EventCategory.PRESCRIPTION,
         "Délibération d'approbation": EventCategory.APPROUVE,
@@ -214,7 +193,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Annulation TA": EventCategory.ANNULE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Caducité": EventCategory.CADUC,  # Deleted 05/26/26
     },
-    TypeDocument.PLU: {
+    core_enums.TypeDocument.PLU: {
         "Prescription": EventCategory.PRESCRIPTION,
         "Délibération de prescription du conseil municipal ou communautaire": EventCategory.PRESCRIPTION,
         "Retrait de l'annulation totale": EventCategory.APPROUVE,
@@ -238,7 +217,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
         "Fin d'échéance": EventCategory.FIN_ECHEANCE,  # Deleted 11/28/25
     },
-    TypeDocument.POS: {
+    core_enums.TypeDocument.POS: {
         "Prescription": EventCategory.PRESCRIPTION,
         "Délibération de prescription du conseil municipal ou communautaire": EventCategory.PRESCRIPTION,
         "Délibération d'approbation du municipal ou communautaire": EventCategory.APPROUVE,  # not found
@@ -259,7 +238,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
     },
 }
 EVENT_CATEGORY_BY_DOC_TYPE |= dict.fromkeys(
-    PLU_LIKE, EVENT_CATEGORY_BY_DOC_TYPE[TypeDocument.PLU]
+    PLU_LIKE, EVENT_CATEGORY_BY_DOC_TYPE[core_enums.TypeDocument.PLU]
 )
 
 # Reverse of EVENT_CATEGORY_BY_DOC_TYPE keeping the same first-level keys.
@@ -269,14 +248,6 @@ for doc_type, types in EVENT_CATEGORY_BY_DOC_TYPE.items():
         EVENT_TYPE_BY_EVENT_CATEGORY.setdefault(doc_type, {}).setdefault(
             category, []
         ).append(name)
-
-
-class ProcedureStatusChoices(models.TextChoices):
-    ANNULE = "annule", "Annulé"
-    EN_COURS = "en cours", "En cours"
-    CADUC = "caduc", "Caduc"
-    ABANDON = "abandon", "Abandon"
-    OPPOSABLE = "opposable", "Opposable"
 
 
 class ProcedureQuerySet(models.QuerySet):
@@ -396,7 +367,7 @@ class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
     test = models.BooleanField(db_default=False)
     testing = models.BooleanField(blank=True, null=True)
-    doc_type = models.CharField(choices=TypeDocument, blank=True, null=True)  # noqa: DJ001 # TextField in DB.
+    doc_type = models.CharField(choices=core_enums.TypeDocument, blank=True, null=True)  # noqa: DJ001 # TextField in DB.
     doc_type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
     type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
     # No mention on Nuxt side of procedure.is_scot but vaut_SCoT is used in the Commune API.
@@ -517,7 +488,9 @@ class Procedure(models.Model):
     )
 
     # Denormalized information used only by Nuxt. See self.statut for the Django logic.
-    status = models.CharField(choices=ProcedureStatusChoices, blank=True, null=True)  # noqa: DJ001 # TextField in DB.
+    status = models.CharField(  # noqa: DJ001
+        choices=core_enums.ProcedureStatusChoices, blank=True, null=True
+    )  # TextField in DB.
 
     objects = FastLoadingProcedureManager.from_queryset(ProcedureQuerySet)()
     full_objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
@@ -626,7 +599,7 @@ class Procedure(models.Model):
 
     @property
     def statut(self) -> EventCategory | None:
-        if self.type_document == TypeDocument.SD:
+        if self.type_document == core_enums.TypeDocument.SD:
             return EventCategory.CADUC
         if not self.dernier_event_impactant:
             return None
@@ -675,15 +648,18 @@ class Procedure(models.Model):
 
     @property
     def is_schema(self) -> bool:
-        return self.doc_type in (TypeDocument.SCOT, TypeDocument.SD)
+        return self.doc_type in (
+            core_enums.TypeDocument.SCOT,
+            core_enums.TypeDocument.SD,
+        )
 
     @property
     def vaut_PLH_consolide(self) -> bool:  # noqa: N802
         if not self.is_intercommunal:
             return False
         return self.vaut_PLH or self.doc_type in (
-            TypeDocument.PLUIH,
-            TypeDocument.PLUIHM,
+            core_enums.TypeDocument.PLUIH,
+            core_enums.TypeDocument.PLUIHM,
         )
 
     @property
@@ -691,35 +667,37 @@ class Procedure(models.Model):
         if not self.is_intercommunal:
             return False
         return self.vaut_PDM or self.doc_type in (
-            TypeDocument.PLUIM,
-            TypeDocument.PLUIHM,
+            core_enums.TypeDocument.PLUIM,
+            core_enums.TypeDocument.PLUIHM,
         )
 
     @property
-    def type_document(self) -> TypeDocument:
-        if self.doc_type in (TypeDocument.PLU, *PLU_LIKE):
+    def type_document(self) -> core_enums.TypeDocument:
+        if self.doc_type in (core_enums.TypeDocument.PLU, *PLU_LIKE):
             if not self.is_intercommunal:
-                return TypeDocument.PLU
+                return core_enums.TypeDocument.PLU
             if self.vaut_PLH_consolide and self.vaut_PDM_consolide:
                 return (
-                    TypeDocument.PLUISHM
+                    core_enums.TypeDocument.PLUISHM
                     if self.is_sectoriel_consolide
-                    else TypeDocument.PLUIHM
+                    else core_enums.TypeDocument.PLUIHM
                 )
             if self.vaut_PLH_consolide:
                 return (
-                    TypeDocument.PLUISH
+                    core_enums.TypeDocument.PLUISH
                     if self.is_sectoriel_consolide
-                    else TypeDocument.PLUIH
+                    else core_enums.TypeDocument.PLUIH
                 )
             if self.vaut_PDM_consolide:
                 return (
-                    TypeDocument.PLUISM
+                    core_enums.TypeDocument.PLUISM
                     if self.is_sectoriel_consolide
-                    else TypeDocument.PLUIM
+                    else core_enums.TypeDocument.PLUIM
                 )
             return (
-                TypeDocument.PLUIS if self.is_sectoriel_consolide else TypeDocument.PLUI
+                core_enums.TypeDocument.PLUIS
+                if self.is_sectoriel_consolide
+                else core_enums.TypeDocument.PLUI
             )
 
         return self.doc_type
@@ -779,7 +757,10 @@ class Procedure(models.Model):
 
     @property
     def is_en_cours(self) -> bool:
-        if self.type == "Abrogation" or self.type_document == TypeDocument.POS:
+        if (
+            self.type == "Abrogation"
+            or self.type_document == core_enums.TypeDocument.POS
+        ):
             return False
 
         return self.statut in (
@@ -1003,9 +984,9 @@ class ActiveEventTypeManager(EventTypeManager):
 
 class EventType(models.Model):
     class DocumentType(models.TextChoices):
-        PLU = TypeDocument.PLU
-        CC = TypeDocument.CC
-        SCOT = TypeDocument.SCOT
+        PLU = core_enums.TypeDocument.PLU
+        CC = core_enums.TypeDocument.CC
+        SCOT = core_enums.TypeDocument.SCOT
 
     id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
     document_type = models.CharField(
@@ -1036,7 +1017,7 @@ class EventType(models.Model):
         db_default="{}",
     )
     impact = models.CharField(
-        blank=True, default="", db_default="", choices=ProcedureStatusChoices
+        blank=True, default="", db_default="", choices=core_enums.ProcedureStatusChoices
     )
     sudocuh_name = models.CharField(
         verbose_name="nom sudocuh", blank=True, default="", db_default=""
@@ -1288,7 +1269,7 @@ class CollectiviteQuerySet(models.QuerySet):
         return (
             self.distinct()
             .filter(
-                procedure__doc_type=TypeDocument.SCOT,
+                procedure__doc_type=core_enums.TypeDocument.SCOT,
                 procedure__parente=None,
                 procedure__archived=False,
             )

@@ -4,12 +4,8 @@ from django.urls import reverse
 from pytest_django import DjangoAssertNumQueries
 from pytest_django.asserts import assertContains, assertNotContains
 
-from docurba.core.models import (
-    Procedure,
-    Topic,
-    TypeCollectivite,
-    TypeDocument,
-)
+from docurba.core import enums as core_enums
+from docurba.core import models as core_models
 from tests.core.factories import (
     EventFactory,
     ProcedureFactory,
@@ -27,10 +23,10 @@ UPDATE_BASE_EXPECTED_NUM_QUERIES = (
 )
 
 
-@pytest.mark.parametrize("doc_type", TypeDocument.values)
+@pytest.mark.parametrize("doc_type", core_enums.TypeDocument.values)
 @pytest.mark.django_db
 def test_procedure_change_page(
-    admin_session_client: Client, doc_type: TypeDocument
+    admin_session_client: Client, doc_type: core_enums.TypeDocument
 ) -> None:
     procedure = ProcedureFactory(doc_type=doc_type)
     response = admin_session_client.get(
@@ -56,10 +52,10 @@ class TestProcedureList:
         assertContains(response, link)
 
     def test_topics_filter(self, admin_session_client: Client) -> None:
-        topic = Topic.objects.first()
-        procedure_with_topic = Procedure.objects.create()
+        topic = core_models.Topic.objects.first()
+        procedure_with_topic = core_models.Procedure.objects.create()
         procedure_with_topic.topics.add(topic)
-        procedure_without_topics = Procedure.objects.create()
+        procedure_without_topics = core_models.Procedure.objects.create()
 
         response = admin_session_client.get(
             f"{reverse('admin:core_procedure_changelist')}?topic={topic.name}"
@@ -77,9 +73,11 @@ class TestProcedureList:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         procedure_polem = ProcedureFactory(
-            collectivite_porteuse__type=TypeCollectivite.POLEM
+            collectivite_porteuse__type=core_enums.TypeCollectivite.POLEM
         )
-        procedure_cc = ProcedureFactory(collectivite_porteuse__type=TypeCollectivite.CC)
+        procedure_cc = ProcedureFactory(
+            collectivite_porteuse__type=core_enums.TypeCollectivite.CC
+        )
 
         response = admin_session_client.get(
             f"{reverse('admin:core_procedure_changelist')}?collectivite_type={procedure_polem.collectivite_porteuse.type}"

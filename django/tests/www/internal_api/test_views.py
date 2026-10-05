@@ -11,11 +11,8 @@ from rest_framework.test import APIClient
 from sendgrid_backend.mail import HTTPError
 from syrupy import SnapshotAssertion
 
-from docurba.core.enums import EventScope
-from docurba.core.models import (
-    EventType,
-    TypeCollectivite,
-)
+from docurba.core import enums as core_enums
+from docurba.core import models as core_models
 from tests.conftest import SupabaseApiTestClient
 from tests.core.factories import (
     CollectiviteFactory,
@@ -83,19 +80,19 @@ class TestCollectivitesAPI:
     ) -> None:
         CollectiviteFactory(
             siren="987654321",
-            type=TypeCollectivite.CC,
+            type=core_enums.TypeCollectivite.CC,
             departement__code_insee="13",
             nom="Groupement 1",
         )
         CollectiviteFactory(
             siren="123456789",
-            type=TypeCollectivite.SIVOM,
+            type=core_enums.TypeCollectivite.SIVOM,
             departement__code_insee="84",
             nom="Groupement 2",
         )
         CollectiviteFactory(
             siren="132435465",
-            type=TypeCollectivite.SMO,
+            type=core_enums.TypeCollectivite.SMO,
             departement__code_insee="30",
             nom="Groupement 3",
         )
@@ -129,13 +126,13 @@ class TestCollectivitesAPI:
         self, api_client: APIClient, query_params: dict, snapshot: SnapshotAssertion
     ) -> None:
         CollectiviteFactory(
-            type=TypeCollectivite.COM,
+            type=core_enums.TypeCollectivite.COM,
             departement__code_insee="13",
             nom="Groupement 1",
             siren="123456789",
         )
         CollectiviteFactory(
-            type=TypeCollectivite.CC,
+            type=core_enums.TypeCollectivite.CC,
             departement__code_insee="13",
             nom="Groupement 2",
             siren="123456778",
@@ -151,24 +148,24 @@ class TestCollectivitesAPI:
         ("factory_params"),
         [
             pytest.param(
-                {"type": TypeCollectivite.COM},
+                {"type": core_enums.TypeCollectivite.COM},
                 id="commune",
             ),
             pytest.param(
                 {
                     "type": functools.partial(
                         random.choice,
-                        seq=list(TypeCollectivite.epci_fiscalite_propre()),
+                        seq=list(core_enums.TypeCollectivite.epci_fiscalite_propre()),
                     )
                 },
                 id="epci_fiscalite_propre",
             ),
             pytest.param(
-                {"type": TypeCollectivite.SIVOM, "competence_plan": True},
+                {"type": core_enums.TypeCollectivite.SIVOM, "competence_plan": True},
                 id="competence_plan",
             ),
             pytest.param(
-                {"type": TypeCollectivite.SIVOM, "competence_schema": True},
+                {"type": core_enums.TypeCollectivite.SIVOM, "competence_schema": True},
                 id="competence_schema",
             ),
         ],
@@ -178,7 +175,9 @@ class TestCollectivitesAPI:
             **factory_params,
         )
         CollectiviteFactory(
-            competence_plan=False, competence_schema=False, type=TypeCollectivite.SIVOM
+            competence_plan=False,
+            competence_schema=False,
+            type=core_enums.TypeCollectivite.SIVOM,
         )
         url = f"{reverse('internal_api:collectivites-list')}?{urlencode({'trouvable': 'true'})}"
         with assertNumQueries(BASE_QUERIES_COUNT + 1):
@@ -253,21 +252,21 @@ class TestCollectivitesAPI:
         self, api_client: APIClient, query_params: dict, snapshot: SnapshotAssertion
     ) -> None:
         CollectiviteFactory(
-            type=TypeCollectivite.CC,
+            type=core_enums.TypeCollectivite.CC,
             departement__code_insee="13",
             nom="Groupement 1",
             siren="123456789",
             competence_schema=True,
         )
         CollectiviteFactory(
-            type=TypeCollectivite.CC,
+            type=core_enums.TypeCollectivite.CC,
             departement__code_insee="13",
             nom="Groupement 2",
             siren="123456778",
             competence_plan=True,
         )
         CollectiviteFactory(
-            type=TypeCollectivite.CC,
+            type=core_enums.TypeCollectivite.CC,
             departement__code_insee="30",
             nom="Groupement 3",
             siren="987654321",
@@ -284,7 +283,7 @@ class TestCollectivitesAPI:
     def test_detail(self, api_client: APIClient) -> None:
         groupement = CollectiviteFactory(
             siren="987654321",
-            type=TypeCollectivite.CC,
+            type=core_enums.TypeCollectivite.CC,
             departement__code_insee="13",
             nom="Groupement 1",
         )
@@ -308,11 +307,11 @@ class TestCollectivitesAPI:
 
     def test_intercommunalite_code(self, api_client: APIClient) -> None:
         intercommunalite = CollectiviteFactory(
-            type=TypeCollectivite.CC, siren="253000020"
+            type=core_enums.TypeCollectivite.CC, siren="253000020"
         )
         commune = CommuneFactory(
             code_insee="30840",
-            type=TypeCollectivite.COM,
+            type=core_enums.TypeCollectivite.COM,
             departement__code_insee="30",
             nom="Commune 1",
             intercommunalite=intercommunalite,
@@ -391,19 +390,19 @@ class TestCommunesAPI:
     ) -> None:
         CommuneFactory(
             code_insee="13150",
-            type=TypeCollectivite.COM,
+            type=core_enums.TypeCollectivite.COM,
             departement__code_insee="13",
             nom="Commune 1",
         )
         CommuneFactory(
             code_insee="30000",
-            type=TypeCollectivite.COM,
+            type=core_enums.TypeCollectivite.COM,
             departement__code_insee="30",
             nom="Commune 2",
         )
         CommuneFactory(
             code_insee="84000",
-            type=TypeCollectivite.COMD,
+            type=core_enums.TypeCollectivite.COMD,
             departement__code_insee="84",
             nom="Commune 3",
         )
@@ -418,7 +417,7 @@ class TestCommunesAPI:
     def test_detail(self, api_client: APIClient) -> None:
         commune = CommuneFactory(
             code_insee="30840",
-            type=TypeCollectivite.COM,
+            type=core_enums.TypeCollectivite.COM,
             departement__code_insee="13",
             nom="Groupement 1",
         )
@@ -439,11 +438,11 @@ class TestCommunesAPI:
 
     def test_intercommunalite_code(self, api_client: APIClient) -> None:
         intercommunalite = CollectiviteFactory(
-            type=TypeCollectivite.CC, siren="253000020"
+            type=core_enums.TypeCollectivite.CC, siren="253000020"
         )
         commune = CommuneFactory(
             code_insee="30840",
-            type=TypeCollectivite.COM,
+            type=core_enums.TypeCollectivite.COM,
             departement__code_insee="13",
             nom="Groupement 1",
             intercommunalite=intercommunalite,
@@ -536,24 +535,24 @@ class TestEventTypesAPI:
     ) -> None:
         EventTypeFactory(
             id="00000000-0000-0000-1111-000000000000",
-            document_type=EventType.DocumentType.CC,
+            document_type=core_models.EventType.DocumentType.CC,
             name="Déroulement des plans de test",
         )
         EventTypeFactory(
             id="00000000-0000-0000-2222-000000000000",
-            document_type=EventType.DocumentType.PLU,
+            document_type=core_models.EventType.DocumentType.PLU,
             name="Echec du déroulement des plans de test",
         )
         EventTypeFactory(
             id="00000000-0000-0000-3333-000000000000",
-            document_type=EventType.DocumentType.CC,
+            document_type=core_models.EventType.DocumentType.CC,
             name="Succès du déroulement des plans de test",
-            scope_list=[EventScope.PP],
-            scope_sugg=[EventScope.PP, EventScope.PPI],
+            scope_list=[core_enums.EventScope.PP],
+            scope_sugg=[core_enums.EventScope.PP, core_enums.EventScope.PPI],
         )
         EventTypeFactory(
             id="00000000-0000-0000-FFFF-000000000000",
-            document_type=EventType.DocumentType.CC,
+            document_type=core_models.EventType.DocumentType.CC,
             name="Je suis invisible car désactivé",
             is_active=False,
         )
@@ -568,10 +567,10 @@ class TestEventTypesAPI:
     def test_detail(self, api_client: APIClient) -> None:
         event_type = EventTypeFactory(
             id="00000000-0000-0000-1111-000000000000",
-            document_type=EventType.DocumentType.CC,
+            document_type=core_models.EventType.DocumentType.CC,
             name="Déroulement des plans de test",
-            scope_list=[EventScope.PP],
-            scope_sugg=[EventScope.PP, EventScope.PPI],
+            scope_list=[core_enums.EventScope.PP],
+            scope_sugg=[core_enums.EventScope.PP, core_enums.EventScope.PPI],
         )
 
         url = reverse("internal_api:event_types-detail", args=[event_type.pk])
