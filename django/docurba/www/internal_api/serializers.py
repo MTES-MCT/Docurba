@@ -3,13 +3,13 @@
 
 from rest_framework import serializers
 
+from docurba.core.enums import TypeDocument
 from docurba.core.models import (
     Collectivite,
     Commune,
     EventType,
     Procedure,
     Topic,
-    TypeDocument,
 )
 
 
