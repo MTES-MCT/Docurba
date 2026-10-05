@@ -1,7 +1,7 @@
 import pytest
 from django.core.management import call_command
 
-from docurba.core.models import TypeDocument
+from docurba.core.enums import TypeDocument
 from tests.core.factories import ProcedureFactory
 
 

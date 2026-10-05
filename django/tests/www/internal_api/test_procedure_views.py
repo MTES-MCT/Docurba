@@ -57,7 +57,7 @@ class TestProcedureList:
     def url(self) -> str:
         return reverse("internal_api:procedures-list")
 
-    @pytest.mark.parametrize("status", core_models.ProcedureStatusChoices)
+    @pytest.mark.parametrize("status", core_enums.ProcedureStatusChoices)
     def test_status_filter(
         self,
         status: str,
@@ -75,7 +75,7 @@ class TestProcedureList:
         excluded_status = random.choice(  # noqa: S311
             [
                 p_status
-                for p_status in core_models.ProcedureStatusChoices
+                for p_status in core_enums.ProcedureStatusChoices
                 if p_status != status
             ]
         )
@@ -103,17 +103,17 @@ class TestProcedureList:
             self._create_collectivite_perimetre_profile()
         )
         expected_procedure_one = core_factories.ProcedureFactory(
-            status=core_models.ProcedureStatusChoices.OPPOSABLE,
+            status=core_enums.ProcedureStatusChoices.OPPOSABLE,
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
         )
         expected_procedure_two = core_factories.ProcedureFactory(
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
         )
         not_expected_procedure = core_factories.ProcedureFactory(
-            status=core_models.ProcedureStatusChoices.ABANDON,
+            status=core_enums.ProcedureStatusChoices.ABANDON,
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
         )
@@ -122,7 +122,7 @@ class TestProcedureList:
             django_assert_num_queries(BASE_QUERIES),
         ):
             response = api_client.get(
-                f"{self.url}?status={core_models.ProcedureStatusChoices.OPPOSABLE}&status={core_models.ProcedureStatusChoices.EN_COURS}"
+                f"{self.url}?status={core_enums.ProcedureStatusChoices.OPPOSABLE}&status={core_enums.ProcedureStatusChoices.EN_COURS}"
             )
         assert response.status_code == 200
         assert response.json()["count"] == 2
@@ -217,7 +217,7 @@ class TestProcedureList:
             collectivite_porteuse=collectivite,
             numero="1",
             for_snapshot=True,
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
         )
         collectivite_with_code_insee = core_factories.CommuneFactory(
             departement__code_insee="30",
@@ -228,27 +228,27 @@ class TestProcedureList:
         core_factories.ProcedureFactory(
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-222222222222"),
             name="Révision du PLU d'Aigaliers",
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite_with_code_insee,
             with_perimetre=[collectivite_with_code_insee],
             numero="1",
             project=core_factories.ProjectFactory(
                 id=uuid.UUID("1cd65b57-7027-4aa5-8d19-333333333333")
             ),
-            doc_type=core_models.TypeDocument.PLU,
+            doc_type=core_enums.TypeDocument.PLU,
         )
         aigremont = core_factories.CommuneFactory(code_insee="30002")
         core_factories.ProcedureFactory(
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-444444444444"),
             name="Révision du PLU d'Aigremont",
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=aigremont,
             with_perimetre=[aigremont],
             numero="1",
             project=core_factories.ProjectFactory(
                 id=uuid.UUID("1cd65b57-7027-4aa5-8d19-555555555555")
             ),
-            doc_type=core_models.TypeDocument.PLU,
+            doc_type=core_enums.TypeDocument.PLU,
         )
         with api_client_with_auth(logged_in_profile) as api_client:
             response = api_client.get(
@@ -293,27 +293,27 @@ class TestProcedureList:
             collectivite_porteuse=collectivite,
             numero="1",
             for_snapshot=True,
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
         )
         core_factories.ProcedureFactory(
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-222222222222"),
             name="Seconde procédure",
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite,
             with_perimetre=[communes[1]],
             numero="1",
             project=procedure.project,
-            doc_type=core_models.TypeDocument.PLU,
+            doc_type=core_enums.TypeDocument.PLU,
         )
         core_factories.ProcedureFactory(
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-333333333333"),
             name="Troisième procédure",
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite,
             with_perimetre=[communes[2]],
             numero="1",
             project=procedure.project,
-            doc_type=core_models.TypeDocument.PLU,
+            doc_type=core_enums.TypeDocument.PLU,
         )
         with api_client_with_auth(logged_in_profile) as api_client:
             response = api_client.get(
@@ -392,7 +392,7 @@ class TestProcedureList:
             with_perimetre=communes,
             numero="1",
             for_snapshot=True,
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -417,18 +417,18 @@ class TestProcedureList:
             with_perimetre=communes,
             numero="1",
             for_snapshot=True,
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
         )
         secondary_procedure = core_factories.ProcedureFactory(
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-222222222222"),
             parente=principal_procedure,
             name="Révision du PLU de Nantes",
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
             numero="1",
             project=principal_procedure.project,
-            doc_type=core_models.TypeDocument.PLU,
+            doc_type=core_enums.TypeDocument.PLU,
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -461,7 +461,7 @@ class TestProcedureList:
             with_perimetre=communes,
             numero="1",
             for_snapshot=True,
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
             with_event=True,
             with_event__category=core_models.EventCategory.APPROUVE,
             with_event__date_evenement=datetime.date(2026, 10, 6),
@@ -470,12 +470,12 @@ class TestProcedureList:
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-222222222222"),
             parente=principal_procedure,
             name="Révision du PLU de Nantes",
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
             numero="1",
             project=principal_procedure.project,
-            doc_type=core_models.TypeDocument.PLU,
+            doc_type=core_enums.TypeDocument.PLU,
             with_event=True,
             with_event__category=core_models.EventCategory.APPROUVE,
             with_event__date_evenement=datetime.date(2026, 10, 6),
@@ -510,7 +510,7 @@ class TestProcedureList:
             with_perimetre=communes,
             numero="1",
             for_snapshot=True,
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
             with_event=True,
             with_event__category=core_models.EventCategory.APPROUVE,
             with_event__date_evenement=datetime.date(2026, 10, 6),
@@ -519,12 +519,12 @@ class TestProcedureList:
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-222222222222"),
             parente=principal_procedure,
             name="Révision du PLU de Nantes",
-            status=core_models.ProcedureStatusChoices.EN_COURS,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
             numero="1",
             project=principal_procedure.project,
-            doc_type=core_models.TypeDocument.PLU,
+            doc_type=core_enums.TypeDocument.PLU,
             with_event=True,
             with_event__category=core_models.EventCategory.APPROUVE,
             with_event__date_evenement=datetime.date(2026, 10, 6),

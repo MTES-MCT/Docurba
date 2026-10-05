@@ -3,7 +3,8 @@ import logging
 from django.core.management.base import BaseCommand, CommandParser
 from django.db.models import Case, F, Value, When
 
-from docurba.core.models import Procedure, TypeDocument
+from docurba.core.enums import TypeDocument
+from docurba.core.models import Procedure
 
 
 class Command(BaseCommand):

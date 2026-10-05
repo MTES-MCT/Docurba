@@ -6,28 +6,20 @@ from django.db.models import Q, QuerySet
 from django.forms import MultipleChoiceField
 from django_filters import rest_framework as filters
 
-from docurba.core.models import (
-    Collectivite,
-    Commune,
-    Departement,
-    EventType,
-    Procedure,
-    ProcedureStatusChoices,
-    Region,
-    TypeCollectivite,
-)
+from docurba.core import enums as core_enums
+from docurba.core import models as core_models
 
 
 class DepartementRegionFilterSet(filters.FilterSet):
     departement = filters.ModelMultipleChoiceFilter(
         field_name="departement__code_insee",
         to_field_name="code_insee",
-        queryset=Departement.objects.all(),
+        queryset=core_models.Departement.objects.all(),
     )
     region = filters.ModelMultipleChoiceFilter(
         field_name="departement__region__code_insee",
         to_field_name="code_insee",
-        queryset=Region.objects.all(),
+        queryset=core_models.Region.objects.all(),
     )
     fields = (
         "departement",
@@ -56,7 +48,9 @@ class NoValidationMultipleFilter(filters.MultipleChoiceFilter):
 
 
 class CollectiviteFilter(DepartementRegionFilterSet):
-    type = filters.MultipleChoiceFilter(field_name="type", choices=TypeCollectivite)
+    type = filters.MultipleChoiceFilter(
+        field_name="type", choices=core_enums.TypeCollectivite
+    )
     codes_siren = NoValidationMultipleFilter(
         label="Codes SIREN",
         field_name="siren",
@@ -76,7 +70,7 @@ class CollectiviteFilter(DepartementRegionFilterSet):
     trouvable = filters.BooleanFilter(label="trouvable", method="_searchable")
 
     class Meta:
-        model = Collectivite
+        model = core_models.Collectivite
         fields = (
             "type",
             "codes_siren",
@@ -102,7 +96,7 @@ class CollectiviteFilter(DepartementRegionFilterSet):
     def _without_communes(self, queryset: QuerySet, name: str, value: str) -> QuerySet:
         if not value:
             return queryset
-        commune_types = TypeCollectivite.communes()
+        commune_types = core_enums.TypeCollectivite.communes()
         return queryset.exclude(type__in=commune_types)
 
     def _searchable(self, queryset: QuerySet, name: str, value: str) -> QuerySet:
@@ -117,24 +111,24 @@ class CollectiviteFilter(DepartementRegionFilterSet):
         return queryset.filter(
             Q(competence_plan=True)
             | Q(competence_schema=True)
-            | Q(type__in=["COM", *TypeCollectivite.epci_fiscalite_propre()])
+            | Q(type__in=["COM", *core_enums.TypeCollectivite.epci_fiscalite_propre()])
         )
 
 
 class CommuneFilter(DepartementRegionFilterSet):
     type = filters.MultipleChoiceFilter(
-        field_name="type", choices=TypeCollectivite.communes()
+        field_name="type", choices=core_enums.TypeCollectivite.communes()
     )
     code = NoValidationMultipleFilter(field_name="code_insee")
 
     class Meta:
-        model = Commune
+        model = core_models.Commune
         fields = ("type", "code", *DepartementRegionFilterSet.fields)
 
 
 class EventTypeFilter(filters.FilterSet):
     class Meta:
-        model = EventType
+        model = core_models.EventType
         fields = ("document_type",)
 
 
@@ -148,11 +142,11 @@ class ProcedureFilter(filters.FilterSet):
     status = filters.MultipleChoiceFilter(
         label="Statut selon Nuxt",
         field_name="status",
-        choices=ProcedureStatusChoices,
+        choices=core_enums.ProcedureStatusChoices,
     )
 
     class Meta:
-        model = Procedure
+        model = core_models.Procedure
         fields = (
             "is_principale",
             "status",
