@@ -1,9 +1,12 @@
 #!/bin/bash
-# Création d'une sauvegarde de la base de données
-# puis conservation chiffrée dans un compartiment S3.
-# Ce script doit être lancé dans l'environnement de Scalingo car il
+# Création d'une sauvegarde complète de la base de données,
+# puis création d'une sauvegarde partielle (liste blanche de tables)
+# destinée à la base Metabase.
+# Les sauvegardes sont conservées chiffrées dans un compartiment S3.
+# Ce script doit être lancé dans l'environnement de Scalingo car il
 # utilise l'utilitaire `dbclient-fetcher` propre à la PaaS.
-# Durée d'exécution : entre 20 minutes et 2 heures.
+# Durée d'exécution : entre 20 minutes et 2 heures pour la sauvegarde
+# complète, plus quelques minutes pour la sauvegarde Metabase.
 
 # Lancement du script en mode strict (non officiel).
 # http://redsymbol.net/articles/unofficial-bash-strict-mode/
@@ -101,6 +104,65 @@ echo "Envoi de la sauvegarde vers le compartiment S3."
 rclone move --s3-chunk-size=20M ${BACKUPS_FOLDER_PATH} docurba_backups:/docurba-backups
 echo "Sauvegarde envoyée vers le compartiment S3."
 
+# Sauvegarde partielle destinée à la base Metabase.
+# Seules les tables d'une liste blanche sont exportées, via l'option `--table`
+# Le format custom permet une restauration ciblée avec pg_restore.
+# Seules les sections pre-data et data sont exportées : les déclencheurs (triggers) et les
+# index (post-data) ne sont pas exportés.
+# La compression (format custom) réduit l'empreinte de la sauvegarde dans le compartiment S3.
+echo "Réception des tables destinées à Metabase."
+backup_file_metabase=${BACKUPS_FOLDER_PATH}/metabase_$(date +%Y-%m-%d_%s).dump
+${HOME}/bin/pg_dump \
+  --verbose \
+  --format=custom \
+  --compress=6 \
+  --quote-all-identifiers \
+  --clean \
+  --if-exists \
+  --section=pre-data \
+  --section=data \
+  --no-owner \
+  --no-privileges \
+  --no-comments \
+  --no-publications \
+  --no-security-labels \
+  --no-subscriptions \
+  --no-table-access-method \
+  --no-tablespaces \
+  --table analytics_events \
+  --table core_collectivite \
+  --table core_collectivite_adhesions \
+  --table core_commune \
+  --table core_departement \
+  --table core_eventtype \
+  --table core_proceduretopic \
+  --table core_region \
+  --table core_topic \
+  --table doc_frise_events \
+  --table etapes_versements \
+  --table pac_sections \
+  --table pac_sections_data \
+  --table prescriptions \
+  --table procedures \
+  --table procedures_perimetres \
+  --table procedures_validations \
+  --table profiles \
+  --table projects \
+  --table projects_sharing \
+  --table surveys_proceduresurvey \
+  --table surveys_survey \
+  --table versements \
+  --table materialized_view_flat_memberships \
+  --file="${backup_file_metabase}" \
+  --dbname="${database_url}"
+echo "Réception des tables destinées à Metabase réalisée."
+
+# BACKUPS_FOLDER_PATH ne contient que les fichiers du dump pour Metabase
+# car les fichiers du dump principal ont été supprimés par le précédent rclone.move
+echo "Envoi de la sauvegarde Metabase vers le compartiment S3."
+rclone move --s3-chunk-size=20M "${BACKUPS_FOLDER_PATH}" docurba_backups:/docurba-backups/metabase
+echo "Sauvegarde Metabase envoyée vers le compartiment S3."
+
 if [[ ! -n ${BACKUPS_SLACK_WEBHOOK} ]]; then
   echo "Le script est terminé mais Slack ne le saura pas car il manque la clé d'API."
   exit 0
@@ -108,7 +170,7 @@ fi
 
 # https://docs.slack.dev/app-management/quickstart-app-settings#webhooks
 curl -X POST -H 'Content-type: application/json'\
-  --data '{"text":"😌 Sauvegarde de la base de données effectuée avec succès."}'\
+  --data '{"text":"😌 Sauvegarde des bases de données (complète et Metabase) effectuée avec succès."}'\
   ${BACKUPS_SLACK_WEBHOOK}
 
 # Sans saut de ligne, ce message est collé au message précédent.
