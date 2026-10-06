@@ -3,6 +3,7 @@
 from django.db import migrations
 
 
+# is_pdu
 def update_procedure_vaut_PDM(apps, schema_editor) -> None:  # noqa: ANN001, ARG001, N802
     Procedure = apps.get_model("core", "Procedure")
     # Fill procedure.is_pdu
@@ -24,6 +25,7 @@ def update_procedure_vaut_PDM(apps, schema_editor) -> None:  # noqa: ANN001, ARG
     Procedure.objects.filter(vaut_PDM__isnull=True).update(vaut_PDM=False)
 
 
+# is_pluih
 def update_procedure_vaut_PLH(apps, schema_editor) -> None:  # noqa: ANN001, ARG001, N802
     Procedure = apps.get_model("core", "Procedure")
     # 1188
@@ -45,6 +47,7 @@ def update_procedure_vaut_PLH(apps, schema_editor) -> None:  # noqa: ANN001, ARG
     )
 
 
+# is_scot
 def update_procedure_vaut_SCoT(apps, schema_editor) -> None:  # noqa: ANN001, ARG001, N802
     Procedure = apps.get_model("core", "Procedure")
     # select count(*) from procedures p
