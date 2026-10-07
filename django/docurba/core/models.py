@@ -287,8 +287,10 @@ class ProcedureStatusChoices(models.TextChoices):
 
 
 class ProcedureQuerySet(models.QuerySet):
-    def with_events(self, *, avant: date | None = None) -> Self:
-        events = (
+    def with_events(
+        self, *, avant: date | None = None, with_parente_events: bool = False
+    ) -> Self:
+        events_qs = (
             Event.objects.without_archived()
             .exclude(date_evenement=None)
             .only(
@@ -298,13 +300,20 @@ class ProcedureQuerySet(models.QuerySet):
                 "procedure_id",
             )
         )
-        return self.annotate(
+        qs = self.annotate(
             with_events__date_pivot=models.Value(
                 avant or timezone.now().date(), output_field=models.DateField()
             )
         ).prefetch_related(
-            models.Prefetch("event_set", events, to_attr="events_prefetched")
+            models.Prefetch("event_set", events_qs, to_attr="events_prefetched"),
         )
+        if with_parente_events:
+            qs = qs.select_related("parente").prefetch_related(
+                models.Prefetch(
+                    "parente__event_set", events_qs, to_attr="events_prefetched"
+                ),
+            )
+        return qs
 
     def with_communes_counts(self) -> Self:
         # On utilise une Subquery plutôt qu'une expression directe pour permettre

@@ -173,6 +173,26 @@ class TestProcedureQuerySet:
         assert len(procedure.events_prefetched) == 1
         assert procedure.events_prefetched[0].id == event_not_archived.id
 
+    def test_with_events__with_parente_events(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        child_procedure = ProcedureFactory(with_parente=True)
+        event = EventFactory(procedure=child_procedure.parente)
+
+        with django_assert_num_queries(2):
+            procedure = Procedure.objects.with_events().get(pk=child_procedure.pk)
+
+        assert len(procedure.events_prefetched) == 0
+
+        with django_assert_num_queries(3):
+            procedure = Procedure.objects.with_events(with_parente_events=True).get(
+                pk=child_procedure.pk
+            )
+
+        assert len(procedure.events_prefetched) == 0
+        assert len(procedure.parente.events_prefetched) == 1
+        assert procedure.parente.events_prefetched[0].id == event.id
+
     def test_most_recently_shared_to_profile_email(self) -> None:
         guest = ProfileFactory()
         # Old sharing
