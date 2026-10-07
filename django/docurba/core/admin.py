@@ -292,6 +292,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         ("parente", admin.EmptyFieldListFilter),
         ("name", admin.EmptyFieldListFilter),
         "doc_type",
+        "type",
         "vaut_PDM",
         "vaut_SCoT",
         "vaut_PLH",
