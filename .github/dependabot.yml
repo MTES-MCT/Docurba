@@ -7,3 +7,10 @@ updates:
       default-days: 7
     schedule:
       interval: "daily"
+
+  - package-ecosystem: "docker"
+    directory: "/docker/metabase"
+    cooldown:
+      default-days: 7
+    schedule:
+      interval: "daily"
