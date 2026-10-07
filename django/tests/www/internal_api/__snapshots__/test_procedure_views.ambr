@@ -2,6 +2,7 @@
 # name: TestProcedureList.test_collectivites_porteuses[default_value]
   list([
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '30001',
         'departementCode': '30',
@@ -34,6 +35,7 @@
       'type': 'Élaboration',
     }),
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '30002',
         'departementCode': '30',
@@ -66,6 +68,7 @@
       'type': 'Élaboration',
     }),
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -106,6 +109,7 @@
 # name: TestProcedureList.test_collectivites_porteuses[one_collectivite_porteuse_code_insee]
   list([
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '30001',
         'departementCode': '30',
@@ -142,6 +146,7 @@
 # name: TestProcedureList.test_collectivites_porteuses[one_collectivite_porteuse_siren]
   list([
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -178,6 +183,7 @@
 # name: TestProcedureList.test_collectivites_porteuses[several_collectivites_porteuses]
   list([
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '30001',
         'departementCode': '30',
@@ -210,6 +216,7 @@
       'type': 'Élaboration',
     }),
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -246,6 +253,7 @@
 # name: TestProcedureList.test_communes_perimetre[default_value]
   list([
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -278,6 +286,7 @@
       'type': 'Élaboration',
     }),
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -310,6 +319,7 @@
       'type': 'Élaboration',
     }),
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -350,6 +360,7 @@
 # name: TestProcedureList.test_communes_perimetre[one_commune]
   list([
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -386,6 +397,7 @@
 # name: TestProcedureList.test_communes_perimetre[several_communes]
   list([
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -418,6 +430,7 @@
       'type': 'Élaboration',
     }),
     dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -468,6 +481,7 @@
     'previous': None,
     'results': list([
       dict({
+        'approval_date': None,
         'collectivite_porteuse': dict({
           'codeInsee': '',
           'departementCode': '30',
@@ -536,6 +550,7 @@
 # ---
 # name: TestProcedureList.test_nominal_secondary_procedure_serializer
   dict({
+    'approval_date': None,
     'collectivite_porteuse': dict({
       'codeInsee': '',
       'departementCode': '30',
@@ -550,6 +565,7 @@
     'name': 'Révision du PLU de Nantes',
     'numero': '1',
     'parent': dict({
+      'approval_date': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',

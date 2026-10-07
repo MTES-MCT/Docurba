@@ -158,8 +158,19 @@ class UserPassword(generics.GenericAPIView):
 
 
 class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
+    events_qs = (
+        core_models.Event.objects.without_archived()
+        .exclude(date_evenement=None)
+        .only(
+            "type",
+            "date_evenement",
+            "is_valid",
+            "procedure_id",
+        )
+    )
     queryset = (
-        core_models.Procedure.objects.all()
+        core_models.Procedure.objects.with_events(with_parente_events=True)
+        .all()
         .select_related(
             "collectivite_porteuse",
             "collectivite_porteuse__commune",
