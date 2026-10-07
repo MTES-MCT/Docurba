@@ -823,7 +823,7 @@ class TestProcedureDates:
             assert procedure_with_events.date_fin_echeance == date(2022, 12, 1)
 
 
-class TestProcedureTypeDocument:
+class TestProcedureDocTypeDocument:
     def test_non_plu_like(self) -> None:
         assert Procedure(doc_type=TypeDocument.CC).type_document == TypeDocument.CC
         assert Procedure(doc_type=TypeDocument.SCOT).type_document == TypeDocument.SCOT
