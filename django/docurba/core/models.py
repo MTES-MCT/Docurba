@@ -298,8 +298,8 @@ class ProcedureQuerySet(models.QuerySet):
                 "procedure_id",
             )
         )
-        return self.annotate(
-            date_pivot=models.Value(
+        qs = self.annotate(
+            with_events__date_pivot=models.Value(
                 avant or timezone.now().date(), output_field=models.DateField()
             )
         ).prefetch_related(
@@ -600,10 +600,14 @@ class Procedure(models.Model):
         if self._events_processed:
             return
 
+        # This attribute is set by an annotation on the `with_events` method.
+        # This should be refactored soon. In the meantime, put a dressing on it.
+        date_pivot = getattr(self, "with_events__date_pivot", timezone.now().date())
+
         for event in reversed(self.events_prefetched):
             if event.category and (
                 event.category == EventCategory.FIN_ECHEANCE
-                or event.date_evenement <= self.date_pivot
+                or event.date_evenement <= date_pivot
             ):
                 setattr(self, event.category, event)
         self._events_processed = True
@@ -629,7 +633,11 @@ class Procedure(models.Model):
             return EventCategory.CADUC
         if not self.dernier_event_impactant:
             return None
-        if self.date_fin_echeance and self.date_fin_echeance < self.date_pivot:
+
+        # This attribute is set by an annotation on the `with_events` method.
+        # This should be refactored soon. In the meantime, put a dressing on it.
+        date_pivot = getattr(self, "with_events__date_pivot", timezone.now().date())
+        if self.date_fin_echeance and self.date_fin_echeance < date_pivot:
             return EventCategory.CADUC
         return self.dernier_event_impactant.category
 
