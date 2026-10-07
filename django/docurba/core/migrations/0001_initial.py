@@ -453,7 +453,34 @@ class Migration(migrations.Migration):
                             ),
                         ),
                         ("name", models.TextField(blank=True, null=True)),
-                        ("type", models.CharField(blank=True, null=True)),
+                        (
+                            "type",
+                            models.CharField(
+                                blank=True,
+                                choices=[
+                                    ("Abrogation", "Abrogation"),
+                                    ("Elaboration", "Elaboration"),
+                                    ("Mise à jour", "Mise à jour"),
+                                    ("Mise en compatibilité", "Mise en compatibilité"),
+                                    ("Modification", "Modification"),
+                                    (
+                                        "Modification simplifiée",
+                                        "Modification simplifiée",
+                                    ),
+                                    ("Révision", "Révision"),
+                                    (
+                                        "Révision à modalité simplifiée ou Révision allégée",
+                                        "Révision à modalité simplifiée ou Révision allégée",
+                                    ),
+                                    (
+                                        "Révision allégée (ou RMS)",
+                                        "Révision allégée (ou RMS)",
+                                    ),
+                                    ("Révision simplifiée", "Révision simplifiée"),
+                                ],
+                                null=True,
+                            ),
+                        ),
                         ("numero", models.CharField(blank=True, null=True)),
                         (
                             "created_at",
