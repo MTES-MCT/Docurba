@@ -155,6 +155,7 @@ class BaseProcedureSerializer(serializers.ModelSerializer):
     topics = TopicSerializer(many=True)
     perimetre = CommuneSerializer(many=True)
     name = serializers.CharField(source="computed_name")
+    approval_date = serializers.DateField(source="date_approbation")
 
     class Meta:
         model = Procedure
@@ -174,6 +175,7 @@ class BaseProcedureSerializer(serializers.ModelSerializer):
             "name",
             "status",
             "topics",
+            "approval_date",
         ]
         depth = 4
 

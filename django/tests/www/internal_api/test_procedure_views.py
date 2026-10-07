@@ -1,3 +1,4 @@
+import datetime
 import random
 import uuid
 from urllib.parse import urlencode
@@ -19,6 +20,7 @@ BASE_QUERIES = (
     + 1  # profiles for authentication check
     + 1  # count for pagination
     + 1  # procedures details
+    + 1  # doc_frise_events for with_events()
     + 1  # topics
     + 1  # perimetre
 )
@@ -351,15 +353,19 @@ class TestProcedureList:
         collectivite, communes, logged_in_profile = (
             self._create_collectivite_perimetre_profile()
         )
-        ProcedureFactory(
+        core_factories.ProcedureFactory(
             name="",
             collectivite_porteuse=collectivite,
             with_perimetre=communes[:1],
             id=uuid.UUID("11111111-7027-4aa5-8d19-222222222222"),
             for_snapshot=True,
         )
-        ProcedureFactory(name="", id=uuid.UUID("22222222-7027-4aa5-8d19-222222222222"))
-        ProcedureFactory(name="", id=uuid.UUID("33333333-7027-4aa5-8d19-333333333333"))
+        core_factories.ProcedureFactory(
+            name="", id=uuid.UUID("22222222-7027-4aa5-8d19-222222222222")
+        )
+        core_factories.ProcedureFactory(
+            name="", id=uuid.UUID("33333333-7027-4aa5-8d19-333333333333")
+        )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
             django_assert_num_queries(BASE_QUERIES),
@@ -428,6 +434,7 @@ class TestProcedureList:
                 + 1  # parente topics
                 + 1  # parente departement
                 + 1  # parente region
+                + 1  # parente events
             ),
         ):
             response = api_client.get(f"{self.url}")
@@ -435,3 +442,52 @@ class TestProcedureList:
         # Results are sorted by ID.
         assert response.json()["results"][1]["id"] == str(secondary_procedure.id)
         assert response.json()["results"][1] == snapshot()
+
+    def test_serializer_with_approval_date(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        collectivite, communes, logged_in_profile = (
+            self._create_collectivite_perimetre_profile()
+        )
+        principal_procedure = core_factories.ProcedureFactory(
+            pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-111111111111"),
+            collectivite_porteuse=collectivite,
+            with_perimetre=communes,
+            numero="1",
+            for_snapshot=True,
+            status=core_models.ProcedureStatusChoices.EN_COURS,
+            with_event=True,
+            with_event__category=core_models.EventCategory.APPROUVE,
+            with_event__date_evenement=datetime.date(2026, 10, 6),
+        )
+        core_factories.ProcedureFactory(
+            pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-222222222222"),
+            parente=principal_procedure,
+            name="Révision du PLU de Nantes",
+            status=core_models.ProcedureStatusChoices.EN_COURS,
+            collectivite_porteuse=collectivite,
+            with_perimetre=communes,
+            numero="1",
+            project=principal_procedure.project,
+            doc_type=core_models.TypeDocument.PLU,
+            with_event=True,
+            with_event__category=core_models.EventCategory.APPROUVE,
+            with_event__date_evenement=datetime.date(2026, 10, 6),
+        )
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(
+                BASE_QUERIES
+                + 1  # parente perimetre
+                + 1  # parente topics
+                + 1  # parente departement
+                + 1  # parente region
+                + 1  # parente events
+            ),
+        ):
+            response = api_client.get(f"{self.url}")
+        assert response.status_code == 200
+        assert response.json()["results"][1]["approval_date"] == "2026-10-06"
+        assert response.json()["results"][1]["parent"]["approval_date"] == "2026-10-06"

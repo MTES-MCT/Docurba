@@ -95,10 +95,10 @@
                   :items="proceduresParents"
                 >
                   <template #selection="{item}">
-                    {{ item.name }}
+                    {{ item.label }}
                   </template>
                   <template #item="{item}">
-                    {{ item.name }}
+                    {{ item.label }}
                   </template>
                 </v-select>
               </validation-provider>
@@ -207,7 +207,6 @@
 import { mdiInformationOutline, mdiOpenInNew } from '@mdi/js'
 import { uniqBy } from 'lodash'
 import FormInput from '@/mixins/FormInput.js'
-import { enrichProcedureWithEvents } from '@/plugins/procedure'
 
 export default {
   name: 'AddProcedureForm',
@@ -410,7 +409,20 @@ export default {
         payload.communes_perimetre = [this.collectivite.code]
       }
 
-      return await this.$djangoApi.get('/api-internes/procedures/', payload)
+      const procedures = await this.$djangoApi.get('/api-internes/procedures/', payload)
+      // See addFormattedDate
+      return procedures.map(procedure => ({
+        ...procedure,
+        label: `${
+            procedure.name
+          }${
+            procedure.approval_date
+              ? ` - ${procedure.approval_date.split('-').reverse().join('/')}`
+              : ''
+          }`
+      })).sort((a, b) => {
+        return new Date(b.approval_date) - new Date(a.approval_date)
+      })
     },
     async createProcedure () {
       this.loadingSave = true
