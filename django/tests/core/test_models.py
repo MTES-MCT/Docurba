@@ -9,7 +9,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.utils import timezone
 from pytest_django import DjangoAssertNumQueries
 
-from docurba.core.enums import ProjectSharingRoleType, TypeCollectivite
+from docurba.core.enums import ProcedureType, ProjectSharingRoleType, TypeCollectivite
 from docurba.core.models import (
     EVENT_CATEGORY_BY_DOC_TYPE,
     Adhesion,
@@ -674,6 +674,28 @@ class TestProcedure:
         )
 
         assert procedure.perimetre.through.objects.count() == 1
+
+    @pytest.mark.parametrize(
+        "procedure_type", [ProcedureType.ABROGATION, ProcedureType.ELABORATION]
+    )
+    def test_principal_type(self, procedure_type: ProcedureType) -> None:
+        assert Procedure(type=procedure_type).type in ProcedureType.principal()
+
+    @pytest.mark.parametrize(
+        "procedure_type",
+        [
+            ProcedureType.MISE_A_JOUR,
+            ProcedureType.MISE_EN_COMPATIBILITE,
+            ProcedureType.MODIFICATION,
+            ProcedureType.MODIFICATION_SIMPLIFIEE,
+            ProcedureType.REVISION,
+            ProcedureType.REVISION_MS_RA,
+            ProcedureType.REVISION_ALLEGEE,
+            ProcedureType.REVISION_SIMPLIFIEE,
+        ],
+    )
+    def test_secondary_type(self, procedure_type: ProcedureType) -> None:
+        assert Procedure(type=procedure_type).type in ProcedureType.secondary()
 
 
 class TestProcedureDates:
