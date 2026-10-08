@@ -1,5 +1,6 @@
 # ruff: noqa: N815, RUF012
 
+
 from rest_framework import serializers
 
 from docurba.core.models import (
@@ -100,6 +101,7 @@ class CommuneSerializer(serializers.ModelSerializer):
     intercommunaliteCode = serializers.CharField(
         source="intercommunalite.siren", allow_blank=True, default=""
     )
+    is_opposable = serializers.CharField(source="opposable", required=False)
 
     class Meta:
         model = Commune
@@ -110,6 +112,7 @@ class CommuneSerializer(serializers.ModelSerializer):
             "departementCode",
             "regionCode",
             "intercommunaliteCode",
+            "is_opposable",
         ]
         read_only_fields = fields
 

@@ -631,14 +631,40 @@ class Procedure(models.Model):
 
     @property
     def zone_name(self) -> str:
-        # If a prefetch has been made, use it here to avoid N+1 queries.
+        """Return the name displayed in a procedure to reflect the perimetre.
+
+        Today, we don't let the user choose it and we have many edge cases. We should denormalize soon.
+        This method should always be called after a prefetch but I don't want to block us if we call it directly from the Procedure object.
+        That's why I fallback on the database when the expected attributes are not present.
+
+        Expected usage:
+        procedure = Procedure.objects.prefetch_related("perimetre", models.Prefetch(Commune.objects.with_opposable()))
+        procedure.zone_name
+        """
         perimetre_qs = (
             self._prefetched_objects_cache.get("perimetre", self.perimetre.all())
             if hasattr(self, "_prefetched_objects_cache")
             else self.perimetre.all()
         )
-        if perimetre_qs.count() == 1:
-            return perimetre_qs[0].nom
+        if perimetre_qs:
+            if len(perimetre_qs) == 1:
+                return perimetre_qs[0].nom
+            # There is more than one commune in the perimetre and only one is set as opposable.
+            # We assume this is the way delegated towns have been handled.
+            if hasattr(perimetre_qs[0], "opposable"):
+                opposable_delegated_towns = [
+                    commune
+                    for commune in perimetre_qs
+                    if commune.opposable and commune.type != TypeCollectivite.COM
+                ]
+            else:
+                opposable_delegated_towns = (
+                    perimetre_qs.exclude(type=TypeCollectivite.COM)
+                    .filter(procedures_through__opposable=True)
+                    .all()
+                )
+            if len(opposable_delegated_towns) == 1:
+                return opposable_delegated_towns[0].nom
         return self.collectivite_porteuse.nom if self.collectivite_porteuse else ""
 
     @cached_property
@@ -1461,6 +1487,15 @@ class CommuneQuerySet(models.QuerySet):
             )
         )
 
+    def with_opposable(self) -> Self:
+        """Return the CommuneProcedure.opposable column.
+
+        Attach the `opposable` attribute to the Commune objects to expose the opposability of a set of precedures.
+        For example:
+        Procedure.objects.prefetch_related("perimetre", queryset=Commune.objects.with_opposable())
+        """
+        return self.annotate(opposable=models.F("procedures_through__opposable"))
+
 
 class Commune(Collectivite):
     intercommunalite = models.ForeignKey(
@@ -1630,6 +1665,7 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
         from_fields=["commune_id"],
         to_fields=["collectivite_ptr_id"],
         on_delete=models.DO_NOTHING,
+        related_name="procedures_through",
     )
     procedure = models.ForeignKey(
         Procedure, models.CASCADE, related_name="perimetre_through"

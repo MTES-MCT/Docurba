@@ -6,6 +6,7 @@ from functools import partial
 
 import pytest
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import models
 from django.utils import timezone
 from pytest_django import DjangoAssertNumQueries
 
@@ -775,7 +776,7 @@ class TestProcedure:
         assert procedure.computed_name == expected_name
 
     @pytest.mark.django_db
-    def test_zone_name(self) -> None:
+    def test_zone_name(self, django_assert_num_queries: DjangoAssertNumQueries) -> None:
         collectivite_porteuse = CollectiviteFactory(
             nom="CC de la Terre d'Argence", type=TypeCollectivite.CC
         )
@@ -817,6 +818,41 @@ class TestProcedure:
             collectivite_porteuse=collectivite_porteuse,
         )
         assert procedure.zone_name == "CC de la Terre d'Argence"
+
+        # Zone has a delegated town. The procedure has effect only on this delegated town.
+        delegated_town = CommuneFactory(nom="Argilliers", type=CommuneType.COMD)
+        procedure = ProcedureFactory(
+            with_perimetre=[
+                CommuneFactory(nom="Beaucaire"),
+                CommuneFactory(nom="Nîmes"),
+                delegated_town,
+            ],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        delegated_town_through = procedure.perimetre_through.get(
+            commune_id=delegated_town.id
+        )
+        delegated_town_through.opposable = True
+        delegated_town_through.save()
+
+        # Assert num queries when the method is called with a prefetch or without.
+        # - Without prefetch.
+        with (
+            django_assert_num_queries(2),
+        ):
+            assert procedure.zone_name == "Argilliers"
+        # - With a prefetch.
+        with (
+            django_assert_num_queries(2),
+        ):
+            procedure = Procedure.objects.prefetch_related(
+                models.Prefetch("perimetre", queryset=Commune.objects.with_opposable())
+            ).get(pk=procedure.pk)
+
+        with (
+            django_assert_num_queries(0),
+        ):
+            assert procedure.zone_name == "Argilliers"
 
 
 class TestProcedureDates:
