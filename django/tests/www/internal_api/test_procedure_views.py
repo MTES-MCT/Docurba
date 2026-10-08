@@ -361,10 +361,14 @@ class TestProcedureList:
             for_snapshot=True,
         )
         core_factories.ProcedureFactory(
-            name="", id=uuid.UUID("22222222-7027-4aa5-8d19-222222222222")
+            name="",
+            id=uuid.UUID("22222222-7027-4aa5-8d19-222222222222"),
+            with_perimetre=communes,
         )
         core_factories.ProcedureFactory(
-            name="", id=uuid.UUID("33333333-7027-4aa5-8d19-333333333333")
+            name="",
+            id=uuid.UUID("33333333-7027-4aa5-8d19-333333333333"),
+            with_perimetre=communes,
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -491,3 +495,76 @@ class TestProcedureList:
         assert response.status_code == 200
         assert response.json()["results"][1]["approval_date"] == "2026-10-06"
         assert response.json()["results"][1]["parent"]["approval_date"] == "2026-10-06"
+
+    def test_serializer_with_is_opposable(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        collectivite, communes, logged_in_profile = (
+            self._create_collectivite_perimetre_profile()
+        )
+        principal_procedure = core_factories.ProcedureFactory(
+            pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-111111111111"),
+            collectivite_porteuse=collectivite,
+            with_perimetre=communes,
+            numero="1",
+            for_snapshot=True,
+            status=core_models.ProcedureStatusChoices.EN_COURS,
+            with_event=True,
+            with_event__category=core_models.EventCategory.APPROUVE,
+            with_event__date_evenement=datetime.date(2026, 10, 6),
+        )
+        secondary_procedure = core_factories.ProcedureFactory(
+            pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-222222222222"),
+            parente=principal_procedure,
+            name="Révision du PLU de Nantes",
+            status=core_models.ProcedureStatusChoices.EN_COURS,
+            collectivite_porteuse=collectivite,
+            with_perimetre=communes,
+            numero="1",
+            project=principal_procedure.project,
+            doc_type=core_models.TypeDocument.PLU,
+            with_event=True,
+            with_event__category=core_models.EventCategory.APPROUVE,
+            with_event__date_evenement=datetime.date(2026, 10, 6),
+        )
+        pp_perimetre_through = principal_procedure.perimetre_through.order_by(
+            "commune__code_insee"
+        ).first()
+        pp_perimetre_through.opposable = True
+        pp_perimetre_through.save()
+
+        ps_perimetre_through = secondary_procedure.perimetre_through.order_by(
+            "commune__code_insee"
+        ).first()
+        ps_perimetre_through.opposable = True
+        ps_perimetre_through.save()
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(
+                BASE_QUERIES
+                + 1  # parente perimetre
+                + 1  # parente topics
+                + 1  # parente departement
+                + 1  # parente region
+                + 1  # parente events
+            ),
+        ):
+            response = api_client.get(f"{self.url}")
+        assert response.status_code == 200
+        assert response.json()["results"][1]["perimetre"][0]["is_opposable"] == "True"
+        for i in range(1, len(communes) - 1):
+            assert (
+                response.json()["results"][1]["perimetre"][i]["is_opposable"] == "False"
+            )
+
+        assert (
+            response.json()["results"][1]["parent"]["perimetre"][0]["is_opposable"]
+            == "True"
+        )
+        for i in range(1, len(communes) - 1):
+            assert (
+                response.json()["results"][1]["parent"]["perimetre"][i]["is_opposable"]
+                == "False"
+            )

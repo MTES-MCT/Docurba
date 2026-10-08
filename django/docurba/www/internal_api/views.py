@@ -160,7 +160,6 @@ class UserPassword(generics.GenericAPIView):
 class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = (
         core_models.Procedure.objects.with_events(with_parente_events=True)
-        .all()
         .select_related(
             "collectivite_porteuse",
             "collectivite_porteuse__commune",
@@ -176,7 +175,7 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
                     "departement",
                     "departement__region",
                     "intercommunalite",
-                ),
+                ).with_opposable(),
             ),
             "parente__topics",
             models.Prefetch(
@@ -185,7 +184,7 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
                     "departement",
                     "departement__region",
                     "intercommunalite",
-                ),
+                ).with_opposable(),
             ),
         )
         .order_by("id")
