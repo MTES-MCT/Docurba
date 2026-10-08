@@ -1,7 +1,39 @@
-import { maxBy, orderBy, groupBy, chunk } from 'lodash'
+// interface Procedure {
+//   approvalDate: string | null
+//   comment: string | null
+//   creationDate: string | null
+//   documentType: string
+//   id: string
+//   lastEvent: Event | null
+//   lastStructuralEvent: Event | null
+//   lastUpdateDate: string | null
+//   name: string | null
+//   nameDetails: string | null
+//   number: string | null
+//   parentId: string | null
+//   prescriptionDate: string | null
+//   privateComment: string | null
+//   procedures: Omit<Procedure, 'procedures'>[]
+//   startedBeforeHuwartLaw: boolean
+//   status: string
+//   sudocuhComment: string | null
+//   sudocuhId: string | null
+//   territorialAuthority: TerritorialAuthority | null
+//   topicDetails: string | null
+//   topics: string[]
+//   towns: TerritorialAuthority[]
+//   type: string
+// }
+// interface Event {
+//   date: string
+//   id: string
+//   type: string
+// }
+
+import { maxBy, orderBy, groupBy, chunk, keyBy, uniq } from 'lodash'
 import { addFormattedDate, getApprovalEvent, getPrescriptionEvent, getStopEvent, getEventImpact } from '@/plugins/event'
 
-export default ({ $supabase, $dayjs }, inject) => {
+export default ({ $djangoApi, $supabase, $dayjs, $territorialAuthorityApi }, inject) => {
   async function computeProcedureStatus (procedure) {
     const { data: events } = await $supabase.from('doc_frise_events')
       .select('id, type')
@@ -166,6 +198,101 @@ export default ({ $supabase, $dayjs }, inject) => {
       await $supabase.from('procedures').update({ status: newStatus }).eq('id', procedure.id)
     }
   })
+
+  inject('procedureApi', {
+    async listForTerritorialAuthorities (territorialAuthorityCodes) {
+      const [{ data: rawProcedures }, eventTypes] = await Promise.all([
+        $supabase.rpc('procedures_by_collectivites', { codes: territorialAuthorityCodes }),
+        $djangoApi.get('/api-internes/types-evenement/')
+      ])
+      const eventStructuringByType = {}
+
+      for (const eventType of eventTypes) {
+        eventStructuringByType[eventType.name] = eventType.isStructuring
+      }
+
+      const territorialAuthorities = await $territorialAuthorityApi.list({
+        codes: uniq(rawProcedures.flatMap(rawProcedure => [
+          ..._getProcedurePerimeter(rawProcedure).map(p => p.collectivite_code),
+          rawProcedure.collectivite_porteuse_id
+        ]))
+      })
+
+      return _parseProcedures(rawProcedures, { eventStructuringByType, territorialAuthorities })
+    }
+  })
+}
+
+export function displayProcedure (procedure) {
+  const copiedKeys = [
+    'topics',
+    'towns'
+  ]
+  const dateKeys = [
+    'approvalDate',
+    'creationDate',
+    'lastUpdateDate',
+    'prescriptionDate'
+  ]
+  const skippedKeys = [
+    'lastEvent',
+    'lastStructuringEvent',
+    'startedBeforeHuwartLaw',
+    'territorialAuthority',
+    'towns',
+    'type'
+  ]
+  const keys = Object.keys(procedure)
+  const displayedProcedureBase = {}
+
+  for (const key of keys) {
+    if (copiedKeys.includes(key)) {
+      displayedProcedureBase[key] = procedure[key]
+
+      continue
+    }
+    if (dateKeys.includes(key)) {
+      displayedProcedureBase[key] = procedure[key]?.split('T')[0].split('-').reverse().join('/') ?? ''
+
+      continue
+    }
+    if (skippedKeys.includes(key)) {
+      continue
+    }
+
+    displayedProcedureBase[key] = procedure[key] ?? ''
+  }
+
+  const displayedProcedure = {
+    ...displayedProcedureBase,
+    lastEventDate: procedure.lastEvent?.date?.split('T')[0].split('-').reverse().join('/') ?? '',
+    lastEventId: procedure.lastEvent?.id ?? '',
+    lastEventType: procedure.lastEvent?.type ?? '',
+    lastStructuringEventDate: procedure.lastStructuringEvent?.date?.split('T')[0].split('-').reverse().join('/') ?? '',
+    lastStructuringEventId: procedure.lastStructuringEvent?.id ?? '',
+    lastStructuringEventType: procedure.lastStructuringEvent?.type ?? '',
+    startedBeforeHuwartLaw: procedure.startedBeforeHuwartLaw ? 'Oui' : 'Non',
+    territorialAuthorityCode: procedure.territorialAuthority?.code ?? '',
+    territorialAuthorityName: procedure.territorialAuthority?.name ?? '',
+    townName: procedure.towns[0]?.name ?? '',
+    towns: procedure.towns.map(({ code, name }) => ({
+      code: code ?? '',
+      name: name ?? ''
+    })),
+    type: `${procedure.type}${
+      ['Élaboration', 'Modification', 'Révision'].includes(procedure.type) &&
+      procedure.startedBeforeHuwartLaw
+        ? ' (antérieure à la loi Huwart)'
+        : ''
+    }`
+  }
+
+  return 'procedures' in procedure
+    ? {
+        ...displayedProcedure,
+        procedures: procedure.procedures.map(displayProcedure)
+      }
+    : displayedProcedure
 }
 
 export function enrichProcedureWithEvents (procedure) {
@@ -225,4 +352,260 @@ export function getProcedureTypeLabel (procedure) {
         : ''
     }`
     : ''
+}
+
+function _getProcedureDocumentType (rawProcedure) {
+  return `${
+    rawProcedure.doc_type === 'SCOT'
+      ? 'SCoT'
+      : rawProcedure.doc_type
+  }${
+    rawProcedure.is_pluih && !rawProcedure.doc_type.includes('H')
+      ? 'H'
+      : ''
+  }`
+}
+
+function _getProcedureName (rawProcedure, { territorialAuthority }) {
+  const suffix = (
+    rawProcedure.name_complement &&
+    !rawProcedure.name?.endsWith(rawProcedure.name_complement)
+  )
+    ? ` - ${rawProcedure.name_complement}`
+    : ''
+
+  if (rawProcedure.name) {
+    return `${rawProcedure.name}${suffix}`
+  }
+
+  const parts = [
+    _parseProcedureType(rawProcedure.type),
+    rawProcedure.numero,
+    _getProcedureDocumentType(rawProcedure),
+    territorialAuthority?.name
+  ].filter(Boolean)
+
+  return `${parts.join(' ')}${suffix}`
+}
+
+function _getProcedurePerimeter (rawProcedure) {
+  if (rawProcedure.procedures_perimetres.length === 2) {
+    const comdPerimeter = rawProcedure.procedures_perimetres
+      .filter(p => p.collectivite_type === 'COMD')
+
+    if (comdPerimeter.length === 1) {
+      return comdPerimeter || []
+    }
+  }
+
+  return rawProcedure.procedures_perimetres || []
+}
+
+function _getProcedureStatus (rawProcedure, { territorialAuthority }) {
+  switch (rawProcedure.status) {
+    case 'abandon':
+      return 'Abandonné'
+    case 'abrogé':
+      return 'Abrogé'
+    case 'annulé':
+      return 'Annulé'
+    case 'approuvé':
+      return 'Approuvé'
+    case 'caduc':
+      return 'Caduc'
+    case 'en cours':
+      return 'En cours'
+    case 'en projet':
+      return 'En projet'
+    case 'opposable':
+      return _getProcedurePerimeter(rawProcedure).some(
+        territorialAuthority?.code
+          ? p => p.opposable && (
+            p.collectivite_code === territorialAuthority.code ||
+            p.collectivite_type === 'COMD'
+          )
+          : ({ opposable }) => opposable
+      )
+        ? 'Opposable'
+        : 'Précédent'
+    default:
+      return null
+  }
+}
+
+function _getProcedureTerritorialAuthorityCode (rawProcedure) {
+  const perimeter = _getProcedurePerimeter(rawProcedure)
+
+  return (
+    perimeter.length === 1
+      ? perimeter[0].collectivite_code
+      : rawProcedure.collectivite_porteuse_id
+  ) || null
+}
+
+function _getProcedureTowns (rawProcedure, { territorialAuthorities }) {
+  const perimeter = _getProcedurePerimeter(rawProcedure)
+  const territorialAuthoritiesByCode = keyBy(territorialAuthorities, 'code')
+  const towns = []
+
+  for (const p of perimeter) {
+    const town = territorialAuthoritiesByCode[p.collectivite_code]
+
+    if (town) {
+      towns.push(town)
+    }
+  }
+
+  return towns
+}
+
+function _parseProcedure (rawProcedure, { eventStructuringByType, territorialAuthorities }) {
+  // This filter is necessary here because the rpc 'procedures_by_collectivites' don't filter out archived events
+  // and will be removed when using internal_apis/events
+  const activeEvents = orderBy(
+    rawProcedure.doc_frise_events?.filter(e => !e.archived_at) ?? [],
+    'date_iso',
+    'desc'
+  )
+  const now = new Date()
+  const lastEvent = activeEvents.find(event =>
+    new Date(event.date_iso) <= now
+  ) ?? null
+  const lastStructuringEvent = activeEvents.find(event =>
+    eventStructuringByType[event.type] &&
+    new Date(event.date_iso) <= now
+  ) ?? null
+  const territorialAuthorityCode = _getProcedureTerritorialAuthorityCode(rawProcedure)
+  const territorialAuthority = territorialAuthorityCode
+    ? territorialAuthorities.find(({ code }) => code === territorialAuthorityCode)
+    : null
+  let approvalDate = null
+  let prescriptionDate = null
+
+  for (const event of activeEvents) {
+    if (!approvalDate && getApprovalEvent(event)) {
+      approvalDate = event.date_iso
+    }
+    if (!prescriptionDate && getPrescriptionEvent(event)) {
+      prescriptionDate = event.date_iso
+    }
+    if (approvalDate && prescriptionDate) {
+      break
+    }
+  }
+
+  return {
+    approvalDate,
+    comment: rawProcedure.commentaire || null,
+    creationDate: rawProcedure.created_at?.split('T')[0] || null,
+    documentType: _getProcedureDocumentType(rawProcedure),
+    id: rawProcedure.id,
+    lastEvent: lastEvent && {
+      date: lastEvent.date_iso,
+      id: lastEvent.id,
+      type: lastEvent.type
+    },
+    lastStructuringEvent: lastStructuringEvent && {
+      date: lastStructuringEvent.date_iso,
+      id: lastStructuringEvent.id,
+      type: lastStructuringEvent.type
+    },
+    lastUpdateDate: rawProcedure.last_updated_at?.split('T')[0] || null,
+    name: _getProcedureName(rawProcedure, { territorialAuthority }),
+    nameDetails: _parseProcedureNameDetails(rawProcedure.name_complement),
+    number: rawProcedure.numero || null,
+    parentId: rawProcedure.procedure_id || null,
+    prescriptionDate,
+    privateComment: rawProcedure.comment_dgd || null,
+    startedBeforeHuwartLaw: !!rawProcedure.started_before_huwart_law,
+    status: _getProcedureStatus(rawProcedure, { territorialAuthority }),
+    sudocuhComment: rawProcedure.comment_from_sudocuh || null,
+    sudocuhId: rawProcedure.from_sudocuh || null,
+    territorialAuthority,
+    topicDetails: rawProcedure.topics__other__comment || null,
+    topics: rawProcedure.topics ?? [],
+    towns: _getProcedureTowns(rawProcedure, { territorialAuthorities }),
+    type: _parseProcedureType(rawProcedure.type)
+  }
+}
+
+function _parseProcedureNameDetails (rawNameDetails) {
+  return rawNameDetails
+    ? /^\(.*\)$/.test(rawNameDetails)
+      ? rawNameDetails.slice(1, -1)
+      : rawNameDetails
+    : null
+}
+
+function _parseProcedureType (rawType) {
+  return rawType === 'Elaboration' ? 'Élaboration' : rawType
+}
+
+function _parseProcedures (rawProcedures, { eventStructuringByType, territorialAuthorities }) {
+  const procedures = []
+  const procedureIndexById = {}
+
+  for (const rawProcedure of rawProcedures) {
+    const procedure = _parseProcedure(rawProcedure, {
+      eventStructuringByType,
+      territorialAuthorities
+    })
+
+    if (rawProcedure.secondary_procedure_of) {
+      if (rawProcedure.secondary_procedure_of in procedureIndexById) {
+        procedures[
+          procedureIndexById[
+            rawProcedure.secondary_procedure_of
+          ]
+        ].procedures.push(procedure)
+      } else {
+        procedureIndexById[rawProcedure.secondary_procedure_of] = procedures.length
+        procedures.push({ procedures: [procedure] })
+      }
+    } else if (procedureIndexById[procedure.id]) {
+      procedures[procedureIndexById[procedure.id]] = {
+        ...procedure,
+        procedures: procedures[procedureIndexById[procedure.id]].procedures
+      }
+    } else {
+      procedureIndexById[procedure.id] = procedures.length
+      procedures.push({
+        ...procedure,
+        procedures: []
+      })
+    }
+  }
+
+  return orderBy(
+    procedures
+      .filter(procedure => 'id' in procedure)
+      .map(procedure => ({
+        ...procedure,
+        procedures: orderBy(
+          procedure.procedures,
+          [
+            ({ prescriptionDate }) => prescriptionDate || '0000-00-00',
+            ({ lastUpdateDate }) => lastUpdateDate || '0000-00-00',
+            ({ approvalDate }) => approvalDate || '0000-00-00'
+          ],
+          ['desc', 'desc', 'desc']
+        )
+      })),
+    [
+      ({ status }) => {
+        switch (status) {
+          case 'En cours':
+            return 1
+          case 'Opposable':
+            return 2
+          default:
+            return 3
+        }
+      },
+      ({ prescriptionDate }) => prescriptionDate || '0000-00-00',
+      ({ lastUpdateDate }) => lastUpdateDate || '0000-00-00',
+      ({ approvalDate }) => approvalDate || '0000-00-00'
+    ],
+    ['asc', 'desc', 'desc', 'desc']
+  )
 }

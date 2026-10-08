@@ -75,11 +75,15 @@ export function getLaunchEvent (eventType) {
 
 export function getPrescriptionEvent (event) {
   return !!event.is_valid && [
+    'Arrêté de lancement de la procédure',
     'Délibération de l\'établissement public qui prescrit',
     'Délibération de l\'Etablissement Public',
     'Délibération de prescription du conseil métropolitain',
     'Délibération de prescription du conseil municipal ou communautaire',
     'Délibération de prescription du conseil municipal',
+    'Notification de modification(préfet, CR, CG...)',
+    'Notification du projet ou demande de DUP',
+    'Notification du projet ou demande de DUP (MECDU)',
     'Prescription'
   ].includes(event.type)
 }
