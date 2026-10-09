@@ -6,10 +6,16 @@ from functools import partial
 
 import pytest
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import models
 from django.utils import timezone
 from pytest_django import DjangoAssertNumQueries
 
-from docurba.core.enums import ProcedureType, ProjectSharingRoleType, TypeCollectivite
+from docurba.core.enums import (
+    CommuneType,
+    ProcedureType,
+    ProjectSharingRoleType,
+    TypeCollectivite,
+)
 from docurba.core.models import (
     EVENT_CATEGORY_BY_DOC_TYPE,
     Adhesion,
@@ -167,6 +173,26 @@ class TestProcedureQuerySet:
 
         assert len(procedure.events_prefetched) == 1
         assert procedure.events_prefetched[0].id == event_not_archived.id
+
+    def test_with_events__with_parente_events(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        child_procedure = ProcedureFactory(with_parente=True)
+        event = EventFactory(procedure=child_procedure.parente)
+
+        with django_assert_num_queries(2):
+            procedure = Procedure.objects.with_events().get(pk=child_procedure.pk)
+
+        assert len(procedure.events_prefetched) == 0
+
+        with django_assert_num_queries(3):
+            procedure = Procedure.objects.with_events(with_parente_events=True).get(
+                pk=child_procedure.pk
+            )
+
+        assert len(procedure.events_prefetched) == 0
+        assert len(procedure.parente.events_prefetched) == 1
+        assert procedure.parente.events_prefetched[0].id == event.id
 
     def test_most_recently_shared_to_profile_email(self) -> None:
         guest = ProfileFactory()
@@ -696,6 +722,137 @@ class TestProcedure:
     )
     def test_secondary_type(self, procedure_type: ProcedureType) -> None:
         assert Procedure(type=procedure_type).type in ProcedureType.secondary()
+
+    @pytest.mark.django_db
+    def test_computed_name(self) -> None:
+        expected_name = "Procedure name"
+        procedure = ProcedureFactory(name=expected_name)
+        assert procedure.computed_name == expected_name
+
+        expected_name = "Procedure name - with complement"
+        procedure = ProcedureFactory(
+            name="Procedure name", name_complement="with complement"
+        )
+        assert procedure.computed_name == expected_name
+
+        expected_name = "Procedure name with complement"
+        procedure = ProcedureFactory(
+            name=expected_name, name_complement="with complement"
+        )
+        assert procedure.computed_name == expected_name
+
+        # With zone name
+        expected_name = (
+            "Élaboration PLU Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+        procedure = ProcedureFactory(
+            name="",
+            collectivite_porteuse__for_snapshot=True,
+            doc_type=TypeDocument.PLU,
+        )
+        assert procedure.computed_name == expected_name
+
+        # With zone name and numero
+        expected_name = (
+            "Élaboration 1 PLU Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+        procedure = ProcedureFactory(
+            name="",
+            numero="1",
+            collectivite_porteuse__for_snapshot=True,
+            doc_type=TypeDocument.PLU,
+        )
+        assert procedure.computed_name == expected_name
+
+        # With zone name, numero and name complement
+        expected_name = "Élaboration 1 PLU Syndicat mixte d'équipement de la commune de Beaucaire - en cours"
+        procedure = ProcedureFactory(
+            name="",
+            numero="1",
+            name_complement="en cours",
+            collectivite_porteuse__for_snapshot=True,
+            doc_type=TypeDocument.PLU,
+        )
+        assert procedure.computed_name == expected_name
+
+    @pytest.mark.django_db
+    def test_zone_name(self, django_assert_num_queries: DjangoAssertNumQueries) -> None:
+        collectivite_porteuse = CollectiviteFactory(
+            nom="CC de la Terre d'Argence", type=TypeCollectivite.CC
+        )
+
+        # Zone composed of one town.
+        procedure = ProcedureFactory(
+            with_perimetre=[CommuneFactory(nom="Beaucaire")],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.zone_name == "Beaucaire"
+
+        # Zone composed of two towns.
+        procedure = ProcedureFactory(
+            with_perimetre=[
+                CommuneFactory(nom="Beaucaire"),
+                CommuneFactory(nom="Argilliers"),
+            ],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.zone_name == "CC de la Terre d'Argence"
+
+        # Zone composed of two towns but only one is active.
+        procedure = ProcedureFactory(
+            with_perimetre=[
+                CommuneFactory(nom="Beaucaire"),
+                CommuneFactory(nom="Argilliers", type=CommuneType.COMD),
+            ],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.zone_name == "CC de la Terre d'Argence"
+
+        # Zone has a delegated town.
+        procedure = ProcedureFactory(
+            with_perimetre=[
+                CommuneFactory(nom="Beaucaire"),
+                CommuneFactory(nom="Nîmes"),
+                CommuneFactory(nom="Argilliers", type=CommuneType.COMD),
+            ],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.zone_name == "CC de la Terre d'Argence"
+
+        # Zone has a delegated town. The procedure has effect only on this delegated town.
+        delegated_town = CommuneFactory(nom="Argilliers", type=CommuneType.COMD)
+        procedure = ProcedureFactory(
+            with_perimetre=[
+                CommuneFactory(nom="Beaucaire"),
+                CommuneFactory(nom="Nîmes"),
+                delegated_town,
+            ],
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        delegated_town_through = procedure.perimetre_through.get(
+            commune_id=delegated_town.id
+        )
+        delegated_town_through.opposable = True
+        delegated_town_through.save()
+
+        # Assert num queries when the method is called with a prefetch or without.
+        # - Without prefetch.
+        with (
+            django_assert_num_queries(2),
+        ):
+            assert procedure.zone_name == "Argilliers"
+        # - With a prefetch.
+        with (
+            django_assert_num_queries(2),
+        ):
+            procedure = Procedure.objects.prefetch_related(
+                models.Prefetch("perimetre", queryset=Commune.objects.with_opposable())
+            ).get(pk=procedure.pk)
+
+        with (
+            django_assert_num_queries(0),
+        ):
+            assert procedure.zone_name == "Argilliers"
 
 
 class TestProcedureDates:

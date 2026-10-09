@@ -1,8 +1,16 @@
 # ruff: noqa: N815, RUF012
 
+
 from rest_framework import serializers
 
-from docurba.core.models import Collectivite, Commune, EventType
+from docurba.core.models import (
+    Collectivite,
+    Commune,
+    EventType,
+    Procedure,
+    Topic,
+    TypeDocument,
+)
 
 
 class BaseCollectiviteSerializer(serializers.ModelSerializer):
@@ -93,6 +101,7 @@ class CommuneSerializer(serializers.ModelSerializer):
     intercommunaliteCode = serializers.CharField(
         source="intercommunalite.siren", allow_blank=True, default=""
     )
+    is_opposable = serializers.CharField(source="opposable", required=False)
 
     class Meta:
         model = Commune
@@ -103,6 +112,7 @@ class CommuneSerializer(serializers.ModelSerializer):
             "departementCode",
             "regionCode",
             "intercommunaliteCode",
+            "is_opposable",
         ]
         read_only_fields = fields
 
@@ -129,3 +139,56 @@ class EventTypeSerializer(serializers.ModelSerializer):
             "sudocuhName",  # TODO: remove  # noqa: FIX002
         ]
         read_only_fields = fields
+
+
+class TopicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Topic
+        fields = ["name"]
+        read_only_fields = fields
+
+
+class BaseProcedureSerializer(serializers.ModelSerializer):
+    id = serializers.CharField()
+    collectivite_porteuse = CollectiviteSerializer()
+    docType = serializers.ChoiceField(choices=TypeDocument, source="doc_type")
+    startedBeforeHuwartLaw = serializers.BooleanField(
+        source="started_before_huwart_law", default=False
+    )
+    topics = TopicSerializer(many=True)
+    perimetre = CommuneSerializer(many=True)
+    name = serializers.CharField(source="computed_name")
+    approval_date = serializers.DateField(source="date_approbation")
+
+    class Meta:
+        model = Procedure
+        read_only_fields = [
+            "id",
+            "project_id",
+        ]
+        fields = [
+            *read_only_fields,
+            "collectivite_porteuse",
+            "project_id",
+            "perimetre",
+            "docType",
+            "startedBeforeHuwartLaw",
+            "type",
+            "numero",
+            "name",
+            "status",
+            "topics",
+            "approval_date",
+        ]
+        depth = 4
+
+
+class ProcedureSerializer(BaseProcedureSerializer):
+    parent = BaseProcedureSerializer(source="parente", default="")
+
+    class Meta:
+        model = Procedure
+        fields = [
+            "parent",
+            *BaseProcedureSerializer.Meta.fields,
+        ]

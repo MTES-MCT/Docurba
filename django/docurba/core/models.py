@@ -287,8 +287,10 @@ class ProcedureStatusChoices(models.TextChoices):
 
 
 class ProcedureQuerySet(models.QuerySet):
-    def with_events(self, *, avant: date | None = None) -> Self:
-        events = (
+    def with_events(
+        self, *, avant: date | None = None, with_parente_events: bool = False
+    ) -> Self:
+        events_qs = (
             Event.objects.without_archived()
             .exclude(date_evenement=None)
             .only(
@@ -298,13 +300,20 @@ class ProcedureQuerySet(models.QuerySet):
                 "procedure_id",
             )
         )
-        return self.annotate(
-            date_pivot=models.Value(
+        qs = self.annotate(
+            with_events__date_pivot=models.Value(
                 avant or timezone.now().date(), output_field=models.DateField()
             )
         ).prefetch_related(
-            models.Prefetch("event_set", events, to_attr="events_prefetched")
+            models.Prefetch("event_set", events_qs, to_attr="events_prefetched"),
         )
+        if with_parente_events:
+            qs = qs.select_related("parente").prefetch_related(
+                models.Prefetch(
+                    "parente__event_set", events_qs, to_attr="events_prefetched"
+                ),
+            )
+        return qs
 
     def with_communes_counts(self) -> Self:
         # On utilise une Subquery plutôt qu'une expression directe pour permettre
@@ -566,23 +575,7 @@ class Procedure(models.Model):
         )
 
     def __str__(self) -> str:
-        if self.name:
-            if (
-                self.name_complement
-                and not self.name.endswith(
-                    self.name_complement
-                )  # do not display twice the name_complement when the name already includes it (old procedures)
-            ):
-                return f"{self.name} - {self.name_complement}"
-            return self.name
-        numero = f" {self.numero}" if self.numero else ""
-        name_complement = f" - {self.name_complement}" if self.name_complement else ""
-        name_zone = (
-            f" {self.collectivite_porteuse}" if self.collectivite_porteuse else ""
-        )
-        return (
-            f"🤖 {self.type}{numero} {self.type_document}{name_zone}{name_complement}"
-        )
+        return ("🤖 " if not self.name else "") + self.computed_name
 
     def __lt__(self, other: Self) -> bool:
         if self.date_approbation and other.date_approbation:
@@ -600,13 +593,79 @@ class Procedure(models.Model):
         if self._events_processed:
             return
 
+        # This attribute is set by an annotation on the `with_events` method.
+        # This should be refactored soon. In the meantime, put a dressing on it.
+        date_pivot = getattr(self, "with_events__date_pivot", timezone.now().date())
+
         for event in reversed(self.events_prefetched):
             if event.category and (
                 event.category == EventCategory.FIN_ECHEANCE
-                or event.date_evenement <= self.date_pivot
+                or event.date_evenement <= date_pivot
             ):
                 setattr(self, event.category, event)
         self._events_processed = True
+
+    @property
+    def computed_name(self) -> str:
+        if self.name:
+            if (
+                self.name_complement
+                and not self.name.endswith(
+                    self.name_complement
+                )  # do not display twice the name_complement when the name already includes it (old procedures)
+            ):
+                return f"{self.name} - {self.name_complement}"
+            return self.name
+
+        return " ".join(
+            part
+            for part in [
+                self.type,
+                self.numero or "",
+                self.type_document,
+                self.zone_name,
+                f"- {self.name_complement}" if self.name_complement else "",
+            ]
+            if part
+        )
+
+    @property
+    def zone_name(self) -> str:
+        """Return the name displayed in a procedure to reflect the perimetre.
+
+        Today, we don't let the user choose it and we have many edge cases. We should denormalize soon.
+        This method should always be called after a prefetch but I don't want to block us if we call it directly from the Procedure object.
+        That's why I fallback on the database when the expected attributes are not present.
+
+        Expected usage:
+        procedure = Procedure.objects.prefetch_related("perimetre", models.Prefetch(Commune.objects.with_opposable()))
+        procedure.zone_name
+        """
+        perimetre_qs = (
+            self._prefetched_objects_cache.get("perimetre", self.perimetre.all())
+            if hasattr(self, "_prefetched_objects_cache")
+            else self.perimetre.all()
+        )
+        if perimetre_qs:
+            if len(perimetre_qs) == 1:
+                return perimetre_qs[0].nom
+            # There is more than one commune in the perimetre and only one is set as opposable.
+            # We assume this is the way delegated towns have been handled.
+            if hasattr(perimetre_qs[0], "opposable"):
+                opposable_delegated_towns = [
+                    commune
+                    for commune in perimetre_qs
+                    if commune.opposable and commune.type != TypeCollectivite.COM
+                ]
+            else:
+                opposable_delegated_towns = (
+                    perimetre_qs.exclude(type=TypeCollectivite.COM)
+                    .filter(procedures_through__opposable=True)
+                    .all()
+                )
+            if len(opposable_delegated_towns) == 1:
+                return opposable_delegated_towns[0].nom
+        return self.collectivite_porteuse.nom if self.collectivite_porteuse else ""
 
     @cached_property
     def dernier_event_impactant(self) -> "Event | None":
@@ -629,7 +688,11 @@ class Procedure(models.Model):
             return EventCategory.CADUC
         if not self.dernier_event_impactant:
             return None
-        if self.date_fin_echeance and self.date_fin_echeance < self.date_pivot:
+
+        # This attribute is set by an annotation on the `with_events` method.
+        # This should be refactored soon. In the meantime, put a dressing on it.
+        date_pivot = getattr(self, "with_events__date_pivot", timezone.now().date())
+        if self.date_fin_echeance and self.date_fin_echeance < date_pivot:
             return EventCategory.CADUC
         return self.dernier_event_impactant.category
 
@@ -1424,6 +1487,15 @@ class CommuneQuerySet(models.QuerySet):
             )
         )
 
+    def with_opposable(self) -> Self:
+        """Return the CommuneProcedure.opposable column.
+
+        Attach the `opposable` attribute to the Commune objects to expose the opposability of a set of precedures.
+        For example:
+        Procedure.objects.prefetch_related("perimetre", queryset=Commune.objects.with_opposable())
+        """
+        return self.annotate(opposable=models.F("procedures_through__opposable"))
+
 
 class Commune(Collectivite):
     intercommunalite = models.ForeignKey(
@@ -1593,6 +1665,7 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
         from_fields=["commune_id"],
         to_fields=["collectivite_ptr_id"],
         on_delete=models.DO_NOTHING,
+        related_name="procedures_through",
     )
     procedure = models.ForeignKey(
         Procedure, models.CASCADE, related_name="perimetre_through"
