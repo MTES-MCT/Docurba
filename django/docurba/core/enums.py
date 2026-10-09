@@ -35,6 +35,32 @@ class VisibilityType(models.TextChoices):
     )
 
 
+class TypeDocument(models.TextChoices):
+    CC = "CC"
+    SCOT = "SCOT"
+    SD = "SD"
+    PLU = "PLU"
+    POS = "POS"
+
+    PLUI = "PLUi"
+    PLUIH = "PLUiH"
+    PLUIHM = "PLUiHM"
+    PLUIM = "PLUiM"
+
+    PLUIS = "PLUiS"
+    PLUISH = "PLUiSH"
+    PLUISHM = "PLUiSHM"
+    PLUISM = "PLUiSM"
+
+
+class ProcedureStatusChoices(models.TextChoices):
+    ANNULE = "annule", "Annulé"
+    EN_COURS = "en cours", "En cours"
+    CADUC = "caduc", "Caduc"
+    ABANDON = "abandon", "Abandon"
+    OPPOSABLE = "opposable", "Opposable"
+
+
 class ProcedureType(models.TextChoices):
     # NOTE(cms): these enums are not really pythonic as they should be in upper case
     # and without space but it's the way they are stored in the database today.
@@ -54,7 +80,7 @@ class ProcedureType(models.TextChoices):
 
     @classmethod
     def principal(cls: models.TextChoices) -> dict:
-        enums = [cls.ABROGATION, cls.ELABORATION]
+        enums = [cls.ABROGATION, cls.ELABORATION, cls.REVISION]
         return {member.value: member for member in cls if member in enums}
 
     @classmethod
@@ -64,7 +90,6 @@ class ProcedureType(models.TextChoices):
             cls.MISE_EN_COMPATIBILITE,
             cls.MODIFICATION,
             cls.MODIFICATION_SIMPLIFIEE,
-            cls.REVISION,
             cls.REVISION_MS_RA,
             cls.REVISION_ALLEGEE,
             cls.REVISION_SIMPLIFIEE,

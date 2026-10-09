@@ -12,20 +12,11 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.html import format_html
 
-from docurba.core.enums import TypeCollectivite
-from docurba.core.models import (
-    Collectivite,
-    Commune,
-    Event,
-    EventType,
-    Procedure,
-    Project,
-    ProjectSharing,
-    Topic,
-)
+from docurba.core import enums as core_enums
+from docurba.core import models as core_models
 
 
-@admin.register(Collectivite)
+@admin.register(core_models.Collectivite)
 class CollectiviteAdmin(admin.ModelAdmin):
     list_display = (
         "code_insee_unique",
@@ -56,13 +47,13 @@ class CollectiviteAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(Commune)
+@admin.register(core_models.Commune)
 class CommuneAdmin(CollectiviteAdmin):
     change_form_template = "admin/core/commune/procedures.html"
 
     def get_extra_context(self, object_id) -> dict:
         commune = get_object_or_404(
-            Commune.objects.with_procedures_principales(), pk=object_id
+            core_models.Commune.objects.with_procedures_principales(), pk=object_id
         )
         procedures = (
             commune.procedures.filter(parente=None)
@@ -105,7 +96,7 @@ class CommuneAdmin(CollectiviteAdmin):
 
 
 class ProcedurePerimetreInline(admin.TabularInline):
-    model = Procedure.perimetre.through
+    model = core_models.Procedure.perimetre.through
     readonly_fields = (
         "collectivite_code",
         "collectivite_type",
@@ -135,7 +126,7 @@ class ProcedurePerimetreInline(admin.TabularInline):
 
 
 class EventsInline(admin.TabularInline):
-    model = Event
+    model = core_models.Event
     show_change_link = True
     autocomplete_fields = ("profile",)
     readonly_fields = (
@@ -174,7 +165,10 @@ class TopicsFilter(admin.SimpleListFilter):
     parameter_name = "topic"
 
     def lookups(self, request, model_admin) -> list[tuple[str, Any]]:
-        return [(topic.name, topic.display_name) for topic in Topic.objects.all()]
+        return [
+            (topic.name, topic.display_name)
+            for topic in core_models.Topic.objects.all()
+        ]
 
     def queryset(self, request, queryset) -> models.QuerySet[Any]:
         if not self.value():
@@ -187,7 +181,7 @@ class CollectiviteTypeFilter(admin.SimpleListFilter):
     parameter_name = "collectivite_type"
 
     def lookups(self, request, model_admin) -> list[tuple[str, Any]]:
-        return TypeCollectivite.choices
+        return core_enums.TypeCollectivite.choices
 
     def queryset(self, request, queryset) -> models.QuerySet[Any]:
         if not self.value():
@@ -197,7 +191,7 @@ class CollectiviteTypeFilter(admin.SimpleListFilter):
 
 class ProjectSharingInline(admin.TabularInline):
     show_change_link = True
-    model = ProjectSharing
+    model = core_models.ProjectSharing
     readonly_fields = (
         "created_at",
         "user_email",
@@ -223,7 +217,7 @@ class ProjectSharingInline(admin.TabularInline):
         return False
 
 
-@admin.register(Project)
+@admin.register(core_models.Project)
 class ProjectAdmin(admin.ModelAdmin):
     search_fields = [
         "id",
@@ -242,7 +236,7 @@ class ProjectAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(ProjectSharing)
+@admin.register(core_models.ProjectSharing)
 class ProjectSharingAdmin(admin.ModelAdmin):
     search_fields = [
         "id",
@@ -262,7 +256,7 @@ class ProjectSharingAdmin(admin.ModelAdmin):
         return super().get_queryset(request).select_related("project", "shared_by")
 
 
-@admin.register(Procedure)
+@admin.register(core_models.Procedure)
 class ProcedureAdmin(admin.ModelAdmin):
     readonly_fields = (
         "id",
@@ -352,7 +346,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         )
 
 
-@admin.register(Topic)
+@admin.register(core_models.Topic)
 class TopicAdmin(admin.ModelAdmin):
     list_display = ("display_name", "ui_rank")
     fields = ["display_name", "ui_rank"]
@@ -367,7 +361,7 @@ class TopicAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(EventType)
+@admin.register(core_models.EventType)
 class EventTypeAdmin(admin.ModelAdmin):
     readonly_fields = (
         "id",
@@ -411,7 +405,7 @@ class EventTypeAdmin(admin.ModelAdmin):
         return False
 
 
-@admin.register(Event)
+@admin.register(core_models.Event)
 class EventAdmin(admin.ModelAdmin):
     readonly_fields = (
         "id",

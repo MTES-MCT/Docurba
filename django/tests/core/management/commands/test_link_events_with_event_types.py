@@ -1,6 +1,7 @@
 import pytest
 from django.core.management import call_command
 
+from docurba.core.enums import TypeDocument
 from docurba.core.models import (
     Collectivite,
     Commune,
@@ -9,7 +10,6 @@ from docurba.core.models import (
     EventType,
     Procedure,
     Region,
-    TypeDocument,
 )
 from docurba.history.models import EventSnapshot
 from docurba.users.models import Profile, SupabaseUser, User

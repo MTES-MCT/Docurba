@@ -8,25 +8,8 @@ import factory.fuzzy
 from django.utils import timezone
 from factory.random import randgen
 
-from docurba.core.enums import CommuneType
-from docurba.core.models import (
-    EVENT_CATEGORY_BY_DOC_TYPE,
-    EVENT_TYPE_BY_EVENT_CATEGORY,
-    Collectivite,
-    Commune,
-    CommuneProcedure,
-    Departement,
-    Event,
-    EventType,
-    MaterializedViewFlatMembership,
-    Procedure,
-    ProcedureStatusChoices,
-    Project,
-    ProjectSharing,
-    Region,
-    TypeCollectivite,
-    TypeDocument,
-)
+from docurba.core import enums as core_enums
+from docurba.core import models as core_models
 from tests.users import factories as users_factories
 
 REGIONS = {
@@ -78,7 +61,7 @@ class RegionFactory(factory.django.DjangoModelFactory):
         )
 
     class Meta:
-        model = Region
+        model = core_models.Region
         django_get_or_create = ("code_insee",)
 
     code_insee = factory.fuzzy.FuzzyChoice(REGIONS.keys())
@@ -94,7 +77,7 @@ class DepartementFactory(factory.django.DjangoModelFactory):
         )
 
     class Meta:
-        model = Departement
+        model = core_models.Departement
         django_get_or_create = ("code_insee",)
 
     code_insee = factory.fuzzy.FuzzyChoice(DEPARTEMENTS.keys())
@@ -111,19 +94,19 @@ class CommuneFactory(factory.django.DjangoModelFactory):
     class Params:
         for_snapshot = factory.Trait(
             code_insee="30032",
-            type=CommuneType.COM,
+            type=core_enums.CommuneType.COM,
             nom="Beaucaire",
             departement__for_snapshot=True,
         )
 
     class Meta:
-        model = Commune
+        model = core_models.Commune
         django_get_or_create = ("code_insee_unique",)
 
     id = factory.LazyAttribute(lambda o: f"{o.code_insee_unique}_{o.type}")
     code_insee_unique = factory.LazyAttribute(lambda o: f"{o.code_insee}")
     code_insee = factory.fuzzy.FuzzyChoice(COMMUNES.keys())
-    type = CommuneType.COM  # Don't mess with COMD and COMA
+    type = core_enums.CommuneType.COM  # Don't mess with COMD and COMA
     nom = factory.LazyAttribute(lambda o: COMMUNES[o.code_insee_unique]["name"])
     competence_plan = False
     competence_schema = False
@@ -138,14 +121,14 @@ class CommuneFactory(factory.django.DjangoModelFactory):
 
 class CollectiviteFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = Collectivite
+        model = core_models.Collectivite
         django_get_or_create = ("code_insee_unique",)
         skip_postgeneration_save = True
 
     class Params:
         for_snapshot = factory.Trait(
             siren="253000020",
-            type=TypeCollectivite.SMO,
+            type=core_enums.TypeCollectivite.SMO,
             nom="Syndicat mixte d'équipement de la commune de Beaucaire",
             departement__for_snapshot=True,
         )
@@ -159,9 +142,13 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
     type = factory.fuzzy.FuzzyChoice(
         [
             type_groupement
-            for type_groupement in TypeCollectivite
+            for type_groupement in core_enums.TypeCollectivite
             if type_groupement
-            not in (TypeCollectivite.COM, TypeCollectivite.COMA, TypeCollectivite.COMD)
+            not in (
+                core_enums.TypeCollectivite.COM,
+                core_enums.TypeCollectivite.COMA,
+                core_enums.TypeCollectivite.COMD,
+            )
         ]
     )
 
@@ -176,14 +163,14 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
     def with_members(
         self,
         create: bool,  # noqa: FBT001
-        extracted: list[Collectivite] | None,
+        extracted: list[core_models.Collectivite] | None,
         **extra: dict,
     ) -> None:
         if not create or not extracted:
             return
         members_list = extra.get("list") or CollectiviteFactory.create_batch(2)
         self.collectivites_adherentes.add(*members_list)
-        MaterializedViewFlatMembership.refresh()
+        core_models.MaterializedViewFlatMembership.refresh()
 
     @factory.post_generation
     def with_flat_members(self, create: bool, extracted: bool, **extra: dict) -> None:  # noqa: FBT001
@@ -193,17 +180,17 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
         grand_children = []
         if extra.get("for_snapshot", False):
             child = CollectiviteFactory(
-                type=TypeCollectivite.CC,
+                type=core_enums.TypeCollectivite.CC,
                 departement__code_insee="30",
                 nom="CC Beaucaire Terre d'Argence",
                 siren="243000585",
             )
             communes_attrs = (
-                (TypeCollectivite.COM, "Beaucaire", "30032"),
-                (TypeCollectivite.COM, "Bellegarde", "30034"),
-                (TypeCollectivite.COM, "Fourques", "30117"),
-                (TypeCollectivite.COM, "Jonquières-Saint-Vincent", "30135"),
-                (TypeCollectivite.COM, "Vallabrègues", "30336"),
+                (core_enums.TypeCollectivite.COM, "Beaucaire", "30032"),
+                (core_enums.TypeCollectivite.COM, "Bellegarde", "30034"),
+                (core_enums.TypeCollectivite.COM, "Fourques", "30117"),
+                (core_enums.TypeCollectivite.COM, "Jonquières-Saint-Vincent", "30135"),
+                (core_enums.TypeCollectivite.COM, "Vallabrègues", "30336"),
             )
             for attr in communes_attrs:
                 grand_child = CommuneFactory(
@@ -220,7 +207,7 @@ class CollectiviteFactory(factory.django.DjangoModelFactory):
         self.collectivites_adherentes.add(*[child])
         child.collectivites_adherentes.add(*grand_children)
 
-        MaterializedViewFlatMembership.refresh()
+        core_models.MaterializedViewFlatMembership.refresh()
 
 
 class ProjectFactory(factory.django.DjangoModelFactory):
@@ -235,7 +222,7 @@ class ProjectFactory(factory.django.DjangoModelFactory):
         )
 
     class Meta:
-        model = Project
+        model = core_models.Project
         skip_postgeneration_save = True
 
     @factory.post_generation
@@ -251,16 +238,16 @@ class ProjectSharingFactory(factory.django.DjangoModelFactory):
     shared_by = factory.SubFactory(users_factories.ProfileFactory)
 
     class Meta:
-        model = ProjectSharing
+        model = core_models.ProjectSharing
 
 
 class ProcedureFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = Procedure
+        model = core_models.Procedure
         skip_postgeneration_save = True
 
     collectivite_porteuse = factory.SubFactory(CollectiviteFactory)
-    doc_type = factory.fuzzy.FuzzyChoice(TypeDocument)
+    doc_type = factory.fuzzy.FuzzyChoice(core_enums.TypeDocument)
     type = "Élaboration"
     vaut_PLH = False  # noqa: N815
     vaut_PDM = False  # noqa: N815
@@ -290,13 +277,17 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
         for_snapshot = factory.Trait(
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-5e1baf8d6f09"),
             collectivite_porteuse__for_snapshot=True,
-            doc_type=TypeDocument.PLU,
+            doc_type=core_enums.TypeDocument.PLU,
             name="Élaboration du PLU de Nantes",
             project__for_snapshot=True,
         )
 
     @factory.post_generation
-    def with_perimetre(self, create: bool, extracted: list[Commune] | None) -> None:  # noqa: FBT001
+    def with_perimetre(
+        self,
+        create: bool,  # noqa: FBT001
+        extracted: list[core_models.Commune] | None,
+    ) -> None:
         if not create or not extracted:
             return
 
@@ -313,7 +304,7 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
 
         event_type = extra.pop("type", None) or "Prescription"
         if extra.get("category"):
-            event_type = EVENT_TYPE_BY_EVENT_CATEGORY[self.doc_type][
+            event_type = core_models.EVENT_TYPE_BY_EVENT_CATEGORY[self.doc_type][
                 extra.pop("category")
             ][0]
 
@@ -322,7 +313,7 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
 
 class CommuneProcedureFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = CommuneProcedure
+        model = core_models.CommuneProcedure
 
     commune = factory.SubFactory(CommuneFactory)
     commune_id = factory.LazyAttribute(
@@ -337,20 +328,20 @@ class CommuneProcedureFactory(factory.django.DjangoModelFactory):
 
 class EventTypeFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = EventType
+        model = core_models.EventType
 
     name = factory.LazyAttribute(
         lambda o: randgen.choice(
-            list(EVENT_CATEGORY_BY_DOC_TYPE[o.document_type].keys())
+            list(core_models.EVENT_CATEGORY_BY_DOC_TYPE[o.document_type].keys())
         )
     )
-    document_type = factory.fuzzy.FuzzyChoice(EventType.DocumentType)
-    impact = factory.fuzzy.FuzzyChoice(ProcedureStatusChoices)
+    document_type = factory.fuzzy.FuzzyChoice(core_models.EventType.DocumentType)
+    impact = factory.fuzzy.FuzzyChoice(core_enums.ProcedureStatusChoices)
 
 
 class EventFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = Event
+        model = core_models.Event
 
     procedure = factory.SubFactory(ProcedureFactory)
     date_evenement = factory.fuzzy.FuzzyDate(datetime.date(1970, 1, 1))
