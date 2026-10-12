@@ -5,6 +5,10 @@ export default {
       default: 0,
       type: Number
     },
+    sm: {
+      default: false,
+      type: Boolean
+    },
     value: {
       default: '',
       type: String
@@ -26,7 +30,8 @@ export default {
     class="du-text"
     :class="{
       'du-text--ellipsis': !!rows,
-      'du-text--markdown': !!document
+      'du-text--markdown': !!document,
+      'du-text--sm': sm
     }"
     :document="document"
     :style="{ '--du-text__rows': rows }"
@@ -38,8 +43,8 @@ export default {
 
 <style>
 .du-text {
-  color: #3a3a3a;
-  font-size: .875rem;
+  color: #161616;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.5rem;
 }
@@ -56,5 +61,9 @@ p.du-text {
 }
 .du-text--markdown > *:last-child {
   margin-bottom: 0;
+}
+.du-text--sm {
+  color: #3a3a3a;
+  font-size: .875rem;
 }
 </style>

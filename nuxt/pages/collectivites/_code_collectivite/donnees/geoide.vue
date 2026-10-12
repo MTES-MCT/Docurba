@@ -1,67 +1,68 @@
-<template>
-  <GeoIDECardList v-if="!loading && communes" :region="collectivite.region.iso" :cards="dataset" :themes="themes" />
-  <VGlobalLoader v-else />
-</template>
-
 <script>
-
 export default {
-  name: 'GeoIDE',
   props: {
-    isEpci: {
-      type: Boolean,
-      required: true
+    territorialAuthority: {
+      required: true,
+      type: Object
     },
-    collectivite: {
-      type: Object,
-      required: true
-    },
-    communes: {
-      type: Array,
-      required: true
+    towns: {
+      required: true,
+      type: Array
     }
   },
   data () {
     return {
       dataset: [],
-      themes: [],
-      loading: true
+      loading: true,
+      regionISO: null,
+      themes: []
+    }
+  },
+  watch: {
+    territorialAuthority: {
+      async handler (value) {
+        this.regionISO = (await this.$regionApi.get(value.regionCode))?.iso || null
+      },
+      immediate: true
     }
   },
   async mounted () {
-    this.communes.forEach((commune) => {
+    this.towns.forEach((town) => {
       this.$matomo([
-        'trackEvent', 'Socle de PAC', 'GeoIDE',
-        `${this.$route.query.document} - ${commune.id}`
+        'trackEvent',
+        'Socle de PAC',
+        'GeoIDE',
+        `${this.$route.query.document} - ${town.code}`
       ])
     })
 
-    await this.fetchDatasets()
+    const parsedInseeCode = this.towns.map(town => `commune/${town.code}`)
+    const { cards, themes } = await this.$daturba.getGeoIDE(parsedInseeCode.join(' or '))
+    this.dataset = cards
+    const inspireThemes = themes.dimension.find(d => d['@label'] === 'inspireThemes')
+
+    if (inspireThemes && inspireThemes.category) {
+      this.themes = inspireThemes.category.map((c) => {
+        return {
+          id: c['@value'],
+          text: `${c['@label']} (${c['@count']})`
+        }
+      })
+    } else {
+      this.themes = []
+    }
 
     this.loading = false
-  },
-  methods: {
-    async fetchDatasets () {
-      this.loading = true
-      const parsedInseeCode = this.communes.map(commune => `commune/${commune.code}`)
-      const { cards, themes } = await this.$daturba.getGeoIDE(parsedInseeCode.join(' or '))
-
-      this.dataset = cards
-      const inspireThemes = themes.dimension.find(d => d['@label'] === 'inspireThemes')
-
-      if (inspireThemes && inspireThemes.category) {
-        this.themes = inspireThemes.category.map((c) => {
-          return {
-            text: `${c['@label']} (${c['@count']})`,
-            id: c['@value']
-          }
-        })
-      } else {
-        this.themes = []
-      }
-
-      this.loading = false
-    }
   }
 }
 </script>
+
+<template>
+  <GeoIDECardList
+    v-if="!loading && towns"
+    :cards="dataset"
+    :region="regionISO"
+    :themes="themes"
+  />
+  <VGlobalLoader v-else />
+</template>

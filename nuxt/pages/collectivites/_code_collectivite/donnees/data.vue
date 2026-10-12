@@ -1,59 +1,58 @@
-<template>
-  <!-- TODO Pour l'instant, un composant spécifique à GeoBretagne -->
-  <GeoBretagneViewer v-if="collectivite.region.iso === 'FR-BRE'" :collectivite-code="collectivite.code" :is-epci="isEpci" class="mt-4" />
-  <DataSourcesList v-else-if="communes" :region="collectivite.region.code" :collectivites-codes="collectivitesCodes" :default-selected-theme="defaultSelectedTheme" @select-theme="onSelectedTheme" />
-</template>
-
 <script>
 export default {
-  name: 'BaseTerritoriale',
   props: {
-    isEpci: {
-      type: Boolean,
-      required: true
+    territorialAuthority: {
+      required: true,
+      type: Object
     },
-    collectivite: {
-      type: Object,
-      required: true
-    },
-    communes: {
-      type: Array,
-      required: true
-    }
-  },
-  data () {
-    return {
-      collectivitesCodes: []
+    towns: {
+      required: true,
+      type: Array
     }
   },
   computed: {
     defaultSelectedTheme () {
       return this.$route.query.theme ? Number(this.$route.query.theme) : null
+    },
+    townCodes () {
+      return this.towns.map(({ code }) => code)
     }
   },
-  created () {
-    // Start Analytics
-    this.communes.forEach((commune) => {
+  mounted () {
+    this.townCodes.forEach((townCode) => {
       this.$matomo([
-        'trackEvent', 'Socle de PAC', 'Data',
-    `${this.$route.query.document} - ${commune}`
+        'trackEvent',
+        'Socle de PAC',
+        'Data',
+        `${this.$route.query.document} - ${townCode}`
       ])
     })
-    // End Analytics
-
-    this.collectivitesCodes = this.isEpci
-      ? this.communes.map((c) => {
-        return c.code
-      })
-      : [this.collectivite.code]
-  },
-  destroyed () {
-    this.$router.replace({ query: { ...this.$route.query, theme: undefined } })
   },
   methods: {
-    onSelectedTheme (selectedThemeId) {
-      this.$router.replace({ query: { ...this.$route.query, theme: selectedThemeId } })
+    selectTheme (themeId) {
+      this.$router.replace({
+        query: {
+          ...this.$route.query,
+          theme: themeId
+        }
+      })
     }
   }
 }
 </script>
+
+<template>
+  <!-- TODO Pour l'instant, un composant spécifique à GeoBretagne -->
+  <GeoBretagneViewer
+    v-if="territorialAuthority.regionCode === '53'"
+    :collectivite-code="territorialAuthority.code"
+    :is-epci="!territorialAuthority.intermunicipalityCode"
+  />
+  <DataSourcesList
+    v-else-if="towns"
+    :region="territorialAuthority.regionCode"
+    :collectivites-codes="townCodes"
+    :default-selected-theme="defaultSelectedTheme"
+    @select-theme="selectTheme($event)"
+  />
+</template>

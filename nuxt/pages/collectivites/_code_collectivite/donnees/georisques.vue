@@ -1,41 +1,21 @@
-<template>
-  <div>
-    <v-container>
-      <v-row>
-        <v-col cols="12">
-          <h1>Risques Géographiques pour {{ isEpci ? 'l\'Epci' : 'la commune' }} </h1>
-        </v-col>
-        <v-col cols="12">
-          <p>
-            Vous trouvez toutes les informations relatives aux risques sur le site georisques.gouv.fr.
-            Vous pouvez également télécharger directement la donnée du Plan Prévention des Risques directement depuis Docurba.
-          </p>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
-          <DataGeorisquesTable :is-epci="isEpci" :communes="communes" />
-        </v-col>
-      </v-row>
-    </v-container>
-  </div>
-</template>
-
 <script>
 export default {
-  name: 'Georisques',
   props: {
-    isEpci: {
-      type: Boolean,
-      required: true
+    territorialAuthority: {
+      required: true,
+      type: Object
     },
-    collectivite: {
-      type: Object,
-      required: true
-    },
-    communes: {
-      type: Array,
-      required: true
+    towns: {
+      required: true,
+      type: Array
+    }
+  },
+  computed: {
+    communes () {
+      return this.towns.map(town => ({
+        code: town.code,
+        intitule: town.name
+      }))
     }
   },
   mounted () {
@@ -55,3 +35,27 @@ export default {
   }
 }
 </script>
+
+<template>
+  <div>
+    <v-row>
+      <v-col cols="12">
+        <h1>Risques Géographiques pour {{ territorialAuthority.intermunicipalityCode ? 'la commune' : 'l\'Epci' }}</h1>
+      </v-col>
+      <v-col cols="12">
+        <p>
+          Vous trouvez toutes les informations relatives aux risques sur le site georisques.gouv.fr.
+          Vous pouvez également télécharger directement la donnée du Plan Prévention des Risques directement depuis Docurba.
+        </p>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <DataGeorisquesTable
+          :communes="communes"
+          :is-epci="!territorialAuthority.intermunicipalityCode"
+        />
+      </v-col>
+    </v-row>
+  </div>
+</template>
