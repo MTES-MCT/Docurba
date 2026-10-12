@@ -191,6 +191,7 @@ export default {
         <DUText
           v-if="value.topicDetails"
           :rows="3"
+          sm
           :value="value.topicDetails"
         />
       </DUGroup>
@@ -203,6 +204,7 @@ export default {
         </DUHeading>
         <DUText
           :rows="2"
+          sm
           :value="value.comment"
         />
       </DUGroup>
@@ -224,6 +226,7 @@ export default {
         </DUGroup>
         <DUText
           :rows="2"
+          sm
           :value="value.privateComment"
         />
       </DUGroup>
@@ -245,6 +248,7 @@ export default {
         </DUGroup>
         <DUText
           :rows="2"
+          sm
           :value="value.sudocuhComment"
         />
       </DUGroup>
@@ -256,7 +260,10 @@ export default {
           md
           start
         >
-          <DUText v-if="value.lastEventDate">
+          <DUText
+            v-if="value.lastEventDate"
+            sm
+          >
             Dernier événement le {{ value.lastEventDate }}&nbsp;:<em>&nbsp;{{ value.lastEventType }}</em>
           </DUText>
           <PageDepartementsCollectivitesTowns

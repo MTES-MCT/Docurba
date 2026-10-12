@@ -52,6 +52,8 @@ export default {
     { src: '~/plugins/django-api.js', mode: 'client' }, // Need to be before urbanisator plugin
     { src: '~/plugins/nuxt-api.js', mode: 'client' },
     { src: '~/plugins/collectivite.js', mode: 'client' },
+    { src: '~/plugins/department.js', mode: 'client' },
+    { src: '~/plugins/region.js', mode: 'client' },
     { src: '~/plugins/territorial-authority.js', mode: 'client' },
     { src: '~/plugins/event.js', mode: 'client' },
     { src: '~/plugins/notifications.js', mode: 'client' },

@@ -23,17 +23,20 @@ export default ({ $djangoApi }, inject) => {
   })
 }
 
-export function displaySirenCode (sirenCode) {
-  if (!sirenCode) {
+export function displayTerritorialAuthorityCode (territorialAuthority) {
+  if (!territorialAuthority) {
     return ''
   }
+  if (territorialAuthority.inseeCode) {
+    return `Code INSEE ${territorialAuthority.inseeCode}`
+  }
 
-  const firstGroupSize = sirenCode.length % 3
+  const firstGroupSize = territorialAuthority.sirenCode.length % 3
 
-  return [
-    sirenCode.slice(0, firstGroupSize),
-    ...sirenCode.slice(firstGroupSize).match(/.{1,3}/g) ?? []
-  ].join(' ')
+  return `SIREN ${[
+    territorialAuthority.sirenCode.slice(0, firstGroupSize),
+    ...territorialAuthority.sirenCode.slice(firstGroupSize).match(/.{1,3}/g) ?? []
+  ].join(' ')}`
 }
 
 export async function getTerritorialAuthority (api, code, params) {

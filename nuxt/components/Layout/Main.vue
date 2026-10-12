@@ -13,6 +13,10 @@ export default {
       default: () => [],
       type: Array
     },
+    primary: {
+      default: false,
+      type: Boolean
+    },
     top: {
       default: '0',
       type: String
@@ -22,11 +26,18 @@ export default {
 </script>
 
 <template>
-  <div class="du-layout-main">
+  <div
+    class="du-layout-main"
+    :class="{ 'du-layout-main--primary': primary }"
+  >
     <LayoutHeader
       :breadcrumb="breadcrumb"
       :label="label"
+      :primary="primary"
     >
+      <template #default>
+        <slot name="header" />
+      </template>
       <template #infos>
         <slot name="infos" />
       </template>
@@ -49,7 +60,11 @@ export default {
 
 <style>
 .du-layout-main {
+  background-color: #f6f6f6;
   display: grid;
+}
+.du-layout-main--primary {
+  background-color: #fff;
 }
 .du-layout-main__body {
   align-items: start;

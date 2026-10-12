@@ -13,6 +13,10 @@ export default {
       default: false,
       type: Boolean
     },
+    secondary: {
+      default: false,
+      type: Boolean
+    },
     tertiary: {
       default: false,
       type: Boolean
@@ -34,6 +38,7 @@ export default {
     class="du-button"
     :class="{
       'du-button--primary': primary,
+      'du-button--secondary': secondary,
       'du-button--sm': sm,
       'du-button--tertiary': tertiary,
       'du-button--tertiary-borderless': tertiaryBorderless
@@ -73,6 +78,19 @@ export default {
 .du-button--primary:hover {
   background-color: #1212ff;
 }
+.du-button--secondary {
+  background-color: #fff;
+  box-shadow: inset 0 0 0 .0625rem #000091;
+  color: #000091 !important;
+}
+.du-button--secondary:focus-visible,
+.du-button--secondary:hover,
+.du-button--tertiary:focus-visible,
+.du-button--tertiary:hover,
+.du-button--tertiary-borderless:focus-visible,
+.du-button--tertiary-borderless:hover {
+  background-color: #f6f6f6;
+}
 .du-button--sm {
   font-size: .875rem;
   padding-bottom: .25rem;
@@ -85,11 +103,5 @@ export default {
 }
 .du-button--tertiary {
   box-shadow: inset 0 0 0 .0625rem #ddd;
-}
-.du-button--tertiary:focus-visible,
-.du-button--tertiary:hover,
-.du-button--tertiary-borderless:focus-visible,
-.du-button--tertiary-borderless:hover {
-  background-color: #f6f6f6;
 }
 </style>
