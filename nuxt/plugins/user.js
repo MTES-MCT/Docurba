@@ -65,7 +65,7 @@ function handleRedirect ({ event, nuxtApi, router, user }) {
           email: user.email
         }
       })
-      router.push({ name: 'collectivites-collectiviteId', params: { collectiviteId: user.profile.collectivite_id }, query })
+      router.push({ name: 'collectivites-code_collectivite', params: { code_collectivite: user.profile.collectivite_id }, query })
       break
     default:
       break
