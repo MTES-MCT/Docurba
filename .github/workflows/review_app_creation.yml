@@ -30,7 +30,7 @@ jobs:
         run: |
           DOMAIN=osc-fr1.scalingo.io
 
-          NUXT_2_REVIEW_APP_NAME=docurba-nuxt-demo-pr${{ env.PR_ID }}
+          NUXT_2_REVIEW_APP_NAME=docurba-demo-pr${{ env.PR_ID }}
           echo "NUXT_2_REVIEW_APP_NAME=${NUXT_2_REVIEW_APP_NAME}" >> $GITHUB_OUTPUT
           echo "NUXT_2_URL=https://${NUXT_2_REVIEW_APP_NAME}.${DOMAIN}" >> $GITHUB_OUTPUT
 
@@ -90,7 +90,7 @@ jobs:
     needs: [prepare, create_supabase]
     runs-on: ubuntu-latest
     env:
-      SCALINGO_NUXT_APP_NAME: docurba-nuxt-demo
+      SCALINGO_NUXT_APP_NAME: docurba-demo
 
     steps:
     - name: 🛠️ Installation de la CLI Scalingo
