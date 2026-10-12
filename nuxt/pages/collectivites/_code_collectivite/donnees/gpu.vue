@@ -1,13 +1,10 @@
 <template>
-  <v-container v-if="loading">
-    <v-row>
-      <v-col v-for="i in 3" :key="i">
-        <v-skeleton-loader type="image" />
-      </v-col>
-    </v-row>
-  </v-container>
-
-  <v-container v-else>
+  <v-row v-if="loading">
+    <v-col v-for="i in 3" :key="i">
+      <v-skeleton-loader type="image" />
+    </v-col>
+  </v-row>
+  <div v-else>
     <v-row>
       <v-col cols="12">
         <v-alert type="info">
@@ -37,7 +34,7 @@
         <DataGpuDocumentCard :document="doc" />
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -45,89 +42,89 @@ import axios from 'axios'
 
 export default {
   props: {
-    isEpci: {
-      type: Boolean,
-      required: true
+    territorialAuthority: {
+      required: true,
+      type: Object
     },
-    collectivite: {
-      type: Object,
-      required: true
+    towns: {
+      required: true,
+      type: Array
     }
   },
   data () {
     return {
-      loading: true,
       areas: [],
-      selectedArea: null,
-      documents: []
+      documents: [],
+      loading: true,
+      selectedArea: null
     }
   },
   computed: {
+    availableAreas () {
+      return this.areas.filter(a => !!this.documents.find(doc => doc.grid.name === a.code))
+    },
     filteredDocuments () {
       if (!this.selectedArea) {
         return this.documents
       }
       return this.documents.filter(doc => doc.grid.name === this.selectedArea)
-    },
-    availableAreas () {
-      return this.areas.filter(a => !!this.documents.find(doc => doc.grid.name === a.code))
     }
   },
-  mounted () {
-    this.$matomo([
-      'trackEvent', 'Socle de PAC', 'GPU',
-      this.collectivite.code
-    ])
-  },
   async created () {
+    const department = await this.$departmentApi.get(this.territorialAuthority.departmentCode)
+
     this.areas = [
-      { code: this.collectivite.code, intitule: this.collectivite.intitule },
-      ...(this.collectivite.membres
-        ?.filter(commune => commune.type.startsWith('COM'))
-        .map(({ code, intitule }) => { return { code, intitule } }) ?? []),
-      { code: this.collectivite.departement.code, intitule: this.collectivite.departement.intitule },
-      { code: 'R' + this.collectivite.region.code, intitule: this.collectivite.region.intitule },
+      { code: this.territorialAuthority.code, intitule: this.territorialAuthority.name },
+      ...this.towns.map(town => ({ code: town.code, intitule: town.name })),
+      { code: department.code, intitule: department.name },
+      { code: `R${department.regionCode}`, intitule: department.regionName },
       { code: 'FR', intitule: 'France' }
     ]
 
     const { data: supCategories } = await axios.get(
-      'https://www.geoportail-urbanisme.gouv.fr/api/sup-categories'
+      'https://www.geoportail-urbanisme.gouv.fr/api/standard/sup-categories'
     )
-
-    const responses = await Promise.all(
-      this.areas.map((area) => {
-        return axios
-          .get('https://www.geoportail-urbanisme.gouv.fr/api/document', {
-            params: {
-              status: 'document.production',
-              grid: area.code
-            }
-          })
-          .then(r => r.data)
-      })
-    )
-
-    const centerRes = await this.$nuxtApi.get(`/api/geo/collectivites/${this.collectivite.code}/center`)
-
+    const responses = (await Promise.all(
+      this.areas.map(area =>
+        axios.get('https://www.geoportail-urbanisme.gouv.fr/api/document', {
+          params: {
+            status: 'document.production',
+            grid: area.code
+          }
+        })
+      )
+    )).flatMap(({ data }) => data)
+    const centerRes = await this.$nuxtApi.get(`/api/geo/collectivites/${this.territorialAuthority.code}/center`)
     const [x, y] = centerRes.coordinates
 
-    this.documents = responses.flat().map((doc) => {
-      if (doc.type === 'SUP') {
-        const categoryCode = doc.name.split('_').at(-1)
-        doc.supCategory = supCategories.find(
-          cat => cat.name === categoryCode
-        )
+    this.documents = responses.map((res) => {
+      const doc = {
+        ...res,
+        center: {
+          lat: y,
+          lon: x
+        }
       }
 
-      doc.center = {
-        lat: y,
-        lon: x
+      if (doc.type === 'SUP') {
+        const categoryCode = doc.name.split('_').at(-1)
+        doc.supCategory = supCategories.find(cat =>
+          cat.name === categoryCode
+        )
       }
 
       return doc
     })
 
     this.loading = false
+  },
+  mounted () {
+    this.$matomo([
+      'trackEvent',
+      'Socle de PAC',
+      'GPU',
+      this.territorialAuthority.code
+    ])
   }
 }
 </script>

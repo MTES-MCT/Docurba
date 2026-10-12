@@ -10,6 +10,15 @@ export default {
       type: [String, Object]
     }
   },
+  computed: {
+    external () {
+      return (
+        !this.disabled &&
+        typeof this.to === 'string' &&
+        this.to.startsWith('http')
+      )
+    }
+  },
   methods: {
     actuate (event) {
       if (!this.disabled) {
@@ -21,8 +30,17 @@ export default {
 </script>
 
 <template>
+  <a
+    v-if="external"
+    :class="elementClass"
+    :href="to"
+    rel="noopener noreferrer"
+    target="_blank"
+  >
+    <slot />
+  </a>
   <NuxtLink
-    v-if="!disabled && to"
+    v-else-if="!disabled && to"
     :class="elementClass"
     :to="to"
   >
