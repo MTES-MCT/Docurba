@@ -3,6 +3,10 @@ import { mdiArrowRight } from '@mdi/js'
 
 export default {
   props: {
+    lg: {
+      default: false,
+      type: Boolean
+    },
     to: {
       default: undefined,
       type: [String, Object]
@@ -21,6 +25,7 @@ export default {
 <template>
   <DUActionable
     class="du-card"
+    :class="{ 'du-card--lg': lg }"
     :disabled="!to"
     :to="to"
   >
@@ -54,6 +59,12 @@ a.du-card:hover {
 }
 .du-card .v-icon {
   color: inherit;
+}
+.du-card--lg {
+  padding: 2rem;
+}
+.du-card--lg .du-card__body {
+  row-gap: 1.5rem;
 }
 .du-card__action.v-icon {
   color: #000091;
