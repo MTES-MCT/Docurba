@@ -467,7 +467,6 @@ class TestProcedureList:
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-222222222222"),
             parente=principal_procedure,
             name="Révision du PLU de Nantes",
-            status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
             numero="1",

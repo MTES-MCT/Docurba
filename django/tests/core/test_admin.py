@@ -53,9 +53,9 @@ class TestProcedureList:
 
     def test_topics_filter(self, admin_session_client: Client) -> None:
         topic = core_models.Topic.objects.first()
-        procedure_with_topic = core_models.Procedure.objects.create()
+        procedure_with_topic = ProcedureFactory()
         procedure_with_topic.topics.add(topic)
-        procedure_without_topics = core_models.Procedure.objects.create()
+        procedure_without_topics = ProcedureFactory()
 
         response = admin_session_client.get(
             f"{reverse('admin:core_procedure_changelist')}?topic={topic.name}"
