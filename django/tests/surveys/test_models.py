@@ -1,8 +1,7 @@
 import pytest
 
-from docurba.core.models import Procedure
 from docurba.surveys.models import ProcedureSurvey, Survey
-from tests.core.factories import CollectiviteFactory
+from tests.core.factories import CollectiviteFactory, ProcedureFactory
 from tests.users.factories import ProfileFactory
 
 
@@ -13,7 +12,7 @@ class TestSurveys:
         profile = ProfileFactory(other_poste=["rédacteur", "maire"])
         collectivite = CollectiviteFactory()
         survey = Survey.objects.filter(name="zan_03_2026").first()
-        procedure = Procedure.objects.create()
+        procedure = ProcedureFactory()
         ProcedureSurvey.objects.create(
             survey=survey,
             procedure=procedure,

@@ -549,8 +549,20 @@ class Procedure(models.Model):
             return self.date_prescription < other.date_prescription
         return self.created_at < other.created_at
 
+    def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+        self.clean()
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self) -> str:
         return utils_urls.get_absolute_url(path=f"/frise/{self.pk}")
+
+    def clean(self) -> None:
+        if self.parente and self.status:
+            message = 'A secondary procedure must not have a "status".'
+            raise ValidationError(message)
+        if not self.parente and not self.status:
+            message = 'A main procedure must have a "status" filled in.'
+            raise ValidationError(message)
 
     _events_processed = False
 

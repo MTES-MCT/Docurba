@@ -632,7 +632,7 @@
     ]),
     'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
     'startedBeforeHuwartLaw': False,
-    'status': 'en cours',
+    'status': None,
     'topics': list([
     ]),
     'type': 'Élaboration',
