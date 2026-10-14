@@ -51,7 +51,7 @@ export default {
     },
     visibleOnPage () {
       return [
-        'collectivites-collectiviteId',
+        'collectivites-code_collectivite',
         'ddt-departement-collectivites',
         'ddt-departement-pac'
       ].includes(this.$route.name)
