@@ -162,8 +162,9 @@ export default ({ $supabase, $dayjs }, inject) => {
       await updatePerimetreOpposability(communes, procedures)
     },
     async updateStatus (procedure) {
+      // Only primary procedures have a status. Secondary procedures have a null status
       const newStatus = await computeProcedureStatus(procedure)
-      await $supabase.from('procedures').update({ status: newStatus }).eq('id', procedure.id)
+      await $supabase.from('procedures').update({ status: newStatus }).eq('id', procedure.id).is('secondary_procedure_of', null)
     }
   })
 }
