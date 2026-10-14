@@ -51,7 +51,11 @@ class TestProcedureList:
             code_insee__in=perimetre_insee_codes
         )
         logged_in_profile = ProfileFactory(collectivite=collectivite)
-        return collectivite, communes, logged_in_profile
+        return (
+            collectivite,
+            sorted(communes, key=lambda c: c.code_insee),
+            logged_in_profile,
+        )
 
     @property
     def url(self) -> str:
