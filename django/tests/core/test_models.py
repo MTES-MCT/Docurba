@@ -1748,6 +1748,156 @@ class TestProcedureStatut:
             assert not procedure_with_events.statut
 
 
+@pytest.mark.django_db
+class TestProcedureComputeStatus:
+    def test_secondary_returns_none(self) -> None:
+        procedure = ProcedureFactory(with_parente=True)
+
+        assert procedure.compute_status() is None
+
+    def test_without_event_returns_en_projet(self) -> None:
+        procedure = ProcedureFactory()
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.EN_PROJET
+
+    @freeze_time("2025-01-01")
+    def test_status_from_most_recent_impactful_event(self) -> None:
+        now = timezone.now()
+        procedure = ProcedureFactory()
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ABANDON,
+            date_evenement=now - timedelta(days=30),
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now,
+        )
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.OPPOSABLE
+
+    @freeze_time("2025-01-01")
+    def test_event_after_pivot_ignored(self) -> None:
+        now = timezone.now()
+        procedure = ProcedureFactory()
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ABANDON,
+            date_evenement=now - timedelta(days=60),
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now,
+        )
+
+        assert (
+            procedure.compute_status(now - timedelta(days=30))
+            == core_enums.ProcedureStatusChoices.ABANDON
+        )
+
+    def test_archived_event_ignored(self) -> None:
+        procedure = ProcedureFactory()
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            archived=True,
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+        )
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.ANNULE
+
+    def test_invalid_event_ignored(self) -> None:
+        procedure = ProcedureFactory()
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            is_valid=False,
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+        )
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.ANNULE
+
+    def test_event_without_type_or_type_not_impactful_ignored(self) -> None:
+        procedure = ProcedureFactory()
+        # Event type not set.
+        EventFactory(
+            procedure=procedure,
+            event_type=None,
+        )
+        # Event type without impact.
+        EventFactory(
+            procedure=procedure,
+            event_type__impact="",
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+        )
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.ANNULE
+
+    @freeze_time("2026-10-15")
+    def test_event_without_date_ignored(self) -> None:
+        now = timezone.now()
+        procedure = ProcedureFactory()
+        # Events without a date (historical data) are ignored.
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=None,
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            date_evenement=now,
+        )
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.ANNULE
+        # Without date_pivot, the event without a date is still ignored.
+        assert procedure.compute_status(now) == core_enums.ProcedureStatusChoices.ANNULE
+
+    @freeze_time("2026-10-15")
+    def test_without_date_pivot_no_date_filter(self) -> None:
+        now = timezone.now()
+        procedure = ProcedureFactory()
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            date_evenement=now,
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now + timedelta(days=20),
+        )
+
+        # Without date_pivot, no date filter is applied: the future event
+        # counts.
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.OPPOSABLE
+        # With a date_pivot before the future event, it is ignored.
+        assert (
+            procedure.compute_status(now + timedelta(days=15))
+            == core_enums.ProcedureStatusChoices.ANNULE
+        )
+
+    def test_without_impactful_event_returns_en_cours(self) -> None:
+        procedure = ProcedureFactory()
+        EventFactory(
+            procedure=procedure,
+            event_type=None,
+        )
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.EN_PROJET
+
+
 class TestProcedureEnCours:
     @pytest.mark.django_db
     @freeze_time("2024-12-01")
@@ -1920,6 +2070,48 @@ class TestProcedureManagers:
                 assert item in procedure.__dict__
 
 
+@pytest.mark.django_db
+class TestEventIsImpactful:
+    def test_impactful_event(self) -> None:
+        event = EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+        )
+
+        assert event.is_impactful
+
+    def test_archived_event_is_not_impactful(self) -> None:
+        event = EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE, archived=True
+        )
+
+        assert not event.is_impactful
+
+    def test_invalid_event_is_not_impactful(self) -> None:
+        event = EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE, is_valid=False
+        )
+
+        assert not event.is_impactful
+
+    def test_event_without_date_is_not_impactful(self) -> None:
+        event = EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            date_evenement=None,
+        )
+
+        assert not event.is_impactful
+
+    def test_event_without_type_is_not_impactful(self) -> None:
+        event = EventFactory(event_type=None)
+
+        assert not event.is_impactful
+
+    def test_event_with_type_without_impact_is_not_impactful(self) -> None:
+        event = EventFactory(event_type__impact="")
+
+        assert not event.is_impactful
+
+
 class TestEvent:
     @pytest.mark.parametrize(
         ("base_doc_type", "type_event", "category"),
@@ -2073,7 +2265,6 @@ class TestEventManagers:
 
 @pytest.mark.django_db
 class TestEventQueryset:
-    @pytest.mark.django_db
     def test_queryset_without_archived(self) -> None:
         event_not_archived = EventFactory()
         EventFactory(archived=True)
@@ -2086,14 +2277,56 @@ class TestEventQueryset:
         event = queryset.first()
         assert event.id == event_not_archived.id
 
-    @pytest.mark.django_db
+    @freeze_time("2025-01-01")
+    def test_queryset_filter_impactful_filters_by_date_pivot(self) -> None:
+        now = timezone.now()
+        event_type = EventTypeFactory(
+            name="Impactful type pivot", impact=core_enums.ProcedureStatusChoices.ANNULE
+        )
+        event_past = EventFactory(
+            event_type=event_type, date_evenement=now - timedelta(days=20)
+        )
+        event_future = EventFactory(
+            event_type=event_type, date_evenement=now + timedelta(days=20)
+        )
+
+        queryset = core_models.Event.objects.filter_impactful()
+        assert set(queryset) == {event_past, event_future}
+
+        queryset = core_models.Event.objects.filter_impactful(now + timedelta(days=10))
+        assert list(queryset) == [event_past]
+
+    def test_queryset_filter_impactful_excludes_non_impactful_events(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        event = EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+        )
+        # Archived, invalid, without date, without type or type without impact: excluded.
+        EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            archived=True,
+        )
+        EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            is_valid=False,
+        )
+        EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            date_evenement=None,
+        )
+        EventFactory(event_type=None)
+        EventFactory(
+            event_type__impact="",
+        )
+        with django_assert_num_queries(1):
+            assert list(core_models.Event.objects.filter_impactful()) == [event]
+
     def test_queryset_bulk_unarchive(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         event_not_archived = EventFactory(archived_at=None, archived_by=None)
-        event_archived = EventFactory(
-            archived_at=timezone.now(), archived_by=ProfileFactory()
-        )
+        event_archived = EventFactory(archived=True)
 
         with django_assert_num_queries(1):
             updated = core_models.Event.objects.all().unarchive()
@@ -2105,7 +2338,6 @@ class TestEventQueryset:
         event_not_archived.refresh_from_db()
         assert not event_not_archived.is_archived
 
-    @pytest.mark.django_db
     def test_queryset_bulk_archive(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:

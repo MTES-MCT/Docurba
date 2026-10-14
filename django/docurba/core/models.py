@@ -679,6 +679,27 @@ class Procedure(models.Model):
             return EventCategory.CADUC
         return self.dernier_event_impactant.category
 
+    def compute_status(
+        self, date_pivot: datetime | None = None
+    ) -> core_enums.ProcedureStatusChoices | None:
+        if self.parente_id:
+            return None
+
+        impactful_events = (
+            event
+            for event in self.event_set.all()
+            if event.is_impactful
+            and (date_pivot is None or event.date_evenement <= date_pivot)
+        )
+        last_event = max(
+            impactful_events,
+            key=attrgetter("date_evenement"),
+            default=None,
+        )
+        if last_event is None:
+            return self.INITIAL_STATUS
+        return core_enums.ProcedureStatusChoices(last_event.event_type.impact)
+
     def _date(self, event_type: EventCategory) -> datetime | None:
         self._process_events()
         event = getattr(self, event_type, None)
@@ -1180,6 +1201,22 @@ class EventQuerySet(models.QuerySet):
     def without_archived(self) -> Self:
         return self.filter(archived_at__isnull=True)
 
+    def filter_impactful(self, date_pivot: datetime | None = None) -> Self:
+        # Same logic as Event.is_impactful for queryset context
+        queryset = (
+            self.without_archived()
+            .filter(
+                is_valid=True,
+                event_type__isnull=False,
+                date_evenement__isnull=False,
+            )
+            .exclude(event_type__impact="")
+            .select_related("event_type")
+        )
+        if date_pivot is not None:
+            queryset = queryset.filter(date_evenement__lte=date_pivot)
+        return queryset
+
     def defer_heavy_fields(self) -> Self:
         to_be_removed_fields = [
             "code",
@@ -1331,6 +1368,16 @@ class Event(models.Model):
     @property
     def is_archived(self) -> bool:
         return bool(self.archived_at)
+
+    @property
+    def is_impactful(self) -> bool:
+        return (
+            not self.is_archived
+            and self.is_valid
+            and self.date_evenement is not None
+            and self.event_type_id is not None
+            and self.event_type.impact != ""
+        )
 
     @property
     def category(self) -> EventCategory | None:
