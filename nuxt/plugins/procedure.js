@@ -466,7 +466,11 @@ function _getProcedureTowns (rawProcedure, { territorialAuthorities }) {
   return orderBy(towns, 'code')
 }
 
-function _parseProcedure (rawProcedure, { eventStructuringByType, territorialAuthorities }) {
+function _parseProcedure (rawProcedure, {
+  eventStructuringByType,
+  primaryTerritorialAuthority = null,
+  territorialAuthorities
+}) {
   // This filter is necessary here because the rpc 'procedures_by_collectivites' don't filter out archived events
   // and will be removed when using internal_apis/events
   const activeEvents = orderBy(
@@ -482,9 +486,10 @@ function _parseProcedure (rawProcedure, { eventStructuringByType, territorialAut
     eventStructuringByType[event.type] &&
     new Date(event.date_iso) <= now
   ) ?? null
-  const territorialAuthority = _getProcedureTerritorialAuthority(rawProcedure, {
-    territorialAuthorities
-  })
+  const territorialAuthority = (
+    primaryTerritorialAuthority ||
+    _getProcedureTerritorialAuthority(rawProcedure, { territorialAuthorities })
+  )
   let approvalDate = null
   let prescriptionDate = null
 
@@ -550,28 +555,24 @@ function _parseProcedureType (rawType) {
 function _parseProcedures (rawProcedures, { eventStructuringByType, territorialAuthorities }) {
   const procedures = []
   const procedureIndexById = {}
+  const rawSecondaryProcedures = []
 
   for (const rawProcedure of rawProcedures) {
+    if (rawProcedure.secondary_procedure_of) {
+      rawSecondaryProcedures.push(rawProcedure)
+
+      continue
+    }
+
     const procedure = _parseProcedure(rawProcedure, {
       eventStructuringByType,
       territorialAuthorities
     })
 
-    if (rawProcedure.secondary_procedure_of) {
-      if (rawProcedure.secondary_procedure_of in procedureIndexById) {
-        procedures[
-          procedureIndexById[
-            rawProcedure.secondary_procedure_of
-          ]
-        ].procedures.push(procedure)
-      } else {
-        procedureIndexById[rawProcedure.secondary_procedure_of] = procedures.length
-        procedures.push({ procedures: [procedure] })
-      }
-    } else if (procedureIndexById[procedure.id]) {
+    if (procedureIndexById[procedure.id]) {
       procedures[procedureIndexById[procedure.id]] = {
         ...procedure,
-        procedures: procedures[procedureIndexById[procedure.id]].procedures
+        procedures: []
       }
     } else {
       procedureIndexById[procedure.id] = procedures.length
@@ -580,6 +581,19 @@ function _parseProcedures (rawProcedures, { eventStructuringByType, territorialA
         procedures: []
       })
     }
+  }
+  for (const rawProcedure of rawSecondaryProcedures) {
+    const primaryProcedure = procedures[procedureIndexById[rawProcedure.secondary_procedure_of]]
+
+    if (!primaryProcedure) {
+      continue
+    }
+
+    primaryProcedure.procedures.push(_parseProcedure(rawProcedure, {
+      eventStructuringByType,
+      primaryTerritorialAuthority: primaryProcedure.territorialAuthority,
+      territorialAuthorities
+    }))
   }
 
   return orderBy(
