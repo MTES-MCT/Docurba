@@ -159,6 +159,10 @@ jobs:
         DJANGO_API_BASE_URL="${{ needs.prepare.outputs.DJANGO_URL }}" \
         USER_ENVIRONMENT="review_app"
 
+    - name: Augmentation des ressources
+      if: steps.exists.outputs.APP_EXISTS == '1'
+      run: scalingo --app "${{ needs.prepare.outputs.NUXT_2_REVIEW_APP_NAME }}" scale web:1
+
     - name: Déploiement de l'application
       run: scalingo --app "${{ needs.prepare.outputs.NUXT_2_REVIEW_APP_NAME }}" integration-link-manual-deploy "${{ env.BRANCH }}"  &> /dev/null
 
@@ -255,6 +259,10 @@ jobs:
         SUPABASE_URL="${{ steps.db.outputs.SUPABASE_URL }}" \
         SUPABASE_ANON_KEY="${{ steps.db.outputs.SUPABASE_ANON_KEY }}" \
         DOCURBA_FQDN="${{ needs.prepare.outputs.DJANGO_DOMAIN_NAME }}"
+
+    - name: Augmentation des ressources
+      if: steps.exists.outputs.APP_EXISTS == '1'
+      run: scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" scale web:1
 
     - name: Déploiement de l'application
       run: scalingo --app "${{ needs.prepare.outputs.DJANGO_REVIEW_APP_NAME }}" integration-link-manual-deploy "${{ env.BRANCH }}" &> /dev/null
