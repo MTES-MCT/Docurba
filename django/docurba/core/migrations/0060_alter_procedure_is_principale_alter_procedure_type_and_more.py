@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0058_fill_procedure_is_pdu_and_more"),
+        ("core", "0059_fill_procedure_is_pdu_and_more"),
     ]
 
     operations = [

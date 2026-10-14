@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0059_alter_procedure_is_principale_alter_procedure_type_and_more"),
+        ("core", "0060_alter_procedure_is_principale_alter_procedure_type_and_more"),
     ]
 
     operations = [

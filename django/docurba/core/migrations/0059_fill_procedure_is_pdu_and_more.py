@@ -12,7 +12,7 @@ def update_procedures(apps, schema_editor) -> None:  # noqa: ANN001, ARG001
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0057_procedure_name_complement"),
+        ("core", "0058_alter_communeprocedure_commune"),
     ]
 
     operations = [
