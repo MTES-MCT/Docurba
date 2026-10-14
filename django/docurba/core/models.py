@@ -671,6 +671,25 @@ class Procedure(models.Model):
             return EventCategory.CADUC
         return self.dernier_event_impactant.category
 
+    INITIAL_STATUS = core_enums.ProcedureStatusChoices.EN_COURS
+
+    def compute_status(
+        self, date_pivot: date | None = None
+    ) -> core_enums.ProcedureStatusChoices | None:
+        if self.parente_id:
+            return None
+
+        events = (
+            event
+            for event in self.event_set.all()
+            if event.has_impact
+            and (date_pivot is None or event.date_evenement <= date_pivot)
+        )
+        event = max(events, key=attrgetter("date_evenement"), default=None)
+        if event is None:
+            return self.INITIAL_STATUS
+        return core_enums.ProcedureStatusChoices(event.event_type.impact)
+
     def _date(self, event_type: EventCategory) -> date | None:
         self._process_events()
         event = getattr(self, event_type, None)
@@ -1125,6 +1144,22 @@ class EventQuerySet(models.QuerySet):
     def without_archived(self) -> Self:
         return self.filter(archived_at__isnull=True)
 
+    def with_impact(self, date_pivot: date | None = None) -> Self:
+        # Same logic as Event.has_impact for queryset context
+        queryset = (
+            self.without_archived()
+            .filter(
+                is_valid=True,
+                event_type__isnull=False,
+                date_evenement__isnull=False,
+            )
+            .exclude(event_type__impact="")
+            .select_related("event_type")
+        )
+        if date_pivot is not None:
+            queryset = queryset.filter(date_evenement__lte=date_pivot)
+        return queryset
+
     def defer_heavy_fields(self) -> Self:
         to_be_removed_fields = [
             "code",
@@ -1267,6 +1302,16 @@ class Event(models.Model):
     @property
     def is_archived(self) -> bool:
         return bool(self.archived_at)
+
+    @property
+    def has_impact(self) -> bool:
+        return (
+            not self.is_archived
+            and self.is_valid
+            and self.date_evenement is not None
+            and self.event_type_id is not None
+            and self.event_type.impact != ""
+        )
 
     @property
     def category(self) -> EventCategory | None:

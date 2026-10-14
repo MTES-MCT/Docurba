@@ -64,6 +64,7 @@ ignore = [
     "S101",    # asserts allowed in tests...
     "PLR2004", # Magic value used in comparison
     "PLR0917", # Too many positional arguments
+    "SLF001",  # Private members are legitimately tested.
 ]
 "**/migrations/**.py" = [
     "RUF012", # Mutable default values in class attributes
