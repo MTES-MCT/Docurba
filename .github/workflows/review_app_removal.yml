@@ -24,7 +24,7 @@ jobs:
         run: |
           PR_ID=${{ github.event.number }}
 
-          NUXT_2_REVIEW_APP_NAME=docurba-nuxt-demo-pr${PR_ID}
+          NUXT_2_REVIEW_APP_NAME=docurba-demo-pr${PR_ID}
           DJANGO_REVIEW_APP_NAME=docurba-django-demo-pr${PR_ID}
 
           echo "SUPABASE_REVIEW_APP_NAME=supabase-pr${PR_ID}" >> $GITHUB_OUTPUT
