@@ -58,7 +58,6 @@
 
 <script>
 import { mdiArrowLeft } from '@mdi/js'
-import axios from 'axios'
 import FormInput from '@/mixins/FormInput.js'
 
 export default {
@@ -75,13 +74,9 @@ export default {
   methods: {
     async signInCollectivite () {
       try {
-        await axios({
-          method: 'post',
-          url: '/api/auth/signinCollectivite',
-          data: {
-            email: this.email,
-            redirectTo: window.location.origin
-          }
+        await this.$nuxtApi.post('/api/auth/signinCollectivite', {
+          email: this.email,
+          redirectTo: window.location.origin
         })
         this.snackbar = {
           val: true,

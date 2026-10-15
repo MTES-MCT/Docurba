@@ -77,7 +77,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import orderSections from '@/mixins/orderSections.js'
 
 export default {
@@ -90,9 +89,8 @@ export default {
         const { data: projects } = await $supAdmin.from('projects').select('*').eq('id', projectId)
         const project = projects[0]
 
-        const { data: sections } = await axios({
-          method: 'get',
-          url: `${process.env.APP_URL}/api/trames/tree/projet-${projectId}?content=all`
+        const sections = await this.$nuxtApi.get(`${process.env.APP_URL}/api/trames/tree/projet-${projectId}`, {
+          content: 'all'
         })
 
         function deptToRef (deptCode) {

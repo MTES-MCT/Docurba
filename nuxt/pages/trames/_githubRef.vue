@@ -136,7 +136,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import { groupBy } from 'lodash'
 import { mdiDotsVertical, mdiCheck, mdiClose } from '@mdi/js'
 import orderSections from '@/mixins/orderSections.js'
@@ -250,12 +249,8 @@ export default {
       this.collectivite = await this.$collectiviteApi.get(this.project.collectivite_id)
     }
 
-    const { data: sections } = await axios({
-      method: 'get',
-      url: `/api/trames/tree/${this.gitRef}`,
-      params: {
-        ghostRef: this.headRef
-      }
+    const sections = await this.$nuxtApi.get(`/api/trames/tree/${this.gitRef}`, {
+      ghostRef: this.headRef
     })
 
     let { data: supSections } = await this.$supabase
@@ -272,21 +267,17 @@ export default {
       .map(s => s.type === 'file' ? s.path : (s.path + '/intro.md'))
 
     if (selfPaths.length) {
-      historiesPromises.push(axios.get(`/api/trames/tree/${this.gitRef}/history`, {
-        params: {
-          paths: selfPaths
-        }
+      historiesPromises.push(this.$nuxtApi.get(`/api/trames/tree/${this.gitRef}/history`, {
+        paths: selfPaths
       }))
     }
     if (headPaths.length) {
-      historiesPromises.push(axios.get(`/api/trames/tree/${this.headRef}/history`, {
-        params: {
-          paths: headPaths
-        }
+      historiesPromises.push(this.$nuxtApi.get(`/api/trames/tree/${this.headRef}/history`, {
+        paths: headPaths
       }))
     }
 
-    const histories = (await Promise.all(historiesPromises)).flatMap(({ data }) => data)
+    const histories = (await Promise.all(historiesPromises)).flat()
 
     // This code should prevent using multiple value when parsing.
     const groupedSupSections = groupBy(supSections, s => s.path)
@@ -363,8 +354,8 @@ export default {
     },
     async getDiff (supSections) {
       // https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits
-      const { data } = await axios({
-        url: `/api/trames/compare?basehead=${this.gitRef}...${this.headRef}`
+      const data = await this.$nuxtApi.get('/api/trames/compare', {
+        basehead: `${this.gitRef}...${this.headRef}`
       })
 
       const diffFiles = data.files.filter((file) => {

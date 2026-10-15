@@ -64,8 +64,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   props: {
     value: {
@@ -144,13 +142,11 @@ export default {
       if (!error) {
         const project = projects[0]
 
-        await axios({
-          method: 'post',
-          url: `/api/trames/projects/dept-${this.$options.filters.deptToRef(this.selectedCollectivite.departementCode)}`,
-          data: {
-            userId: this.$user.id,
-            projectId: project.id
-          }
+        await this.$nuxtApi.post(`/api/trames/projects/dept-${
+          this.$options.filters.deptToRef(this.selectedCollectivite.departementCode)
+        }`, {
+          userId: this.$user.id,
+          projectId: project.id
         })
 
         this.$router.push(`/trames/projet-${project.id}`)
