@@ -1,5 +1,5 @@
 <script>
-import { mdiArrowRight, mdiSubdirectoryArrowRight } from '@mdi/js'
+import { mdiArrowRight, mdiInformation, mdiSubdirectoryArrowRight } from '@mdi/js'
 
 export default {
   props: {
@@ -12,6 +12,7 @@ export default {
     return {
       icons: {
         mdiArrowRight,
+        mdiInformation,
         mdiSubdirectoryArrowRight
       }
     }
@@ -31,7 +32,15 @@ export default {
   >
     <template #header>
       <DUTableCell>Statut</DUTableCell>
-      <DUTableCell>Procédure</DUTableCell>
+      <DUTableCell>
+        Procédure
+        <VIcon
+          small
+          title="Les procédures engagées avant le 26 mai 2026 sont antérieures à la loi Huwart"
+        >
+          {{ icons.mdiInformation }}
+        </VIcon>
+      </DUTableCell>
       <DUTableCell>N°</DUTableCell>
       <DUTableCell>Type de DU</DUTableCell>
       <DUTableCell>{{ selection === 'plu' ? 'Commune' : 'Collectivité porteuse' }}</DUTableCell>

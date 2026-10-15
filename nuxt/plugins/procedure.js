@@ -239,8 +239,7 @@ export function displayProcedure (procedure) {
     'lastStructuringEvent',
     'startedBeforeHuwartLaw',
     'territorialAuthority',
-    'towns',
-    'type'
+    'towns'
   ]
   const keys = Object.keys(procedure)
   const displayedProcedureBase = {}
@@ -278,13 +277,7 @@ export function displayProcedure (procedure) {
     towns: procedure.towns.map(({ code, name }) => ({
       code: code ?? '',
       name: name ?? ''
-    })),
-    type: `${procedure.type}${
-      ['Élaboration', 'Modification', 'Révision'].includes(procedure.type) &&
-      procedure.startedBeforeHuwartLaw
-        ? ' (antérieure à la loi Huwart)'
-        : ''
-    }`
+    }))
   }
 
   return 'procedures' in procedure

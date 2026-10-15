@@ -65,4 +65,7 @@ export default {
   box-shadow: inset .0625rem 0 0 0 #ddd,
               inset -.0625rem 0 0 0 #929292;
 }
+.du-table__header .du-table-cell .v-icon {
+  color: #000091;
+}
 </style>
