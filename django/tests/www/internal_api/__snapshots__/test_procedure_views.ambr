@@ -1,5 +1,5 @@
 # serializer version: 1
-# name: TestProcedureList.test_collectivites_porteuses[default_value]
+# name: TestProcedureList.test_filter_collectivites_porteuses[default_value]
   list([
     dict({
       'approval_date': None,
@@ -16,7 +16,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
       'name': "Révision du PLU d'Aigaliers",
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30001',
@@ -50,7 +50,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-444444444444',
       'name': "Révision du PLU d'Aigremont",
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30002',
@@ -84,7 +84,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
       'name': 'Élaboration du PLU de Nantes',
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30032',
@@ -105,11 +105,11 @@
     }),
   ])
 # ---
-# name: TestProcedureList.test_collectivites_porteuses[not_found]
+# name: TestProcedureList.test_filter_collectivites_porteuses[not_found]
   list([
   ])
 # ---
-# name: TestProcedureList.test_collectivites_porteuses[one_collectivite_porteuse_code_insee]
+# name: TestProcedureList.test_filter_collectivites_porteuses[one_collectivite_porteuse_code_insee]
   list([
     dict({
       'approval_date': None,
@@ -126,7 +126,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
       'name': "Révision du PLU d'Aigaliers",
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30001',
@@ -147,7 +147,7 @@
     }),
   ])
 # ---
-# name: TestProcedureList.test_collectivites_porteuses[one_collectivite_porteuse_siren]
+# name: TestProcedureList.test_filter_collectivites_porteuses[one_collectivite_porteuse_siren]
   list([
     dict({
       'approval_date': None,
@@ -164,7 +164,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
       'name': 'Élaboration du PLU de Nantes',
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30032',
@@ -185,7 +185,7 @@
     }),
   ])
 # ---
-# name: TestProcedureList.test_collectivites_porteuses[several_collectivites_porteuses]
+# name: TestProcedureList.test_filter_collectivites_porteuses[several_collectivites_porteuses]
   list([
     dict({
       'approval_date': None,
@@ -202,7 +202,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
       'name': "Révision du PLU d'Aigaliers",
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30001',
@@ -236,7 +236,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
       'name': 'Élaboration du PLU de Nantes',
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30032',
@@ -257,7 +257,7 @@
     }),
   ])
 # ---
-# name: TestProcedureList.test_communes_perimetre[default_value]
+# name: TestProcedureList.test_filter_communes_perimetre[default_value]
   list([
     dict({
       'approval_date': None,
@@ -274,7 +274,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
       'name': 'Seconde procédure',
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30034',
@@ -308,7 +308,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-333333333333',
       'name': 'Troisième procédure',
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30117',
@@ -342,7 +342,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
       'name': 'Élaboration du PLU de Nantes',
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30032',
@@ -363,11 +363,11 @@
     }),
   ])
 # ---
-# name: TestProcedureList.test_communes_perimetre[not_found]
+# name: TestProcedureList.test_filter_communes_perimetre[not_found]
   list([
   ])
 # ---
-# name: TestProcedureList.test_communes_perimetre[one_commune]
+# name: TestProcedureList.test_filter_communes_perimetre[one_commune]
   list([
     dict({
       'approval_date': None,
@@ -384,7 +384,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
       'name': 'Élaboration du PLU de Nantes',
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30032',
@@ -405,7 +405,7 @@
     }),
   ])
 # ---
-# name: TestProcedureList.test_communes_perimetre[several_communes]
+# name: TestProcedureList.test_filter_communes_perimetre[several_communes]
   list([
     dict({
       'approval_date': None,
@@ -422,7 +422,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
       'name': 'Seconde procédure',
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30034',
@@ -456,7 +456,7 @@
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
       'name': 'Élaboration du PLU de Nantes',
       'numero': '1',
-      'parent': None,
+      'parentId': None,
       'perimetre': list([
         dict({
           'code': '30032',
@@ -477,16 +477,16 @@
     }),
   ])
 # ---
-# name: TestProcedureList.test_is_principale_filter[default_value]
+# name: TestProcedureList.test_filter_is_principale[default_value]
   2
 # ---
-# name: TestProcedureList.test_is_principale_filter[is_principale0]
+# name: TestProcedureList.test_filter_is_principale[is_principale0]
   1
 # ---
-# name: TestProcedureList.test_is_principale_filter[is_principale1]
+# name: TestProcedureList.test_filter_is_principale[is_principale1]
   1
 # ---
-# name: TestProcedureList.test_nominal_principal_procedure_serializer
+# name: TestProcedureList.test_serializer_nominal_principal_procedure
   dict({
     'count': 1,
     'next': None,
@@ -504,11 +504,11 @@
           'siren': '253000020',
           'type': 'SMO',
         }),
-        'docType': 'PLU',
+        'docType': 'PLUi',
         'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
         'name': 'Élaboration du PLU de Nantes',
         'numero': '1',
-        'parent': None,
+        'parentId': None,
         'perimetre': list([
           dict({
             'code': '30032',
@@ -566,7 +566,7 @@
     ]),
   })
 # ---
-# name: TestProcedureList.test_nominal_secondary_procedure_serializer
+# name: TestProcedureList.test_serializer_nominal_secondary_procedure
   dict({
     'approval_date': None,
     'collectivite_porteuse': dict({
@@ -578,79 +578,11 @@
       'siren': '253000020',
       'type': 'SMO',
     }),
-    'docType': 'PLU',
+    'docType': 'PLUi',
     'id': '1cd65b57-7027-4aa5-8d19-222222222222',
     'name': 'Révision du PLU de Nantes',
     'numero': '1',
-    'parent': dict({
-      'approval_date': None,
-      'collectivite_porteuse': dict({
-        'codeInsee': '',
-        'departementCode': '30',
-        'intercommunaliteCode': '',
-        'intitule': "Syndicat mixte d'équipement de la commune de Beaucaire",
-        'regionCode': '76',
-        'siren': '253000020',
-        'type': 'SMO',
-      }),
-      'docType': 'PLU',
-      'id': '1cd65b57-7027-4aa5-8d19-111111111111',
-      'name': 'Élaboration du PLU de Nantes',
-      'numero': '1',
-      'perimetre': list([
-        dict({
-          'code': '30032',
-          'departementCode': '30',
-          'intercommunaliteCode': '',
-          'intitule': 'Beaucaire',
-          'is_opposable': 'False',
-          'regionCode': '76',
-          'type': 'COM',
-        }),
-        dict({
-          'code': '30034',
-          'departementCode': '30',
-          'intercommunaliteCode': '',
-          'intitule': 'Bellegarde',
-          'is_opposable': 'False',
-          'regionCode': '76',
-          'type': 'COM',
-        }),
-        dict({
-          'code': '30117',
-          'departementCode': '30',
-          'intercommunaliteCode': '',
-          'intitule': 'Fourques',
-          'is_opposable': 'False',
-          'regionCode': '76',
-          'type': 'COM',
-        }),
-        dict({
-          'code': '30135',
-          'departementCode': '30',
-          'intercommunaliteCode': '',
-          'intitule': 'Jonquières-Saint-Vincent',
-          'is_opposable': 'False',
-          'regionCode': '76',
-          'type': 'COM',
-        }),
-        dict({
-          'code': '30336',
-          'departementCode': '30',
-          'intercommunaliteCode': '',
-          'intitule': 'Vallabrègues',
-          'is_opposable': 'False',
-          'regionCode': '76',
-          'type': 'COM',
-        }),
-      ]),
-      'project_id': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
-      'startedBeforeHuwartLaw': False,
-      'status': 'en cours',
-      'topics': list([
-      ]),
-      'type': 'Élaboration',
-    }),
+    'parentId': '1cd65b57-7027-4aa5-8d19-111111111111',
     'perimetre': list([
       dict({
         'code': '30032',

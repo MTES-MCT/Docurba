@@ -148,10 +148,11 @@ class TopicSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class BaseProcedureSerializer(serializers.ModelSerializer):
+class ProcedureSerializer(serializers.ModelSerializer):
     id = serializers.CharField()
+    parentId = serializers.UUIDField(source="parente_id")
     collectivite_porteuse = CollectiviteSerializer()
-    docType = serializers.ChoiceField(choices=TypeDocument, source="doc_type")
+    docType = serializers.ChoiceField(choices=TypeDocument, source="type_document")
     startedBeforeHuwartLaw = serializers.BooleanField(
         source="started_before_huwart_law", default=False
     )
@@ -179,16 +180,6 @@ class BaseProcedureSerializer(serializers.ModelSerializer):
             "status",
             "topics",
             "approval_date",
+            "parentId",
         ]
         depth = 4
-
-
-class ProcedureSerializer(BaseProcedureSerializer):
-    parent = BaseProcedureSerializer(source="parente", default="")
-
-    class Meta:
-        model = Procedure
-        fields = [
-            "parent",
-            *BaseProcedureSerializer.Meta.fields,
-        ]
