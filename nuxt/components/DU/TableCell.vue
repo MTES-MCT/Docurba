@@ -62,4 +62,7 @@ export default {
 .du-table-cell--primary {
   font-weight: 800;
 }
+.du-table-cell--primary em {
+  font-weight: 400;
+}
 </style>
