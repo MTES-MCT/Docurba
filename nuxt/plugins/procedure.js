@@ -275,6 +275,11 @@ export function displayProcedure (procedure) {
     lastStructuringEventId: procedure.lastStructuringEvent?.id ?? '',
     lastStructuringEventType: procedure.lastStructuringEvent?.type ?? '',
     startedBeforeHuwartLaw: procedure.startedBeforeHuwartLaw ? 'Oui' : 'Non',
+    startedBeforeHuwartLawVisible: [
+      'Élaboration',
+      'Modification',
+      'Révision'
+    ].includes(procedure.type) && procedure.startedBeforeHuwartLaw,
     territorialAuthorityCode: procedure.territorialAuthority?.code ?? '',
     territorialAuthorityName: procedure.territorialAuthority?.name ?? '',
     townName: procedure.towns[0]?.name ?? '',
