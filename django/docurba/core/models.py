@@ -549,6 +549,13 @@ class Procedure(models.Model):
             return self.date_prescription < other.date_prescription
         return self.created_at < other.created_at
 
+    def __init__(self, *args, **kwargs) -> None:
+        self._cached_perimetre = kwargs.pop("cached_perimetre", None)
+        self._cached_collectivite_porteuse = kwargs.pop(
+            "cached_collectivite_porteuse", None
+        )
+        super().__init__(*args, **kwargs)
+
     def get_absolute_url(self) -> str:
         return utils_urls.get_absolute_url(path=f"/frise/{self.pk}")
 
@@ -606,29 +613,20 @@ class Procedure(models.Model):
         procedure = Procedure.objects.prefetch_related("perimetre", models.Prefetch(Commune.objects.with_opposable()))
         procedure.zone_name
         """
-        perimetre_qs = (
-            self._prefetched_objects_cache.get("perimetre", self.perimetre.all())
-            if hasattr(self, "_prefetched_objects_cache")
-            else self.perimetre.all()
-        )
+        perimetre_qs = self._cached_perimetre or self.perimetre.all()
         if perimetre_qs:
             if len(perimetre_qs) == 1:
                 return perimetre_qs[0].nom
+
+            if not hasattr(perimetre_qs[0], "opposable"):
+                perimetre_qs = perimetre_qs.with_opposable().all()
             # There is more than one commune in the perimetre and only one is set as opposable.
             # We assume this is the way delegated towns have been handled.
-            if hasattr(perimetre_qs[0], "opposable"):
-                opposable_delegated_towns = [
-                    commune
-                    for commune in perimetre_qs
-                    if commune.opposable
-                    and commune.type != core_enums.TypeCollectivite.COM
-                ]
-            else:
-                opposable_delegated_towns = (
-                    perimetre_qs.exclude(type=core_enums.TypeCollectivite.COM)
-                    .filter(procedures_through__opposable=True)
-                    .all()
-                )
+            opposable_delegated_towns = [
+                commune
+                for commune in perimetre_qs
+                if commune.opposable and commune.type != core_enums.TypeCollectivite.COM
+            ]
             if len(opposable_delegated_towns) == 1:
                 return opposable_delegated_towns[0].nom
         return self.collectivite_porteuse.nom if self.collectivite_porteuse else ""
@@ -793,8 +791,13 @@ class Procedure(models.Model):
         # The self.type_document, using self.is_intercommunal, is used to generate the self representation, thus on the Django admin.
         # For an unknown reason, the ProcedureManager is used on the "list" view but not on the "change" one.
         # This should be refactored some day as this hack is quite ugly.
+        # TODO: update me
         if not hasattr(self, "perimetre__count"):
-            self.perimetre__count = self.perimetre.count()
+            self.perimetre__count = (
+                len(self._cached_perimetre)
+                if self._cached_perimetre
+                else self.perimetre.count()
+            )
 
         return self.perimetre__count > 1
 
@@ -805,7 +808,18 @@ class Procedure(models.Model):
         # For the moment, it is mandatory to know if the procedure is_sectoriel_consolide.
         # This should be refactored some day as this hack is quite ugly.
         if not hasattr(self, "perimetre__count"):
-            self.perimetre__count = self.perimetre.count()
+            self.perimetre__count = (
+                len(self._cached_perimetre)
+                if self._cached_perimetre
+                else self.perimetre.count()
+            )
+
+        if not hasattr(self, "communes_adherentes__count"):
+            self.communes_adherentes__count = (
+                self._cached_collectivite_porteuse.flat_members.filter(
+                    member_type=core_enums.TypeCollectivite.COM
+                ).count()
+            )
 
         # TODO Ajouter la vérif de la colonne is_sectoriel  # noqa: FIX002
         return self.communes_adherentes__count > self.perimetre__count

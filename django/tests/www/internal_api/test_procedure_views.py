@@ -536,3 +536,38 @@ class TestProcedureList:
             assert (
                 response.json()["results"][0]["perimetre"][i]["is_opposable"] == "False"
             )
+
+
+@pytest.mark.django_db
+class TestProcedureName:
+    base_queries = 2
+
+    @property
+    def url(self) -> str:
+        return reverse("internal_api:procedures-compute-name")
+
+    def test_principal_procedure_name__one_town(
+        self,
+        api_client,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = core_factories.CommuneFactory(for_snapshot=True)
+        collectivite = commune.collectivite_ptr
+
+        query_params = {
+            "type": core_enums.ProcedureType.ELABORATION,
+            "docType": core_enums.TypeDocument.PLU,
+            "perimetreCodes": [
+                commune.code_insee,
+                "30001",
+            ],  # procedure creation is on active communes only.
+            "collectiviteCode": commune.code_insee,
+        }
+        with (
+            django_assert_num_queries(self.base_queries),
+        ):
+            response = api_client.get(
+                f"{self.url}?{urlencode(query_params, doseq=True)}"
+            )
+        assert response.status_code == 200
+        assert response.json()["name"] == "Elaboration PLU Beaucaire"
