@@ -177,13 +177,24 @@ export default {
       return !!this.event.type && getLaunchEvent(this.event.type)
     }
   },
-  async mounted () {
-    const eventTypes = await this.$djangoApi.get('/api-internes/types-evenement/')
-    const eventTypeIdByName = {}
-    eventTypes.forEach(({ id, name }) => {
-      eventTypeIdByName[name] = id
-    })
-    this.eventTypeIdByName = eventTypeIdByName
+  watch: {
+    procedure: {
+      async handler (value) {
+        if (!value) {
+          return
+        }
+
+        const eventTypes = await this.$procedureEvent.getTypes(value.doc_type)
+        const eventTypeIdByName = {}
+        eventTypes.forEach(({ id, name }) => {
+          eventTypeIdByName[name] = id
+        })
+        this.eventTypeIdByName = eventTypeIdByName
+      },
+      immediate: true
+    }
+  },
+  mounted () {
     this.loading = false
   },
   methods: {
