@@ -186,3 +186,52 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]  # noqa: RUF012
     serializer_class = core_serializers.ProcedureSerializer
     filterset_class = custom_filters.ProcedureFilter
+
+
+class ProcedureName(generics.GenericAPIView):
+    def get(self, request: Request, *args, **kwargs) -> Response:  # noqa: ANN002, ANN003, ARG002
+        # if parentId: return parent computed name
+
+        # if principal procedure:
+
+        if "password" not in request.data:
+            return Response(
+                {"errors": ["Il n'y a pas de mot de passe."]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        password = request.data.get("password")
+        try:
+            validate_password(password=password)
+        except ValidationError as errors:
+            return Response(
+                {"errors": list(errors)}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            request.user.supabase_client.auth.update_user({"password": password})
+        except (
+            supabase_errors.AuthApiError,
+            supabase_errors.AuthError,
+            supabase_errors.AuthSessionMissingError,
+            supabase_errors.AuthUnknownError,
+            supabase_errors.AuthWeakPasswordError,
+        ):
+            logger.exception("Supabase error")
+            return Response(
+                {"errors": ["Merci d'essayer un autre mot de passe."]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        profile = request.user.profile
+        if profile and profile.must_update_password:
+            profile.must_update_password = False
+            profile.save()
+
+        if profile:
+            try:
+                profile.update_password_email().send()
+            except HTTPError:
+                logger.exception("Sendgrid error")
+
+        return Response(
+            {"message": "Mot de passe mis à jour."}, status=status.HTTP_201_CREATED
+        )
