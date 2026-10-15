@@ -155,6 +155,7 @@ export default {
         project_id: this.procedure.project_id,
         procedure_id: this.procedure.id
       }, this.value),
+      eventTypeIdByName: {},
       attachements: this.value?.attachements ? this.value?.attachements : [],
       icons: { mdiTrashCan },
       loading: !!this.eventId,
@@ -174,6 +175,23 @@ export default {
     },
     launchEvent () {
       return !!this.event.type && getLaunchEvent(this.event.type)
+    }
+  },
+  watch: {
+    procedure: {
+      async handler (value) {
+        if (!value) {
+          return
+        }
+
+        const eventTypes = await this.$procedureEvent.getTypes(value.doc_type)
+        const eventTypeIdByName = {}
+        eventTypes.forEach(({ id, name }) => {
+          eventTypeIdByName[name] = id
+        })
+        this.eventTypeIdByName = eventTypeIdByName
+      },
+      immediate: true
     }
   },
   mounted () {
@@ -200,7 +218,11 @@ export default {
         this.event.attachements = this.attachements.filter(attachement => attachement.state !== 'removed')
           .map(attachement => ({ id: attachement.id, name: attachement.name }))
 
-        const upsertEvent = { ...this.event, profile_id: this.$user.id }
+        const upsertEvent = {
+          ...this.event,
+          event_type_id: this.eventTypeIdByName[this.event.type] ?? null,
+          profile_id: this.$user.id
+        }
         if (this.eventId) {
           const payload = { ...upsertEvent, updated_at: new Date().toISOString() }
           await this.$supabase.from('doc_frise_events').update(payload).eq('id', this.eventId)
