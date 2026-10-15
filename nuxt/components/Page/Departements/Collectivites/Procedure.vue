@@ -266,6 +266,9 @@ export default {
           >
             Périmètre de la procédure&nbsp;: {{ value.towns.length }} commune{{ value.towns.length === 1 ? '' : 's' }}
           </PageDepartementsCollectivitesTowns>
+          <DUText v-if="value.startedBeforeHuwartLawVisible">
+            <em>Procédure antérieure à la loi Huwart</em>
+          </DUText>
           <DUDottedList sm>
             <li>Identifiant de la procédure&nbsp;: {{ value.id }}</li>
             <li v-if="value.sudocuhId">
