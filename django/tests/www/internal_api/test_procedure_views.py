@@ -62,7 +62,7 @@ class TestProcedureList:
         return reverse("internal_api:procedures-list")
 
     @pytest.mark.parametrize("status", core_enums.ProcedureStatusChoices)
-    def test_status_filter(
+    def test_filter_status(
         self,
         status: str,
         api_client_with_auth: SupabaseApiTestClient,
@@ -98,7 +98,7 @@ class TestProcedureList:
         assert response.json()["results"][0]["status"] == status.value
         assert response.json()["results"][0]["id"] == str(expected_procedure.id)
 
-    def test_many_statuses_filter(
+    def test_filter_many_statuses(
         self,
         api_client_with_auth: SupabaseApiTestClient,
         django_assert_num_queries: DjangoAssertNumQueries,
@@ -153,7 +153,7 @@ class TestProcedureList:
             ),
         ],
     )
-    def test_is_principale_filter(
+    def test_filter_is_principale(
         self,
         query_params: dict,
         api_client_with_auth: SupabaseApiTestClient,
@@ -207,7 +207,7 @@ class TestProcedureList:
             ),
         ],
     )
-    def test_collectivites_porteuses(
+    def test_filter_collectivites_porteuses(
         self,
         query_params: dict,
         snapshot: SnapshotAssertion,
@@ -283,7 +283,7 @@ class TestProcedureList:
             ),
         ],
     )
-    def test_communes_perimetre(
+    def test_filter_communes_perimetre(
         self,
         query_params: dict,
         snapshot: SnapshotAssertion,
@@ -337,7 +337,7 @@ class TestProcedureList:
         expected_topic = core_models.Topic.objects.get(name="zan")
         core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
-            with_perimetre=[communes[0]],
+            with_perimetre=communes,
             with_topics=True,
             with_topics__list=[expected_topic],
         )
@@ -349,7 +349,7 @@ class TestProcedureList:
         assert response.status_code == 200
         assert response.json()["results"][0]["topics"] == [{"name": "zan"}]
 
-    def test_procedure_name(
+    def test_serializer_name(
         self,
         api_client_with_auth: SupabaseApiTestClient,
         django_assert_num_queries: DjangoAssertNumQueries,
@@ -382,7 +382,47 @@ class TestProcedureList:
         assert response.status_code == 200
         assert response.json()["results"][0]["name"] == "Élaboration PLU Beaucaire"
 
-    def test_nominal_principal_procedure_serializer(
+    def test_serializer_doc_type(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        """The exposed docType is computed in Procedure.type_document.
+
+        We don't need to fully test it here because it's already tested in core models tests.
+        """
+        collectivite, communes, logged_in_profile = (
+            self._create_collectivite_perimetre_profile()
+        )
+        # doc_type matches type_document
+        core_factories.ProcedureFactory(
+            collectivite_porteuse=collectivite,
+            with_perimetre=communes,
+            doc_type=core_enums.TypeDocument.PLUI,
+        )
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(BASE_QUERIES),
+        ):
+            response = api_client.get(f"{self.url}")
+        assert response.status_code == 200
+        assert response.json()["results"][0]["docType"] == "PLUi"
+
+        # doc_type is PLU but area is composed of many towns
+        core_factories.ProcedureFactory(
+            collectivite_porteuse=collectivite,
+            with_perimetre=communes,
+            doc_type=core_enums.TypeDocument.PLU,
+        )
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(BASE_QUERIES),
+        ):
+            response = api_client.get(f"{self.url}")
+        assert response.status_code == 200
+        assert response.json()["results"][0]["docType"] == "PLUi"
+
+    def test_serializer_nominal_principal_procedure(
         self,
         api_client_with_auth: SupabaseApiTestClient,
         snapshot: SnapshotAssertion,
@@ -406,7 +446,7 @@ class TestProcedureList:
         assert response.status_code == 200
         assert response.json() == snapshot()
 
-    def test_nominal_secondary_procedure_serializer(
+    def test_serializer_nominal_secondary_procedure(
         self,
         api_client_with_auth: SupabaseApiTestClient,
         snapshot: SnapshotAssertion,
@@ -436,19 +476,13 @@ class TestProcedureList:
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
-            django_assert_num_queries(
-                BASE_QUERIES
-                + 1  # parente perimetre
-                + 1  # parente topics
-                + 1  # parente departement
-                + 1  # parente region
-                + 1  # parente events
-            ),
+            django_assert_num_queries(BASE_QUERIES),
         ):
             response = api_client.get(f"{self.url}")
         assert response.status_code == 200
         # Results are sorted by ID.
-        assert response.json()["results"][1]["id"] == str(secondary_procedure.id)
+        assert response.json()["results"][1]["id"] == str(secondary_procedure.pk)
+        assert response.json()["results"][1]["parentId"] == str(principal_procedure.pk)
         assert response.json()["results"][1] == snapshot()
 
     def test_serializer_with_approval_date(
@@ -459,48 +493,22 @@ class TestProcedureList:
         collectivite, communes, logged_in_profile = (
             self._create_collectivite_perimetre_profile()
         )
-        principal_procedure = core_factories.ProcedureFactory(
-            pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-111111111111"),
-            collectivite_porteuse=collectivite,
-            with_perimetre=communes,
-            numero="1",
-            for_snapshot=True,
-            status=core_enums.ProcedureStatusChoices.EN_COURS,
-            with_event=True,
-            with_event__category=core_models.EventCategory.APPROUVE,
-            with_event__date_evenement=datetime.date(2026, 10, 6),
-        )
         core_factories.ProcedureFactory(
-            pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-222222222222"),
-            parente=principal_procedure,
-            name="Révision du PLU de Nantes",
-            status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
-            numero="1",
-            project=principal_procedure.project,
-            doc_type=core_enums.TypeDocument.PLU,
             with_event=True,
             with_event__category=core_models.EventCategory.APPROUVE,
             with_event__date_evenement=datetime.date(2026, 10, 6),
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
-            django_assert_num_queries(
-                BASE_QUERIES
-                + 1  # parente perimetre
-                + 1  # parente topics
-                + 1  # parente departement
-                + 1  # parente region
-                + 1  # parente events
-            ),
+            django_assert_num_queries(BASE_QUERIES),
         ):
             response = api_client.get(f"{self.url}")
         assert response.status_code == 200
-        assert response.json()["results"][1]["approval_date"] == "2026-10-06"
-        assert response.json()["results"][1]["parent"]["approval_date"] == "2026-10-06"
+        assert response.json()["results"][0]["approval_date"] == "2026-10-06"
 
-    def test_serializer_with_is_opposable(
+    def test_serializer_with_communes_is_opposable(
         self,
         api_client_with_auth: SupabaseApiTestClient,
         django_assert_num_queries: DjangoAssertNumQueries,
@@ -508,67 +516,23 @@ class TestProcedureList:
         collectivite, communes, logged_in_profile = (
             self._create_collectivite_perimetre_profile()
         )
-        principal_procedure = core_factories.ProcedureFactory(
-            pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-111111111111"),
+        procedure = core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
-            numero="1",
-            for_snapshot=True,
-            status=core_enums.ProcedureStatusChoices.EN_COURS,
-            with_event=True,
-            with_event__category=core_models.EventCategory.APPROUVE,
-            with_event__date_evenement=datetime.date(2026, 10, 6),
         )
-        secondary_procedure = core_factories.ProcedureFactory(
-            pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-222222222222"),
-            parente=principal_procedure,
-            name="Révision du PLU de Nantes",
-            status=core_enums.ProcedureStatusChoices.EN_COURS,
-            collectivite_porteuse=collectivite,
-            with_perimetre=communes,
-            numero="1",
-            project=principal_procedure.project,
-            doc_type=core_enums.TypeDocument.PLU,
-            with_event=True,
-            with_event__category=core_models.EventCategory.APPROUVE,
-            with_event__date_evenement=datetime.date(2026, 10, 6),
-        )
-        pp_perimetre_through = principal_procedure.perimetre_through.order_by(
+        perimetre_through = procedure.perimetre_through.order_by(
             "commune__code_insee"
         ).first()
-        pp_perimetre_through.opposable = True
-        pp_perimetre_through.save()
-
-        ps_perimetre_through = secondary_procedure.perimetre_through.order_by(
-            "commune__code_insee"
-        ).first()
-        ps_perimetre_through.opposable = True
-        ps_perimetre_through.save()
+        perimetre_through.opposable = True
+        perimetre_through.save()
         with (
             api_client_with_auth(logged_in_profile) as api_client,
-            django_assert_num_queries(
-                BASE_QUERIES
-                + 1  # parente perimetre
-                + 1  # parente topics
-                + 1  # parente departement
-                + 1  # parente region
-                + 1  # parente events
-            ),
+            django_assert_num_queries(BASE_QUERIES),
         ):
             response = api_client.get(f"{self.url}")
         assert response.status_code == 200
-        assert response.json()["results"][1]["perimetre"][0]["is_opposable"] == "True"
+        assert response.json()["results"][0]["perimetre"][0]["is_opposable"] == "True"
         for i in range(1, len(communes) - 1):
             assert (
-                response.json()["results"][1]["perimetre"][i]["is_opposable"] == "False"
-            )
-
-        assert (
-            response.json()["results"][1]["parent"]["perimetre"][0]["is_opposable"]
-            == "True"
-        )
-        for i in range(1, len(communes) - 1):
-            assert (
-                response.json()["results"][1]["parent"]["perimetre"][i]["is_opposable"]
-                == "False"
+                response.json()["results"][0]["perimetre"][i]["is_opposable"] == "False"
             )
