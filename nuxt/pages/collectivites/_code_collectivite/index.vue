@@ -76,6 +76,9 @@ export default {
           ({ townName }) => getSortableText(townName)
         ], ['asc', 'asc'])
     },
+    favoriteView () {
+      return this.$user.profile?.poste === 'ddt' ? 'tableau' : 'liste'
+    },
     intermunicipalityCode () {
       return this.territorialAuthority?.intermunicipalityCode || null
     },
@@ -179,9 +182,27 @@ export default {
     },
     territorialAuthorityCode () {
       return this.$route.params.code_collectivite || null
+    },
+    view () {
+      return this.$route.query.vue || null
     }
   },
   watch: {
+    favoriteView: {
+      handler (value) {
+        if (this.view) {
+          return
+        }
+
+        this.$router.replace({
+          query: {
+            ...this.$route.query,
+            vue: value
+          }
+        })
+      },
+      immediate: true
+    },
     intermunicipalityCode: {
       async handler (value) {
         if (!process.client) {
@@ -333,11 +354,11 @@ export default {
         <DUTabs>
           <template #default="{ activeClass }">
             <NuxtLink
-              :class="{ [activeClass]: !$route.query.vue }"
+              :class="{ [activeClass]: view === 'liste' }"
               :to="{
                 query: {
                   ...$route.query,
-                  vue: undefined
+                  vue: 'liste'
                 }
               }"
             >
@@ -347,7 +368,7 @@ export default {
               Liste
             </NuxtLink>
             <NuxtLink
-              :class="{ [activeClass]: $route.query.vue === 'tableau' }"
+              :class="{ [activeClass]: view === 'tableau' }"
               :to="{
                 query: {
                   ...$route.query,
@@ -366,7 +387,7 @@ export default {
         </DUTabs>
       </DUGroup>
       <PageDepartementsCollectivitesProceduresTable
-        v-if="$route.query.vue === 'tableau'"
+        v-if="view === 'tableau'"
         :value="proceduresPage"
       />
       <template v-else>
@@ -377,9 +398,8 @@ export default {
         />
       </template>
       <DUGroup
-        :end="pages > 1"
+        end
         lg
-        :start="pages === 1"
       >
         <LayoutPagination :size="pages" />
         <LayoutScrollTop />
