@@ -53,7 +53,6 @@ export default {
         <DUTableRow
           :key="procedure.id"
           primary
-          :title="procedure.name"
           :to="`/frise/${procedure.id}`"
         >
           <DUTableCell>
@@ -63,7 +62,13 @@ export default {
             />
           </DUTableCell>
           <DUTableCell primary>
-            {{ procedure.type }}
+            <div>
+              {{ procedure.type }}
+              <template v-if="procedure.nameDetails">
+                <br>
+                <em>{{ procedure.nameDetails }}</em>
+              </template>
+            </div>
           </DUTableCell>
           <DUTableCell>{{ procedure.number }}</DUTableCell>
           <DUTableCell>
@@ -96,7 +101,13 @@ export default {
             <VIcon small>
               {{ icons.mdiSubdirectoryArrowRight }}
             </VIcon>
-            {{ secondaryProcedure.type }}
+            <div>
+              {{ secondaryProcedure.type }}
+              <template v-if="secondaryProcedure.nameDetails">
+                <br>
+                <em>{{ secondaryProcedure.nameDetails }}</em>
+              </template>
+            </div>
           </DUTableCell>
           <DUTableCell>{{ secondaryProcedure.number }}</DUTableCell>
           <DUTableCell />
