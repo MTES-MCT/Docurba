@@ -4,6 +4,7 @@
 //   groups: TerritorialAuthority[]
 //   inseeCode: string
 //   intermunicipalityCode: string
+//   lowerMembers: TerritorialAuthority[]
 //   members: TerritorialAuthority[]
 //   name: string
 //   regionCode: string
@@ -55,8 +56,11 @@ export async function listTerritorialAuthorities (api, params) {
       (code.length > 5 ? sirenCodes : inseeCodes).push(code)
     })
   }
+  if (params.includeLowerMembers) {
+    apiParams.avec_membres_niveaux_inferieurs = true
+  }
   if (params.includeMembers) {
-    apiParams.avec_membres = params.includeMembers
+    apiParams.avec_membres = true
   }
   if (inseeCodes.length) {
     if (inseeCodes.length < 100) {
@@ -108,6 +112,7 @@ function _parseTerritorialAuthority (rawTerritorialAuthority) {
     groups: rawTerritorialAuthority.membres?.map(_parseTerritorialAuthority) ?? [],
     inseeCode: rawTerritorialAuthority.codeInsee,
     intermunicipalityCode: rawTerritorialAuthority.intercommunaliteCode,
+    lowerMembers: rawTerritorialAuthority.membres_niveaux_inferieurs?.map(_parseTerritorialAuthority) ?? [],
     members: rawTerritorialAuthority.membres?.map(_parseTerritorialAuthority) ?? [],
     name: rawTerritorialAuthority.intitule,
     regionCode: rawTerritorialAuthority.regionCode,

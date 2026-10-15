@@ -206,6 +206,7 @@ export default ({ $dayjs, $djangoApi, $supabase, $territorialAuthorityApi }, inj
         $supabase.rpc('procedures_by_collectivites', { codes: territorialAuthorityCodes }),
         $djangoApi.get('/api-internes/types-evenement/')
       ])
+      const activeRawProcedures = rawProcedures.filter(({ archived }) => !archived)
       const eventStructuringByType = {}
 
       for (const eventType of eventTypes) {
@@ -213,13 +214,16 @@ export default ({ $dayjs, $djangoApi, $supabase, $territorialAuthorityApi }, inj
       }
 
       const territorialAuthorities = await $territorialAuthorityApi.list({
-        codes: uniq(rawProcedures.flatMap(rawProcedure => [
+        codes: uniq(activeRawProcedures.flatMap(rawProcedure => [
           ..._getProcedurePerimeter(rawProcedure).map(p => p.collectivite_code),
           rawProcedure.collectivite_porteuse_id
         ]))
       })
 
-      return _parseProcedures(rawProcedures, { eventStructuringByType, territorialAuthorities })
+      return _parseProcedures(activeRawProcedures, {
+        eventStructuringByType,
+        territorialAuthorities
+      })
     }
   })
 }
