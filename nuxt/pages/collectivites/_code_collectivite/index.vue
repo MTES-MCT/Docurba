@@ -315,7 +315,7 @@ export default {
       <DUButton
         v-if="procedureCreationAvailable"
         primary
-        :to="`/ddt/${departmentCode}/collectivites/${territorialAuthorityCode}/procedures/add`"
+        :to="`/collectivites/${territorialAuthorityCode}/procedures/add`"
       >
         <VIcon small>
           {{ icons.mdiPlus }}

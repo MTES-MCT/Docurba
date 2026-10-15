@@ -405,11 +405,11 @@ function _getProcedureStatus (rawProcedure, { territorialAuthority }) {
   switch (rawProcedure.status) {
     case 'abandon':
       return 'Abandonné'
-    case 'abrogé':
+    case 'abroge':
       return 'Abrogé'
-    case 'annulé':
+    case 'annule':
       return 'Annulé'
-    case 'approuvé':
+    case 'approuve':
       return 'Approuvé'
     case 'caduc':
       return 'Caduc'
