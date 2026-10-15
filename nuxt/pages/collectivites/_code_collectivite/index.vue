@@ -222,7 +222,10 @@ export default {
         }
 
         this.territorialAuthority = value
-          ? await this.$territorialAuthorityApi.get(value, { includeMembers: true })
+          ? await this.$territorialAuthorityApi.get(value, {
+            includeLowerMembers: true,
+            includeMembers: true
+          })
           : null
 
         if (this.territorialAuthority) {
@@ -231,6 +234,7 @@ export default {
 
           for (const { code, type } of [
             this.territorialAuthority,
+            ...this.territorialAuthority.lowerMembers,
             ...this.territorialAuthority.members
           ]) {
             if (type === 'COM' && !existingCodes[code]) {
