@@ -420,9 +420,9 @@ function _getProcedureStatus (rawProcedure, { territorialAuthority }) {
       return 'En projet'
     case 'opposable':
       return _getProcedurePerimeter(rawProcedure).some(
-        territorialAuthority?.code
+        territorialAuthority?.inseeCode
           ? p => p.opposable && (
-            p.collectivite_code === territorialAuthority.code ||
+            p.collectivite_code === territorialAuthority.inseeCode ||
             p.collectivite_type === 'COMD'
           )
           : ({ opposable }) => opposable
