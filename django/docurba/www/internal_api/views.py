@@ -180,7 +180,7 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
                 ).with_opposable(),
             ),
         )
-        .order_by("id")
+        .order_by("pk")
     )
     authentication_classes = [SupabaseAuthentication]  # noqa: RUF012
     permission_classes = [IsAuthenticated]  # noqa: RUF012
