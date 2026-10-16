@@ -160,8 +160,8 @@ class UserPassword(generics.GenericAPIView):
 class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = (
         core_models.Procedure.objects.with_events()
-        .with_communes_counts()
-        .with_perimetre_counts()
+        .with_collectivite_porteuse_communes_adherentes_count()
+        .with_perimetre_without_delegates_count()
         .select_related(
             "collectivite_porteuse",
             "collectivite_porteuse__commune",
@@ -186,3 +186,11 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]  # noqa: RUF012
     serializer_class = core_serializers.ProcedureSerializer
     filterset_class = custom_filters.ProcedureFilter
+
+
+class ProcedureComputeName(PublicAPIView, generics.GenericAPIView):
+    def get(self, request: Request, *args, **kwargs) -> Response:  # noqa: ANN002, ANN003, ARG002
+        serializer = core_serializers.ProcedureNameSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.data
+        return Response({"name": data["name"]}, status=status.HTTP_200_OK)

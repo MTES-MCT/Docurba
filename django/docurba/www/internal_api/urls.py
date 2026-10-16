@@ -22,5 +22,10 @@ urlpatterns = [
         views.UserPassword.as_view(),
         name="user-password",
     ),
+    path(
+        "procedures/compute-name",
+        views.ProcedureComputeName.as_view(),
+        name="procedures-compute-name",
+    ),
     *router.urls,
 ]
