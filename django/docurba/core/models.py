@@ -270,13 +270,13 @@ class ProcedureQuerySet(models.QuerySet):
             models.Prefetch("event_set", events_qs, to_attr="events_prefetched"),
         )
 
-    def with_communes_counts(self) -> Self:
+    def with_collectivite_porteuse_communes_adherentes_count(self) -> Self:
         # On utilise une Subquery plutôt qu'une expression directe pour permettre
         # à Django d'ignorer la Subquery quand il fait des count(*) dans l'admin,
         # ce qui rend l'admin plus rapide.
         return self.annotate(
             # 254003304 est un bon EPCI pour tester DISTINCT : 1279 communes en 2024
-            communes_adherentes__count=models.functions.Coalesce(
+            collectivite_porteuse_communes_adherentes_count=models.functions.Coalesce(
                 models.Subquery(
                     MaterializedViewFlatMembership.objects.filter(
                         group=models.OuterRef("collectivite_porteuse__id"),
@@ -292,9 +292,9 @@ class ProcedureQuerySet(models.QuerySet):
             ),
         )
 
-    def with_perimetre_counts(self) -> Self:
+    def with_perimetre_without_delegates_count(self) -> Self:
         return self.annotate(
-            perimetre__count=models.functions.Coalesce(
+            perimetre_without_delegates_count=models.functions.Coalesce(
                 models.Subquery(
                     CommuneProcedure.objects.filter(
                         procedure=models.OuterRef("pk"), commune__nouvelle=None
@@ -336,8 +336,8 @@ class ProcedureManager(models.Manager):
         return (
             super()
             .get_queryset()
-            .with_perimetre_counts()
-            .with_communes_counts()
+            .with_perimetre_without_delegates_count()
+            .with_collectivite_porteuse_communes_adherentes_count()
             .select_related("collectivite_porteuse__departement__region")
         )
 
@@ -549,11 +549,8 @@ class Procedure(models.Model):
             return self.date_prescription < other.date_prescription
         return self.created_at < other.created_at
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: list, **kwargs: dict) -> None:
         self._cached_perimetre = kwargs.pop("cached_perimetre", None)
-        self._cached_collectivite_porteuse = kwargs.pop(
-            "cached_collectivite_porteuse", None
-        )
         super().__init__(*args, **kwargs)
 
     def get_absolute_url(self) -> str:
@@ -576,6 +573,12 @@ class Procedure(models.Model):
             ):
                 setattr(self, event.category, event)
         self._events_processed = True
+
+    @property
+    def _internal_perimetre(self) -> models.QuerySet:
+        if self._cached_perimetre is not None:
+            return self._cached_perimetre
+        return self.perimetre.all()
 
     @property
     def computed_name(self) -> str:
@@ -613,13 +616,13 @@ class Procedure(models.Model):
         procedure = Procedure.objects.prefetch_related("perimetre", models.Prefetch(Commune.objects.with_opposable()))
         procedure.zone_name
         """
-        perimetre_qs = self._cached_perimetre or self.perimetre.all()
+        perimetre_qs = self._internal_perimetre
         if perimetre_qs:
             if len(perimetre_qs) == 1:
                 return perimetre_qs[0].nom
 
             if not hasattr(perimetre_qs[0], "opposable"):
-                perimetre_qs = perimetre_qs.with_opposable().all()
+                perimetre_qs = self.perimetre.with_opposable().all()
             # There is more than one commune in the perimetre and only one is set as opposable.
             # We assume this is the way delegated towns have been handled.
             opposable_delegated_towns = [
@@ -784,45 +787,43 @@ class Procedure(models.Model):
             return delai.days
 
     @property
-    def is_intercommunal(self) -> bool:
-        # self.perimetre_count is set when calling Procedure.objects.with_perimetre_counts
+    def _perimetre_without_delegates_count(self) -> int:
+        # self.perimetre_count is set when calling Procedure.objects.perimetre_without_delegates_count
         # which is always called on the manager (see ProcedureManager.get_queryset).
         # For the moment, it is mandatory to know if the procedure is_intercommunal.
         # The self.type_document, using self.is_intercommunal, is used to generate the self representation, thus on the Django admin.
         # For an unknown reason, the ProcedureManager is used on the "list" view but not on the "change" one.
         # This should be refactored some day as this hack is quite ugly.
-        # TODO: update me
-        if not hasattr(self, "perimetre__count"):
-            self.perimetre__count = (
-                len(self._cached_perimetre)
-                if self._cached_perimetre
-                else self.perimetre.count()
+        perimetre_count = getattr(self, "perimetre_without_delegates_count", None)
+        if perimetre_count is None:
+            perimetre_count = len(
+                [
+                    commune
+                    for commune in self._internal_perimetre
+                    if commune.type == core_enums.CommuneType.COM
+                ]
             )
+        return perimetre_count
 
-        return self.perimetre__count > 1
+    @property
+    def is_intercommunal(self) -> bool:
+        return self._perimetre_without_delegates_count > 1
 
     @property
     def is_sectoriel_consolide(self) -> bool:
-        # self.perimetre_count is set when calling Procedure.objects.with_perimetre_counts
-        # which is always called on the manager (see ProcedureManager.get_queryset).
-        # For the moment, it is mandatory to know if the procedure is_sectoriel_consolide.
-        # This should be refactored some day as this hack is quite ugly.
-        if not hasattr(self, "perimetre__count"):
-            self.perimetre__count = (
-                len(self._cached_perimetre)
-                if self._cached_perimetre
-                else self.perimetre.count()
-            )
+        communes_adherentes_count = getattr(
+            self.collectivite_porteuse, "communes_adherentes_count", None
+        ) or getattr(self, "collectivite_porteuse_communes_adherentes_count", None)
 
-        if not hasattr(self, "communes_adherentes__count"):
-            self.communes_adherentes__count = (
-                self._cached_collectivite_porteuse.flat_members.filter(
-                    member_type=core_enums.TypeCollectivite.COM
-                ).count()
+        if communes_adherentes_count is None:
+            communes_adherentes_count = (
+                Collectivite.objects.get(pk=self.collectivite_porteuse.pk)
+                .with_communes_counts()
+                .communes_adherentes_count
             )
 
         # TODO Ajouter la vérif de la colonne is_sectoriel  # noqa: FIX002
-        return self.communes_adherentes__count > self.perimetre__count
+        return communes_adherentes_count > self._perimetre_without_delegates_count
 
     @property
     def is_en_cours(self) -> bool:
@@ -1359,6 +1360,29 @@ class CollectiviteQuerySet(models.QuerySet):
             )
         )
 
+    def with_communes_adherentes_count(self) -> Self:
+        # TODO: find a way to refactor me as this is exactly the same thing as in Procedure.with_collectivite_porteuse_communes_count.
+        # On utilise une Subquery plutôt qu'une expression directe pour permettre
+        # à Django d'ignorer la Subquery quand il fait des count(*) dans l'admin,
+        # ce qui rend l'admin plus rapide.
+        return self.annotate(
+            # 254003304 est un bon EPCI pour tester DISTINCT : 1279 communes en 2024
+            communes_adherentes_count=models.functions.Coalesce(
+                models.Subquery(
+                    MaterializedViewFlatMembership.objects.filter(
+                        group=models.OuterRef("id"),
+                        member_type=core_enums.TypeCollectivite.COM,
+                    )
+                    .values("group")
+                    .annotate(
+                        communes_adherentes__count=models.Count("member"),
+                    )
+                    .values("communes_adherentes__count")
+                ),
+                0,
+            ),
+        )
+
 
 class Collectivite(models.Model):
     id = models.CharField(primary_key=True)  # Au format code_type
@@ -1500,7 +1524,7 @@ class Commune(Collectivite):
 
     class Meta:
         indexes = (
-            # perimetre__count utilise commune__nouvelle=None pour savoir si une commune est déléguée.
+            # perimetre_without_delegates_count utilise commune__nouvelle=None pour savoir si une commune est déléguée.
             # Cet index partiel permet un Index Only Scan (au lieu de Index Scan)
             models.Index(
                 fields=["collectivite_ptr"],

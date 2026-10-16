@@ -241,8 +241,13 @@ class TestProcedureCommunesCounts:
             procedure_sectorielle_with_counts = core_models.Procedure.objects.get(
                 id=procedure_sectorielle.id
             )
-            assert procedure_sectorielle_with_counts.perimetre__count == 1
-            assert procedure_sectorielle_with_counts.communes_adherentes__count == 3
+            assert (
+                procedure_sectorielle_with_counts.perimetre_without_delegates_count == 1
+            )
+            assert (
+                procedure_sectorielle_with_counts.collectivite_porteuse_communes_adherentes_count
+                == 3
+            )
             assert procedure_sectorielle_with_counts.is_sectoriel_consolide
 
     @pytest.mark.django_db
@@ -281,8 +286,14 @@ class TestProcedureCommunesCounts:
             procedure_non_sectorielle_with_counts = core_models.Procedure.objects.get(
                 id=procedure_non_sectorielle.id
             )
-            assert procedure_non_sectorielle_with_counts.perimetre__count == 3
-            assert procedure_non_sectorielle_with_counts.communes_adherentes__count == 3
+            assert (
+                procedure_non_sectorielle_with_counts.perimetre_without_delegates_count
+                == 3
+            )
+            assert (
+                procedure_non_sectorielle_with_counts.collectivite_porteuse_communes_adherentes_count
+                == 3
+            )
             assert not procedure_non_sectorielle_with_counts.is_sectoriel_consolide
 
     @pytest.mark.django_db
@@ -306,8 +317,11 @@ class TestProcedureCommunesCounts:
 
         with django_assert_num_queries(1):
             procedure_with_counts = core_models.Procedure.objects.get(id=procedure.id)
-            assert procedure_with_counts.perimetre__count == 1
-            assert procedure_with_counts.communes_adherentes__count == 1
+            assert procedure_with_counts.perimetre_without_delegates_count == 1
+            assert (
+                procedure_with_counts.collectivite_porteuse_communes_adherentes_count
+                == 1
+            )
 
     @pytest.mark.django_db
     def test_retourne_zero_quand_pas_de_commune(
@@ -323,8 +337,11 @@ class TestProcedureCommunesCounts:
 
         with django_assert_num_queries(1):
             procedure_with_counts = core_models.Procedure.objects.get(id=procedure.id)
-            assert procedure_with_counts.perimetre__count == 0
-            assert procedure_with_counts.communes_adherentes__count == 0
+            assert procedure_with_counts.perimetre_without_delegates_count == 0
+            assert (
+                procedure_with_counts.collectivite_porteuse_communes_adherentes_count
+                == 0
+            )
 
 
 def test_tous_document_types_ont_event_category() -> None:
@@ -835,7 +852,7 @@ class TestProcedure:
             django_assert_num_queries(2),
         ):
             assert procedure.zone_name == "Argilliers"
-        # - With a prefetch.
+        # # - With a prefetch.
         with (
             django_assert_num_queries(2),
         ):
