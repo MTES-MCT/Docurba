@@ -205,7 +205,7 @@
 
 <script>
 import { mdiInformationOutline, mdiOpenInNew } from '@mdi/js'
-import { uniqBy } from 'lodash'
+import { uniq, uniqBy } from 'lodash'
 import FormInput from '@/mixins/FormInput.js'
 
 export default {

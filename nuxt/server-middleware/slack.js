@@ -5,7 +5,7 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-const { getCollectivite } = require('../plugins/collectivite.js')
+const { getCollectiviteFromCode } = require('../plugins/collectivite.js')
 const sendgrid = require('./modules/sendgrid.js')
 const supabase = require('./modules/supabase.js')
 
