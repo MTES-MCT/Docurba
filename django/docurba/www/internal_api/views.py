@@ -6,6 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import models
 from rest_framework import generics, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sendgrid_backend.mail import HTTPError
@@ -186,6 +187,15 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]  # noqa: RUF012
     serializer_class = core_serializers.ProcedureSerializer
     filterset_class = custom_filters.ProcedureFilter
+
+    @action(detail=True, methods=["post"], url_path="synchronize-status")
+    def synchronize_status(
+        self, _request: Request, *_args: list, **_kwargs: dict
+    ) -> Response:
+        procedure = self.get_object()
+        procedure.status = procedure.compute_status()
+        procedure.save(update_fields=["status"])
+        return Response({"status": procedure.status})
 
 
 class ProcedureComputeName(PublicAPIView, generics.GenericAPIView):
