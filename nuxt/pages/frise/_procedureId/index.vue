@@ -497,7 +497,6 @@ export default
         .eq('procedure_id', this.$route.params.procedureId)
         .is('archived_at', null)
         .order('date_iso', { ascending: false })
-        .order('created_at', { ascending: false })
 
       if (errorEvents) { throw errorEvents }
       return events
