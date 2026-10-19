@@ -11,7 +11,7 @@ from syrupy.assertion import SnapshotAssertion
 from docurba.core import enums as core_enums
 from docurba.core import models as core_models
 from docurba.users import models as users_models
-from tests.conftest import SupabaseApiTestClient
+from tests.conftest import APIClient, SupabaseApiTestClient
 from tests.core import factories as core_factories
 from tests.users.factories import ProfileFactory
 
@@ -535,3 +535,218 @@ class TestProcedureList:
             assert (
                 response.json()["results"][0]["perimetre"][i]["is_opposable"] == "False"
             )
+
+
+@pytest.mark.django_db
+class TestProcedureName:
+    base_queries = 4
+
+    @property
+    def url(self) -> str:
+        return reverse("internal_api:procedures-compute-name")
+
+    def test_principal_procedure_name__one_town(
+        self,
+        api_client: APIClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = core_factories.CommuneFactory(for_snapshot=True)
+
+        query_params = {
+            "type": core_enums.ProcedureType.ELABORATION,
+            "docType": core_enums.TypeDocument.PLU,
+            "perimetreCodes": [
+                commune.code_insee,
+            ],  # procedure creation is on active communes only.
+            "collectiviteCode": commune.code_insee,
+        }
+        with (
+            django_assert_num_queries(self.base_queries),
+        ):
+            response = api_client.get(
+                f"{self.url}?{urlencode(query_params, doseq=True)}"
+            )
+        assert response.status_code == 200
+        assert response.json()["name"] == "Elaboration PLU Beaucaire"
+
+    def test_principal_procedure_name__multiple_towns(
+        self,
+        api_client: APIClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        communes = core_factories.CommuneFactory.create_batch(2)
+        collectivite = core_factories.CollectiviteFactory(
+            for_snapshot=True,
+            with_members=True,
+            with_members__list=[commune.collectivite_ptr for commune in communes],
+        )
+
+        query_params = {
+            "type": core_enums.ProcedureType.ELABORATION,
+            "docType": core_enums.TypeDocument.PLU,
+            "perimetreCodes": [
+                commune.code_insee for commune in communes
+            ],  # procedure creation is on active communes only.
+            "collectiviteCode": collectivite.siren,
+        }
+        with (
+            django_assert_num_queries(self.base_queries),
+        ):
+            response = api_client.get(
+                f"{self.url}?{urlencode(query_params, doseq=True)}"
+            )
+        assert response.status_code == 200
+        assert (
+            response.json()["name"]
+            == "Elaboration PLUi Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+
+    def test_secondary_procedure_name(
+        self,
+        api_client: APIClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        communes = core_factories.CommuneFactory.create_batch(2)
+        collectivite_porteuse = core_factories.CollectiviteFactory(
+            for_snapshot=True,
+            with_members=True,
+            with_members__list=[commune.collectivite_ptr for commune in communes],
+        )
+        principal_procedure = core_factories.ProcedureFactory(
+            for_snapshot=True,
+            collectivite_porteuse=collectivite_porteuse,
+            with_perimetre=communes,
+        )
+
+        query_params = {
+            "type": core_enums.ProcedureType.MODIFICATION,
+            "parentId": str(principal_procedure.pk),
+            "number": "1",
+        }
+        with django_assert_num_queries(self.base_queries):
+            response = api_client.get(
+                f"{self.url}?{urlencode(query_params, doseq=True)}"
+            )
+        assert response.status_code == 200
+        assert (
+            response.json()["name"]
+            == "Modification PLUi Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+
+    @pytest.mark.parametrize(
+        "query_params",
+        [
+            pytest.param(
+                {
+                    "parentId": "",
+                    "collectiviteCode": "253000020",
+                    "docType": core_enums.TypeDocument.PLU,
+                    "type": core_enums.ProcedureType.ELABORATION,
+                },
+                id="missing perimetreCodes",
+            ),
+            pytest.param(
+                {
+                    "parentId": "",
+                    "perimetreCodes": "30032",
+                    "docType": core_enums.TypeDocument.PLU,
+                    "type": core_enums.ProcedureType.ELABORATION,
+                },
+                id="missing collectiviteCode",
+            ),
+            pytest.param(
+                {
+                    "parentId": "",
+                    "collectiviteCode": "253000020",
+                    "perimetreCodes": "30032",
+                    "type": core_enums.ProcedureType.ELABORATION,
+                },
+                id="missing docType",
+            ),
+        ],
+    )
+    def test_validation_error(
+        self,
+        api_client: APIClient,
+        query_params: dict,
+    ) -> None:
+        commune = core_factories.CommuneFactory(for_snapshot=True)
+        core_factories.CollectiviteFactory(
+            for_snapshot=True,
+            with_members=True,
+            with_members__list=[commune],
+        )
+
+        response = api_client.get(f"{self.url}?{urlencode(query_params, doseq=True)}")
+        assert response.status_code == 400
+        assert (
+            response.json()["non_field_errors"][0]
+            == "Missing principal procedure required field. Mandatory fields are: ['collectiviteCode', 'perimetreCodes', 'doc_type']"
+        )
+
+    def test_parente_procedure_not_found(
+        self,
+        api_client: APIClient,
+    ) -> None:
+        commune = core_factories.CommuneFactory(for_snapshot=True)
+        core_factories.CollectiviteFactory(
+            for_snapshot=True,
+            with_members=True,
+            with_members__list=[commune],
+        )
+        query_params = {
+            "parentId": "fb48c069-33c6-4ed2-9db3-054e99ea7981",
+            "type": core_enums.ProcedureType.ELABORATION,
+        }
+
+        response = api_client.get(f"{self.url}?{urlencode(query_params, doseq=True)}")
+        assert response.status_code == 400
+        assert (
+            response.json()["parentId"][0]
+            == "The principal procedure has not been found."
+        )
+
+    def test_collectivite_porteuse_not_found(
+        self,
+        api_client: APIClient,
+    ) -> None:
+        core_factories.CommuneFactory(for_snapshot=True)
+        query_params = {
+            "parentId": "",
+            "collectiviteCode": "000000000",
+            "perimetreCodes": "30032",
+            "type": core_enums.ProcedureType.ELABORATION,
+            "docType": core_enums.TypeDocument.PLU,
+        }
+
+        response = api_client.get(f"{self.url}?{urlencode(query_params, doseq=True)}")
+        assert response.status_code == 400
+        assert (
+            response.json()["collectiviteCode"][0]
+            == 'The "collectivité porteuse" has not been found.'
+        )
+
+    def test_perimetre_not_found(
+        self,
+        api_client: APIClient,
+    ) -> None:
+        commune = core_factories.CommuneFactory(for_snapshot=True)
+        collectivite = core_factories.CollectiviteFactory(
+            for_snapshot=True,
+            with_members=True,
+            with_members__list=[commune],
+        )
+        query_params = {
+            "parentId": "",
+            "collectiviteCode": collectivite.siren,
+            "perimetreCodes": ["30032", "00000"],
+            "type": core_enums.ProcedureType.ELABORATION,
+            "docType": core_enums.TypeDocument.PLU,
+        }
+
+        response = api_client.get(f"{self.url}?{urlencode(query_params, doseq=True)}")
+        assert response.status_code == 400
+        assert (
+            response.json()["perimetreCodes"][0]
+            == "Following communes have not been found: ['00000']."
+        )

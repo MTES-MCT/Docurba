@@ -1,9 +1,10 @@
 # ruff: noqa: N815, RUF012
 
 
+from django.db import models
 from rest_framework import serializers
 
-from docurba.core.enums import TypeDocument
+from docurba.core.enums import ProcedureType, TypeDocument
 from docurba.core.models import (
     Collectivite,
     Commune,
@@ -146,6 +147,124 @@ class TopicSerializer(serializers.ModelSerializer):
         model = Topic
         fields = ["name"]
         read_only_fields = fields
+
+
+class ProcedureNameSerializer(serializers.ModelSerializer):
+    parentId = serializers.UUIDField(required=False, source="parente_id")
+    type = serializers.ChoiceField(choices=ProcedureType)
+    number = serializers.CharField(required=False, source="numero")
+    docType = serializers.ChoiceField(
+        required=False, choices=TypeDocument, source="doc_type"
+    )
+    nameComplement = serializers.CharField(required=False, source="name_complement")
+    perimetreCodes = serializers.ListField(
+        required=False, child=serializers.CharField()
+    )
+    collectiviteCode = serializers.CharField(required=False)
+
+    class Meta:
+        model = Procedure
+        fields = [
+            "parentId",
+            "type",
+            "docType",
+            "nameComplement",
+            "number",
+            "perimetreCodes",
+            "collectiviteCode",
+        ]
+
+    def validate_collectiviteCode(self, value: str) -> str:  # noqa: N802
+        if not Collectivite.objects.filter(
+            models.Q(siren=value) | models.Q(code_insee=value)
+        ).exists():
+            raise serializers.ValidationError(
+                ('The "collectivité porteuse" has not been found.',),
+            )
+        return value
+
+    def validate_perimetreCodes(self, values: list) -> list:  # noqa: N802
+        found_communes = Commune.objects.filter(code_insee__in=values).values_list(
+            "code_insee", flat=True
+        )
+        not_found = [code for code in values if code not in found_communes]
+        if not_found:
+            raise serializers.ValidationError(
+                (f"Following communes have not been found: {not_found}.",),
+            )
+        return values
+
+    def validate_parentId(self, value: str) -> str:  # noqa: N802
+        if not Procedure.objects.filter(pk=value).exists():
+            raise serializers.ValidationError(
+                ("The principal procedure has not been found.",),
+            )
+        return value
+
+    def validate(self, data: dict) -> dict:
+        principal_procedure_required_fields = [
+            "collectiviteCode",
+            "perimetreCodes",
+            "doc_type",
+        ]
+        if not data.get("parente_id") and not all(
+            field in data for field in principal_procedure_required_fields
+        ):
+            raise serializers.ValidationError(
+                (
+                    f"Missing principal procedure required field. Mandatory fields are: {principal_procedure_required_fields}",
+                ),
+            )
+
+        return data
+
+    def to_representation(self, value: str) -> dict:  # noqa: ARG002
+        parente_id = self.validated_data.pop("parente_id", None)
+        if parente_id:
+            principal_procedure = Procedure.objects.prefetch_related(
+                models.Prefetch(
+                    "perimetre",
+                    Commune.objects.select_related(
+                        "departement",
+                        "departement__region",
+                        "intercommunalite",
+                    ).with_opposable(),
+                ),
+            ).get(pk=parente_id)
+            collectivite_porteuse = (
+                Collectivite.objects.with_communes_adherentes_count().get(
+                    pk=principal_procedure.collectivite_porteuse.pk
+                )
+            )
+            instance = Procedure(
+                cached_perimetre=principal_procedure.perimetre.all(),
+                collectivite_porteuse=collectivite_porteuse,
+                doc_type=principal_procedure.doc_type,
+                type=self.validated_data["type"],
+                name_complement=self.validated_data.get("name_complement"),
+                numero=self.validated_data.get("number"),
+            )
+
+        else:
+            collectivite_code = self.validated_data.pop("collectiviteCode")
+            perimetre_codes = self.validated_data.pop("perimetreCodes")
+            perimetre = Commune.objects.filter(
+                code_insee__in=perimetre_codes
+            ).with_opposable()
+            collectivite = (
+                Collectivite.objects.filter(
+                    models.Q(siren=collectivite_code)
+                    | models.Q(code_insee=collectivite_code)
+                )
+                .with_communes_adherentes_count()
+                .get()
+            )
+            instance = Procedure(
+                cached_perimetre=perimetre,
+                collectivite_porteuse=collectivite,
+                **self.validated_data,
+            )
+        return {"name": instance.computed_name}
 
 
 class ProcedureSerializer(serializers.ModelSerializer):
