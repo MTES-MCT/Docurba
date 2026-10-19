@@ -498,6 +498,7 @@ export default
         .is('archived_at', null)
         .order('date_iso', { ascending: false })
         .order('created_at', { ascending: false })
+        .order('from_sudocuh', { ascending: false })
 
       if (errorEvents) { throw errorEvents }
       return events
