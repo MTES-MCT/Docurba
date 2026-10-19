@@ -5,7 +5,9 @@ import supabase_auth.errors as supabase_errors
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 from rest_framework import generics, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sendgrid_backend.mail import HTTPError
@@ -14,6 +16,7 @@ from docurba.api.auth import SupabaseAuthentication
 from docurba.core import models as core_models
 from docurba.users import models as users_models
 from docurba.utils.api.views import PublicAPIView
+from docurba.utils.date import end_of_day
 from docurba.www.internal_api import filters as custom_filters
 from docurba.www.internal_api import serializers as core_serializers
 
@@ -188,6 +191,16 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]  # noqa: RUF012
     serializer_class = core_serializers.ProcedureSerializer
     filterset_class = custom_filters.ProcedureFilter
+
+    @action(detail=True, methods=["post"], url_path="synchronize-status")
+    def synchronize_status(
+        self, _request: Request, *_args: list, **_kwargs: dict
+    ) -> Response:
+        now = timezone.localdate()
+        procedure = self.get_object()
+        procedure.status = procedure.compute_status(date_pivot=end_of_day(now))
+        procedure.save(update_fields=["status"])
+        return Response({"status": procedure.status})
 
 
 class ProcedureComputeName(PublicAPIView, generics.GenericAPIView):
