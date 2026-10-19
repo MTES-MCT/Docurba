@@ -549,6 +549,10 @@ class Procedure(models.Model):
             return self.date_prescription < other.date_prescription
         return self.created_at < other.created_at
 
+    def __init__(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+        self._cached_perimetre = kwargs.pop("cached_perimetre", None)
+        super().__init__(*args, **kwargs)
+
     def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
         self.clean()
         super().save(*args, **kwargs)
@@ -581,6 +585,12 @@ class Procedure(models.Model):
             ):
                 setattr(self, event.category, event)
         self._events_processed = True
+
+    @property
+    def _perimetre(self) -> models.QuerySet:
+        if self._cached_perimetre is not None:
+            return self._cached_perimetre
+        return self.perimetre.all()
 
     @property
     def computed_name(self) -> str:
@@ -618,31 +628,22 @@ class Procedure(models.Model):
         procedure = Procedure.objects.prefetch_related("perimetre", models.Prefetch(Commune.objects.with_opposable()))
         procedure.zone_name
         """
-        perimetre_qs = (
-            self._prefetched_objects_cache.get("perimetre", self.perimetre.all())
-            if hasattr(self, "_prefetched_objects_cache")
-            else self.perimetre.all()
-        )
+        perimetre_qs = self._perimetre
         if perimetre_qs:
             if len(perimetre_qs) == 1:
                 return perimetre_qs[0].nom
+
+            if not hasattr(perimetre_qs[0], "opposable"):
+                perimetre_qs = self.perimetre.with_opposable().all()
             # There is more than one commune in the perimetre and only one is set as opposable.
             # We assume this is the way delegated towns have been handled.
-            if hasattr(perimetre_qs[0], "opposable"):
-                opposable_delegated_towns = [
-                    commune
-                    for commune in perimetre_qs
-                    if commune.opposable
-                    and commune.type != core_enums.TypeCollectivite.COM
-                ]
-            else:
-                opposable_delegated_towns = (
-                    perimetre_qs.exclude(type=core_enums.TypeCollectivite.COM)
-                    .filter(procedures_through__opposable=True)
-                    .all()
-                )
-            if len(opposable_delegated_towns) == 1:
-                return opposable_delegated_towns[0].nom
+            communes_deleguees_opposables = [
+                commune
+                for commune in perimetre_qs
+                if commune.opposable and commune.type != core_enums.TypeCollectivite.COM
+            ]
+            if len(communes_deleguees_opposables) == 1:
+                return communes_deleguees_opposables[0].nom
         return self.collectivite_porteuse.nom if self.collectivite_porteuse else ""
 
     @cached_property
