@@ -31,7 +31,7 @@ app.post('/password', async (req, res) => {
   // console.log('user.action_link', user.action_link)
 
   if (!error && properties && properties.action_link) {
-    const { data: profiles } = await supabase.from('profiles').select('firstname, lastname').eq('email', req.body.email)
+    const { data: profiles } = await supabase.from('profiles').select('firstname, lastname').ilike('email', req.body.email)
     const profile = profiles[0]
 
     sendgrid.sendEmail({
@@ -52,7 +52,7 @@ app.post('/password', async (req, res) => {
 })
 
 async function magicLinkSignIn ({ email, redirectBasePath }) {
-  const { data: profiles } = await supabase.from('profiles').select('firstname, lastname, successfully_logged_once, collectivite_id').eq('email', email)
+  const { data: profiles } = await supabase.from('profiles').select('firstname, lastname, successfully_logged_once, collectivite_id').ilike('email', email)
   const profile = profiles[0]
 
   if (!profile) {
@@ -87,7 +87,7 @@ async function magicLinkSignIn ({ email, redirectBasePath }) {
 }
 
 async function getRedirectPath (emailProfile) {
-  const { data: rawProfile, error: errorProfile } = await supabase.from('profiles').select().eq('email', emailProfile)
+  const { data: rawProfile, error: errorProfile } = await supabase.from('profiles').select().ilike('email', emailProfile)
   if (errorProfile) { throw errorProfile }
   if (rawProfile.length < 1) { throw new Error('KO') }
   const profile = rawProfile[0]

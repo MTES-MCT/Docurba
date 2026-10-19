@@ -54,7 +54,7 @@ app.post('/notify/frp_shared', async (req, res) => {
   try {
     // Send notification to Slack
     const slackRes = await slack.shareProcedure(req.body)
-    console.log('Slack response:', slackRes.data)
+    console.log('Slack response:', slackRes?.data)
 
     // Prepare email data
     const { to, from, procedure, title } = req.body

@@ -15,7 +15,7 @@ export async function requireAuthenticated (req, validate = () => true) {
 
   const { data: profile, profileError } = await supabase.from('profiles')
     .select('*')
-    .eq('email', userData.user.email)
+    .ilike('email', userData.user.email)
     .limit(1)
     .maybeSingle()
 
