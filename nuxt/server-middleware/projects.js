@@ -111,7 +111,7 @@ app.post('/notify/update', async (req, res) => {
       const lastNotif = +new Date(sharing.last_update_notification)
 
       const { data: profile } = await supabase.from('profiles')
-        .select('*').eq('email', sharing.user_email)
+        .select('*').ilike('email', sharing.user_email)
 
       const readingUrl = `https://docurba.beta.gouv.fr/documents/projet-${projectId}/pac`
       const writingUrl = `https://docurba.beta.gouv.fr/trames/projet-${projectId}`
