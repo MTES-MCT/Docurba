@@ -1,5 +1,6 @@
 import random
 import uuid
+from datetime import timedelta
 from urllib.parse import urlencode
 
 import pytest
@@ -859,3 +860,65 @@ class TestProcedureName:
             response.json()["perimetreCodes"][0]
             == "Following communes have not been found: ['00000']."
         )
+
+
+@pytest.mark.django_db
+class TestProcedureSynchronizeStatus:
+    def _url(self, procedure: core_models.Procedure) -> str:
+        return reverse(
+            "internal_api:procedures-synchronize-status", kwargs={"pk": procedure.pk}
+        )
+
+    def test_synchronize_status_updates_procedure(
+        self, api_client_with_auth: SupabaseApiTestClient
+    ) -> None:
+        event = core_factories.EventFactory(
+            procedure__status=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+        )
+        profile = ProfileFactory()
+
+        with api_client_with_auth(profile) as api_client:
+            response = api_client.post(self._url(event.procedure))
+
+        assert response.status_code == 200
+        assert response.json() == {"status": "annule"}
+        event.procedure.refresh_from_db()
+        assert event.procedure.status == core_enums.ProcedureStatusChoices.ANNULE
+
+    def test_synchronize_status_already_up_to_date(
+        self, api_client_with_auth: SupabaseApiTestClient
+    ) -> None:
+        procedure = core_factories.ProcedureFactory(
+            status=core_enums.ProcedureStatusChoices.EN_PROJET
+        )
+        profile = ProfileFactory()
+
+        with api_client_with_auth(profile) as api_client:
+            response = api_client.post(self._url(procedure))
+
+        assert response.status_code == 200
+        assert response.json() == {"status": "en projet"}
+        procedure.refresh_from_db()
+        assert procedure.status == core_enums.ProcedureStatusChoices.EN_PROJET
+
+    @freeze_time("2026-10-15")
+    def test_synchronize_status_takes_future_events_into_account(
+        self, api_client_with_auth: SupabaseApiTestClient
+    ) -> None:
+        # The endpoint does not use a date pivot: even a future event impacts
+        # the computed status.
+        event = core_factories.EventFactory(
+            procedure__status=core_enums.ProcedureStatusChoices.EN_COURS,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=timezone.now() + timedelta(days=365),
+        )
+        profile = ProfileFactory()
+
+        with api_client_with_auth(profile) as api_client:
+            response = api_client.post(self._url(event.procedure))
+
+        assert response.status_code == 200
+        assert response.json() == {"status": "opposable"}
+        event.procedure.refresh_from_db()
+        assert event.procedure.status == core_enums.ProcedureStatusChoices.OPPOSABLE
