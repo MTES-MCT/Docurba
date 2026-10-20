@@ -53,6 +53,7 @@ export default {
         <DUTableRow
           :key="procedure.id"
           primary
+          :title="procedure.name"
           :to="`/frise/${procedure.id}`"
         >
           <DUTableCell>
