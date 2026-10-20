@@ -829,8 +829,8 @@ class Procedure(models.Model):
 
         if communes_adherentes_count is None:
             communes_adherentes_count = (
-                Collectivite.objects.get(pk=self.collectivite_porteuse.pk)
-                .with_communes_adherentes_count()
+                Collectivite.objects.with_communes_adherentes_count()
+                .get(pk=self.collectivite_porteuse.pk)
                 .communes_adherentes_count
             )
 
