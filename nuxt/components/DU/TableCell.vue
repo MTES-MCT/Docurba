@@ -27,7 +27,6 @@ export default {
 
 <style>
 .du-table-cell {
-  align-content: center;
   align-items: start;
   color: #3a3a3a;
   column-gap: .5rem;
