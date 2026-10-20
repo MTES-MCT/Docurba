@@ -283,7 +283,6 @@ export function displayProcedure (procedure) {
     ].includes(procedure.type) && procedure.startedBeforeHuwartLaw,
     territorialAuthorityCode: procedure.territorialAuthority?.code ?? '',
     territorialAuthorityName: procedure.territorialAuthority?.name ?? '',
-    townName: procedure.towns[0]?.name ?? '',
     towns: procedure.towns.map(({ code, name }) => ({
       code: code ?? '',
       name: name ?? ''
@@ -471,7 +470,6 @@ function _getProcedureTowns (rawProcedure, { territorialAuthorities }) {
 
 function _parseProcedure (rawProcedure, {
   eventStructuringByType,
-  primaryTerritorialAuthority = null,
   territorialAuthorities
 }) {
   // This filter is necessary here because the rpc 'procedures_by_collectivites' don't filter out archived events
@@ -489,10 +487,9 @@ function _parseProcedure (rawProcedure, {
     eventStructuringByType[event.type] &&
     new Date(event.date_iso) <= now
   ) ?? null
-  const territorialAuthority = (
-    primaryTerritorialAuthority ||
-    _getProcedureTerritorialAuthority(rawProcedure, { territorialAuthorities })
-  )
+  const territorialAuthority = _getProcedureTerritorialAuthority(rawProcedure, {
+    territorialAuthorities
+  })
   let approvalDate = null
   let prescriptionDate = null
 
@@ -594,7 +591,6 @@ function _parseProcedures (rawProcedures, { eventStructuringByType, territorialA
 
     primaryProcedure.procedures.push(_parseProcedure(rawProcedure, {
       eventStructuringByType,
-      primaryTerritorialAuthority: primaryProcedure.territorialAuthority,
       territorialAuthorities
     }))
   }

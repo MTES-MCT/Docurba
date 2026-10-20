@@ -71,10 +71,11 @@ export default {
 
       return this.intermunicipalityCode || this.selection !== 'plu'
         ? displayedProcedures
-        : orderBy(displayedProcedures, [
-          ({ townName }) => townName ? 1 : 2,
-          ({ townName }) => getSortableText(townName)
-        ], ['asc', 'asc'])
+        : orderBy(
+          displayedProcedures,
+          ({ territorialAuthorityName }) => getSortableText(territorialAuthorityName),
+          'asc'
+        )
     },
     favoriteView () {
       return this.$user.profile?.poste === 'ddt' ? 'tableau' : 'liste'
