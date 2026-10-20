@@ -77,7 +77,7 @@ export default {
               {{ procedure.documentType }}
             </DUTag>
           </DUTableCell>
-          <DUTableCell>{{ selection === 'plu' ? procedure.townName : procedure.territorialAuthorityName }}</DUTableCell>
+          <DUTableCell>{{ procedure.territorialAuthorityName }}</DUTableCell>
           <DUTableCell>{{ procedure.prescriptionDate }}</DUTableCell>
           <DUTableCell>{{ procedure.approvalDate }}</DUTableCell>
           <DUTableCell link>
@@ -112,7 +112,7 @@ export default {
           </DUTableCell>
           <DUTableCell>{{ secondaryProcedure.number }}</DUTableCell>
           <DUTableCell />
-          <DUTableCell>{{ selection === 'plu' ? secondaryProcedure.townName : secondaryProcedure.territorialAuthorityName }}</DUTableCell>
+          <DUTableCell>{{ secondaryProcedure.territorialAuthorityName }}</DUTableCell>
           <DUTableCell>{{ secondaryProcedure.prescriptionDate }}</DUTableCell>
           <DUTableCell>{{ secondaryProcedure.approvalDate }}</DUTableCell>
           <DUTableCell link>
