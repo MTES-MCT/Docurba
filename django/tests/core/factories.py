@@ -254,9 +254,7 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
     soft_delete = False
     doc_type = factory.LazyAttribute(lambda o: o.base_doc_type)
     parente = None
-    status = factory.LazyAttribute(
-        lambda o: None if o.parente else core_enums.ProcedureStatusChoices.EN_COURS
-    )
+    status = None
     doublon_cache_de = None
     project = factory.SubFactory(ProjectFactory)
 
