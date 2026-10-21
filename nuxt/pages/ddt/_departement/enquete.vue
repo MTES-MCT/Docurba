@@ -190,18 +190,10 @@
                     v-if="plan.status"
                     column
                   >
-                    <v-chip
-                      :class="{
-                        'success-light success--text': plan.status === 'opposable',
-                        'bf200': plan.status === 'en cours',
-                        'primary--text text--lighten-2': plan.status === 'en cours',
-                      }"
-                      class="font-weight-bold flex-shrink-0 ml-2"
-                      small
-                      label
-                    >
-                      {{ ['en cours', 'opposable'].includes(plan.status) ? plan.status.toUpperCase() : 'ARCHIVÉ' }}
-                    </v-chip>
+                    <ProcedureStatus
+                      v-if="plan.status"
+                      :value="plan.status"
+                    />
                   </v-chip-group>
                   <v-chip-group column>
                     <span v-if="plan.topics">
@@ -232,18 +224,10 @@
                       v-if="scot.status"
                       column
                     >
-                      <v-chip
-                        :class="{
-                          'success-light success--text': scot.status === 'opposable',
-                          'bf200': scot.status === 'en cours',
-                          'primary--text text--lighten-2': scot.status === 'en cours',
-                        }"
-                        class="font-weight-bold flex-shrink-0 ml-2"
-                        small
-                        label
-                      >
-                        {{ ['en cours', 'opposable'].includes(scot.status) ? scot.status.toUpperCase() : 'ARCHIVÉ' }}
-                      </v-chip>
+                      <ProcedureStatus
+                        v-if="scot.status"
+                        :value="scot.status"
+                      />
                     </v-chip-group>
                     <v-chip-group column>
                       <span v-if="scot.topics">
