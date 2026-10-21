@@ -1775,10 +1775,10 @@ class TestProcedureComputeStatus:
 
         assert procedure.compute_status() is None
 
-    def test_without_event_returns_en_cours(self) -> None:
+    def test_without_event_returns_en_projet(self) -> None:
         procedure = ProcedureFactory()
 
-        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.EN_COURS
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.EN_PROJET
 
     def test_status_from_most_recent_impactful_event(self) -> None:
         now = timezone.now()
@@ -1926,7 +1926,7 @@ class TestProcedureComputeStatus:
             date_evenement=timezone.now(),
         )
 
-        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.EN_COURS
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.EN_PROJET
 
 
 class TestProcedureEnCours:
@@ -2035,13 +2035,10 @@ class TestProcedureClean:
 
         assert procedure.status is None
 
-    def test_principale_avec_status_null(self) -> None:
-        with pytest.raises(ValidationError) as error:
-            ProcedureFactory(status=None)
+    def test_main_procedure_without_status_gets_en_projet_default(self) -> None:
+        procedure = ProcedureFactory(status=None, parente=None)
 
-        assert error.value.messages == [
-            'A main procedure must have a "status" filled in.'
-        ]
+        assert procedure.status == core_enums.ProcedureStatusChoices.EN_PROJET
 
     def test_secondaire_avec_status_en_cours(self) -> None:
         principale = ProcedureFactory()
