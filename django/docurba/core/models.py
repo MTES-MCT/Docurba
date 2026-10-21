@@ -492,6 +492,8 @@ class Procedure(models.Model):
         choices=core_enums.ProcedureStatusChoices, blank=True, null=True
     )  # TextField in DB.
 
+    INITIAL_STATUS = core_enums.ProcedureStatusChoices.EN_PROJET
+
     objects = FastLoadingProcedureManager.from_queryset(ProcedureQuerySet)()
     full_objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
@@ -554,6 +556,8 @@ class Procedure(models.Model):
         super().__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+        if not self.parente_id and not self.status:
+            self.status = self.INITIAL_STATUS
         self.clean()
         super().save(*args, **kwargs)
 
@@ -561,11 +565,8 @@ class Procedure(models.Model):
         return utils_urls.get_absolute_url(path=f"/frise/{self.pk}")
 
     def clean(self) -> None:
-        if self.parente and self.status:
+        if self.parente_id and self.status:
             message = 'A secondary procedure must not have a "status".'
-            raise ValidationError(message)
-        if not self.parente and not self.status:
-            message = 'A main procedure must have a "status" filled in.'
             raise ValidationError(message)
 
     _events_processed = False
@@ -698,7 +699,7 @@ class Procedure(models.Model):
             default=None,
         )
         if last_event is None:
-            return core_enums.ProcedureStatusChoices.EN_COURS
+            return self.INITIAL_STATUS
         return core_enums.ProcedureStatusChoices(last_event.event_type.impact)
 
     def _date(self, event_type: EventCategory) -> date | None:
