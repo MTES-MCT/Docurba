@@ -372,6 +372,22 @@ class TestCollectivite:
         with does_not_raise():
             collectivite.save()
 
+    def test_filter_by_code(self) -> None:
+        collectivite_with_siren = CollectiviteFactory(siren="123456789", code_insee="")
+        collectivite_with_code_insee = CollectiviteFactory(
+            siren="", code_insee="12345", type=core_enums.CommuneType.COM
+        )
+        siren_results = core_models.Collectivite.objects.filter_by_code(
+            collectivite_with_siren.siren
+        )
+        code_insee_results = core_models.Collectivite.objects.filter_by_code(
+            collectivite_with_code_insee.code_insee
+        )
+        assert collectivite_with_siren in siren_results
+        assert collectivite_with_code_insee not in siren_results
+        assert collectivite_with_siren not in code_insee_results
+        assert collectivite_with_code_insee in code_insee_results
+
 
 class TestCollectivitePortantScot:
     @pytest.mark.django_db

@@ -1395,6 +1395,9 @@ class CollectiviteQuerySet(models.QuerySet):
             ),
         )
 
+    def filter_by_code(self, code: str) -> Self:
+        return self.filter(models.Q(siren=code) | models.Q(code_insee=code))
+
 
 class Collectivite(models.Model):
     id = models.CharField(primary_key=True)  # Au format code_type
