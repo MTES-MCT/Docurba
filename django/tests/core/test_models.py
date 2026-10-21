@@ -1854,13 +1854,10 @@ class TestProcedureClean:
 
         assert procedure.status is None
 
-    def test_principale_avec_status_null(self) -> None:
-        with pytest.raises(ValidationError) as error:
-            ProcedureFactory(status=None)
+    def test_main_procedure_without_status_gets_en_projet_default(self) -> None:
+        procedure = ProcedureFactory(status=None, parente=None)
 
-        assert error.value.messages == [
-            'A main procedure must have a "status" filled in.'
-        ]
+        assert procedure.status == core_enums.ProcedureStatusChoices.EN_PROJET
 
     def test_secondaire_avec_status_en_cours(self) -> None:
         principale = ProcedureFactory()
