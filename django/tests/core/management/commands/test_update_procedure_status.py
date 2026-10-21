@@ -50,7 +50,7 @@ class TestUpdateProcedureStatus:
             date_evenement=date(2024, 6, 1),
         )
         # This procedure is not exported because its status is already up to date.
-        ProcedureFactory(status=ProcedureStatusChoices.EN_COURS)
+        ProcedureFactory()
 
         expected_csv = (
             "procedure_id,ancien_status,nouveau_status\n"
