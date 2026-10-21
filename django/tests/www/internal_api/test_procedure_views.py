@@ -791,18 +791,16 @@ class TestProcedureSynchronizeStatus:
     def test_synchronize_status_already_up_to_date(
         self, api_client_with_auth: SupabaseApiTestClient
     ) -> None:
-        procedure = core_factories.ProcedureFactory(
-            status=core_enums.ProcedureStatusChoices.EN_COURS
-        )
+        procedure = core_factories.ProcedureFactory()
         profile = ProfileFactory()
 
         with api_client_with_auth(profile) as api_client:
             response = api_client.post(self._url(procedure))
 
         assert response.status_code == 200
-        assert response.json() == {"status": "en cours"}
+        assert response.json() == {"status": "en projet"}
         procedure.refresh_from_db()
-        assert procedure.status == core_enums.ProcedureStatusChoices.EN_COURS
+        assert procedure.status == core_enums.ProcedureStatusChoices.EN_PROJET
 
     def test_synchronize_status_takes_future_events_into_account(
         self, api_client_with_auth: SupabaseApiTestClient
