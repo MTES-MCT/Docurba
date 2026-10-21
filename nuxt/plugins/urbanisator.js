@@ -6,7 +6,7 @@ export default ({ $collectiviteApi, $nuxtApi, $supabase, $dayjs, $procedure }, i
     if (procedure.doc_type === 'PLU') {
       let docType = procedure.doc_type
       if (procedure.current_perimetre.length > 1) { docType += 'i' }
-      if (procedure.is_sectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')) {
+      if (procedure.is_sectoriel && ['opposable', 'en cours', 'en projet'].includes(procedure.status)) {
         docType += 'S'
       }
       if (procedure.is_pluih) { docType += 'H' }
