@@ -430,26 +430,6 @@ export default {
         })
         // TODO: ask Etienne to handle 400 errors when the API returns validation errors.
         const procedureId = responseData.id
-        const projectId = responseData.projectId
-
-        // Probably for later
-        const sender = {
-          user_email: this.$user.email,
-          project_id: projectId ?? this.proceduresParents?.find(e => e.id === this.procedureParent)?.project_id,
-          shared_by: this.$user.id,
-          notified: false,
-          role: 'write_frise',
-          archived: false,
-          dev_test: true
-        }
-
-        // Probably for later
-        const { error: errorInsertedCollabs } = await this.$supabase.from('projects_sharing').insert(sender)
-
-        if (errorInsertedCollabs) {
-          // eslint-disable-next-line no-console
-          console.log('errorInsertedCollabs: ', errorInsertedCollabs)
-        }
 
         this.$analytics({
           category: 'procedures',

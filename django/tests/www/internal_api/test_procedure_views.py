@@ -769,6 +769,7 @@ class TestPrincipalProcedureCreation:
         + 1  # to list topics # 10
         + 1  # to create procedure topics # 11
         + 1  # to save it again # 12
+        + 1  # to create in projects_sharing
         + 7  # to serialize # 19
     )
     PS_BASE_QUERIES = (
@@ -779,6 +780,7 @@ class TestPrincipalProcedureCreation:
         + 1  # for getting the topics # 9
         + 1  # for saving ProcedureTopic # 10
         + 1  # for computing procedure.doc_type for procedure.type_document # 11
+        + 1  # to create in projects_sharing
         + 1  # to save the instance again # 12
         + 8  # to serialize the result # 20
     )
@@ -1142,7 +1144,7 @@ class TestPrincipalProcedureCreation:
         logged_in_profile = ProfileFactory(collectivite=commune)
         with (
             api_client_with_auth(logged_in_profile) as api_client,
-            django_assert_num_queries(self.PP_BASE_QUERIES),
+            django_assert_num_queries(self.PP_BASE_QUERIES + 1),
         ):
             response = api_client.post(self.url, data=post_data)
         assert response.status_code == 201
@@ -1669,3 +1671,79 @@ class TestPrincipalProcedureCreation:
 
         self._assert_default_commune_procedure_creation(procedure=procedure)
         self._assert_default_topics_creation(procedure=procedure, post_data=post_data)
+
+    def test_project_sharing_principal_procedure(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+    ) -> None:
+        collectivite = core_factories.CommuneFactory()
+        logged_in_profile = ProfileFactory(
+            collectivite=collectivite,
+        )
+        perimetre_codes_insee = [collectivite.code_insee]
+        post_data = self._default_post_data(
+            collectivite=collectivite, perimetre=perimetre_codes_insee
+        ) | {
+            "docType": core_enums.TypeDocument.PLU,
+        }
+        with api_client_with_auth(profile=logged_in_profile) as api_client:
+            response = api_client.post(self.url, data=post_data)
+        assert response.status_code == 201
+
+        assert core_models.Procedure.objects.count() == 1
+        procedure = core_models.Procedure.objects.first()
+        shared_project = core_models.ProjectSharing.objects.get(
+            project_id=procedure.project
+        )
+        assert shared_project.user_email == logged_in_profile.email
+        assert str(shared_project.shared_by.pk) == logged_in_profile.pk
+        assert shared_project.notified is False
+        assert shared_project.role == core_enums.ProjectSharingRoleType.WRITE_FRISE
+        assert shared_project.archived is False
+
+    def test_project_sharing_secondary_procedure(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+    ) -> None:
+        communes = core_factories.CommuneFactory.create_batch(2)
+        collectivite = core_factories.CollectiviteFactory(
+            for_snapshot=True,
+            with_flat_members=True,
+            with_flat_members__list=communes,
+        )
+        principal_procedure = core_factories.ProcedureFactory(
+            pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-111111111111"),
+            doc_type=core_enums.TypeDocument.PLUI,
+            collectivite_porteuse=collectivite,
+            with_perimetre=communes,
+            numero="1",
+            for_snapshot=True,
+            status=core_enums.ProcedureStatusChoices.EN_COURS,
+        )
+
+        post_data = {
+            "collectiviteCode": "",
+            "perimetreCodes": "",
+            "docType": "",
+            "number": "3",
+            "type": core_enums.ProcedureType.MISE_A_JOUR,
+            "startedBeforeHuwartLaw": True,
+            "topicsList": ["zan", "coastline", "other"],
+            "otherTopicComment": "I love coastlines.",
+            "parentId": str(principal_procedure.pk),
+            "nameComplement": "complément du nom",
+        }
+        logged_in_profile = ProfileFactory(collectivite=collectivite)
+        with api_client_with_auth(profile=logged_in_profile) as api_client:
+            response = api_client.post(self.url, data=post_data)
+        assert response.status_code == 201
+
+        assert core_models.Procedure.objects.count() == 2
+        shared_project = core_models.ProjectSharing.objects.get(
+            project_id=principal_procedure.project
+        )
+        assert shared_project.user_email == logged_in_profile.email
+        assert str(shared_project.shared_by.pk) == logged_in_profile.pk
+        assert shared_project.notified is False
+        assert shared_project.role == core_enums.ProjectSharingRoleType.WRITE_FRISE
+        assert shared_project.archived is False

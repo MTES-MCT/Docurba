@@ -2,7 +2,12 @@
 from django.db import models
 from rest_framework import serializers
 
-from docurba.core.enums import CommuneType, ProcedureType, TypeDocument
+from docurba.core.enums import (
+    CommuneType,
+    ProcedureType,
+    ProjectSharingRoleType,
+    TypeDocument,
+)
 from docurba.core.models import (
     Collectivite,
     Commune,
@@ -11,6 +16,7 @@ from docurba.core.models import (
     Procedure,
     ProcedureTopic,
     Project,
+    ProjectSharing,
     Topic,
 )
 
@@ -413,6 +419,7 @@ class ProcedureSerializer(serializers.ModelSerializer):
             project = principal_procedure.project
         instance.project_id = project.pk
 
+        # Topics
         topics_by_name = {
             topic["name"]: topic["id"] for topic in Topic.objects.values("name", "id")
         }
@@ -426,6 +433,17 @@ class ProcedureSerializer(serializers.ModelSerializer):
             for topic in topics_list
         ]
         ProcedureTopic.objects.bulk_create(procedure_topics)
+
+        # Invitations
+        ProjectSharing.objects.create(
+            user_email=self.context["request"].user.email,
+            shared_by_id=owner_id,
+            notified=False,
+            role=ProjectSharingRoleType.WRITE_FRISE,
+            archived=False,
+            project_id=project.pk,
+        )
+
         # The selected doc type does not include the S information and is sometimes wrong.
         # Setting it in the instance.save method would make the code
         # really complicated and would had unexpected side effects.
