@@ -276,9 +276,9 @@ class ProcedureSerializer(serializers.ModelSerializer):
     perimetre = CommuneSerializer(read_only=True, many=True)
     name = serializers.CharField(read_only=True, source="computed_name")
     approval_date = serializers.DateField(read_only=True, source="date_approbation")
-    project_id = serializers.CharField(read_only=True)
+    projectId = serializers.CharField(read_only=True, source="project_id")
     # Write only fields
-    perimetreCommunesCodes = serializers.ListField(
+    perimetreCodes = serializers.ListField(
         write_only=True,
         required=False,
         child=serializers.CharField(required=False, allow_blank=True),
@@ -310,6 +310,7 @@ class ProcedureSerializer(serializers.ModelSerializer):
     startedBeforeHuwartLaw = serializers.BooleanField(
         source="started_before_huwart_law", default=False
     )
+    number = serializers.CharField(required=False, allow_blank=True, source="numero")
 
     def create(self, validated_data: dict) -> Procedure:
         owner_id = self.context["request"].user.username
@@ -501,7 +502,7 @@ class ProcedureSerializer(serializers.ModelSerializer):
             "perimetre",
             "name",
             "approval_date",
-            "project_id",
+            "projectId",
             "status",  # Nuxt one
         ]
         write_only_fields = [
@@ -518,6 +519,6 @@ class ProcedureSerializer(serializers.ModelSerializer):
             "docType",
             "startedBeforeHuwartLaw",
             "type",
-            "numero",
+            "number",
         ]
         depth = 4
