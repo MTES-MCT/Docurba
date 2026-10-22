@@ -1,3 +1,8 @@
+import { keyBy } from 'lodash'
+import regions from '~/assets/data/Regions.json'
+
+const regionsByCode = keyBy(regions, 'code')
+
 export default ({ $djangoApi }, inject) => {
   inject('collectiviteApi', {
     getFromCode (code, params) {
@@ -71,10 +76,11 @@ function parseCollectivite (collectivite) {
   return {
     ...collectivite,
     code: collectivite.codeInsee || collectivite.siren,
-    membres: collectivite.membres?.map((el) => { return parseCollectivite(el) }),
-    membres_niveaux_inferieurs: collectivite.membres_niveaux_inferieurs?.map((el) => { return parseCollectivite(el) }),
-    groupements: collectivite.groupements?.map((el) => { return parseCollectivite(el) }),
-    groupements_niveaux_superieurs: collectivite.groupements_niveaux_superieurs?.map((el) => { return parseCollectivite(el) })
+    membres: collectivite.membres?.map(parseCollectivite),
+    membres_niveaux_inferieurs: collectivite.membres_niveaux_inferieurs?.map(parseCollectivite),
+    groupements: collectivite.groupements?.map(parseCollectivite),
+    groupements_niveaux_superieurs: collectivite.groupements_niveaux_superieurs?.map(parseCollectivite),
+    region: regionsByCode[collectivite.regionCode]
   }
 }
 
