@@ -165,9 +165,6 @@ class ProcedureViewSet(viewsets.ModelViewSet):
         .select_related(
             "collectivite_porteuse",
             "collectivite_porteuse__commune",
-            "parente",
-            "parente__collectivite_porteuse",
-            "parente__collectivite_porteuse__commune",
         )
         .prefetch_related(
             "topics",
