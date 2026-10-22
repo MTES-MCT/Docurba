@@ -1,8 +1,10 @@
+import { keyBy } from 'lodash'
+import regions from '~/assets/data/Regions.json'
+
+const regionsByCode = keyBy(regions, 'code')
+
 export default ({ $djangoApi }, inject) => {
   inject('collectiviteApi', {
-    get (id, params) {
-      return getCollectivite($djangoApi, id, params)
-    },
     getFromCode (code, params) {
       return getCollectiviteFromCode($djangoApi, code, params)
     },
@@ -13,10 +15,6 @@ export default ({ $djangoApi }, inject) => {
       return listCollectivitesFromCodes($djangoApi, codes, params)
     }
   })
-}
-
-export async function getCollectivite (api, id, params) {
-  return parseCollectivite(await api.get(`/api-internes/collectivites/${id}/`, params))
 }
 
 export async function getCollectiviteFromCode (api, code, params) {
@@ -78,10 +76,11 @@ function parseCollectivite (collectivite) {
   return {
     ...collectivite,
     code: collectivite.codeInsee || collectivite.siren,
-    membres: collectivite.membres?.map((el) => { return parseCollectivite(el) }),
-    membres_niveaux_inferieurs: collectivite.membres_niveaux_inferieurs?.map((el) => { return parseCollectivite(el) }),
-    groupements: collectivite.groupements?.map((el) => { return parseCollectivite(el) }),
-    groupements_niveaux_superieurs: collectivite.groupements_niveaux_superieurs?.map((el) => { return parseCollectivite(el) })
+    membres: collectivite.membres?.map(parseCollectivite),
+    membres_niveaux_inferieurs: collectivite.membres_niveaux_inferieurs?.map(parseCollectivite),
+    groupements: collectivite.groupements?.map(parseCollectivite),
+    groupements_niveaux_superieurs: collectivite.groupements_niveaux_superieurs?.map(parseCollectivite),
+    region: regionsByCode[collectivite.regionCode]
   }
 }
 

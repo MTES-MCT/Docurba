@@ -68,8 +68,13 @@ export default {
       this.collectivite = this.procedure.procedures_perimetres[0]
     } else {
       try {
-        // TODO :: Migrate this to Django once `groupements` and `membres` are available in `/api-internes/collectivites/`
-        this.collectivite = await this.$nuxtApi.get(`/api/geo/collectivites/${this.procedure.collectivite_porteuse_id}`)
+        this.collectivite = await this.$collectiviteApi.getFromCode(
+          this.procedure.collectivite_porteuse_id,
+          {
+            avec_groupements: true,
+            avec_membres: true
+          }
+        )
       } catch (err) {
         console.log('no coll', this.procedure, this.collectivite)
       }

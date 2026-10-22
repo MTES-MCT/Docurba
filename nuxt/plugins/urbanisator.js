@@ -99,8 +99,9 @@ export default ({ $collectiviteApi, $nuxtApi, $supabase, $dayjs }, inject) => {
       return procedures
     },
     async getCollectiviteProcedures (collectiviteId) {
-      // TODO :: Migrate this once `membres` is available in `/api-internes/collectivites/`
-      const collectivite = await $nuxtApi.get(`/api/geo/collectivites/${collectiviteId}/`)
+      const collectivite = await $collectiviteApi.getFromCode(collectiviteId, {
+        avec_membres: true
+      })
       const collectivites = [collectivite]
       if (collectivite.membres) { collectivites.push(...collectivite.membres) }
 
