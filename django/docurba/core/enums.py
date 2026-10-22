@@ -59,6 +59,9 @@ class ProcedureStatusChoices(models.TextChoices):
     CADUC = "caduc", "Caduc"
     ABANDON = "abandon", "Abandon"
     OPPOSABLE = "opposable", "Opposable"
+    EN_PROJET = "en projet", "En projet"
+    APPROUVE = "approuve", "Approuvé"
+    ABROGE = "abroge", "Abrogé"
 
 
 class ProcedureType(models.TextChoices):

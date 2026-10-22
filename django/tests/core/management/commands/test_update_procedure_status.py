@@ -29,7 +29,7 @@ class TestUpdateProcedureStatus:
         )
 
     def test_matching_statuses_not_exported(self) -> None:
-        procedure = ProcedureFactory(status=ProcedureStatusChoices.EN_COURS)
+        procedure = ProcedureFactory()
 
         out = StringIO()
         call_command("update_procedure_status", wet_run=False, stdout=out)
@@ -37,7 +37,7 @@ class TestUpdateProcedureStatus:
         assert out.getvalue() == "procedure_id,ancien_status,nouveau_status\n"
 
         procedure.refresh_from_db()
-        assert procedure.status == ProcedureStatusChoices.EN_COURS
+        assert procedure.status == ProcedureStatusChoices.EN_PROJET
 
     def test_differing_status_exported_and_updated_with_wet_run(self) -> None:
         outdated_procedure = ProcedureFactory(status=ProcedureStatusChoices.OPPOSABLE)
@@ -47,7 +47,7 @@ class TestUpdateProcedureStatus:
             date_evenement=date(2024, 6, 1),
         )
         # This procedure is not exported because its status is already up to date.
-        ProcedureFactory(status=ProcedureStatusChoices.EN_COURS)
+        ProcedureFactory()
 
         expected_csv = (
             "procedure_id,ancien_status,nouveau_status\n"
@@ -74,7 +74,6 @@ class TestUpdateProcedureStatus:
         procedure = ProcedureFactory(
             status=None,
             with_parente=True,
-            parente__status=ProcedureStatusChoices.EN_COURS,
         )
         self._create_impactful_event(
             procedure,
