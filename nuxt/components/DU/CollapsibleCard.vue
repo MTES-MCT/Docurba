@@ -71,7 +71,7 @@ export default {
   column-gap: .5rem;
   cursor: pointer;
   display: grid;
-  font-size: .75rem;
+  font-size: .875rem;
   font-weight: 400;
   grid-auto-flow: column;
   justify-content: start;
