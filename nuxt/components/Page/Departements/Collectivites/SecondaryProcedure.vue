@@ -69,6 +69,7 @@ export default {
       <DUText
         v-if="value.topicDetails"
         :rows="3"
+        sm
         :value="value.topicDetails"
       />
     </DUGroup>

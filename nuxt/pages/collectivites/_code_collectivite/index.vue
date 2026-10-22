@@ -2,10 +2,24 @@
 import { mdiFormatListBulleted, mdiMessageAlertOutline, mdiPlus, mdiViewColumnOutline } from '@mdi/js'
 import { orderBy } from 'lodash'
 import { displayProcedure } from '~/plugins/procedure'
-import { displaySirenCode } from '~/plugins/territorial-authority'
+import { displayTerritorialAuthorityCode } from '~/plugins/territorial-authority'
 import { getSortableText } from '~/plugins/utils'
 
 export default {
+  props: {
+    breadcrumbRoot: {
+      default: () => [],
+      type: Array
+    },
+    intermunicipality: {
+      default: null,
+      type: Object
+    },
+    territorialAuthority: {
+      default: null,
+      type: Object
+    }
+  },
   data () {
     return {
       icons: {
@@ -14,52 +28,17 @@ export default {
         mdiFormatListBulleted,
         mdiViewColumnOutline
       },
-      intermunicipality: null,
       pageSize: 10,
       procedures: [],
-      proceduresLoading: false,
-      territorialAuthority: null
+      proceduresLoading: false
     }
   },
   computed: {
-    breadcrumb () {
-      if (!this.departmentCode) {
-        return []
-      }
-
-      const breadcrumb = []
-
-      if (this.$user.canViewSectionCollectivites({ departement: this.departmentCode })) {
-        breadcrumb.push({
-          label: `Mes collectivités (${this.departmentCode})`,
-          value: `/ddt/${this.departmentCode}/collectivites`
-        })
-      }
-      if (this.intermunicipality) {
-        breadcrumb.push({
-          label: this.intermunicipality.name,
-          value: {
-            params: {
-              code_collectivite: this.intermunicipalityCode
-            },
-            query: {
-              vue: this.$route.query.vue
-            }
-          }
-        })
-      }
-
-      return breadcrumb
-    },
     departmentCode () {
       return this.territorialAuthority?.departmentCode || null
     },
     displayedCode () {
-      return this.territorialAuthority
-        ? this.territorialAuthority.inseeCode
-          ? `Code INSEE ${this.territorialAuthority.inseeCode}`
-          : `SIREN ${displaySirenCode(this.territorialAuthority.sirenCode)}`
-        : ''
+      return displayTerritorialAuthorityCode(this.territorialAuthority)
     },
     displayedProcedures () {
       if (!(this.selection in this.proceduresBySelection)) {
@@ -204,18 +183,6 @@ export default {
       },
       immediate: true
     },
-    intermunicipalityCode: {
-      async handler (value) {
-        if (!process.client) {
-          return
-        }
-
-        this.intermunicipality = value
-          ? await this.$territorialAuthorityApi.get(value)
-          : null
-      },
-      immediate: true
-    },
     proceduresBySelection: {
       handler (value) {
         if (
@@ -237,28 +204,16 @@ export default {
       },
       immediate: true
     },
-    territorialAuthorityCode: {
+    territorialAuthority: {
       async handler (value) {
         if (!process.client) {
           return
         }
-
-        this.territorialAuthority = value
-          ? await this.$territorialAuthorityApi.get(value, {
-            includeLowerMembers: true,
-            includeMembers: true
-          })
-          : null
-
-        if (this.territorialAuthority) {
+        if (value) {
           const codes = []
           const existingCodes = {}
 
-          for (const { code, type } of [
-            this.territorialAuthority,
-            ...this.territorialAuthority.lowerMembers,
-            ...this.territorialAuthority.members
-          ]) {
+          for (const { code, type } of [value, ...value.lowerMembers, ...value.members]) {
             if (type === 'COM' && !existingCodes[code]) {
               existingCodes[code] = true
               codes.push(code)
@@ -298,10 +253,10 @@ export default {
 
 <template>
   <LayoutMain
-    v-if="territorialAuthority"
-    :breadcrumb="breadcrumb"
+    :breadcrumb="breadcrumbRoot"
     :label="label"
     :menu="menu"
+    primary
     top="94px"
   >
     <template #infos>
@@ -316,7 +271,14 @@ export default {
         </PageDepartementsCollectivitesTowns>
       </li>
       <li>
-        <DULink :to="`/collectivites/${territorialAuthorityCode}/informations`">
+        <DULink
+          :to="{
+            name: 'collectivites-code_collectivite-informations',
+            params: {
+              code_collectivite: territorialAuthorityCode
+            }
+          }"
+        >
           Plus d'informations
         </DULink>
       </li>
@@ -411,7 +373,9 @@ export default {
       #default
     >
       <DUHeading>Documents d'urbanisme</DUHeading>
-      <DUText>Cette collectivité n'a pas de documents d'urbanisme sous sa compétence</DUText>
+      <DUText sm>
+        Cette collectivité n'a pas de documents d'urbanisme sous sa compétence
+      </DUText>
     </template>
   </LayoutMain>
 </template>

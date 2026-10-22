@@ -9,6 +9,10 @@ export default {
       default: false,
       type: Boolean
     },
+    grid: {
+      default: false,
+      type: Boolean
+    },
     lg: {
       default: false,
       type: Boolean
@@ -42,6 +46,7 @@ export default {
     class="du-group"
     :class="{
       'du-group--end': end,
+      'du-group--grid': grid,
       'du-group--horizontal': horizontal,
       'du-group--lg': lg,
       'du-group--md': md,
@@ -57,11 +62,14 @@ export default {
 
 <style>
 .du-group {
-  align-items: center;
   display: grid;
 }
 .du-group--end {
   justify-items: end;
+}
+.du-group--grid {
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
 }
 .du-group--horizontal {
   display: flex;
