@@ -166,7 +166,7 @@ export default {
     return {
       referentiel: null,
       typeFilterItems: [{ text: 'Procédures principales', value: 'pp' }, { text: 'Procédures secondaires', value: 'ps' }],
-      documentFilterItems: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiHM', 'PLUiM', 'SCOT'].map(documentType => ({ text: documentType, value: documentType })),
+      documentFilterItems: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiSH', 'PLUiHM', 'PLUiM', 'SCOT'].map(documentType => ({ text: documentType, value: documentType })),
       statusFilterItems: [{ text: 'En cours', value: 'en_cours' }, { text: 'Opposable', value: 'opposable' }, { text: 'Archivée', value: 'archived' }],
       rawProcedures: null
     }
