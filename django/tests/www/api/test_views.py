@@ -720,8 +720,8 @@ class TestAPICommunes:
         ProcedureFactory(
             **self._default_procedure_factory_params(
                 procedure_status=procedure_status, perimetre=perimetre
-            ),
-            vaut_PLH=True,
+            )
+            | {"doc_type": core_enums.TypeDocument.PLUIH}
         )
         response = client.get(reverse("api:communes"))
         assert response.status_code == 200
@@ -789,8 +789,8 @@ class TestAPICommunes:
         ProcedureFactory(
             **self._default_procedure_factory_params(
                 procedure_status=procedure_status, perimetre=perimetre
-            ),
-            vaut_PDM=True,
+            )
+            | {"doc_type": core_enums.TypeDocument.PLUIM},
         )
         response = client.get(reverse("api:communes"))
         assert response.status_code == 200
@@ -846,6 +846,7 @@ class TestAPICommunes:
     ) -> None:
         ProcedureFactory(
             **self._default_procedure_factory_params(procedure_status=procedure_status),
+            from_sudocuh=123456789,
             vaut_SCoT=True,
         )
         response = client.get(reverse("api:communes"))
