@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import re
 
 from django.test import Client
@@ -14,9 +14,7 @@ def test_security_txt_is_valid(client: Client) -> None:
     for line in response.content.decode().splitlines():
         if match := expire_re.match(line):
             expiry = match.group("expires")
-            expiry = datetime.datetime.fromisoformat(expiry)
+            expiry = dt.datetime.fromisoformat(expiry)
             break
 
-    assert expiry - datetime.datetime.now(tz=datetime.UTC) >= datetime.timedelta(
-        days=14
-    )
+    assert expiry - dt.datetime.now(tz=dt.UTC) >= dt.timedelta(days=14)
