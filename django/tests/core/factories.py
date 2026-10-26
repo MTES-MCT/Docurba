@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import string
 import uuid
 from json import loads
@@ -356,7 +356,7 @@ class EventFactory(factory.django.DjangoModelFactory):
         model = core_models.Event
 
     procedure = factory.SubFactory(ProcedureFactory)
-    date_evenement = factory.fuzzy.FuzzyDate(datetime.date(1970, 1, 1))
+    date_evenement = factory.fuzzy.FuzzyDate(dt.date(1970, 1, 1))
     type = "Prescription"
     from_sudocuh = None
     archived_at = None

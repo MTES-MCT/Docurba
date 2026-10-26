@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import random
 import uuid
 from urllib.parse import urlencode
@@ -497,7 +497,7 @@ class TestProcedureList:
             with_perimetre=communes,
             with_event=True,
             with_event__category=core_models.EventCategory.APPROUVE,
-            with_event__date_evenement=datetime.date(2026, 10, 6),
+            with_event__date_evenement=dt.date(2026, 10, 6),
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
