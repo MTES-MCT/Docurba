@@ -1151,7 +1151,8 @@ class EventType(models.Model):
         ordering = ("order",)
 
     def __str__(self) -> str:
-        return f"{self.document_type} - {self.name}"
+        impact = f" ({self.impact})" if self.impact else ""
+        return f"{self.document_type} - {self.name}{impact}"
 
     def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
         if self.order is None:
