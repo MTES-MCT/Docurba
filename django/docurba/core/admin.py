@@ -132,10 +132,12 @@ class EventsInline(admin.TabularInline):
     readonly_fields = (
         "id",
         "type",
+        "event_type",
         "date_evenement",
-        "is_valid",
         "visibility",
+        "is_valid",
         "from_sudocuh",
+        "archived_at",
     )
     fields = [
         *readonly_fields,
@@ -144,9 +146,9 @@ class EventsInline(admin.TabularInline):
 
     def get_queryset(self, request) -> models.QuerySet:
         queryset = super().get_queryset(request)
-        return queryset.select_related(
-            "procedure", "procedure__collectivite_porteuse"
-        ).prefetch_related("procedure__perimetre")
+        return queryset.select_related("event_type").order_by(
+            "-date_evenement",
+        )
 
     def has_add_permission(self, *args: list, **kwargs: dict) -> bool:
         return False
@@ -423,7 +425,7 @@ class EventAdmin(admin.ModelAdmin):
     raw_id_fields = ("event_type", "procedure")
     list_display = (
         "id",
-        "event_type__name",
+        "event_type",
         "type",
         "date_evenement",
         "is_valid",
@@ -433,7 +435,13 @@ class EventAdmin(admin.ModelAdmin):
         "archived_at",
     )
     list_filter = ("archived_at", "code")
-    search_fields = ("id", "procedure__id")
+    search_fields = (
+        "id",
+        "procedure__id",
+        "event_type__name",
+        "event_type__sudocuh_name",
+        "event_type__sudocuh_code",
+    )
     autocomplete_fields = ("profile",)
     historized_fields = (
         "type",
