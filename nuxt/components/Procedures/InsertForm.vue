@@ -341,7 +341,7 @@ export default {
     baseName () {
       let name
       if (this.procedureParentObj) {
-        const regexp = new RegExp(`${this.procedureParentDocType} (.*)`)
+        const regexp = new RegExp(`${this.procedureParentDocType.replace('S', 'S?')} (.*)`)
         name = this.procedureParentObj.name.match(regexp)[0].replace(/\s+/g, ' ').trim()
       } else {
         name = `${(this.typeDu) + this.postfixSectoriel} ${this.collectivite.intitule}`
