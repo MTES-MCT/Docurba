@@ -205,7 +205,7 @@ export default {
               <DUButton
                 secondary
                 :to="{
-                  name: 'collectivites-code_collectivite-donnees-data',
+                  name: 'collectivites-code_collectivite-donnees-georisques',
                   params: {
                     code_collectivite: territorialAuthorityCode
                   }
