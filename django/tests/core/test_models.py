@@ -1,7 +1,7 @@
 # ruff: noqa: FBT001, N803
 from collections.abc import Callable
 from contextlib import nullcontext as does_not_raise
-from datetime import datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from functools import partial
 
 import pytest
