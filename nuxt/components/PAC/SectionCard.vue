@@ -277,6 +277,7 @@ import {
   mdiArrowDown, mdiArrowUp,
   mdiLinkVariant
 } from '@mdi/js'
+import axios from 'axios'
 import { encode } from 'js-base64'
 import { getCommitter } from '@/plugins/user'
 import { getUniquePropValues } from '@/plugins/utils'
@@ -443,6 +444,9 @@ export default {
       return `${lastEditDate} par ${lastEdit.author.firstname} ${lastEdit.author.lastname}${
         lastEdit.author.poste === 'dreal' ? ' DREAL' : ''
       }`
+    },
+    isPACAdmin () {
+      return process.env.PAC_ADMIN_EMAILS.includes(this.$user.email)
     }
   },
   watch: {
@@ -589,7 +593,10 @@ export default {
         const nameIndex = filePath.lastIndexOf(this.section.name)
         filePath = `${filePath.substring(0, nameIndex)}${this.sectionName}${this.section.type === 'file' ? '.md' : '/intro.md'}`
 
-        if (this.parent.children.some(c => c.name === this.sectionName)) {
+        if (
+          !this.isPACAdmin &&
+          this.parent.children.some(c => c.name === this.sectionName)
+        ) {
           this.errorRename = true
           this.saving = false
           return
@@ -629,7 +636,7 @@ export default {
         })
 
         if (history[0]) {
-          const author = await this.$PAC.getAuthorFromEmail(history[0].commit.author?.email?.toLowerCase())
+          const author = await this.$PAC.getAuthorFromEmail(history[0].commit?.author?.email?.toLowerCase())
 
           // eslint-disable-next-line vue/no-mutating-props
           this.section.lastEdit = {
