@@ -682,6 +682,9 @@ class Procedure(models.Model):
     def compute_status(
         self, date_pivot: datetime | None = None
     ) -> core_enums.ProcedureStatusChoices | None:
+        # Prefetch events with filter_impactful to avoid N+1 queries
+        # Example : models.Prefetch("event_set", queryset=Event.objects.filter_impactful()
+
         if self.parente_id:
             return None
 
@@ -1844,6 +1847,65 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
             # Remove me later.
             models.Index(name="test_idx", fields=["procedure_id", "collectivite_code"]),
         ]
+
+    @staticmethod
+    def get_opposables_for_commune(commune: Commune) -> list["CommuneProcedure"]:
+        commune_procedures = (
+            commune_procedure
+            for commune_procedure in commune.procedures_through.all()
+            if commune_procedure.procedure.parente_id is None
+            and not commune_procedure.procedure.archived
+        )
+
+        last_opposable_events = []
+        for commune_procedure in commune_procedures:
+            impactful_events = (
+                event
+                for event in commune_procedure.procedure.event_set.all()
+                if event.is_impactful
+            )
+
+            last_event = max(
+                impactful_events,
+                key=attrgetter("date_evenement"),
+                default=None,
+            )
+
+            if (
+                last_event
+                and last_event.event_type.impact
+                == core_enums.ProcedureStatusChoices.OPPOSABLE
+            ):
+                last_opposable_events.append(
+                    {"event": last_event, "commune_procedure": commune_procedure}
+                )
+
+        opposable_scot = max(
+            (
+                item
+                for item in last_opposable_events
+                if item["commune_procedure"].procedure.is_schema
+            ),
+            key=lambda e: e["event"].date_evenement,
+            default=None,
+        )
+        opposable_plan = max(
+            (
+                item
+                for item in last_opposable_events
+                if not item["commune_procedure"].procedure.is_schema
+            ),
+            key=lambda e: e["event"].date_evenement,
+            default=None,
+        )
+
+        opposables = []
+        if opposable_scot:
+            opposables.append(opposable_scot["commune_procedure"])
+        if opposable_plan:
+            opposables.append(opposable_plan["commune_procedure"])
+
+        return opposables
 
 
 class MaterializedViewFlatMembershipQuerySet(models.QuerySet):
