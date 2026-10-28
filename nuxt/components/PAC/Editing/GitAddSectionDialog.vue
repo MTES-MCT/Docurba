@@ -83,7 +83,9 @@ export default {
       if (this.parent.children) {
         const sameNameChild = this.parent.children.find(c => c.name === this.sectionName)
 
-        if (sameNameChild) { return 'Une section porte déjà ce nom.' }
+        if (!this.isPACAdmin && sameNameChild) {
+          return 'Une section porte déjà ce nom.'
+        }
       }
 
       if (this.sectionName.includes('/')) {
@@ -91,6 +93,9 @@ export default {
       }
 
       return null
+    },
+    isPACAdmin () {
+      return process.env.PAC_ADMIN_EMAILS.includes(this.$user.email)
     }
   },
   methods: {
