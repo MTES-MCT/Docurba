@@ -3,6 +3,7 @@ from collections.abc import Callable
 from contextlib import nullcontext as does_not_raise
 from datetime import UTC, date, datetime, timedelta
 from functools import partial
+from uuid import uuid4
 
 import pytest
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -1723,27 +1724,29 @@ class TestProcedureStatut:
             assert not procedure_with_events.statut
 
 
+def create_impactful_event(
+    procedure: core_models.Procedure,
+    impact: core_enums.ProcedureStatusChoices,
+    *,
+    date_evenement: date,
+    **kwargs: dict,
+) -> core_models.Event:
+    # The uuid suffix prevents unique constraint violations when two events
+    # share the same date and impact.
+    event_type = EventTypeFactory(
+        name=f"Type {impact} {date_evenement} {uuid4().hex[:8]}", impact=impact
+    )
+    return EventFactory(
+        procedure=procedure,
+        event_type=event_type,
+        date_evenement=date_evenement,
+        **kwargs,
+    )
+
+
 @pytest.mark.django_db
 class TestProcedureComputeStatus:
     DATE_PIVOT = date(2025, 6, 15)
-
-    def _create_impactful_event(
-        self,
-        procedure: core_models.Procedure,
-        impact: core_enums.ProcedureStatusChoices,
-        *,
-        date_evenement: date,
-        **kwargs: dict,
-    ) -> core_models.Event:
-        event_type = EventTypeFactory(
-            name=f"Type {impact} {date_evenement}", impact=impact
-        )
-        return EventFactory(
-            procedure=procedure,
-            event_type=event_type,
-            date_evenement=date_evenement,
-            **kwargs,
-        )
 
     def test_secondary_returns_none(self) -> None:
         procedure = ProcedureFactory(with_parente=True)
@@ -1760,12 +1763,12 @@ class TestProcedureComputeStatus:
 
     def test_status_from_most_recent_impactful_event(self) -> None:
         procedure = ProcedureFactory()
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.ABANDON,
             date_evenement=date(2024, 6, 1),
         )
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=date(2025, 1, 1),
@@ -1778,12 +1781,12 @@ class TestProcedureComputeStatus:
 
     def test_event_after_pivot_ignored(self) -> None:
         procedure = ProcedureFactory()
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.ABANDON,
             date_evenement=date(2024, 6, 1),
         )
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=date(2025, 12, 1),
@@ -1796,13 +1799,13 @@ class TestProcedureComputeStatus:
 
     def test_archived_event_ignored(self) -> None:
         procedure = ProcedureFactory()
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=date(2025, 1, 1),
             archived=True,
         )
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.ANNULE,
             date_evenement=date(2024, 6, 1),
@@ -1815,13 +1818,13 @@ class TestProcedureComputeStatus:
 
     def test_invalid_event_ignored(self) -> None:
         procedure = ProcedureFactory()
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=date(2025, 1, 1),
             is_valid=False,
         )
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.ANNULE,
             date_evenement=date(2024, 6, 1),
@@ -1847,7 +1850,7 @@ class TestProcedureComputeStatus:
             event_type=event_type_not_impactful,
             date_evenement=date(2025, 2, 1),
         )
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.ANNULE,
             date_evenement=date(2024, 6, 1),
@@ -1869,7 +1872,7 @@ class TestProcedureComputeStatus:
             event_type=event_type_without_date,
             date_evenement=None,
         )
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.ANNULE,
             date_evenement=date(2024, 6, 1),
@@ -1885,12 +1888,12 @@ class TestProcedureComputeStatus:
     @freeze_time("2026-10-15")
     def test_without_date_pivot_no_date_filter(self) -> None:
         procedure = ProcedureFactory()
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.ANNULE,
             date_evenement=date(2024, 6, 1),
         )
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=date(2026, 12, 1),
@@ -1907,13 +1910,13 @@ class TestProcedureComputeStatus:
 
     def test_same_date_breaks_tie_on_created_at(self) -> None:
         procedure = ProcedureFactory()
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.ABANDON,
             date_evenement=date(2024, 6, 1),
             created_at=datetime(2024, 6, 2, 12, 0, 0, tzinfo=UTC),
         )
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=date(2024, 6, 1),
@@ -1929,14 +1932,14 @@ class TestProcedureComputeStatus:
     def test_same_date_and_created_at_breaks_tie_on_from_sudocuh(self) -> None:
         procedure = ProcedureFactory()
         created_at = datetime(2024, 6, 2, 12, 0, 0, tzinfo=UTC)
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.ABANDON,
             date_evenement=date(2024, 6, 1),
             created_at=created_at,
             from_sudocuh=100,
         )
-        self._create_impactful_event(
+        create_impactful_event(
             procedure,
             core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=date(2024, 6, 1),
@@ -2498,6 +2501,265 @@ class TestCommuneProceduresPrincipales:
         with django_assert_num_queries(3):
             commune = core_models.Commune.objects.with_procedures_principales().get()
             assert commune.procedures_principales == [procedure_reelle]
+
+
+@pytest.mark.django_db
+class TestCommuneProcedureGetOpposablesForCommune:
+    def _create_procedure_on_commune(
+        self,
+        commune: core_models.Commune,
+        *,
+        doc_type: core_enums.TypeDocument = core_enums.TypeDocument.PLU,
+        **kwargs: dict,
+    ) -> core_models.Procedure:
+        return ProcedureFactory(
+            doc_type=doc_type,
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+            **kwargs,
+        )
+
+    @staticmethod
+    def _perimetre_line(
+        procedure: core_models.Procedure,
+    ) -> core_models.CommuneProcedure:
+        return procedure.perimetre_through.get()
+
+    def test_unique_opposable_procedure_is_returned(self) -> None:
+        commune = CommuneFactory()
+        procedure = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2025, 1, 1),
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == [
+            self._perimetre_line(procedure)
+        ]
+
+    def test_procedures_without_opposable_event_are_not_returned(self) -> None:
+        commune = CommuneFactory()
+        procedure_en_cours = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure_en_cours,
+            core_enums.ProcedureStatusChoices.EN_COURS,
+            date_evenement=date(2025, 1, 1),
+        )
+        self._create_procedure_on_commune(commune)
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == []
+
+    def test_most_recent_opposable_event_wins(self) -> None:
+        commune = CommuneFactory()
+        procedure_avant = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure_avant,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2024, 6, 1),
+        )
+        procedure_apres = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure_apres,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2025, 1, 1),
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == [
+            self._perimetre_line(procedure_apres)
+        ]
+
+    def test_plan_and_schema_are_independent(self) -> None:
+        commune = CommuneFactory()
+        scot = self._create_procedure_on_commune(
+            commune, doc_type=core_enums.TypeDocument.SCOT
+        )
+        create_impactful_event(
+            scot,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2025, 6, 1),
+        )
+        plu = self._create_procedure_on_commune(
+            commune, doc_type=core_enums.TypeDocument.PLU
+        )
+        create_impactful_event(
+            plu,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2024, 1, 1),
+        )
+
+        # The SCOT event is more recent, but plans and schemas don't compete:
+        # each category keeps its own opposable procedure.
+        opposables = core_models.CommuneProcedure.get_opposables_for_commune(commune)
+        assert len(opposables) == 2
+        assert self._perimetre_line(scot) in opposables
+        assert self._perimetre_line(plu) in opposables
+
+    def test_secondary_procedure_is_excluded(self) -> None:
+        commune = CommuneFactory()
+        procedure_secondaire = self._create_procedure_on_commune(
+            commune,
+            with_parente=True,
+            parente__with_perimetre=[commune],
+        )
+        create_impactful_event(
+            procedure_secondaire,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2025, 6, 1),
+        )
+        procedure_principale = procedure_secondaire.parente
+        create_impactful_event(
+            procedure_principale,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2024, 6, 1),
+        )
+
+        # The secondary procedure is not a candidate, whatever its events.
+        opposables = core_models.CommuneProcedure.get_opposables_for_commune(commune)
+        assert self._perimetre_line(procedure_secondaire) not in opposables
+        assert self._perimetre_line(procedure_principale) in opposables
+
+    def test_archived_procedure_is_excluded(self) -> None:
+        commune = CommuneFactory()
+        procedure_supprimee = self._create_procedure_on_commune(
+            commune, soft_delete=True
+        )
+        create_impactful_event(
+            procedure_supprimee,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2025, 6, 1),
+        )
+        procedure_reelle = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure_reelle,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2024, 6, 1),
+        )
+
+        opposables = core_models.CommuneProcedure.get_opposables_for_commune(commune)
+        assert self._perimetre_line(procedure_supprimee) not in opposables
+        assert self._perimetre_line(procedure_reelle) in opposables
+
+    def test_last_impactful_event_not_opposable_excludes_procedure(self) -> None:
+        commune = CommuneFactory()
+        procedure_annulee = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure_annulee,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2024, 6, 1),
+        )
+        create_impactful_event(
+            procedure_annulee,
+            core_enums.ProcedureStatusChoices.ANNULE,
+            date_evenement=date(2025, 1, 1),
+        )
+        procedure_opposable = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure_opposable,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2024, 9, 1),
+        )
+
+        # The last impactful event of the cancelled procedure is not opposable,
+        # so it is no longer a candidate.
+        opposables = core_models.CommuneProcedure.get_opposables_for_commune(commune)
+        assert self._perimetre_line(procedure_annulee) not in opposables
+        assert self._perimetre_line(procedure_opposable) in opposables
+
+    def test_archived_event_is_ignored(self) -> None:
+        commune = CommuneFactory()
+        procedure = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2025, 1, 1),
+            archived=True,
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == []
+
+    def test_invalid_event_is_ignored(self) -> None:
+        commune = CommuneFactory()
+        procedure = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2025, 1, 1),
+            is_valid=False,
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == []
+
+    def test_event_without_date_is_ignored(self) -> None:
+        commune = CommuneFactory()
+        procedure = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=None,
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == []
+
+    def test_only_the_given_commune_is_considered(self) -> None:
+        commune = CommuneFactory()
+        autre_commune = CommuneFactory()
+        procedure = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2024, 6, 1),
+        )
+        autre_procedure = self._create_procedure_on_commune(autre_commune)
+        create_impactful_event(
+            autre_procedure,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2025, 6, 1),
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == [
+            self._perimetre_line(procedure)
+        ]
+        assert core_models.CommuneProcedure.get_opposables_for_commune(
+            autre_commune
+        ) == [self._perimetre_line(autre_procedure)]
+
+    def test_same_date_breaks_tie_on_created_at(self) -> None:
+        commune = CommuneFactory()
+        procedure_avant = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure_avant,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2024, 6, 1),
+            created_at=datetime(2024, 6, 2, 12, 0, 0, tzinfo=UTC),
+        )
+        procedure_apres = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure_apres,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2024, 6, 1),
+            created_at=datetime(2024, 6, 3, 12, 0, 0, tzinfo=UTC),
+        )
+
+        # Same date_evenement: the most recently created event wins.
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == [
+            self._perimetre_line(procedure_apres)
+        ]
+
+    @freeze_time("2025-06-15")
+    def test_future_opposable_event_counts(self) -> None:
+        commune = CommuneFactory()
+        procedure = self._create_procedure_on_commune(commune)
+        create_impactful_event(
+            procedure,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=date(2025, 12, 1),
+        )
+
+        # There is no date_pivot: future events count.
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == [
+            self._perimetre_line(procedure)
+        ]
 
 
 class TestCommunePlanEnCours:
