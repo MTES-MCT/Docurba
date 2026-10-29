@@ -243,10 +243,17 @@ export default {
         { text: 'Dernier évènement', value: 'last_event', filterable: false, sort: this.sortByDateIso }
       ]
     },
+    extendedSelectedDocumentsFilter () {
+      return this.selectedDocumentsFilter.flatMap(docType =>
+        docType.startsWith('PLUi')
+          ? [docType, `PLUiS${docType.slice(4)}`]
+          : [docType]
+      )
+    },
     procedures () {
       const proceduresAndFilters = this.rawProcedures?.filter((e) => {
         return e.procedures.created_at &&
-        this.selectedDocumentsFilter.includes(e.procedures.doc_type) &&
+        this.extendedSelectedDocumentsFilter.includes(e.procedures.doc_type) &&
           ((this.selectedTypesFilter.includes('pp') && e.procedures.is_principale) ||
           (this.selectedTypesFilter.includes('ps') && !e.procedures.is_principale)) &&
           (((this.selectedStatusFilter.includes('opposable') && e.opposable) ||
