@@ -277,6 +277,7 @@ import {
   mdiArrowDown, mdiArrowUp,
   mdiLinkVariant
 } from '@mdi/js'
+import axios from 'axios'
 import { encode } from 'js-base64'
 import { getCommitter } from '@/plugins/user'
 import { getUniquePropValues } from '@/plugins/utils'
@@ -589,7 +590,10 @@ export default {
         const nameIndex = filePath.lastIndexOf(this.section.name)
         filePath = `${filePath.substring(0, nameIndex)}${this.sectionName}${this.section.type === 'file' ? '.md' : '/intro.md'}`
 
-        if (this.parent.children.some(c => c.name === this.sectionName)) {
+        if (
+          !process.env.PAC_ADMIN_EMAILS.includes(this.$user.email) &&
+          this.parent.children.some(c => c.name === this.sectionName)
+        ) {
           this.errorRename = true
           this.saving = false
           return
