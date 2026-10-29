@@ -5,18 +5,6 @@
     </h1>
   </v-container>
   <v-container v-else>
-    <v-btn
-      v-show="$user?.profile?.is_admin"
-      fab
-      fixed
-      bottom
-      left
-      color="primary"
-      :loading="syncLoading"
-      @click="syncProcedure"
-    >
-      <v-icon>{{ icons.mdiSync }}</v-icon>
-    </v-btn>
     <v-row v-if="collectivite">
       <v-col cols="12" class="pb-0 mt-6">
         <nuxt-link :to="backToCollectivite" class="text-decoration-none d-flex align-center">
@@ -260,7 +248,7 @@
 </template>
 
 <script>
-import { mdiBookmark, mdiChevronLeft, mdiDotsVertical, mdiPaperclip, mdiSync } from '@mdi/js'
+import { mdiBookmark, mdiChevronLeft, mdiDotsVertical, mdiPaperclip } from '@mdi/js'
 import _ from 'lodash'
 
 import { getProcedureEventsScope } from '@/plugins/event'
@@ -277,15 +265,13 @@ export default
       events: null,
       dialog: false,
       loaded: false,
-      syncLoading: false,
       showAllCollabs: false,
       collaborators: [],
       icons: {
         mdiBookmark,
         mdiPaperclip,
         mdiChevronLeft,
-        mdiDotsVertical,
-        mdiSync
+        mdiDotsVertical
       }
     }
   },
@@ -496,11 +482,6 @@ export default
 
       if (errorEvents) { throw errorEvents }
       return events
-    },
-    async syncProcedure () {
-      this.syncLoading = true
-      await this.$procedure.updateOpposability(this.$route.params.procedureId)
-      this.syncLoading = false
     }
   }
 }
