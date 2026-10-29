@@ -301,15 +301,21 @@ export default {
 
       return [
         ...(
-          this.startedBeforeHuwartLaw
-            ? [
-                'Révision à modalité simplifiée ou Révision allégée',
-                { text: 'Modification (antérieure à la loi Huwart)', value: 'Modification' },
-                'Modification simplifiée'
+          this.procedureParentDocType === 'CC'
+            ? []
+            : [
+                ...(
+                  this.startedBeforeHuwartLaw
+                    ? [
+                        'Révision à modalité simplifiée ou Révision allégée',
+                        { text: 'Modification (antérieure à la loi Huwart)', value: 'Modification' },
+                        'Modification simplifiée'
+                      ]
+                    : [{ text: 'Modification (postérieure à la loi Huwart)', value: 'Modification' }]
+                ),
+                'Mise en compatibilité'
               ]
-            : [{ text: 'Modification (postérieure à la loi Huwart)', value: 'Modification' }]
         ),
-        'Mise en compatibilité',
         'Mise à jour'
       ].map(item => typeof item === 'string' ? { text: item, value: item } : item)
     },
