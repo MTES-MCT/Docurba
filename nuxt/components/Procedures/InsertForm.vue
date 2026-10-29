@@ -313,19 +313,6 @@ export default {
         'Mise à jour'
       ].map(item => typeof item === 'string' ? { text: item, value: item } : item)
     },
-    collectivitePorteuseCode () {
-      if (this.collectivite[this.typeCompetence]) {
-        // return the collectivite if it has the competence
-        return this.collectivite.code
-      } else if (this.collectivite.intercommunalite) {
-        // return the interco if it exist.
-        return this.collectivite.intercommunalite.code
-      } else {
-        // Return the collectivite code if there is no groupement available.
-        // This can create an anomaly with Banatic but is better than nothing.
-        return this.collectivite.code
-      }
-    },
     procedureParentObj () {
       return this.proceduresParents?.find(e => e.id === this.procedureParent)
     },
@@ -338,6 +325,7 @@ export default {
     postfixSectoriel () {
       return (this.collectivite.type === 'COM' && this.perimetre.length > 1) || (this.collectivite.type !== 'COM' && this.perimetre.length < this.communes.length) ? 'S' : ''
     },
+    // TODO: call endpoint
     baseName () {
       let name
       if (this.procedureParentObj) {
@@ -381,7 +369,7 @@ export default {
   async mounted () {
     try {
       if (this.procedureCategory === 'secondaire') {
-        const proceduresParents = await this.getProcedures()
+        const proceduresParents = await this.getParentProcedures()
         this.proceduresParents = proceduresParents
         if (this.$route.query.secondary_id) {
           this.procedureParent = this.$route.query.secondary_id
@@ -397,7 +385,7 @@ export default {
     this.topicsItems = await this.getTopicItems()
   },
   methods: {
-    async getProcedures () {
+    async getParentProcedures () {
       const payload = {
         is_principale: true,
         status: ['opposable']
@@ -428,91 +416,20 @@ export default {
       this.loadingSave = true
 
       try {
-        let detailedPerimetre
-        if (this.procedureParent) {
-          detailedPerimetre = this.procedureParentObj.perimetre
-        } else {
-          detailedPerimetre = await this.$djangoApi.get('/api-internes/communes/', {
-            code: this.perimetre,
-            type: 'COM'
-          })
-        }
-        const oldFomattedPerimetre = detailedPerimetre.map(e => ({ name: e.intitule, inseeCode: e.code }))
-        const departements = [...new Set(detailedPerimetre.map(e => e.departementCode))]
-        let insertedProject = null
-
-        if (this.procedureCategory === 'principale') {
-          const insertRet = await this.$supabase.from('projects').insert({
-            name: `${this.typeProcedure} ${this.typeDu}`,
-            doc_type: this.typeDu,
-            region: this.collectivite.regionCode,
-            current_perimetre: oldFomattedPerimetre,
-            collectivite_id: this.collectivite.intercommunaliteCode || this.collectivite.code,
-            collectivite_porteuse_id: this.collectivitePorteuseCode,
-            test: true,
-            owner: this.$user.id
-          }).select()
-
-          insertedProject = insertRet.data && insertRet.data[0] ? insertRet.data[0].id : null
-          if (insertRet.error) { throw insertRet.error }
-        }
-
-        const { data: insertedProcedure, error: errorInsertedProcedure } = await this.$supabase.from('procedures').insert({
-          shareable: true,
-          secondary_procedure_of: this.procedureParent,
-          type: this.typeProcedure,
-          collectivite_porteuse_id: this.collectivitePorteuseCode,
-          is_principale: this.procedureCategory === 'principale',
-          status: this.procedureParent ? null : 'en cours',
-          is_sectoriel: null,
-          is_scot: this.typeDu === 'SCOT', // also 'SD' but this type doesn't exist anymore.
-          is_pluih: ['PLUiH', 'PLUiHM', 'PLUiSH', 'PLUiSHM', 'PLUiHS', 'PLUiHMS'].includes(this.typeDu), // This will be refactored in Django: H in doc_type
-          is_pdu: ['PLUiM', 'PLUiHM', 'PLUiSM', 'PLUiSHM', 'PLUiMS', 'PLUiHMS'].includes(this.typeDu), // This will be refactored in Django: M in doc_type
-          current_perimetre: oldFomattedPerimetre,
-          doc_type: this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType,
-          departements,
-          numero: this.procedureCategory === 'principale' ? '1' : this.numberProcedure,
-          project_id: insertedProject,
-          name: this.baseName,
-          name_complement: this.nameComplement.trim(),
-          owner_id: this.$user.id,
-          started_before_huwart_law: this.startedBeforeHuwartLaw,
-          testing: true
-        }).select()
-
-        if (errorInsertedProcedure) {
-          // eslint-disable-next-line no-console
-          console.log('errorInsertedProcedure: ', errorInsertedProcedure)
-        }
-
-        const topicsToInsert = this.topics.map((e) => {
-          return {
-            topic_id: e.value,
-            procedure_id: insertedProcedure[0].id,
-            comment: e.text === 'Autre' ? this.topicOtherComment : ''
-          }
+        const responseData = await this.$djangoApi.post('/api-internes/procedures/', {
+          collectiviteCode: this.collectivite.code,
+          perimetreCodes: this.perimetre,
+          docType: this.typeDu,
+          number: this.numberProcedure,
+          nameComplement: this.nameComplement.trim(),
+          startedBeforeHuwartLaw: this.startedBeforeHuwartLaw,
+          topicsList: this.topics.map(e => e.value),
+          otherTopicComment: this.topicOtherComment,
+          parentId: this.procedureParent,
+          type: this.typeProcedure
         })
-        await this.$supabase.from('core_proceduretopic').insert(topicsToInsert).select()
-
-        const fomattedPerimetre = detailedPerimetre.map(e => ({ collectivite_code: e.code, collectivite_type: e.type, procedure_id: insertedProcedure[0].id, opposable: false, departement: e.departementCode }))
-        await this.$supabase.from('procedures_perimetres').insert(fomattedPerimetre)
-
-        const sender = {
-          user_email: this.$user.email,
-          project_id: insertedProject ?? this.proceduresParents?.find(e => e.id === this.procedureParent)?.project_id,
-          shared_by: this.$user.id,
-          notified: false,
-          role: 'write_frise',
-          archived: false,
-          dev_test: true
-        }
-
-        const { error: errorInsertedCollabs } = await this.$supabase.from('projects_sharing').insert(sender)
-
-        if (errorInsertedCollabs) {
-          // eslint-disable-next-line no-console
-          console.log('errorInsertedCollabs: ', errorInsertedCollabs)
-        }
+        // TODO: ask Etienne to handle 400 errors when the API returns validation errors.
+        const procedureId = responseData.id
 
         this.$analytics({
           category: 'procedures',
@@ -520,8 +437,7 @@ export default {
           value: (this.baseName + ' ' + this.nameComplement).trim()
         })
 
-        this.$router.push(`/frise/${insertedProcedure[0].id}/invite`)
-        // this.$router.push(`/ddt/${this.collectivite.departementCode}/collectivites/${this.collectivite.code}/${this.collectivite.code.length > 5 ? 'epci' : 'commune'}`)
+        this.$router.push(`/frise/${procedureId}/invite`)
       } catch (error) {
         this.error = error
         // eslint-disable-next-line no-console
@@ -531,14 +447,14 @@ export default {
       }
     },
     async getTopicItems () {
-      let { data: topics } = await this.$supabase.from('core_topic').select('id,display_name,ui_rank')
+      let { data: topics } = await this.$supabase.from('core_topic').select('name,display_name,ui_rank')
       topics = topics.sort((a, b) => {
         return a.ui_rank > b.ui_rank
       })
       // Push first item to the end.
       topics.push(topics.shift())
       return topics.map((e) => {
-        return { value: e.id, text: e.display_name }
+        return { value: e.name, text: e.display_name }
       })
     }
   }

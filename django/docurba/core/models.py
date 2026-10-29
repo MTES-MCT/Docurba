@@ -414,7 +414,7 @@ class Procedure(models.Model):
         blank=True, null=True
     )  # No reference in Nuxt's side but column is filled with different values.
     sudocu_secondary_procedure_of = models.IntegerField(blank=True, null=True)
-    shareable = models.BooleanField(db_default=True)
+    shareable = models.BooleanField(db_default=True, default=True)
     type = models.CharField(
         choices=core_enums.ProcedureType, default=core_enums.ProcedureType.ELABORATION
     )  # TextField in DB.
@@ -553,7 +553,15 @@ class Procedure(models.Model):
         self._cached_perimetre = kwargs.pop("cached_perimetre", None)
         super().__init__(*args, **kwargs)
 
-    def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+    def save(self, *args: list, **kwargs: dict) -> None:
+        if self.type in core_enums.ProcedureType.principal():
+            self.is_principale = True
+            # https://docs.djangoproject.com/en/6.1/ref/models/instances/#state
+            if self._state.adding:
+                if self.type != core_enums.ProcedureType.REVISION:
+                    self.numero = "1"
+                if not self.status:
+                    self.status = core_enums.ProcedureStatusChoices.EN_COURS
         self.clean()
         super().save(*args, **kwargs)
 
@@ -567,6 +575,31 @@ class Procedure(models.Model):
         if not self.parente and not self.status:
             message = 'A main procedure must have a "status" filled in.'
             raise ValidationError(message)
+        super().clean()
+
+    # We need it to create the procedure.
+    @classmethod
+    def get_collectivite_porteuse(  # noqa: ANN206
+        cls,
+        collectivite,  # noqa: ANN001
+        doc_type: core_enums.TypeDocument,
+    ):
+        if (
+            (
+                (
+                    doc_type == core_enums.TypeDocument.SCOT
+                    and not collectivite.competence_schema
+                )
+                or (
+                    doc_type != core_enums.TypeDocument.SCOT
+                    and not collectivite.competence_plan
+                )
+            )
+            and collectivite.type in core_enums.CommuneType
+            and collectivite.commune.intercommunalite
+        ):
+            collectivite = collectivite.commune.intercommunalite
+        return collectivite
 
     _events_processed = False
 
@@ -591,6 +624,18 @@ class Procedure(models.Model):
         if self._cached_perimetre is not None:
             return self._cached_perimetre
         return self.perimetre.all()
+
+    def update_perimetre_denormalized_fields(self, save: bool = False) -> None:  # noqa: FBT001,FBT002
+        # This method should disappear quite soon.
+        self.current_perimetre = [
+            {"name": commune.nom, "inseeCode": commune.code_insee}
+            for commune in self._perimetre
+        ]
+        self.departements = list(
+            {commune.departement.code_insee for commune in self._perimetre}
+        )
+        if save:
+            self.save()
 
     @property
     def computed_name(self) -> str:
@@ -829,8 +874,8 @@ class Procedure(models.Model):
 
         if communes_adherentes_count is None:
             communes_adherentes_count = (
-                Collectivite.objects.get(pk=self.collectivite_porteuse.pk)
-                .with_communes_adherentes_count()
+                Collectivite.objects.with_communes_adherentes_count()
+                .get(pk=self.collectivite_porteuse.pk)
                 .communes_adherentes_count
             )
 
@@ -1708,7 +1753,6 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     )
     opposable = models.BooleanField(verbose_name="Est opposable", default=False)
     # Denormalized version of commune.departement.code_insee already existing in production.
-    # Real type is TextField but I used a Charfiel here for performance reasons.
     # This column is used in Nuxt side to retrieve procedures by departement.
     # See urbanizator.getProceduresForDept.
     # Unfortunately, there is a mismatch between commune.departement.code_insee and self.departement
