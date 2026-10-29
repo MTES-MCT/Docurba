@@ -2,6 +2,7 @@ import random
 import uuid
 from datetime import timedelta
 from urllib.parse import urlencode
+from zoneinfo import ZoneInfo
 
 import pytest
 from django.urls import reverse
@@ -871,15 +872,19 @@ class TestProcedureSynchronizeStatus:
         )
 
     def test_synchronize_status_updates_procedure(
-        self, api_client_with_auth: SupabaseApiTestClient
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         event = core_factories.EventFactory(
             procedure__status=core_enums.ProcedureStatusChoices.OPPOSABLE,
             event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
         )
-        profile = ProfileFactory()
 
-        with api_client_with_auth(profile) as api_client:
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(6),
+        ):
             response = api_client.post(self._url(event.procedure))
 
         assert response.status_code == 200
@@ -888,14 +893,18 @@ class TestProcedureSynchronizeStatus:
         assert event.procedure.status == core_enums.ProcedureStatusChoices.ANNULE
 
     def test_synchronize_status_already_up_to_date(
-        self, api_client_with_auth: SupabaseApiTestClient
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         procedure = core_factories.ProcedureFactory(
             status=core_enums.ProcedureStatusChoices.EN_PROJET
         )
-        profile = ProfileFactory()
 
-        with api_client_with_auth(profile) as api_client:
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(6),
+        ):
             response = api_client.post(self._url(procedure))
 
         assert response.status_code == 200
@@ -904,16 +913,20 @@ class TestProcedureSynchronizeStatus:
         assert procedure.status == core_enums.ProcedureStatusChoices.EN_PROJET
 
     def test_synchronize_status_ignores_future_events_after_end_of_day(
-        self, api_client_with_auth: SupabaseApiTestClient
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         event = core_factories.EventFactory(
             procedure__status=core_enums.ProcedureStatusChoices.EN_COURS,
             event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=end_of_day(timezone.localdate()) + timedelta(seconds=1),
         )
-        profile = ProfileFactory()
 
-        with api_client_with_auth(profile) as api_client:
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(6),
+        ):
             response = api_client.post(self._url(event.procedure))
 
         assert response.status_code == 200
@@ -938,3 +951,29 @@ class TestProcedureSynchronizeStatus:
         assert response.json() == {"status": "opposable"}
         event.procedure.refresh_from_db()
         assert event.procedure.status == core_enums.ProcedureStatusChoices.OPPOSABLE
+
+    @freeze_time("2012-01-01T00:00:00Z")
+    def test_synchronize_status_ignores_future_events_depending_on_timezone(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        event = core_factories.EventFactory(
+            procedure__status=core_enums.ProcedureStatusChoices.EN_COURS,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=end_of_day(
+                timezone.localdate(timezone=ZoneInfo("Europe/Paris"))
+            ),
+        )
+
+        timezone.activate(ZoneInfo("Pacific/Tahiti"))  # UTC-10
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(6),
+        ):
+            response = api_client.post(self._url(event.procedure))
+
+        assert response.status_code == 200
+        assert response.json() == {"status": "en projet"}
+        event.procedure.refresh_from_db()
+        assert event.procedure.status == core_enums.ProcedureStatusChoices.EN_PROJET
