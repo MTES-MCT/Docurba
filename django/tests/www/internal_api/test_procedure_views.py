@@ -870,15 +870,19 @@ class TestProcedureSynchronizeStatus:
         )
 
     def test_synchronize_status_updates_procedure(
-        self, api_client_with_auth: SupabaseApiTestClient
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         event = core_factories.EventFactory(
             procedure__status=core_enums.ProcedureStatusChoices.OPPOSABLE,
             event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
         )
-        profile = ProfileFactory()
 
-        with api_client_with_auth(profile) as api_client:
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(6),
+        ):
             response = api_client.post(self._url(event.procedure))
 
         assert response.status_code == 200
@@ -887,14 +891,18 @@ class TestProcedureSynchronizeStatus:
         assert event.procedure.status == core_enums.ProcedureStatusChoices.ANNULE
 
     def test_synchronize_status_already_up_to_date(
-        self, api_client_with_auth: SupabaseApiTestClient
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         procedure = core_factories.ProcedureFactory(
             status=core_enums.ProcedureStatusChoices.EN_PROJET
         )
-        profile = ProfileFactory()
 
-        with api_client_with_auth(profile) as api_client:
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(6),
+        ):
             response = api_client.post(self._url(procedure))
 
         assert response.status_code == 200
@@ -904,7 +912,9 @@ class TestProcedureSynchronizeStatus:
 
     @freeze_time("2026-10-15")
     def test_synchronize_status_takes_future_events_into_account(
-        self, api_client_with_auth: SupabaseApiTestClient
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         # The endpoint does not use a date pivot: even a future event impacts
         # the computed status.
@@ -913,9 +923,11 @@ class TestProcedureSynchronizeStatus:
             event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=timezone.now() + timedelta(days=365),
         )
-        profile = ProfileFactory()
 
-        with api_client_with_auth(profile) as api_client:
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(6),
+        ):
             response = api_client.post(self._url(event.procedure))
 
         assert response.status_code == 200
