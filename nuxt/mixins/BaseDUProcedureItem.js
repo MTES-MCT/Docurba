@@ -1,18 +1,6 @@
 import { getProcedureTypeLabel } from '@/plugins/procedure'
 
 export default {
-  data () {
-    return {
-      statusColors: {
-        opposable: 'success lighten-2',
-        precedent: 'primary lighten-2',
-        'en cours': 'primary ',
-        abandon: 'error',
-        annule: 'error'
-
-      }
-    }
-  },
   computed: {
     procedureTypeLabel () {
       return getProcedureTypeLabel(this.procedure)

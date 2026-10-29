@@ -463,7 +463,7 @@ export default {
           type: this.typeProcedure,
           collectivite_porteuse_id: this.collectivitePorteuseCode,
           is_principale: this.procedureCategory === 'principale',
-          status: this.procedureParent ? null : 'en cours',
+          status: this.procedureParent ? null : 'en projet',
           is_sectoriel: null,
           is_scot: this.typeDu === 'SCOT', // also 'SD' but this type doesn't exist anymore.
           is_pluih: ['PLUiH', 'PLUiHM', 'PLUiSH', 'PLUiSHM', 'PLUiHS', 'PLUiHMS'].includes(this.typeDu), // This will be refactored in Django: H in doc_type

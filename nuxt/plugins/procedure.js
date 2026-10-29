@@ -41,7 +41,7 @@ export default ({ $dayjs, $djangoApi, $supabase, $territorialAuthorityApi }, inj
       .select('*, procedures_perimetres!inner ()')
       .eq('is_principale', true)
       .neq('doc_type', 'SD')
-      .in('status', ['opposable', 'en cours'])
+      .in('status', ['opposable', 'en cours', 'en projet'])
       .in('procedures_perimetres.collectivite_code', inseeCodes)
       .throwOnError()
 
