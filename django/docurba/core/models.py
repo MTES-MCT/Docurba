@@ -553,7 +553,13 @@ class Procedure(models.Model):
         self._cached_perimetre = kwargs.pop("cached_perimetre", None)
         super().__init__(*args, **kwargs)
 
-    def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+    def save(self, *args: list, **kwargs: dict) -> None:
+        # NOTE(cms): I think we should delete these two columns.
+        self.vaut_PLH = self.vaut_PLH_consolide
+        self.vaut_PDM = self.vaut_PDM_consolide
+        # Some PLU were treated as SCoT when Sudocuh was up.
+        if not self.from_sudocuh:
+            self.vaut_SCoT = self.is_schema
         self.clean()
         super().save(*args, **kwargs)
 
@@ -723,20 +729,20 @@ class Procedure(models.Model):
 
     @property
     def vaut_PLH_consolide(self) -> bool:  # noqa: N802
-        if not self.is_intercommunal:
-            return False
-        return self.vaut_PLH or self.doc_type in (
+        return self.doc_type in (
             core_enums.TypeDocument.PLUIH,
             core_enums.TypeDocument.PLUIHM,
+            core_enums.TypeDocument.PLUISH,
+            core_enums.TypeDocument.PLUISHM,
         )
 
     @property
     def vaut_PDM_consolide(self) -> bool:  # noqa: N802
-        if not self.is_intercommunal:
-            return False
-        return self.vaut_PDM or self.doc_type in (
+        return self.doc_type in (
             core_enums.TypeDocument.PLUIM,
             core_enums.TypeDocument.PLUIHM,
+            core_enums.TypeDocument.PLUISM,
+            core_enums.TypeDocument.PLUISHM,
         )
 
     @property
