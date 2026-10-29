@@ -1,6 +1,6 @@
 import random
 import uuid
-from datetime import timedelta
+from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
 import pytest
@@ -884,12 +884,16 @@ class TestProcedureSynchronizeStatus:
         return procedure
 
     def test_synchronize_status_updates_procedure(
-        self, api_client_with_auth: SupabaseApiTestClient
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         procedure = self._procedure_with_outdated_status()
-        profile = ProfileFactory()
 
-        with api_client_with_auth(profile) as api_client:
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(6),
+        ):
             response = api_client.post(self._url(procedure))
 
         assert response.status_code == 200
@@ -898,12 +902,16 @@ class TestProcedureSynchronizeStatus:
         assert procedure.status == core_enums.ProcedureStatusChoices.ANNULE
 
     def test_synchronize_status_already_up_to_date(
-        self, api_client_with_auth: SupabaseApiTestClient
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         procedure = core_factories.ProcedureFactory()
-        profile = ProfileFactory()
 
-        with api_client_with_auth(profile) as api_client:
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(6),
+        ):
             response = api_client.post(self._url(procedure))
 
         assert response.status_code == 200
@@ -913,7 +921,9 @@ class TestProcedureSynchronizeStatus:
 
     @freeze_time("2026-01-01")
     def test_synchronize_status_takes_future_events_into_account(
-        self, api_client_with_auth: SupabaseApiTestClient
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         # The endpoint does not use a date pivot: even a future event impacts
         # the computed status.
@@ -929,12 +939,183 @@ class TestProcedureSynchronizeStatus:
             event_type=event_type,
             date_evenement=timezone.now() + timedelta(days=365),
         )
-        profile = ProfileFactory()
 
-        with api_client_with_auth(profile) as api_client:
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(6),
+        ):
             response = api_client.post(self._url(procedure))
 
         assert response.status_code == 200
         assert response.json() == {"status": "opposable"}
         procedure.refresh_from_db()
         assert procedure.status == core_enums.ProcedureStatusChoices.OPPOSABLE
+
+    def _create_impactful_event(
+        self,
+        procedure: core_models.Procedure,
+        impact: core_enums.ProcedureStatusChoices,
+        *,
+        date_evenement: datetime,
+    ) -> core_models.Event:
+        # The uuid suffix prevents unique constraint violations when several
+        # events share the same date and impact.
+        event_type = core_factories.EventTypeFactory(
+            name=f"Type {impact} {date_evenement} {uuid.uuid4().hex[:8]}",
+            impact=impact,
+        )
+        return core_factories.EventFactory(
+            procedure=procedure,
+            event_type=event_type,
+            date_evenement=date_evenement,
+        )
+
+    def test_synchronize_status_updates_perimetre_opposability(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = core_factories.CommuneFactory()
+        procedure = core_factories.ProcedureFactory(with_perimetre=[commune])
+        self._create_impactful_event(
+            procedure,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=datetime(2025, 1, 1),
+        )
+
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(9),
+        ):
+            response = api_client.post(self._url(procedure))
+        assert response.status_code == 200
+
+        assert procedure.perimetre_through.get().opposable is True
+
+    def test_synchronize_status_resets_stale_opposable_flag(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        # Historically flagged as opposable by Nuxt, but the last impactful
+        # event is no longer opposable.
+        commune = core_factories.CommuneFactory()
+        procedure = core_factories.ProcedureFactory(with_perimetre=[commune])
+        self._create_impactful_event(
+            procedure,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=datetime(2024, 6, 1),
+        )
+        self._create_impactful_event(
+            procedure,
+            core_enums.ProcedureStatusChoices.ANNULE,
+            date_evenement=datetime(2025, 1, 1),
+        )
+        perimetre_line = procedure.perimetre_through.get()
+        perimetre_line.opposable = True
+        perimetre_line.save(update_fields=["opposable"])
+
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(9),
+        ):
+            response = api_client.post(self._url(procedure))
+        assert response.status_code == 200
+
+        assert procedure.perimetre_through.get().opposable is False
+
+    def test_synchronize_status_synchronizes_other_procedures_of_perimetre_communes(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        # Synchronizing a procedure also updates the flags of the other
+        # procedures sharing its perimetre communes.
+        commune = core_factories.CommuneFactory()
+        procedure_avant = core_factories.ProcedureFactory(
+            doc_type=core_enums.TypeDocument.PLU, with_perimetre=[commune]
+        )
+        self._create_impactful_event(
+            procedure_avant,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=datetime(2024, 6, 1),
+        )
+        procedure_apres = core_factories.ProcedureFactory(
+            doc_type=core_enums.TypeDocument.PLU, with_perimetre=[commune]
+        )
+        self._create_impactful_event(
+            procedure_apres,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=datetime(2025, 1, 1),
+        )
+        stale_line = procedure_avant.perimetre_through.get()
+        stale_line.opposable = True
+        stale_line.save(update_fields=["opposable"])
+
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(9),
+        ):
+            response = api_client.post(self._url(procedure_avant))
+        assert response.status_code == 200
+
+        assert procedure_apres.perimetre_through.get().opposable is True
+        assert procedure_avant.perimetre_through.get().opposable is False
+
+    def test_synchronize_status_leaves_communes_outside_perimetre_untouched(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = core_factories.CommuneFactory()
+        procedure = core_factories.ProcedureFactory(with_perimetre=[commune])
+        self._create_impactful_event(
+            procedure,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=datetime(2025, 1, 1),
+        )
+        autre_commune = core_factories.CommuneFactory()
+        autre_procedure = core_factories.ProcedureFactory(
+            with_perimetre=[autre_commune]
+        )
+        autre_line = autre_procedure.perimetre_through.get()
+        autre_line.opposable = True
+        autre_line.save(update_fields=["opposable"])
+
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(9),
+        ):
+            response = api_client.post(self._url(procedure))
+        assert response.status_code == 200
+
+        assert procedure.perimetre_through.get().opposable is True
+        # The stale flag outside the procedure perimetre is left untouched.
+        assert autre_procedure.perimetre_through.get().opposable is True
+
+    def test_synchronize_status_synchronizes_opposability_for_secondary_procedure(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = core_factories.CommuneFactory()
+        procedure_secondaire = core_factories.ProcedureFactory(
+            with_perimetre=[commune],
+            with_parente=True,
+            parente__with_perimetre=[commune],
+        )
+        self._create_impactful_event(
+            procedure_secondaire.parente,
+            core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=datetime(2024, 6, 1),
+        )
+
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(9),
+        ):
+            response = api_client.post(self._url(procedure_secondaire))
+        assert response.status_code == 200
+
+        assert procedure_secondaire.parente.perimetre_through.get().opposable is True
+        assert procedure_secondaire.perimetre_through.get().opposable is False

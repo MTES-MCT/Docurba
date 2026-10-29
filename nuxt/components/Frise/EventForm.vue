@@ -225,11 +225,11 @@ export default {
         if (this.eventId) {
           const payload = { ...upsertEvent, updated_at: new Date().toISOString() }
           await this.$supabase.from('doc_frise_events').update(payload).eq('id', this.eventId)
-          await this.updateProcedureStatus()
+          await this.$procedure.updateStatus(this.procedure)
           await this.saveAttachements(this.eventId)
         } else {
           const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(upsertEvent).select()
-          await this.updateProcedureStatus()
+          await this.$procedure.updateStatus(this.procedure)
           await this.saveAttachements(savedEvents[0].id)
         }
         if (this.overrideHuwartField) {
@@ -261,12 +261,8 @@ export default {
       const now = new Date().toISOString()
       const payload = { archived_by_id: this.$user.id, archived_at: now, updated_at: now }
       await this.$supabase.from('doc_frise_events').update(payload).eq('id', this.eventId)
-      await this.updateProcedureStatus()
-      this.$router.push({ name: 'frise-procedureId', params: { procedureId: this.procedure.id }, query: this.$route.query })
-    },
-    async updateProcedureStatus () {
       await this.$procedure.updateStatus(this.procedure)
-      await this.$procedure.updateOpposability(this.procedure.id)
+      this.$router.push({ name: 'frise-procedureId', params: { procedureId: this.procedure.id }, query: this.$route.query })
     }
   }
 }
