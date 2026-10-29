@@ -18,7 +18,14 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: list, wet_run: bool, **options: dict) -> None:  # noqa: ARG002
-        events_qs = Event.objects.filter_impactful()
+        # distinct + order_by allows to keep only the most recent impactful event per procedure
+        # https://docs.djangoproject.com/en/6.1/ref/models/querysets/#django.db.models.query.QuerySet.distinct
+        # https://www.postgresql.org/docs/current/sql-select.html#SQL-DISTINCT
+        events_qs = (
+            Event.objects.filter_impactful()
+            .order_by("procedure_id", "-date_evenement", "-created_at", "-from_sudocuh")
+            .distinct("procedure_id")
+        )
         queryset = Procedure.objects.filter(parente__isnull=True).prefetch_related(
             models.Prefetch("event_set", queryset=events_qs)
         )

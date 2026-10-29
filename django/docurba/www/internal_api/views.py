@@ -195,7 +195,50 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
         procedure = self.get_object()
         procedure.status = procedure.compute_status()
         procedure.save(update_fields=["status"])
+        self._synchronize_opposability(procedure)
         return Response({"status": procedure.status})
+
+    def _synchronize_opposability(self, procedure: core_models.Procedure) -> None:
+        # Update the opposable flag on every perimetre line of this
+        # procedure's communes, following the commune-level view of
+        # opposability.
+        communes = (
+            core_models.Commune.objects.filter(procedures_through__procedure=procedure)
+            .distinct()
+            .prefetch_related(
+                models.Prefetch(
+                    "procedures_through",
+                    queryset=core_models.CommuneProcedure.objects.select_related(
+                        "procedure"
+                    ).prefetch_related(
+                        models.Prefetch(
+                            "procedure__event_set",
+                            queryset=core_models.Event.objects.filter_impactful(),
+                        )
+                    ),
+                )
+            )
+        )
+
+        perimetre_lines_to_update = []
+        for commune in communes:
+            opposable_line_ids = {
+                line.id
+                for line in core_models.CommuneProcedure.get_opposables_for_commune(
+                    commune
+                )
+            }
+            for perimetre_line in commune.procedures_through.all():
+                opposable = perimetre_line.id in opposable_line_ids
+                if perimetre_line.opposable == opposable:
+                    continue
+                perimetre_line.opposable = opposable
+                perimetre_lines_to_update.append(perimetre_line)
+
+        if perimetre_lines_to_update:
+            core_models.CommuneProcedure.objects.bulk_update(
+                perimetre_lines_to_update, ["opposable"], batch_size=1000
+            )
 
 
 class ProcedureComputeName(PublicAPIView, generics.GenericAPIView):
