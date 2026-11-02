@@ -861,12 +861,14 @@ class TestProcedure:
 
         # Zone has a delegated town. The procedure has effect only on this delegated town.
         delegated_town = CommuneFactory(
-            nom="Argilliers", type=core_enums.CommuneType.COMD
+            nom="Argilliers",
+            type=core_enums.CommuneType.COMD,
+            code_insee="30013",
         )
         procedure = ProcedureFactory(
             with_perimetre=[
-                CommuneFactory(nom="Beaucaire"),
-                CommuneFactory(nom="Nîmes"),
+                CommuneFactory(nom="Beaucaire", code_insee="30032"),
+                CommuneFactory(nom="Nîmes", code_insee="30189"),
                 delegated_town,
             ],
             collectivite_porteuse=collectivite_porteuse,
