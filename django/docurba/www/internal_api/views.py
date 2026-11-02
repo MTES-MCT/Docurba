@@ -177,7 +177,9 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
                     "departement",
                     "departement__region",
                     "intercommunalite",
-                ).with_opposable(),
+                )
+                .with_opposable()
+                .order_by("code_insee"),
             ),
         )
         .order_by("pk")

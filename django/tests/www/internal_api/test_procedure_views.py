@@ -574,7 +574,10 @@ class TestProcedureName:
         api_client: APIClient,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        communes = core_factories.CommuneFactory.create_batch(2)
+        communes = [
+            core_factories.CommuneFactory(for_snapshot=True),
+            core_factories.CommuneFactory(),
+        ]
         collectivite = core_factories.CollectiviteFactory(
             for_snapshot=True,
             with_members=True,
@@ -606,7 +609,10 @@ class TestProcedureName:
         api_client: APIClient,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        communes = core_factories.CommuneFactory.create_batch(2)
+        communes = [
+            core_factories.CommuneFactory(for_snapshot=True),
+            core_factories.CommuneFactory(),
+        ]
         collectivite_porteuse = core_factories.CollectiviteFactory(
             for_snapshot=True,
             with_members=True,
