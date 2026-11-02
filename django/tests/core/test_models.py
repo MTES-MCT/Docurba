@@ -1929,31 +1929,6 @@ class TestProcedureComputeStatus:
             == core_enums.ProcedureStatusChoices.OPPOSABLE
         )
 
-    def test_same_date_and_created_at_breaks_tie_on_from_sudocuh(self) -> None:
-        procedure = ProcedureFactory()
-        created_at = datetime(2024, 6, 2, 12, 0, 0, tzinfo=UTC)
-        create_impactful_event(
-            procedure,
-            core_enums.ProcedureStatusChoices.ABANDON,
-            date_evenement=date(2024, 6, 1),
-            created_at=created_at,
-            from_sudocuh=100,
-        )
-        create_impactful_event(
-            procedure,
-            core_enums.ProcedureStatusChoices.OPPOSABLE,
-            date_evenement=date(2024, 6, 1),
-            created_at=created_at,
-            from_sudocuh=200,
-        )
-
-        # Both events share the same date_evenement and created_at:
-        # the one with the highest legacy id (from_sudocuh) wins.
-        assert (
-            procedure.compute_status(self.DATE_PIVOT)
-            == core_enums.ProcedureStatusChoices.OPPOSABLE
-        )
-
     def test_without_impactful_event_returns_en_projet(self) -> None:
         procedure = ProcedureFactory()
         EventFactory(

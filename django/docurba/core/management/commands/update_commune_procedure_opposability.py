@@ -5,7 +5,7 @@ from django.db import connection
 
 DIFF_QUERY = """
 WITH impactful_events AS (
-	SELECT DISTINCT ON (p.id) p.id AS procedure_id, e.id AS event_id, e.type, e.date_iso, e.created_at, e.from_sudocuh, et.impact,
+	SELECT DISTINCT ON (p.id) p.id AS procedure_id, e.id AS event_id, e.type, e.date_iso, e.created_at, et.impact,
     CASE et.document_type WHEN 'SCOT' THEN 'SCOT' WHEN 'SD' THEN 'SCOT' ELSE 'PLAN' END AS document_type
 	FROM doc_frise_events e
 	JOIN core_eventtype et ON e.event_type_id = et.id
@@ -16,13 +16,13 @@ WITH impactful_events AS (
 	and e.archived_at IS NULL
 	and e.date_iso IS NOT NULL
 	and et.impact != ''
-	ORDER BY p.id, e.date_iso DESC, e.created_at DESC, e.from_sudocuh DESC
+	ORDER BY p.id, e.date_iso DESC, e.created_at DESC
 ), opposable_procedure_for_commune AS (
 	SELECT DISTINCT ON (pp.collectivite_code, pp.collectivite_type, e.document_type) pp.id
 	FROM procedures_perimetres pp
 	JOIN impactful_events e ON e.procedure_id = pp.procedure_id
 	WHERE e.impact ='opposable'
-	ORDER BY pp.collectivite_code, pp.collectivite_type, e.document_type, e.date_iso DESC, e.created_at DESC, e.from_sudocuh DESC
+	ORDER BY pp.collectivite_code, pp.collectivite_type, e.document_type, e.date_iso DESC, e.created_at DESC
 ), output AS (
 	SELECT pp.id, opposable AS old_opposable, (opp.id IS NOT NULL) AS new_opposable
 	FROM procedures_perimetres pp

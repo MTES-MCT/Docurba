@@ -1339,12 +1339,11 @@ class Event(models.Model):
             and self.event_type.impact != ""
         )
 
-    def sort_key(self) -> tuple[date, float, int]:
+    def sort_key(self) -> tuple[date, float]:
         # Old data can have same date_evenement and same created_at
         return (
             self.date_evenement,
             self.created_at.timestamp() if self.created_at else 0,
-            self.from_sudocuh or 0,
         )
 
     @property

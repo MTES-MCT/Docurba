@@ -135,7 +135,6 @@ class EventsInline(admin.TabularInline):
         "event_type",
         "date_evenement",
         "created_at",
-        "from_sudocuh",
         "visibility",
         "is_valid",
         "archived_at",
@@ -148,7 +147,8 @@ class EventsInline(admin.TabularInline):
     def get_queryset(self, request) -> models.QuerySet:
         queryset = super().get_queryset(request)
         return queryset.select_related("event_type").order_by(
-            "-date_evenement", "-created_at", "-from_sudocuh"
+            "-date_evenement",
+            "-created_at",
         )
 
     def has_add_permission(self, *args: list, **kwargs: dict) -> bool:
