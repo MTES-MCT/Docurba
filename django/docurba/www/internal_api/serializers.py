@@ -242,7 +242,7 @@ class ProcedureNameSerializer(serializers.ModelSerializer):
                 doc_type=principal_procedure.doc_type,
                 type=self.validated_data["type"],
                 name_complement=self.validated_data.get("name_complement"),
-                numero=self.validated_data.get("number"),
+                numero=self.validated_data.get("numero"),
             )
 
         else:

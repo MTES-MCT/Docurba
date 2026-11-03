@@ -636,7 +636,7 @@ class TestProcedureName:
         assert response.status_code == 200
         assert (
             response.json()["name"]
-            == "Modification PLUi Syndicat mixte d'équipement de la commune de Beaucaire"
+            == "Modification 1 PLUi Syndicat mixte d'équipement de la commune de Beaucaire"
         )
 
     @pytest.mark.parametrize(
