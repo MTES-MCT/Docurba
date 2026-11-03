@@ -262,6 +262,7 @@ class ProcedureAdmin(admin.ModelAdmin):
         "id",
         "collectivite_porteuse_id",
         "from_sudocuh",
+        "base_doc_type",
         "doc_type",
         "type",
         "numero",
