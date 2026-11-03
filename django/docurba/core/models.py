@@ -728,6 +728,8 @@ class Procedure(models.Model):
         return self.vaut_PLH or self.doc_type in (
             core_enums.TypeDocument.PLUIH,
             core_enums.TypeDocument.PLUIHM,
+            core_enums.TypeDocument.PLUISH,
+            core_enums.TypeDocument.PLUISHM,
         )
 
     @property
@@ -737,6 +739,8 @@ class Procedure(models.Model):
         return self.vaut_PDM or self.doc_type in (
             core_enums.TypeDocument.PLUIM,
             core_enums.TypeDocument.PLUIHM,
+            core_enums.TypeDocument.PLUISM,
+            core_enums.TypeDocument.PLUISHM,
         )
 
     @property
@@ -825,12 +829,16 @@ class Procedure(models.Model):
     def is_sectoriel_consolide(self) -> bool:
         communes_adherentes_count = getattr(
             self.collectivite_porteuse, "communes_adherentes_count", None
-        ) or getattr(self, "collectivite_porteuse_communes_adherentes_count", None)
+        )
+        if communes_adherentes_count is None:
+            communes_adherentes_count = getattr(
+                self, "collectivite_porteuse_communes_adherentes_count", None
+            )
 
         if communes_adherentes_count is None:
             communes_adherentes_count = (
-                Collectivite.objects.get(pk=self.collectivite_porteuse.pk)
-                .with_communes_adherentes_count()
+                Collectivite.objects.with_communes_adherentes_count()
+                .get(pk=self.collectivite_porteuse.pk)
                 .communes_adherentes_count
             )
 
