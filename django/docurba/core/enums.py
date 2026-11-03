@@ -35,6 +35,14 @@ class VisibilityType(models.TextChoices):
     )
 
 
+class BaseDocumentType(models.TextChoices):
+    CC = "CC", "CC"
+    SCOT = "SCOT", "SCoT"
+    SD = "SD", "SD"
+    PLU = "PLU", "PLU"
+    POS = "POS", "POS"
+
+
 class TypeDocument(models.TextChoices):
     CC = "CC"
     SCOT = "SCOT"
