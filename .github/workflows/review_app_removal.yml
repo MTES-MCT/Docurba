@@ -75,4 +75,4 @@ jobs:
       env:
         SUPABASE_ACCESS_TOKEN: ${{ secrets.TEST_SUPABASE_ACCESS_TOKEN }}
         SUPABASE_PROJECT_ID: ${{ secrets.TEST_SUPABASE_PROJECT_ID }}
-      run: supabase branches delete "${{ needs.prepare.outputs.SUPABASE_REVIEW_APP_NAME }}"
+      run: supabase branches delete "${{ needs.prepare.outputs.SUPABASE_REVIEW_APP_NAME }}" --yes
