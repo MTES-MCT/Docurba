@@ -61,7 +61,7 @@ jobs:
 
     - name: 🪆 Creation de la branche Supabase
       run: |
-       supabase branches create --size large ${{ needs.prepare.outputs.SUPABASE_REVIEW_APP_NAME }}
+       supabase branches create --size large ${{ needs.prepare.outputs.SUPABASE_REVIEW_APP_NAME }} --yes
 
     # La configuration de chaque nouvelle branche reprend celle par défaut et non celle du projet parent.
     # Le fichier supabase/config.toml est le seul moyen documenté par Supabase
