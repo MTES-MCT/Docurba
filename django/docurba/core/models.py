@@ -367,7 +367,19 @@ class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
     test = models.BooleanField(db_default=False)
     testing = models.BooleanField(blank=True, null=True)
-    doc_type = models.CharField(choices=core_enums.TypeDocument, blank=True, null=True)  # noqa: DJ001 # TextField in DB.
+    base_doc_type = models.CharField(
+        choices=core_enums.BaseDocumentType,
+        default=core_enums.BaseDocumentType.CC,
+        verbose_name="Type de document de base",
+    )
+    # NOTE(cms): doc_type is never null now.
+    # We could add a constraint.
+    doc_type = models.CharField(  # noqa: DJ001
+        choices=core_enums.TypeDocument,
+        blank=True,
+        null=True,
+        verbose_name="Type de document consolidé",
+    )  # TextField in DB.
     doc_type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
     type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
     # No mention on Nuxt side of procedure.is_scot but vaut_SCoT is used in the Commune API.
