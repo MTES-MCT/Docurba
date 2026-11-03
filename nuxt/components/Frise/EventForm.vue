@@ -228,7 +228,8 @@ export default {
           await this.$procedure.updateStatus(this.procedure)
           await this.saveAttachements(this.eventId)
         } else {
-          const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(upsertEvent).select()
+          const payload = { ...upsertEvent, created_by_id: this.$user.id }
+          const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(payload).select()
           await this.$procedure.updateStatus(this.procedure)
           await this.saveAttachements(savedEvents[0].id)
         }
