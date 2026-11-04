@@ -33,7 +33,7 @@ dev = [
     "django-cors-headers",
     "ptpython",
     "pytest-cov",
-    "pytest>=9.1.1",
+    "pytest>=9.2.0",
     "pytest-django",
     "ruff",
     "pre-commit>=4.7.0", # https://github.com/pre-commit/pre-commit
