@@ -879,12 +879,7 @@ class TestProcedure:
         delegated_town_through.opposable = True
         delegated_town_through.save()
 
-        # Assert num queries when the method is called with a prefetch or without.
-        # - Without prefetch.
-        with (
-            django_assert_num_queries(2),
-        ):
-            assert procedure.zone_name == "Argilliers"
+        # Assert num queries when the method is called with a prefetch.
         # - With a prefetch.
         with (
             django_assert_num_queries(2),

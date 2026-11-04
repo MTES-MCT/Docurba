@@ -604,6 +604,42 @@ class TestProcedureName:
             == "Elaboration PLUi Syndicat mixte d'équipement de la commune de Beaucaire"
         )
 
+    def test_principal_procedure_name__sectoriel(
+        self,
+        api_client: APIClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        communes = [
+            core_factories.CommuneFactory(for_snapshot=True),
+            *core_factories.CommuneFactory.create_batch(3),
+        ]
+        collectivite = core_factories.CollectiviteFactory(
+            for_snapshot=True,
+            with_members=True,
+            with_members__list=[commune.collectivite_ptr for commune in communes],
+        )
+        perimetre = communes[:2]
+
+        query_params = {
+            "type": core_enums.ProcedureType.ELABORATION,
+            "docType": core_enums.TypeDocument.PLU,
+            "perimetreCodes": [
+                commune.code_insee for commune in perimetre
+            ],  # procedure creation is on active communes only.
+            "collectiviteCode": collectivite.siren,
+        }
+        with (
+            django_assert_num_queries(self.base_queries),
+        ):
+            response = api_client.get(
+                f"{self.url}?{urlencode(query_params, doseq=True)}"
+            )
+        assert response.status_code == 200
+        assert (
+            response.json()["name"]
+            == "Elaboration PLUiS Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+
     def test_secondary_procedure_name(
         self,
         api_client: APIClient,
