@@ -621,29 +621,30 @@ class Procedure(models.Model):
         """Return the name displayed in a procedure to reflect the perimetre.
 
         Today, we don't let the user choose it and we have many edge cases. We should denormalize soon.
-        This method should always be called after a prefetch but I don't want to block us if we call it directly from the Procedure object.
-        That's why I fallback on the database when the expected attributes are not present.
 
-        Expected usage:
+        Expected usage for a saved procedure:
         procedure = Procedure.objects.prefetch_related("perimetre", models.Prefetch(Commune.objects.with_opposable()))
         procedure.zone_name
+
+        If the procedure is not saved in the database yet, the perimetre can't include delegated towns
+        because only active communes can be selected when creating a procedure.
         """
         perimetre_qs = self._perimetre
         if perimetre_qs:
             if len(perimetre_qs) == 1:
                 return perimetre_qs[0].nom
 
-            if not hasattr(perimetre_qs[0], "opposable"):
-                perimetre_qs = self.perimetre.with_opposable().all()
-            # There is more than one commune in the perimetre and only one is set as opposable.
-            # We assume this is the way delegated towns have been handled.
-            communes_deleguees_opposables = [
-                commune
-                for commune in perimetre_qs
-                if commune.opposable and commune.type != core_enums.TypeCollectivite.COM
-            ]
-            if len(communes_deleguees_opposables) == 1:
-                return communes_deleguees_opposables[0].nom
+            if hasattr(perimetre_qs[0], "opposable"):
+                # There is more than one commune in the perimetre and only one is set as opposable.
+                # We assume this is the way delegated towns have been handled.
+                communes_deleguees_opposables = [
+                    commune
+                    for commune in perimetre_qs
+                    if commune.opposable
+                    and commune.type != core_enums.TypeCollectivite.COM
+                ]
+                if len(communes_deleguees_opposables) == 1:
+                    return communes_deleguees_opposables[0].nom
         return self.collectivite_porteuse.nom if self.collectivite_porteuse else ""
 
     @cached_property

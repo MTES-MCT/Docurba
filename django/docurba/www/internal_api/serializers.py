@@ -4,7 +4,7 @@
 from django.db import models
 from rest_framework import serializers
 
-from docurba.core.enums import ProcedureType, TypeDocument
+from docurba.core.enums import CommuneType, ProcedureType, TypeDocument
 from docurba.core.models import (
     Collectivite,
     Commune,
@@ -249,8 +249,9 @@ class ProcedureNameSerializer(serializers.ModelSerializer):
             collectivite_code = self.validated_data.pop("collectiviteCode")
             perimetre_codes = self.validated_data.pop("perimetreCodes")
             perimetre = Commune.objects.filter(
-                code_insee__in=perimetre_codes
-            ).with_opposable()
+                code_insee__in=perimetre_codes,
+                type=CommuneType.COM,
+            )
             collectivite = (
                 Collectivite.objects.filter(
                     models.Q(siren=collectivite_code)
