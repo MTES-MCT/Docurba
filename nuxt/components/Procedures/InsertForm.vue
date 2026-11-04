@@ -130,7 +130,7 @@
             </v-alert>
             <div class="d-flex">
               <v-text-field
-                :value="baseName"
+                :value="loadingName ? '...' : baseName"
                 background-color="white"
                 outlined
                 class="rounded-r-0 "
@@ -223,6 +223,8 @@ export default {
   },
   data () {
     return {
+      baseName: '',
+      loadingName: false,
       loaded: false,
       loadingSave: false,
       startedBeforeHuwartLaw: new Date() < new Date('2026-05-26'),
@@ -344,16 +346,6 @@ export default {
     postfixSectoriel () {
       return (this.collectivite.type === 'COM' && this.perimetre.length > 1) || (this.collectivite.type !== 'COM' && this.perimetre.length < this.communes.length) ? 'S' : ''
     },
-    baseName () {
-      let name
-      if (this.procedureParentObj) {
-        const regexp = new RegExp(`${this.procedureParentDocType.replace('S', 'S?')} (.*)`)
-        name = this.procedureParentObj.name.match(regexp)[0].replace(/\s+/g, ' ').trim()
-      } else {
-        name = `${(this.typeDu) + this.postfixSectoriel} ${this.collectivite.intitule}`
-      }
-      return `${this.typeProcedure} ${this.numberProcedure} de ${name}`.replace(/\s+/g, ' ').trim()
-    },
     communes () {
       const coms = this.collectivite.membres || this.collectivite.intercommunalite.membres
       const uniqComs = uniqBy(coms, 'code').filter(e => e.type === 'COM')
@@ -382,6 +374,33 @@ export default {
       ) {
         this.typeDu = ''
       }
+    },
+    collectivite () {
+      this.updateBaseName()
+    },
+    numberProcedure () {
+      this.updateBaseName()
+    },
+    perimetre () {
+      this.updateBaseName()
+    },
+    procedureCategory () {
+      this.updateBaseName()
+    },
+    procedureParent () {
+      this.updateBaseName()
+    },
+    procedureParentDocType () {
+      this.updateBaseName()
+    },
+    procedureParentObj () {
+      this.updateBaseName()
+    },
+    typeDu () {
+      this.updateBaseName()
+    },
+    typeProcedure () {
+      this.updateBaseName()
     }
   },
   async mounted () {
@@ -546,6 +565,37 @@ export default {
       return topics.map((e) => {
         return { value: e.id, text: e.display_name }
       })
+    },
+    async updateBaseName () {
+      this.loadingName = true
+      const params = {
+        collectiviteCode: this.collectivite.code,
+        docType: this.procedureCategory === 'principale'
+          ? this.typeDu
+          : this.procedureParentDocType,
+        number: this.procedureCategory === 'secondaire' || this.typeProcedure === 'Révision'
+          ? this.numberProcedure || undefined
+          : undefined,
+        parentId: this.procedureParent || undefined,
+        perimetreCodes: (
+          this.procedureParent
+            ? this.procedureParentObj.perimetre.map(({ code }) => code)
+            : this.perimetre
+        ) ?? [],
+        type: this.typeProcedure
+      }
+      this.baseName = (
+        params.collectiviteCode &&
+        params.perimetreCodes.length &&
+        params.docType &&
+        params.type
+      )
+        ? (await this.$djangoApi.get(
+            '/api-internes/procedures/compute-name',
+            params
+          )).name
+        : ''
+      this.loadingName = false
     }
   }
 
