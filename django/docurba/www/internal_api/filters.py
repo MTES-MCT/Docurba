@@ -51,6 +51,7 @@ class CollectiviteFilter(DepartementRegionFilterSet):
     type = filters.MultipleChoiceFilter(
         field_name="type", choices=core_enums.TypeCollectivite
     )
+    code_departement = NoValidationMultipleFilter(field_name="departement__code_insee")
     codes_siren = NoValidationMultipleFilter(
         label="Codes SIREN",
         field_name="siren",

@@ -4,6 +4,9 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
 
   env: {
+    GITHUB_PAC_REPO_NAME: process.env.GITHUB_PAC_REPO_NAME,
+    GITHUB_PAC_REPO_OWNER: process.env.GITHUB_PAC_REPO_OWNER,
+    GITHUB_TOKEN: process.env.GITHUB_TOKEN,
     DDT_ENQUETE_ENABLED: process.env.DDT_ENQUETE_ENABLED?.split(',') ?? [],
     DDT_PROCEDURE_SURVEY_ENABLED_DEPTS: process.env.DDT_PROCEDURE_SURVEY_ENABLED_DEPTS?.split(',') ?? [],
     DJANGO_API_BASE_URL: process.env.DJANGO_API_BASE_URL,
@@ -31,6 +34,7 @@ export default {
   },
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+    '~/assets/css/dsfr.css'
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
