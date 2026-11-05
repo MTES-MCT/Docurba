@@ -157,7 +157,7 @@ class UserPassword(generics.GenericAPIView):
         )
 
 
-class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
+class ProcedureViewSet(viewsets.ModelViewSet):
     queryset = (
         core_models.Procedure.objects.with_events()
         .with_collectivite_porteuse_communes_adherentes_count()
@@ -165,9 +165,6 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
         .select_related(
             "collectivite_porteuse",
             "collectivite_porteuse__commune",
-            "parente",
-            "parente__collectivite_porteuse",
-            "parente__collectivite_porteuse__commune",
         )
         .prefetch_related(
             "topics",

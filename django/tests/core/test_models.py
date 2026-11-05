@@ -815,6 +815,25 @@ class TestProcedure:
         )
         assert procedure.computed_name == expected_name
 
+        # With a "sectoriel" PLU.
+        expected_name = (
+            "Élaboration PLUiS Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+        communes = CommuneFactory.create_batch(3)
+        collectivite_porteuse = CollectiviteFactory(
+            nom="Syndicat mixte d'équipement de la commune de Beaucaire",
+            with_members=True,
+            with_members__list=communes,
+        )
+        procedure = ProcedureFactory(
+            name="",
+            collectivite_porteuse=collectivite_porteuse,
+            with_perimetre=communes[:2],
+            doc_type=core_enums.TypeDocument.PLU,
+        )
+        procedure = core_models.Procedure.objects.get(pk=procedure.pk)
+        assert procedure.computed_name == expected_name
+
     @pytest.mark.django_db
     def test_zone_name(self, django_assert_num_queries: DjangoAssertNumQueries) -> None:
         collectivite_porteuse = CollectiviteFactory(
@@ -897,6 +916,144 @@ class TestProcedure:
             django_assert_num_queries(0),
         ):
             assert procedure.zone_name == "Argilliers"
+
+    @pytest.mark.django_db
+    def test_numero_principal_procedure(self) -> None:
+        procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.ABROGATION, numero=4, project=None
+        )
+        assert procedure.numero == "1"
+        assert procedure.is_principale is True
+        # Don't override the number when updating the object.
+        procedure.numero = "2"
+        procedure.save()
+        assert procedure.numero == "2"
+
+    @pytest.mark.django_db
+    def test_numero_secondary_procedure(self) -> None:
+        procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.MISE_A_JOUR, numero="4", project=None
+        )
+        assert procedure.numero == "4"
+        assert procedure.is_principale is False
+
+    @pytest.mark.django_db
+    def test_numero_prinipal_procedure__revision(self) -> None:
+        procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.REVISION, numero="4", project=None
+        )
+        assert procedure.numero == "4"
+        assert procedure.is_principale is True
+
+    @pytest.mark.django_db
+    def test_default_status(self) -> None:
+        principal_procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.ELABORATION
+        )
+        secondary_procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.MISE_A_JOUR,
+            parente=principal_procedure,
+        )
+        assert principal_procedure.status == core_enums.ProcedureStatusChoices.EN_COURS
+        assert secondary_procedure.status is None
+
+        # An explicit status overrides the default value.
+        principal_procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.ELABORATION,
+            status=core_enums.ProcedureStatusChoices.ABANDON,
+        )
+        assert principal_procedure.status == core_enums.ProcedureStatusChoices.ABANDON
+
+        # Updating the status also works.
+        principal_procedure.status = core_enums.ProcedureStatusChoices.OPPOSABLE
+        principal_procedure.save()
+        principal_procedure.refresh_from_db()
+        assert principal_procedure.status == core_enums.ProcedureStatusChoices.OPPOSABLE
+
+    @pytest.mark.django_db
+    def test_update_perimetre_denormalized_fields(self) -> None:
+
+        # test procedure.save(update_perimetre_denormalized_fields=True)
+        communes = [
+            CommuneFactory(nom="Aix-en-Provence", code_insee="13001"),
+            CommuneFactory(nom="Allauch", code_insee="13002"),
+            CommuneFactory(nom="Apt", code_insee="84003"),
+        ]
+        expected_current_perimetre = [
+            {"name": "Aix-en-Provence", "inseeCode": "13001"},
+            {"name": "Allauch", "inseeCode": "13002"},
+            {"name": "Apt", "inseeCode": "84003"},
+        ]
+        expected_departements = ["13", "84"]
+        procedure = ProcedureFactory(with_perimetre=communes)
+        procedure = core_models.Procedure.objects.get(pk=procedure.pk)
+        assert procedure.current_perimetre is None
+        assert procedure.departements is None
+
+        procedure.update_perimetre_denormalized_fields(save=False)
+        procedure = core_models.Procedure.objects.get(pk=procedure.pk)
+        assert procedure.current_perimetre is None
+        assert procedure.departements is None
+
+        procedure.update_perimetre_denormalized_fields(save=True)
+        procedure = core_models.Procedure.objects.get(pk=procedure.pk)
+        assert procedure.current_perimetre == expected_current_perimetre
+        assert procedure.departements == expected_departements
+
+    @pytest.mark.django_db
+    def test_get_collectivite_porteuse(self) -> None:
+        collectivite_without_jurisdiction = CollectiviteFactory(
+            type=core_enums.TypeCollectivite.CC,
+            competence_plan=False,
+            competence_schema=False,
+        )
+        collectivite_with_jurisdiction = CollectiviteFactory(
+            type=core_enums.TypeCollectivite.CC,
+            competence_plan=True,
+            competence_schema=True,
+        )
+        intermunicipality = CollectiviteFactory(
+            type=core_enums.TypeCollectivite.CC,
+            competence_plan=True,
+            competence_schema=True,
+        )
+        commune_with_jurisdiction = CommuneFactory(
+            type=core_enums.TypeCollectivite.COM,
+            competence_plan=True,
+            competence_schema=True,
+            intercommunalite=intermunicipality,
+        )
+        commune_without_jurisdiction = CommuneFactory(
+            type=core_enums.TypeCollectivite.COM,
+            competence_plan=False,
+            competence_schema=False,
+            intercommunalite=intermunicipality,
+        )
+        for doc_type in [core_enums.TypeDocument.PLU, core_enums.TypeDocument.SCOT]:
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=collectivite_without_jurisdiction, doc_type=doc_type
+                )
+                == collectivite_without_jurisdiction
+            )
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=collectivite_with_jurisdiction, doc_type=doc_type
+                )
+                == collectivite_with_jurisdiction
+            )
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=commune_with_jurisdiction, doc_type=doc_type
+                )
+                == commune_with_jurisdiction
+            )
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=commune_without_jurisdiction, doc_type=doc_type
+                )
+                == intermunicipality
+            )
 
 
 class TestProcedureDates:
