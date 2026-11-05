@@ -602,6 +602,10 @@ class Procedure(models.Model):
     def _perimetre(self) -> models.QuerySet:
         if self._cached_perimetre is not None:
             return self._cached_perimetre
+        # Object is not created yet.
+        # It can't have a perimetre.
+        if not self._is_pk_set():
+            return []
         return self.perimetre.all()
 
     @property
