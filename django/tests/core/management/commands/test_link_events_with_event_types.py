@@ -1,7 +1,7 @@
 import pytest
 from django.core.management import call_command
 
-from docurba.core.enums import TypeDocument
+from docurba.core.enums import BaseDocumentType
 from docurba.core.models import (
     Collectivite,
     Commune,
@@ -13,7 +13,7 @@ from docurba.core.models import (
 )
 from docurba.history.models import EventSnapshot
 from docurba.users.models import Profile, SupabaseUser, User
-from tests.core.factories import EventFactory, EventTypeFactory
+from tests.core.factories import CommuneFactory, EventFactory, EventTypeFactory
 
 MAPPINGS = [
     (
@@ -76,19 +76,22 @@ def _event_types_args(mapping: tuple) -> tuple:
 class TestLinkEventsWithEventTypes:
     @pytest.mark.parametrize(
         (
-            "procedure_doc_type",
+            "procedure_base_doc_type",
             "et_document_type",
         ),
         [
-            pytest.param(TypeDocument.CC, EventType.DocumentType.CC),
-            pytest.param(TypeDocument.SCOT, EventType.DocumentType.SCOT),
-            pytest.param(TypeDocument.SD, EventType.DocumentType.SCOT),
-            pytest.param(TypeDocument.PLU, EventType.DocumentType.PLU),
-            pytest.param(TypeDocument.PLUI, EventType.DocumentType.PLU),
-            pytest.param(TypeDocument.PLUIH, EventType.DocumentType.PLU),
-            pytest.param(TypeDocument.PLUIHM, EventType.DocumentType.PLU),
-            pytest.param(TypeDocument.PLUIM, EventType.DocumentType.PLU),
-            pytest.param(TypeDocument.POS, EventType.DocumentType.PLU),
+            pytest.param(BaseDocumentType.CC, EventType.DocumentType.CC, id="CC"),
+            pytest.param(
+                BaseDocumentType.SCOT,
+                EventType.DocumentType.SCOT,
+                id="SCOT",
+            ),
+            pytest.param(BaseDocumentType.SD, EventType.DocumentType.SCOT, id="SD"),
+            pytest.param(BaseDocumentType.PLU, EventType.DocumentType.PLU, id="PLU"),
+            pytest.param(BaseDocumentType.PLU, EventType.DocumentType.PLU, id="PLUH"),
+            pytest.param(BaseDocumentType.PLU, EventType.DocumentType.PLU, id="PLUHM"),
+            pytest.param(BaseDocumentType.PLU, EventType.DocumentType.PLU, id="PLUM"),
+            pytest.param(BaseDocumentType.POS, EventType.DocumentType.PLU, id="POS"),
         ],
     )
     @pytest.mark.parametrize(
@@ -153,7 +156,7 @@ class TestLinkEventsWithEventTypes:
     def test_call_command_link(
         self,
         clear_data,  # noqa: ANN001, ARG002
-        procedure_doc_type: TypeDocument,
+        procedure_base_doc_type: BaseDocumentType,
         et_document_type: EventType.DocumentType,
         e_name: str,
         e_code: str,
@@ -169,8 +172,12 @@ class TestLinkEventsWithEventTypes:
             sudocuh_code=et_sudocuh_code,
         )
 
+        perimetre = CommuneFactory.create_batch(2)
         event = EventFactory(
-            procedure__doc_type=procedure_doc_type, type=e_name, code=e_code
+            procedure__base_doc_type=procedure_base_doc_type,
+            procedure__with_perimetre=perimetre,
+            type=e_name,
+            code=e_code,
         )
 
         call_command("link_events_with_event_types")
@@ -187,15 +194,14 @@ class TestLinkEventsWithEventTypes:
 
     @pytest.mark.parametrize(
         (
-            "procedure_doc_type",
+            "procedure_base_doc_type",
             "et_document_type",
         ),
         [
-            pytest.param(TypeDocument.CC, EventType.DocumentType.CC),
-            pytest.param(TypeDocument.SCOT, EventType.DocumentType.SCOT),
-            pytest.param(TypeDocument.SD, EventType.DocumentType.SCOT),
-            pytest.param(TypeDocument.PLU, EventType.DocumentType.PLU),
-            pytest.param(TypeDocument.PLUI, EventType.DocumentType.PLU),
+            pytest.param(BaseDocumentType.CC, EventType.DocumentType.CC),
+            pytest.param(BaseDocumentType.SCOT, EventType.DocumentType.SCOT),
+            pytest.param(BaseDocumentType.SD, EventType.DocumentType.SCOT),
+            pytest.param(BaseDocumentType.PLU, EventType.DocumentType.PLU),
         ],
     )
     @pytest.mark.parametrize(
@@ -260,7 +266,7 @@ class TestLinkEventsWithEventTypes:
     def test_call_command_no_link(
         self,
         clear_data,  # noqa: ANN001, ARG002
-        procedure_doc_type: TypeDocument,
+        procedure_base_doc_type: BaseDocumentType,
         et_document_type: EventType.DocumentType,
         e_name: str,
         e_code: str,
@@ -277,7 +283,7 @@ class TestLinkEventsWithEventTypes:
         )
 
         event = EventFactory(
-            procedure__doc_type=procedure_doc_type, type=e_name, code=e_code
+            procedure__base_doc_type=procedure_base_doc_type, type=e_name, code=e_code
         )
 
         call_command("link_events_with_event_types")
@@ -292,24 +298,23 @@ class TestLinkEventsWithEventTypes:
 
     @pytest.mark.parametrize(
         (
-            "procedure_doc_type",
+            "procedure_base_doc_type",
             "et_document_type",
         ),
         [
-            pytest.param(TypeDocument.CC, EventType.DocumentType.SCOT),
-            pytest.param(TypeDocument.CC, EventType.DocumentType.PLU),
-            pytest.param(TypeDocument.PLU, EventType.DocumentType.CC),
-            pytest.param(TypeDocument.PLU, EventType.DocumentType.SCOT),
-            pytest.param(TypeDocument.SCOT, EventType.DocumentType.PLU),
-            pytest.param(TypeDocument.SCOT, EventType.DocumentType.CC),
-            pytest.param(TypeDocument.SD, EventType.DocumentType.PLU),
-            pytest.param(TypeDocument.PLUI, EventType.DocumentType.SCOT),
+            pytest.param(BaseDocumentType.CC, EventType.DocumentType.SCOT),
+            pytest.param(BaseDocumentType.CC, EventType.DocumentType.PLU),
+            pytest.param(BaseDocumentType.PLU, EventType.DocumentType.CC),
+            pytest.param(BaseDocumentType.PLU, EventType.DocumentType.SCOT),
+            pytest.param(BaseDocumentType.SCOT, EventType.DocumentType.PLU),
+            pytest.param(BaseDocumentType.SCOT, EventType.DocumentType.CC),
+            pytest.param(BaseDocumentType.SD, EventType.DocumentType.PLU),
         ],
     )
     def test_call_command_no_link_procedure_unmatch(
         self,
         clear_data,  # noqa: ANN001, ARG002
-        procedure_doc_type: TypeDocument,
+        procedure_base_doc_type: BaseDocumentType,
         et_document_type: EventType.DocumentType,
     ) -> None:
 
@@ -321,7 +326,9 @@ class TestLinkEventsWithEventTypes:
         )
 
         event = EventFactory(
-            procedure__doc_type=procedure_doc_type, type="Name 1", code="CODE 1"
+            procedure__base_doc_type=procedure_base_doc_type,
+            type="Name 1",
+            code="CODE 1",
         )
 
         call_command("link_events_with_event_types")
@@ -344,7 +351,7 @@ class TestLinkEventsWithEventTypes:
 
         for _, event_name, _ in MAPPINGS:
             for document_type in EventType.DocumentType:
-                EventFactory(procedure__doc_type=document_type, type=event_name)
+                EventFactory(procedure__base_doc_type=document_type, type=event_name)
 
         call_command("link_events_with_event_types")
 

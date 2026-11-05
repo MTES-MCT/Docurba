@@ -248,13 +248,13 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
         skip_postgeneration_save = True
 
     collectivite_porteuse = factory.SubFactory(CollectiviteFactory)
-    doc_type = factory.fuzzy.FuzzyChoice(core_enums.TypeDocument)
     type = "Élaboration"
     vaut_PLH = False  # noqa: N815
     vaut_PDM = False  # noqa: N815
     soft_delete = False
+    doc_type = factory.LazyAttribute(lambda o: o.base_doc_type)
     name = factory.LazyAttribute(
-        lambda o: f"{o.type} {o.doc_type} {o.collectivite_porteuse.nom}"
+        lambda o: f"{o.type} {o.base_doc_type} {o.collectivite_porteuse.nom}"
     )
     parente = None
     status = factory.LazyAttribute(
@@ -267,21 +267,19 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
         with_parente = factory.Trait(
             parente=factory.SubFactory(
                 "tests.core.factories.ProcedureFactory",
-                doc_type=factory.SelfAttribute("..doc_type"),
                 collectivite_porteuse=factory.SelfAttribute("..collectivite_porteuse"),
             ),
         )
         with_doublon = factory.Trait(
             doublon_cache_de=factory.SubFactory(
                 "tests.core.factories.ProcedureFactory",
-                doc_type=factory.SelfAttribute("..doc_type"),
                 collectivite_porteuse=factory.SelfAttribute("..collectivite_porteuse"),
             ),
         )
         for_snapshot = factory.Trait(
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-5e1baf8d6f09"),
             collectivite_porteuse__for_snapshot=True,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             name="Élaboration du PLU de Nantes",
             project__for_snapshot=True,
         )
@@ -308,7 +306,7 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
 
         event_type = extra.pop("type", None) or "Prescription"
         if extra.get("category"):
-            event_type = core_models.EVENT_TYPE_BY_EVENT_CATEGORY[self.doc_type][
+            event_type = core_models.EVENT_TYPE_BY_EVENT_CATEGORY[self.base_doc_type][
                 extra.pop("category")
             ][0]
 

@@ -239,7 +239,9 @@ class ProcedureNameSerializer(serializers.ModelSerializer):
             instance = Procedure(
                 cached_perimetre=principal_procedure.perimetre.all(),
                 collectivite_porteuse=collectivite_porteuse,
-                doc_type=principal_procedure.doc_type,
+                base_doc_type=principal_procedure.base_doc_type,
+                vaut_PDM=principal_procedure.vaut_PDM,
+                vaut_PLH=principal_procedure.vaut_PLH,
                 type=self.validated_data["type"],
                 name_complement=self.validated_data.get("name_complement"),
                 numero=self.validated_data.get("numero"),
@@ -248,6 +250,10 @@ class ProcedureNameSerializer(serializers.ModelSerializer):
         else:
             collectivite_code = self.validated_data.pop("collectiviteCode")
             perimetre_codes = self.validated_data.pop("perimetreCodes")
+            doc_type = self.validated_data.pop("doc_type")
+            base_doc_type = Procedure.dynamic_doc_type_to_base_doc_type(doc_type)
+            vaut_PLH = doc_type in TypeDocument.plh_variations()  # noqa: N806
+            vaut_PDM = doc_type in TypeDocument.pdm_variations()  # noqa: N806
             perimetre = Commune.objects.filter(
                 code_insee__in=perimetre_codes,
                 type=CommuneType.COM,
@@ -263,6 +269,9 @@ class ProcedureNameSerializer(serializers.ModelSerializer):
             instance = Procedure(
                 cached_perimetre=perimetre,
                 collectivite_porteuse=collectivite,
+                base_doc_type=base_doc_type,
+                vaut_PLH=vaut_PLH,
+                vaut_PDM=vaut_PDM,
                 **self.validated_data,
             )
         return {"name": instance.computed_name}

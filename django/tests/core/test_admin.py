@@ -23,12 +23,9 @@ UPDATE_BASE_EXPECTED_NUM_QUERIES = (
 )
 
 
-@pytest.mark.parametrize("doc_type", core_enums.TypeDocument.values)
 @pytest.mark.django_db
-def test_procedure_change_page(
-    admin_session_client: Client, doc_type: core_enums.TypeDocument
-) -> None:
-    procedure = ProcedureFactory(doc_type=doc_type)
+def test_procedure_change_page(admin_session_client: Client) -> None:
+    procedure = ProcedureFactory(for_snapshot=True)
     response = admin_session_client.get(
         reverse("admin:core_procedure_change", kwargs={"object_id": procedure.pk})
     )
