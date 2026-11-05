@@ -749,7 +749,10 @@ class TestAPICommunes:
     ) -> None:
         # We need to specify the INSEE code because results are ordered by the INSEE code
         # and we need to check the first result.
-        perimetre = [CommuneFactory(code_insee="30135")]
+        perimetre = [
+            CommuneFactory(code_insee="30135"),
+            CommuneFactory(code_insee="30117"),
+        ]
         collectivite_porteuse = CollectiviteFactory(
             with_members=True,
             with_members__list=[*perimetre, CommuneFactory(code_insee="30189")],
@@ -768,6 +771,46 @@ class TestAPICommunes:
             assert results[0]["pc_sectoriel"] == "True"
         elif core_models.EventCategory.APPROUVE:
             assert results[0]["pa_sectoriel"] == "True"
+
+    @pytest.mark.parametrize(
+        "procedure_status",
+        [
+            pytest.param(
+                core_models.EventCategory.PUBLICATION_PERIMETRE,
+                id="ongoing_procedure",
+            ),
+            pytest.param(
+                core_models.EventCategory.APPROUVE,
+                id="approved_procedure",
+            ),
+        ],
+    )
+    def test_not_sectoriel_one_commune(
+        self, client: Client, procedure_status: core_models.EventCategory
+    ) -> None:
+        # We need to specify the INSEE code because results are ordered by the INSEE code
+        # and we need to check the first result.
+        perimetre = [
+            CommuneFactory(code_insee="30135"),
+        ]
+        collectivite_porteuse = CollectiviteFactory(
+            with_members=True,
+            with_members__list=[*perimetre, CommuneFactory(code_insee="30189")],
+        )
+        ProcedureFactory(
+            **self._default_procedure_factory_params(
+                procedure_status=procedure_status,
+                perimetre=perimetre,
+                collectivite_porteuse=collectivite_porteuse,
+            ),
+        )
+        response = client.get(reverse("api:communes"))
+        assert response.status_code == 200
+        results = csv_to_json_like(response.content)
+        if procedure_status == core_models.EventCategory.PUBLICATION_PERIMETRE:
+            assert results[0]["pc_sectoriel"] == "False"
+        elif core_models.EventCategory.APPROUVE:
+            assert results[0]["pa_sectoriel"] == "False"
 
     @pytest.mark.parametrize(
         "procedure_status",
