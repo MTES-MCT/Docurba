@@ -34,6 +34,7 @@
     "@nuxtjs/axios": "^5.13.1",
     "@nuxtjs/pwa": "^3.3.5",
     "@nuxtjs/vuetify": "^1.11.3",
+    "@octokit/request": "^10.0.16",
     "@sendgrid/mail": "^8.1.0",
     "@supabase/supabase-js": "^2.33",
     "@tiptap-extend/columns": "^2.1.6",
