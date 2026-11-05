@@ -33,21 +33,6 @@ class CodeCompetencePerimetre(IntEnum):
     PAS_DE_PLAN = 9
 
 
-# NOTE(cms): remove me when doc_type is cleaned.
-TYPE_DOCUMENT_TO_CODE = {
-    core_enums.TypeDocument.CC: 1,
-    core_enums.TypeDocument.POS: 2,
-    core_enums.TypeDocument.PLU: 3,
-    core_enums.TypeDocument.PLUI: 3,
-    core_enums.TypeDocument.PLUIH: 3,
-    core_enums.TypeDocument.PLUIM: 3,
-    core_enums.TypeDocument.PLUIHM: 3,
-    core_enums.TypeDocument.PLUIS: 3,
-    core_enums.TypeDocument.PLUISH: 3,
-    core_enums.TypeDocument.PLUISM: 3,
-    core_enums.TypeDocument.PLUISHM: 3,
-}
-
 CODE_ETAT_SIMPLIFIE_TO_LIBELLE = {
     "99": "RNU",
     "91": "CC en élaboration",
@@ -553,6 +538,7 @@ class Procedure(models.Model):
 
     def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
         self.clean()
+        self.sync_denormalized_fields()
         super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:
@@ -611,7 +597,7 @@ class Procedure(models.Model):
             for part in [
                 self.type,
                 self.numero or "",
-                self.type_document,
+                self.dynamic_doc_type,
                 self.zone_name,
                 f"- {self.name_complement}" if self.name_complement else "",
             ]
@@ -725,61 +711,12 @@ class Procedure(models.Model):
         )
 
     @property
-    def vaut_PLH_consolide(self) -> bool:  # noqa: N802
-        if not self.is_intercommunal:
-            return False
-        return self.vaut_PLH or self.doc_type in (
-            core_enums.TypeDocument.PLUIH,
-            core_enums.TypeDocument.PLUIHM,
-            core_enums.TypeDocument.PLUISH,
-            core_enums.TypeDocument.PLUISHM,
-        )
-
-    @property
-    def vaut_PDM_consolide(self) -> bool:  # noqa: N802
-        if not self.is_intercommunal:
-            return False
-        return self.vaut_PDM or self.doc_type in (
-            core_enums.TypeDocument.PLUIM,
-            core_enums.TypeDocument.PLUIHM,
-            core_enums.TypeDocument.PLUISM,
-            core_enums.TypeDocument.PLUISHM,
-        )
-
-    @property
-    def type_document(self) -> core_enums.TypeDocument:
-        if self.base_doc_type == core_enums.BaseDocumentType.PLU:
-            if not self.is_intercommunal:
-                return core_enums.TypeDocument.PLU
-            if self.vaut_PLH_consolide and self.vaut_PDM_consolide:
-                return (
-                    core_enums.TypeDocument.PLUISHM
-                    if self.is_sectoriel_consolide
-                    else core_enums.TypeDocument.PLUIHM
-                )
-            if self.vaut_PLH_consolide:
-                return (
-                    core_enums.TypeDocument.PLUISH
-                    if self.is_sectoriel_consolide
-                    else core_enums.TypeDocument.PLUIH
-                )
-            if self.vaut_PDM_consolide:
-                return (
-                    core_enums.TypeDocument.PLUISM
-                    if self.is_sectoriel_consolide
-                    else core_enums.TypeDocument.PLUIM
-                )
-            return (
-                core_enums.TypeDocument.PLUIS
-                if self.is_sectoriel_consolide
-                else core_enums.TypeDocument.PLUI
-            )
-
-        return self.base_doc_type
-
-    @property
     def type_document_code(self) -> int:
-        return TYPE_DOCUMENT_TO_CODE[self.type_document]
+        return {
+            core_enums.BaseDocumentType.CC: 1,
+            core_enums.BaseDocumentType.POS: 2,
+            core_enums.BaseDocumentType.PLU: 3,
+        }[self.base_doc_type]
 
     def competence_intercommunalite_code(
         self, collectivite: "Collectivite"
@@ -807,12 +744,6 @@ class Procedure(models.Model):
 
     @property
     def _perimetre_without_deleguees_count(self) -> int:
-        # self.perimetre_count is set when calling Procedure.objects.perimetre_without_deleguees_count
-        # which is always called on the manager (see ProcedureManager.get_queryset).
-        # For the moment, it is mandatory to know if the procedure is_intercommunal.
-        # The self.type_document, using self.is_intercommunal, is used to generate the self representation, thus on the Django admin.
-        # For an unknown reason, the ProcedureManager is used on the "list" view but not on the "change" one.
-        # This should be refactored some day as this hack is quite ugly.
         perimetre_count = getattr(self, "perimetre_without_deleguees_count", None)
         if perimetre_count is None:
             perimetre_count = len(
@@ -872,6 +803,26 @@ class Procedure(models.Model):
         if dynamic_doc_type in core_enums.TypeDocument.plu_variations():
             return core_enums.BaseDocumentType.PLU
         return core_enums.BaseDocumentType(dynamic_doc_type)
+
+    @property
+    def dynamic_doc_type(self) -> str:
+        doc_type = self.base_doc_type
+        if self.base_doc_type == core_enums.BaseDocumentType.PLU:
+            if self.is_intercommunal:
+                doc_type = doc_type + "i"
+            if self.is_sectoriel_consolide:
+                doc_type = doc_type + "S"
+            if self.vaut_PLH:
+                doc_type = doc_type + "H"
+            if self.vaut_PDM:
+                doc_type = doc_type + "M"
+        return core_enums.TypeDocument(doc_type)
+
+    def sync_denormalized_fields(self, save: bool = False) -> Self:  # noqa: FBT001, FBT002
+        self.doc_type = self.dynamic_doc_type
+        if save:
+            self.save()
+        return self
 
 
 class ProcedureTopic(models.Model):

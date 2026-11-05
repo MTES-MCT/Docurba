@@ -387,14 +387,14 @@ class TestProcedureList:
         api_client_with_auth: SupabaseApiTestClient,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        """The exposed docType is computed in Procedure.type_document.
+        """The exposed docType is computed in Procedure.dynamic_doc_type.
 
         We don't need to fully test it here because it's already tested in core models tests.
         """
         collectivite, communes, logged_in_profile = (
             self._create_collectivite_perimetre_profile()
         )
-        # doc_type matches type_document
+        # doc_type matches dynamic_doc_type
         procedure = core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
             with_perimetre=communes,

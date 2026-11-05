@@ -281,7 +281,7 @@ class ProcedureSerializer(serializers.ModelSerializer):
     id = serializers.CharField()
     parentId = serializers.UUIDField(source="parente_id")
     collectivite_porteuse = CollectiviteSerializer()
-    docType = serializers.ChoiceField(choices=TypeDocument, source="type_document")
+    docType = serializers.ChoiceField(choices=TypeDocument, source="dynamic_doc_type")
     startedBeforeHuwartLaw = serializers.BooleanField(
         source="started_before_huwart_law", default=False
     )
