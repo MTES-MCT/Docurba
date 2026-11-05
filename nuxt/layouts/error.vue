@@ -49,6 +49,14 @@ export default {
     return {
       title
     }
+  },
+  watch: {
+    error: {
+      handler (value) {
+        console.log('!!!', value)
+      },
+      immediate: true
+    }
   }
 }
 </script>
