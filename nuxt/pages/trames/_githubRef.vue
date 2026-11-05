@@ -95,7 +95,6 @@
           :project="project || {}"
           :opened-path="searchedSectionPath"
           :editable="editable"
-          :title-editable="isPACAdmin"
           @editing="handleEditing"
           @selectionChange="saveSelection"
           @changeOrder="saveOrder"
@@ -225,9 +224,6 @@ export default {
       }
 
       return null
-    },
-    isPACAdmin () {
-      return process.env.PAC_ADMIN_EMAILS.includes(this.$user.email)
     }
   },
   async mounted () {
