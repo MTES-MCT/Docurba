@@ -6,6 +6,7 @@ from typing import Any
 import pytest
 from django.test import Client
 from django.urls import reverse
+from django.utils import timezone
 from freezegun import freeze_time
 from pytest_django import DjangoAssertNumQueries
 from syrupy import SnapshotAssertion
@@ -51,6 +52,7 @@ class TestEveryAPI:
     ["api:perimetres", "api:communes"],
 )
 @pytest.mark.django_db
+@freeze_time("2024-06-06")
 class TestApiPerimetresAndCommunes:
     def _default_procedure_factory_attrs(
         self, perimetre: list[core_models.Commune]
@@ -61,7 +63,7 @@ class TestApiPerimetresAndCommunes:
             "doc_type": core_enums.TypeDocument.PLU,
             "with_event": True,
             "with_event__category": core_models.EventCategory.APPROUVE,
-            "with_event__date_evenement": dt.date(2024, 6, 6),
+            "with_event__date_evenement": timezone.now(),
         }
 
     def test_is_intercommunal(
@@ -307,19 +309,34 @@ class TestAPIPerimetres:
         ("avant_value", "approval_date", "expected_opposable_value"),
         [
             pytest.param(
-                "2026-07-05", "2026-07-04", "True", id="avant_is_after_approval_date"
+                "2026-07-05",
+                dt.timedelta(days=-4),
+                "True",
+                id="avant_is_after_approval_date",  # 2026-07-04
             ),
             pytest.param(
-                "2026-07-04", "2026-07-04", "True", id="avant_is_same_as_approval_date"
+                "2026-07-04",
+                dt.timedelta(days=-4),
+                "True",
+                id="avant_is_same_as_approval_date",  # 2026-07-04
             ),
             pytest.param(
-                "2026-07-02", "2026-07-04", "False", id="avant_is_before_approval_date"
+                "2026-07-02",
+                dt.timedelta(days=-4),
+                "False",
+                id="avant_is_before_approval_date",  # 2026-07-04
             ),
             pytest.param(
-                "", "2026-07-04", "True", id="no_filter_approval_date_in_past"
+                "",
+                dt.timedelta(days=-4),
+                "True",
+                id="no_filter_approval_date_in_past",  # 2026-07-04
             ),
             pytest.param(
-                "", "2026-07-20", "False", id="no_filter_approval_date_in_future"
+                "",
+                dt.timedelta(days=12),
+                "False",
+                id="no_filter_approval_date_in_future",  # 2026-07-20
             ),
         ],
     )
@@ -329,13 +346,14 @@ class TestAPIPerimetres:
         client: Client,
         django_assert_num_queries: DjangoAssertNumQueries,
         avant_value: bool,  # noqa: FBT001
-        approval_date: dt.date,
+        approval_date: dt.timedelta,
         expected_opposable_value: int,
     ) -> None:
+        now = timezone.now()
         ProcedureFactory(
             **self._default_procedure_factory_params(),
             with_event__category=core_models.EventCategory.APPROUVE,
-            with_event__date_evenement=approval_date,
+            with_event__date_evenement=now + approval_date,
         )
         with django_assert_num_queries(3):
             response = client.get(f"{reverse('api:perimetres')}?avant={avant_value}")
@@ -372,13 +390,13 @@ class TestAPICommunes:
         self,
         category: core_models.EventCategory,
         procedure: core_models.Procedure,
-        date: dt.date | None = None,
+        date: dt.datetime | None = None,
     ) -> None:
         return procedure.event_set.create(
             type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][category][
                 0
             ],
-            date_evenement=date or dt.date(2025, 11, 11),
+            date_evenement=date,
         )
 
     @pytest.mark.parametrize(
@@ -423,22 +441,24 @@ class TestAPICommunes:
                 procedure_status=core_models.EventCategory.PRESCRIPTION,
             ),
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-5e1baf8d6f09"),
-            with_event__date_evenement=dt.date(2026, 5, 5),
+            with_event__date_evenement=dt.datetime(
+                2026, 5, 5, tzinfo=dt.UTC
+            ),  # 2026, 5, 5
         )
         self._create_event(
             procedure=ongoing_procedure,
             category=core_models.EventCategory.ARRET_DE_PROJET,
-            date=dt.date(2025, 6, 6),
+            date=dt.datetime(2025, 6, 6, tzinfo=dt.UTC),
         )
         self._create_event(
             procedure=ongoing_procedure,
             category=core_models.EventCategory.PORTER_A_CONNAISSANCE,
-            date=dt.date(2025, 7, 7),
+            date=dt.datetime(2025, 7, 7, tzinfo=dt.UTC),
         )
         self._create_event(
             procedure=ongoing_procedure,
             category=core_models.EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
-            date=dt.date(2025, 8, 8),
+            date=dt.datetime(2025, 8, 8, tzinfo=dt.UTC),
         )
         approved_procedure = ProcedureFactory(
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-5e1baf8d6f10"),
@@ -447,34 +467,36 @@ class TestAPICommunes:
                 collectivite_porteuse=collectivite_porteuse,
                 procedure_status=core_models.EventCategory.APPROUVE,
             ),
-            with_event__date_evenement=dt.date(2026, 7, 6),
+            with_event__date_evenement=dt.datetime(
+                2026, 7, 6, tzinfo=dt.UTC
+            ),  # 2026, 7, 6
         )
         self._create_event(
             procedure=approved_procedure,
             category=core_models.EventCategory.PRESCRIPTION,
-            date=dt.date(2025, 1, 1),
+            date=dt.datetime(2025, 1, 1, tzinfo=dt.UTC),
         )
         self._create_event(
             procedure=approved_procedure,
             category=core_models.EventCategory.PORTER_A_CONNAISSANCE,
-            date=dt.date(2025, 2, 2),
+            date=dt.datetime(2025, 2, 2, tzinfo=dt.UTC),
         )
         self._create_event(
             procedure=approved_procedure,
             category=core_models.EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE,
-            date=dt.date(2025, 3, 3),
+            date=dt.datetime(2025, 3, 3, tzinfo=dt.UTC),
         )
 
         self._create_event(
             procedure=approved_procedure,
             category=core_models.EventCategory.CARACTERE_EXECUTOIRE,
-            date=dt.date(2025, 4, 4),
+            date=dt.datetime(2025, 4, 4, tzinfo=dt.UTC),
         )
 
         self._create_event(
             procedure=approved_procedure,
             category=core_models.EventCategory.ARRET_DE_PROJET,
-            date=dt.date(2025, 5, 5),
+            date=dt.datetime(2025, 5, 5, tzinfo=dt.UTC),
         )
 
         response = client.get(reverse("api:communes"))
@@ -516,6 +538,7 @@ class TestAPICommunes:
         assert len(results) == 1
         assert results[0]["com_nouvelle"] == "True"
 
+    @freeze_time("2025-02-02")
     @pytest.mark.parametrize(
         (
             "with_procedure",
@@ -554,7 +577,7 @@ class TestAPICommunes:
                 ),
                 pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-5e1baf8d6f09"),
                 with_event__category=procedure_status,
-                with_event__date_evenement=dt.date(2025, 2, 2),
+                with_event__date_evenement=timezone.now(),
             )
         response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
@@ -924,6 +947,7 @@ class TestAPICommunes:
             else ""
         )
 
+    @freeze_time("2025-11-11")
     @pytest.mark.parametrize(
         ("event_type", "date_key"),
         [
@@ -964,15 +988,16 @@ class TestAPICommunes:
         procedure_status: core_models.EventCategory,
         client: Client,
     ) -> None:
+        now = timezone.now()
         procedure = ProcedureFactory(
             **self._default_procedure_factory_params(procedure_status=procedure_status),
-            with_event__date_evenement=dt.date(2025, 10, 10),
+            with_event__date_evenement=now - dt.timedelta(days=30),  # 2025, 10, 10
         )
         EventFactory(
             type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][
                 event_type
             ][0],
-            date_evenement=dt.date(2025, 11, 11),
+            date_evenement=now,
             procedure=procedure,
         )
         response = client.get(reverse("api:communes"))
@@ -988,6 +1013,7 @@ class TestAPICommunes:
             else ""
         )
 
+    @freeze_time("2025-11-11")
     @pytest.mark.parametrize(
         ("event_type", "date_key"),
         [
@@ -1009,23 +1035,25 @@ class TestAPICommunes:
         date_key: str,
         client: Client,
     ) -> None:
+        now = timezone.now()
         procedure = ProcedureFactory(
             **self._default_procedure_factory_params(
                 procedure_status=core_models.EventCategory.APPROUVE
             ),
-            with_event__date_evenement=dt.date(2025, 10, 10),
+            with_event__date_evenement=now - dt.timedelta(days=30),  # 2025, 10, 10
         )
         EventFactory(
             type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][
                 event_type
             ][0],
-            date_evenement=dt.date(2025, 11, 11),
+            date_evenement=now,
             procedure=procedure,
         )
         response = client.get(reverse("api:communes"))
         results = list(DictReader(response.content.decode().splitlines()))
         assert results[0][f"pa_{date_key}"] == "2025-11-11"
 
+    @freeze_time("2025-11-11")
     @pytest.mark.parametrize(
         ("event_type", "date_key"),
         [
@@ -1042,17 +1070,18 @@ class TestAPICommunes:
         date_key: str,
         client: Client,
     ) -> None:
+        now = timezone.now()
         procedure = ProcedureFactory(
             **self._default_procedure_factory_params(
                 procedure_status=core_models.EventCategory.PUBLICATION_PERIMETRE
             ),
-            with_event__date_evenement=dt.date(2025, 10, 10),
+            with_event__date_evenement=now - dt.timedelta(days=30),  # 2025, 10, 10
         )
         EventFactory(
             type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][
                 event_type
             ][0],
-            date_evenement=dt.date(2025, 11, 11),
+            date_evenement=now,
             procedure=procedure,
         )
         response = client.get(reverse("api:communes"))
@@ -1066,17 +1095,31 @@ class TestAPICommunes:
         ("avant_value", "approval_date", "expected_procedure_is_approved"),
         [
             pytest.param(
-                "2026-07-05", "2026-07-04", True, id="avant_is_after_approval_date"
+                "2026-07-05",
+                dt.timedelta(days=-4),
+                True,
+                id="avant_is_after_approval_date",  # 2026-07-04
             ),
             pytest.param(
-                "2026-07-04", "2026-07-04", True, id="avant_is_same_as_approval_date"
+                "2026-07-04",
+                dt.timedelta(days=-4),
+                True,
+                id="avant_is_same_as_approval_date",  # 2026-07-04
             ),
             pytest.param(
-                "2026-07-02", "2026-07-04", False, id="avant_is_before_approval_date"
+                "2026-07-02",
+                dt.timedelta(days=-4),
+                False,
+                id="avant_is_before_approval_date",  # 2026-07-04
             ),
-            pytest.param("", "2026-07-04", True, id="no_filter_approval_date_in_past"),
             pytest.param(
-                "", "2026-07-20", False, id="no_filter_approval_date_in_future"
+                "", dt.timedelta(days=-4), True, id="no_filter_approval_date_in_past"
+            ),  # 2026-07-04
+            pytest.param(
+                "",
+                dt.timedelta(days=12),
+                False,
+                id="no_filter_approval_date_in_future",  # 2026-07-20
             ),
         ],
     )
@@ -1086,7 +1129,7 @@ class TestAPICommunes:
         client: Client,
         django_assert_num_queries: DjangoAssertNumQueries,
         avant_value: bool,  # noqa: FBT001
-        approval_date: dt.date,
+        approval_date: dt.datetime,
         expected_procedure_is_approved: int,
     ) -> None:
         procedure = ProcedureFactory(**self._default_procedure_factory_params())
@@ -1094,7 +1137,7 @@ class TestAPICommunes:
             type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][
                 core_models.EventCategory.APPROUVE
             ][0],
-            date_evenement=approval_date,  # 2026-07-04
+            date_evenement=timezone.now() + approval_date,  # 2026-07-04
         )
         with django_assert_num_queries(3):
             response = client.get(f"{reverse('api:communes')}?avant={avant_value}")
@@ -1360,13 +1403,13 @@ class TestAPIScots:
         self,
         category: core_models.EventCategory,
         procedure: core_models.Procedure,
-        date: dt.date | None = None,
+        date: dt.datetime | None = None,
     ) -> None:
         return procedure.event_set.create(
             type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][category][
                 0
             ],
-            date_evenement=date or dt.date(2025, 11, 11),
+            date_evenement=date,
         )
 
     def test_nominal(self, client: Client, snapshot: SnapshotAssertion) -> None:
@@ -1380,20 +1423,20 @@ class TestAPIScots:
                 collectivite=collectivite_porteuse,
                 procedure_status=core_models.EventCategory.PRESCRIPTION,
             ),
-            with_event__date_evenement=dt.date(2025, 10, 10),
+            with_event__date_evenement=dt.datetime(2025, 10, 10, tzinfo=dt.UTC),
             for_snapshot=True,
         )
         # pa_date_prescription
         self._create_event(
             procedure=ongoing_procedure,
             category=core_models.EventCategory.PUBLICATION_PERIMETRE,
-            date=dt.date(2025, 11, 11),
+            date=dt.datetime(2025, 11, 11, tzinfo=dt.UTC),
         )
         # pa_date_prescription
         self._create_event(
             procedure=ongoing_procedure,
             category=core_models.EventCategory.ARRET_DE_PROJET,
-            date=dt.date(2025, 12, 11),
+            date=dt.datetime(2025, 12, 11, tzinfo=dt.UTC),
         )
         # pa_*
         # dates: pa_date_approbation, pa_annee_approbation
@@ -1403,27 +1446,27 @@ class TestAPIScots:
                 collectivite=collectivite_porteuse,
                 procedure_status=core_models.EventCategory.APPROUVE,
             ),
-            with_event__date_evenement=dt.date(2026, 1, 1),
+            with_event__date_evenement=dt.datetime(2026, 1, 1, tzinfo=dt.UTC),
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-5e1baf8d6f10"),
         )
         # pa_date_prescription
         self._create_event(
             procedure=approved_procedure,
             category=core_models.EventCategory.PRESCRIPTION,
-            date=dt.date(2025, 9, 11),
+            date=dt.datetime(2025, 9, 11, tzinfo=dt.UTC),
         )
         # pa_date_publication_perimetre
         self._create_event(
             procedure=approved_procedure,
             category=core_models.EventCategory.PUBLICATION_PERIMETRE,
-            date=dt.date(2025, 10, 11),
+            date=dt.datetime(2025, 10, 11, tzinfo=dt.UTC),
         )
 
         # pa_date_arret_projet
         self._create_event(
             procedure=approved_procedure,
             category=core_models.EventCategory.ARRET_DE_PROJET,
-            date=dt.date(2025, 11, 11),
+            date=dt.datetime(2025, 11, 11, tzinfo=dt.UTC),
         )
 
         response = client.get(reverse("api:scots"))
@@ -1441,20 +1484,22 @@ class TestAPIScots:
     @pytest.mark.xfail(
         reason="procedure.statut is CADUC when FIN ECHEANCE category event is set"
     )
+    @freeze_time("2025-11-11")
     def test_date_fin_echeance(
         self,
         client: Client,
     ) -> None:
+        now = timezone.now()
         procedure = ProcedureFactory(
             **self._default_procedure_factory_params(
                 procedure_status=core_models.EventCategory.FIN_ECHEANCE
             ),
-            with_event__date_evenement=dt.date(2025, 10, 10),
+            with_event__date_evenement=now - dt.timedelta(days=30),
         )
         self._create_event(
             procedure=procedure,
             type=core_models.EventCategory.APPROUVE,
-            date=dt.date(2025, 11, 11),
+            date=now,
         )
         response = client.get(f"{reverse('api:scots')}")
         results = csv_to_json_like(response.content)
@@ -1673,17 +1718,31 @@ class TestAPIScots:
         ("avant_value", "approval_date", "expected_procedure_is_approved"),
         [
             pytest.param(
-                "2026-07-05", "2026-07-04", True, id="avant_is_after_approval_date"
+                "2026-07-05",
+                dt.timedelta(days=-4),
+                True,
+                id="avant_is_after_approval_date",  # 2026-07-04
             ),
             pytest.param(
-                "2026-07-04", "2026-07-04", True, id="avant_is_same_as_approval_date"
+                "2026-07-04",
+                dt.timedelta(days=-4),
+                True,
+                id="avant_is_same_as_approval_date",  # 2026-07-04
             ),
             pytest.param(
-                "2026-07-02", "2026-07-04", False, id="avant_is_before_approval_date"
+                "2026-07-02",
+                dt.timedelta(days=-4),
+                False,
+                id="avant_is_before_approval_date",  # 2026-07-04
             ),
-            pytest.param("", "2026-07-04", True, id="no_filter_approval_date_in_past"),
             pytest.param(
-                "", "2026-07-20", False, id="no_filter_approval_date_in_future"
+                "", dt.timedelta(days=-4), True, id="no_filter_approval_date_in_past"
+            ),  # 2026-07-04
+            pytest.param(
+                "",
+                dt.timedelta(days=12),
+                False,
+                id="no_filter_approval_date_in_future",  # 2026-07-20
             ),
         ],
     )
@@ -1693,7 +1752,7 @@ class TestAPIScots:
         client: Client,
         django_assert_num_queries: DjangoAssertNumQueries,
         avant_value: bool,  # noqa: FBT001
-        approval_date: dt.date,
+        approval_date: dt.datetime,
         expected_procedure_is_approved: int,
     ) -> None:
         procedure = ProcedureFactory(
@@ -1703,7 +1762,7 @@ class TestAPIScots:
             type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][
                 core_models.EventCategory.APPROUVE
             ][0],
-            date_evenement=approval_date,  # 2026-07-04
+            date_evenement=timezone.now() + approval_date,  # 2026-07-04
         )
         with django_assert_num_queries(6):
             response = client.get(f"{reverse('api:scots')}?avant={avant_value}")

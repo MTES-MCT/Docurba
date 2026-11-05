@@ -1,13 +1,14 @@
 # ruff: noqa: FBT001, N803
 from collections.abc import Callable
 from contextlib import nullcontext as does_not_raise
-from datetime import date, timedelta
+from datetime import timedelta
 from functools import partial
 
 import pytest
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models
 from django.utils import timezone
+from freezegun import freeze_time
 from pytest_django import DjangoAssertNumQueries
 
 from docurba.core import enums as core_enums
@@ -391,6 +392,7 @@ class TestCollectivite:
 
 class TestCollectivitePortantScot:
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_retourne_que_collectivite_avec_scot(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -402,7 +404,7 @@ class TestCollectivitePortantScot:
         )
         scot_en_cours.event_set.create(
             type="Délibération de l'établissement public qui prescrit",
-            date_evenement="2024-12-01",
+            date_evenement=timezone.now(),
         )
 
         _collectivite_sans_procedure = CollectiviteFactory()
@@ -463,6 +465,7 @@ class TestCollectivitePortantScot:
             assert list(core_models.Collectivite.objects.portant_scot()) == []
 
     @pytest.mark.django_db
+    @freeze_time("2024-02-02")
     def test_retourne_collectivites_distinctes(
         self,
         django_assert_num_queries: DjangoAssertNumQueries,
@@ -471,7 +474,8 @@ class TestCollectivitePortantScot:
         commune = CommuneFactory()
 
         scots_opposables = []
-        for date_string in ("2024-02-01", "2024-02-02"):
+        now = timezone.now()
+        for date_string in (now - timedelta(days=1), now):
             scot_opposable = ProcedureFactory(
                 collectivite_porteuse=collectivite_avec_scot,
                 doc_type=core_enums.TypeDocument.SCOT,
@@ -489,6 +493,7 @@ class TestCollectivitePortantScot:
             assert collectivites[0].scots_pour_csv == [(scots_opposables[1], None)]
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_fonctionne_et_log_erreur_quand_plusieurs_scots_en_cours(
         self,
         django_assert_num_queries: DjangoAssertNumQueries,
@@ -504,7 +509,7 @@ class TestCollectivitePortantScot:
             )
             scot_en_cours.event_set.create(
                 type="Délibération de l'établissement public qui prescrit",
-                date_evenement="2024-12-01",
+                date_evenement=timezone.now(),
             )
             scots_en_cours.append(scot_en_cours)
 
@@ -523,6 +528,7 @@ class TestCollectivitePortantScot:
             )
 
     @pytest.mark.django_db
+    @freeze_time("2024-01-01")
     def test_retourne_scot_opposables_des_qu_une_commune_considere_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -536,8 +542,10 @@ class TestCollectivitePortantScot:
             type="A",
             with_perimetre=[commune_a],
         )
+        now = timezone.now()
         scot_opposable_a.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-01-01"
+            type="Délibération d'approbation",
+            date_evenement=now,  # 2024-01-01
         )
 
         scot_precedent_a = ProcedureFactory(
@@ -547,7 +555,8 @@ class TestCollectivitePortantScot:
             with_perimetre=[commune_a],
         )
         scot_precedent_a.event_set.create(
-            type="Délibération d'approbation", date_evenement="1999-01-01"
+            type="Délibération d'approbation",
+            date_evenement=now - timedelta(days=25 * 365),  # 1999-01-01
         )
 
         scot_opposable_a_et_b = ProcedureFactory(
@@ -557,7 +566,8 @@ class TestCollectivitePortantScot:
             with_perimetre=[commune_a, commune_b],
         )
         scot_opposable_a_et_b.event_set.create(
-            type="Délibération d'approbation", date_evenement="2023-01-01"
+            type="Délibération d'approbation",
+            date_evenement=now - timedelta(days=365),  # 2023-01-01
         )
 
         with django_assert_num_queries(6):
@@ -570,6 +580,7 @@ class TestCollectivitePortantScot:
             }
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_retourne_le_meme_scot_en_cours_pour_chaque_opposable(
         self,
         django_assert_num_queries: DjangoAssertNumQueries,
@@ -584,7 +595,7 @@ class TestCollectivitePortantScot:
         )
         scot_en_cours.event_set.create(
             type="Délibération de l'établissement public qui prescrit",
-            date_evenement="2024-12-01",
+            date_evenement=timezone.now(),
         )
 
         scots_opposables = []
@@ -595,7 +606,7 @@ class TestCollectivitePortantScot:
                 with_perimetre=[commune],
             )
             scot_opposable.event_set.create(
-                type="Délibération d'approbation", date_evenement="2024-12-01"
+                type="Délibération d'approbation", date_evenement=timezone.now()
             )
             scots_opposables.append(scot_opposable)
 
@@ -609,38 +620,44 @@ class TestCollectivitePortantScot:
             }
 
     @pytest.mark.django_db
+    @freeze_time("2025-12-15")
     @pytest.mark.parametrize(
         ("avant", "has_scot_opposable"),
         [
-            ("", False),
-            ("2025-12-13", True),
-            ("2025-12-10", False),
+            (None, False),
+            (timedelta(days=2), True),  # 2025-12-13
+            (timedelta(days=5), False),  # 2025-12-10
         ],
     )
     def test_scot_caduc_est_opposable_si_interroge_avant_fin_d_echeance(
         self,
-        avant: str,
+        avant: timedelta | None,
         has_scot_opposable: bool,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         collectivite_avec_scot = CollectiviteFactory()
         commune = CommuneFactory()
 
+        now = timezone.now()
         scot_opposable = ProcedureFactory(
             collectivite_porteuse=collectivite_avec_scot,
             doc_type=core_enums.TypeDocument.SCOT,
             with_perimetre=[commune],
         )
         scot_opposable.event_set.create(
-            type="Délibération d'approbation", date_evenement="2025-12-11"
+            type="Délibération d'approbation",
+            date_evenement=now - timedelta(days=4),  # 2025-12-11
         )
         scot_opposable.event_set.create(
-            type="Fin d'échéance", date_evenement="2025-12-14"
+            type="Fin d'échéance",
+            date_evenement=now - timedelta(days=1),  # 2025-12-14
         )
 
         with django_assert_num_queries(6):
             collectivites = list(
-                core_models.Collectivite.objects.portant_scot(avant=avant)
+                core_models.Collectivite.objects.portant_scot(
+                    avant=now - avant if avant else ""
+                )
             )
         assert collectivites == [collectivite_avec_scot]
 
@@ -650,6 +667,7 @@ class TestCollectivitePortantScot:
             assert collectivites[0].scots_pour_csv == []
 
 
+@freeze_time("2024-12-01")
 class TestScotInterdepartemental:
     @pytest.mark.django_db
     def test_un_departement(
@@ -665,7 +683,9 @@ class TestScotInterdepartemental:
             doc_type=core_enums.TypeDocument.SCOT,
             with_perimetre=[commune_a, commune_b],
         )
-        scot_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
+        scot_en_cours.event_set.create(
+            type="Prescription", date_evenement=timezone.now()
+        )
 
         with django_assert_num_queries(6):
             collectivites = list(core_models.Collectivite.objects.portant_scot())
@@ -687,7 +707,9 @@ class TestScotInterdepartemental:
             doc_type=core_enums.TypeDocument.SCOT,
             with_perimetre=[commune_a, commune_b],
         )
-        scot_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
+        scot_en_cours.event_set.create(
+            type="Prescription", date_evenement=timezone.now()
+        )
 
         with django_assert_num_queries(6):
             collectivites = list(core_models.Collectivite.objects.portant_scot())
@@ -919,6 +941,7 @@ class TestProcedureDates:
             assert procedure.date_fin_echeance is None
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     @pytest.mark.parametrize(
         ("event_type", "date_attribute"),
         [
@@ -940,15 +963,21 @@ class TestProcedureDates:
             doc_type=core_enums.TypeDocument.SCOT,
             collectivite_porteuse=commune,
         )
-        for date_string in ("2022-12-01", "2024-12-01", "2023-12-01"):
-            procedure.event_set.create(type=event_type, date_evenement=date_string)
+        now = timezone.now()
+        for dates in (
+            now - timedelta(days=2 * 365),
+            now,
+            now - timedelta(days=365),
+        ):
+            procedure.event_set.create(type=event_type, date_evenement=dates)
 
         with django_assert_num_queries(2):
             procedure_with_events = core_models.Procedure.objects.with_events().first()
 
-            assert getattr(procedure_with_events, date_attribute) == date(2024, 12, 1)
+            assert getattr(procedure_with_events, date_attribute) == now
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     @pytest.mark.parametrize(
         ("event_type", "date_attribute"),
         [
@@ -970,7 +999,7 @@ class TestProcedureDates:
             doc_type=core_enums.TypeDocument.SCOT, collectivite_porteuse=commune
         )
         procedure.event_set.create(
-            type=event_type, date_evenement="2024-12-01", is_valid=False
+            type=event_type, date_evenement=timezone.now(), is_valid=False
         )
 
         with django_assert_num_queries(2):
@@ -979,6 +1008,7 @@ class TestProcedureDates:
             assert getattr(procedure_with_events, date_attribute) is None
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     @pytest.mark.parametrize(
         ("event_type", "date_attribute"),
         [
@@ -999,29 +1029,33 @@ class TestProcedureDates:
         procedure = ProcedureFactory(
             doc_type=core_enums.TypeDocument.SCOT, collectivite_porteuse=commune
         )
-        procedure.event_set.create(type=event_type, date_evenement="2022-12-01")
-        procedure.event_set.create(type="Fin d'échéance", date_evenement="2022-12-01")
+        now = timezone.now()
+        date_fin_echeance = now - timedelta(days=2 * 365)  # 2022-12-01
+        procedure.event_set.create(type=event_type, date_evenement=date_fin_echeance)
+        procedure.event_set.create(
+            type="Fin d'échéance", date_evenement=date_fin_echeance
+        )
 
         with django_assert_num_queries(2):
             procedure_with_events = core_models.Procedure.objects.with_events(
-                avant="2022-11-29"
+                avant=date_fin_echeance - timedelta(days=2)
             ).first()
             assert getattr(procedure_with_events, date_attribute) is None
-            assert procedure_with_events.date_fin_echeance == date(2022, 12, 1)
+            assert procedure_with_events.date_fin_echeance == date_fin_echeance
 
         with django_assert_num_queries(2):
             procedure_with_events = core_models.Procedure.objects.with_events(
-                avant="2022-11-30"
+                avant=date_fin_echeance - timedelta(days=1)
             ).first()
             assert getattr(procedure_with_events, date_attribute) is None
-            assert procedure_with_events.date_fin_echeance == date(2022, 12, 1)
+            assert procedure_with_events.date_fin_echeance == date_fin_echeance
 
         with django_assert_num_queries(2):
             procedure_with_events = core_models.Procedure.objects.with_events(
-                avant="2022-12-01"
+                avant=date_fin_echeance
             ).first()
-            assert getattr(procedure_with_events, date_attribute) == date(2022, 12, 1)
-            assert procedure_with_events.date_fin_echeance == date(2022, 12, 1)
+            assert getattr(procedure_with_events, date_attribute) == date_fin_echeance
+            assert procedure_with_events.date_fin_echeance == date_fin_echeance
 
 
 class TestProcedureDocTypeDocument:
@@ -1233,12 +1267,13 @@ class TestProcedureDocTypeDocument:
 
 class TestProcedureDelaiApprobation:
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     @pytest.mark.parametrize(
         ("date_approbation", "date_prescription"),
         [
             (None, None),
-            ("2024-12-01", None),
-            (None, "2024-01-01"),
+            (timezone.now(), None),
+            (None, timezone.now() - timedelta(days=31 * 12)),
         ],
     )
     def test_none_si_au_moins_une_date_absente(
@@ -1264,14 +1299,18 @@ class TestProcedureDelaiApprobation:
         assert procedure_with_events.delai_d_approbation is None
 
     @pytest.mark.django_db
+    @freeze_time("2024-02-01")
     def test_delai_d_approbation_calcule(self) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
-        procedure.event_set.create(type="Prescription", date_evenement="2024-01-01")
+        now = timezone.now()
         procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-02-01"
+            type="Prescription", date_evenement=now - timedelta(days=31)
+        )
+        procedure.event_set.create(
+            type="Délibération d'approbation", date_evenement=now
         )
 
         procedure_with_events = core_models.Procedure.objects.with_events().get(
@@ -1282,20 +1321,22 @@ class TestProcedureDelaiApprobation:
 
 class TestProcedureSort:
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_approuvee_plus_recemment(self) -> None:
         commune = CommuneFactory()
         procedure_recente = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_recente.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-01"
+            type="Délibération d'approbation", date_evenement=timezone.now()
         )
 
         procedure_vieille = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_vieille.event_set.create(
-            type="Délibération d'approbation", date_evenement="2023-12-01"
+            type="Délibération d'approbation",
+            date_evenement=timezone.now() - timedelta(days=365),
         )
 
         procedure_recent_with_events = core_models.Procedure.objects.with_events().get(
@@ -1307,20 +1348,21 @@ class TestProcedureSort:
         assert procedure_vieille_with_events < procedure_recent_with_events
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_prescrite_plus_recemment(self) -> None:
         commune = CommuneFactory()
         procedure_recente = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_recente.event_set.create(
-            type="Prescription", date_evenement="2024-12-01"
+            type="Prescription", date_evenement=timezone.now()
         )
 
         procedure_vieille = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_vieille.event_set.create(
-            type="Prescription", date_evenement="2023-12-01"
+            type="Prescription", date_evenement=timezone.now() - timedelta(days=365)
         )
 
         procedure_recent_with_events = core_models.Procedure.objects.with_events().get(
@@ -1332,26 +1374,28 @@ class TestProcedureSort:
         assert procedure_vieille_with_events < procedure_recent_with_events
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_date_approbation_priorite_quand_date_entremelees(self) -> None:
         commune = CommuneFactory()
         procedure_recente = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
+        now = timezone.now()
         procedure_recente.event_set.create(
-            type="Prescription", date_evenement="1999-12-01"
+            type="Prescription", date_evenement=now - timedelta(days=25 * 365)
         )
         procedure_recente.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-01"
+            type="Délibération d'approbation", date_evenement=now
         )
 
         procedure_vieille = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
         procedure_vieille.event_set.create(
-            type="Prescription", date_evenement="2023-12-01"
+            type="Prescription", date_evenement=now - timedelta(days=365)
         )
         procedure_vieille.event_set.create(
-            type="Délibération d'approbation", date_evenement="2023-12-02"
+            type="Délibération d'approbation", date_evenement=now - timedelta(days=364)
         )
 
         procedure_recent_with_events = core_models.Procedure.objects.with_events().get(
@@ -1388,6 +1432,7 @@ class TestProcedureSort:
 
 class TestProcedureStatut:
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_principale_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -1396,7 +1441,7 @@ class TestProcedureStatut:
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-01"
+            type="Délibération d'approbation", date_evenement=timezone.now()
         )
 
         assert event.category == core_models.EventCategory.APPROUVE
@@ -1409,6 +1454,7 @@ class TestProcedureStatut:
             assert procedure_with_events.statut == core_models.EventCategory.APPROUVE
 
     @pytest.mark.django_db
+    @freeze_time("2004-12-01")
     @pytest.mark.parametrize("is_approuve", [True, False])
     def test_sd_est_toujours_caduc(
         self, is_approuve: bool, django_assert_num_queries: DjangoAssertNumQueries
@@ -1420,7 +1466,7 @@ class TestProcedureStatut:
         )
         if is_approuve:
             event = procedure.event_set.create(
-                type="Délibération d'approbation", date_evenement="2004-12-01"
+                type="Délibération d'approbation", date_evenement=timezone.now()
             )
             assert event.category == core_models.EventCategory.APPROUVE
 
@@ -1432,11 +1478,18 @@ class TestProcedureStatut:
             assert procedure_with_events.statut == core_models.EventCategory.CADUC
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     @pytest.mark.parametrize(
         ("annee_limite", "statut"),
         [
-            (2029, core_models.EventCategory.APPROUVE),
-            (2030, core_models.EventCategory.CADUC),
+            (
+                timedelta(days=5 * 365 + 15),
+                core_models.EventCategory.APPROUVE,
+            ),  # 2029-12-15
+            (
+                timedelta(days=6 * 365 + 15),
+                core_models.EventCategory.CADUC,
+            ),  # 2030-12-15
         ],
     )
     def test_fin_d_echeance_impacte_caducite(
@@ -1448,24 +1501,28 @@ class TestProcedureStatut:
         procedure = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
+        now = timezone.now()
         procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-01"
+            type="Délibération d'approbation", date_evenement=now
         )
-        procedure.event_set.create(type="Fin d'échéance", date_evenement="2030-12-01")
+        procedure.event_set.create(
+            type="Fin d'échéance", date_evenement=now + timedelta(days=6 * 365)
+        )
         procedure_with_events = core_models.Procedure.objects.with_events(
-            avant=date(annee_limite, 12, 15)
+            avant=now + annee_limite
         ).get(id=procedure.id)
 
         assert procedure_with_events.statut == statut
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-05")
     @pytest.mark.parametrize(
         ("jour_limite", "statut"),
         [
-            (2, None),
-            (3, core_models.EventCategory.PRESCRIPTION),
-            (4, core_models.EventCategory.PRESCRIPTION),
-            (5, core_models.EventCategory.APPROUVE),
+            (timedelta(days=3), None),
+            (timedelta(days=2), core_models.EventCategory.PRESCRIPTION),
+            (timedelta(days=1), core_models.EventCategory.PRESCRIPTION),
+            (timedelta(days=0), core_models.EventCategory.APPROUVE),
         ],
     )
     def test_ignore_event_apres(
@@ -1478,19 +1535,20 @@ class TestProcedureStatut:
         procedure = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
+        now = timezone.now()
         event_prescription = procedure.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
-            date_evenement="2024-12-03",
+            date_evenement=now - timedelta(days=2),
         )
         event_approbation = procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-05"
+            type="Délibération d'approbation", date_evenement=now
         )
 
         assert event_prescription.category == core_models.EventCategory.PRESCRIPTION
         assert event_approbation.category == core_models.EventCategory.APPROUVE
         with django_assert_num_queries(2):
             procedure_with_events = core_models.Procedure.objects.with_events(
-                avant=date(2024, 12, jour_limite)
+                avant=now - jour_limite
             ).get(id=procedure.id)
 
             assert procedure_with_events.statut == statut
@@ -1510,7 +1568,7 @@ class TestProcedureStatut:
         delta_jour: int,
         statut: core_models.EventCategory,
     ) -> None:
-        today = timezone.now().date()
+        today = timezone.now()
 
         commune = CommuneFactory()
         procedure = ProcedureFactory(
@@ -1547,6 +1605,7 @@ class TestProcedureStatut:
             assert not procedure_with_events.statut
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_principale_annule(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -1555,7 +1614,7 @@ class TestProcedureStatut:
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(
-            type="Abrogation", date_evenement="2024-12-01"
+            type="Abrogation", date_evenement=timezone.now()
         )
 
         assert event.category == core_models.EventCategory.ANNULE
@@ -1568,6 +1627,7 @@ class TestProcedureStatut:
             assert procedure_with_events.statut == core_models.EventCategory.ANNULE
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_principale_ignore_event_invalide(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -1577,7 +1637,7 @@ class TestProcedureStatut:
         )
         event = procedure.event_set.create(
             type="Délibération d'approbation",
-            date_evenement="2024-12-01",
+            date_evenement=timezone.now(),
             is_valid=False,
         )
 
@@ -1591,6 +1651,7 @@ class TestProcedureStatut:
             assert not procedure_with_events.statut
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_principale_carte_communale_deliberation_d_approbation_pas_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -1599,7 +1660,7 @@ class TestProcedureStatut:
             doc_type=core_enums.TypeDocument.CC, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-01"
+            type="Délibération d'approbation", date_evenement=timezone.now()
         )
 
         assert event.category is None
@@ -1612,6 +1673,7 @@ class TestProcedureStatut:
             assert not procedure_with_events.statut
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_secondaire_non_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -1625,7 +1687,7 @@ class TestProcedureStatut:
             collectivite_porteuse=commune,
         )
         procedure_secondaire.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-01"
+            type="Délibération d'approbation", date_evenement=timezone.now()
         )
 
         with django_assert_num_queries(2):
@@ -1637,6 +1699,7 @@ class TestProcedureStatut:
             assert not procedure_with_events.statut
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_approuvee_quand_prescription_et_approbation_meme_jour(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -1644,14 +1707,15 @@ class TestProcedureStatut:
         procedure = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
+        now = timezone.now()
         prescription_inseree_avant = procedure.event_set.create(
-            type="Prescription", date_evenement="2023-04-26"
+            type="Prescription", date_evenement=now
         )
         approbation = procedure.event_set.create(
-            type="Délibération d'approbation", date_evenement="2023-04-26"
+            type="Délibération d'approbation", date_evenement=now
         )
         prescription_inseree_apres = procedure.event_set.create(
-            type="Prescription", date_evenement="2023-04-26"
+            type="Prescription", date_evenement=now
         )
 
         assert approbation.category == core_models.EventCategory.APPROUVE
@@ -1671,6 +1735,7 @@ class TestProcedureStatut:
             assert procedure_with_events.statut == core_models.EventCategory.APPROUVE
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_abandon_quand_prescription_et_abandon_meme_jour(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -1678,14 +1743,13 @@ class TestProcedureStatut:
         procedure = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
+        now = timezone.now()
         prescription_insere_avant = procedure.event_set.create(
-            type="Prescription", date_evenement="2023-04-26"
+            type="Prescription", date_evenement=now
         )
-        abandon = procedure.event_set.create(
-            type="Abandon", date_evenement="2023-04-26"
-        )
+        abandon = procedure.event_set.create(type="Abandon", date_evenement=now)
         prescription_insere_apres = procedure.event_set.create(
-            type="Prescription", date_evenement="2023-04-26"
+            type="Prescription", date_evenement=now
         )
 
         assert abandon.category == core_models.EventCategory.ABANDON
@@ -1724,6 +1788,7 @@ class TestProcedureStatut:
 
 class TestProcedureEnCours:
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     @pytest.mark.parametrize(
         ("event_type", "event_category", "expected_en_cours"),
         [
@@ -1747,7 +1812,9 @@ class TestProcedureEnCours:
         procedure = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
         )
-        event = procedure.event_set.create(type=event_type, date_evenement="2024-12-01")
+        event = procedure.event_set.create(
+            type=event_type, date_evenement=timezone.now()
+        )
 
         assert event.category == event_category
         with django_assert_num_queries(2):
@@ -1760,6 +1827,7 @@ class TestProcedureEnCours:
             assert procedure_with_events.is_en_cours == expected_en_cours
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_abrogation_jamais_en_cours(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -1771,7 +1839,7 @@ class TestProcedureEnCours:
             collectivite_porteuse=commune,
         )
         event = procedure.event_set.create(
-            type="Prescription", date_evenement="2024-12-01"
+            type="Prescription", date_evenement=timezone.now()
         )
 
         with django_assert_num_queries(2):
@@ -1786,6 +1854,7 @@ class TestProcedureEnCours:
             assert not procedure_with_events.is_en_cours
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_pos_jamais_en_cours(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -1795,7 +1864,7 @@ class TestProcedureEnCours:
             doc_type=core_enums.TypeDocument.POS, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(
-            type="Prescription", date_evenement="2024-12-01"
+            type="Prescription", date_evenement=timezone.now()
         )
 
         with django_assert_num_queries(2):
@@ -2158,18 +2227,20 @@ class TestCommuneProceduresPrincipales:
 
 class TestCommunePlanEnCours:
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_plus_recent_en_cours(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         commune = CommuneFactory()
 
+        now = timezone.now()
         procedure_saisie_avant = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
         procedure_saisie_avant.event_set.create(
-            type="Prescription", date_evenement="2022-12-01"
+            type="Prescription", date_evenement=now - timedelta(days=2 * 365)
         )
 
         procedure_en_cours = ProcedureFactory(
@@ -2177,9 +2248,7 @@ class TestCommunePlanEnCours:
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
-        procedure_en_cours.event_set.create(
-            type="Prescription", date_evenement="2024-12-01"
-        )
+        procedure_en_cours.event_set.create(type="Prescription", date_evenement=now)
 
         procedure_saisie_apres = ProcedureFactory(
             doc_type=core_enums.TypeDocument.PLU,
@@ -2187,7 +2256,7 @@ class TestCommunePlanEnCours:
             with_perimetre=[commune],
         )
         procedure_saisie_apres.event_set.create(
-            type="Prescription", date_evenement="2023-12-01"
+            type="Prescription", date_evenement=now - timedelta(days=365)
         )
 
         with django_assert_num_queries(3):
@@ -2200,6 +2269,7 @@ class TestCommunePlanEnCours:
             assert commune.plan_en_cours == procedure_en_cours
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_ignore_les_procedures_non_lancees(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -2211,7 +2281,7 @@ class TestCommunePlanEnCours:
             with_perimetre=[commune],
         )
         procedure_en_cours.event_set.create(
-            type="Prescription", date_evenement="2024-12-01"
+            type="Prescription", date_evenement=timezone.now()
         )
 
         _procedure_pas_commencee = ProcedureFactory(
@@ -2250,6 +2320,7 @@ class TestCommune:
         ],
     )
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_collectivite_porteuse_selon_situation_plans(
         self, plan_opposable: bool, plan_en_cours: bool, collectivite_attendue: str
     ) -> None:
@@ -2262,7 +2333,9 @@ class TestCommune:
                 collectivite_porteuse=collectivite,
                 with_perimetre=[commune],
             )
-            procedure.event_set.create(type="Prescription", date_evenement="2022-12-01")
+            procedure.event_set.create(
+                type="Prescription", date_evenement=timezone.now()
+            )
 
         if plan_opposable:
             collectivite = CollectiviteFactory(code_insee_unique="200004444")
@@ -2272,7 +2345,7 @@ class TestCommune:
                 with_perimetre=[commune],
             )
             procedure.event_set.create(
-                type="Délibération d'approbation", date_evenement="2022-12-01"
+                type="Délibération d'approbation", date_evenement=timezone.now()
             )
 
         commune = core_models.Commune.objects.with_procedures_principales().first()
@@ -2281,6 +2354,7 @@ class TestCommune:
 
 class TestCommuneOpposabilite:
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_plus_recente_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -2290,8 +2364,10 @@ class TestCommuneOpposabilite:
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
+        now = timezone.now()
         procedure_precedente_saisie_avant.event_set.create(
-            type="Délibération d'approbation", date_evenement="2022-12-01"
+            type="Délibération d'approbation",
+            date_evenement=now - timedelta(days=2 * 365),
         )
 
         procedure_opposable = ProcedureFactory(
@@ -2300,7 +2376,7 @@ class TestCommuneOpposabilite:
             with_perimetre=[commune],
         )
         procedure_opposable.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-01"
+            type="Délibération d'approbation", date_evenement=now
         )
 
         procedure_precedente_saisie_apres = ProcedureFactory(
@@ -2309,7 +2385,7 @@ class TestCommuneOpposabilite:
             with_perimetre=[commune],
         )
         procedure_precedente_saisie_apres.event_set.create(
-            type="Délibération d'approbation", date_evenement="2023-12-01"
+            type="Délibération d'approbation", date_evenement=now - timedelta(days=365)
         )
 
         with django_assert_num_queries(3):
@@ -2327,6 +2403,7 @@ class TestCommuneOpposabilite:
             assert not commune.is_opposable(procedure_precedente_saisie_apres)
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_plans_et_schemas_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -2337,8 +2414,9 @@ class TestCommuneOpposabilite:
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
+        now = timezone.now()
         plan_opposable.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-01-02"
+            type="Délibération d'approbation", date_evenement=now
         )
 
         schema_opposable = ProcedureFactory(
@@ -2347,7 +2425,7 @@ class TestCommuneOpposabilite:
             with_perimetre=[commune],
         )
         schema_opposable.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-01-01"
+            type="Délibération d'approbation", date_evenement=now - timedelta(days=1)
         )
 
         with django_assert_num_queries(3):
@@ -2364,6 +2442,7 @@ class TestCommuneOpposabilite:
             assert commune.is_opposable(schema_opposable)
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_opposable_sans_prescription(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -2375,7 +2454,7 @@ class TestCommuneOpposabilite:
             with_perimetre=[commune],
         )
         procedure_opposable.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-01"
+            type="Délibération d'approbation", date_evenement=timezone.now()
         )
 
         with django_assert_num_queries(3):
@@ -2388,6 +2467,7 @@ class TestCommuneOpposabilite:
             assert commune.is_opposable(procedure_opposable)
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_aucune_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -2400,7 +2480,7 @@ class TestCommuneOpposabilite:
         )
         procedure_en_cours.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
-            date_evenement="2024-12-01",
+            date_evenement=timezone.now(),
         )
 
         with django_assert_num_queries(3):
@@ -2413,6 +2493,7 @@ class TestCommuneOpposabilite:
             assert not commune.is_opposable(procedure_en_cours)
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_abrogation_non_opposable(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -2425,7 +2506,7 @@ class TestCommuneOpposabilite:
             with_perimetre=[commune],
         )
         procedure_approuvee.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-01"
+            type="Délibération d'approbation", date_evenement=timezone.now()
         )
 
         with django_assert_num_queries(3):
@@ -2438,6 +2519,7 @@ class TestCommuneOpposabilite:
             assert not commune.is_opposable(procedure_approuvee)
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_ignore_procedures_secondaires(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -2452,7 +2534,7 @@ class TestCommuneOpposabilite:
         )
         procedure_principale = procedure_secondaire.parente
         procedure_secondaire.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-01"
+            type="Délibération d'approbation", date_evenement=timezone.now()
         )
 
         with django_assert_num_queries(3):
@@ -2466,6 +2548,7 @@ class TestCommuneOpposabilite:
             assert not commune.is_opposable(procedure_secondaire)
 
     @pytest.mark.django_db
+    @freeze_time("2024-12-01")
     def test_ignore_procedures_archivees(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -2474,8 +2557,9 @@ class TestCommuneOpposabilite:
         procedure_supprimee = ProcedureFactory(
             collectivite_porteuse=commune, soft_delete=True, with_perimetre=[commune]
         )
+        now = timezone.now()
         procedure_supprimee.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-01"
+            type="Délibération d'approbation", date_evenement=now
         )
 
         procedure_doublon = ProcedureFactory(
@@ -2486,7 +2570,7 @@ class TestCommuneOpposabilite:
         )
         procedure_reelle = procedure_doublon.doublon_cache_de
         procedure_doublon.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-12-01"
+            type="Délibération d'approbation", date_evenement=now
         )
 
         with django_assert_num_queries(3):
@@ -2501,6 +2585,7 @@ class TestCommuneOpposabilite:
             assert not commune.is_opposable(procedure_doublon)
 
     @pytest.mark.django_db
+    @freeze_time("2024-02-01")
     def test_ignore_event_apres(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -2511,8 +2596,9 @@ class TestCommuneOpposabilite:
             doc_type=core_enums.TypeDocument.PLUI,
             with_perimetre=[commune],
         )
+        now = timezone.now()
         procedure_opposable_fevrier.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-02-02"
+            type="Délibération d'approbation", date_evenement=now
         )
 
         procedure_opposable_janvier = ProcedureFactory(
@@ -2521,7 +2607,7 @@ class TestCommuneOpposabilite:
             with_perimetre=[commune],
         )
         procedure_opposable_janvier.event_set.create(
-            type="Délibération d'approbation", date_evenement="2024-01-01"
+            type="Délibération d'approbation", date_evenement=now - timedelta(days=31)
         )
 
         with django_assert_num_queries(2):
@@ -2534,7 +2620,7 @@ class TestCommuneOpposabilite:
 
         with django_assert_num_queries(3):
             commune = core_models.Commune.objects.with_procedures_principales(
-                avant=date(2024, 2, 1)
+                avant=now - timedelta(days=31)
             ).get()
 
         with django_assert_num_queries(0):
