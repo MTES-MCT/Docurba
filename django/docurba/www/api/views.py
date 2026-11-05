@@ -1,5 +1,5 @@
 from csv import DictWriter
-from datetime import date
+from datetime import datetime
 from urllib.request import Request
 
 from django.db import models
@@ -11,12 +11,18 @@ from docurba.core.models import Collectivite, Commune, Procedure
 from docurba.utils.api.views import PublicAPIView
 
 
-def _avant(request: HttpRequest) -> date | None:
+def _avant(request: HttpRequest) -> datetime | None:
     return (
-        date.fromisoformat(request.GET.get("avant"))
+        datetime.fromisoformat(request.GET.get("avant") + "T00:00:00Z")
         if request.GET.get("avant")
         else None
     )
+
+
+def format_date(value: datetime | None) -> str | None:
+    if value:
+        return value.strftime("%F")  # YYYY-MM-DD
+    return None
 
 
 class PerimetresView(PublicAPIView, generics.GenericAPIView):
@@ -222,10 +228,18 @@ class CommunesView(PublicAPIView, generics.GenericAPIView):
                     "pc_nb_communes": plan_en_cours.perimetre_without_deleguees_count,
                     "pc_type_document": plan_en_cours.type_document,
                     "pc_type_procedure": plan_en_cours.type,
-                    "pc_date_prescription": plan_en_cours.date_prescription,
-                    "pc_date_arret_projet": plan_en_cours.date_arret_projet,
-                    "pc_date_pac": plan_en_cours.date_porter_a_connaissance,
-                    "pc_date_pac_comp": plan_en_cours.date_porter_a_connaissance_complementaire,
+                    "pc_date_prescription": format_date(
+                        plan_en_cours.date_prescription
+                    ),
+                    "pc_date_arret_projet": format_date(
+                        plan_en_cours.date_arret_projet
+                    ),
+                    "pc_date_pac": format_date(
+                        plan_en_cours.date_porter_a_connaissance
+                    ),
+                    "pc_date_pac_comp": format_date(
+                        plan_en_cours.date_porter_a_connaissance_complementaire
+                    ),
                     "pc_plui_valant_scot": plan_en_cours.vaut_SCoT,
                     "pc_pluih": plan_en_cours.vaut_PLH_consolide,
                     "pc_sectoriel": plan_en_cours.is_sectoriel_consolide,
@@ -249,15 +263,27 @@ class CommunesView(PublicAPIView, generics.GenericAPIView):
                     "pa_type_document": plan_opposable.type_document,
                     "pa_type_procedure": plan_opposable.type,
                     "pa_sectoriel": plan_opposable.is_sectoriel_consolide,
-                    "pa_date_prescription": plan_opposable.date_prescription,
-                    "pa_date_arret_projet": plan_opposable.date_arret_projet,
-                    "pa_date_pac": plan_opposable.date_porter_a_connaissance,
-                    "pa_date_pac_comp": plan_opposable.date_porter_a_connaissance_complementaire,
-                    "pa_date_approbation": plan_opposable.date_approbation,
-                    "pa_annee_prescription": plan_opposable.date_prescription
+                    "pa_date_prescription": format_date(
+                        plan_opposable.date_prescription
+                    ),
+                    "pa_date_arret_projet": format_date(
+                        plan_opposable.date_arret_projet
+                    ),
+                    "pa_date_pac": format_date(
+                        plan_opposable.date_porter_a_connaissance
+                    ),
+                    "pa_date_pac_comp": format_date(
+                        plan_opposable.date_porter_a_connaissance_complementaire
+                    ),
+                    "pa_date_approbation": format_date(plan_opposable.date_approbation),
+                    "pa_annee_prescription": format_date(
+                        plan_opposable.date_prescription
+                    )
                     and plan_opposable.date_prescription.year,
                     "pa_annee_approbation": plan_opposable.date_approbation.year,
-                    "pa_date_executoire": plan_opposable.date_caractere_executoire,
+                    "pa_date_executoire": format_date(
+                        plan_opposable.date_caractere_executoire
+                    ),
                     "pa_delai_approbation": plan_opposable.delai_d_approbation,
                     "pa_plui_valant_scot": plan_opposable.vaut_SCoT,
                     "pa_pluih": plan_opposable.vaut_PLH_consolide,
@@ -365,12 +391,20 @@ class ScotsView(PublicAPIView, generics.GenericAPIView):
                     "pa_nom_schema": scot_opposable.computed_name,
                     "pa_noserie_procedure": scot_opposable.from_sudocuh,
                     "pa_scot_interdepartement": scot_opposable.is_interdepartemental,
-                    "pa_date_publication_perimetre": scot_opposable.date_publication_perimetre,
-                    "pa_date_prescription": scot_opposable.date_prescription,
-                    "pa_date_arret_projet": scot_opposable.date_arret_projet,
-                    "pa_date_approbation": scot_opposable.date_approbation,
+                    "pa_date_publication_perimetre": format_date(
+                        scot_opposable.date_publication_perimetre
+                    ),
+                    "pa_date_prescription": format_date(
+                        scot_opposable.date_prescription
+                    ),
+                    "pa_date_arret_projet": format_date(
+                        scot_opposable.date_arret_projet
+                    ),
+                    "pa_date_approbation": format_date(scot_opposable.date_approbation),
                     "pa_annee_approbation": scot_opposable.date_approbation.year,
-                    "pa_date_fin_echeance": scot_opposable.date_fin_echeance,
+                    "pa_date_fin_echeance": format_date(
+                        scot_opposable.date_fin_echeance
+                    ),
                     "pa_nombre_communes": len(scot_opposable.perimetre.all()),
                     "pa_objets": scot_opposable.concatenated_topics_as_string,
                 }
@@ -383,9 +417,15 @@ class ScotsView(PublicAPIView, generics.GenericAPIView):
                     "pc_noserie_procedure": scot_en_cours.from_sudocuh,
                     "pc_proc_elaboration_revision": scot_en_cours.type,
                     "pc_scot_interdepartement": scot_en_cours.is_interdepartemental,
-                    "pc_date_publication_perimetre": scot_en_cours.date_publication_perimetre,
-                    "pc_date_prescription": scot_en_cours.date_prescription,
-                    "pc_date_arret_projet": scot_en_cours.date_arret_projet,
+                    "pc_date_publication_perimetre": format_date(
+                        scot_en_cours.date_publication_perimetre
+                    ),
+                    "pc_date_prescription": format_date(
+                        scot_en_cours.date_prescription
+                    ),
+                    "pc_date_arret_projet": format_date(
+                        scot_en_cours.date_arret_projet
+                    ),
                     "pc_nombre_communes": len(scot_en_cours.perimetre.all()),
                     "pc_objets": scot_en_cours.concatenated_topics_as_string,
                 }
