@@ -130,11 +130,11 @@
             </v-alert>
             <div class="d-flex">
               <v-text-field
-                :value="loadingName ? '...' : baseName"
+                :value="baseName"
                 background-color="white"
+                :error-messages="baseNameErrors"
                 outlined
                 class="rounded-r-0 "
-                hide-details
                 readonly
               />
               <v-text-field
@@ -224,7 +224,7 @@ export default {
   data () {
     return {
       baseName: '',
-      loadingName: false,
+      baseNameErrors: [],
       loaded: false,
       loadingSave: false,
       startedBeforeHuwartLaw: new Date() < new Date('2026-05-26'),
@@ -567,7 +567,7 @@ export default {
       })
     },
     async updateBaseName () {
-      this.loadingName = true
+      this.baseNameErrors = []
       const params = {
         collectiviteCode: this.collectivite.code,
         docType: this.procedureCategory === 'principale'
@@ -584,18 +584,25 @@ export default {
         ) ?? [],
         type: this.typeProcedure
       }
-      this.baseName = (
+
+      if (
         params.collectiviteCode &&
         params.perimetreCodes.length &&
         params.docType &&
         params.type
-      )
-        ? (await this.$djangoApi.get(
+      ) {
+        try {
+          this.baseName = (await this.$djangoApi.get(
             '/api-internes/procedures/compute-name',
             params
           )).name
-        : ''
-      this.loadingName = false
+        } catch {
+          this.baseName = ''
+          this.baseNameErrors = ['Le calcul du nom a échoué']
+        }
+      } else {
+        this.baseName = ''
+      }
     }
   }
 
