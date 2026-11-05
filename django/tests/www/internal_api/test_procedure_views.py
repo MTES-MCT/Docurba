@@ -239,7 +239,7 @@ class TestProcedureList:
             project=core_factories.ProjectFactory(
                 id=uuid.UUID("1cd65b57-7027-4aa5-8d19-333333333333")
             ),
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
         )
         aigremont = core_factories.CommuneFactory(code_insee="30002")
         core_factories.ProcedureFactory(
@@ -252,7 +252,7 @@ class TestProcedureList:
             project=core_factories.ProjectFactory(
                 id=uuid.UUID("1cd65b57-7027-4aa5-8d19-555555555555")
             ),
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
         )
         with api_client_with_auth(logged_in_profile) as api_client:
             response = api_client.get(
@@ -307,7 +307,7 @@ class TestProcedureList:
             with_perimetre=[communes[1]],
             numero="1",
             project=procedure.project,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
         )
         core_factories.ProcedureFactory(
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-333333333333"),
@@ -317,7 +317,7 @@ class TestProcedureList:
             with_perimetre=[communes[2]],
             numero="1",
             project=procedure.project,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
         )
         with api_client_with_auth(logged_in_profile) as api_client:
             response = api_client.get(
@@ -398,7 +398,8 @@ class TestProcedureList:
         core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            vaut_PDM=True,
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -406,13 +407,13 @@ class TestProcedureList:
         ):
             response = api_client.get(f"{self.url}")
         assert response.status_code == 200
-        assert response.json()["results"][0]["docType"] == "PLUi"
+        assert response.json()["results"][0]["docType"] == "PLUiM"
 
         # doc_type is PLU but area is composed of many towns
         core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -471,7 +472,7 @@ class TestProcedureList:
             with_perimetre=communes,
             numero="1",
             project=principal_procedure.project,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -569,7 +570,7 @@ class TestProcedureName:
         assert response.status_code == 200
         assert response.json()["name"] == "Elaboration PLU Beaucaire"
 
-    def test_principal_procedure_name__multiple_towns(
+    def test_principal_procedure_name__multiple_towns__plui(
         self,
         api_client: APIClient,
         django_assert_num_queries: DjangoAssertNumQueries,
@@ -602,6 +603,41 @@ class TestProcedureName:
         assert (
             response.json()["name"]
             == "Elaboration PLUi Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+
+    def test_principal_procedure_name__multiple_towns__scot(
+        self,
+        api_client: APIClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        communes = [
+            core_factories.CommuneFactory(for_snapshot=True),
+            core_factories.CommuneFactory(),
+        ]
+        collectivite = core_factories.CollectiviteFactory(
+            for_snapshot=True,
+            with_members=True,
+            with_members__list=[commune.collectivite_ptr for commune in communes],
+        )
+
+        query_params = {
+            "type": core_enums.ProcedureType.ELABORATION,
+            "docType": core_enums.TypeDocument.SCOT,
+            "perimetreCodes": [
+                commune.code_insee for commune in communes
+            ],  # procedure creation is on active communes only.
+            "collectiviteCode": collectivite.siren,
+        }
+        with (
+            django_assert_num_queries(self.base_queries),
+        ):
+            response = api_client.get(
+                f"{self.url}?{urlencode(query_params, doseq=True)}"
+            )
+        assert response.status_code == 200
+        assert (
+            response.json()["name"]
+            == "Elaboration SCOT Syndicat mixte d'équipement de la commune de Beaucaire"
         )
 
     def test_principal_procedure_name__sectoriel(
@@ -724,6 +760,31 @@ class TestProcedureName:
         assert (
             response.json()["non_field_errors"][0]
             == "Missing principal procedure required field. Mandatory fields are: ['collectiviteCode', 'perimetreCodes', 'doc_type']"
+        )
+
+    def test_validation_error__wrong_doc_type(
+        self,
+        api_client: APIClient,
+    ) -> None:
+        commune = core_factories.CommuneFactory(for_snapshot=True)
+        core_factories.CollectiviteFactory(
+            for_snapshot=True,
+            with_members=True,
+            with_members__list=[commune],
+        )
+        query_params = {
+            "parentId": "",
+            "collectiviteCode": "253000020",
+            "perimetreCodes": "30032",
+            "type": core_enums.ProcedureType.ELABORATION,
+            "docType": "SomeFancyPLU",
+        }
+
+        response = api_client.get(f"{self.url}?{urlencode(query_params, doseq=True)}")
+        assert response.status_code == 400
+        assert (
+            response.json()["docType"][0]
+            == "« SomeFancyPLU » n'est pas un choix valide."
         )
 
     def test_parente_procedure_not_found(

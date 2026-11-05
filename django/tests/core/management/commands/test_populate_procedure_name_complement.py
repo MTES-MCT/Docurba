@@ -3,7 +3,7 @@ from io import StringIO
 import pytest
 from django.core.management import call_command
 
-from docurba.core.enums import TypeDocument
+from docurba.core.enums import BaseDocumentType
 from tests.core.factories import CommuneFactory, ProcedureFactory
 
 
@@ -38,10 +38,10 @@ class TestPopulateProcedureNameComplement:
             ),
             pytest.param(  # dynamic_name == name : skipped
                 {
-                    "name": "Élaboration 1 de PLUi CC du test",
+                    "name": "Élaboration 1 de PLU CC du test",
                     "name_complement": "",
                     "type": "Élaboration",
-                    "doc_type": TypeDocument.PLUI,
+                    "base_doc_type": BaseDocumentType.PLU,
                     "numero": "1",
                     "collectivite_porteuse__nom": "CC du test",
                 },
@@ -50,10 +50,10 @@ class TestPopulateProcedureNameComplement:
             ),
             pytest.param(  # dynamic_name == name : skipped (no numero)
                 {
-                    "name": "Élaboration de PLUi CC du test",
+                    "name": "Élaboration de PLU CC du test",
                     "name_complement": "",
                     "type": "Élaboration",
-                    "doc_type": TypeDocument.PLUI,
+                    "base_doc_type": BaseDocumentType.PLU,
                     "collectivite_porteuse__nom": "CC du test",
                 },
                 "",
@@ -64,7 +64,7 @@ class TestPopulateProcedureNameComplement:
                     "name": "Élaboration 1 de PLU suite-de-test",
                     "name_complement": "",
                     "type": "Élaboration",
-                    "doc_type": TypeDocument.PLU,
+                    "base_doc_type": BaseDocumentType.PLU,
                     "numero": "1",
                     "with_perimetre": "suite-de-test",
                 },
