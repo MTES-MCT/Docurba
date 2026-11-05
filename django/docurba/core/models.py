@@ -830,6 +830,9 @@ class Procedure(models.Model):
 
     @property
     def is_sectoriel_consolide(self) -> bool:
+        if not self.is_intercommunal:
+            return False
+
         communes_adherentes_count = getattr(
             self.collectivite_porteuse, "communes_adherentes_count", None
         )

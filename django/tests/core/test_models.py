@@ -215,71 +215,43 @@ class TestProcedureCommunesCounts:
     def test_procedure_sectorielle_perimetre_inferieur_adhesions(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        collectivite = CollectiviteFactory()
-
-        collectivite_enfant = CollectiviteFactory()
-        collectivite_enfant.adhesions.add(collectivite)
-
-        commune_enfant = CommuneFactory()
-        commune_enfant.adhesions.add(collectivite)
-
-        collectivite_grand_enfant = CollectiviteFactory()
-        collectivite_grand_enfant.adhesions.add(collectivite_enfant)
-        commune_grand_enfant = CommuneFactory()
-        commune_grand_enfant.adhesions.add(collectivite_enfant)
-
-        commune_grand_grand_enfant = CommuneFactory()
-        commune_grand_grand_enfant.adhesions.add(collectivite_grand_enfant)
-        core_models.MaterializedViewFlatMembership.refresh()
+        collectivite = CollectiviteFactory(
+            with_flat_members=True, with_flat_members__for_snapshot=True
+        )
+        communes_enfant = [
+            core_models.Commune.objects.get(code_insee="30032"),
+            core_models.Commune.objects.get(code_insee="30034"),
+        ]
 
         procedure_sectorielle = ProcedureFactory(
             collectivite_porteuse=collectivite,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[commune_enfant],
+            with_perimetre=communes_enfant,
         )
         with django_assert_num_queries(1):
             procedure_sectorielle_with_counts = core_models.Procedure.objects.get(
                 id=procedure_sectorielle.id
             )
             assert (
-                procedure_sectorielle_with_counts.perimetre_without_deleguees_count == 1
+                procedure_sectorielle_with_counts.perimetre_without_deleguees_count == 2
             )
             assert (
                 procedure_sectorielle_with_counts.collectivite_porteuse_communes_adherentes_count
-                == 3
+                == 5
             )
             assert procedure_sectorielle_with_counts.is_sectoriel_consolide
 
     @pytest.mark.django_db
-    def test_procedure_non_sectorielle(
+    def test_procedure_plusieurs_communes_non_sectorielle(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        collectivite = CollectiviteFactory()
-
-        collectivite_enfant = CollectiviteFactory()
-        collectivite_enfant.adhesions.add(collectivite)
-
-        commune_enfant = CommuneFactory()
-        commune_enfant.adhesions.add(collectivite)
-
-        collectivite_grand_enfant = CollectiviteFactory()
-        collectivite_grand_enfant.adhesions.add(collectivite_enfant)
-        commune_grand_enfant = CommuneFactory()
-        commune_grand_enfant.adhesions.add(collectivite_enfant)
-
-        commune_grand_grand_enfant = CommuneFactory()
-        commune_grand_grand_enfant.adhesions.add(collectivite_grand_enfant)
-
-        core_models.MaterializedViewFlatMembership.refresh()
-
+        collectivite = CollectiviteFactory(
+            with_flat_members=True, with_flat_members__for_snapshot=True
+        )
         procedure_non_sectorielle = ProcedureFactory(
             collectivite_porteuse=collectivite,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[
-                commune_enfant,
-                commune_grand_enfant,
-                commune_grand_grand_enfant,
-            ],
+            with_perimetre=core_models.Commune.objects.all(),
         )
 
         with django_assert_num_queries(1):
@@ -288,13 +260,37 @@ class TestProcedureCommunesCounts:
             )
             assert (
                 procedure_non_sectorielle_with_counts.perimetre_without_deleguees_count
-                == 3
+                == 5
             )
             assert (
                 procedure_non_sectorielle_with_counts.collectivite_porteuse_communes_adherentes_count
-                == 3
+                == 5
             )
             assert not procedure_non_sectorielle_with_counts.is_sectoriel_consolide
+
+    @pytest.mark.django_db
+    def test_procedure_une_commune_non_sectorielle(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        collectivite = CollectiviteFactory(
+            with_flat_members=True, with_flat_members__for_snapshot=True
+        )
+        commune_enfant = core_models.Commune.objects.get(code_insee="30032")
+
+        procedure = ProcedureFactory(
+            collectivite_porteuse=collectivite,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            with_perimetre=[commune_enfant],
+        )
+
+        with django_assert_num_queries(1):
+            procedure_with_counts = core_models.Procedure.objects.get(id=procedure.id)
+            assert procedure_with_counts.perimetre_without_deleguees_count == 1
+            assert (
+                procedure_with_counts.collectivite_porteuse_communes_adherentes_count
+                == 5
+            )
+            assert not procedure_with_counts.is_sectoriel_consolide
 
     @pytest.mark.django_db
     def test_exclut_commune_deleguee_du_perimetre_count(
