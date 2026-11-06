@@ -481,6 +481,22 @@ export default {
           insertedProject = insertRet.data && insertRet.data[0] ? insertRet.data[0].id : null
           if (insertRet.error) { throw insertRet.error }
         }
+        const docType = this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType
+        const pluLike = [
+          'PLU',
+          'PLUi',
+          'PLUiH',
+          'PLUiHM',
+          'PLUiM',
+          'PLUiS',
+          'PLUiSH',
+          'PLUiSHM',
+          'PLUiSM'
+        ]
+        let baseDocType = docType
+        if (pluLike.includes(docType)) {
+          baseDocType = 'PLU'
+        }
 
         const { data: insertedProcedure, error: errorInsertedProcedure } = await this.$supabase.from('procedures').insert({
           shareable: true,
@@ -494,7 +510,8 @@ export default {
           is_pluih: ['PLUiH', 'PLUiHM', 'PLUiSH', 'PLUiSHM', 'PLUiHS', 'PLUiHMS'].includes(this.typeDu), // This will be refactored in Django: H in doc_type
           is_pdu: ['PLUiM', 'PLUiHM', 'PLUiSM', 'PLUiSHM', 'PLUiMS', 'PLUiHMS'].includes(this.typeDu), // This will be refactored in Django: M in doc_type
           current_perimetre: oldFomattedPerimetre,
-          doc_type: this.procedureCategory === 'principale' ? this.typeDu : this.procedureParentDocType,
+          base_doc_type: baseDocType,
+          doc_type: docType,
           departements,
           numero: this.procedureCategory === 'principale' ? '1' : this.numberProcedure,
           project_id: insertedProject,

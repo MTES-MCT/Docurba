@@ -35,6 +35,14 @@ class VisibilityType(models.TextChoices):
     )
 
 
+class BaseDocumentType(models.TextChoices):
+    CC = "CC", "CC"
+    SCOT = "SCOT", "SCoT"
+    SD = "SD", "SD"
+    PLU = "PLU", "PLU"
+    POS = "POS", "POS"
+
+
 class TypeDocument(models.TextChoices):
     CC = "CC"
     SCOT = "SCOT"
@@ -51,6 +59,41 @@ class TypeDocument(models.TextChoices):
     PLUISH = "PLUiSH"
     PLUISHM = "PLUiSHM"
     PLUISM = "PLUiSM"
+
+    @classmethod
+    def plu_variations(cls: models.TextChoices) -> dict:
+        enums = [
+            cls.PLU,
+            cls.PLUI,
+            cls.PLUIH,
+            cls.PLUIHM,
+            cls.PLUIM,
+            cls.PLUIS,
+            cls.PLUISH,
+            cls.PLUISHM,
+            cls.PLUISM,
+        ]
+        return {member.value: member for member in cls if member in enums}
+
+    @classmethod
+    def plh_variations(cls: models.TextChoices) -> dict:
+        enums = [
+            cls.PLUIH,
+            cls.PLUIHM,
+            cls.PLUISH,
+            cls.PLUISHM,
+        ]
+        return {member.value: member for member in cls if member in enums}
+
+    @classmethod
+    def pdm_variations(cls: models.TextChoices) -> dict:
+        enums = [
+            cls.PLUIHM,
+            cls.PLUIM,
+            cls.PLUISHM,
+            cls.PLUISM,
+        ]
+        return {member.value: member for member in cls if member in enums}
 
 
 class ProcedureStatusChoices(models.TextChoices):

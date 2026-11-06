@@ -58,7 +58,7 @@ class TestApiPerimetresAndCommunes:
         return {
             "for_snapshot": True,
             "with_perimetre": perimetre,
-            "doc_type": core_enums.TypeDocument.PLU,
+            "base_doc_type": core_enums.BaseDocumentType.PLU,
             "with_event": True,
             "with_event__category": core_models.EventCategory.APPROUVE,
             "with_event__date_evenement": dt.date(2024, 6, 6),
@@ -84,7 +84,7 @@ class TestApiPerimetresAndCommunes:
         collectivite.adhesions.add(*communes)
         ProcedureFactory(
             **self._default_procedure_factory_attrs(perimetre=communes[1:])
-            | {"doc_type": core_enums.TypeDocument.PLUIH}
+            | {"base_doc_type": core_enums.BaseDocumentType.PLU, "vaut_PLH": True}
         )
         response = client.get(reverse(view_name))
         assert response.status_code == 200
@@ -109,7 +109,7 @@ class TestApiPerimetresAndCommunes:
         collectivite.adhesions.add(*[commune])
         ProcedureFactory(
             **self._default_procedure_factory_attrs(perimetre=[commune])
-            | {"doc_type": core_enums.TypeDocument.CC},
+            | {"base_doc_type": core_enums.BaseDocumentType.CC},
         )
 
         response = client.get(reverse(view_name))
@@ -167,7 +167,7 @@ class TestAPIPerimetres:
             collectivite_porteuse = perimetre[0]
 
         params = {
-            "doc_type": core_enums.TypeDocument.PLU,
+            "base_doc_type": core_enums.BaseDocumentType.PLU,
             "collectivite_porteuse": collectivite_porteuse,
             "with_perimetre": perimetre,
             "with_event": True,
@@ -217,7 +217,7 @@ class TestAPIPerimetres:
                 ProcedureFactory(
                     pk=procedures_uids[i * nb_communes + ii],
                     collectivite_porteuse=commune,
-                    doc_type=core_enums.TypeDocument.PLU,
+                    base_doc_type=core_enums.BaseDocumentType.PLU,
                     with_perimetre=[commune],
                 )
 
@@ -259,13 +259,13 @@ class TestAPIPerimetres:
         # Procédure principale
         principal_procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             with_perimetre=[commune],
         )
         # Procédure secondaire : belongs to a parent procedure.
         ProcedureFactory(
             collectivite_porteuse=commune,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             with_perimetre=[commune],
             parente=principal_procedure,
         )
@@ -273,13 +273,13 @@ class TestAPIPerimetres:
         # Archived if soft delete is true or doublon_cache_de is filled.
         ProcedureFactory(
             collectivite_porteuse=commune,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             with_perimetre=[commune],
             soft_delete=True,
         )
         ProcedureFactory(
             collectivite_porteuse=commune,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             with_perimetre=[commune],
             doublon_cache_de=principal_procedure,
         )
@@ -359,7 +359,7 @@ class TestAPICommunes:
             collectivite_porteuse = perimetre[0]
 
         params = {
-            "doc_type": core_enums.TypeDocument.PLU,
+            "base_doc_type": core_enums.BaseDocumentType.PLU,
             "collectivite_porteuse": collectivite_porteuse,
             "with_perimetre": perimetre,
             "with_event": True,
@@ -375,9 +375,9 @@ class TestAPICommunes:
         date: dt.date | None = None,
     ) -> None:
         return procedure.event_set.create(
-            type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][category][
-                0
-            ],
+            type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.base_doc_type][
+                category
+            ][0],
             date_evenement=date or dt.date(2025, 11, 11),
         )
 
@@ -749,7 +749,10 @@ class TestAPICommunes:
     ) -> None:
         # We need to specify the INSEE code because results are ordered by the INSEE code
         # and we need to check the first result.
-        perimetre = [CommuneFactory(code_insee="30135")]
+        perimetre = [
+            CommuneFactory(code_insee="30135"),
+            CommuneFactory(code_insee="30117"),
+        ]
         collectivite_porteuse = CollectiviteFactory(
             with_members=True,
             with_members__list=[*perimetre, CommuneFactory(code_insee="30189")],
@@ -768,6 +771,46 @@ class TestAPICommunes:
             assert results[0]["pc_sectoriel"] == "True"
         elif core_models.EventCategory.APPROUVE:
             assert results[0]["pa_sectoriel"] == "True"
+
+    @pytest.mark.parametrize(
+        "procedure_status",
+        [
+            pytest.param(
+                core_models.EventCategory.PUBLICATION_PERIMETRE,
+                id="ongoing_procedure",
+            ),
+            pytest.param(
+                core_models.EventCategory.APPROUVE,
+                id="approved_procedure",
+            ),
+        ],
+    )
+    def test_not_sectoriel_one_commune(
+        self, client: Client, procedure_status: core_models.EventCategory
+    ) -> None:
+        # We need to specify the INSEE code because results are ordered by the INSEE code
+        # and we need to check the first result.
+        perimetre = [
+            CommuneFactory(code_insee="30135"),
+        ]
+        collectivite_porteuse = CollectiviteFactory(
+            with_members=True,
+            with_members__list=[*perimetre, CommuneFactory(code_insee="30189")],
+        )
+        ProcedureFactory(
+            **self._default_procedure_factory_params(
+                procedure_status=procedure_status,
+                perimetre=perimetre,
+                collectivite_porteuse=collectivite_porteuse,
+            ),
+        )
+        response = client.get(reverse("api:communes"))
+        assert response.status_code == 200
+        results = csv_to_json_like(response.content)
+        if procedure_status == core_models.EventCategory.PUBLICATION_PERIMETRE:
+            assert results[0]["pc_sectoriel"] == "False"
+        elif core_models.EventCategory.APPROUVE:
+            assert results[0]["pa_sectoriel"] == "False"
 
     @pytest.mark.parametrize(
         "procedure_status",
@@ -969,7 +1012,7 @@ class TestAPICommunes:
             with_event__date_evenement=dt.date(2025, 10, 10),
         )
         EventFactory(
-            type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][
+            type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.base_doc_type][
                 event_type
             ][0],
             date_evenement=dt.date(2025, 11, 11),
@@ -1016,7 +1059,7 @@ class TestAPICommunes:
             with_event__date_evenement=dt.date(2025, 10, 10),
         )
         EventFactory(
-            type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][
+            type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.base_doc_type][
                 event_type
             ][0],
             date_evenement=dt.date(2025, 11, 11),
@@ -1049,7 +1092,7 @@ class TestAPICommunes:
             with_event__date_evenement=dt.date(2025, 10, 10),
         )
         EventFactory(
-            type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][
+            type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.base_doc_type][
                 event_type
             ][0],
             date_evenement=dt.date(2025, 11, 11),
@@ -1091,7 +1134,7 @@ class TestAPICommunes:
     ) -> None:
         procedure = ProcedureFactory(**self._default_procedure_factory_params())
         procedure.event_set.create(
-            type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.doc_type][
+            type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.base_doc_type][
                 core_models.EventCategory.APPROUVE
             ][0],
             date_evenement=approval_date,  # 2026-07-04
@@ -1135,11 +1178,11 @@ class TestAPICommunes:
         ],
     )
     @pytest.mark.parametrize(
-        ("doc_type", "expected_code"),
+        ("base_doc_type", "expected_code"),
         [
-            (core_enums.TypeDocument.CC, "1"),
-            (core_enums.TypeDocument.POS, "2"),
-            (core_enums.TypeDocument.PLU, "3"),
+            (core_enums.BaseDocumentType.CC, "1"),
+            (core_enums.BaseDocumentType.POS, "2"),
+            (core_enums.BaseDocumentType.PLU, "3"),
         ],
     )
     def test_code_etat_simplifie(
@@ -1147,7 +1190,7 @@ class TestAPICommunes:
         client: Client,
         with_ongoing: bool,  # noqa: FBT001
         with_approved: bool,  # noqa: FBT001
-        doc_type: core_enums.TypeDocument,
+        base_doc_type: core_enums.BaseDocumentType,
         expected_code: str,
     ) -> None:
         perimetre = [CommuneFactory()]
@@ -1157,7 +1200,7 @@ class TestAPICommunes:
                     perimetre=perimetre,
                     procedure_status=core_models.EventCategory.PUBLICATION_PERIMETRE,
                 )
-                | {"doc_type": doc_type},
+                | {"base_doc_type": base_doc_type},
             )
         if with_approved:
             ProcedureFactory(
@@ -1165,7 +1208,7 @@ class TestAPICommunes:
                     perimetre=perimetre,
                     procedure_status=core_models.EventCategory.APPROUVE,
                 )
-                | {"doc_type": doc_type},
+                | {"base_doc_type": base_doc_type},
             )
         response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
@@ -1176,7 +1219,7 @@ class TestAPICommunes:
             assert results[0]["plan_code_etat_simplifie"][0] == "9"
             assert results[0]["plan_code_etat_complet"][0] == "9"
 
-        if with_ongoing and doc_type != core_enums.TypeDocument.POS:
+        if with_ongoing and base_doc_type != core_enums.BaseDocumentType.POS:
             assert results[0]["plan_code_etat_simplifie"][1] == expected_code
             assert results[0]["plan_code_etat_complet"][2] == expected_code
         else:
@@ -1324,7 +1367,7 @@ class TestAPICommunes:
             **self._default_procedure_factory_params(
                 collectivite_porteuse=collectivite_porteuse, perimetre=perimetre
             )
-            | {"doc_type": core_enums.TypeDocument.CC}
+            | {"base_doc_type": core_enums.BaseDocumentType.CC}
         )
         response = client.get(reverse("api:communes"))
         results = csv_to_json_like(response.content)
@@ -1334,6 +1377,14 @@ class TestAPICommunes:
 
 @pytest.mark.django_db
 class TestAPIScots:
+    BASE_NUM_QUERIES = (
+        1  # core_collectivite
+        + 1  # procedures
+        + 1  # doc_frise_events
+        + 2  # procedures_perimetres
+        + 1  # doc_frise_events
+    )
+
     def _default_procedure_factory_params(
         self,
         perimetre: list | None = None,
@@ -1347,7 +1398,7 @@ class TestAPIScots:
                 with_members=True, with_members__list=perimetre
             )
         params = {
-            "doc_type": core_enums.TypeDocument.SCOT,
+            "base_doc_type": core_enums.BaseDocumentType.SCOT,
             "collectivite_porteuse": collectivite,
             "with_perimetre": perimetre,
             "with_event": True,
@@ -1370,13 +1421,17 @@ class TestAPIScots:
         )
 
     def test_nominal(self, client: Client, snapshot: SnapshotAssertion) -> None:
-        commune = CommuneFactory(for_snapshot=True)
-        collectivite_porteuse = CollectiviteFactory(for_snapshot=True)
+        collectivite_porteuse = CollectiviteFactory(
+            for_snapshot=True,
+            with_flat_members=True,
+            with_flat_members__for_snapshot=True,
+        )
+        perimetre = core_models.Commune.objects.all()
         # pc_*
         # pc_date_perscription
         ongoing_procedure = ProcedureFactory(
             **self._default_procedure_factory_params(
-                perimetre=[commune],
+                perimetre=perimetre,
                 collectivite=collectivite_porteuse,
                 procedure_status=core_models.EventCategory.PRESCRIPTION,
             ),
@@ -1399,7 +1454,7 @@ class TestAPIScots:
         # dates: pa_date_approbation, pa_annee_approbation
         approved_procedure = ProcedureFactory(
             **self._default_procedure_factory_params(
-                perimetre=[commune],
+                perimetre=perimetre,
                 collectivite=collectivite_porteuse,
                 procedure_status=core_models.EventCategory.APPROUVE,
             ),
@@ -1434,7 +1489,7 @@ class TestAPIScots:
     ) -> None:
         for _ in range(2):
             ProcedureFactory(**self._default_procedure_factory_params())
-            with django_assert_num_queries(6):
+            with django_assert_num_queries(self.BASE_NUM_QUERIES):
                 response = client.get(reverse("api:scots"))
         assert response.status_code == 200
 
@@ -1484,7 +1539,9 @@ class TestAPIScots:
             ),
         )
 
-        with django_assert_num_queries(6 if nb_communes else 4):
+        with django_assert_num_queries(
+            self.BASE_NUM_QUERIES if nb_communes else self.BASE_NUM_QUERIES - 2
+        ):
             response = client.get(reverse("api:scots"))
         result = csv_to_json_like(response.content)
         if procedure_status == core_models.EventCategory.APPROUVE and nb_communes != 0:
@@ -1594,12 +1651,11 @@ class TestAPIScots:
                 procedure_status=procedure_status,
             ),
         )
-
         if procedure_topics:
             topics = core_models.Topic.objects.filter(name__in=procedure_topics)
             procedure.topics.add(*topics)
 
-        with django_assert_num_queries(6):
+        with django_assert_num_queries(self.BASE_NUM_QUERIES):
             response = client.get(reverse("api:scots"))
 
         results = csv_to_json_like(response.content)
@@ -1647,14 +1703,14 @@ class TestAPIScots:
         )
         ProcedureFactory(
             collectivite_porteuse=collectivite_porteuse_a,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             with_event=True,
             with_event__category=core_models.EventCategory.APPROUVE,
             with_perimetre=[commune_a],
         )
         ProcedureFactory(
             collectivite_porteuse=collectivite_porteuse_b,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             with_event=True,
             with_event__category=core_models.EventCategory.APPROUVE,
             with_perimetre=[commune_b],
@@ -1705,7 +1761,7 @@ class TestAPIScots:
             ][0],
             date_evenement=approval_date,  # 2026-07-04
         )
-        with django_assert_num_queries(6):
+        with django_assert_num_queries(self.BASE_NUM_QUERIES):
             response = client.get(f"{reverse('api:scots')}?avant={avant_value}")
         results = csv_to_json_like(response.content)
         assert len(results) == 1

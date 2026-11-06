@@ -10,9 +10,9 @@ WITH events_with_event_type AS (
     FROM doc_frise_events e
     JOIN procedures p ON p.id = e.procedure_id
     JOIN core_eventtype et ON (CASE
-           WHEN p.doc_type IN ('SCOT', 'SD') AND et.document_type = 'SCOT' THEN 1
-           WHEN p.doc_type = 'CC' AND et.document_type = 'CC' THEN 1
-           WHEN p.doc_type IN ('PLU', 'PLUi', 'PLUiH', 'PLUiHM', 'PLUiM', 'POS') AND et.document_type = 'PLU' THEN 1
+           WHEN p.base_doc_type IN ('SCOT', 'SD') AND et.document_type = 'SCOT' THEN 1
+           WHEN p.base_doc_type = 'CC' AND et.document_type = 'CC' THEN 1
+           WHEN p.base_doc_type in ('PLU', 'POS') AND et.document_type = 'PLU' THEN 1
            ELSE 0
            END = 1) AND (
         (COALESCE(e.type, '') != '' AND (e.type = et.name OR e.type = et.sudocuh_name)) OR
@@ -54,7 +54,7 @@ WITH mapping AS (SELECT * FROM (VALUES
     JOIN "procedures" p ON p.id = e.procedure_id AND (CASE
            WHEN p.doc_type IN ('SCOT', 'SD') AND mapping.code = 'SCOT' THEN 1
            WHEN p.doc_type = 'CC' AND mapping.code = 'CC' THEN 1
-           WHEN p.doc_type IN ('PLU', 'PLUi', 'PLUiH', 'PLUiHM', 'PLUiM', 'POS') AND mapping.code = 'PLU' THEN 1
+           WHEN p.base_doc_type IN ('PLU', 'POS') AND mapping.code = 'PLU' THEN 1
            ELSE 0
            END = 1)
     JOIN core_eventtype et ON et.document_type = mapping.code AND et.name = mapping.type_name

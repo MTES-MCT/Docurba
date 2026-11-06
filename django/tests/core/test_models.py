@@ -215,71 +215,43 @@ class TestProcedureCommunesCounts:
     def test_procedure_sectorielle_perimetre_inferieur_adhesions(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        collectivite = CollectiviteFactory()
-
-        collectivite_enfant = CollectiviteFactory()
-        collectivite_enfant.adhesions.add(collectivite)
-
-        commune_enfant = CommuneFactory()
-        commune_enfant.adhesions.add(collectivite)
-
-        collectivite_grand_enfant = CollectiviteFactory()
-        collectivite_grand_enfant.adhesions.add(collectivite_enfant)
-        commune_grand_enfant = CommuneFactory()
-        commune_grand_enfant.adhesions.add(collectivite_enfant)
-
-        commune_grand_grand_enfant = CommuneFactory()
-        commune_grand_grand_enfant.adhesions.add(collectivite_grand_enfant)
-        core_models.MaterializedViewFlatMembership.refresh()
+        collectivite = CollectiviteFactory(
+            with_flat_members=True, with_flat_members__for_snapshot=True
+        )
+        communes_enfant = [
+            core_models.Commune.objects.get(code_insee="30032"),
+            core_models.Commune.objects.get(code_insee="30034"),
+        ]
 
         procedure_sectorielle = ProcedureFactory(
             collectivite_porteuse=collectivite,
-            doc_type=core_enums.TypeDocument.PLU,
-            with_perimetre=[commune_enfant],
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            with_perimetre=communes_enfant,
         )
         with django_assert_num_queries(1):
             procedure_sectorielle_with_counts = core_models.Procedure.objects.get(
                 id=procedure_sectorielle.id
             )
             assert (
-                procedure_sectorielle_with_counts.perimetre_without_deleguees_count == 1
+                procedure_sectorielle_with_counts.perimetre_without_deleguees_count == 2
             )
             assert (
                 procedure_sectorielle_with_counts.collectivite_porteuse_communes_adherentes_count
-                == 3
+                == 5
             )
             assert procedure_sectorielle_with_counts.is_sectoriel_consolide
 
     @pytest.mark.django_db
-    def test_procedure_non_sectorielle(
+    def test_procedure_plusieurs_communes_non_sectorielle(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
-        collectivite = CollectiviteFactory()
-
-        collectivite_enfant = CollectiviteFactory()
-        collectivite_enfant.adhesions.add(collectivite)
-
-        commune_enfant = CommuneFactory()
-        commune_enfant.adhesions.add(collectivite)
-
-        collectivite_grand_enfant = CollectiviteFactory()
-        collectivite_grand_enfant.adhesions.add(collectivite_enfant)
-        commune_grand_enfant = CommuneFactory()
-        commune_grand_enfant.adhesions.add(collectivite_enfant)
-
-        commune_grand_grand_enfant = CommuneFactory()
-        commune_grand_grand_enfant.adhesions.add(collectivite_grand_enfant)
-
-        core_models.MaterializedViewFlatMembership.refresh()
-
+        collectivite = CollectiviteFactory(
+            with_flat_members=True, with_flat_members__for_snapshot=True
+        )
         procedure_non_sectorielle = ProcedureFactory(
             collectivite_porteuse=collectivite,
-            doc_type=core_enums.TypeDocument.PLU,
-            with_perimetre=[
-                commune_enfant,
-                commune_grand_enfant,
-                commune_grand_grand_enfant,
-            ],
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            with_perimetre=core_models.Commune.objects.all(),
         )
 
         with django_assert_num_queries(1):
@@ -288,13 +260,37 @@ class TestProcedureCommunesCounts:
             )
             assert (
                 procedure_non_sectorielle_with_counts.perimetre_without_deleguees_count
-                == 3
+                == 5
             )
             assert (
                 procedure_non_sectorielle_with_counts.collectivite_porteuse_communes_adherentes_count
-                == 3
+                == 5
             )
             assert not procedure_non_sectorielle_with_counts.is_sectoriel_consolide
+
+    @pytest.mark.django_db
+    def test_procedure_une_commune_non_sectorielle(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        collectivite = CollectiviteFactory(
+            with_flat_members=True, with_flat_members__for_snapshot=True
+        )
+        commune_enfant = core_models.Commune.objects.get(code_insee="30032")
+
+        procedure = ProcedureFactory(
+            collectivite_porteuse=collectivite,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            with_perimetre=[commune_enfant],
+        )
+
+        with django_assert_num_queries(1):
+            procedure_with_counts = core_models.Procedure.objects.get(id=procedure.id)
+            assert procedure_with_counts.perimetre_without_deleguees_count == 1
+            assert (
+                procedure_with_counts.collectivite_porteuse_communes_adherentes_count
+                == 5
+            )
+            assert not procedure_with_counts.is_sectoriel_consolide
 
     @pytest.mark.django_db
     def test_exclut_commune_deleguee_du_perimetre_count(
@@ -311,7 +307,7 @@ class TestProcedureCommunesCounts:
 
         procedure = ProcedureFactory(
             collectivite_porteuse=collectivite,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             with_perimetre=[commune_enfant, commune_deleguee],
         )
 
@@ -332,7 +328,8 @@ class TestProcedureCommunesCounts:
         core_models.MaterializedViewFlatMembership.refresh()
 
         procedure = ProcedureFactory(
-            collectivite_porteuse=collectivite, doc_type=core_enums.TypeDocument.PLU
+            collectivite_porteuse=collectivite,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
         )
 
         with django_assert_num_queries(1):
@@ -345,7 +342,7 @@ class TestProcedureCommunesCounts:
 
 
 def test_tous_document_types_ont_event_category() -> None:
-    assert list(core_enums.TypeDocument) == list(
+    assert list(core_enums.BaseDocumentType) == list(
         core_models.EVENT_CATEGORY_BY_DOC_TYPE.keys()
     )
 
@@ -398,7 +395,7 @@ class TestCollectivitePortantScot:
 
         scot_en_cours = ProcedureFactory(
             collectivite_porteuse=collectivite_avec_scot,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
         )
         scot_en_cours.event_set.create(
             type="Délibération de l'établissement public qui prescrit",
@@ -411,7 +408,7 @@ class TestCollectivitePortantScot:
 
         ProcedureFactory(
             collectivite_porteuse=collectivite_avec_plan,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
         )
 
         with django_assert_num_queries(4):
@@ -428,13 +425,13 @@ class TestCollectivitePortantScot:
 
         scot_supprime = ProcedureFactory(
             collectivite_porteuse=collectivite,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             soft_delete=True,
         )
 
         _scot_doublon = ProcedureFactory(
             collectivite_porteuse=collectivite,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             doublon_cache_de=scot_supprime,
         )
 
@@ -448,13 +445,13 @@ class TestCollectivitePortantScot:
         collectivite = CollectiviteFactory()
         parent_procedure = ProcedureFactory(
             collectivite_porteuse=collectivite,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             soft_delete=True,
         )
 
         ProcedureFactory(
             collectivite_porteuse=collectivite,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             parente=parent_procedure,
             archived=False,
         )
@@ -474,7 +471,7 @@ class TestCollectivitePortantScot:
         for date_string in ("2024-02-01", "2024-02-02"):
             scot_opposable = ProcedureFactory(
                 collectivite_porteuse=collectivite_avec_scot,
-                doc_type=core_enums.TypeDocument.SCOT,
+                base_doc_type=core_enums.BaseDocumentType.SCOT,
                 with_perimetre=[commune],
             )
             scot_opposable.event_set.create(
@@ -500,7 +497,7 @@ class TestCollectivitePortantScot:
         for _ in range(2):
             scot_en_cours = ProcedureFactory(
                 collectivite_porteuse=collectivite_avec_scot,
-                doc_type=core_enums.TypeDocument.SCOT,
+                base_doc_type=core_enums.BaseDocumentType.SCOT,
             )
             scot_en_cours.event_set.create(
                 type="Délibération de l'établissement public qui prescrit",
@@ -532,7 +529,7 @@ class TestCollectivitePortantScot:
 
         scot_opposable_a = ProcedureFactory(
             collectivite_porteuse=collectivite,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             type="A",
             with_perimetre=[commune_a],
         )
@@ -542,7 +539,7 @@ class TestCollectivitePortantScot:
 
         scot_precedent_a = ProcedureFactory(
             collectivite_porteuse=collectivite,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             type="B",
             with_perimetre=[commune_a],
         )
@@ -552,7 +549,7 @@ class TestCollectivitePortantScot:
 
         scot_opposable_a_et_b = ProcedureFactory(
             collectivite_porteuse=collectivite,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             type="C",
             with_perimetre=[commune_a, commune_b],
         )
@@ -580,7 +577,7 @@ class TestCollectivitePortantScot:
 
         scot_en_cours = ProcedureFactory(
             collectivite_porteuse=collectivite_avec_scot,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
         )
         scot_en_cours.event_set.create(
             type="Délibération de l'établissement public qui prescrit",
@@ -591,7 +588,7 @@ class TestCollectivitePortantScot:
         for commune in [commune_a, commune_b]:
             scot_opposable = ProcedureFactory(
                 collectivite_porteuse=collectivite_avec_scot,
-                doc_type=core_enums.TypeDocument.SCOT,
+                base_doc_type=core_enums.BaseDocumentType.SCOT,
                 with_perimetre=[commune],
             )
             scot_opposable.event_set.create(
@@ -628,7 +625,7 @@ class TestCollectivitePortantScot:
 
         scot_opposable = ProcedureFactory(
             collectivite_porteuse=collectivite_avec_scot,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             with_perimetre=[commune],
         )
         scot_opposable.event_set.create(
@@ -662,7 +659,7 @@ class TestScotInterdepartemental:
 
         scot_en_cours = ProcedureFactory(
             collectivite_porteuse=collectivite_avec_scot,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             with_perimetre=[commune_a, commune_b],
         )
         scot_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
@@ -684,7 +681,7 @@ class TestScotInterdepartemental:
 
         scot_en_cours = ProcedureFactory(
             collectivite_porteuse=collectivite_avec_scot,
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             with_perimetre=[commune_a, commune_b],
         )
         scot_en_cours.event_set.create(type="Prescription", date_evenement="2024-12-01")
@@ -698,23 +695,28 @@ class TestScotInterdepartemental:
 
 class TestProcedure:
     def test_is_schema(self) -> None:
-        assert not core_models.Procedure(doc_type=core_enums.TypeDocument.CC).is_schema
-        assert not core_models.Procedure(doc_type=core_enums.TypeDocument.PLU).is_schema
         assert not core_models.Procedure(
-            doc_type=core_enums.TypeDocument.PLUI
+            base_doc_type=core_enums.BaseDocumentType.CC
         ).is_schema
         assert not core_models.Procedure(
-            doc_type=core_enums.TypeDocument.PLUIM
+            base_doc_type=core_enums.BaseDocumentType.PLU
         ).is_schema
         assert not core_models.Procedure(
-            doc_type=core_enums.TypeDocument.PLUIH
+            base_doc_type=core_enums.BaseDocumentType.PLU
         ).is_schema
         assert not core_models.Procedure(
-            doc_type=core_enums.TypeDocument.PLUIHM
+            vaut_PDM=True, base_doc_type=core_enums.BaseDocumentType.PLU
+        ).is_schema
+        assert not core_models.Procedure(
+            vaut_PLH=True, base_doc_type=core_enums.BaseDocumentType.PLU
         ).is_schema
 
-        assert core_models.Procedure(doc_type=core_enums.TypeDocument.SCOT).is_schema
-        assert core_models.Procedure(doc_type=core_enums.TypeDocument.SD).is_schema
+        assert core_models.Procedure(
+            base_doc_type=core_enums.BaseDocumentType.SCOT
+        ).is_schema
+        assert core_models.Procedure(
+            base_doc_type=core_enums.BaseDocumentType.SD
+        ).is_schema
 
     @pytest.mark.django_db
     def test_liable_a_collectivite_porteuse_inexistante(self) -> None:
@@ -788,7 +790,7 @@ class TestProcedure:
         procedure = ProcedureFactory(
             name="",
             collectivite_porteuse__for_snapshot=True,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
         )
         assert procedure.computed_name == expected_name
 
@@ -800,7 +802,7 @@ class TestProcedure:
             name="",
             numero="1",
             collectivite_porteuse__for_snapshot=True,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
         )
         assert procedure.computed_name == expected_name
 
@@ -811,7 +813,7 @@ class TestProcedure:
             numero="1",
             name_complement="en cours",
             collectivite_porteuse__for_snapshot=True,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
         )
         assert procedure.computed_name == expected_name
 
@@ -903,7 +905,8 @@ class TestProcedureDates:
     ) -> None:
         commune = CommuneFactory()
         ProcedureFactory(
-            doc_type=core_enums.TypeDocument.SCOT, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
+            collectivite_porteuse=commune,
         )
 
         with django_assert_num_queries(2):
@@ -934,7 +937,7 @@ class TestProcedureDates:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             collectivite_porteuse=commune,
         )
         for date_string in ("2022-12-01", "2024-12-01", "2023-12-01"):
@@ -964,7 +967,8 @@ class TestProcedureDates:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.SCOT, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
+            collectivite_porteuse=commune,
         )
         procedure.event_set.create(
             type=event_type, date_evenement="2024-12-01", is_valid=False
@@ -994,7 +998,8 @@ class TestProcedureDates:
         """Ignore les événements après la date fournie, sauf pour les dates de fin d'échéance qui doivent toujours être récupérées."""
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.SCOT, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
+            collectivite_porteuse=commune,
         )
         procedure.event_set.create(type=event_type, date_evenement="2022-12-01")
         procedure.event_set.create(type="Fin d'échéance", date_evenement="2022-12-01")
@@ -1021,59 +1026,27 @@ class TestProcedureDates:
             assert procedure_with_events.date_fin_echeance == date(2022, 12, 1)
 
 
-class TestProcedureDocTypeDocument:
+class TestProcedureTypeDocument:
+    @pytest.mark.django_db
     def test_non_plu_like(self) -> None:
         assert (
-            core_models.Procedure(doc_type=core_enums.TypeDocument.CC).type_document
-            == core_enums.TypeDocument.CC
+            ProcedureFactory(base_doc_type=core_enums.BaseDocumentType.CC).type_document
+            == core_enums.BaseDocumentType.CC
         )
         assert (
-            core_models.Procedure(doc_type=core_enums.TypeDocument.SCOT).type_document
-            == core_enums.TypeDocument.SCOT
+            ProcedureFactory(
+                base_doc_type=core_enums.BaseDocumentType.SCOT
+            ).type_document
+            == core_enums.BaseDocumentType.SCOT
         )
         assert (
-            core_models.Procedure(doc_type=core_enums.TypeDocument.SD).type_document
-            == core_enums.TypeDocument.SD
+            ProcedureFactory(base_doc_type=core_enums.BaseDocumentType.SD).type_document
+            == core_enums.BaseDocumentType.SD
         )
 
     @pytest.mark.django_db
-    @pytest.mark.parametrize(
-        "doc_type",
-        [
-            (core_enums.TypeDocument.PLU),
-            (core_enums.TypeDocument.PLUI),
-            (core_enums.TypeDocument.PLUIH),
-            (core_enums.TypeDocument.PLUIM),
-            (core_enums.TypeDocument.PLUIHM),
-        ],
-    )
-    def test_plu(
-        self,
-        doc_type: core_enums.TypeDocument,
-        django_assert_num_queries: DjangoAssertNumQueries,
-    ) -> None:
-        commune = CommuneFactory()
-        procedure = ProcedureFactory(
-            doc_type=doc_type, collectivite_porteuse=commune, with_perimetre=[commune]
-        )
-
-        with django_assert_num_queries(1):
-            procedure = core_models.Procedure.objects.get(id=procedure.id)
-            assert procedure.type_document == core_enums.TypeDocument.PLU
-            assert not procedure.vaut_PLH_consolide
-            assert not procedure.vaut_PDM_consolide
-
-    @pytest.mark.django_db
-    @pytest.mark.parametrize(
-        "doc_type",
-        [
-            (core_enums.TypeDocument.PLU),
-            (core_enums.TypeDocument.PLUI),
-        ],
-    )
     def test_plui(
         self,
-        doc_type: core_enums.TypeDocument,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         commune_a = CommuneFactory()
@@ -1081,30 +1054,17 @@ class TestProcedureDocTypeDocument:
 
         procedure = ProcedureFactory(
             collectivite_porteuse=commune_a,
-            doc_type=doc_type,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             with_perimetre=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
             procedure = core_models.Procedure.objects.get(id=procedure.id)
             assert procedure.type_document == core_enums.TypeDocument.PLUI
-            assert not procedure.vaut_PLH_consolide
-            assert not procedure.vaut_PDM_consolide
 
     @pytest.mark.django_db
-    @pytest.mark.parametrize(
-        ("doc_type", "vaut_PLH"),
-        [
-            (core_enums.TypeDocument.PLU, True),
-            (core_enums.TypeDocument.PLUI, True),
-            (core_enums.TypeDocument.PLUIH, False),
-            (core_enums.TypeDocument.PLUIH, True),
-        ],
-    )
     def test_pluih(
         self,
-        doc_type: core_enums.TypeDocument,
-        vaut_PLH: bool,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         commune_a = CommuneFactory()
@@ -1112,31 +1072,18 @@ class TestProcedureDocTypeDocument:
 
         procedure = ProcedureFactory(
             collectivite_porteuse=commune_a,
-            doc_type=doc_type,
-            vaut_PLH=vaut_PLH,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            vaut_PLH=True,
             with_perimetre=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
             procedure = core_models.Procedure.objects.get(id=procedure.id)
             assert procedure.type_document == core_enums.TypeDocument.PLUIH
-            assert procedure.vaut_PLH_consolide
-            assert not procedure.vaut_PDM_consolide
 
     @pytest.mark.django_db
-    @pytest.mark.parametrize(
-        ("doc_type", "vaut_PDM"),
-        [
-            (core_enums.TypeDocument.PLU, True),
-            (core_enums.TypeDocument.PLUI, True),
-            (core_enums.TypeDocument.PLUIM, False),
-            (core_enums.TypeDocument.PLUIM, True),
-        ],
-    )
     def test_pluim(
         self,
-        doc_type: core_enums.TypeDocument,
-        vaut_PDM: bool,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         commune_a = CommuneFactory()
@@ -1144,36 +1091,18 @@ class TestProcedureDocTypeDocument:
 
         procedure = ProcedureFactory(
             collectivite_porteuse=commune_a,
-            doc_type=doc_type,
-            vaut_PDM=vaut_PDM,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            vaut_PDM=True,
             with_perimetre=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
             procedure = core_models.Procedure.objects.get(id=procedure.id)
             assert procedure.type_document == core_enums.TypeDocument.PLUIM
-            assert not procedure.vaut_PLH_consolide
-            assert procedure.vaut_PDM_consolide
 
     @pytest.mark.django_db
-    @pytest.mark.parametrize(
-        ("doc_type", "vaut_PLH", "vaut_PDM"),
-        [
-            (core_enums.TypeDocument.PLU, True, True),
-            (core_enums.TypeDocument.PLUI, True, True),
-            (core_enums.TypeDocument.PLUIH, True, True),
-            (core_enums.TypeDocument.PLUIM, True, True),
-            (core_enums.TypeDocument.PLUIHM, False, False),
-            (core_enums.TypeDocument.PLUIHM, False, True),
-            (core_enums.TypeDocument.PLUIHM, True, False),
-            (core_enums.TypeDocument.PLUIHM, True, True),
-        ],
-    )
     def test_pluihm(
         self,
-        doc_type: core_enums.TypeDocument,
-        vaut_PLH: bool,
-        vaut_PDM: bool,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         commune_a = CommuneFactory()
@@ -1181,32 +1110,30 @@ class TestProcedureDocTypeDocument:
 
         procedure = ProcedureFactory(
             collectivite_porteuse=commune_a,
-            doc_type=doc_type,
-            vaut_PLH=vaut_PLH,
-            vaut_PDM=vaut_PDM,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            vaut_PLH=True,
+            vaut_PDM=True,
             with_perimetre=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
             procedure = core_models.Procedure.objects.get(id=procedure.id)
             assert procedure.type_document == core_enums.TypeDocument.PLUIHM
-            assert procedure.vaut_PLH_consolide
-            assert procedure.vaut_PDM_consolide
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
-        ("src_doc_type", "expected_doc_type"),
+        ("vaut_PDM", "vaut_PLH", "expected_doc_type"),
         [
-            (core_enums.TypeDocument.PLU, core_enums.TypeDocument.PLUIS),
-            (core_enums.TypeDocument.PLUI, core_enums.TypeDocument.PLUIS),
-            (core_enums.TypeDocument.PLUIH, core_enums.TypeDocument.PLUISH),
-            (core_enums.TypeDocument.PLUIM, core_enums.TypeDocument.PLUISM),
-            (core_enums.TypeDocument.PLUIHM, core_enums.TypeDocument.PLUISHM),
+            (False, False, core_enums.TypeDocument.PLUIS),
+            (False, True, core_enums.TypeDocument.PLUISH),
+            (True, False, core_enums.TypeDocument.PLUISM),
+            (True, True, core_enums.TypeDocument.PLUISHM),
         ],
     )
     def test_type_document_pour_procedure_sectorielle(
         self,
-        src_doc_type: core_enums.TypeDocument,
+        vaut_PDM: bool,
+        vaut_PLH: bool,
         expected_doc_type: core_enums.TypeDocument,
     ) -> None:
         commune_a = CommuneFactory()
@@ -1220,12 +1147,49 @@ class TestProcedureDocTypeDocument:
             ],
         )
         procedure = ProcedureFactory(
-            doc_type=src_doc_type,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            vaut_PDM=vaut_PDM,
+            vaut_PLH=vaut_PLH,
             collectivite_porteuse=collectivite,
             with_perimetre=[commune_a, commune_b],
         )
         procedure = core_models.Procedure.objects.get(id=procedure.id)
         assert procedure.type_document == expected_doc_type
+
+    def test_base_doc_type_from_dynamic_doc_type(
+        self, subtests: pytest.Subtests
+    ) -> None:
+        non_plu_variations = [
+            core_enums.TypeDocument.CC,
+            core_enums.TypeDocument.SCOT,
+            core_enums.TypeDocument.SD,
+            core_enums.TypeDocument.POS,
+        ]
+        for doc_type in non_plu_variations:
+            with subtests.test(doc_type, item=doc_type):
+                assert core_models.Procedure.dynamic_doc_type_to_base_doc_type(
+                    dynamic_doc_type=doc_type
+                ) == core_enums.BaseDocumentType(doc_type)
+
+        plu_variations = [
+            core_enums.TypeDocument.PLU,
+            core_enums.TypeDocument.PLUI,
+            core_enums.TypeDocument.PLUIH,
+            core_enums.TypeDocument.PLUIHM,
+            core_enums.TypeDocument.PLUIM,
+            core_enums.TypeDocument.PLUIS,
+            core_enums.TypeDocument.PLUISH,
+            core_enums.TypeDocument.PLUISHM,
+            core_enums.TypeDocument.PLUISM,
+        ]
+        for dynamic_doc_type in plu_variations:
+            with subtests.test(dynamic_doc_type, item=dynamic_doc_type):
+                assert (
+                    core_models.Procedure.dynamic_doc_type_to_base_doc_type(
+                        dynamic_doc_type=dynamic_doc_type
+                    )
+                    == core_enums.BaseDocumentType.PLU
+                )
 
 
 class TestProcedureDelaiApprobation:
@@ -1243,7 +1207,7 @@ class TestProcedureDelaiApprobation:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         if date_approbation:
             procedure.event_set.create(
@@ -1264,7 +1228,7 @@ class TestProcedureDelaiApprobation:
     def test_delai_d_approbation_calcule(self) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         procedure.event_set.create(type="Prescription", date_evenement="2024-01-01")
         procedure.event_set.create(
@@ -1282,14 +1246,14 @@ class TestProcedureSort:
     def test_approuvee_plus_recemment(self) -> None:
         commune = CommuneFactory()
         procedure_recente = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         procedure_recente.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
         )
 
         procedure_vieille = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         procedure_vieille.event_set.create(
             type="Délibération d'approbation", date_evenement="2023-12-01"
@@ -1307,14 +1271,14 @@ class TestProcedureSort:
     def test_prescrite_plus_recemment(self) -> None:
         commune = CommuneFactory()
         procedure_recente = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         procedure_recente.event_set.create(
             type="Prescription", date_evenement="2024-12-01"
         )
 
         procedure_vieille = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         procedure_vieille.event_set.create(
             type="Prescription", date_evenement="2023-12-01"
@@ -1332,7 +1296,7 @@ class TestProcedureSort:
     def test_date_approbation_priorite_quand_date_entremelees(self) -> None:
         commune = CommuneFactory()
         procedure_recente = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         procedure_recente.event_set.create(
             type="Prescription", date_evenement="1999-12-01"
@@ -1342,7 +1306,7 @@ class TestProcedureSort:
         )
 
         procedure_vieille = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         procedure_vieille.event_set.create(
             type="Prescription", date_evenement="2023-12-01"
@@ -1366,10 +1330,10 @@ class TestProcedureSort:
     def test_sans_prescription_utilise_date_creation(self) -> None:
         commune = CommuneFactory()
         procedure_vieille = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         procedure_recente = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
 
         procedure_recent_with_events = core_models.Procedure.objects.with_events().get(
@@ -1390,7 +1354,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
@@ -1413,7 +1377,7 @@ class TestProcedureStatut:
         """https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000028809968/2015-08-09."""
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.SD, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.SD, collectivite_porteuse=commune
         )
         if is_approuve:
             event = procedure.event_set.create(
@@ -1443,7 +1407,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         procedure.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
@@ -1473,7 +1437,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         event_prescription = procedure.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
@@ -1511,7 +1475,7 @@ class TestProcedureStatut:
 
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         event_approbation = procedure.event_set.create(
             type="Délibération d'approbation",
@@ -1532,7 +1496,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
 
         with django_assert_num_queries(2):
@@ -1549,7 +1513,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(
             type="Abrogation", date_evenement="2024-12-01"
@@ -1570,7 +1534,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(
             type="Délibération d'approbation",
@@ -1593,7 +1557,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.CC, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.CC, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(
             type="Délibération d'approbation", date_evenement="2024-12-01"
@@ -1614,11 +1578,11 @@ class TestProcedureStatut:
     ) -> None:
         commune = CommuneFactory()
         procedure_principale = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         procedure_secondaire = ProcedureFactory(
             parente=procedure_principale,
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
         )
         procedure_secondaire.event_set.create(
@@ -1639,7 +1603,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         prescription_inseree_avant = procedure.event_set.create(
             type="Prescription", date_evenement="2023-04-26"
@@ -1673,7 +1637,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         prescription_insere_avant = procedure.event_set.create(
             type="Prescription", date_evenement="2023-04-26"
@@ -1705,7 +1669,7 @@ class TestProcedureStatut:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(type="Délibération d'approbation")
 
@@ -1742,7 +1706,7 @@ class TestProcedureEnCours:
     ) -> None:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.PLU, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(type=event_type, date_evenement="2024-12-01")
 
@@ -1763,7 +1727,7 @@ class TestProcedureEnCours:
         commune = CommuneFactory()
 
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             type="Abrogation",
             collectivite_porteuse=commune,
         )
@@ -1789,7 +1753,7 @@ class TestProcedureEnCours:
         commune = CommuneFactory()
 
         procedure = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.POS, collectivite_porteuse=commune
+            base_doc_type=core_enums.BaseDocumentType.POS, collectivite_porteuse=commune
         )
         event = procedure.event_set.create(
             type="Prescription", date_evenement="2024-12-01"
@@ -1891,7 +1855,7 @@ class TestProcedureManagers:
 
 class TestEvent:
     @pytest.mark.parametrize(
-        ("doc_type", "type_event", "category"),
+        ("base_doc_type", "type_event", "category"),
         [
             ("PLU", "lol", None),
             (
@@ -1899,18 +1863,13 @@ class TestEvent:
                 "Délibération de prescription du conseil municipal ou communautaire",
                 "prescription",
             ),
-            (
-                "PLUi",
-                "Délibération de prescription du conseil municipal ou communautaire",
-                "prescription",
-            ),
             ("CC", "Délibération d'approbation", None),
         ],
     )
     def test_event_category(
-        self, doc_type: str, type_event: str, category: core_models.EventCategory
+        self, base_doc_type: str, type_event: str, category: core_models.EventCategory
     ) -> None:
-        procedure = core_models.Procedure(doc_type=doc_type)
+        procedure = core_models.Procedure(base_doc_type=base_doc_type)
         assert (
             core_models.Event(procedure=procedure, type=type_event).category == category
         )
@@ -1981,7 +1940,7 @@ class TestEventUpdate:
         procedure = ProcedureFactory(
             with_event=True,
             with_event__category=core_models.EventCategory.PUBLICATION_PERIMETRE,
-            doc_type=core_enums.TypeDocument.CC,
+            base_doc_type=core_enums.BaseDocumentType.CC,
         )
         procedure = core_models.Procedure.objects.with_events().get(pk=procedure.pk)
         procedure.status = procedure.statut
@@ -1997,7 +1956,7 @@ class TestEventUpdate:
         procedure = ProcedureFactory(
             with_event=True,
             with_event__category=core_models.EventCategory.PUBLICATION_PERIMETRE,
-            doc_type=core_enums.TypeDocument.CC,
+            base_doc_type=core_enums.BaseDocumentType.CC,
             with_perimetre=[commune],
         )
         procedure = core_models.Procedure.objects.with_events().get(pk=procedure.pk)
@@ -2118,7 +2077,7 @@ class TestCommuneProceduresPrincipales:
 
         procedure_secondaire = ProcedureFactory(
             with_parente=True,
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
             parente__with_perimetre=[commune],
@@ -2141,7 +2100,7 @@ class TestCommuneProceduresPrincipales:
 
         procedure_doublon = ProcedureFactory(
             with_doublon=True,
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
             doublon_cache_de__with_perimetre=[commune],
@@ -2161,7 +2120,7 @@ class TestCommunePlanEnCours:
         commune = CommuneFactory()
 
         procedure_saisie_avant = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
@@ -2170,7 +2129,7 @@ class TestCommunePlanEnCours:
         )
 
         procedure_en_cours = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
@@ -2179,7 +2138,7 @@ class TestCommunePlanEnCours:
         )
 
         procedure_saisie_apres = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
@@ -2203,7 +2162,7 @@ class TestCommunePlanEnCours:
         commune = CommuneFactory()
 
         procedure_en_cours = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
@@ -2212,7 +2171,7 @@ class TestCommunePlanEnCours:
         )
 
         _procedure_pas_commencee = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
@@ -2255,7 +2214,7 @@ class TestCommune:
         if plan_en_cours:
             collectivite = CollectiviteFactory(code_insee_unique="200003333")
             procedure = ProcedureFactory(
-                doc_type=core_enums.TypeDocument.PLU,
+                base_doc_type=core_enums.BaseDocumentType.PLU,
                 collectivite_porteuse=collectivite,
                 with_perimetre=[commune],
             )
@@ -2264,7 +2223,7 @@ class TestCommune:
         if plan_opposable:
             collectivite = CollectiviteFactory(code_insee_unique="200004444")
             procedure = ProcedureFactory(
-                doc_type=core_enums.TypeDocument.PLU,
+                base_doc_type=core_enums.BaseDocumentType.PLU,
                 collectivite_porteuse=collectivite,
                 with_perimetre=[commune],
             )
@@ -2283,7 +2242,7 @@ class TestCommuneOpposabilite:
     ) -> None:
         commune = CommuneFactory()
         procedure_precedente_saisie_avant = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
@@ -2292,7 +2251,7 @@ class TestCommuneOpposabilite:
         )
 
         procedure_opposable = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
@@ -2301,7 +2260,7 @@ class TestCommuneOpposabilite:
         )
 
         procedure_precedente_saisie_apres = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
@@ -2330,7 +2289,7 @@ class TestCommuneOpposabilite:
         commune = CommuneFactory()
 
         plan_opposable = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
@@ -2339,7 +2298,7 @@ class TestCommuneOpposabilite:
         )
 
         schema_opposable = ProcedureFactory(
-            doc_type=core_enums.TypeDocument.SCOT,
+            base_doc_type=core_enums.BaseDocumentType.SCOT,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
         )
@@ -2368,7 +2327,7 @@ class TestCommuneOpposabilite:
 
         procedure_opposable = ProcedureFactory(
             collectivite_porteuse=commune,
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             with_perimetre=[commune],
         )
         procedure_opposable.event_set.create(
@@ -2392,7 +2351,7 @@ class TestCommuneOpposabilite:
 
         procedure_en_cours = ProcedureFactory(
             collectivite_porteuse=commune,
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             with_perimetre=[commune],
         )
         procedure_en_cours.event_set.create(
@@ -2417,7 +2376,7 @@ class TestCommuneOpposabilite:
 
         procedure_approuvee = ProcedureFactory(
             collectivite_porteuse=commune,
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             type="Abrogation",
             with_perimetre=[commune],
         )
@@ -2442,7 +2401,7 @@ class TestCommuneOpposabilite:
 
         procedure_secondaire = ProcedureFactory(
             with_parente=True,
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
             with_perimetre=[commune],
             parente__with_perimetre=[commune],
@@ -2505,7 +2464,7 @@ class TestCommuneOpposabilite:
 
         procedure_opposable_fevrier = ProcedureFactory(
             collectivite_porteuse=commune,
-            doc_type=core_enums.TypeDocument.PLUI,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             with_perimetre=[commune],
         )
         procedure_opposable_fevrier.event_set.create(
@@ -2514,7 +2473,7 @@ class TestCommuneOpposabilite:
 
         procedure_opposable_janvier = ProcedureFactory(
             collectivite_porteuse=commune,
-            doc_type=core_enums.TypeDocument.PLU,
+            base_doc_type=core_enums.BaseDocumentType.PLU,
             with_perimetre=[commune],
         )
         procedure_opposable_janvier.event_set.create(

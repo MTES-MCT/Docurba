@@ -25,18 +25,6 @@ from docurba.utils import urls as utils_urls
 logger = logging.getLogger(__name__)
 
 
-PLU_LIKE = (
-    core_enums.TypeDocument.PLUI,
-    core_enums.TypeDocument.PLUIH,
-    core_enums.TypeDocument.PLUIHM,
-    core_enums.TypeDocument.PLUIM,
-    core_enums.TypeDocument.PLUIS,
-    core_enums.TypeDocument.PLUISH,
-    core_enums.TypeDocument.PLUISHM,
-    core_enums.TypeDocument.PLUISM,
-)
-
-
 class CodeCompetencePerimetre(IntEnum):
     COMPETENCE_COMMUNE = 1
     COMPETENCE_EPCI_PERIMETRE_EPCI = 2
@@ -45,6 +33,7 @@ class CodeCompetencePerimetre(IntEnum):
     PAS_DE_PLAN = 9
 
 
+# NOTE(cms): remove me when doc_type is cleaned.
 TYPE_DOCUMENT_TO_CODE = {
     core_enums.TypeDocument.CC: 1,
     core_enums.TypeDocument.POS: 2,
@@ -55,8 +44,8 @@ TYPE_DOCUMENT_TO_CODE = {
     core_enums.TypeDocument.PLUIHM: 3,
     core_enums.TypeDocument.PLUIS: 3,
     core_enums.TypeDocument.PLUISH: 3,
-    core_enums.TypeDocument.PLUISHM: 3,
     core_enums.TypeDocument.PLUISM: 3,
+    core_enums.TypeDocument.PLUISHM: 3,
 }
 
 CODE_ETAT_SIMPLIFIE_TO_LIBELLE = {
@@ -140,7 +129,7 @@ EVENT_CATEGORY_PRIORISES = (
 
 # https://docs.google.com/spreadsheets/d/1NEcWazdx7LvpnydcyP4pBdFWl9fI_Iu9zy9AQcDtll0/edit?gid=637043323#gid=637043323
 EVENT_CATEGORY_BY_DOC_TYPE = {
-    core_enums.TypeDocument.CC: {
+    core_enums.BaseDocumentType.CC: {
         "Prescription": EventCategory.PRESCRIPTION,
         "Délibération de prescription du conseil municipal": EventCategory.PRESCRIPTION,
         "Approbation du préfet": EventCategory.APPROUVE,
@@ -161,7 +150,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
         "Fin d'échéance": EventCategory.FIN_ECHEANCE,  # Deleted 11/28/25
     },
-    core_enums.TypeDocument.SCOT: {
+    core_enums.BaseDocumentType.SCOT: {
         "Prescription": EventCategory.PRESCRIPTION,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Délibération de l'Etablissement Public": EventCategory.PRESCRIPTION,
         "Délibération de l'établissement public qui prescrit": EventCategory.PRESCRIPTION,
@@ -184,7 +173,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
         "Fin d'échéance": EventCategory.FIN_ECHEANCE,  # Deleted 11/28/25
     },
-    core_enums.TypeDocument.SD: {
+    core_enums.BaseDocumentType.SD: {
         "Prescription": EventCategory.PRESCRIPTION,
         "Délibération de l'établissement public qui prescrit": EventCategory.PRESCRIPTION,
         "Délibération d'approbation": EventCategory.APPROUVE,
@@ -193,7 +182,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Annulation TA": EventCategory.ANNULE,  # not found in Nuxt's JSON. Probably Sudocuh's name.
         "Caducité": EventCategory.CADUC,  # Deleted 05/26/26
     },
-    core_enums.TypeDocument.PLU: {
+    core_enums.BaseDocumentType.PLU: {
         "Prescription": EventCategory.PRESCRIPTION,
         "Délibération de prescription du conseil municipal ou communautaire": EventCategory.PRESCRIPTION,
         "Retrait de l'annulation totale": EventCategory.APPROUVE,
@@ -217,7 +206,7 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Caractère exécutoire": EventCategory.CARACTERE_EXECUTOIRE,
         "Fin d'échéance": EventCategory.FIN_ECHEANCE,  # Deleted 11/28/25
     },
-    core_enums.TypeDocument.POS: {
+    core_enums.BaseDocumentType.POS: {
         "Prescription": EventCategory.PRESCRIPTION,
         "Délibération de prescription du conseil municipal ou communautaire": EventCategory.PRESCRIPTION,
         "Délibération d'approbation du municipal ou communautaire": EventCategory.APPROUVE,  # not found
@@ -237,15 +226,12 @@ EVENT_CATEGORY_BY_DOC_TYPE = {
         "Fin d'échéance": EventCategory.FIN_ECHEANCE,  # Deleted 11/28/25
     },
 }
-EVENT_CATEGORY_BY_DOC_TYPE |= dict.fromkeys(
-    PLU_LIKE, EVENT_CATEGORY_BY_DOC_TYPE[core_enums.TypeDocument.PLU]
-)
 
 # Reverse of EVENT_CATEGORY_BY_DOC_TYPE keeping the same first-level keys.
 EVENT_TYPE_BY_EVENT_CATEGORY = {}
-for doc_type, types in EVENT_CATEGORY_BY_DOC_TYPE.items():
+for base_doc_type, types in EVENT_CATEGORY_BY_DOC_TYPE.items():
     for name, category in types.items():
-        EVENT_TYPE_BY_EVENT_CATEGORY.setdefault(doc_type, {}).setdefault(
+        EVENT_TYPE_BY_EVENT_CATEGORY.setdefault(base_doc_type, {}).setdefault(
             category, []
         ).append(name)
 
@@ -367,7 +353,19 @@ class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
     test = models.BooleanField(db_default=False)
     testing = models.BooleanField(blank=True, null=True)
-    doc_type = models.CharField(choices=core_enums.TypeDocument, blank=True, null=True)  # noqa: DJ001 # TextField in DB.
+    base_doc_type = models.CharField(
+        choices=core_enums.BaseDocumentType,
+        default=core_enums.BaseDocumentType.CC,
+        verbose_name="Type de document de base",
+    )
+    # NOTE(cms): doc_type is never null now.
+    # We could add a constraint.
+    doc_type = models.CharField(  # noqa: DJ001
+        choices=core_enums.TypeDocument,
+        blank=True,
+        null=True,
+        verbose_name="Type de document consolidé",
+    )  # TextField in DB.
     doc_type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
     type_code = models.TextField(blank=True, null=True)  # noqa: DJ001
     # No mention on Nuxt side of procedure.is_scot but vaut_SCoT is used in the Commune API.
@@ -590,6 +588,10 @@ class Procedure(models.Model):
     def _perimetre(self) -> models.QuerySet:
         if self._cached_perimetre is not None:
             return self._cached_perimetre
+        # Object is not created yet.
+        # It can't have a perimetre.
+        if not self._is_pk_set():
+            return []
         return self.perimetre.all()
 
     @property
@@ -664,7 +666,7 @@ class Procedure(models.Model):
 
     @property
     def statut(self) -> EventCategory | None:
-        if self.type_document == core_enums.TypeDocument.SD:
+        if self.base_doc_type == core_enums.TypeDocument.SD:
             return EventCategory.CADUC
         if not self.dernier_event_impactant:
             return None
@@ -717,9 +719,9 @@ class Procedure(models.Model):
 
     @property
     def is_schema(self) -> bool:
-        return self.doc_type in (
-            core_enums.TypeDocument.SCOT,
-            core_enums.TypeDocument.SD,
+        return self.base_doc_type in (
+            core_enums.BaseDocumentType.SCOT,
+            core_enums.BaseDocumentType.SD,
         )
 
     @property
@@ -746,7 +748,7 @@ class Procedure(models.Model):
 
     @property
     def type_document(self) -> core_enums.TypeDocument:
-        if self.doc_type in (core_enums.TypeDocument.PLU, *PLU_LIKE):
+        if self.base_doc_type == core_enums.BaseDocumentType.PLU:
             if not self.is_intercommunal:
                 return core_enums.TypeDocument.PLU
             if self.vaut_PLH_consolide and self.vaut_PDM_consolide:
@@ -792,7 +794,7 @@ class Procedure(models.Model):
 
     @cached_property
     def is_interdepartemental(self) -> bool:
-        return len({commune.departement for commune in self.communes}) > 1
+        return len({commune.departement for commune in self._perimetre}) > 1
 
     @property
     def delai_d_approbation(self) -> int | None:
@@ -828,6 +830,9 @@ class Procedure(models.Model):
 
     @property
     def is_sectoriel_consolide(self) -> bool:
+        if not self.is_intercommunal:
+            return False
+
         communes_adherentes_count = getattr(
             self.collectivite_porteuse, "communes_adherentes_count", None
         )
@@ -850,7 +855,7 @@ class Procedure(models.Model):
     def is_en_cours(self) -> bool:
         if (
             self.type == "Abrogation"
-            or self.type_document == core_enums.TypeDocument.POS
+            or self.base_doc_type == core_enums.BaseDocumentType.POS
         ):
             return False
 
@@ -858,6 +863,15 @@ class Procedure(models.Model):
             EventCategory.PRESCRIPTION,
             EventCategory.PUBLICATION_PERIMETRE,
         )
+
+    @classmethod
+    def dynamic_doc_type_to_base_doc_type(
+        cls, dynamic_doc_type: str
+    ) -> core_enums.BaseDocumentType:
+        dynamic_doc_type = core_enums.TypeDocument(dynamic_doc_type)
+        if dynamic_doc_type in core_enums.TypeDocument.plu_variations():
+            return core_enums.BaseDocumentType.PLU
+        return core_enums.BaseDocumentType(dynamic_doc_type)
 
 
 class ProcedureTopic(models.Model):
@@ -1075,9 +1089,9 @@ class ActiveEventTypeManager(EventTypeManager):
 
 class EventType(models.Model):
     class DocumentType(models.TextChoices):
-        PLU = core_enums.TypeDocument.PLU
-        CC = core_enums.TypeDocument.CC
-        SCOT = core_enums.TypeDocument.SCOT
+        PLU = core_enums.BaseDocumentType.PLU
+        CC = core_enums.BaseDocumentType.CC
+        SCOT = core_enums.BaseDocumentType.SCOT
 
     id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
     document_type = models.CharField(
@@ -1300,7 +1314,7 @@ class Event(models.Model):
         if not self.is_valid:
             return None
 
-        return EVENT_CATEGORY_BY_DOC_TYPE[self.procedure.doc_type].get(self.type)
+        return EVENT_CATEGORY_BY_DOC_TYPE[self.procedure.base_doc_type].get(self.type)
 
 
 class Region(models.Model):
@@ -1360,7 +1374,7 @@ class CollectiviteQuerySet(models.QuerySet):
         return (
             self.distinct()
             .filter(
-                procedure__doc_type=core_enums.TypeDocument.SCOT,
+                procedure__base_doc_type=core_enums.BaseDocumentType.SCOT,
                 procedure__parente=None,
                 procedure__archived=False,
             )
@@ -1376,7 +1390,6 @@ class CollectiviteQuerySet(models.QuerySet):
                     Commune.objects.with_scots(avant=avant).select_related(
                         "departement__region",
                     ),
-                    to_attr="communes",
                 ),
             )
         )
@@ -1471,7 +1484,7 @@ class Collectivite(models.Model):
             scot
             for scot in self.scots
             if scot.statut == EventCategory.APPROUVE
-            and any(commune.is_opposable(scot) for commune in scot.communes)
+            and any(commune.is_opposable(scot) for commune in scot.perimetre.all())
         ]
 
     @cached_property
