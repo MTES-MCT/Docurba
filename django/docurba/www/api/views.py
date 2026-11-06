@@ -362,7 +362,7 @@ class ScotsView(PublicAPIView, generics.GenericAPIView):
             if scot_opposable:
                 champs_opposable = {
                     "pa_id": scot_opposable.id,
-                    "pa_nom_schema": scot_opposable.name,
+                    "pa_nom_schema": scot_opposable.computed_name,
                     "pa_noserie_procedure": scot_opposable.from_sudocuh,
                     "pa_scot_interdepartement": scot_opposable.is_interdepartemental,
                     "pa_date_publication_perimetre": scot_opposable.date_publication_perimetre,
@@ -371,7 +371,7 @@ class ScotsView(PublicAPIView, generics.GenericAPIView):
                     "pa_date_approbation": scot_opposable.date_approbation,
                     "pa_annee_approbation": scot_opposable.date_approbation.year,
                     "pa_date_fin_echeance": scot_opposable.date_fin_echeance,
-                    "pa_nombre_communes": len(scot_opposable.communes),
+                    "pa_nombre_communes": len(scot_opposable.perimetre.all()),
                     "pa_objets": scot_opposable.concatenated_topics_as_string,
                 }
 
@@ -379,14 +379,14 @@ class ScotsView(PublicAPIView, generics.GenericAPIView):
             if scot_en_cours:
                 champs_en_cours = {
                     "pc_id": scot_en_cours.id,
-                    "pc_nom_schema": scot_en_cours.name,
+                    "pc_nom_schema": scot_en_cours.computed_name,
                     "pc_noserie_procedure": scot_en_cours.from_sudocuh,
                     "pc_proc_elaboration_revision": scot_en_cours.type,
                     "pc_scot_interdepartement": scot_en_cours.is_interdepartemental,
                     "pc_date_publication_perimetre": scot_en_cours.date_publication_perimetre,
                     "pc_date_prescription": scot_en_cours.date_prescription,
                     "pc_date_arret_projet": scot_en_cours.date_arret_projet,
-                    "pc_nombre_communes": len(scot_en_cours.communes),
+                    "pc_nombre_communes": len(scot_en_cours.perimetre.all()),
                     "pc_objets": scot_en_cours.concatenated_topics_as_string,
                 }
 

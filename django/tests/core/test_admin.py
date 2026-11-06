@@ -141,7 +141,15 @@ class TestEventChange:
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
         event = EventFactory()
-        with django_assert_num_queries(7):
+        with django_assert_num_queries(
+            1  # session
+            + 1  # user
+            + 2  # doc_frise_events
+            + 1  # django_content_type
+            + 1  # procedures
+            + 1  # core_collectivite
+            + 1  # projects
+        ):
             response = admin_session_client.get(
                 reverse("admin:core_event_change", kwargs={"object_id": event.pk})
             )

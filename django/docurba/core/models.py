@@ -794,7 +794,7 @@ class Procedure(models.Model):
 
     @cached_property
     def is_interdepartemental(self) -> bool:
-        return len({commune.departement for commune in self.communes}) > 1
+        return len({commune.departement for commune in self._perimetre}) > 1
 
     @property
     def delai_d_approbation(self) -> int | None:
@@ -1390,7 +1390,6 @@ class CollectiviteQuerySet(models.QuerySet):
                     Commune.objects.with_scots(avant=avant).select_related(
                         "departement__region",
                     ),
-                    to_attr="communes",
                 ),
             )
         )
@@ -1485,7 +1484,7 @@ class Collectivite(models.Model):
             scot
             for scot in self.scots
             if scot.statut == EventCategory.APPROUVE
-            and any(commune.is_opposable(scot) for commune in scot.communes)
+            and any(commune.is_opposable(scot) for commune in scot.perimetre.all())
         ]
 
     @cached_property
