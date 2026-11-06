@@ -1377,6 +1377,14 @@ class TestAPICommunes:
 
 @pytest.mark.django_db
 class TestAPIScots:
+    BASE_NUM_QUERIES = (
+        1  # core_collectivite
+        + 1  # procedures
+        + 1  # doc_frise_events
+        + 2  # procedures_perimetres
+        + 1  # doc_frise_events
+    )
+
     def _default_procedure_factory_params(
         self,
         perimetre: list | None = None,
@@ -1413,13 +1421,17 @@ class TestAPIScots:
         )
 
     def test_nominal(self, client: Client, snapshot: SnapshotAssertion) -> None:
-        commune = CommuneFactory(for_snapshot=True)
-        collectivite_porteuse = CollectiviteFactory(for_snapshot=True)
+        collectivite_porteuse = CollectiviteFactory(
+            for_snapshot=True,
+            with_flat_members=True,
+            with_flat_members__for_snapshot=True,
+        )
+        perimetre = core_models.Commune.objects.all()
         # pc_*
         # pc_date_perscription
         ongoing_procedure = ProcedureFactory(
             **self._default_procedure_factory_params(
-                perimetre=[commune],
+                perimetre=perimetre,
                 collectivite=collectivite_porteuse,
                 procedure_status=core_models.EventCategory.PRESCRIPTION,
             ),
@@ -1442,7 +1454,7 @@ class TestAPIScots:
         # dates: pa_date_approbation, pa_annee_approbation
         approved_procedure = ProcedureFactory(
             **self._default_procedure_factory_params(
-                perimetre=[commune],
+                perimetre=perimetre,
                 collectivite=collectivite_porteuse,
                 procedure_status=core_models.EventCategory.APPROUVE,
             ),
@@ -1477,7 +1489,7 @@ class TestAPIScots:
     ) -> None:
         for _ in range(2):
             ProcedureFactory(**self._default_procedure_factory_params())
-            with django_assert_num_queries(6):
+            with django_assert_num_queries(self.BASE_NUM_QUERIES):
                 response = client.get(reverse("api:scots"))
         assert response.status_code == 200
 
@@ -1527,7 +1539,9 @@ class TestAPIScots:
             ),
         )
 
-        with django_assert_num_queries(6 if nb_communes else 4):
+        with django_assert_num_queries(
+            self.BASE_NUM_QUERIES if nb_communes else self.BASE_NUM_QUERIES - 2
+        ):
             response = client.get(reverse("api:scots"))
         result = csv_to_json_like(response.content)
         if procedure_status == core_models.EventCategory.APPROUVE and nb_communes != 0:
@@ -1637,12 +1651,11 @@ class TestAPIScots:
                 procedure_status=procedure_status,
             ),
         )
-
         if procedure_topics:
             topics = core_models.Topic.objects.filter(name__in=procedure_topics)
             procedure.topics.add(*topics)
 
-        with django_assert_num_queries(6):
+        with django_assert_num_queries(self.BASE_NUM_QUERIES):
             response = client.get(reverse("api:scots"))
 
         results = csv_to_json_like(response.content)
@@ -1748,7 +1761,7 @@ class TestAPIScots:
             ][0],
             date_evenement=approval_date,  # 2026-07-04
         )
-        with django_assert_num_queries(6):
+        with django_assert_num_queries(self.BASE_NUM_QUERIES):
             response = client.get(f"{reverse('api:scots')}?avant={avant_value}")
         results = csv_to_json_like(response.content)
         assert len(results) == 1
