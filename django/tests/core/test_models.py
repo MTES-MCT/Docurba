@@ -1028,19 +1028,59 @@ class TestProcedureDates:
 
 class TestProcedureTypeDocument:
     @pytest.mark.django_db
+    def test_compute_doc_type(
+        self,
+        subtests: pytest.Subtests,
+    ) -> None:
+        procedure = ProcedureFactory(
+            vaut_PDM=True, base_doc_type=core_enums.BaseDocumentType.PLU
+        )
+        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUM
+
+        procedure = ProcedureFactory(
+            vaut_PLH=True, base_doc_type=core_enums.BaseDocumentType.PLU
+        )
+        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUH
+
+        procedure = ProcedureFactory(
+            vaut_PLH=True, vaut_PDM=True, base_doc_type=core_enums.BaseDocumentType.PLU
+        )
+        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUHM
+
+        procedure = ProcedureFactory(
+            vaut_PLH=True, base_doc_type=core_enums.BaseDocumentType.POS
+        )
+        assert procedure.dynamic_doc_type == core_enums.TypeDocument.POS
+
+        for doc_type in core_enums.BaseDocumentType.values:
+            with subtests.test(doc_type, doc_type=doc_type):
+                procedure = ProcedureFactory(base_doc_type=doc_type)
+                assert procedure.dynamic_doc_type == doc_type
+
+        with pytest.raises(
+            ValueError,
+            match=r"'destination-unknown' is not a valid TypeDocument",
+        ):
+            ProcedureFactory(vaut_PLH=True, base_doc_type="destination-unknown")
+
+    @pytest.mark.django_db
     def test_non_plu_like(self) -> None:
         assert (
-            ProcedureFactory(base_doc_type=core_enums.BaseDocumentType.CC).type_document
+            ProcedureFactory(
+                base_doc_type=core_enums.BaseDocumentType.CC
+            ).dynamic_doc_type
             == core_enums.BaseDocumentType.CC
         )
         assert (
             ProcedureFactory(
                 base_doc_type=core_enums.BaseDocumentType.SCOT
-            ).type_document
+            ).dynamic_doc_type
             == core_enums.BaseDocumentType.SCOT
         )
         assert (
-            ProcedureFactory(base_doc_type=core_enums.BaseDocumentType.SD).type_document
+            ProcedureFactory(
+                base_doc_type=core_enums.BaseDocumentType.SD
+            ).dynamic_doc_type
             == core_enums.BaseDocumentType.SD
         )
 
@@ -1060,7 +1100,7 @@ class TestProcedureTypeDocument:
 
         with django_assert_num_queries(1):
             procedure = core_models.Procedure.objects.get(id=procedure.id)
-            assert procedure.type_document == core_enums.TypeDocument.PLUI
+            assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUI
 
     @pytest.mark.django_db
     def test_pluih(
@@ -1079,7 +1119,7 @@ class TestProcedureTypeDocument:
 
         with django_assert_num_queries(1):
             procedure = core_models.Procedure.objects.get(id=procedure.id)
-            assert procedure.type_document == core_enums.TypeDocument.PLUIH
+            assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUIH
 
     @pytest.mark.django_db
     def test_pluim(
@@ -1098,7 +1138,7 @@ class TestProcedureTypeDocument:
 
         with django_assert_num_queries(1):
             procedure = core_models.Procedure.objects.get(id=procedure.id)
-            assert procedure.type_document == core_enums.TypeDocument.PLUIM
+            assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUIM
 
     @pytest.mark.django_db
     def test_pluihm(
@@ -1118,7 +1158,7 @@ class TestProcedureTypeDocument:
 
         with django_assert_num_queries(1):
             procedure = core_models.Procedure.objects.get(id=procedure.id)
-            assert procedure.type_document == core_enums.TypeDocument.PLUIHM
+            assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUIHM
 
     @pytest.mark.django_db
     @pytest.mark.parametrize(
@@ -1130,7 +1170,7 @@ class TestProcedureTypeDocument:
             (True, True, core_enums.TypeDocument.PLUISHM),
         ],
     )
-    def test_type_document_pour_procedure_sectorielle(
+    def test_dynamic_doc_type_for_procedure_sectorielle(
         self,
         vaut_PDM: bool,
         vaut_PLH: bool,
@@ -1154,7 +1194,7 @@ class TestProcedureTypeDocument:
             with_perimetre=[commune_a, commune_b],
         )
         procedure = core_models.Procedure.objects.get(id=procedure.id)
-        assert procedure.type_document == expected_doc_type
+        assert procedure.dynamic_doc_type == expected_doc_type
 
     def test_base_doc_type_from_dynamic_doc_type(
         self, subtests: pytest.Subtests
