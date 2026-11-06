@@ -253,9 +253,6 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
     vaut_PDM = False  # noqa: N815
     soft_delete = False
     doc_type = factory.LazyAttribute(lambda o: o.base_doc_type)
-    name = factory.LazyAttribute(
-        lambda o: f"{o.type} {o.base_doc_type} {o.collectivite_porteuse.nom}"
-    )
     parente = None
     status = factory.LazyAttribute(
         lambda o: None if o.parente else core_enums.ProcedureStatusChoices.EN_COURS

@@ -395,7 +395,7 @@ class TestProcedureList:
             self._create_collectivite_perimetre_profile()
         )
         # doc_type matches type_document
-        core_factories.ProcedureFactory(
+        procedure = core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
             base_doc_type=core_enums.BaseDocumentType.PLU,
@@ -409,6 +409,7 @@ class TestProcedureList:
         assert response.status_code == 200
         assert response.json()["results"][0]["docType"] == "PLUiM"
 
+        procedure.delete()
         # doc_type is PLU but area is composed of many towns
         core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
