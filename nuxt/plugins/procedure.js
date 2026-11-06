@@ -31,29 +31,10 @@
 // }
 
 import { chunk, groupBy, keyBy, maxBy, orderBy, uniq } from 'lodash'
-import { addFormattedDate, getApprovalEvent, getPrescriptionEvent, getStopEvent, getEventImpact } from '@/plugins/event'
+import { addFormattedDate, getApprovalEvent, getPrescriptionEvent, getStopEvent } from '@/plugins/event'
 import { displayDate } from '@/plugins/utils'
 
 export default ({ $dayjs, $djangoApi, $supabase, $territorialAuthorityApi }, inject) => {
-  async function computeProcedureStatus (procedure) {
-    const { data: events } = await $supabase.from('doc_frise_events')
-      .select('id, type')
-      .eq('procedure_id', procedure.id)
-      .is('archived_at', null)
-      .or('is_valid.eq.true, type.eq.Abandon')
-      .order('date_iso', { ascending: false })
-      .order('type')
-
-    for (const event of events) {
-      const impact = getEventImpact(event.type, procedure.doc_type)
-      if (impact) {
-        return impact
-      }
-    }
-
-    return 'en cours'
-  }
-
   async function fetchCommunesProcedures (inseeCodes) {
     const { data: procedures } = await $supabase
       .from('procedures')
@@ -195,9 +176,8 @@ export default ({ $dayjs, $djangoApi, $supabase, $territorialAuthorityApi }, inj
       await updatePerimetreOpposability(communes, procedures)
     },
     async updateStatus (procedure) {
-      // Only primary procedures have a status. Secondary procedures have a null status
-      const newStatus = await computeProcedureStatus(procedure)
-      await $supabase.from('procedures').update({ status: newStatus }).eq('id', procedure.id).is('secondary_procedure_of', null)
+      // The status is computed on the Django side and persisted there.
+      await $djangoApi.post(`/api-internes/procedures/${procedure.id}/synchronize-status/`)
     }
   })
 
