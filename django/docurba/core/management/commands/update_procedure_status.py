@@ -12,7 +12,7 @@ WITH impactful_events AS (
 	AND e.archived_at IS NULL
 	AND e.date_iso IS NOT NULL
 	AND et.impact != ''
-	ORDER BY e.procedure_id, e.date_iso desc, e.created_at desc, e.from_sudocuh DESC
+	ORDER BY e.procedure_id, e.date_iso desc, e.created_at desc
 ), candidates AS (
 	SELECT p.id, p.status AS old_status, CASE
 		WHEN p.secondary_procedure_of IS NOT NULL THEN NULL
