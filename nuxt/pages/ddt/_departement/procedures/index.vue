@@ -117,16 +117,11 @@
                 {{ item.procedureName }}
               </nuxt-link>
 
-              <div v-if="item.procedures.status === null" />
-              <v-chip v-else-if="item.opposable" class="ml-2 flex-shrink-0 success--text font-weight-bold" small label color="success-light">
-                OPPOSABLE
-              </v-chip>
-              <v-chip v-else-if="!item.opposable && item.procedures.status === 'opposable'" class="ml-2 flex-shrink-0 font-weight-bold" small label>
-                ARCHIVÉ
-              </v-chip>
-              <v-chip v-else class="ml-2 flex-shrink-0 primary--text text--lighten-2 font-weight-bold" small label color="bf200">
-                EN COURS
-              </v-chip>
+              <ProcedureStatus
+                class="ml-2"
+                v-if="item.status"
+                :value="item.status"
+              />
             </div>
           </template>
 
@@ -167,7 +162,17 @@ export default {
       referentiel: null,
       typeFilterItems: [{ text: 'Procédures principales', value: 'pp' }, { text: 'Procédures secondaires', value: 'ps' }],
       documentFilterItems: ['CC', 'PLU', 'PLUi', 'PLUiH', 'PLUiHM', 'PLUiM', 'SCOT'].map(documentType => ({ text: documentType, value: documentType })),
-      statusFilterItems: [{ text: 'En cours', value: 'en_cours' }, { text: 'Opposable', value: 'opposable' }, { text: 'Archivée', value: 'archived' }],
+      statusFilterItems: [
+        { text: 'Abandonné', value: 'abandon' },
+        { text: 'Abrogé', value: 'abroge' },
+        { text: 'Annulé', value: 'annule' },
+        { text: 'Approuvé', value: 'approuve' },
+        { text: 'Caduc', value: 'caduc' },
+        { text: 'En cours', value: 'en cours' },
+        { text: 'En projet', value: 'en projet' },
+        { text: 'Opposable', value: 'opposable' },
+        { text: 'Précédent', value: 'precedent' }
+      ],
       rawProcedures: null
     }
   },
@@ -249,9 +254,7 @@ export default {
         this.selectedDocumentsFilter.includes(e.procedures.doc_type) &&
           ((this.selectedTypesFilter.includes('pp') && e.procedures.is_principale) ||
           (this.selectedTypesFilter.includes('ps') && !e.procedures.is_principale)) &&
-          (((this.selectedStatusFilter.includes('opposable') && e.opposable) ||
-          (this.selectedStatusFilter.includes('en_cours') && (!e.opposable && !(e.procedures.status === 'opposable'))) ||
-          (this.selectedStatusFilter.includes('archived') && (!e.opposable && e.procedures.status === 'opposable'))))
+          (!e.status || this.selectedStatusFilter.includes(e.status))
       })
       return proceduresAndFilters
     }
@@ -288,7 +291,9 @@ export default {
           e.last_event.date_iso_formattee = dayjs(e.last_event.date_iso).format('DD/MM/YYYY')
         }
 
-        return { ...e, procedureName }
+        const status = e.procedures.status === 'opposable' && !e.opposable ? 'precedent' : e.procedures.status
+
+        return { ...e, status, procedureName }
       })
     } catch (error) {
       // eslint-disable-next-line no-console
