@@ -1291,6 +1291,15 @@ class Event(models.Model):
         verbose_name="archivé par",
     )
 
+    created_by = models.ForeignKey(
+        "users.Profile",
+        models.DO_NOTHING,
+        blank=True,
+        null=True,
+        related_name="+",
+        verbose_name="créé par",
+    )
+
     objects = FastLoadingEventManager.from_queryset(EventQuerySet)()
     full_objects = EventManager.from_queryset(EventQuerySet)()
 
