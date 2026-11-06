@@ -50,6 +50,10 @@ class TypeDocument(models.TextChoices):
     PLU = "PLU"
     POS = "POS"
 
+    PLUH = "PLUH"
+    PLUM = "PLUM"
+    PLUHM = "PLUHM"
+
     PLUI = "PLUi"
     PLUIH = "PLUiH"
     PLUIHM = "PLUiHM"
@@ -64,6 +68,9 @@ class TypeDocument(models.TextChoices):
     def plu_variations(cls: models.TextChoices) -> dict:
         enums = [
             cls.PLU,
+            cls.PLUH,
+            cls.PLUM,
+            cls.PLUHM,
             cls.PLUI,
             cls.PLUIH,
             cls.PLUIHM,
@@ -78,6 +85,8 @@ class TypeDocument(models.TextChoices):
     @classmethod
     def plh_variations(cls: models.TextChoices) -> dict:
         enums = [
+            cls.PLUH,
+            cls.PLUHM,
             cls.PLUIH,
             cls.PLUIHM,
             cls.PLUISH,
@@ -88,6 +97,8 @@ class TypeDocument(models.TextChoices):
     @classmethod
     def pdm_variations(cls: models.TextChoices) -> dict:
         enums = [
+            cls.PLUM,
+            cls.PLUHM,
             cls.PLUIHM,
             cls.PLUIM,
             cls.PLUISHM,
