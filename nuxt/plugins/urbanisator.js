@@ -4,17 +4,7 @@ import { enrichProcedureWithEvents } from '@/plugins/procedure'
 
 export default ({ $collectiviteApi, $nuxtApi, $supabase, $dayjs }, inject) => {
   Vue.filter('docType', function (procedure) {
-    if (procedure.doc_type === 'PLU') {
-      let docType = procedure.doc_type
-      if (procedure.current_perimetre.length > 1) { docType += 'i' }
-      if (procedure.is_sectoriel && (procedure.status === 'opposable' || procedure.status === 'en cours')) {
-        docType += 'S'
-      }
-      if (procedure.is_pluih) { docType += 'H' }
-      if (procedure.is_pdu) { docType += 'D' }
-
-      return docType
-    } else { return procedure.doc_type }
+    return procedure.doc_type
   })
 
   inject('urbanisator', {
