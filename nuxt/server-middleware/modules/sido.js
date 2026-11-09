@@ -1,3 +1,4 @@
+// TODO: delete me. Dead code.
 /* eslint-disable no-console */
 const supabase = require('./supabase.js')
 
