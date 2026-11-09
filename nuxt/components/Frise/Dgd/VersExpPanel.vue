@@ -61,6 +61,17 @@
               €
             </div>
           </div>
+          <div
+            v-if="versement.comment"
+            class="ml-7"
+          >
+            <div class="mention-grey--text mb-4">
+              Commentaire
+            </div>
+            <div>
+              {{ versement.comment }}
+            </div>
+          </div>
         </v-col>
       </v-row>
     </v-expansion-panel-header>
