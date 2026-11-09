@@ -40,15 +40,6 @@ export default ({ $djangoApi }, inject) => {
   })
 }
 
-export function addFormattedDate (event) {
-  return event && event.date_iso && !event.date_iso_formattee
-    ? {
-        ...event,
-        date_iso_formattee: event.date_iso.split('-').reverse().join('/')
-      }
-    : event
-}
-
 export function getApprovalEvent (event) {
   return !!event.is_valid && [
     'Approbation du préfet',
