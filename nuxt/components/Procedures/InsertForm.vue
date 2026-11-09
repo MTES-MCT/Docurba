@@ -505,7 +505,7 @@ export default {
           collectivite_porteuse_id: this.collectivitePorteuseCode,
           is_principale: this.procedureCategory === 'principale',
           status: this.procedureParent ? null : 'en cours',
-          is_sectoriel: null,
+          is_sectoriel: this.postfixSectoriel === 'S', // this will be refactored soon.
           is_scot: this.typeDu === 'SCOT', // also 'SD' but this type doesn't exist anymore.
           is_pluih: ['PLUiH', 'PLUiHM', 'PLUiSH', 'PLUiSHM', 'PLUiHS', 'PLUiHMS'].includes(this.typeDu), // This will be refactored in Django: H in doc_type
           is_pdu: ['PLUiM', 'PLUiHM', 'PLUiSM', 'PLUiSHM', 'PLUiMS', 'PLUiHMS'].includes(this.typeDu), // This will be refactored in Django: M in doc_type
