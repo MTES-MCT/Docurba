@@ -44,25 +44,25 @@ class BaseDocumentType(models.TextChoices):
 
 
 class TypeDocument(models.TextChoices):
-    CC = "CC"
-    SCOT = "SCOT"
-    SD = "SD"
-    PLU = "PLU"
-    POS = "POS"
+    CC = "CC", "CC"
+    SCOT = "SCOT", "SCoT"
+    SD = "SD", "SD"
+    PLU = "PLU", "PLU"
+    POS = "POS", "POS"
 
-    PLUH = "PLUH"
-    PLUM = "PLUM"
-    PLUHM = "PLUHM"
+    PLUH = "PLUH", "PLUH"
+    PLUM = "PLUM", "PLUM"
+    PLUHM = "PLUHM", "PLUHM"
 
-    PLUI = "PLUi"
-    PLUIH = "PLUiH"
-    PLUIHM = "PLUiHM"
-    PLUIM = "PLUiM"
+    PLUI = "PLUi", "PLUi"
+    PLUIH = "PLUiH", "PLUiH"
+    PLUIHM = "PLUiHM", "PLUiHM"
+    PLUIM = "PLUiM", "PLUiM"
 
-    PLUIS = "PLUiS"
-    PLUISH = "PLUiSH"
-    PLUISHM = "PLUiSHM"
-    PLUISM = "PLUiSM"
+    PLUIS = "PLUiS", "PLUiS"
+    PLUISH = "PLUiSH", "PLUiSH"
+    PLUISHM = "PLUiSHM", "PLUiSHM"
+    PLUISM = "PLUiSM", "PLUiSM"
 
     @classmethod
     def plu_variations(cls: models.TextChoices) -> dict:
