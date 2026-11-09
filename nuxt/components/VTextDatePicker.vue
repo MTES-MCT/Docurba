@@ -64,14 +64,17 @@ export default {
       if (!this.date) {
         return ''
       }
+
       return this.$dayjs(this.date, 'YYYY-MM-DD').format(this.diplayedFormat)
     },
     pickerDate: {
       get () {
         return this.date
+          ? this.date.split('T')[0]
+          : this.date
       },
       set (newDate) {
-        this.$emit('input', newDate)
+        this.$emit('input', `${newDate}T00:00:00+00:00`)
         this.menu = false
       }
     }

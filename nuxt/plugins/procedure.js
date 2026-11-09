@@ -31,7 +31,7 @@
 // }
 
 import { chunk, groupBy, keyBy, maxBy, orderBy, uniq } from 'lodash'
-import { addFormattedDate, getApprovalEvent, getPrescriptionEvent, getStopEvent, getEventImpact } from '@/plugins/event'
+import { getApprovalEvent, getPrescriptionEvent, getStopEvent, getEventImpact } from '@/plugins/event'
 import { displayDate } from '@/plugins/utils'
 
 export default ({ $dayjs, $djangoApi, $supabase, $territorialAuthorityApi }, inject) => {
@@ -198,6 +198,55 @@ export default ({ $dayjs, $djangoApi, $supabase, $territorialAuthorityApi }, inj
       // Only primary procedures have a status. Secondary procedures have a null status
       const newStatus = await computeProcedureStatus(procedure)
       await $supabase.from('procedures').update({ status: newStatus }).eq('id', procedure.id).is('secondary_procedure_of', null)
+    },
+    enrichProcedureWithEvents (procedure) {
+      const events = procedure?.doc_frise_events
+
+      // This filter is necessary here because the rpc 'procedures_by_collectivites' don't filter out archived events
+      // and will be removed when using internal_apis/events
+      const activeEvents = events?.filter(event => !event.archived_at)
+
+      if (!activeEvents) {
+        return procedure
+      }
+
+      const now = new Date()
+      const lastEvent = maxBy(
+        // Remove future events
+        activeEvents.filter(event => new Date(event.date_iso) <= now),
+        'date_iso'
+      )
+      let approvalEvent, prescriptionEvent, stopEvent
+
+      for (const event of orderBy(activeEvents, 'date_iso', 'desc')) {
+        const eventWithFormattedDate = event && event.date_iso
+          ? {
+              ...event,
+              date_iso_formattee: $dayjs(event.date_iso).format('DD/MM/YYYY')
+            }
+          : event
+
+        if (!approvalEvent && getApprovalEvent(event)) {
+          approvalEvent = eventWithFormattedDate
+        }
+        if (!prescriptionEvent && getPrescriptionEvent(event)) {
+          prescriptionEvent = eventWithFormattedDate
+        }
+        if (!stopEvent && getStopEvent(event)) {
+          stopEvent = eventWithFormattedDate
+        }
+        if (approvalEvent && prescriptionEvent && stopEvent) {
+          break
+        }
+      }
+
+      return {
+        ...procedure,
+        approval_event: approvalEvent,
+        last_event: lastEvent,
+        prescription_event: prescriptionEvent,
+        stop_event: stopEvent
+      }
     }
   })
 
@@ -295,51 +344,6 @@ export function displayProcedure (procedure) {
         procedures: procedure.procedures.map(displayProcedure)
       }
     : displayedProcedure
-}
-
-export function enrichProcedureWithEvents (procedure) {
-  const events = procedure?.doc_frise_events
-
-  // This filter is necessary here because the rpc 'procedures_by_collectivites' don't filter out archived events
-  // and will be removed when using internal_apis/events
-  const activeEvents = events?.filter(event => !event.archived_at)
-
-  if (!activeEvents) {
-    return procedure
-  }
-
-  const now = new Date()
-  const lastEvent = maxBy(
-    // Remove future events
-    activeEvents.filter(event => new Date(event.date_iso) <= now),
-    'date_iso'
-  )
-  let approvalEvent, prescriptionEvent, stopEvent
-
-  for (const event of orderBy(activeEvents, 'date_iso', 'desc')) {
-    const eventWithFormattedDate = addFormattedDate(event)
-
-    if (!approvalEvent && getApprovalEvent(event)) {
-      approvalEvent = eventWithFormattedDate
-    }
-    if (!prescriptionEvent && getPrescriptionEvent(event)) {
-      prescriptionEvent = eventWithFormattedDate
-    }
-    if (!stopEvent && getStopEvent(event)) {
-      stopEvent = eventWithFormattedDate
-    }
-    if (approvalEvent && prescriptionEvent && stopEvent) {
-      break
-    }
-  }
-
-  return {
-    ...procedure,
-    approval_event: approvalEvent,
-    last_event: lastEvent,
-    prescription_event: prescriptionEvent,
-    stop_event: stopEvent
-  }
 }
 
 export function getProcedureTypeLabel (procedure) {
