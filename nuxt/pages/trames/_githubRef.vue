@@ -32,8 +32,8 @@
         </h2>
 
         <div class="mt-4">
-          <v-btn color="primary" depressed :disabled="editingSections.length > 0" @click="editable = !editable">
-            {{ editable ? 'Prévisualiser' : 'Éditer' }}
+          <v-btn color="primary" depressed :disabled="editingSections.length > 0" @click="preview = !preview">
+            {{ preview ? 'Éditer' : 'Prévisualiser' }}
           </v-btn>
           <v-btn v-if="project" color="primary" outlined class="ml-2" @click="shareDialog = true">
             Partager
@@ -94,7 +94,7 @@
           :git-ref="gitRef"
           :project="project || {}"
           :opened-path="searchedSectionPath"
-          :editable="editable"
+          :editable="!preview"
           @editing="handleEditing"
           @selectionChange="saveSelection"
           @changeOrder="saveOrder"
@@ -168,7 +168,6 @@ export default {
       loading: true,
       beforeLeaveDialog: { visible: false, next: null },
       collectivite: null,
-      editable: false,
       opening: false,
       searchedSectionPath: this.$route.query.path ?? null,
       shareDialog: false,
@@ -202,11 +201,24 @@ export default {
         })
       }
 
-      if (this.project && paths && !this.editable) {
+      if (this.project && paths && this.preview) {
         return filterSelectedSections(this.sections)
       }
 
       return this.sections
+    },
+    preview: {
+      get () {
+        return !!this.$route.query.apercu
+      },
+      set (value) {
+        this.$router.push({
+          query: {
+            ...this.$route.query,
+            apercu: value || undefined
+          }
+        })
+      }
     },
     title () {
       if (this.project) {
