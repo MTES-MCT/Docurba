@@ -1,5 +1,10 @@
 <template>
-  <v-card flat :color="backgroundColor" class="section-card">
+  <v-card
+    v-if="editable || !section.ghost"
+    class="section-card"
+    :color="backgroundColor"
+    flat
+  >
     <v-card-text :class="section.ghost ? 'section-card-text--ghost' : 'section-card-text'">
       <v-expansion-panels flat :value="isOpen ? 0 : null" @change="isOpen = $event === 0">
         <v-hover v-slot="{hover}">
