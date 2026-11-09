@@ -3,7 +3,7 @@ from datetime import date
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
 from operator import attrgetter
-from typing import Self
+from typing import ClassVar, Self
 
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
@@ -335,6 +335,9 @@ class FastLoadingProcedureManager(ProcedureManager):
 
 
 class Procedure(models.Model):
+    DYNAMIC_TO_DENORMALIZED_FIELDS: ClassVar[dict[str:str]] = {
+        "dynamic_doc_type": "doc_type",
+    }
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
     test = models.BooleanField(db_default=False)
     testing = models.BooleanField(blank=True, null=True)
@@ -538,7 +541,7 @@ class Procedure(models.Model):
 
     def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
         self.clean()
-        self.sync_denormalized_fields()
+        self.update_denormalized_fields()
         super().save(*args, **kwargs)
 
     def get_absolute_url(self) -> str:
@@ -580,6 +583,22 @@ class Procedure(models.Model):
             return []
         return self.perimetre.all()
 
+    def has_inconsistent_denormalized_fields(self) -> bool:
+        return not all(
+            getattr(self, dynamic_field) == getattr(self, denormalized_field)
+            for dynamic_field, denormalized_field in self.DYNAMIC_TO_DENORMALIZED_FIELDS.items()
+        )
+
+    def update_denormalized_fields(self, save: bool = False) -> Self:  # noqa: FBT001, FBT002
+        [
+            setattr(self, denormalized_field, getattr(self, dynamic_field))
+            for dynamic_field, denormalized_field in self.DYNAMIC_TO_DENORMALIZED_FIELDS.items()
+        ]
+        if save:
+            self.save()
+        return self
+
+    # NOTE(cms): rename me in dynamic_name?
     @property
     def computed_name(self) -> str:
         if self.name:
@@ -795,15 +814,6 @@ class Procedure(models.Model):
             EventCategory.PUBLICATION_PERIMETRE,
         )
 
-    @classmethod
-    def dynamic_doc_type_to_base_doc_type(
-        cls, dynamic_doc_type: str
-    ) -> core_enums.BaseDocumentType:
-        dynamic_doc_type = core_enums.TypeDocument(dynamic_doc_type)
-        if dynamic_doc_type in core_enums.TypeDocument.plu_variations():
-            return core_enums.BaseDocumentType.PLU
-        return core_enums.BaseDocumentType(dynamic_doc_type)
-
     @property
     def dynamic_doc_type(self) -> str:
         doc_type = self.base_doc_type
@@ -818,11 +828,14 @@ class Procedure(models.Model):
                 doc_type = doc_type + "M"
         return core_enums.TypeDocument(doc_type)
 
-    def sync_denormalized_fields(self, save: bool = False) -> Self:  # noqa: FBT001, FBT002
-        self.doc_type = self.dynamic_doc_type
-        if save:
-            self.save()
-        return self
+    @classmethod
+    def dynamic_doc_type_to_base_doc_type(
+        cls, dynamic_doc_type: str
+    ) -> core_enums.BaseDocumentType:
+        dynamic_doc_type = core_enums.TypeDocument(dynamic_doc_type)
+        if dynamic_doc_type in core_enums.TypeDocument.plu_variations():
+            return core_enums.BaseDocumentType.PLU
+        return core_enums.BaseDocumentType(dynamic_doc_type)
 
 
 class ProcedureTopic(models.Model):

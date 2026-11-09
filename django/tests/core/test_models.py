@@ -693,6 +693,7 @@ class TestScotInterdepartemental:
             assert collectivites[0].scots[0].is_interdepartemental
 
 
+@pytest.mark.django_db
 class TestProcedure:
     def test_is_schema(self) -> None:
         assert not core_models.Procedure(
@@ -718,14 +719,12 @@ class TestProcedure:
             base_doc_type=core_enums.BaseDocumentType.SD
         ).is_schema
 
-    @pytest.mark.django_db
     def test_liable_a_collectivite_porteuse_inexistante(self) -> None:
         """Tant que l'on ne gère pas bien les communes des anciens COG."""
         ProcedureFactory(collectivite_porteuse_id=12)
 
         assert core_models.Procedure.objects.count() == 1
 
-    @pytest.mark.django_db
     def test_liable_a_commune_inexistante(self) -> None:
         """Tant que l'on ne gère pas bien les communes des anciens COG."""
         procedure = ProcedureFactory()
@@ -765,7 +764,6 @@ class TestProcedure:
             in core_enums.ProcedureType.secondary()
         )
 
-    @pytest.mark.django_db
     def test_computed_name(self) -> None:
         expected_name = "Procedure name"
         procedure = ProcedureFactory(name=expected_name)
@@ -817,7 +815,6 @@ class TestProcedure:
         )
         assert procedure.computed_name == expected_name
 
-    @pytest.mark.django_db
     def test_zone_name(self, django_assert_num_queries: DjangoAssertNumQueries) -> None:
         collectivite_porteuse = CollectiviteFactory(
             nom="CC de la Terre d'Argence", type=core_enums.TypeCollectivite.CC
@@ -896,6 +893,49 @@ class TestProcedure:
             django_assert_num_queries(0),
         ):
             assert procedure.zone_name == "Argilliers"
+
+
+@pytest.mark.django_db
+class TestProcedureDenormalizedFields:
+    def test_has_inconsistent_denormalized_fields__doc_type(self) -> None:
+        procedure = ProcedureFactory.build(
+            base_doc_type=core_enums.BaseDocumentType.PLU, vaut_PDM=True, doc_type="PLU"
+        )
+        assert procedure.has_inconsistent_denormalized_fields() is True
+        procedure = ProcedureFactory.build(
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            doc_type=core_enums.TypeDocument.PLU,
+        )
+        assert procedure.has_inconsistent_denormalized_fields() is False
+
+    def test_update_denormalized_fields__doc_type(self) -> None:
+        procedure = ProcedureFactory(
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            project=None,
+        )
+        procedure.vaut_PDM = True
+        procedure = procedure.update_denormalized_fields(save=False)
+        assert procedure.doc_type == core_enums.TypeDocument.PLUM
+
+        procedure.refresh_from_db()
+        procedure.vaut_PDM = True
+        assert procedure.doc_type == core_enums.TypeDocument.PLU
+
+        procedure = procedure.update_denormalized_fields(save=True)
+        procedure.refresh_from_db()
+        assert procedure.doc_type == core_enums.TypeDocument.PLUM
+
+    def test_update_on_save__doc_type(self) -> None:
+        procedure = ProcedureFactory.build(
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            vaut_PDM=True,
+            doc_type=core_enums.TypeDocument.PLU,
+            project=None,
+        )
+        assert procedure.has_inconsistent_denormalized_fields() is True
+        procedure.save()
+        assert procedure.has_inconsistent_denormalized_fields() is False
+        assert procedure.doc_type == core_enums.TypeDocument.PLUM
 
 
 class TestProcedureDates:

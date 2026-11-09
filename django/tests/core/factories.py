@@ -295,7 +295,7 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
                 procedure=self,
                 commune=commune,
             )
-        self.sync_denormalized_fields(save=True)
+        self.update_denormalized_fields(save=True)
 
     @factory.post_generation
     def with_event(self, create: bool, extracted: bool, **extra: dict) -> None:  # noqa: FBT001
