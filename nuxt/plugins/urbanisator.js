@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import { groupBy, uniq, uniqBy, orderBy } from 'lodash'
-import { enrichProcedureWithEvents } from '@/plugins/procedure'
 
-export default ({ $collectiviteApi, $nuxtApi, $supabase, $dayjs }, inject) => {
+export default ({ $collectiviteApi, $nuxtApi, $supabase, $dayjs, $procedure }, inject) => {
   Vue.filter('docType', function (procedure) {
     if (procedure.doc_type === 'PLU') {
       let docType = procedure.doc_type
@@ -30,7 +29,7 @@ export default ({ $collectiviteApi, $nuxtApi, $supabase, $dayjs }, inject) => {
         .throwOnError()
       const groupedProceduresPerim = groupBy(data, e => e.procedure_id)
       const procedures = data.map((e) => {
-        const enrichedProcedure = enrichProcedureWithEvents(e.procedures)
+        const enrichedProcedure = $procedure.enrichProcedureWithEvents(e.procedures)
 
         return {
           ...e,
@@ -151,7 +150,7 @@ export default ({ $collectiviteApi, $nuxtApi, $supabase, $dayjs }, inject) => {
       })
 
       return this.parseProceduresStatus(
-        filteredProcedures.map(procedure => enrichProcedureWithEvents(procedure))
+        filteredProcedures.map(procedure => $procedure.enrichProcedureWithEvents(procedure))
       )
     },
     async getProjects (collectiviteId) {
