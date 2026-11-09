@@ -2,7 +2,6 @@ from io import StringIO
 
 import pytest
 from django.core.management import call_command
-
 from docurba.core.enums import BaseDocumentType
 from tests.core.factories import CommuneFactory, ProcedureFactory
 
@@ -115,7 +114,7 @@ class TestPopulateProcedureNameComplement:
         self,
         create_args: dict[str],
         expected: str,
-        needs_update: bool,  # noqa: FBT001
+        needs_update: bool,
     ) -> None:
 
         if "with_perimetre" in create_args:
