@@ -1,5 +1,5 @@
 import { keyBy } from 'lodash'
-import regions from '~/assets/data/Regions.json'
+import regions from '../assets/data/Regions.json'
 
 const regionsByCode = keyBy(regions, 'code')
 

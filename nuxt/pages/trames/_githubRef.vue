@@ -277,9 +277,7 @@ export default {
 
       const projectId = this.gitRef.replace('projet-', '')
 
-      const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-      this.project = projects ? projects[0] : null
-
+      this.project = await this.$nuxtApi.get(`/api/projects/${projectId}`)
       this.collectivite = await this.$collectiviteApi.getFromCode(this.project.collectivite_id)
     }
 
@@ -441,9 +439,9 @@ export default {
         this.project.PAC = this.project.PAC.filter(path => path !== selection.path)
       }
 
-      await this.$supabase.from('projects').update({
+      await this.$nuxtApi.post(`/api/projects/${this.project.id}/update`, {
         PAC: this.project.PAC
-      }).eq('id', this.project.id)
+      })
     },
     findSection (sections, path) {
       const flatSections = this.getFlatSections(sections)
@@ -544,9 +542,9 @@ export default {
           return path.replace(sectionPath, newPath)
         })
 
-        await this.$supabase.from('projects').update({
+        await this.$nuxtApi.post(`/api/projects/${this.project.id}/update`, {
           PAC: this.project.PAC
-        }).eq('id', this.project.id)
+        })
       }
 
       // Finaly section.name need to be updated.
@@ -576,7 +574,9 @@ export default {
         return
       }
 
-      await this.$supabase.from('projects').update({ name: this.newName }).eq('id', this.project.id)
+      await this.$nuxtApi.post(`/api/projects/${this.project.id}/update`, {
+        name: this.newName
+      })
       this.project.name = this.newName
       this.renameMode = false
     }
