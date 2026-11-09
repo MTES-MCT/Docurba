@@ -5,7 +5,6 @@ from math import ceil
 
 from django.core.management.base import BaseCommand, CommandParser
 from django.db import transaction
-
 from docurba.core.models import Procedure
 
 # si intercommunal ET is_pdu = false ET is_pluih = true alors doc_type = PLUiH
@@ -28,7 +27,7 @@ class Command(BaseCommand):
             help="Update Sudocuh's procedure.doc_type.",
         )
 
-    def handle(self, *args: list, **options: dict) -> None:  # noqa: ARG002
+    def handle(self, *args: list, **options: dict) -> None:
         logger = logging.getLogger(self.__class__.__module__)
         # .with_perimetre_without_deleguees_count() and .with_collectivite_porteuse_communes_adherentes_count()
         # are already called on Procedure.objets.get_queryset()

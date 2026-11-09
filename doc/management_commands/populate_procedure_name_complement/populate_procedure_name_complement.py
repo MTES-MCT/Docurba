@@ -2,7 +2,6 @@ import csv
 import re
 
 from django.core.management.base import BaseCommand
-
 from docurba.core.enums import CommuneType
 from docurba.core.models import Procedure
 
@@ -18,7 +17,7 @@ class Command(BaseCommand):
             help="Update procedures.name_complement",
         )
 
-    def handle(self, *args: list, wet_run: bool, **options: dict) -> None:  # noqa: ARG002
+    def handle(self, *args: list, wet_run: bool, **options: dict) -> None:
 
         queryset = (
             Procedure.objects.select_related("collectivite_porteuse")

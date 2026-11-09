@@ -8,7 +8,6 @@ from pathlib import Path
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandParser
 from django.db import models
-
 from docurba.core.enums import TypeDocument
 from docurba.core.models import Procedure
 
@@ -64,7 +63,7 @@ class Command(BaseCommand):
                 ]
             )
 
-    def handle(self, *args: list, **options: dict) -> None:  # noqa: ARG002, C901, PLR0912, PLR0915
+    def handle(self, *args: list, **options: dict) -> None:
         logger = logging.getLogger(self.__class__.__module__)
         procedure_qs = Procedure.objects.exclude(
             doc_type__in=[TypeDocument.POS, TypeDocument.PLU]
