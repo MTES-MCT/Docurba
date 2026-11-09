@@ -85,6 +85,11 @@
             </v-list-item-content>
           </template>
         </v-autocomplete>
+        <v-checkbox
+          v-if="project && !preview"
+          v-model="allSectionsSelected"
+          :label="`Tout ${allSectionsSelected ? 'dé' : ''}cocher`"
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -236,6 +241,23 @@ export default {
       }
 
       return null
+    },
+    allSectionsPaths () {
+      return this.getFlatSections(this.sections).map(({ path }) => path)
+    },
+    allSectionsSelected: {
+      get () {
+        return (
+          !!this.project &&
+          this.project.PAC.length === this.allSectionsPaths.length &&
+          this.project.PAC.every(path => this.allSectionsPaths.includes(path))
+        )
+      },
+      set (value) {
+        const PAC = value ? this.allSectionsPaths : []
+        this.project.PAC = PAC
+        this.$nuxtApi.post(`/api/projects/${this.project.id}/update`, { PAC })
+      }
     }
   },
   async mounted () {
