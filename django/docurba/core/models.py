@@ -822,10 +822,12 @@ class Procedure(models.Model):
                 doc_type = doc_type + "i"
             if self.is_sectoriel_consolide:
                 doc_type = doc_type + "S"
-            if self.vaut_PLH:
-                doc_type = doc_type + "H"
-            if self.vaut_PDM:
-                doc_type = doc_type + "M"
+            # We don't know yet how to display these types.
+            if self.is_intercommunal:
+                if self.vaut_PLH:
+                    doc_type = doc_type + "H"
+                if self.vaut_PDM:
+                    doc_type = doc_type + "M"
         return core_enums.TypeDocument(doc_type)
 
     @classmethod

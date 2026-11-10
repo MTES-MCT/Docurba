@@ -898,44 +898,71 @@ class TestProcedure:
 @pytest.mark.django_db
 class TestProcedureDenormalizedFields:
     def test_has_inconsistent_denormalized_fields__doc_type(self) -> None:
+        communes = [
+            CommuneFactory(code_insee="30188"),
+            CommuneFactory(code_insee="30189"),
+        ]
+        collectivite_porteuse = CollectiviteFactory(with_members=communes)
         procedure = ProcedureFactory.build(
-            base_doc_type=core_enums.BaseDocumentType.PLU, vaut_PDM=True, doc_type="PLU"
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            vaut_PDM=True,
+            doc_type="PLU",
+            cached_perimetre=communes,
+            collectivite_porteuse=collectivite_porteuse,
         )
         assert procedure.has_inconsistent_denormalized_fields() is True
         procedure = ProcedureFactory.build(
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            doc_type=core_enums.TypeDocument.PLU,
+            doc_type=core_enums.TypeDocument.PLUI,
+            cached_perimetre=communes,
+            collectivite_porteuse=collectivite_porteuse,
         )
         assert procedure.has_inconsistent_denormalized_fields() is False
 
     def test_update_denormalized_fields__doc_type(self) -> None:
+        communes = [
+            CommuneFactory(code_insee="30188"),
+            CommuneFactory(code_insee="30189"),
+        ]
+        collectivite_porteuse = CollectiviteFactory(with_members=communes)
+
         procedure = ProcedureFactory(
             base_doc_type=core_enums.BaseDocumentType.PLU,
             project=None,
+            cached_perimetre=communes,
+            collectivite_porteuse=collectivite_porteuse,
         )
         procedure.vaut_PDM = True
         procedure = procedure.update_denormalized_fields(save=False)
-        assert procedure.doc_type == core_enums.TypeDocument.PLUM
+        assert procedure.doc_type == core_enums.TypeDocument.PLUIM
 
         procedure.refresh_from_db()
         procedure.vaut_PDM = True
-        assert procedure.doc_type == core_enums.TypeDocument.PLU
+        assert procedure.doc_type == core_enums.TypeDocument.PLUI
 
         procedure = procedure.update_denormalized_fields(save=True)
         procedure.refresh_from_db()
-        assert procedure.doc_type == core_enums.TypeDocument.PLUM
+        assert procedure.doc_type == core_enums.TypeDocument.PLUIM
 
     def test_update_on_save__doc_type(self) -> None:
+        communes = [
+            CommuneFactory(code_insee="30188"),
+            CommuneFactory(code_insee="30189"),
+        ]
+        collectivite_porteuse = CollectiviteFactory(with_members=communes)
+
         procedure = ProcedureFactory.build(
             base_doc_type=core_enums.BaseDocumentType.PLU,
             vaut_PDM=True,
-            doc_type=core_enums.TypeDocument.PLU,
+            doc_type=core_enums.TypeDocument.PLUI,
+            cached_perimetre=communes,
+            collectivite_porteuse=collectivite_porteuse,
             project=None,
         )
         assert procedure.has_inconsistent_denormalized_fields() is True
         procedure.save()
         assert procedure.has_inconsistent_denormalized_fields() is False
-        assert procedure.doc_type == core_enums.TypeDocument.PLUM
+        assert procedure.doc_type == core_enums.TypeDocument.PLUIM
 
 
 class TestProcedureDates:
@@ -1075,17 +1102,48 @@ class TestProcedureTypeDocument:
         procedure = ProcedureFactory(
             vaut_PDM=True, base_doc_type=core_enums.BaseDocumentType.PLU
         )
-        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUM
+        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLU
 
         procedure = ProcedureFactory(
             vaut_PLH=True, base_doc_type=core_enums.BaseDocumentType.PLU
         )
-        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUH
+        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLU
 
         procedure = ProcedureFactory(
             vaut_PLH=True, vaut_PDM=True, base_doc_type=core_enums.BaseDocumentType.PLU
         )
-        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUHM
+        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLU
+
+        # PLUi
+        communes = [
+            CommuneFactory(code_insee="30188"),
+            CommuneFactory(code_insee="30189"),
+        ]
+        collectivite_porteuse = CollectiviteFactory(with_members=communes)
+        procedure = ProcedureFactory(
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            vaut_PDM=True,
+            cached_perimetre=communes,
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUIM
+
+        procedure = ProcedureFactory(
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            vaut_PLH=True,
+            cached_perimetre=communes,
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUIH
+
+        procedure = ProcedureFactory(
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            vaut_PLH=True,
+            vaut_PDM=True,
+            cached_perimetre=communes,
+            collectivite_porteuse=collectivite_porteuse,
+        )
+        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLUIHM
 
         procedure = ProcedureFactory(
             vaut_PLH=True, base_doc_type=core_enums.BaseDocumentType.POS
@@ -1235,6 +1293,38 @@ class TestProcedureTypeDocument:
         )
         procedure = core_models.Procedure.objects.get(id=procedure.id)
         assert procedure.dynamic_doc_type == expected_doc_type
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize(
+        ("vaut_PDM", "vaut_PLH"),
+        [
+            (False, False),
+            (False, True),
+            (True, False),
+            (True, True),
+        ],
+    )
+    def test_dynamic_doc_type__ignored_plu_variation(
+        self,
+        vaut_PDM: bool,
+        vaut_PLH: bool,
+    ) -> None:
+        commune_a = CommuneFactory()
+        collectivite = CollectiviteFactory(
+            with_members=True,
+            with_members__list=[
+                commune_a,
+            ],
+        )
+        procedure = ProcedureFactory(
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            vaut_PDM=vaut_PDM,
+            vaut_PLH=vaut_PLH,
+            collectivite_porteuse=collectivite,
+            with_perimetre=[commune_a],
+        )
+        procedure = core_models.Procedure.objects.get(id=procedure.id)
+        assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLU
 
     def test_base_doc_type_from_dynamic_doc_type(
         self, subtests: pytest.Subtests
