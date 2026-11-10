@@ -30,7 +30,31 @@
         <h2 v-if="collectivite" class="text-subtitle">
           {{ collectivite.intitule }} ({{ collectivite.code }})
         </h2>
-
+      </v-col>
+      <v-col>
+        <v-autocomplete
+          v-model="searchedSectionPath"
+          :loading="opening"
+          :items="autocompleteSectionItems"
+          filled
+          label="Rechercher une section"
+          item-text="name"
+          item-value="path"
+          @input="opening = true"
+        >
+          <template #item="data">
+            <v-list-item-content>
+              <v-list-item-subtitle :style="{ whiteSpace: 'normal' }">
+                {{ data.item.parentPathSubtitle }}
+              </v-list-item-subtitle>
+              <v-list-item-title>{{ data.item.name }}</v-list-item-title>
+            </v-list-item-content>
+          </template>
+        </v-autocomplete>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
         <div class="mt-4">
           <v-btn color="primary" depressed :disabled="editingSections.length > 0" @click="preview = !preview">
             {{ preview ? 'Éditer' : 'Prévisualiser' }}
@@ -65,29 +89,11 @@
           </v-menu>
         </div>
       </v-col>
-      <v-col>
-        <v-autocomplete
-          v-model="searchedSectionPath"
-          :loading="opening"
-          :items="autocompleteSectionItems"
-          filled
-          label="Rechercher une section"
-          item-text="name"
-          item-value="path"
-          @input="opening = true"
-        >
-          <template #item="data">
-            <v-list-item-content>
-              <v-list-item-subtitle :style="{ whiteSpace: 'normal' }">
-                {{ data.item.parentPathSubtitle }}
-              </v-list-item-subtitle>
-              <v-list-item-title>{{ data.item.name }}</v-list-item-title>
-            </v-list-item-content>
-          </template>
-        </v-autocomplete>
+      <v-col class="d-flex justify-end">
         <v-checkbox
           v-if="project && !preview"
           v-model="allSectionsSelected"
+          hide-details
           :label="`Tout ${allSectionsSelected ? 'dé' : ''}cocher`"
         />
       </v-col>
