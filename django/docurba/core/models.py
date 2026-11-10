@@ -1094,6 +1094,19 @@ class EventType(models.Model):
         CC = core_enums.BaseDocumentType.CC
         SCOT = core_enums.BaseDocumentType.SCOT
 
+        @classmethod
+        def from_base_document_type(
+            cls, value: core_enums.BaseDocumentType
+        ) -> "EventType.DocumentType":
+            if value == core_enums.BaseDocumentType.CC:
+                return cls.CC
+            if value in [
+                core_enums.BaseDocumentType.SCOT,
+                core_enums.BaseDocumentType.SD,
+            ]:
+                return cls.SCOT
+            return cls.PLU
+
     id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
     document_type = models.CharField(
         verbose_name="type de document", choices=DocumentType
