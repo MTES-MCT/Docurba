@@ -5,7 +5,7 @@ app.use(express.json())
 const _ = require('lodash')
 
 const { getCollectiviteFromCode } = require('../plugins/collectivite.js')
-const { requireDDT } = require('./modules/auth.js')
+const { requireDDT, requireRefRoles } = require('./modules/auth.js')
 const djangoApi = require('./modules/django-api.js')
 const supabase = require('./modules/supabase.js')
 const sendgrid = require('./modules/sendgrid.js')
@@ -33,6 +33,36 @@ const day = hour * 24
 //     res.status(400).send('Email Sharing FRP failed')
 //   }
 // })
+
+app.get('/:id', async (req, res) => {
+  const { data } = await supabase.from('projects')
+    .select('*')
+    .eq('id', req.params.id)
+    .limit(1)
+    .single()
+  res.status(200).send(data)
+})
+
+app.post('/:id/update', async (req, res) => {
+  try {
+    await requireRefRoles(req, ['write'])
+  } catch (error) {
+    return res.status(403).send({ message: error.message })
+  }
+
+  const patch = {}
+
+  for (const key of ['name', 'PAC']) {
+    if (key in req.body) {
+      patch[key] = req.body[key]
+    }
+  }
+
+  await supabase.from('projects')
+    .update(patch)
+    .eq('id', req.params.id)
+  res.status(200).send('OK')
+})
 
 app.post('/notify/shared', async (req, res) => {
   try {

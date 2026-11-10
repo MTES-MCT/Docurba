@@ -30,7 +30,31 @@
         <h2 v-if="collectivite" class="text-subtitle">
           {{ collectivite.intitule }} ({{ collectivite.code }})
         </h2>
-
+      </v-col>
+      <v-col>
+        <v-autocomplete
+          v-model="searchedSectionPath"
+          :loading="opening"
+          :items="autocompleteSectionItems"
+          filled
+          label="Rechercher une section"
+          item-text="name"
+          item-value="path"
+          @input="opening = true"
+        >
+          <template #item="data">
+            <v-list-item-content>
+              <v-list-item-subtitle :style="{ whiteSpace: 'normal' }">
+                {{ data.item.parentPathSubtitle }}
+              </v-list-item-subtitle>
+              <v-list-item-title>{{ data.item.name }}</v-list-item-title>
+            </v-list-item-content>
+          </template>
+        </v-autocomplete>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
         <div class="mt-4">
           <v-btn color="primary" depressed :disabled="editingSections.length > 0" @click="preview = !preview">
             {{ preview ? 'Éditer' : 'Prévisualiser' }}
@@ -65,26 +89,13 @@
           </v-menu>
         </div>
       </v-col>
-      <v-col>
-        <v-autocomplete
-          v-model="searchedSectionPath"
-          :loading="opening"
-          :items="autocompleteSectionItems"
-          filled
-          label="Rechercher une section"
-          item-text="name"
-          item-value="path"
-          @input="opening = true"
-        >
-          <template #item="data">
-            <v-list-item-content>
-              <v-list-item-subtitle :style="{ whiteSpace: 'normal' }">
-                {{ data.item.parentPathSubtitle }}
-              </v-list-item-subtitle>
-              <v-list-item-title>{{ data.item.name }}</v-list-item-title>
-            </v-list-item-content>
-          </template>
-        </v-autocomplete>
+      <v-col class="d-flex justify-end">
+        <v-checkbox
+          v-if="project && !preview"
+          v-model="allSectionsSelected"
+          hide-details
+          :label="`Tout ${allSectionsSelected ? 'dé' : ''}cocher`"
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -236,6 +247,23 @@ export default {
       }
 
       return null
+    },
+    allSectionsPaths () {
+      return this.getFlatSections(this.sections).map(({ path }) => path)
+    },
+    allSectionsSelected: {
+      get () {
+        return (
+          !!this.project &&
+          this.project.PAC.length === this.allSectionsPaths.length &&
+          this.project.PAC.every(path => this.allSectionsPaths.includes(path))
+        )
+      },
+      set (value) {
+        const PAC = value ? this.allSectionsPaths : []
+        this.project.PAC = PAC
+        this.$nuxtApi.post(`/api/projects/${this.project.id}/update`, { PAC })
+      }
     }
   },
   async mounted () {
@@ -255,9 +283,7 @@ export default {
 
       const projectId = this.gitRef.replace('projet-', '')
 
-      const { data: projects } = await this.$supabase.from('projects').select('*').eq('id', projectId)
-      this.project = projects ? projects[0] : null
-
+      this.project = await this.$nuxtApi.get(`/api/projects/${projectId}`)
       this.collectivite = await this.$collectiviteApi.getFromCode(this.project.collectivite_id)
     }
 
@@ -419,9 +445,9 @@ export default {
         this.project.PAC = this.project.PAC.filter(path => path !== selection.path)
       }
 
-      await this.$supabase.from('projects').update({
+      await this.$nuxtApi.post(`/api/projects/${this.project.id}/update`, {
         PAC: this.project.PAC
-      }).eq('id', this.project.id)
+      })
     },
     findSection (sections, path) {
       const flatSections = this.getFlatSections(sections)
@@ -522,9 +548,9 @@ export default {
           return path.replace(sectionPath, newPath)
         })
 
-        await this.$supabase.from('projects').update({
+        await this.$nuxtApi.post(`/api/projects/${this.project.id}/update`, {
           PAC: this.project.PAC
-        }).eq('id', this.project.id)
+        })
       }
 
       // Finaly section.name need to be updated.
@@ -554,7 +580,9 @@ export default {
         return
       }
 
-      await this.$supabase.from('projects').update({ name: this.newName }).eq('id', this.project.id)
+      await this.$nuxtApi.post(`/api/projects/${this.project.id}/update`, {
+        name: this.newName
+      })
       this.project.name = this.newName
       this.renameMode = false
     }
