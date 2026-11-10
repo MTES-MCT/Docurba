@@ -140,7 +140,7 @@ class TestEventChange:
         admin_session_client: Client,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
-        event = EventFactory()
+        event = EventFactory(event_type=None)
         with django_assert_num_queries(
             1  # session
             + 1  # user
