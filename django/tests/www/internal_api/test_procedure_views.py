@@ -1,10 +1,11 @@
-import datetime as dt
 import random
 import uuid
 from urllib.parse import urlencode
 
 import pytest
 from django.urls import reverse
+from django.utils import timezone
+from freezegun import freeze_time
 from pytest_django import DjangoAssertNumQueries
 from syrupy.assertion import SnapshotAssertion
 
@@ -486,6 +487,7 @@ class TestProcedureList:
         assert response.json()["results"][1]["parentId"] == str(principal_procedure.pk)
         assert response.json()["results"][1] == snapshot()
 
+    @freeze_time("2026-10-06")
     def test_serializer_with_approval_date(
         self,
         api_client_with_auth: SupabaseApiTestClient,
@@ -499,7 +501,7 @@ class TestProcedureList:
             with_perimetre=communes,
             with_event=True,
             with_event__category=core_models.EventCategory.APPROUVE,
-            with_event__date_evenement=dt.date(2026, 10, 6),
+            with_event__date_evenement=timezone.now(),
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -507,7 +509,10 @@ class TestProcedureList:
         ):
             response = api_client.get(f"{self.url}")
         assert response.status_code == 200
-        assert response.json()["results"][0]["approval_date"] == "2026-10-06"
+        assert (
+            response.json()["results"][0]["approval_date"]
+            == "2026-10-06T02:00:00+02:00"
+        )
 
     def test_serializer_with_communes_is_opposable(
         self,

@@ -435,14 +435,13 @@ export default {
       }
 
       const procedures = await this.$djangoApi.get('/api-internes/procedures/', payload)
-      // See addFormattedDate
       return procedures.map(procedure => ({
         ...procedure,
         label: `${
             procedure.name
           }${
             procedure.approval_date
-              ? ` - ${procedure.approval_date.split('-').reverse().join('/')}`
+              ? ` - ${this.$dayjs(procedure.approval_date).format('DD/MM/YYYY')}`
               : ''
           }`
       })).sort((a, b) => {

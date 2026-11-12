@@ -351,7 +351,7 @@ class EventFactory(factory.django.DjangoModelFactory):
         model = core_models.Event
 
     procedure = factory.SubFactory(ProcedureFactory)
-    date_evenement = factory.fuzzy.FuzzyDate(dt.date(1970, 1, 1))
+    date_evenement = factory.fuzzy.FuzzyDateTime(dt.datetime(1970, 1, 1, tzinfo=dt.UTC))
     type = "Prescription"
     from_sudocuh = None
     archived_at = None

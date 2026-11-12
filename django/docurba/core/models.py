@@ -1,5 +1,5 @@
 import logging
-from datetime import date
+from datetime import datetime
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
 from operator import attrgetter
@@ -237,7 +237,7 @@ for base_doc_type, types in EVENT_CATEGORY_BY_DOC_TYPE.items():
 
 
 class ProcedureQuerySet(models.QuerySet):
-    def with_events(self, *, avant: date | None = None) -> Self:
+    def with_events(self, *, avant: datetime | None = None) -> Self:
         events_qs = (
             Event.objects.without_archived()
             .exclude(date_evenement=None)
@@ -250,7 +250,7 @@ class ProcedureQuerySet(models.QuerySet):
         )
         return self.annotate(
             with_events__date_pivot=models.Value(
-                avant or timezone.now().date(), output_field=models.DateField()
+                avant or timezone.now(), output_field=models.DateTimeField()
             )
         ).prefetch_related(
             models.Prefetch("event_set", events_qs, to_attr="events_prefetched"),
@@ -574,12 +574,12 @@ class Procedure(models.Model):
 
         # This attribute is set by an annotation on the `with_events` method.
         # This should be refactored soon. In the meantime, put a dressing on it.
-        date_pivot = getattr(self, "with_events__date_pivot", timezone.now().date())
+        date_pivot = getattr(self, "with_events__date_pivot", timezone.now())
 
         for event in reversed(self.events_prefetched):
             if event.category and (
                 event.category == EventCategory.FIN_ECHEANCE
-                or event.date_evenement <= date_pivot
+                or event.date_evenement.date() <= date_pivot.date()
             ):
                 setattr(self, event.category, event)
         self._events_processed = True
@@ -673,12 +673,12 @@ class Procedure(models.Model):
 
         # This attribute is set by an annotation on the `with_events` method.
         # This should be refactored soon. In the meantime, put a dressing on it.
-        date_pivot = getattr(self, "with_events__date_pivot", timezone.now().date())
+        date_pivot = getattr(self, "with_events__date_pivot", timezone.now())
         if self.date_fin_echeance and self.date_fin_echeance < date_pivot:
             return EventCategory.CADUC
         return self.dernier_event_impactant.category
 
-    def _date(self, event_type: EventCategory) -> date | None:
+    def _date(self, event_type: EventCategory) -> datetime | None:
         self._process_events()
         event = getattr(self, event_type, None)
         if not event:
@@ -686,35 +686,35 @@ class Procedure(models.Model):
         return event.date_evenement
 
     @property
-    def date_approbation(self) -> date | None:
+    def date_approbation(self) -> datetime | None:
         return self._date(EventCategory.APPROUVE)
 
     @property
-    def date_prescription(self) -> date | None:
+    def date_prescription(self) -> datetime | None:
         return self._date(EventCategory.PRESCRIPTION)
 
     @property
-    def date_publication_perimetre(self) -> date | None:
+    def date_publication_perimetre(self) -> datetime | None:
         return self._date(EventCategory.PUBLICATION_PERIMETRE)
 
     @property
-    def date_arret_projet(self) -> date | None:
+    def date_arret_projet(self) -> datetime | None:
         return self._date(EventCategory.ARRET_DE_PROJET)
 
     @property
-    def date_fin_echeance(self) -> date | None:
+    def date_fin_echeance(self) -> datetime | None:
         return self._date(EventCategory.FIN_ECHEANCE)
 
     @property
-    def date_porter_a_connaissance(self) -> date | None:
+    def date_porter_a_connaissance(self) -> datetime | None:
         return self._date(EventCategory.PORTER_A_CONNAISSANCE)
 
     @property
-    def date_porter_a_connaissance_complementaire(self) -> date | None:
+    def date_porter_a_connaissance_complementaire(self) -> datetime | None:
         return self._date(EventCategory.PORTER_A_CONNAISSANCE_COMPLEMENTAIRE)
 
     @property
-    def date_caractere_executoire(self) -> date | None:
+    def date_caractere_executoire(self) -> datetime | None:
         return self._date(EventCategory.CARACTERE_EXECUTOIRE)
 
     @property
@@ -1215,7 +1215,7 @@ class Event(models.Model):
         "core.EventType", models.DO_NOTHING, blank=True, null=True, verbose_name="type"
     )
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
-    date_evenement = models.DateField(
+    date_evenement = models.DateTimeField(
         db_column="date_iso", blank=True, null=True, verbose_name="date"
     )
     is_valid = models.BooleanField(db_default=True, verbose_name="est valide")
@@ -1360,7 +1360,7 @@ class Adhesion(models.Model):
 
 
 class CollectiviteQuerySet(models.QuerySet):
-    def portant_scot(self, avant: date | None = None) -> Self:
+    def portant_scot(self, avant: datetime | None = None) -> Self:
         procedures_qs = (
             Procedure.objects.with_events(avant=avant)
             .with_concatenated_topics_as_string()
@@ -1513,7 +1513,7 @@ class Collectivite(models.Model):
 
 
 class CommuneQuerySet(models.QuerySet):
-    def with_procedures_principales(self, *, avant: date | None = None) -> Self:
+    def with_procedures_principales(self, *, avant: datetime | None = None) -> Self:
         procedures_principales = (
             Procedure.objects.with_concatenated_topics_as_string()
             .with_events(avant=avant)
@@ -1526,7 +1526,7 @@ class CommuneQuerySet(models.QuerySet):
             )
         )
 
-    def with_scots(self, avant: date | None = None) -> Self:
+    def with_scots(self, avant: datetime | None = None) -> Self:
         return self.prefetch_related(
             models.Prefetch(
                 "procedures",
