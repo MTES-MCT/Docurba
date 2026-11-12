@@ -110,6 +110,7 @@ export function getProcedureEventsScope (procedure) {
       return 'ms'
     case 'Révision allégée (ou RMS)':
     case 'Révision à modalité simplifiée ou Révision allégée':
+    case 'Révision simplifiée':
       return 'rms'
     default:
       return 'aucun'
