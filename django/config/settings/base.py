@@ -23,6 +23,7 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 DOCURBA_ENVIRONMENT = DocurbaEnvironment(env.str("DOCURBA_ENVIRONMENT", default="PROD"))
 DOCURBA_PROTOCOL = "https"
 DOCURBA_FQDN = env.str("DOCURBA_FQDN", default="docurba.beta.gouv.fr")
+SLACK_TECH_MONITORING_URL = env.str("SLACK_TECH_MONITORING_URL", default="")
 
 # Application definition
 
