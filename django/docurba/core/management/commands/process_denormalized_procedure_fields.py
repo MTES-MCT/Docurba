@@ -1,11 +1,13 @@
 import csv
 import logging
+from datetime import timedelta
 from itertools import batched
 from math import ceil
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandParser
-from django.db import transaction
+from django.db import models, transaction
+from django.utils import timezone
 
 from docurba.core.models import Procedure
 from docurba.utils.slack import send_slack_message
@@ -40,10 +42,11 @@ class Command(BaseCommand):
         writer.writeheader()
 
         total_inconsistent_procedures_count = 0
-        # 389 Docurba: des erreurs de i et l'ajout du S.
-        # 25 Sudocuh: PLUH or PLUHM
-        # Ignore sudocuh procedures until Octavie comes back.
-        procedures_pks = Procedure.objects.values_list("pk", flat=True)
+        yesterday = (timezone.now() - timedelta(days=1)).day
+        procedures_pks = Procedure.objects.filter(
+            models.Q(created_at__day=yesterday)
+            | models.Q(last_updated_at__day=yesterday)
+        ).values_list("pk", flat=True)
 
         batches = ceil(len(procedures_pks) / BATCH_SIZE)
         for i, batch_pks in enumerate(
