@@ -1,0 +1,50 @@
+name: ⏰ Désactivation des apps démo
+on:
+  schedule:
+    - cron: '0 19 * * *' # Every day at 19h00 UTC
+  workflow_dispatch:
+
+
+jobs:
+  all:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🛠️ Installation de la CLI Scalingo
+      uses: scalingo-community/setup-scalingo@87fe86eedc708ffb9d232c756b21f6a5784f6c8a # v0.1.1
+      with:
+        # Docurbot's token.
+        api_token: ${{ secrets.SCALINGO_API_TOKEN }}
+        region: 'osc-fr1'
+
+    - name: 🛠️ Installation de la CLI Supabase
+      uses: supabase/setup-cli@46f7f98c7f948ad727d22c1e67fab04c223a0520 # v3.0.0
+      with:
+        version: latest
+
+    - name: Désactivation des apps démo
+      run: |
+        scalingo --format json apps \
+        | jq -r '.apps[] | select(.status == "running") | .name' \
+        | sed -n '/\(docurba-demo-pr\|docurba-nuxt-demo-pr\|docurba-django-demo-pr\)/p' > apps.txt
+
+        cat apps.txt | while read app
+        do
+          echo "Desactiving review app : ${app}"
+          scalingo --app "${app}" scale web:0
+        done
+
+    - name: Désactivation des branches supabase
+      env:
+        SUPABASE_ACCESS_TOKEN: ${{ secrets.TEST_SUPABASE_ACCESS_TOKEN }}
+        SUPABASE_PROJECT_ID: ${{ secrets.TEST_SUPABASE_PROJECT_ID }}
+      run: |
+        supabase branches list --output json \
+        | jq -r '.[] | select(.preview_project_status == "ACTIVE_HEALTHY") | .name' \
+        | sed -n '/supabase-pr/p' > branches.txt
+
+        cat branches.txt | while read branch
+        do
+          echo "Pausing supabase branche : ${branch}"
+          supabase branches pause "${branch}" --yes
+        done
