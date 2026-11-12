@@ -1,7 +1,7 @@
 <template>
   <v-row v-show="!ignore" class=" align-center justify-center ma-2">
     <v-col cols="auto">
-      <v-chip v-if="!suggestion" class="font-weight-bold" color="alt-beige" label>
+      <v-chip v-if="!suggestion" class="font-weight-bold" :class="{invisible: isSystem}" color="alt-beige" label>
         {{ formatDate }}
       </v-chip>
     </v-col>
@@ -127,8 +127,11 @@ export default {
     }
   },
   computed: {
+    isSystem () {
+      return process.env.SYSTEM_PROFILE_IDS.includes(this.event.profile_id)
+    },
     creator () {
-      return this.$utils.formatEventProfileToCreator(this.event)
+      return this.$utils.formatEventProfileToCreator(this.isSystem ? {} : this.event)
     },
     description () {
       const descriptionString = this.event.commentaire || this.event.description
@@ -158,3 +161,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .invisible {
+    visibility: hidden;
+  }
+</style>

@@ -13,10 +13,11 @@
         <div class="text-caption g600--text">
           Statut
         </div>
-        <div>
-          <v-chip :color="statusColors[procedure.status]" small label class="text-uppercase mr-2">
-            {{ procedure.status }}
-          </v-chip>
+        <div class="d-flex align-center my-2">
+          <ProcedureStatus
+            v-if="procedure.status"
+            :value="procedure.status"
+          />
         </div>
       </v-col>
       <v-col>

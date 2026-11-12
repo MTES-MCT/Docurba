@@ -9,6 +9,7 @@ export default {
     DJANGO_API_BASE_URL: process.env.DJANGO_API_BASE_URL,
     DEV_EMAILS: process.env.DEV_EMAILS?.split(',') ?? [],
     PAC_ADMIN_EMAILS: process.env.PAC_ADMIN_EMAILS?.split(',') ?? [],
+    SYSTEM_PROFILE_IDS: process.env.SYSTEM_PROFILE_IDS?.split(',') ?? [],
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
     APP_URL: process.env.APP_URL,

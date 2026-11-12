@@ -490,6 +490,8 @@ class Procedure(models.Model):
         choices=core_enums.ProcedureStatusChoices, blank=True, null=True
     )  # TextField in DB.
 
+    INITIAL_STATUS = core_enums.ProcedureStatusChoices.EN_PROJET
+
     objects = FastLoadingProcedureManager.from_queryset(ProcedureQuerySet)()
     full_objects = ProcedureManager.from_queryset(ProcedureQuerySet)()
 
@@ -552,6 +554,8 @@ class Procedure(models.Model):
         super().__init__(*args, **kwargs)
 
     def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+        if not self.parente_id and not self.status:
+            self.status = self.INITIAL_STATUS
         self.clean()
         super().save(*args, **kwargs)
 
@@ -559,11 +563,8 @@ class Procedure(models.Model):
         return utils_urls.get_absolute_url(path=f"/frise/{self.pk}")
 
     def clean(self) -> None:
-        if self.parente and self.status:
+        if self.parente_id and self.status:
             message = 'A secondary procedure must not have a "status".'
-            raise ValidationError(message)
-        if not self.parente and not self.status:
-            message = 'A main procedure must have a "status" filled in.'
             raise ValidationError(message)
 
     _events_processed = False
@@ -677,6 +678,30 @@ class Procedure(models.Model):
         if self.date_fin_echeance and self.date_fin_echeance < date_pivot:
             return EventCategory.CADUC
         return self.dernier_event_impactant.category
+
+    def compute_status(
+        self, date_pivot: datetime | None = None
+    ) -> core_enums.ProcedureStatusChoices | None:
+        # Prefetch events with filter_impactful to avoid N+1 queries
+        # Example : models.Prefetch("event_set", queryset=Event.objects.filter_impactful()
+
+        if self.parente_id:
+            return None
+
+        impactful_events = (
+            event
+            for event in self.event_set.all()
+            if event.is_impactful
+            and (date_pivot is None or event.date_evenement <= date_pivot)
+        )
+        last_event = max(
+            impactful_events,
+            key=attrgetter("date_evenement"),
+            default=None,
+        )
+        if last_event is None:
+            return self.INITIAL_STATUS
+        return core_enums.ProcedureStatusChoices(last_event.event_type.impact)
 
     def _date(self, event_type: EventCategory) -> datetime | None:
         self._process_events()
@@ -1093,6 +1118,19 @@ class EventType(models.Model):
         CC = core_enums.BaseDocumentType.CC
         SCOT = core_enums.BaseDocumentType.SCOT
 
+        @classmethod
+        def from_base_document_type(
+            cls, value: core_enums.BaseDocumentType
+        ) -> "EventType.DocumentType":
+            if value == core_enums.BaseDocumentType.CC:
+                return cls.CC
+            if value in [
+                core_enums.BaseDocumentType.SCOT,
+                core_enums.BaseDocumentType.SD,
+            ]:
+                return cls.SCOT
+            return cls.PLU
+
     id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
     document_type = models.CharField(
         verbose_name="type de document", choices=DocumentType
@@ -1147,7 +1185,8 @@ class EventType(models.Model):
         ordering = ("order",)
 
     def __str__(self) -> str:
-        return f"{self.document_type} - {self.name}"
+        impact = f" ({self.impact})" if self.impact else ""
+        return f"{self.document_type} - {self.name}{impact}"
 
     def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
         if self.order is None:
@@ -1165,6 +1204,22 @@ class EventType(models.Model):
 class EventQuerySet(models.QuerySet):
     def without_archived(self) -> Self:
         return self.filter(archived_at__isnull=True)
+
+    def filter_impactful(self, date_pivot: datetime | None = None) -> Self:
+        # Same logic as Event.is_impactful for queryset context
+        queryset = (
+            self.without_archived()
+            .filter(
+                is_valid=True,
+                event_type__isnull=False,
+                date_evenement__isnull=False,
+            )
+            .exclude(event_type__impact="")
+            .select_related("event_type")
+        )
+        if date_pivot is not None:
+            queryset = queryset.filter(date_evenement__lte=date_pivot)
+        return queryset
 
     def defer_heavy_fields(self) -> Self:
         to_be_removed_fields = [
@@ -1262,6 +1317,15 @@ class Event(models.Model):
         verbose_name="archivé par",
     )
 
+    created_by = models.ForeignKey(
+        "users.Profile",
+        models.DO_NOTHING,
+        blank=True,
+        null=True,
+        related_name="+",
+        verbose_name="créé par",
+    )
+
     objects = FastLoadingEventManager.from_queryset(EventQuerySet)()
     full_objects = EventManager.from_queryset(EventQuerySet)()
 
@@ -1308,6 +1372,16 @@ class Event(models.Model):
     @property
     def is_archived(self) -> bool:
         return bool(self.archived_at)
+
+    @property
+    def is_impactful(self) -> bool:
+        return (
+            not self.is_archived
+            and self.is_valid
+            and self.date_evenement is not None
+            and self.event_type_id is not None
+            and self.event_type.impact != ""
+        )
 
     @property
     def category(self) -> EventCategory | None:
@@ -1773,6 +1847,65 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
             # Remove me later.
             models.Index(name="test_idx", fields=["procedure_id", "collectivite_code"]),
         ]
+
+    @staticmethod
+    def get_opposables_for_commune(commune: Commune) -> list["CommuneProcedure"]:
+        commune_procedures = (
+            commune_procedure
+            for commune_procedure in commune.procedures_through.all()
+            if commune_procedure.procedure.parente_id is None
+            and not commune_procedure.procedure.archived
+        )
+
+        last_opposable_events = []
+        for commune_procedure in commune_procedures:
+            impactful_events = (
+                event
+                for event in commune_procedure.procedure.event_set.all()
+                if event.is_impactful
+            )
+
+            last_event = max(
+                impactful_events,
+                key=attrgetter("date_evenement"),
+                default=None,
+            )
+
+            if (
+                last_event
+                and last_event.event_type.impact
+                == core_enums.ProcedureStatusChoices.OPPOSABLE
+            ):
+                last_opposable_events.append(
+                    {"event": last_event, "commune_procedure": commune_procedure}
+                )
+
+        opposable_scot = max(
+            (
+                item
+                for item in last_opposable_events
+                if item["commune_procedure"].procedure.is_schema
+            ),
+            key=lambda e: e["event"].date_evenement,
+            default=None,
+        )
+        opposable_plan = max(
+            (
+                item
+                for item in last_opposable_events
+                if not item["commune_procedure"].procedure.is_schema
+            ),
+            key=lambda e: e["event"].date_evenement,
+            default=None,
+        )
+
+        opposables = []
+        if opposable_scot:
+            opposables.append(opposable_scot["commune_procedure"])
+        if opposable_plan:
+            opposables.append(opposable_plan["commune_procedure"])
+
+        return opposables
 
 
 class MaterializedViewFlatMembershipQuerySet(models.QuerySet):

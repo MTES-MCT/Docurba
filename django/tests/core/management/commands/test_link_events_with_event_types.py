@@ -174,6 +174,7 @@ class TestLinkEventsWithEventTypes:
 
         perimetre = CommuneFactory.create_batch(2)
         event = EventFactory(
+            event_type=None,
             procedure__base_doc_type=procedure_base_doc_type,
             procedure__with_perimetre=perimetre,
             type=e_name,
@@ -283,7 +284,10 @@ class TestLinkEventsWithEventTypes:
         )
 
         event = EventFactory(
-            procedure__base_doc_type=procedure_base_doc_type, type=e_name, code=e_code
+            event_type=None,
+            procedure__base_doc_type=procedure_base_doc_type,
+            type=e_name,
+            code=e_code,
         )
 
         call_command("link_events_with_event_types")
@@ -326,6 +330,7 @@ class TestLinkEventsWithEventTypes:
         )
 
         event = EventFactory(
+            event_type=None,
             procedure__base_doc_type=procedure_base_doc_type,
             type="Name 1",
             code="CODE 1",
@@ -351,7 +356,11 @@ class TestLinkEventsWithEventTypes:
 
         for _, event_name, _ in MAPPINGS:
             for document_type in EventType.DocumentType:
-                EventFactory(procedure__base_doc_type=document_type, type=event_name)
+                EventFactory(
+                    event_type=None,
+                    procedure__base_doc_type=document_type,
+                    type=event_name,
+                )
 
         call_command("link_events_with_event_types")
 

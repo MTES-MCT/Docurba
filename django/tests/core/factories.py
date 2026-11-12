@@ -254,9 +254,7 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
     soft_delete = False
     doc_type = factory.LazyAttribute(lambda o: o.base_doc_type)
     parente = None
-    status = factory.LazyAttribute(
-        lambda o: None if o.parente else core_enums.ProcedureStatusChoices.EN_COURS
-    )
+    status = None
     doublon_cache_de = None
     project = factory.SubFactory(ProjectFactory)
 
@@ -338,12 +336,10 @@ class EventTypeFactory(factory.django.DjangoModelFactory):
         model = core_models.EventType
 
     name = factory.LazyAttribute(
-        lambda o: randgen.choice(
-            list(core_models.EVENT_CATEGORY_BY_DOC_TYPE[o.document_type].keys())
-        )
+        lambda o: f"{o.document_type} {o.impact} {randgen.randbytes(16).hex()}"
     )
     document_type = factory.fuzzy.FuzzyChoice(core_models.EventType.DocumentType)
-    impact = factory.fuzzy.FuzzyChoice(core_enums.ProcedureStatusChoices)
+    impact = ""
 
 
 class EventFactory(factory.django.DjangoModelFactory):
@@ -356,6 +352,14 @@ class EventFactory(factory.django.DjangoModelFactory):
     from_sudocuh = None
     archived_at = None
     archived_by = None
+    event_type = factory.SubFactory(
+        EventTypeFactory,
+        document_type=factory.LazyAttribute(
+            lambda o: core_models.EventType.DocumentType.from_base_document_type(
+                o.factory_parent.procedure.base_doc_type
+            )
+        ),
+    )
 
     class Params:
         archived = factory.Trait(

@@ -1748,6 +1748,156 @@ class TestProcedureStatut:
             assert not procedure_with_events.statut
 
 
+@pytest.mark.django_db
+class TestProcedureComputeStatus:
+    def test_secondary_returns_none(self) -> None:
+        procedure = ProcedureFactory(with_parente=True)
+
+        assert procedure.compute_status() is None
+
+    def test_without_event_returns_en_projet(self) -> None:
+        procedure = ProcedureFactory()
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.EN_PROJET
+
+    @freeze_time("2025-01-01")
+    def test_status_from_most_recent_impactful_event(self) -> None:
+        now = timezone.now()
+        procedure = ProcedureFactory()
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ABANDON,
+            date_evenement=now - timedelta(days=30),
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now,
+        )
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.OPPOSABLE
+
+    @freeze_time("2025-01-01")
+    def test_event_after_pivot_ignored(self) -> None:
+        now = timezone.now()
+        procedure = ProcedureFactory()
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ABANDON,
+            date_evenement=now - timedelta(days=60),
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now,
+        )
+
+        assert (
+            procedure.compute_status(now - timedelta(days=30))
+            == core_enums.ProcedureStatusChoices.ABANDON
+        )
+
+    def test_archived_event_ignored(self) -> None:
+        procedure = ProcedureFactory()
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            archived=True,
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+        )
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.ANNULE
+
+    def test_invalid_event_ignored(self) -> None:
+        procedure = ProcedureFactory()
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            is_valid=False,
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+        )
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.ANNULE
+
+    def test_event_without_type_or_type_not_impactful_ignored(self) -> None:
+        procedure = ProcedureFactory()
+        # Event type not set.
+        EventFactory(
+            procedure=procedure,
+            event_type=None,
+        )
+        # Event type without impact.
+        EventFactory(
+            procedure=procedure,
+            event_type__impact="",
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+        )
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.ANNULE
+
+    @freeze_time("2026-10-15")
+    def test_event_without_date_ignored(self) -> None:
+        now = timezone.now()
+        procedure = ProcedureFactory()
+        # Events without a date (historical data) are ignored.
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=None,
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            date_evenement=now,
+        )
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.ANNULE
+        # Without date_pivot, the event without a date is still ignored.
+        assert procedure.compute_status(now) == core_enums.ProcedureStatusChoices.ANNULE
+
+    @freeze_time("2026-10-15")
+    def test_without_date_pivot_no_date_filter(self) -> None:
+        now = timezone.now()
+        procedure = ProcedureFactory()
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            date_evenement=now,
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now + timedelta(days=20),
+        )
+
+        # Without date_pivot, no date filter is applied: the future event
+        # counts.
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.OPPOSABLE
+        # With a date_pivot before the future event, it is ignored.
+        assert (
+            procedure.compute_status(now + timedelta(days=15))
+            == core_enums.ProcedureStatusChoices.ANNULE
+        )
+
+    def test_without_impactful_event_returns_en_cours(self) -> None:
+        procedure = ProcedureFactory()
+        EventFactory(
+            procedure=procedure,
+            event_type=None,
+        )
+
+        assert procedure.compute_status() == core_enums.ProcedureStatusChoices.EN_PROJET
+
+
 class TestProcedureEnCours:
     @pytest.mark.django_db
     @freeze_time("2024-12-01")
@@ -1854,13 +2004,10 @@ class TestProcedureClean:
 
         assert procedure.status is None
 
-    def test_principale_avec_status_null(self) -> None:
-        with pytest.raises(ValidationError) as error:
-            ProcedureFactory(status=None)
+    def test_main_procedure_without_status_gets_en_projet_default(self) -> None:
+        procedure = ProcedureFactory(status=None, parente=None)
 
-        assert error.value.messages == [
-            'A main procedure must have a "status" filled in.'
-        ]
+        assert procedure.status == core_enums.ProcedureStatusChoices.EN_PROJET
 
     def test_secondaire_avec_status_en_cours(self) -> None:
         principale = ProcedureFactory()
@@ -1921,6 +2068,48 @@ class TestProcedureManagers:
         for item in [*to_be_removed_fields, *heavy_fields]:
             with subtests.test(item, item=item):
                 assert item in procedure.__dict__
+
+
+@pytest.mark.django_db
+class TestEventIsImpactful:
+    def test_impactful_event(self) -> None:
+        event = EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+        )
+
+        assert event.is_impactful
+
+    def test_archived_event_is_not_impactful(self) -> None:
+        event = EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE, archived=True
+        )
+
+        assert not event.is_impactful
+
+    def test_invalid_event_is_not_impactful(self) -> None:
+        event = EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE, is_valid=False
+        )
+
+        assert not event.is_impactful
+
+    def test_event_without_date_is_not_impactful(self) -> None:
+        event = EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            date_evenement=None,
+        )
+
+        assert not event.is_impactful
+
+    def test_event_without_type_is_not_impactful(self) -> None:
+        event = EventFactory(event_type=None)
+
+        assert not event.is_impactful
+
+    def test_event_with_type_without_impact_is_not_impactful(self) -> None:
+        event = EventFactory(event_type__impact="")
+
+        assert not event.is_impactful
 
 
 class TestEvent:
@@ -2076,7 +2265,6 @@ class TestEventManagers:
 
 @pytest.mark.django_db
 class TestEventQueryset:
-    @pytest.mark.django_db
     def test_queryset_without_archived(self) -> None:
         event_not_archived = EventFactory()
         EventFactory(archived=True)
@@ -2089,14 +2277,56 @@ class TestEventQueryset:
         event = queryset.first()
         assert event.id == event_not_archived.id
 
-    @pytest.mark.django_db
+    @freeze_time("2025-01-01")
+    def test_queryset_filter_impactful_filters_by_date_pivot(self) -> None:
+        now = timezone.now()
+        event_type = EventTypeFactory(
+            name="Impactful type pivot", impact=core_enums.ProcedureStatusChoices.ANNULE
+        )
+        event_past = EventFactory(
+            event_type=event_type, date_evenement=now - timedelta(days=20)
+        )
+        event_future = EventFactory(
+            event_type=event_type, date_evenement=now + timedelta(days=20)
+        )
+
+        queryset = core_models.Event.objects.filter_impactful()
+        assert set(queryset) == {event_past, event_future}
+
+        queryset = core_models.Event.objects.filter_impactful(now + timedelta(days=10))
+        assert list(queryset) == [event_past]
+
+    def test_queryset_filter_impactful_excludes_non_impactful_events(
+        self, django_assert_num_queries: DjangoAssertNumQueries
+    ) -> None:
+        event = EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+        )
+        # Archived, invalid, without date, without type or type without impact: excluded.
+        EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            archived=True,
+        )
+        EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            is_valid=False,
+        )
+        EventFactory(
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            date_evenement=None,
+        )
+        EventFactory(event_type=None)
+        EventFactory(
+            event_type__impact="",
+        )
+        with django_assert_num_queries(1):
+            assert list(core_models.Event.objects.filter_impactful()) == [event]
+
     def test_queryset_bulk_unarchive(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
         event_not_archived = EventFactory(archived_at=None, archived_by=None)
-        event_archived = EventFactory(
-            archived_at=timezone.now(), archived_by=ProfileFactory()
-        )
+        event_archived = EventFactory(archived=True)
 
         with django_assert_num_queries(1):
             updated = core_models.Event.objects.all().unarchive()
@@ -2108,7 +2338,6 @@ class TestEventQueryset:
         event_not_archived.refresh_from_db()
         assert not event_not_archived.is_archived
 
-    @pytest.mark.django_db
     def test_queryset_bulk_archive(
         self, django_assert_num_queries: DjangoAssertNumQueries
     ) -> None:
@@ -2180,6 +2409,265 @@ class TestCommuneProceduresPrincipales:
         with django_assert_num_queries(3):
             commune = core_models.Commune.objects.with_procedures_principales().get()
             assert commune.procedures_principales == [procedure_reelle]
+
+
+@pytest.mark.django_db
+class TestCommuneProcedureGetOpposablesForCommune:
+    def test_unique_opposable_procedure_is_returned(self) -> None:
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == [
+            procedure.perimetre_through.get()
+        ]
+
+    def test_procedures_without_opposable_event_are_not_returned(self) -> None:
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.EN_COURS,
+        )
+        ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == []
+
+    @freeze_time("2026-10-15")
+    def test_most_recent_opposable_event_wins(self) -> None:
+        now = timezone.now()
+        commune = CommuneFactory()
+        procedure_before = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=procedure_before,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now - timedelta(days=30),
+        )
+        procedure_after = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=procedure_after,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now,
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == [
+            procedure_after.perimetre_through.get()
+        ]
+
+    def test_plan_and_schema_are_independent(self) -> None:
+        commune = CommuneFactory()
+        scot = ProcedureFactory(
+            base_doc_type=core_enums.TypeDocument.SCOT,
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=scot,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+        )
+        plu = ProcedureFactory(
+            base_doc_type=core_enums.TypeDocument.PLU,
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=plu,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+        )
+
+        # The SCOT event is more recent, but plans and schemas don't compete:
+        # each category keeps its own opposable procedure.
+        opposables = core_models.CommuneProcedure.get_opposables_for_commune(commune)
+        assert len(opposables) == 2
+        assert scot.perimetre_through.get() in opposables
+        assert plu.perimetre_through.get() in opposables
+
+    def test_secondary_procedure_is_excluded(self) -> None:
+        commune = CommuneFactory()
+        child_procedure = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+            with_parente=True,
+            parente__with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=child_procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+        )
+        parent_procedure = child_procedure.parente
+        EventFactory(
+            procedure=parent_procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+        )
+
+        # The secondary procedure is not a candidate, whatever its events.
+        opposables = core_models.CommuneProcedure.get_opposables_for_commune(commune)
+        assert child_procedure.perimetre_through.get() not in opposables
+        assert parent_procedure.perimetre_through.get() in opposables
+
+    def test_archived_procedure_is_excluded(self) -> None:
+        commune = CommuneFactory()
+        deleted_procedure = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+            soft_delete=True,
+        )
+        EventFactory(
+            procedure=deleted_procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+        )
+        procedure = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+        )
+
+        opposables = core_models.CommuneProcedure.get_opposables_for_commune(commune)
+        assert deleted_procedure.perimetre_through.get() not in opposables
+        assert procedure.perimetre_through.get() in opposables
+
+    @freeze_time("2025-06-15")
+    def test_last_impactful_event_not_opposable_excludes_procedure(self) -> None:
+        now = timezone.now()
+        commune = CommuneFactory()
+        canceled_procedure = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=canceled_procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now - timedelta(days=60),
+        )
+        EventFactory(
+            procedure=canceled_procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            date_evenement=now,
+        )
+        opposable_procedure = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=opposable_procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now - timedelta(days=30),
+        )
+
+        # The last impactful event of the cancelled procedure is not opposable,
+        # so it is no longer a candidate.
+        opposables = core_models.CommuneProcedure.get_opposables_for_commune(commune)
+        assert canceled_procedure.perimetre_through.get() not in opposables
+        assert opposable_procedure.perimetre_through.get() in opposables
+
+    def test_archived_event_is_ignored(self) -> None:
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            archived=True,
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == []
+
+    def test_invalid_event_is_ignored(self) -> None:
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            is_valid=False,
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == []
+
+    def test_event_without_date_is_ignored(self) -> None:
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=None,
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == []
+
+    def test_only_the_given_commune_is_considered(self) -> None:
+        commune = CommuneFactory()
+        other_commune = CommuneFactory()
+        procedure = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+        )
+
+        other_procedure = ProcedureFactory(
+            collectivite_porteuse=other_commune,
+            with_perimetre=[other_commune],
+        )
+        EventFactory(
+            procedure=other_procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+        )
+
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == [
+            procedure.perimetre_through.get()
+        ]
+        assert core_models.CommuneProcedure.get_opposables_for_commune(
+            other_commune
+        ) == [other_procedure.perimetre_through.get()]
+
+    @freeze_time("2025-06-15")
+    def test_future_opposable_event_counts(self) -> None:
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(
+            collectivite_porteuse=commune,
+            with_perimetre=[commune],
+        )
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=timezone.now() + timedelta(days=365),
+        )
+
+        # There is no date_pivot: future events count.
+        assert core_models.CommuneProcedure.get_opposables_for_commune(commune) == [
+            procedure.perimetre_through.get()
+        ]
 
 
 class TestCommunePlanEnCours:

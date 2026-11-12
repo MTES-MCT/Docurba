@@ -6,6 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import models
 from rest_framework import generics, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sendgrid_backend.mail import HTTPError
@@ -188,6 +189,69 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]  # noqa: RUF012
     serializer_class = core_serializers.ProcedureSerializer
     filterset_class = custom_filters.ProcedureFilter
+
+    def get_queryset(self):  # noqa: ANN201
+        queryset = super().get_queryset()
+        if self.action == "synchronize_status":
+            queryset = core_models.Procedure.objects.prefetch_related(
+                models.Prefetch(
+                    "event_set",
+                    queryset=core_models.Event.objects.filter_impactful(),
+                )
+            )
+        return queryset
+
+    @action(detail=True, methods=["post"], url_path="synchronize-status")
+    def synchronize_status(
+        self, _request: Request, *_args: list, **_kwargs: dict
+    ) -> Response:
+        procedure = self.get_object()
+        procedure.status = procedure.compute_status()
+        procedure.save(update_fields=["status"])
+        self._synchronize_opposability(procedure)
+        return Response({"status": procedure.status})
+
+    def _synchronize_opposability(self, procedure: core_models.Procedure) -> None:
+        # Update the opposable flag on every perimetre line of this
+        # procedure's communes, following the commune-level view of
+        # opposability.
+        communes = (
+            core_models.Commune.objects.filter(procedures_through__procedure=procedure)
+            .distinct()
+            .prefetch_related(
+                models.Prefetch(
+                    "procedures_through",
+                    queryset=core_models.CommuneProcedure.objects.select_related(
+                        "procedure"
+                    ).prefetch_related(
+                        models.Prefetch(
+                            "procedure__event_set",
+                            queryset=core_models.Event.objects.filter_impactful(),
+                        )
+                    ),
+                )
+            )
+        )
+
+        perimetre_lines_to_update = []
+        for commune in communes:
+            opposable_line_ids = {
+                line.id
+                for line in core_models.CommuneProcedure.get_opposables_for_commune(
+                    commune
+                )
+            }
+            for perimetre_line in commune.procedures_through.all():
+                opposable = perimetre_line.id in opposable_line_ids
+                if perimetre_line.opposable == opposable:
+                    continue
+                perimetre_line.opposable = opposable
+                perimetre_lines_to_update.append(perimetre_line)
+
+        if perimetre_lines_to_update:
+            core_models.CommuneProcedure.objects.bulk_update(
+                perimetre_lines_to_update, ["opposable"], batch_size=1000
+            )
 
 
 class ProcedureComputeName(PublicAPIView, generics.GenericAPIView):

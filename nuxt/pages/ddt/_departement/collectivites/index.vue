@@ -183,20 +183,10 @@
                       {{ $utils.formatProcedureName(plan, item) }}
                     </nuxt-link>
                     <div class="d-flex align-middle mt-1">
-                      <v-chip
-                        :class="{
-                          'success-light': plan.inContextStatus === 'OPPOSABLE',
-                          'success--text': plan.inContextStatus === 'OPPOSABLE',
-                          'bf200': plan.inContextStatus === 'EN COURS',
-                          'primary--text': plan.inContextStatus === 'EN COURS',
-                          'text--lighten-2': plan.inContextStatus === 'EN COURS',
-                        }"
-                        class="font-weight-bold flex-shrink-0"
-                        small
-                        label
-                      >
-                        {{ plan.inContextStatus }}
-                      </v-chip>
+                      <ProcedureStatus
+                        v-if="plan.status"
+                        :value="plan.status"
+                      />
                       <span v-if="plan.topics" class="ml-2">
                         <ProceduresTopicChips :topics="plan.topics" :small="true" />
                       </span>
@@ -232,21 +222,10 @@
                       {{ $utils.formatProcedureName(scot, item) }}
                     </nuxt-link>
                     <div class="d-flex align-middle mt-1">
-                      <v-chip
-                        :class="{
-                          'success-light': scot.inContextStatus === 'OPPOSABLE',
-                          'success--text': scot.inContextStatus === 'OPPOSABLE',
-                          'bf200': scot.inContextStatus === 'EN COURS',
-                          'primary--text': scot.inContextStatus === 'EN COURS',
-                          'text--lighten-2': scot.inContextStatus === 'EN COURS',
-
-                        }"
-                        class="font-weight-bold flex-shrink-0"
-                        small
-                        label
-                      >
-                        {{ scot.inContextStatus }}
-                      </v-chip>
+                      <ProcedureStatus
+                        v-if="scot.status"
+                        :value="scot.status"
+                      />
                       <span v-if="scot.topics" class="ml-2">
                         <ProceduresTopicChips :topics="scot.topics" :small="true" />
                       </span>
@@ -364,9 +343,15 @@ import { partition } from 'lodash'
 
 const docVersion = '1.0'
 
-const statusMap = {
-  opposable: 'OPPOSABLE',
-  'en cours': 'EN COURS'
+function statusOrder (status) {
+  switch (status) {
+    case 'opposable':
+      return 3
+    case 'en cours':
+      return 2
+    default:
+      return 1
+  }
 }
 
 const SCOT_LIKE = ['SCOT', 'SD']
@@ -572,19 +557,15 @@ export default {
             return p.collectivite_code === commune.code && p.opposable
           })
 
-          let status = procedure.status
-
-          if (status === 'opposable' && !isOpposableInContext) {
-            status = 'precedent'
-          }
+          const status = procedure.status === 'opposable' && !isOpposableInContext ? 'precedent' : procedure.status
 
           return Object.assign({}, procedure, {
             status,
-            inContextStatus: statusMap[status] || 'ARCHIVÉ'
+            order: statusOrder(status)
           })
         }).sort((a, b) => {
-          if (a.inContextStatus < b.inContextStatus) { return -1 }
-          if (a.inContextStatus > b.inContextStatus) { return 1 }
+          if (a.order < b.order) { return -1 }
+          if (a.order > b.order) { return 1 }
           return 0
         }).reverse()
 
@@ -608,11 +589,11 @@ export default {
 
         const inContextProcedures = groupementProcedures.map((procedure) => {
           return Object.assign({}, procedure, {
-            inContextStatus: statusMap[procedure.status] || 'ARCHIVÉ'
+            order: statusOrder(procedure.status)
           })
         }).sort((a, b) => {
-          if (a.inContextStatus < b.inContextStatus) { return -1 }
-          if (a.inContextStatus > b.inContextStatus) { return 1 }
+          if (a.order < b.order) { return -1 }
+          if (a.order > b.order) { return 1 }
           return 0
         }).reverse()
 
