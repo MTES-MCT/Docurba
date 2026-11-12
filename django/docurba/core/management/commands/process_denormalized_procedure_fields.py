@@ -26,8 +26,17 @@ class Command(BaseCommand):
             choices=["check", "update"],
             default="check",
         )
+        parser.add_argument(
+            "--tell-slack", dest="tell_slack", action="store_true", default=False
+        )
 
-    def handle(self, mode: str, *args: list, **options: dict) -> None:  # noqa: ARG002
+    def handle(
+        self,
+        mode: str,
+        tell_slack: bool = False,  # noqa: FBT001, FBT002
+        *args: list,  # noqa: ARG002
+        **options: dict,  # noqa: ARG002
+    ) -> None:
         logger = logging.getLogger(self.__class__.__module__)
         procedure_normalized_and_denormalized_fields = [
             field
@@ -89,11 +98,10 @@ class Command(BaseCommand):
         inconsistencies_msg = (
             f"{total_inconsistent_procedures_count} inconsistent procedures"
         )
-        if total_inconsistent_procedures_count == 0:
-            # just log without telling Slack.
-            logger.info(inconsistencies_msg)
-        else:
+        if tell_slack:
             send_slack_message(
                 text=inconsistencies_msg,
                 url=settings.SLACK_TECH_MONITORING_URL,
             )
+        else:
+            logger.info(inconsistencies_msg)

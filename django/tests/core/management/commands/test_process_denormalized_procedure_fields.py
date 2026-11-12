@@ -88,7 +88,7 @@ class TestProcessDenormalizedProcedureFields:
         procedure = Procedure.objects.get(pk="fb48c069-33c6-4ed2-9db3-054e99ea7981")
         assert procedure.doc_type is None
 
-        assert caplog.messages[-1] == "[TEST] 1 inconsistent procedures"
+        assert caplog.messages[-1] == "1 inconsistent procedures"
 
         # Update mode
         call_command("process_denormalized_procedure_fields", mode="update")
@@ -98,8 +98,7 @@ class TestProcessDenormalizedProcedureFields:
         first_line = next(reader)
         assert reader.line_num == 2
         assert first_line == expected_csv
-        assert caplog.messages[-2] == "=============================\nSlack message:"
-        assert caplog.messages[-1] == "[TEST] 1 inconsistent procedures"
+        assert caplog.messages[-1] == "1 inconsistent procedures"
 
         procedure = Procedure.objects.get(pk="fb48c069-33c6-4ed2-9db3-054e99ea7981")
         assert procedure.doc_type == core_enums.TypeDocument.PLUIM
@@ -193,7 +192,7 @@ class TestProcessDenormalizedProcedureFields:
             },
         )
         call_command("process_denormalized_procedure_fields")
-        assert caplog.messages[-1] == "[TEST] 1 inconsistent procedures"
+        assert caplog.messages[-1] == "1 inconsistent procedures"
         procedure.delete()
 
         # Updated less than 24h.
@@ -205,7 +204,7 @@ class TestProcessDenormalizedProcedureFields:
             },
         )
         call_command("process_denormalized_procedure_fields")
-        assert caplog.messages[-1] == "[TEST] 1 inconsistent procedures"
+        assert caplog.messages[-1] == "1 inconsistent procedures"
         procedure.delete()
 
         # Created today
