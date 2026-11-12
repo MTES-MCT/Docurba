@@ -3,10 +3,12 @@ import logging
 from itertools import batched
 from math import ceil
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandParser
 from django.db import transaction
 
 from docurba.core.models import Procedure
+from docurba.utils.slack import send_slack_message
 
 BATCH_SIZE = 2000
 
@@ -81,4 +83,14 @@ class Command(BaseCommand):
                         fields=Procedure.DYNAMIC_TO_DENORMALIZED_FIELDS.values(),
                     )
 
-        logger.info("%s inconsistent procedures", total_inconsistent_procedures_count)
+        inconsistencies_msg = (
+            f"{total_inconsistent_procedures_count} inconsistent procedures"
+        )
+        if total_inconsistent_procedures_count == 0:
+            # just log without telling Slack.
+            logger.info(inconsistencies_msg)
+        else:
+            send_slack_message(
+                text=inconsistencies_msg,
+                url=settings.SLACK_TECH_MONITORING_URL,
+            )
