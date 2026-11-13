@@ -442,7 +442,7 @@ class Procedure(models.Model):
     )
     owner = models.ForeignKey(
         "users.Profile",
-        models.SET_NULL,
+        models.RESTRICT,
         null=True,
         verbose_name="propriétaire",
         related_name="procedures",
@@ -958,7 +958,7 @@ class Project(models.Model):
     towns = models.JSONField(blank=True, null=True)
 
     owner = models.ForeignKey(
-        "users.Profile", models.DO_NOTHING, db_column="owner", blank=True, null=True
+        "users.Profile", models.RESTRICT, db_column="owner", blank=True, null=True
     )
 
     objects = FastLoadingProjectManager()
@@ -994,14 +994,14 @@ class ProjectSharing(models.Model):
     user_email = models.TextField(verbose_name="partagé à")
     project = models.ForeignKey(
         "core.Project",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.CASCADE,
         related_name="sharings",
         verbose_name="projet",
     )
     shared_by = models.ForeignKey(
         "users.Profile",
         # in the DB: on_update=models.CASCADE (but impossible to import here).
-        on_delete=models.CASCADE,
+        on_delete=models.RESTRICT,
         db_column="shared_by",
         blank=True,
         null=True,
@@ -1175,10 +1175,16 @@ class FastLoadingEventManager(EventManager):
 class Event(models.Model):
     id = models.UUIDField(primary_key=True, db_default=RandomUUID(), editable=False)
     procedure = models.ForeignKey(
-        "core.Procedure", models.DO_NOTHING, verbose_name="procédure"
+        "core.Procedure",
+        models.CASCADE,
+        verbose_name="procédure",
     )
     event_type = models.ForeignKey(
-        "core.EventType", models.DO_NOTHING, blank=True, null=True, verbose_name="type"
+        "core.EventType",
+        models.RESTRICT,  # Could be CASCADE but we may want to assign events to another event_type
+        blank=True,
+        null=True,
+        verbose_name="type",
     )
     type = models.TextField(blank=True, null=True)  # noqa: DJ001
     date_evenement = models.DateField(
@@ -1207,7 +1213,7 @@ class Event(models.Model):
         unique=True, blank=True, null=True, verbose_name="from_sudocuh"
     )
     profile = models.ForeignKey(
-        "users.Profile", models.DO_NOTHING, blank=True, null=True, verbose_name="profil"
+        "users.Profile", models.RESTRICT, blank=True, null=True, verbose_name="profil"
     )
     project = models.ForeignKey(
         "core.Project", blank=True, null=True, on_delete=models.SET_NULL
@@ -1221,7 +1227,7 @@ class Event(models.Model):
     archived_at = models.DateTimeField(blank=True, null=True, verbose_name="archivé le")
     archived_by = models.ForeignKey(
         "users.Profile",
-        models.DO_NOTHING,
+        models.SET_NULL,
         blank=True,
         null=True,
         related_name="+",
@@ -1294,7 +1300,7 @@ class Region(models.Model):
 class Departement(models.Model):
     code_insee = models.CharField(unique=True)
     nom = models.CharField()
-    region = models.ForeignKey(Region, models.DO_NOTHING, related_name="departements")
+    region = models.ForeignKey(Region, models.PROTECT, related_name="departements")
 
     def __str__(self) -> str:
         return f"{self.code_insee} - {self.nom}"

@@ -11,7 +11,7 @@ class ProcedureSurvey(models.Model):
     )
     survey = models.ForeignKey(
         "surveys.Survey",
-        on_delete=models.RESTRICT,
+        on_delete=models.CASCADE,
         related_name="procedures_through",
         verbose_name="enquête",
     )
