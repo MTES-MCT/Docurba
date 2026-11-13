@@ -68,9 +68,6 @@ class ProfileAdmin(admin.ModelAdmin):
     def has_add_permission(self, request) -> Literal[False]:
         return False
 
-    def has_delete_permission(self, request, obj=None) -> Literal[False]:
-        return False
-
     @admin.action(
         permissions=["change"],
         description="Vérifier",

@@ -5,6 +5,7 @@ from respx import MockRouter
 
 from docurba.core.enums import ProjectSharingRoleType
 from docurba.users import enums as users_enums
+from docurba.users import models as users_models
 from docurba.utils.consumed_apis import pipedrive
 from tests.core.factories import ProjectSharingFactory
 from tests.utils.consumed_apis import pipedrive_mocks
@@ -32,6 +33,15 @@ class TestSupabaseUserModel:
             )
             row = cursor.fetchone()
         assert row[0]
+
+    def test_delete_user(self) -> None:
+        # As we don't totally control the Supabase environment,
+        # we check if we still can delete a row.
+        user = SupabaseUserFactory()
+        pk = user.pk
+        assert users_models.SupabaseUser.objects.filter(pk=pk).exists() is True
+        user.delete()
+        assert users_models.SupabaseUser.objects.filter(pk=pk).exists() is False
 
 
 @pytest.mark.django_db
@@ -138,6 +148,15 @@ class TestProfile:
         assert respx_mock.calls.called
         profile.refresh_from_db()
         assert profile.verified is True
+
+    def test_delete_user(self) -> None:
+        user = ProfileFactory()
+        supabase_user_pk = user.user_id
+        assert users_models.SupabaseUser.objects.filter(pk=supabase_user_pk).exists()
+        user.delete()
+        assert not users_models.SupabaseUser.objects.filter(
+            pk=supabase_user_pk
+        ).exists()
 
 
 @pytest.mark.django_db

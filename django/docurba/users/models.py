@@ -193,6 +193,15 @@ class Profile(models.Model):
     def __str__(self) -> str:
         return f"{self.firstname} {self.lastname}"
 
+    def delete(self, *args: list, **kwargs: dict) -> None:
+        # When a SupabaseUser is deleted, Profile is deleted too.
+        # But the contrary is not true.
+        # See https://github.com/django/django/blob/main/django/db/models/fields/related_descriptors.py#L40-L46
+        supabase_user_pk = self.user_id
+        super().delete(*args, **kwargs)
+        if SupabaseUser.objects.filter(pk=supabase_user_pk).exists():
+            SupabaseUser.objects.get(pk=supabase_user_pk).delete()
+
     def update_password_email(self) -> SendgridEmailMessage:
         return get_email_message(
             to=[self.email],
