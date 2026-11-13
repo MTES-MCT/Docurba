@@ -9,6 +9,8 @@ from docurba.core.models import (
     Event,
     EventType,
     Procedure,
+    Project,
+    ProjectSharing,
     Region,
 )
 from docurba.history.models import EventSnapshot
@@ -51,9 +53,11 @@ MAPPINGS = [
 def clear_data() -> None:
     yield
     models = [
-        EventSnapshot,
-        Event,
+        Project,
         Procedure,
+        ProjectSharing,
+        Event,
+        EventSnapshot,
         EventType,
         Commune,
         Collectivite,
@@ -164,7 +168,6 @@ class TestLinkEventsWithEventTypes:
         et_sudocuh_name: str,
         et_sudocuh_code: str,
     ) -> None:
-
         event_type = EventTypeFactory(
             document_type=et_document_type,
             name=et_name,
