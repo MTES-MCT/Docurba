@@ -232,9 +232,6 @@ class ProjectAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None) -> bool:
         return False
 
-    def has_delete_permission(self, request, obj=None) -> bool:
-        return False
-
 
 @admin.register(core_models.ProjectSharing)
 class ProjectSharingAdmin(admin.ModelAdmin):
@@ -318,9 +315,6 @@ class ProcedureAdmin(admin.ModelAdmin):
     ]
 
     def has_add_permission(self, request: object) -> bool:
-        return False
-
-    def has_delete_permission(self, request, obj=None) -> bool:
         return False
 
     def get_queryset(self, request) -> models.QuerySet:
@@ -453,9 +447,6 @@ class EventAdmin(admin.ModelAdmin):
     # actions = ["archive", "unarchive"]  # noqa: ERA001
 
     def has_add_permission(self, request: object) -> bool:
-        return False
-
-    def has_delete_permission(self, request: object, obj=None) -> bool:
         return False
 
     def has_change_permission(self, request: object, obj=None) -> bool:
