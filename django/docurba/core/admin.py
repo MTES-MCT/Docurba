@@ -19,19 +19,20 @@ from docurba.core import models as core_models
 @admin.register(core_models.Collectivite)
 class CollectiviteAdmin(admin.ModelAdmin):
     list_display = (
-        "code_insee_unique",
         "__str__",
+        "code_insee",
+        "siren",
         "type",
         "competence_plan",
         "competence_schema",
     )
-    list_display_links = ("code_insee_unique", "__str__")
+    list_display_links = ("__str__",)
     list_filter = ("type", "competence_plan", "competence_schema", "departement")
-    search_fields = ("nom", "code_insee_unique")
+    search_fields = ("nom", "code_insee", "siren")
     readonly_fields = (
         "commune",
         "siren",
-        "code_insee_unique",
+        "code_insee",
     )
     fields = [
         *readonly_fields,
@@ -48,7 +49,25 @@ class CollectiviteAdmin(admin.ModelAdmin):
 
 
 @admin.register(core_models.Commune)
-class CommuneAdmin(CollectiviteAdmin):
+class CommuneAdmin(admin.ModelAdmin):
+    list_display = (
+        "__str__",
+        "code_insee",
+        "type",
+        "competence_plan",
+        "competence_schema",
+    )
+    list_display_links = ("__str__",)
+    list_filter = ("type", "competence_plan", "competence_schema", "departement")
+    search_fields = (
+        "nom",
+        "code_insee",
+    )
+    readonly_fields = ("code_insee",)
+    fields = [
+        *readonly_fields,
+    ]
+
     change_form_template = "admin/core/commune/procedures.html"
 
     def get_extra_context(self, object_id) -> dict:

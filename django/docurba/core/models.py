@@ -1425,7 +1425,7 @@ class Collectivite(models.Model):
     objects = CollectiviteQuerySet.as_manager()
 
     def __str__(self) -> str:
-        return f"{self.nom} ({self.code_insee_unique})"
+        return f"{self.nom} ({self.siren or self.code_insee})"
 
     def save(self, *args: list, **kwargs: dict) -> None:
         self.clean()
@@ -1537,6 +1537,9 @@ class Commune(Collectivite):
                 opclasses=["varchar_pattern_ops"],
             ),
         )
+
+    def __str__(self) -> str:
+        return f"{self.nom} ({self.code_insee})"
 
     def get_absolute_url(self) -> str:
         return reverse(
