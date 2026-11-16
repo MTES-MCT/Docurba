@@ -83,3 +83,44 @@ update_snapshots:
 		fi; \
 	done | sort -u | xargs --no-run-if-empty \
 		pytest --snapshot-update
+
+start_rj:
+	@if [[ ! -n "$(PR)" ]]; then \
+		echo "PR is not specified. Usage: PR=XXXX make start_rj"; \
+		exit 0; \
+	fi; \
+	scalingo --format json apps \
+	| jq -r '.apps[] | select(.status == "stopped") | .name' \
+	| sed -n "/\(docurba-demo-pr$(PR)\|docurba-nuxt-demo-pr$(PR)\|docurba-django-demo-pr$(PR)\)/p" \
+	| while read app; do \
+          echo "Starting review app : $$app"; \
+          scalingo --app "$$app" scale web:1; \
+	done; \
+	supabase branches list --output json \
+	| jq -r '.[] | select(.preview_project_status == "INACTIVE") | .name' \
+	| sed -n '/supabase-pr$(PR)/p' \
+	| while read branch; do \
+          echo "Unpausing supabase branche : $$branch"; \
+          supabase branches unpause "$$branch" --yes; \
+	done
+
+
+stop_rj:
+	@if [[ ! -n "$(PR)" ]]; then \
+		echo "PR is not specified. Usage: PR=XXXX make stop_rj"; \
+		exit 0; \
+	fi; \
+	scalingo --format json apps \
+	| jq -r '.apps[] | select(.status == "running") | .name' \
+	| sed -n "/\(docurba-demo-pr$(PR)\|docurba-nuxt-demo-pr$(PR)\|docurba-django-demo-pr$(PR)\)/p" \
+	| while read app; do \
+          echo "Stopping review app : $$app"; \
+          scalingo --app "$$app" scale web:0; \
+	done; \
+	supabase branches list --output json \
+	| jq -r '.[] | select(.preview_project_status == "ACTIVE_HEALTHY") | .name' \
+	| sed -n '/supabase-pr$(PR)/p' \
+	| while read branch; do \
+          echo "Pausing supabase branche : $$branch"; \
+          supabase branches pause "$$branch" --yes; \
+	done
