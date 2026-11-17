@@ -240,6 +240,7 @@ class ProjectSharingInline(admin.TabularInline):
 class ProjectAdmin(admin.ModelAdmin):
     search_fields = [
         "id",
+        "owner__email",
     ]
     inlines = [
         ProjectSharingInline,
@@ -298,6 +299,7 @@ class ProcedureAdmin(admin.ModelAdmin):
     autocomplete_fields = (
         "collectivite_porteuse",
         "owner",
+        "last_updated_by",
     )
     list_filter = (
         ("parente", admin.EmptyFieldListFilter),
@@ -323,7 +325,11 @@ class ProcedureAdmin(admin.ModelAdmin):
         "vaut_SCoT",
         "vaut_PLH",
     )
-    search_fields = ("pk",)
+    search_fields = (
+        "pk",
+        "owner__email",
+        "last_updated_by__email",
+    )
     fields = [
         *autocomplete_fields,
         *readonly_fields,
@@ -428,7 +434,6 @@ class EventAdmin(admin.ModelAdmin):
         "project",
         "attachements",
         "archived_at",
-        "archived_by",
         # Data imported from Sudocuh
         "is_valid",
         "from_sudocuh_procedure_id",
@@ -446,8 +451,16 @@ class EventAdmin(admin.ModelAdmin):
         "archived_at",
     )
     list_filter = ("archived_at", "code")
-    search_fields = ("id", "procedure__id")
-    autocomplete_fields = ("profile",)
+    search_fields = (
+        "id",
+        "procedure__id",
+        "profile__email",
+        "archived_by__email",
+    )
+    autocomplete_fields = (
+        "profile",
+        "archived_by",
+    )
     historized_fields = (
         "type",
         "code",
