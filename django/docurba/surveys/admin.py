@@ -79,7 +79,11 @@ class ProcedureSurveyAdmin(admin.ModelAdmin):
         *raw_id_fields,
         *autocomplete_fields,
     )
-    search_fields = ("procedure__id", "collectivite_code__code_insee_unique")
+    search_fields = (
+        "procedure__id",
+        "collectivite_code__code_insee_unique",
+        "respondant__email",
+    )
     list_filter = ("is_validated", DepartementsFilter, CollectiviteTypeFilter)
 
     def get_queryset(self, request) -> models.QuerySet:
@@ -89,4 +93,5 @@ class ProcedureSurveyAdmin(admin.ModelAdmin):
             "survey",
             "collectivite_code",
             "procedure__collectivite_porteuse",
+            "respondant",
         ).prefetch_related("procedure__perimetre")
