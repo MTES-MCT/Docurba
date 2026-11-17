@@ -123,6 +123,7 @@ class SupabaseUserAdmin(admin.ModelAdmin):
         "id",
         "email",
         "last_sign_in_at",
+        "profile",
     )
     fields = (*readonly_fields,)
     search_fields = ("email",)

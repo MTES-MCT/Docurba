@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("surveys", "0004_remove_archived_procedures"),
+        ("surveys", "0005_update_rls"),
     ]
 
     operations = [
