@@ -1,6 +1,5 @@
 import pytest
 from django.core.management import call_command
-
 from tests.core.factories import EventTypeFactory
 
 
