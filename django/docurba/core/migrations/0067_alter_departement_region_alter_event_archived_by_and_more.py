@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("core", "0065_alter_procedure_doc_type"),
+        ("core", "0066_alter_event_date_evenement"),
         ("users", "0010_rename_github_ref_roles"),
     ]
 
