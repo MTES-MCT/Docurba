@@ -13,7 +13,7 @@ WHERE et.id = t1.id;
 class Command(BaseCommand):
     help = "Add scopes pplh and ppilh to scope_list & scope_sugg containing pp and ppi scopes"
 
-    def handle(self, *args: list, **options: dict) -> None:  # noqa: ARG002
+    def handle(self, *args: list, **options: dict) -> None:
         queries = [
             UPDATE_SCOPE_QUERY.format(field="scope_list", scope="pp"),
             UPDATE_SCOPE_QUERY.format(field="scope_list", scope="ppi"),
