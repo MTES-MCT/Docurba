@@ -29,11 +29,18 @@ class Command(BaseCommand):
         parser.add_argument(
             "--tell-slack", dest="tell_slack", action="store_true", default=False
         )
+        parser.add_argument(
+            "--yesterday-only",
+            dest="yesterday_only",
+            action="store_true",
+            default=False,
+        )
 
     def handle(
         self,
         mode: str,
         tell_slack: bool = False,  # noqa: FBT001, FBT002
+        yesterday_only: bool = False,  # noqa: FBT001, FBT002
         *args: list,  # noqa: ARG002
         **options: dict,  # noqa: ARG002
     ) -> None:
@@ -52,10 +59,13 @@ class Command(BaseCommand):
 
         total_inconsistent_procedures_count = 0
         yesterday = (timezone.now() - timedelta(days=1)).day
-        procedures_pks = Procedure.objects.filter(
-            models.Q(created_at__day=yesterday)
-            | models.Q(last_updated_at__day=yesterday)
-        ).values_list("pk", flat=True)
+        procedures_qs = Procedure.objects.defer(None)
+        if yesterday_only:
+            procedures_qs = procedures_qs.filter(
+                models.Q(created_at__day=yesterday)
+                | models.Q(last_updated_at__day=yesterday)
+            )
+        procedures_pks = procedures_qs.values_list("pk", flat=True)
 
         batches = ceil(len(procedures_pks) / BATCH_SIZE)
         for i, batch_pks in enumerate(

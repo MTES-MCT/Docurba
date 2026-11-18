@@ -171,7 +171,7 @@ class TestProcessDenormalizedProcedureFields:
             },
         )
 
-        call_command("process_denormalized_procedure_fields")
+        call_command("process_denormalized_procedure_fields", yesterday_only=True)
         assert caplog.messages[-1] == "0 inconsistent procedures"
         procedure.delete()
 
@@ -183,7 +183,7 @@ class TestProcessDenormalizedProcedureFields:
                 "last_updated_at": yesterday_dt - timedelta(days=1),
             },
         )
-        call_command("process_denormalized_procedure_fields")
+        call_command("process_denormalized_procedure_fields", yesterday_only=True)
         assert caplog.messages[-1] == "0 inconsistent procedures"
         procedure.delete()
 
@@ -195,7 +195,7 @@ class TestProcessDenormalizedProcedureFields:
                 "last_updated_at": now,
             },
         )
-        call_command("process_denormalized_procedure_fields")
+        call_command("process_denormalized_procedure_fields", yesterday_only=True)
         assert caplog.messages[-1] == "1 inconsistent procedures"
         procedure.delete()
 
@@ -207,7 +207,7 @@ class TestProcessDenormalizedProcedureFields:
                 "last_updated_at": yesterday_dt,
             },
         )
-        call_command("process_denormalized_procedure_fields")
+        call_command("process_denormalized_procedure_fields", yesterday_only=True)
         assert caplog.messages[-1] == "1 inconsistent procedures"
         procedure.delete()
 
@@ -218,7 +218,7 @@ class TestProcessDenormalizedProcedureFields:
                 "created_at": now,
             },
         )
-        call_command("process_denormalized_procedure_fields")
+        call_command("process_denormalized_procedure_fields", yesterday_only=True)
         assert caplog.messages[-1] == "0 inconsistent procedures"
         procedure.delete()
 
@@ -230,6 +230,6 @@ class TestProcessDenormalizedProcedureFields:
                 "last_updated_at": now,
             },
         )
-        call_command("process_denormalized_procedure_fields")
+        call_command("process_denormalized_procedure_fields", yesterday_only=True)
         assert caplog.messages[-1] == "0 inconsistent procedures"
         procedure.delete()
