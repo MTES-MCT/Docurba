@@ -1721,6 +1721,12 @@ class Commune(Collectivite):
 
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
+    DYNAMIC_TO_DENORMALIZED_FIELDS: ClassVar[dict[str:str]] = {
+        "dynamic_collectivite_code": "collectivite_code",
+        "dynamic_collectivite_type": "collectivite_type",
+        "dynamic_departement": "departement",
+    }
+
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
 
     # Created for Nuxt before Django models were here.
@@ -1797,6 +1803,57 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
             # Remove me later.
             models.Index(name="test_idx", fields=["procedure_id", "collectivite_code"]),
         ]
+
+    def save(self, *args: list, **kwargs: dict) -> None:
+        self.update_denormalized_fields()
+        super().save(*args, **kwargs)
+
+    def has_inconsistent_denormalized_fields(self) -> bool:
+        return not all(
+            getattr(self, dynamic_field) == getattr(self, denormalized_field)
+            for dynamic_field, denormalized_field in self.DYNAMIC_TO_DENORMALIZED_FIELDS.items()
+        )
+
+    def update_denormalized_fields(self, save: bool = False) -> Self:  # noqa: FBT001, FBT002
+        [
+            setattr(self, denormalized_field, getattr(self, dynamic_field))
+            for dynamic_field, denormalized_field in self.DYNAMIC_TO_DENORMALIZED_FIELDS.items()
+        ]
+        if save:
+            self.save()
+        return self
+
+    @property
+    def dynamic_collectivite_code(self) -> str | None:
+        # Until we create missing communes.
+        try:
+            if not self.commune:
+                return None
+        except Commune.DoesNotExist:
+            return self.collectivite_code
+        return self.commune.code_insee
+
+    @property
+    def dynamic_collectivite_type(self) -> str | None:
+        # Until we create missing communes.
+        try:
+            if not self.commune:
+                return None
+        except Commune.DoesNotExist:
+            return self.collectivite_type
+
+        return self.commune.type
+
+    @property
+    def dynamic_departement(self) -> str | None:
+        # Until we create missing communes.
+        try:
+            if not self.commune:
+                return None
+        except Commune.DoesNotExist:
+            return self.departement
+
+        return self.commune.departement.code_insee
 
 
 class MaterializedViewFlatMembershipQuerySet(models.QuerySet):
