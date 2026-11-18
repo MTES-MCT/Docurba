@@ -52,6 +52,7 @@ class Command(BaseCommand):
         ]
         writer = csv.DictWriter(
             self.stdout,
+            delimiter=";",
             fieldnames=["procedure_id", *procedure_normalized_and_denormalized_fields],
             lineterminator="\n",
         )

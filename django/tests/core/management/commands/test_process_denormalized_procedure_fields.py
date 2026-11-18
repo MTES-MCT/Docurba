@@ -52,7 +52,7 @@ class TestProcessDenormalizedProcedureFields:
         output = capsys.readouterr()
 
         # No procedure to update
-        expected_csv = "procedure_id,dynamic_doc_type,doc_type,dynamic_departements,departements,dynamic_current_perimetre,current_perimetre\n"
+        expected_csv = "procedure_id;dynamic_doc_type;doc_type;dynamic_departements;departements;dynamic_current_perimetre;current_perimetre\n"
         assert expected_csv == output.out
         assert caplog.messages[-1] == "0 inconsistent procedures"
 
@@ -84,7 +84,7 @@ class TestProcessDenormalizedProcedureFields:
         call_command("process_denormalized_procedure_fields")
         output = capsys.readouterr()
 
-        reader = csv.DictReader(StringIO(output.out), delimiter=",")
+        reader = csv.DictReader(StringIO(output.out), delimiter=";")
         first_line = next(reader)
         assert reader.line_num == 2
         assert first_line == expected_csv
@@ -98,7 +98,7 @@ class TestProcessDenormalizedProcedureFields:
         call_command("process_denormalized_procedure_fields", mode="update")
         output = capsys.readouterr()
 
-        reader = csv.DictReader(StringIO(output.out), delimiter=",")
+        reader = csv.DictReader(StringIO(output.out), delimiter=";")
         first_line = next(reader)
         assert reader.line_num == 2
         assert first_line == expected_csv
