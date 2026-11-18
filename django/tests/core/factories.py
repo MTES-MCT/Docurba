@@ -334,14 +334,8 @@ class CommuneProcedureFactory(factory.django.DjangoModelFactory):
         model = core_models.CommuneProcedure
 
     commune = factory.SubFactory(CommuneFactory)
-    commune_id = factory.LazyAttribute(
-        lambda o: f"{o.collectivite_code}_{o.collectivite_type}"
-    )
     procedure = factory.SubFactory(ProcedureFactory)
-    collectivite_code = factory.SelfAttribute("commune.code_insee")
-    collectivite_type = factory.SelfAttribute("commune.type")
     opposable = False
-    departement = factory.SelfAttribute("commune.departement.code_insee")
 
 
 class EventTypeFactory(factory.django.DjangoModelFactory):
