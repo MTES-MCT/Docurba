@@ -12,7 +12,11 @@ export default {
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
     APP_URL: process.env.APP_URL,
-    USER_ENVIRONMENT: process.env.USER_ENVIRONMENT
+    USER_ENVIRONMENT: process.env.USER_ENVIRONMENT,
+    SURVEY_END_DATE: process.env.SURVEY_END_DATE,
+    SURVEY_ID: process.env.SURVEY_ID,
+    SURVEY_START_DATE: process.env.SURVEY_START_DATE,
+    SURVEY_YEAR: process.env.SURVEY_YEAR ?? ''
   },
   head: {
     titleTemplate: '%s - Docurba',
@@ -59,6 +63,7 @@ export default {
     { src: '~/plugins/event.js', mode: 'client' },
     { src: '~/plugins/notifications.js', mode: 'client' },
     { src: '~/plugins/procedure.js', mode: 'client' },
+    { src: '~/plugins/survey.js', mode: 'client' },
     { src: '~/plugins/urbanisator.js' },
     { src: '~/plugins/pdfMake.js', mode: 'client' },
     { src: '~/plugins/analytics.js' },
