@@ -1,4 +1,5 @@
 import logging
+import operator
 from datetime import datetime
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
@@ -337,6 +338,8 @@ class FastLoadingProcedureManager(ProcedureManager):
 class Procedure(models.Model):
     DYNAMIC_TO_DENORMALIZED_FIELDS: ClassVar[dict[str:str]] = {
         "dynamic_doc_type": "doc_type",
+        "dynamic_departements": "departements",
+        "dynamic_current_perimetre": "current_perimetre",
     }
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
     test = models.BooleanField(db_default=False)
@@ -400,7 +403,7 @@ class Procedure(models.Model):
         blank=True, null=True
     )  # No reference in Nuxt's side but column is filled with different values.
     sudocu_secondary_procedure_of = models.IntegerField(blank=True, null=True)
-    shareable = models.BooleanField(db_default=True)
+    shareable = models.BooleanField(db_default=True, default=True)
     type = models.CharField(
         choices=core_enums.ProcedureType, default=core_enums.ProcedureType.ELABORATION
     )  # TextField in DB.
@@ -539,7 +542,15 @@ class Procedure(models.Model):
         self._cached_perimetre = kwargs.pop("cached_perimetre", None)
         super().__init__(*args, **kwargs)
 
-    def save(self, *args, **kwargs) -> None:  # noqa: ANN002, ANN003
+    def save(self, *args: list, **kwargs: dict) -> None:
+        if self.type in core_enums.ProcedureType.principal():
+            self.is_principale = True
+            # https://docs.djangoproject.com/en/6.1/ref/models/instances/#state
+            if self._state.adding:
+                if self.type != core_enums.ProcedureType.REVISION:
+                    self.numero = "1"
+                if not self.status:
+                    self.status = core_enums.ProcedureStatusChoices.EN_COURS
         self.clean()
         self.update_denormalized_fields()
         super().save(*args, **kwargs)
@@ -554,6 +565,31 @@ class Procedure(models.Model):
         if not self.parente and not self.status:
             message = 'A main procedure must have a "status" filled in.'
             raise ValidationError(message)
+        super().clean()
+
+    # We need it to create the procedure.
+    @classmethod
+    def get_collectivite_porteuse(  # noqa: ANN206
+        cls,
+        collectivite,  # noqa: ANN001
+        doc_type: core_enums.TypeDocument,
+    ):
+        if (
+            (
+                (
+                    doc_type == core_enums.TypeDocument.SCOT
+                    and not collectivite.competence_schema
+                )
+                or (
+                    doc_type != core_enums.TypeDocument.SCOT
+                    and not collectivite.competence_plan
+                )
+            )
+            and collectivite.type in core_enums.CommuneType
+            and collectivite.commune.intercommunalite
+        ):
+            collectivite = collectivite.commune.intercommunalite
+        return collectivite
 
     _events_processed = False
 
@@ -598,7 +634,27 @@ class Procedure(models.Model):
             self.save()
         return self
 
-    # NOTE(cms): rename me in dynamic_name?
+    @property
+    def dynamic_current_perimetre(self) -> list[dict[str:str]]:
+        if not self._perimetre:
+            return None
+        return sorted(
+            [
+                {"name": commune.nom, "inseeCode": commune.code_insee}
+                for commune in self._perimetre
+            ],
+            key=operator.itemgetter(
+                "inseeCode", "name"
+            ),  # faster than lambda o: (o["inseeCode"], o["name"])
+        )
+
+    @property
+    def dynamic_departements(self) -> list[str]:
+        if not self._perimetre:
+            return None
+
+        return sorted({commune.departement.code_insee for commune in self._perimetre})
+
     @property
     def computed_name(self) -> str:
         if self.name:
@@ -1665,6 +1721,12 @@ class Commune(Collectivite):
 
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
+    DYNAMIC_TO_DENORMALIZED_FIELDS: ClassVar[dict[str:str]] = {
+        "dynamic_collectivite_code": "collectivite_code",
+        "dynamic_collectivite_type": "collectivite_type",
+        "dynamic_departement": "departement",
+    }
+
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
 
     # Created for Nuxt before Django models were here.
@@ -1699,7 +1761,6 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
     )
     opposable = models.BooleanField(verbose_name="Est opposable", default=False)
     # Denormalized version of commune.departement.code_insee already existing in production.
-    # Real type is TextField but I used a Charfiel here for performance reasons.
     # This column is used in Nuxt side to retrieve procedures by departement.
     # See urbanizator.getProceduresForDept.
     # Unfortunately, there is a mismatch between commune.departement.code_insee and self.departement
@@ -1742,6 +1803,57 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
             # Remove me later.
             models.Index(name="test_idx", fields=["procedure_id", "collectivite_code"]),
         ]
+
+    def save(self, *args: list, **kwargs: dict) -> None:
+        self.update_denormalized_fields()
+        super().save(*args, **kwargs)
+
+    def has_inconsistent_denormalized_fields(self) -> bool:
+        return not all(
+            getattr(self, dynamic_field) == getattr(self, denormalized_field)
+            for dynamic_field, denormalized_field in self.DYNAMIC_TO_DENORMALIZED_FIELDS.items()
+        )
+
+    def update_denormalized_fields(self, save: bool = False) -> Self:  # noqa: FBT001, FBT002
+        [
+            setattr(self, denormalized_field, getattr(self, dynamic_field))
+            for dynamic_field, denormalized_field in self.DYNAMIC_TO_DENORMALIZED_FIELDS.items()
+        ]
+        if save:
+            self.save()
+        return self
+
+    @property
+    def dynamic_collectivite_code(self) -> str | None:
+        # Until we create missing communes.
+        try:
+            if not self.commune:
+                return None
+        except Commune.DoesNotExist:
+            return self.collectivite_code
+        return self.commune.code_insee
+
+    @property
+    def dynamic_collectivite_type(self) -> str | None:
+        # Until we create missing communes.
+        try:
+            if not self.commune:
+                return None
+        except Commune.DoesNotExist:
+            return self.collectivite_type
+
+        return self.commune.type
+
+    @property
+    def dynamic_departement(self) -> str | None:
+        # Until we create missing communes.
+        try:
+            if not self.commune:
+                return None
+        except Commune.DoesNotExist:
+            return self.departement
+
+        return self.commune.departement.code_insee
 
 
 class MaterializedViewFlatMembershipQuerySet(models.QuerySet):
