@@ -42,6 +42,12 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+h1.du-heading {
+  color: #000 !important;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 3rem;
+}
 h2.du-heading {
   color: #000 !important;
   font-size: 2rem;

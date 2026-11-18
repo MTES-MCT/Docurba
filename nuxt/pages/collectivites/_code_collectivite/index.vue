@@ -314,7 +314,7 @@ export default {
       <DUHeading>{{ proceduresLabel }}</DUHeading>
       <DUText>Date du dernier import Sudocuh&nbsp;: 16/12/2025</DUText>
       <DUGroup start>
-        <DUTabs>
+        <DUSegmented>
           <template #default="{ activeClass }">
             <NuxtLink
               :class="{ [activeClass]: view === 'liste' }"
@@ -347,7 +347,7 @@ export default {
               Tableau
             </NuxtLink>
           </template>
-        </DUTabs>
+        </DUSegmented>
       </DUGroup>
       <PageDepartementsCollectivitesProceduresTable
         v-if="view === 'tableau'"

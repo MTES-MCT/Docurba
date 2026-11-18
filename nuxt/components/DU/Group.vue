@@ -1,6 +1,10 @@
 <script>
 export default {
   props: {
+    between: {
+      default: false,
+      type: Boolean
+    },
     end: {
       default: false,
       type: Boolean
@@ -21,11 +25,19 @@ export default {
       default: false,
       type: Boolean
     },
+    padLg: {
+      default: false,
+      type: Boolean
+    },
     sm: {
       default: false,
       type: Boolean
     },
     start: {
+      default: false,
+      type: Boolean
+    },
+    xl: {
       default: false,
       type: Boolean
     },
@@ -45,13 +57,16 @@ export default {
   <div
     class="du-group"
     :class="{
+      'du-group--between': between,
       'du-group--end': end,
       'du-group--grid': grid,
       'du-group--horizontal': horizontal,
       'du-group--lg': lg,
       'du-group--md': md,
+      'du-group--pad-lg': padLg,
       'du-group--sm': sm,
       'du-group--start': start,
+      'du-group--xl': xl,
       'du-group--xs': xs,
       'du-group--xxs': xxs
     }"
@@ -63,6 +78,10 @@ export default {
 <style>
 .du-group {
   display: grid;
+}
+.du-group--between {
+  grid-auto-flow: column;
+  justify-content: space-between;
 }
 .du-group--end {
   justify-items: end;
@@ -81,11 +100,17 @@ export default {
 .du-group--md {
   gap: 1rem;
 }
+.du-group--pad-lg {
+  padding: 1.5rem;
+}
 .du-group--sm {
   gap: .75rem;
 }
 .du-group--start {
   justify-items: start;
+}
+.du-group--xl {
+  gap: 2rem;
 }
 .du-group--xs {
   gap: .5rem;
