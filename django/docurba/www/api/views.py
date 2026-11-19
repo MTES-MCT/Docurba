@@ -1,5 +1,5 @@
 from csv import DictWriter
-from datetime import datetime
+from datetime import date, datetime
 from urllib.request import Request
 
 from django.db import models
@@ -9,11 +9,12 @@ from rest_framework import generics
 from docurba.core.enums import TypeCollectivite
 from docurba.core.models import Collectivite, Commune, Procedure
 from docurba.utils.api.views import PublicAPIView
+from docurba.utils.date import end_of_day
 
 
 def _avant(request: HttpRequest) -> datetime | None:
     return (
-        datetime.fromisoformat(request.GET.get("avant") + "T00:00:00Z")
+        end_of_day(date.fromisoformat(request.GET.get("avant")))
         if request.GET.get("avant")
         else None
     )

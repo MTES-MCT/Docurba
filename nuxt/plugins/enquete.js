@@ -130,10 +130,10 @@ export default ({ app, $supabase, $utils, $user, $analytics, $urbanisator }, inj
     })
 
     const plans = (collectiviteToValidate.plans || []).map(formatProcedure).filter(
-      e => e.status === 'opposable' || e.status === 'en cours'
+      e => ['opposable', 'en cours', 'en projet'].includes(e.status)
     )
     const scots = (collectiviteToValidate.scots || []).map(formatProcedure).filter(
-      e => e.status === 'opposable' || e.status === 'en cours'
+      e => ['opposable', 'en cours', 'en projet'].includes(e.status)
     )
 
     if (plans.length === 0) {

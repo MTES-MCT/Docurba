@@ -25,5 +25,11 @@ while true; do
     echo "☕ Il est ${current_time} ! C'est l'heure de la sauvegarde !"
     /usr/bin/bash scripts/backup_database.sh "${DATABASE_URL}"
   fi
+  if [[ "$current_time" == "03:03" ]]; then
+    date_pivot=$(date -I)
+    echo "Synchronize procedure status and opposability using events until $date_pivot"
+    django-admin synchronize_procedure_status --date_pivot="$date_pivot" --wet-run
+    django-admin synchronize_commune_procedure_opposability --date_pivot="$date_pivot" --wet-run
+  fi
   sleep 1m
 done
