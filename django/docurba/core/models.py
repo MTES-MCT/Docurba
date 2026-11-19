@@ -411,7 +411,7 @@ class Procedure(models.Model):
         db_constraint=False,
         null=True,
         to_field="code_insee_unique",
-    )
+    )  # NOTE(cms): replace me by collectivite.uuid after this pull request.
     created_at = models.DateTimeField(db_default=TransactionNow(), null=True)
     last_updated_at = models.DateTimeField(db_default=TransactionNow(), null=True)
     # Procedure updated "in cascade" when the parent procedure is.
@@ -1747,7 +1747,6 @@ class Commune(Collectivite):
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
-
     # Created for Nuxt before Django models were here.
     # It should be refactored when working on the COG.
     commune_id = models.GeneratedField(
@@ -1759,9 +1758,8 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
         output_field=models.TextField(),
         db_persist=True,
     )
-    # Use the commune_id (GeneratedField) as a foreign key.
     commune = models.ForeignObject(
-        Commune,
+        "core.Commune",
         from_fields=["commune_id"],
         to_fields=["collectivite_ptr_id"],
         on_delete=models.DO_NOTHING,
@@ -1777,6 +1775,11 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
         verbose_name="Type de collectivité",
         choices=core_enums.CommuneType,
         default=core_enums.CommuneType.COM,
+    )
+    old_collectivite_type = models.CharField(
+        verbose_name="Type de collectivité",
+        choices=core_enums.CommuneType,
+        blank=True,
     )
     opposable = models.BooleanField(verbose_name="Est opposable", default=False)
     # Denormalized version of commune.departement.code_insee already existing in production.
