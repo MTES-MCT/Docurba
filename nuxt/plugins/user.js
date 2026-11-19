@@ -239,12 +239,22 @@ export default async ({ $nuxtApi, $supabase, app }, inject) => {
     canViewProcedureCommentFromSudocuh () {
       return (this.profile.side === 'etat' && this.profile.poste === 'ddt') || this.profile.is_admin
     },
-    canViewProcedureSurvey ({ departement }) {
-      const isDDT = this.profile.side === 'etat' && this.profile.poste === 'ddt'
-      if (!isDDT && !this.profile.is_admin) {
-        return false
-      }
-      return process.env.DDT_PROCEDURE_SURVEY_ENABLED_DEPTS.includes(departement)
+    canViewProcedureSurvey () {
+      const now = new Date()
+
+      return (
+        !!process.env.SURVEY_ID &&
+        !!process.env.SURVEY_START_DATE &&
+        !!process.env.SURVEY_END_DATE &&
+        now >= new Date(process.env.SURVEY_START_DATE) &&
+        now < new Date(process.env.SURVEY_END_DATE) &&
+        (
+          !!this.profile.is_admin || (
+            this.profile.side === 'etat' &&
+            this.profile.poste === 'ddt'
+          )
+        )
+      )
     }
   }
 

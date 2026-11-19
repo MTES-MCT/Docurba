@@ -5,6 +5,10 @@ export default {
       default: () => [],
       type: Array
     },
+    highlighted: {
+      default: false,
+      type: Boolean
+    },
     label: {
       default: '',
       type: String
@@ -28,9 +32,13 @@ export default {
 <template>
   <div
     class="du-layout-main"
-    :class="{ 'du-layout-main--primary': primary }"
+    :class="{
+      'du-layout-main--highlighted': highlighted,
+      'du-layout-main--primary': primary
+    }"
   >
     <LayoutHeader
+      v-if="label"
       :breadcrumb="breadcrumb"
       :label="label"
       :primary="primary"
@@ -62,6 +70,16 @@ export default {
 .du-layout-main {
   background-color: #f6f6f6;
   display: grid;
+}
+.du-layout-main--highlighted .du-layout-main__body {
+  position: relative;
+}
+.du-layout-main--highlighted .du-layout-main__body::after {
+  box-shadow: 0 0 0 .1875rem #fcc63a;
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
 }
 .du-layout-main--primary {
   background-color: #fff;

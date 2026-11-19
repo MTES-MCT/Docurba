@@ -54,13 +54,15 @@
           Mes PAC
         </v-tab>
         <v-tab
-          v-if="$user.canViewProcedureSurvey({ departement })"
+          v-if="$user.canViewProcedureSurvey()"
+          class="du-layout-tab--highlighted"
           :to="{
             name:'ddt-departement-enquete',
             params: { departement }
           }"
         >
-          Enquête ZAN
+          Enquête annuelle {{ $survey.year }}
+          <v-icon small>{{ icons.mdiCircle }}</v-icon>
         </v-tab>
       </v-tabs>
     </LayoutsAppBar>
@@ -94,10 +96,15 @@
 </template>
 
 <script>
+import { mdiCircle } from '@mdi/js'
+
 export default {
   name: 'DdtLayout',
   data () {
     return {
+      icons: {
+        mdiCircle
+      },
       isLoading: true
       // showTally: false
     }
@@ -165,5 +172,9 @@ export default {
 .header-tabs .v-tab {
   color: var(--v-typo-base) !important;
   text-transform: none;
+}
+.du-layout-tab--highlighted .v-icon {
+  color: #fcc63a !important;
+  margin-left: .5rem;
 }
 </style>
