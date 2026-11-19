@@ -571,7 +571,7 @@ class Procedure(models.Model):
         for event in reversed(self.events_prefetched):
             if event.category and (
                 event.category == EventCategory.FIN_ECHEANCE
-                or event.date_evenement.date() <= date_pivot.date()
+                or event.date_evenement <= date_pivot
             ):
                 setattr(self, event.category, event)
         self._events_processed = True
