@@ -101,13 +101,12 @@ class CommuneFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = core_models.Commune
-        django_get_or_create = ("code_insee_unique",)
 
     id = factory.LazyAttribute(lambda o: f"{o.code_insee_unique}_{o.type}")
-    code_insee_unique = factory.LazyAttribute(lambda o: f"{o.code_insee}")
     code_insee = factory.fuzzy.FuzzyChoice(COMMUNES.keys())
+    code_insee_unique = factory.SelfAttribute("code_insee")
     type = core_enums.CommuneType.COM  # Don't mess with COMD and COMA
-    nom = factory.LazyAttribute(lambda o: COMMUNES[o.code_insee_unique]["name"])
+    nom = factory.LazyAttribute(lambda o: COMMUNES[o.code_insee]["name"])
     competence_plan = False
     competence_schema = False
 
@@ -328,7 +327,7 @@ class CommuneProcedureFactory(factory.django.DjangoModelFactory):
         lambda o: f"{o.collectivite_code}_{o.collectivite_type}"
     )
     procedure = factory.SubFactory(ProcedureFactory)
-    collectivite_code = factory.SelfAttribute("commune.code_insee_unique")
+    collectivite_code = factory.SelfAttribute("commune.code_insee")
     collectivite_type = factory.SelfAttribute("commune.type")
     opposable = False
     departement = factory.SelfAttribute("commune.departement.code_insee")

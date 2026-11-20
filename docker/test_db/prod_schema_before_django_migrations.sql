@@ -1064,16 +1064,6 @@ GRANT USAGE ON SCHEMA public TO anon;
 GRANT USAGE ON SCHEMA public TO authenticated;
 GRANT USAGE ON SCHEMA public TO service_role;
 
-
---
--- Name: FUNCTION check_project_sharing_permission(project_id uuid, user_email text); Type: ACL; Schema: public; Owner: -
---
-
-GRANT ALL ON FUNCTION public.check_project_sharing_permission(project_id uuid, user_email text) TO anon;
-GRANT ALL ON FUNCTION public.check_project_sharing_permission(project_id uuid, user_email text) TO authenticated;
-GRANT ALL ON FUNCTION public.check_project_sharing_permission(project_id uuid, user_email text) TO service_role;
-
-
 --
 -- Name: FUNCTION check_user_access(); Type: ACL; Schema: public; Owner: -
 --
