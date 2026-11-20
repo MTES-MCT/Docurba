@@ -1534,6 +1534,7 @@ class Commune(Collectivite):
     procedures = models.ManyToManyField(
         Procedure, through="CommuneProcedure", related_name="perimetre"
     )
+    collectivite_ptr_uuid = models.CharField(unique=True)
 
     objects = CommuneQuerySet.as_manager()
 
@@ -1677,29 +1678,30 @@ class Commune(Collectivite):
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
-    commune_uuid = models.UUIDField(
-        blank=True,
-        null=True,
-    )  # To be renamed `commune`.`
+    # commune_uuid = models.UUIDField(
+    #     blank=True,
+    #     null=True,
+    # )  # To be renamed commune_id when the old one will be deleted.
 
     # Created for Nuxt before Django models were here.
     # It should be refactored when working on the COG.
-    commune_id = models.GeneratedField(
-        expression=models.functions.Concat(
-            "collectivite_code",
-            models.Value("_"),
-            "collectivite_type",
-        ),
-        output_field=models.TextField(),
-        db_persist=True,
-    )
-    # Use the commune_id (GeneratedField) as a foreign key.
-    commune = models.ForeignObject(
-        Commune,
-        from_fields=["commune_id"],
-        to_fields=["collectivite_ptr_id"],
+    # commune_id = models.GeneratedField(
+    #     expression=models.functions.Concat(
+    #         "collectivite_code",
+    #         models.Value("_"),
+    #         "collectivite_type",
+    #     ),
+    #     output_field=models.TextField(),
+    #     db_persist=True,
+    # )
+    commune = models.ForeignKey(
+        "core.Commune",
+        db_column="commune_uuid",
+        to_field="collectivite_ptr_uuid",
         on_delete=models.DO_NOTHING,
         related_name="procedures_through",
+        blank=True,
+        null=True,
     )
     procedure = models.ForeignKey(
         Procedure, models.CASCADE, related_name="perimetre_through"

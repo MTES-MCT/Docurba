@@ -2,11 +2,23 @@
 
 import logging
 
-from django.db import migrations
+from django.db import migrations, models
 
 from docurba.core.models import CommuneProcedure
 
 logger = logging.getLogger(__name__)
+
+
+def fill_collectivite_ptr_uid(apps, schema_editor) -> None:  # noqa: ANN001, ARG001
+    Commune = apps.get_model("core", "Commune")
+    Collectivite = apps.get_model("core", "Collectivite")
+    Commune.objects.select_related("collectivite_ptr").annotate(
+        col_uuid=models.Subquery(
+            Collectivite.objects.filter(pk=models.OuterRef("collectivite_ptr")).values(
+                "uuid"
+            )[:1]
+        )
+    ).update(collectivite_ptr_uuid=models.F("col_uuid"))
 
 
 def fill_commune_procedure_commune_uuid(apps, schema_editor) -> None:  # noqa: ANN001, ARG001
@@ -22,8 +34,13 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(
-            fill_commune_procedure_commune_uuid,
+            fill_collectivite_ptr_uid,
             reverse_code=migrations.RunPython.noop,
             elidable=True,
-        )
+        ),
+        # migrations.RunPython(
+        #     fill_commune_procedure_commune_uuid,
+        #     reverse_code=migrations.RunPython.noop,
+        #     elidable=True,
+        # ),
     ]

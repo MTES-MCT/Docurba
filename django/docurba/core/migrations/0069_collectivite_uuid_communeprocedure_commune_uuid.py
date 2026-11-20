@@ -38,4 +38,9 @@ class Migration(migrations.Migration):
                 verbose_name="Type de collectivité",
             ),
         ),
+        migrations.AddField(
+            model_name="commune",
+            name="collectivite_ptr_uuid",
+            field=models.CharField(blank=True),
+        ),
     ]
