@@ -2451,10 +2451,10 @@ class TestCommune:
     def test_collectivite_porteuse_selon_situation_plans(
         self, plan_opposable: bool, plan_en_cours: bool, collectivite_attendue: str
     ) -> None:
-        commune = CommuneFactory(code_insee_unique="13001")
+        commune = CommuneFactory(code_insee="13001")
 
         if plan_en_cours:
-            collectivite = CollectiviteFactory(code_insee_unique="200003333")
+            collectivite = CollectiviteFactory(siren="200003333")
             procedure = ProcedureFactory(
                 base_doc_type=core_enums.BaseDocumentType.PLU,
                 collectivite_porteuse=collectivite,
@@ -2465,7 +2465,7 @@ class TestCommune:
             )
 
         if plan_opposable:
-            collectivite = CollectiviteFactory(code_insee_unique="200004444")
+            collectivite = CollectiviteFactory(siren="200004444")
             procedure = ProcedureFactory(
                 base_doc_type=core_enums.BaseDocumentType.PLU,
                 collectivite_porteuse=collectivite,
