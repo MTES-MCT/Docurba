@@ -101,6 +101,38 @@ class EventTypeViewSet(PublicAPIView, viewsets.ReadOnlyModelViewSet):
     filterset_class = custom_filters.EventTypeFilter
 
 
+class EventViewSet(viewsets.ModelViewSet):
+    """Evenements en base."""
+
+    filterset_class = custom_filters.EventFilter
+    authentication_classes = [SupabaseAuthentication]  # noqa: RUF012
+    permission_classes = [IsAuthenticated]  # noqa: RUF012
+
+    def get_queryset(self):  # noqa: ANN201
+        if self.action == "list":
+            return core_models.Event.objects.without_archived()
+        return core_models.Event.full_objects.without_archived()
+
+    def get_serializer_class(self):  # noqa: ANN201
+        if self.action == "list":
+            return core_serializers.EventListSerializer
+        if self.action == "create":
+            return core_serializers.EventCreateSerializer
+        return core_serializers.EventDetailSerializer
+
+        return super().get_serializer_class()
+
+    def get_permissions(self):  # noqa: ANN201
+        if self.action in ["list", "retrieve"]:
+            return []
+
+        return super().get_permissions()
+
+    def perform_destroy(self, instance: core_models.Event):  # noqa: ANN201
+        instance.archive(archived_by=self.request.user.profile)
+        instance.save()
+
+
 class UserMustUpdatePasswordView(PublicAPIView, generics.GenericAPIView):
     def get(self, request: Request, *args, **kwargs) -> Response:  # noqa: ANN002, ANN003, ARG002
         must_update_password = (
