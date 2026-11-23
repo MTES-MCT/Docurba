@@ -2451,10 +2451,10 @@ class TestCommune:
     def test_collectivite_porteuse_selon_situation_plans(
         self, plan_opposable: bool, plan_en_cours: bool, collectivite_attendue: str
     ) -> None:
-        commune = CommuneFactory(code_insee_unique="13001")
+        commune = CommuneFactory(code_insee="13001")
 
         if plan_en_cours:
-            collectivite = CollectiviteFactory(code_insee_unique="200003333")
+            collectivite = CollectiviteFactory(siren="200003333")
             procedure = ProcedureFactory(
                 base_doc_type=core_enums.BaseDocumentType.PLU,
                 collectivite_porteuse=collectivite,
@@ -2465,7 +2465,7 @@ class TestCommune:
             )
 
         if plan_opposable:
-            collectivite = CollectiviteFactory(code_insee_unique="200004444")
+            collectivite = CollectiviteFactory(siren="200004444")
             procedure = ProcedureFactory(
                 base_doc_type=core_enums.BaseDocumentType.PLU,
                 collectivite_porteuse=collectivite,
@@ -2845,3 +2845,214 @@ class TestEventType:
 
         plu1 = EventTypeFactory(document_type=core_models.EventType.DocumentType.PLU)
         assert plu1.order == 1
+
+
+@pytest.mark.django_db
+class TestCommuneProcedureFillCommuneProcedure:
+    def test_easy_case__no_save(self, caplog: pytest.LogCaptureFixture) -> None:
+        # Easy case
+        commune = CommuneFactory(code_insee="30188")
+        procedure = ProcedureFactory(with_perimetre=[commune])
+        core_models.CommuneProcedure.update_commune_uuid()
+        commune_procedure = core_models.CommuneProcedure.objects.get(
+            procedure_id=procedure.pk
+        )
+        assert caplog.messages == [
+            "Checking communes procedures (1/1).",
+            "Not existing: 0",
+            "CommuneProcedure without commune_uuid: 1",
+            "Can be updated: 1",
+            "Successfully updated 1 CommuneProcedure",
+        ]
+        assert commune_procedure.commune_uuid is None
+
+    def test_easy_case__save(self, caplog: pytest.LogCaptureFixture) -> None:
+        commune = CommuneFactory(code_insee="30188")
+        procedure = ProcedureFactory(with_perimetre=[commune])
+        core_models.CommuneProcedure.update_commune_uuid(save=True)
+        commune_procedure = core_models.CommuneProcedure.objects.get(
+            procedure_id=procedure.pk
+        )
+        assert caplog.messages == [
+            "Checking communes procedures (1/1).",
+            "Not existing: 0",
+            "CommuneProcedure without commune_uuid: 0",
+            "Can be updated: 1",
+            "Successfully updated 1 CommuneProcedure",
+        ]
+        commune_procedure.refresh_from_db()
+        assert commune_procedure.commune_uuid == commune.collectivite_ptr.uuid
+
+        # Test indempotency
+        core_models.CommuneProcedure.update_commune_uuid(save=True)
+        assert caplog.messages[-1] == "Successfully updated 0 CommuneProcedure"
+
+    def test_comd_to_com(self, caplog: pytest.LogCaptureFixture) -> None:
+        # # cp.collectivite_code is right but cp.collectivite_type is wrong.
+        # # Try to find the commune only if there is one match.
+        # # It was a COMD, now it's a COM.
+        commune = CommuneFactory(code_insee="30189", type=core_enums.CommuneType.COM)
+        procedure = ProcedureFactory(with_perimetre=[commune], for_snapshot=True)
+        commune_procedure = core_models.CommuneProcedure.objects.get(
+            procedure_id=procedure.pk
+        )
+        commune_procedure.collectivite_type = core_enums.CommuneType.COMD
+        commune_procedure.save()
+        with pytest.raises(core_models.Commune.DoesNotExist):
+            commune_procedure.commune  # noqa: B018
+
+        core_models.CommuneProcedure.update_commune_uuid(save=True)
+        commune_procedure.refresh_from_db()
+        assert caplog.messages == [
+            "Checking communes procedures (1/1).",
+            "A COMD became a COM.; Procedure: 1cd65b57-7027-4aa5-8d19-5e1baf8d6f09; commune: 30189;",
+            "Not existing: 0",
+            "CommuneProcedure without commune_uuid: 0",
+            "Can be updated: 1",
+            "Successfully updated 1 CommuneProcedure",
+        ]
+        assert commune_procedure.commune_uuid == commune.collectivite_ptr.uuid
+        assert commune_procedure.collectivite_type == core_enums.CommuneType.COM
+        assert commune_procedure.old_collectivite_type == core_enums.CommuneType.COMD
+
+    def test_com_to_comd_creation(self, caplog: pytest.LogCaptureFixture) -> None:
+        # # It was a COM, now it's a COMD.
+        # # Case 1: the new commune is not part of the perimetre. We should create it.
+        commune_nouvelle = CommuneFactory(
+            code_insee="30192", type=core_enums.CommuneType.COM
+        )
+        commune = CommuneFactory(
+            code_insee="30193",
+            type=core_enums.CommuneType.COMD,
+            nouvelle=commune_nouvelle,
+        )
+        procedure = ProcedureFactory(with_perimetre=[commune], for_snapshot=True)
+        commune_procedure = core_models.CommuneProcedure.objects.get(
+            procedure_id=procedure.pk
+        )
+        commune_procedure.collectivite_type = core_enums.CommuneType.COM
+        commune_procedure.save()
+        with pytest.raises(core_models.Commune.DoesNotExist):
+            commune_procedure.commune  # noqa: B018
+
+        core_models.CommuneProcedure.update_commune_uuid(save=True)
+        commune_procedure.refresh_from_db()
+        assert caplog.messages == [
+            "Checking communes procedures (1/1).",
+            "A COM became a COMD.; Procedure: 1cd65b57-7027-4aa5-8d19-5e1baf8d6f09; commune: 30193;",
+            "Creating a CommuneProcedure: 1cd65b57-7027-4aa5-8d19-5e1baf8d6f09; commune: 30193; nouvelle 30192",
+            "Not existing: 0",
+            "CommuneProcedure without commune_uuid: 0",
+            "Can be updated: 1",
+            "Successfully updated 1 CommuneProcedure",
+        ]
+        assert commune_procedure.commune_uuid == commune.collectivite_ptr.uuid
+        assert commune_procedure.collectivite_type == core_enums.CommuneType.COMD
+        assert commune_procedure.old_collectivite_type == core_enums.CommuneType.COM
+        assert procedure.perimetre_through.count() == 2
+        assert procedure.perimetre.count() == 2
+        assert procedure.perimetre.filter(pk=commune_nouvelle.pk).exists()
+
+    def test_com_to_comd_no_creation(self, caplog: pytest.LogCaptureFixture) -> None:
+        # # It was a COM, now it's a COMD.
+        # # Case 2: the new commune was already part of the perimetre. We should not create it.
+        commune_nouvelle = CommuneFactory(
+            code_insee="30194", type=core_enums.CommuneType.COM
+        )
+        commune = CommuneFactory(
+            code_insee="30195",
+            type=core_enums.CommuneType.COMD,
+            nouvelle=commune_nouvelle,
+        )
+        procedure = ProcedureFactory(
+            with_perimetre=[commune, commune_nouvelle], for_snapshot=True
+        )
+        commune_procedure = core_models.CommuneProcedure.objects.get(
+            procedure_id=procedure.pk,
+            commune=commune,
+        )
+        commune_procedure.collectivite_type = core_enums.CommuneType.COM
+        commune_procedure.save()
+        with pytest.raises(core_models.Commune.DoesNotExist):
+            commune_procedure.commune  # noqa: B018
+
+        core_models.CommuneProcedure.update_commune_uuid(save=True)
+        commune_procedure.refresh_from_db()
+        assert caplog.messages == [
+            "Checking communes procedures (1/1).",
+            "A COM became a COMD.; Procedure: 1cd65b57-7027-4aa5-8d19-5e1baf8d6f09; commune: 30195;",
+            "Not existing: 0",
+            "CommuneProcedure without commune_uuid: 0",
+            "Can be updated: 2",
+            "Successfully updated 2 CommuneProcedure",
+        ]
+        assert commune_procedure.commune_uuid == commune.collectivite_ptr.uuid
+        assert commune_procedure.collectivite_type == core_enums.CommuneType.COMD
+        assert commune_procedure.old_collectivite_type == core_enums.CommuneType.COM
+        assert procedure.perimetre_through.count() == 2
+        assert procedure.perimetre.count() == 2
+        assert (
+            procedure.perimetre.get(pk=commune_nouvelle.pk).type
+            == core_enums.CommuneType.COM
+        )
+        assert (
+            procedure.perimetre.get(pk=commune.pk).type == core_enums.CommuneType.COMD
+        )
+
+    def test_multiple_communes_found(self, caplog: pytest.LogCaptureFixture) -> None:
+        # Multiple communes found.
+        commune_nouvelle = CommuneFactory(
+            code_insee="30196",
+            code_insee_unique="30196",
+            type=core_enums.CommuneType.COM,
+        )
+        commune = CommuneFactory(
+            code_insee="30196",
+            code_insee_unique="",  # This is how it is stored today.
+            type=core_enums.CommuneType.COMD,
+            nouvelle=commune_nouvelle,
+        )
+        procedure = ProcedureFactory(with_perimetre=[commune])
+        commune_procedure = core_models.CommuneProcedure.objects.get(
+            procedure_id=procedure.pk
+        )
+        commune_procedure.collectivite_type = core_enums.CommuneType.COMA
+        commune_procedure.save()
+
+        core_models.CommuneProcedure.update_commune_uuid(save=True)
+        commune_procedure.refresh_from_db()
+        assert caplog.messages == [
+            "Checking communes procedures (1/1).",
+            "Multiple communes found. Skipping. 30196",
+            "Not existing: 0",
+            "CommuneProcedure without commune_uuid: 1",
+            "Can be updated: 1",
+            "Successfully updated 0 CommuneProcedure",
+        ]
+        assert commune_procedure.collectivite_type == core_enums.CommuneType.COMA
+
+    def test_commune_not_found(self, caplog: pytest.LogCaptureFixture) -> None:
+        # Commune not found.
+        commune = CommuneFactory(
+            code_insee="30197",
+            type=core_enums.CommuneType.COM,
+        )
+        procedure = ProcedureFactory(with_perimetre=[commune])
+        commune_procedure = core_models.CommuneProcedure.objects.get(
+            procedure_id=procedure.pk
+        )
+        commune_procedure.collectivite_code = "00000"
+        commune_procedure.save()
+
+        core_models.CommuneProcedure.update_commune_uuid(save=True)
+        commune_procedure.refresh_from_db()
+        assert caplog.messages == [
+            "Checking communes procedures (1/1).",
+            "Commune not existing. 00000",
+            "Not existing: 1",
+            "CommuneProcedure without commune_uuid: 1",
+            "Can be updated: 1",
+            "Successfully updated 0 CommuneProcedure",
+        ]
+        assert commune_procedure.collectivite_code == "00000"
+        assert commune_procedure.collectivite_type == commune.type

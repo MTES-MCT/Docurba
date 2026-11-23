@@ -2,6 +2,8 @@ import logging
 from datetime import datetime
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
+from itertools import batched
+from math import ceil
 from operator import attrgetter
 from typing import ClassVar, Self
 
@@ -9,7 +11,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.validators import MinValueValidator
-from django.db import connection, models
+from django.db import connection, models, transaction
 from django.db.models import Value
 from django.db.models.aggregates import StringAgg
 from django.db.models.constraints import UniqueConstraint
@@ -411,7 +413,7 @@ class Procedure(models.Model):
         db_constraint=False,
         null=True,
         to_field="code_insee_unique",
-    )
+    )  # NOTE(cms): replace me by collectivite.uuid after this pull request.
     created_at = models.DateTimeField(db_default=TransactionNow(), null=True)
     last_updated_at = models.DateTimeField(db_default=TransactionNow(), null=True)
     # Procedure updated "in cascade" when the parent procedure is.
@@ -1398,6 +1400,7 @@ class CollectiviteQuerySet(models.QuerySet):
 
 class Collectivite(models.Model):
     id = models.CharField(primary_key=True)  # Au format code_type
+    uuid = models.UUIDField(db_default=RandomUUID(), editable=False, unique=True)
     code_insee_unique = models.CharField(  # noqa: DJ001
         unique=True,
         null=True,
@@ -1674,6 +1677,10 @@ class Commune(Collectivite):
 
 class CommuneProcedure(models.Model):  # noqa: DJ008
     id = models.UUIDField(primary_key=True, db_default=RandomUUID())
+    commune_uuid = models.UUIDField(
+        blank=True,
+        null=True,
+    )  # To be renamed `commune`.`
 
     # Created for Nuxt before Django models were here.
     # It should be refactored when working on the COG.
@@ -1701,6 +1708,11 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
         verbose_name="Code collectivité",
     )
     collectivite_type = models.TextField(
+        verbose_name="Type de collectivité",
+        choices=core_enums.CommuneType,
+        default=core_enums.CommuneType.COM,
+    )
+    old_collectivite_type = models.CharField(
         verbose_name="Type de collectivité",
         choices=core_enums.CommuneType,
         default=core_enums.CommuneType.COM,
@@ -1750,6 +1762,120 @@ class CommuneProcedure(models.Model):  # noqa: DJ008
             # Remove me later.
             models.Index(name="test_idx", fields=["procedure_id", "collectivite_code"]),
         ]
+
+    @classmethod
+    def update_commune_uuid(cls, save: bool = False) -> None:  # noqa: FBT001, FBT002, PLR0915
+        """
+        Update CommuneProcedure.commune_uuid in bulk
+        and try to update outdated cls.collectivite_type at the same time.
+        """  # noqa: D205
+        cp_pks = cls.objects.filter(commune_uuid__isnull=True).values_list(
+            "pk", flat=True
+        )
+        can_be_updated_counter = 0
+        updated_counter = 0
+        not_existing_counter = 0
+
+        batches = ceil(len(cp_pks) / 2000)
+        for i, batch_pks in enumerate(batched(cp_pks, 2000, strict=False), 1):
+            to_be_created = []
+            to_be_updated = []
+            logger.info("Checking communes procedures (%d/%d).", i, batches)
+            qs = cls.objects.filter(
+                pk__in=batch_pks
+            ).select_related(
+                "procedure"
+            )  # can't use select related because it creates an inner join, not a left join.
+            for cp in qs:
+                can_be_updated_counter += 1
+                uuid = None
+                try:
+                    uuid = cp.commune.uuid
+                    updated_counter += 1
+                except Commune.DoesNotExist:
+                    results = Commune.objects.filter(code_insee=cp.collectivite_code)
+                    match results.count():
+                        case 0:
+                            # Commune does not exist. Stop here.
+                            not_existing_counter += 1
+                            logger.info(
+                                "Commune not existing. %s",
+                                cp.collectivite_code,
+                            )
+                            continue
+                        case 1:
+                            found_commune = results.first()
+                            logger.info(
+                                "A %s became a %s.; Procedure: %s; commune: %s;",
+                                cp.collectivite_type,
+                                found_commune.type,
+                                cp.procedure.pk,
+                                found_commune.code_insee,
+                            )
+                            if (
+                                cp.collectivite_type != core_enums.CommuneType.COM
+                                and found_commune.type == core_enums.CommuneType.COM
+                            ):
+                                # We should delete the "old nouvelle commune" from the "perimetre"
+                                # but Commune does not handle de-merging communes for the moment.
+                                # There are very few cases so we could do it manually.
+                                pass
+                            elif (
+                                cp.collectivite_type == core_enums.CommuneType.COM
+                                and found_commune.type != core_enums.CommuneType.COM
+                            ):
+                                nouvelle_code_insee = found_commune.nouvelle.code_insee
+                                if (
+                                    nouvelle_code_insee
+                                    not in cp.procedure.perimetre_through.values_list(
+                                        "commune__code_insee", flat=True
+                                    )
+                                ):
+                                    # Add it
+                                    logger.info(
+                                        "Creating a CommuneProcedure: %s; commune: %s; nouvelle %s",
+                                        cp.procedure.pk,
+                                        found_commune.code_insee,
+                                        nouvelle_code_insee,
+                                    )
+                                    new_cp = cls(
+                                        collectivite_code=found_commune.nouvelle.code_insee,
+                                        collectivite_type=found_commune.nouvelle.type,
+                                        procedure_id=cp.procedure_id,
+                                        opposable=False,
+                                        commune_uuid=found_commune.nouvelle.uuid,
+                                    )
+                                    to_be_created.append(new_cp)
+
+                            cp.old_collectivite_type = cp.collectivite_type
+                            cp.collectivite_type = found_commune.type
+                            uuid = found_commune.uuid
+                            updated_counter += 1
+                        case _:
+                            logger.info(
+                                "Multiple communes found. Skipping. %s",
+                                cp.collectivite_code,
+                            )
+                            continue
+                cp.commune_uuid = uuid
+                to_be_updated.append(cp)
+            if save:
+                with transaction.atomic():
+                    cls.objects.bulk_create(to_be_created)
+                    cls.objects.bulk_update(
+                        to_be_updated,
+                        fields=[
+                            "commune_uuid",
+                            "collectivite_type",
+                            "old_collectivite_type",
+                        ],
+                    )
+
+        logger.info("Not existing: %s", not_existing_counter)
+        ignored_obj = cls.objects.filter(commune_uuid__isnull=True).count()
+        logger.info("CommuneProcedure without commune_uuid: %s", ignored_obj)
+        logger.info("Can be updated: %s", can_be_updated_counter)
+        logger.info("Successfully updated %s CommuneProcedure", updated_counter)
 
 
 class MaterializedViewFlatMembershipQuerySet(models.QuerySet):
