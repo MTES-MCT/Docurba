@@ -16,7 +16,7 @@
           Modification d'évènement
         </h1>
       </v-col>
-      <FriseEventForm v-if="!loading" v-model="event" :procedure="procedure" :type-du="$route.query.typeDu" />
+      <FriseEventForm v-if="!loading" v-model="event" :procedure="procedure" />
       <VGlobalLoader v-else />
     </v-row>
   </v-container>
@@ -45,10 +45,9 @@ export default {
     if (errorProcedure) { throw errorProcedure }
     this.procedure = procedure[0]
 
-    const { data: event, error: errorEvent } = await this.$supabase.from('doc_frise_events').select('*').eq('id', this.$route.params.eventId).is('archived_at', null)
-    if (errorEvent) { throw errorEvent }
-    this.event = event[0]
-    console.log('this.event: ', event)
+    const url = this.$user.profile?.verified ? '/api-internes/evenements/' : '/api-internes/evenements-public/'
+    this.event = await this.$djangoApi.get(`${url}${this.$route.params.eventId}/`)
+    console.log('this.event: ', this.event)
     this.loading = false
   }
 }

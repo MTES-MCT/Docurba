@@ -13,10 +13,10 @@
               </v-col>
               <v-row>
                 <v-col cols="12">
-                  <FriseEventSelector v-model="event.type" :procedure="procedure" />
+                  <FriseEventSelector v-model="event.name" :procedure="procedure" />
                 </v-col>
                 <v-col cols="12">
-                  <VTextDatePicker v-model="event.date_iso" label="Date de l'évènement" />
+                  <VTextDatePicker v-model="event.dateEvenement" label="Date de l'évènement" />
                 </v-col>
                 <v-col v-if="!validDate" cols="12">
                   <validation-provider
@@ -110,6 +110,7 @@
 </template>
 
 <script>
+import { pick } from 'lodash'
 import { mdiTrashCan } from '@mdi/js'
 import FormInput from '@/mixins/FormInput.js'
 import { getLaunchEvent } from '@/plugins/event'
@@ -117,10 +118,6 @@ import { getLaunchEvent } from '@/plugins/event'
 export default {
   mixins: [FormInput],
   props: {
-    typeDu: {
-      type: String,
-      required: true
-    },
     procedure: {
       type: Object,
       required: true
@@ -140,8 +137,8 @@ export default {
   },
   data () {
     const defaultEvent = {
-      type: this.$route.query.eventType || '',
-      date_iso: null,
+      name: this.$route.query.eventType || '',
+      dateEvenement: null,
       description: '',
       attachements: [],
       visibility: null
@@ -151,8 +148,7 @@ export default {
       defaultEvent,
       event: Object.assign({}, defaultEvent, {
         description: '',
-        project_id: this.procedure.project_id,
-        procedure_id: this.procedure.id
+        procedureId: this.procedure.id
       }, this.value),
       eventTypeIdByName: {},
       attachements: this.value?.attachements ? this.value?.attachements : [],
@@ -166,14 +162,14 @@ export default {
   computed: {
     // Check if the lauch event date is compatible with the before Huwart law procedure field
     validDate () {
-      return !this.event.date_iso ||
+      return !this.event.dateEvenement ||
         !this.launchEvent ||
         this.procedure.started_before_huwart_law === (
-          new Date(this.event.date_iso) < new Date('2026-05-26')
+          new Date(this.event.dateEvenement) < new Date('2026-05-26')
         )
     },
     launchEvent () {
-      return !!this.event.type && getLaunchEvent(this.event.type)
+      return !!this.event.name && getLaunchEvent(this.event.name)
     }
   },
   watch: {
@@ -197,16 +193,16 @@ export default {
     this.loading = false
   },
   methods: {
-    async saveAttachements (eventId) {
+    async saveAttachements () {
       const modifiedAttachements = this.attachements.filter((attachement) => {
         return attachement.state !== 'old'
       })
 
       await Promise.all(modifiedAttachements.map((attachement) => {
         if (attachement.state === 'new') {
-          return this.$supabase.storage.from('doc-events-attachements').upload(`${this.procedure.project_id}/${eventId}/${attachement.id}`, attachement.file)
+          return this.$supabase.storage.from('doc-events-attachements').upload(attachement.path, attachement.file)
         } else if (attachement.state === 'removed') {
-          return this.$supabase.storage.from('doc-events-attachements').remove([`${this.procedure.project_id}/${eventId}/${attachement.id}`])
+          return this.$supabase.storage.from('doc-events-attachements').remove([attachement.path])
         } else { return null }
       }))
     },
@@ -217,21 +213,25 @@ export default {
         this.event.attachements = this.attachements.filter(attachement => attachement.state !== 'removed')
           .map(attachement => ({ id: attachement.id, name: attachement.name }))
 
+        const eventTypeId = this.eventTypeIdByName[this.event.name]
         const upsertEvent = {
-          ...this.event,
-          event_type_id: this.eventTypeIdByName[this.event.type] ?? null,
-          profile_id: this.$user.id
+          ...pick(this.event, ['dateEvenement', 'visibility', 'description', 'attachements']),
+          eventTypeId: eventTypeId ?? null,
+          otherName: this.event.name // TODO: replace by "eventTypeId ? '' : this.event.name" after stopping using event.type elsewhere
         }
+
         if (this.eventId) {
-          const payload = { ...upsertEvent, updated_at: new Date().toISOString() }
-          await this.$supabase.from('doc_frise_events').update(payload).eq('id', this.eventId)
+          await this.$djangoApi.patch(`/api-internes/evenements/${this.eventId}/`, upsertEvent)
           await this.$procedure.updateStatus(this.procedure)
-          await this.saveAttachements(this.eventId)
+          await this.saveAttachements()
         } else {
-          const payload = { ...upsertEvent, created_by_id: this.$user.id }
-          const { data: savedEvents } = await this.$supabase.from('doc_frise_events').insert(payload).select()
+          const payload = {
+            ...upsertEvent,
+            procedureId: this.procedure.id
+          }
+          const savedEvents = await this.$djangoApi.post('/api-internes/evenements/', payload)
           await this.$procedure.updateStatus(this.procedure)
-          await this.saveAttachements(savedEvents[0].id)
+          await this.saveAttachements()
         }
         if (this.overrideHuwartField) {
           await this.$supabase.from('procedures').update({
@@ -242,7 +242,7 @@ export default {
         this.$analytics({
           category: 'frp',
           name: this.eventId ? 'update_event' : 'create_event',
-          value: this.event.type
+          value: this.event.name
         })
 
         this.$nuxtApi.post('/api/slack/notify/frp', {
@@ -258,10 +258,8 @@ export default {
       }
     },
     async archiveEvent () {
-      this.saveAttachements(this.eventId)
-      const now = new Date().toISOString()
-      const payload = { archived_by_id: this.$user.id, archived_at: now, updated_at: now }
-      await this.$supabase.from('doc_frise_events').update(payload).eq('id', this.eventId)
+      this.saveAttachements()
+      await this.$djangoApi.delete(`/api-internes/evenements/${this.eventId}/`)
       await this.$procedure.updateStatus(this.procedure)
       this.$router.push({ name: 'frise-procedureId', params: { procedureId: this.procedure.id }, query: this.$route.query })
     }

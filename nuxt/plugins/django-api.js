@@ -41,6 +41,20 @@ export default ({ $axios, $user }, inject) => {
       })
 
       return data
+    },
+    async patch (path, params) {
+      const { data } = await djangoAxios.patch(path, params, {
+        headers: getRequestHeaders()
+      })
+
+      return data
+    },
+    async delete (path) {
+      const { data } = await djangoAxios.delete(path, {
+        headers: getRequestHeaders()
+      })
+
+      return data
     }
   })
 }

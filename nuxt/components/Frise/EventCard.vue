@@ -1,7 +1,7 @@
 <template>
   <v-row v-show="!ignore" class=" align-center justify-center ma-2">
     <v-col cols="auto">
-      <v-chip v-if="!suggestion" class="font-weight-bold" :class="{invisible: isSystem}" color="alt-beige" label>
+      <v-chip v-if="!suggestion" class="font-weight-bold" :class="{invisible: event.isSystem}" color="alt-beige" label>
         {{ formatDate }}
       </v-chip>
     </v-col>
@@ -14,18 +14,18 @@
         <v-card-title class="font-weight-bold d-flex flex-nowrap">
           <div class="break-word flex-grow-0 d-flex flex-wrap align-self-start mr-4">
             <div>
-              {{ event.type || event.name }}
-              <v-icon v-if="event.structurant" color="grey darken-2">
+              {{ event.name }}
+              <v-icon v-if="event.eventType?.isStructuring" color="grey darken-2">
                 {{ icons.mdiBookmark }}
               </v-icon>
             </div>
 
-            <v-chip v-if="!suggestion && !event.is_valid" class="ml-2 font-weight-bold text-uppercase" color="error" label>
+            <v-chip v-if="!suggestion && !event.isValid" class="ml-2 font-weight-bold text-uppercase" color="error" label>
               invalide
             </v-chip>
           </div>
           <div v-if="!suggestion" class=" ml-auto flex-shrink-1 d-flex align-self-start">
-            <v-tooltip v-if="event.visibility === 'private' && !(event.from_sudocuh && event.structurant)" bottom>
+            <v-tooltip v-if="!event.isPublic" bottom>
               <template #activator="{ on, attrs }">
                 <v-chip
                   class="mr-2 font-weight-bold text-uppercase"
@@ -40,7 +40,7 @@
               </template>
               Visible uniquement par les collaborateur·ices de la procédure
             </v-tooltip>
-            <v-btn v-if="creator.label != 'Sudocuh' && ($user.profile?.side === 'etat' || event.profile_id === $user.id )" class="ml-2" text icon :to="`/frise/${event.procedure_id}/${event.id}?typeDu=${typeDu}`">
+            <v-btn v-if="event.editable" class="ml-2" text icon :to="`/frise/${event.procedureId}/${event.id}`">
               <v-icon color="grey darken-2">
                 {{ icons.mdiPencil }}
               </v-icon>
@@ -103,10 +103,6 @@ import { mdiPencil, mdiPaperclip, mdiBookmark } from '@mdi/js'
 
 export default {
   props: {
-    typeDu: {
-      type: String,
-      default: () => null
-    },
     censored: {
       type: Boolean,
       default: () => true
@@ -127,25 +123,22 @@ export default {
     }
   },
   computed: {
-    isSystem () {
-      return process.env.SYSTEM_PROFILE_IDS.includes(this.event.profile_id)
-    },
     creator () {
-      return this.$utils.formatEventProfileToCreator(this.isSystem ? {} : this.event)
+      return this.$utils.formatEventProfileToCreator(this.event)
     },
     description () {
-      const descriptionString = this.event.commentaire || this.event.description
+      const descriptionString = this.event.description
 
       return descriptionString && { body: this.$md.compile(descriptionString) }
     },
     formatDate () {
-      return this.$dayjs(this.event.date_iso).format('DD/MM/YYYY')
+      return this.$dayjs(this.event.dateEvenement).format('DD/MM/YYYY')
     }
   },
   methods: {
     async downloadFile (attachement) {
       // TODO: Handle link type
-      const path = this.event.from_sudocuh ? attachement.id : `${this.event.project_id}/${this.event.id}/${attachement.id}`
+      const path = attachement.path
       const { data } = await this.$supabase.storage.from('doc-events-attachements').download(path)
 
       const link = this.$refs[`file-${attachement.id}`][0]

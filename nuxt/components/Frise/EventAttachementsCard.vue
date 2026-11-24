@@ -147,7 +147,7 @@ export default {
       this.dowloading.push(file.id)
 
       const { data } = await this.$supabase.storage.from('doc-events-attachements')
-        .download(`${this.projectId}/${this.eventId}/${file.id}`)
+        .download(file.path)
 
       const link = this.$refs[`file-${file.id}`][0]
       link.href = URL.createObjectURL(data)

@@ -53,7 +53,7 @@
         >
           Ajouter une procédure secondaire
         </v-btn>
-        <v-btn v-if="($user?.id && isAdmin)" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+        <v-btn v-if="($user?.id && isAdmin)" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}}">
           Ajouter un événement
         </v-btn>
         <FriseShareDialog
@@ -131,12 +131,12 @@
                   suggestion
                   @addSuggestedEvent="addSuggestedEvent"
                 />
-                <div v-if="isEmptyFrise" class="d-flex align-center justify-center flex-column py-16">
+                <div v-if="this.events.length === 0" class="d-flex align-center justify-center flex-column py-16">
                   <p class="text-h6 font-weight-bold">
                     Aucun événement
                   </p>
                   <p>Cette procédure n’a pas encore reçu d’événement.</p>
-                  <v-btn v-if="$user?.id && isAdmin" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}, query:{typeDu: procedure.doc_type}}">
+                  <v-btn v-if="$user?.id && isAdmin" depressed nuxt color="primary" :to="{name: 'frise-procedureId-add', params: {procedureId: $route.params.procedureId}}">
                     Ajouter un événement
                   </v-btn>
                 </div>
@@ -146,7 +146,6 @@
                       :id="`event-${event.id}`"
                       :key="event.id"
                       :event="event"
-                      :type-du="procedure.doc_type"
                     />
                   </template>
                 </div>
@@ -203,11 +202,11 @@
                             {{ icons.mdiBookmark }}
                           </v-icon>
                           <span class="text-truncate">
-                            {{ eventStructurant.type }}
+                            {{ eventStructurant.name }}
                           </span>
                         </v-chip>
                       </template>
-                      {{ eventStructurant.type }}
+                      {{ eventStructurant.name }}
                     </v-tooltip>
                   </div>
                 </div>
@@ -260,9 +259,9 @@ export default
     return {
       canShare: false,
       collectivite: null,
-      documentEvents: [],
+      eventTypes: [],
       procedure: null,
-      events: null,
+      events: [],
       dialog: false,
       loaded: false,
       showAllCollabs: false,
@@ -278,9 +277,6 @@ export default
   computed: {
     toDisplayCollabs () {
       return this.$sharing.excludeStaff(this.collaborators)
-    },
-    isEmptyFrise () {
-      return this.events.length === 0 || this.events.every(e => !e.type || !e.date_iso)
     },
     isAdmin () {
       console.log('this.$user.profile: ', this.$user)
@@ -309,18 +305,12 @@ export default
       return this.isAdmin && !this.procedure.secondary_procedure_of
     },
     eventsStructurants () {
-      return this.enrichedEvents.filter(e => e.structurant)
+      return this.enrichedEvents.filter(e => e.eventType?.isStructuring)
     },
     enrichedEvents () {
       console.log('this.isAdmin: ', this.isAdmin)
-      return this.events.map((event) => {
-        const ev = this.documentEvents.find(x =>
-          // Matche le type d'événement en regardant le libellé Docurba ET le libellé Sudocuh
-          [x.name, x.sudocuhName].includes(event.type)
-        )
-        return { ...event, structurant: !!ev?.structurant }
-      }).filter((event) => {
-        return event.visibility === 'public' || this.isAdmin || (event.from_sudocuh && event.structurant)
+      return this.events.filter((event) => {
+        return event.isPublic || this.isAdmin
       })
     },
     attachments () {
@@ -342,13 +332,12 @@ export default
       return this.$user?.profile?.side === 'etat' && this.$user?.profile?.verified
     },
     recommendedEvent () {
-      const filteredDocumentEvents = this.documentEvents?.filter(e => e.scopeSugg.includes(this.internalProcedureType))
+      const filteredDocumentEvents = this.eventTypes?.filter(e => e.scopeSugg.includes(this.internalProcedureType))
       if (!filteredDocumentEvents) { return null }
 
-      if (this.events && this.events.length < 1) { return filteredDocumentEvents[0] }
-      const lastEventType = this.events[0]
+      if (this.events.length === 0) { return filteredDocumentEvents[0] }
 
-      const lastEventOrder = this.documentEvents.find(e => [e.name, e.sudocuhName].includes(lastEventType.type))
+      const lastEventOrder = this.eventTypes.find(e => e.id === this.events[0].event_type?.id)
 
       if (!lastEventOrder) { return filteredDocumentEvents[0] }
       return filteredDocumentEvents.find(e => _.gt(e.order, lastEventOrder.order))
@@ -359,7 +348,7 @@ export default
   },
   watch: {
     async procedure () {
-      this.documentEvents = await this.$procedureEvent.getTypes(this.procedure.doc_type)
+      this.eventTypes = await this.$procedureEvent.getTypes(this.procedure.doc_type)
     }
   },
   async mounted () {
@@ -405,14 +394,15 @@ export default
         }
       )
 
-      this.events = await this.getEvents()
+      const url = this.$user.profile?.verified ? '/api-internes/evenements/' : '/api-internes/evenements-public/'
+      this.events = await this.$djangoApi.get(url, { procedure: this.$route.params.procedureId })
 
       this.collaborators = await this.$sharing.getCollaborators(this.procedure, this.collectivite)
       if (this.procedure.project_id) {
         const canShare = await this.$supabase.from('projects_sharing').select('id').eq('project_id', this.procedure.project_id).eq('user_email', this.$user.profile.email).eq('role', 'write_frise')
         this.canShare = canShare.data.length > 0
       }
-      this.documentEvents = await this.$procedureEvent.getTypes(this.procedure.doc_type)
+      this.eventTypes = await this.$procedureEvent.getTypes(this.procedure.doc_type)
 
       this.loaded = true
     } catch (error) {
@@ -442,7 +432,7 @@ export default
     },
     async downloadFile (attachement) {
       // TODO: Handle link type
-      const path = this.event.from_sudocuh ? attachement.id : `${this.event.project_id}/${this.event.id}/${attachement.id}`
+      const path = attachement.path
       const { data } = await this.$supabase.storage.from('doc-events-attachements').download(path)
 
       const link = this.$refs[`file-${attachement.id}`][0]
@@ -459,7 +449,7 @@ export default
       }
     },
     addSuggestedEvent (eventName) {
-      this.$router.push(`/frise/${this.procedure.id}/add?eventType=${eventName}&typeDu=${this.procedure.doc_type}`)
+      this.$router.push(`/frise/${this.procedure.id}/add?eventType=${eventName}`)
     },
     async archiveProcedure (idProcedure) {
       try {
@@ -476,16 +466,6 @@ export default
         // eslint-disable-next-line no-console
         console.log(error)
       }
-    },
-    async getEvents () {
-      const { data: events, error: errorEvents } = await this.$supabase.from('doc_frise_events')
-        .select('*, profiles!doc_frise_events_profile_id_fkey(*)')
-        .eq('procedure_id', this.$route.params.procedureId)
-        .is('archived_at', null)
-        .order('date_iso', { ascending: false })
-
-      if (errorEvents) { throw errorEvents }
-      return events
     }
   }
 }
