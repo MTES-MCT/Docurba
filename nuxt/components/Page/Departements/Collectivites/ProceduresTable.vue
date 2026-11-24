@@ -27,7 +27,8 @@ export default {
 
 <template>
   <DUTable
-    cols="5fr 7fr 2fr 5fr 7fr 5fr 5fr 3rem"
+    card
+    cols="5 7 2 5 7 5 5 fixed"
     top="94px"
   >
     <template #header>
@@ -52,7 +53,6 @@ export default {
       <template v-for="procedure in value">
         <DUTableRow
           :key="procedure.id"
-          primary
           :title="procedure.name"
           :to="`/frise/${procedure.id}`"
         >
@@ -62,18 +62,21 @@ export default {
               :value="procedure.status"
             />
           </DUTableCell>
-          <DUTableCell primary>
-            <div>
+          <DUTableCell>
+            <strong>
               {{ procedure.type }}
               <template v-if="procedure.nameDetails">
                 <br>
                 <em>{{ procedure.nameDetails }}</em>
               </template>
-            </div>
+            </strong>
           </DUTableCell>
           <DUTableCell>{{ procedure.number }}</DUTableCell>
           <DUTableCell>
-            <DUTag sm>
+            <DUTag
+              actionable-child
+              sm
+            >
               {{ procedure.documentType }}
             </DUTag>
           </DUTableCell>
@@ -89,6 +92,7 @@ export default {
         <DUTableRow
           v-for="secondaryProcedure in procedure.procedures"
           :key="secondaryProcedure.id"
+          secondary
           :title="secondaryProcedure.name"
           :to="`/frise/${secondaryProcedure.id}`"
         >

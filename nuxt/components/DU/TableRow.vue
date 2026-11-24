@@ -1,49 +1,54 @@
 <script>
 export default {
   props: {
-    primary: {
+    secondary: {
       default: false,
       type: Boolean
     },
     to: {
-      required: true,
+      default: undefined,
       type: [String, Object]
+    }
+  },
+  computed: {
+    actionable () {
+      return !!this.to || !!this.$listeners.actuated
     }
   }
 }
 </script>
 
 <template>
-  <NuxtLink
+  <component
+    :is="actionable ? 'DUActionable' : 'div'"
     class="du-table-row"
-    :class="{ 'du-table-row--primary': primary }"
+    :class="{ 'du-table-row--secondary': secondary }"
     :to="to"
+    @actuated="$emit('actuated', $event)"
   >
     <slot />
-  </NuxtLink>
+  </component>
 </template>
 
 <style>
 .du-table-row {
-  box-shadow: inset 0 .0625rem 0 0 #ddd;
+  box-shadow: 0 -.0625rem 0 0 #dddddd;
   display: grid;
   grid-auto-flow: column;
   grid-template-columns: var(--du-table__cols);
+}
+a.du-table-row,
+.du-table-row[tabindex] {
+  cursor: pointer;
   text-decoration: none;
 }
-.du-table-row:focus-visible,
-.du-table-row:hover {
+a.du-table-row:focus-visible,
+a.du-table-row:hover,
+.du-table-row[tabindex]:focus-visible,
+.du-table-row[tabindex]:hover {
   background-color: #f6f6f6;
 }
-.du-table-row:last-child {
-  box-shadow: inset 0 .0625rem 0 0 #ddd,
-              inset 0 -.0625rem 0 0 #929292;
-}
-.du-table-row--primary:not(:first-child) {
-  box-shadow: inset 0 .0625rem 0 0 #161616;
-}
-.du-table-row--primary:last-child {
-  box-shadow: inset 0 .0625rem 0 0 #161616,
-              inset 0 -.0625rem 0 0 #929292;
+.du-table-row--secondary {
+  box-shadow: none;
 }
 </style>

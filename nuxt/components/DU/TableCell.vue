@@ -5,63 +5,81 @@ export default {
       default: false,
       type: Boolean
     },
-    primary: {
+    to: {
+      default: undefined,
+      type: [String, Object]
+    },
+    vertical: {
       default: false,
       type: Boolean
+    }
+  },
+  computed: {
+    actionable () {
+      return !!this.to || !!this.$listeners.actuated
     }
   }
 }
 </script>
 
 <template>
-  <div
+  <component
+    :is="actionable ? 'DUActionable' : 'div'"
     class="du-table-cell"
     :class="{
       'du-table-cell--link': link,
-      'du-table-cell--primary': primary
+      'du-table-cell--vertical': vertical
     }"
+    :to="to"
   >
     <slot />
-  </div>
+  </component>
 </template>
 
 <style>
 .du-table-cell {
   align-items: start;
   color: #3a3a3a;
-  column-gap: .5rem;
   display: grid;
   font-size: .875rem;
-  font-weight: 400;
+  gap: .5rem;
   grid-auto-flow: column;
   justify-content: start;
-  line-height: 1.25rem;
-  padding: .5rem 1rem;
-  min-width: 100%;
-  width: 0;
+  line-height: 1.5rem;
+  overflow: hidden;
+  padding: .5rem;
 }
-.du-table-cell:first-child {
-  box-shadow: inset .0625rem 0 0 0 #929292;
-}
-.du-table-cell:last-child {
-  box-shadow: inset -.0625rem 0 0 0 #929292;
-}
-.du-table-cell .du-tag {
-  margin-bottom: -.125rem;
-  margin-top: -.125rem;
-}
-.du-table-cell .v-icon {
-  color: inherit;
-  margin-bottom: .125rem;
-  margin-top: .125rem;
-}
+a.du-table-cell,
+.du-table-cell[tabindex],
 .du-table-cell--link {
   color: #000091;
 }
-.du-table-cell--primary {
-  font-weight: 800;
+a.du-table-cell,
+.du-table-cell[tabindex] {
+  cursor: pointer;
+  text-decoration: none;
 }
-.du-table-cell--primary em {
-  font-weight: 400;
+a.du-table-cell:focus-visible,
+a.du-table-cell:hover,
+.du-table-cell[tabindex]:focus-visible,
+.du-table-cell[tabindex]:hover {
+  background-color: #f6f6f6;
+}
+.du-table-cell > .du-badge--sm {
+  margin-bottom: .125rem;
+  margin-top: .125rem;
+}
+.du-table-cell > .du-field--checkbox {
+  margin-bottom: -.5rem;
+  margin-top: -.5rem;
+}
+.du-table-cell > .v-icon {
+  color: inherit !important;
+  margin-bottom: .25rem;
+  margin-top: .25rem;
+}
+.du-table-cell--vertical {
+  grid-auto-flow: row;
+  justify-items: start;
 }
 </style>

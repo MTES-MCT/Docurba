@@ -62,6 +62,7 @@ export default {
         <DUTag
           v-for="topic, index in value.topics"
           :key="index"
+          actionable-child
         >
           {{ topic }}
         </DUTag>

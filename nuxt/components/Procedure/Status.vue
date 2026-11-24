@@ -31,9 +31,9 @@ export default {
 </script>
 
 <template>
-  <div
-    class="du-procedure-status"
+  <DUBadge
     :class="elementClass"
+    sm
   >
     <VIcon
       v-if="value === 'Opposable'"
@@ -42,65 +42,48 @@ export default {
       {{ icons.mdiCheckCircle }}
     </VIcon>
     {{ value }}
-  </div>
+  </DUBadge>
 </template>
 
 <style>
-.du-procedure-status {
-  align-items: center;
-  border-radius: .25rem;
-  column-gap: .25rem;
-  display: grid;
-  font-size: .75rem;
-  font-weight: 700;
-  grid-auto-flow: column;
-  line-height: 1.25rem;
-  padding-left: .375rem;
-  padding-right: .375rem;
-  text-transform: uppercase;
-  white-space: nowrap;
+.du-badge.du-procedure-status--abandonne {
+  --du-badge__bg: #f6f6f6;
+  --du-badge__color: #929292;
 }
-.du-procedure-status .v-icon {
-  margin-left: -.1875rem;
+.du-badge.du-procedure-status--abroge {
+  --du-badge__bg: #ffe9e6;
+  --du-badge__color: #b34000;
 }
-.du-procedure-status--abandonne {
-  background-color: #f6f6f6;
-  color: #929292;
+.du-badge.du-procedure-status--annule {
+  --du-badge__bg: #ffe9e6;
+  --du-badge__color: #b34000;
 }
-.du-procedure-status--abroge {
-  background-color: #ffe9e6;
-  color: #b34000;
+.du-badge.du-procedure-status--approuve {
+  --du-badge__bg: #c3fad5;
+  --du-badge__color: #297254;
 }
-.du-procedure-status--annule {
-  background-color: #ffe9e6;
-  color: #b34000;
+.du-badge.du-procedure-status--caduc {
+  --du-badge__bg: #f6f6f6;
+  --du-badge__color: #929292;
 }
-.du-procedure-status--approuve {
-  background-color: #c3fad5;
-  color: #297254;
+.du-badge.du-procedure-status--en-cours {
+  --du-badge__bg: #e9edfe;
+  --du-badge__color: #2f4077;
 }
-.du-procedure-status--caduc {
-  background-color: #f6f6f6;
-  color: #929292;
+.du-badge.du-procedure-status--en-projet {
+  --du-badge__bg: #feecc2;
+  --du-badge__color: #6e445a;
 }
-.du-procedure-status--en-cours {
-  background-color: #e9edfe;
-  color: #2f4077;
+.du-badge.du-procedure-status--opposable {
+  --du-badge__bg: #c3fad5;
+  --du-badge__color: #297254;
 }
-.du-procedure-status--en-projet {
-  background-color: #feecc2;
-  color: #6e445a;
-}
-.du-procedure-status--opposable {
-  background-color: #c3fad5;
-  color: #297254;
-}
-.du-procedure-status--opposable .v-icon {
+.du-badge.du-procedure-status--opposable > .v-icon {
   color: #18753c;
 }
-.du-procedure-status--precedent {
-  background-color: #ededed;
-  box-shadow: inset 0 0 0 .0625rem #ddd;
-  color: #666;
+.du-badge.du-procedure-status--precedent {
+  --du-badge__bg: #ededed;
+  --du-badge__border: #ddd;
+  --du-badge__color: #666;
 }
 </style>

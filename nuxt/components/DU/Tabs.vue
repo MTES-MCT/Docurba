@@ -1,42 +1,72 @@
+<script>
+export default {
+  props: {
+    value: {
+      default: () => [],
+      type: Array
+    }
+  }
+}
+</script>
+
 <template>
   <div class="du-tabs">
-    <slot active-class="du-tabs__tab--active" />
+    <div class="du-tabs__header">
+      <DUActionable
+        v-for="item, index in value"
+        :key="index"
+        class="du-tabs__tab"
+        :class="{ 'du-tabs__tab--active': item.active }"
+        :to="item.to"
+      >
+        {{ item.label }}
+      </DUActionable>
+    </div>
+    <div class="du-tabs__body">
+      <slot />
+    </div>
   </div>
 </template>
 
 <style>
 .du-tabs {
-  border-radius: .25rem;
+  display: grid;
+}
+.du-tabs__body {
+  background-color: #fff;
   box-shadow: inset 0 0 0 .0625rem #ddd;
+  padding: 1rem;
+}
+.du-tabs__header {
+  column-gap: .5rem;
   display: grid;
   grid-auto-flow: column;
   justify-content: start;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
-.du-tabs a {
-  color: #161616 !important;
-  column-gap: .75rem;
-  cursor: pointer;
-  display: grid;
+.du-tabs__tab {
+  background-color: #e3e3fd;
+  color: #161616;
   font-size: 1rem;
-  font-weight: 500;
-  grid-auto-flow: column;
+  font-weight: 700;
   line-height: 1.5rem;
   padding: .5rem 1rem;
   text-decoration: none;
 }
-.du-tabs a:not(.du-tabs__tab--active):focus-visible,
-.du-tabs a:not(.du-tabs__tab--active):hover {
-  background-image: linear-gradient(#f6f6f6, #f6f6f6);
-  background-size: calc(100% - .5rem) calc(100% - .5rem);
-  background-position: center;
+.du-tabs__tab:not(.du-tabs__tab--active):focus-visible,
+.du-tabs__tab:not(.du-tabs__tab--active):hover {
+  background-color: #c1c1fb;
 }
-.du-tabs a.du-tabs__tab--active {
-  border-radius: .25rem;
-  box-shadow: inset 0 0 0 .0625rem #000091;
-  color: #000091 !important;
-}
-.du-tabs .v-icon {
-  color: inherit;
-  margin: .25rem -.25rem;
+.du-tabs__tab--active {
+  background-color: #fff;
+  box-shadow: inset 0 .125rem 0 0 #000091,
+              inset .0625rem 0 0 0 #ddd,
+              inset -.0625rem 0 0 0 #ddd,
+              inset 0 -.0625rem 0 0 #fff;
+  color: #000091;
+  margin-bottom: -.0625rem;
+  padding-bottom: .5625rem;
+  position: relative;
 }
 </style>
