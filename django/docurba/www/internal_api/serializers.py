@@ -175,9 +175,13 @@ class ProcedureNameSerializer(serializers.ModelSerializer):
         ]
 
     def validate_collectiviteCode(self, value: str) -> str:  # noqa: N802
-        if not Collectivite.objects.filter(
-            models.Q(siren=value) | models.Q(code_insee=value)
-        ).exists():
+        if (
+            not Collectivite.objects.filter(
+                models.Q(siren=value) | models.Q(code_insee=value)
+            )
+            .exclude(type__in=[CommuneType.COMD, CommuneType.COMA])
+            .exists()
+        ):
             raise serializers.ValidationError(
                 ('The "collectivité porteuse" has not been found.',),
             )
@@ -263,6 +267,7 @@ class ProcedureNameSerializer(serializers.ModelSerializer):
                     models.Q(siren=collectivite_code)
                     | models.Q(code_insee=collectivite_code)
                 )
+                .exclude(type__in=[CommuneType.COMD, CommuneType.COMA])
                 .with_communes_adherentes_count()
                 .get()
             )

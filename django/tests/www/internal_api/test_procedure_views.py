@@ -584,6 +584,7 @@ class TestProcedureName:
         commune = core_factories.CommuneFactory(for_snapshot=True)
         core_factories.CommuneFactory(
             code_insee="30032",
+            code_insee_unique="",
             type=core_enums.CommuneType.COMD,
             nom="Beaucaire COMD",
         )
