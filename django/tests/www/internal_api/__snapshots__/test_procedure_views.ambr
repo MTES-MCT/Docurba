@@ -2,7 +2,8 @@
 # name: TestProcedureList.test_filter_collectivites_porteuses[default_value]
   list([
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '30001',
         'departementCode': '30',
@@ -12,8 +13,18 @@
         'siren': '',
         'type': 'COM',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': "Révision du PLU d'Aigaliers",
       'number': '1',
       'parentId': None,
@@ -28,6 +39,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': '1cd65b57-7027-4aa5-8d19-333333333333',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -36,7 +48,8 @@
       'type': 'Élaboration',
     }),
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '30002',
         'departementCode': '30',
@@ -46,8 +59,18 @@
         'siren': '',
         'type': 'COM',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-444444444444',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': "Révision du PLU d'Aigremont",
       'number': '1',
       'parentId': None,
@@ -62,6 +85,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': '1cd65b57-7027-4aa5-8d19-555555555555',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -70,7 +94,8 @@
       'type': 'Élaboration',
     }),
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -80,8 +105,18 @@
         'siren': '253000020',
         'type': 'SMO',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': 'Élaboration du PLU de Nantes',
       'number': '1',
       'parentId': None,
@@ -96,6 +131,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -112,7 +148,8 @@
 # name: TestProcedureList.test_filter_collectivites_porteuses[one_collectivite_porteuse_code_insee]
   list([
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '30001',
         'departementCode': '30',
@@ -122,8 +159,18 @@
         'siren': '',
         'type': 'COM',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': "Révision du PLU d'Aigaliers",
       'number': '1',
       'parentId': None,
@@ -138,6 +185,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': '1cd65b57-7027-4aa5-8d19-333333333333',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -150,7 +198,8 @@
 # name: TestProcedureList.test_filter_collectivites_porteuses[one_collectivite_porteuse_siren]
   list([
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -160,8 +209,18 @@
         'siren': '253000020',
         'type': 'SMO',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': 'Élaboration du PLU de Nantes',
       'number': '1',
       'parentId': None,
@@ -176,6 +235,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -188,7 +248,8 @@
 # name: TestProcedureList.test_filter_collectivites_porteuses[several_collectivites_porteuses]
   list([
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '30001',
         'departementCode': '30',
@@ -198,8 +259,18 @@
         'siren': '',
         'type': 'COM',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': "Révision du PLU d'Aigaliers",
       'number': '1',
       'parentId': None,
@@ -214,6 +285,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': '1cd65b57-7027-4aa5-8d19-333333333333',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -222,7 +294,8 @@
       'type': 'Élaboration',
     }),
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -232,8 +305,18 @@
         'siren': '253000020',
         'type': 'SMO',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': 'Élaboration du PLU de Nantes',
       'number': '1',
       'parentId': None,
@@ -248,6 +331,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -260,7 +344,8 @@
 # name: TestProcedureList.test_filter_communes_perimetre[default_value]
   list([
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -270,8 +355,18 @@
         'siren': '253000020',
         'type': 'SMO',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': 'Seconde procédure',
       'number': '1',
       'parentId': None,
@@ -286,6 +381,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -294,7 +390,8 @@
       'type': 'Élaboration',
     }),
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -304,8 +401,18 @@
         'siren': '253000020',
         'type': 'SMO',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-333333333333',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': 'Troisième procédure',
       'number': '1',
       'parentId': None,
@@ -320,6 +427,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -328,7 +436,8 @@
       'type': 'Élaboration',
     }),
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -338,8 +447,18 @@
         'siren': '253000020',
         'type': 'SMO',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': 'Élaboration du PLU de Nantes',
       'number': '1',
       'parentId': None,
@@ -354,6 +473,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -370,7 +490,8 @@
 # name: TestProcedureList.test_filter_communes_perimetre[one_commune]
   list([
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -380,8 +501,18 @@
         'siren': '253000020',
         'type': 'SMO',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': 'Élaboration du PLU de Nantes',
       'number': '1',
       'parentId': None,
@@ -396,6 +527,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -408,7 +540,8 @@
 # name: TestProcedureList.test_filter_communes_perimetre[several_communes]
   list([
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -418,8 +551,18 @@
         'siren': '253000020',
         'type': 'SMO',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': 'Seconde procédure',
       'number': '1',
       'parentId': None,
@@ -434,6 +577,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -442,7 +586,8 @@
       'type': 'Élaboration',
     }),
     dict({
-      'approval_date': None,
+      'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+      'approvalDate': None,
       'collectivite_porteuse': dict({
         'codeInsee': '',
         'departementCode': '30',
@@ -452,8 +597,18 @@
         'siren': '253000020',
         'type': 'SMO',
       }),
+      'comment': None,
+      'commentDGD': None,
+      'commentFromSudocuh': '',
+      'createdAt': '2026-11-23T01:00:00+01:00',
       'docType': 'PLU',
+      'fromSudocuhID': None,
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+      'lastEvent': dict({
+        'dateEvenement': None,
+        'visibility': None,
+      }),
+      'lastImpactfulEvent': None,
       'name': 'Élaboration du PLU de Nantes',
       'number': '1',
       'parentId': None,
@@ -468,6 +623,7 @@
           'type': 'COM',
         }),
       ]),
+      'prescriptionDate': None,
       'projectId': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
       'startedBeforeHuwartLaw': False,
       'status': 'en cours',
@@ -494,7 +650,8 @@
     'previous': None,
     'results': list([
       dict({
-        'approval_date': None,
+        'LastUpdatedAt': '2026-11-23T02:00:00+01:00',
+        'approvalDate': None,
         'collectivite_porteuse': dict({
           'codeInsee': '',
           'departementCode': '30',
@@ -504,8 +661,18 @@
           'siren': '253000020',
           'type': 'SMO',
         }),
+        'comment': 'Some other comment',
+        'commentDGD': 'Comment DGD',
+        'commentFromSudocuh': 'Comment coming from Sudocuh',
+        'createdAt': '2026-11-23T01:00:00+01:00',
         'docType': 'PLUi',
+        'fromSudocuhID': '123456',
         'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
+        'lastEvent': dict({
+          'dateEvenement': None,
+          'visibility': None,
+        }),
+        'lastImpactfulEvent': None,
         'name': 'Élaboration du PLU de Nantes',
         'number': '1',
         'parentId': None,
@@ -556,6 +723,7 @@
             'type': 'COM',
           }),
         ]),
+        'prescriptionDate': None,
         'projectId': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
         'startedBeforeHuwartLaw': False,
         'status': 'en cours',
@@ -568,7 +736,8 @@
 # ---
 # name: TestProcedureList.test_serializer_nominal_secondary_procedure
   dict({
-    'approval_date': None,
+    'LastUpdatedAt': '2026-11-23T01:00:00+01:00',
+    'approvalDate': None,
     'collectivite_porteuse': dict({
       'codeInsee': '',
       'departementCode': '30',
@@ -578,8 +747,18 @@
       'siren': '253000020',
       'type': 'SMO',
     }),
+    'comment': None,
+    'commentDGD': None,
+    'commentFromSudocuh': '',
+    'createdAt': '2026-11-23T01:00:00+01:00',
     'docType': 'PLUi',
+    'fromSudocuhID': None,
     'id': '1cd65b57-7027-4aa5-8d19-222222222222',
+    'lastEvent': dict({
+      'dateEvenement': None,
+      'visibility': None,
+    }),
+    'lastImpactfulEvent': None,
     'name': 'Révision du PLU de Nantes',
     'number': '1',
     'parentId': '1cd65b57-7027-4aa5-8d19-111111111111',
@@ -630,11 +809,32 @@
         'type': 'COM',
       }),
     ]),
+    'prescriptionDate': None,
     'projectId': 'fb48c069-33c6-4ed2-9db3-054e99ea7981',
     'startedBeforeHuwartLaw': False,
     'status': None,
     'topics': list([
     ]),
     'type': 'Élaboration',
+  })
+# ---
+# name: TestProcedureList.test_serializer_with_events[lastEvent]
+  dict({
+    'dateEvenement': '2026-10-06T01:00:00+02:00',
+    'id': 'fb48c069-33c6-4ed2-9db3-222222222222',
+    'isSudocuh': False,
+    'isValid': True,
+    'type': 'Porter à connaissance',
+    'visibility': 'public',
+  })
+# ---
+# name: TestProcedureList.test_serializer_with_events[lastImpactfulEvent]
+  dict({
+    'dateEvenement': '2026-10-05T02:00:00+02:00',
+    'id': 'fb48c069-33c6-4ed2-9db3-000000000000',
+    'isSudocuh': False,
+    'isValid': True,
+    'type': "Délibération d'approbation",
+    'visibility': 'public',
   })
 # ---
