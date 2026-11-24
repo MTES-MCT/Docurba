@@ -169,7 +169,8 @@ class ProcedureViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):  # noqa: ANN201
         queryset = (
-            core_models.Procedure.objects.with_events()
+            core_models.Procedure.objects.defer(None)
+            .with_events()
             .with_collectivite_porteuse_communes_adherentes_count()
             .with_perimetre_without_deleguees_count()
             .select_related(
@@ -177,7 +178,10 @@ class ProcedureViewSet(viewsets.ModelViewSet):
                 "collectivite_porteuse__commune",
             )
             .prefetch_related(
-                "topics",
+                models.Prefetch(
+                    "topics_through",
+                    core_models.ProcedureTopic.objects.select_related("topic"),
+                ),
                 models.Prefetch(
                     "perimetre",
                     core_models.Commune.objects.select_related(

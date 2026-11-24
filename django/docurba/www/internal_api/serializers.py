@@ -4,13 +4,14 @@
 from django.db import models
 from rest_framework import serializers
 
-from docurba.core.enums import CommuneType, ProcedureType, TypeDocument
+from docurba.core.enums import CommuneType, ProcedureType, TypeDocument, VisibilityType
 from docurba.core.models import (
     Collectivite,
     Commune,
+    Event,
     EventType,
     Procedure,
-    Topic,
+    ProcedureTopic,
 )
 
 
@@ -142,11 +143,40 @@ class EventTypeSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class TopicSerializer(serializers.ModelSerializer):
+class EventSerializer(serializers.ModelSerializer):
+    dateEvenement = serializers.DateTimeField(source="date_evenement")
+    isSudocuh = serializers.SerializerMethodField()
+    isValid = serializers.BooleanField(source="is_valid", read_only=True)
+    visibility = serializers.ChoiceField(choices=VisibilityType)
+
     class Meta:
-        model = Topic
-        fields = ["name"]
+        model = Event
+        read_only_fields = [
+            "id",
+            "isValid",
+            "isSudocuh",
+            "type",
+        ]
+        fields = [
+            *read_only_fields,
+            "dateEvenement",
+            "visibility",
+        ]
+
+    def get_isSudocuh(self, obj) -> bool:  # noqa: ANN001, N802
+        return bool(obj.from_sudocuh)
+
+
+class ProcedureTopicSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProcedureTopic
+        fields = ["name", "comment"]
         read_only_fields = fields
+
+    def get_name(self, obj) -> str:  # noqa: ANN001
+        return obj.topic.name
 
 
 class ProcedureNameSerializer(serializers.ModelSerializer):
@@ -286,11 +316,45 @@ class ProcedureSerializer(serializers.ModelSerializer):
     # Read only fields
     id = serializers.CharField(read_only=True)
     collectivite_porteuse = CollectiviteSerializer(read_only=True)
-    topics = TopicSerializer(read_only=True, many=True)
+    topics = ProcedureTopicSerializer(
+        read_only=True, many=True, source="topics_through"
+    )
     perimetre = CommuneSerializer(read_only=True, many=True)
     name = serializers.CharField(read_only=True, source="computed_name")
-    approval_date = serializers.DateTimeField(read_only=True, source="date_approbation")
     projectId = serializers.CharField(read_only=True, source="project_id")
+    commentDGD = serializers.CharField(
+        read_only=True, required=False, allow_blank=True, source="comment_dgd"
+    )
+    commentFromSudocuh = serializers.CharField(
+        read_only=True, required=False, allow_blank=True, source="comment_from_sudocuh"
+    )
+    comment = serializers.CharField(
+        read_only=True, required=False, allow_blank=True, source="commentaire"
+    )
+    createdAt = serializers.DateTimeField(read_only=True, source="created_at")
+    LastUpdatedAt = serializers.DateTimeField(
+        read_only=True, required=False, allow_null=True, source="last_updated_at"
+    )
+    lastEvent = serializers.SerializerMethodField(
+        read_only=True, required=False, allow_null=True
+    )
+    lastImpactfulEvent = EventSerializer(
+        read_only=True,
+        required=False,
+        allow_null=True,
+        source="dernier_event_impactant",
+    )
+    approvalDate = serializers.DateTimeField(
+        read_only=True, source="date_approbation", allow_null=True
+    )
+    prescriptionDate = serializers.DateTimeField(
+        read_only=True,
+        source="date_prescription",
+        allow_null=True,
+    )
+    fromSudocuhID = serializers.CharField(
+        read_only=True, required=False, allow_blank=True, source="from_sudocuh"
+    )
     # Both
     parentId = serializers.UUIDField(
         source="parente_id", required=False, allow_null=True
@@ -314,9 +378,20 @@ class ProcedureSerializer(serializers.ModelSerializer):
             "topics",
             "perimetre",
             "name",
-            "approval_date",
             "projectId",
             "status",  # Nuxt one
+            "commentDGD",
+            "commentFromSudocuh",
+            "comment",
+            "createdAt",
+            "LastUpdatedAt",
+            # Events
+            "lastEvent",
+            "lastImpactfulEvent",
+            # Dates
+            "approvalDate",
+            "prescriptionDate",
+            "fromSudocuhID",
         ]
         fields = [
             *read_only_fields,
@@ -327,3 +402,21 @@ class ProcedureSerializer(serializers.ModelSerializer):
             "number",
         ]
         depth = 4
+
+    def get_topicOtherComment(self, obj) -> str | None:  # noqa: ANN001, N802
+        other_comment = None
+        for topic_through in obj.topics_through.all():
+            if topic_through.topic.name == "other":
+                other_comment = topic_through.comment
+
+        return other_comment
+
+    def get_lastEvent(self, obj) -> str | None:  # noqa: ANN001, N802
+        # events are ordered antechronologically.
+        instance = None
+        if obj.events_prefetched:
+            instance = obj.events_prefetched[0]
+        serializer = EventSerializer(
+            read_only=True, required=False, allow_null=True, instance=instance
+        )
+        return serializer.data

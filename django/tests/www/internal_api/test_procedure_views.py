@@ -25,7 +25,7 @@ BASE_QUERIES = (
     + 1  # count for pagination
     + 1  # procedures details
     + 1  # doc_frise_events for with_events()
-    + 1  # topics
+    + 1  # topics_through
     + 1  # perimetre
 )
 
@@ -185,6 +185,7 @@ class TestProcedureList:
         assert response.status_code == 200
         assert response.json()["count"] == snapshot()
 
+    @freeze_time("2026-11-23")
     @pytest.mark.parametrize(
         ("query_params"),
         [
@@ -226,6 +227,8 @@ class TestProcedureList:
             numero="1",
             for_snapshot=True,
             status=core_enums.ProcedureStatusChoices.EN_COURS,
+            created_at=timezone.now(),
+            last_updated_at=timezone.now(),
         )
         collectivite_with_code_insee = core_factories.CommuneFactory(
             departement__code_insee="30",
@@ -244,6 +247,8 @@ class TestProcedureList:
                 id=uuid.UUID("1cd65b57-7027-4aa5-8d19-333333333333")
             ),
             base_doc_type=core_enums.BaseDocumentType.PLU,
+            created_at=timezone.now(),
+            last_updated_at=timezone.now(),
         )
         aigremont = core_factories.CommuneFactory(code_insee="30002")
         core_factories.ProcedureFactory(
@@ -257,6 +262,8 @@ class TestProcedureList:
                 id=uuid.UUID("1cd65b57-7027-4aa5-8d19-555555555555")
             ),
             base_doc_type=core_enums.BaseDocumentType.PLU,
+            created_at=timezone.now(),
+            last_updated_at=timezone.now(),
         )
         with api_client_with_auth(logged_in_profile) as api_client:
             response = api_client.get(
@@ -265,6 +272,7 @@ class TestProcedureList:
         assert response.status_code == 200
         assert response.json()["results"] == snapshot()
 
+    @freeze_time("2026-11-23")
     @pytest.mark.parametrize(
         ("query_params"),
         [
@@ -302,6 +310,8 @@ class TestProcedureList:
             numero="1",
             for_snapshot=True,
             status=core_enums.ProcedureStatusChoices.EN_COURS,
+            created_at=timezone.now(),
+            last_updated_at=timezone.now(),
         )
         core_factories.ProcedureFactory(
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-222222222222"),
@@ -312,6 +322,8 @@ class TestProcedureList:
             numero="1",
             project=procedure.project,
             base_doc_type=core_enums.BaseDocumentType.PLU,
+            created_at=timezone.now(),
+            last_updated_at=timezone.now(),
         )
         core_factories.ProcedureFactory(
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-333333333333"),
@@ -322,6 +334,8 @@ class TestProcedureList:
             numero="1",
             project=procedure.project,
             base_doc_type=core_enums.BaseDocumentType.PLU,
+            created_at=timezone.now(),
+            last_updated_at=timezone.now(),
         )
         with api_client_with_auth(logged_in_profile) as api_client:
             response = api_client.get(
@@ -351,7 +365,37 @@ class TestProcedureList:
         ):
             response = api_client.get(f"{self.url}")
         assert response.status_code == 200
-        assert response.json()["results"][0]["topics"] == [{"name": "zan"}]
+        assert response.json()["results"][0]["topics"] == [
+            {"name": "zan", "comment": ""}
+        ]
+
+    def test_serializer_with_topic_other_comment(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        collectivite, communes, logged_in_profile = (
+            self._create_collectivite_perimetre_profile()
+        )
+        expected_topic = core_models.Topic.objects.get(name="other")
+        procedure = core_factories.ProcedureFactory(
+            collectivite_porteuse=collectivite,
+            with_perimetre=communes,
+        )
+        core_models.ProcedureTopic.objects.create(
+            procedure_id=procedure.id,
+            topic_id=expected_topic.id,
+            comment="Hey there!",
+        )
+        with (
+            api_client_with_auth(logged_in_profile) as api_client,
+            django_assert_num_queries(BASE_QUERIES),
+        ):
+            response = api_client.get(f"{self.url}")
+        assert response.status_code == 200
+        assert response.json()["results"][0]["topics"] == [
+            {"name": "other", "comment": "Hey there!"}
+        ]
 
     def test_serializer_name(
         self,
@@ -428,6 +472,7 @@ class TestProcedureList:
         assert response.status_code == 200
         assert response.json()["results"][0]["docType"] == "PLUi"
 
+    @freeze_time("2026-11-23")
     def test_serializer_nominal_principal_procedure(
         self,
         api_client_with_auth: SupabaseApiTestClient,
@@ -437,13 +482,21 @@ class TestProcedureList:
         collectivite, communes, logged_in_profile = (
             self._create_collectivite_perimetre_profile()
         )
-        core_factories.ProcedureFactory(
+        procedure = core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
             numero="1",
             for_snapshot=True,
             status=core_enums.ProcedureStatusChoices.EN_COURS,
+            comment_dgd="Comment DGD",
+            comment_from_sudocuh="Comment coming from Sudocuh",
+            commentaire="Some other comment",
+            from_sudocuh="123456",
+            created_at=timezone.now(),
+            last_updated_at=timezone.now(),
         )
+        procedure.last_updated_at = procedure.created_at + timedelta(hours=1)
+        procedure.save()
         with (
             api_client_with_auth(logged_in_profile) as api_client,
             django_assert_num_queries(BASE_QUERIES),
@@ -452,6 +505,7 @@ class TestProcedureList:
         assert response.status_code == 200
         assert response.json() == snapshot()
 
+    @freeze_time("2026-11-23")
     def test_serializer_nominal_secondary_procedure(
         self,
         api_client_with_auth: SupabaseApiTestClient,
@@ -478,6 +532,8 @@ class TestProcedureList:
             numero="1",
             project=principal_procedure.project,
             base_doc_type=core_enums.BaseDocumentType.PLU,
+            created_at=timezone.now(),
+            last_updated_at=timezone.now(),
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -491,31 +547,60 @@ class TestProcedureList:
         assert response.json()["results"][1] == snapshot()
 
     @freeze_time("2026-10-06")
-    def test_serializer_with_approval_date(
+    def test_serializer_with_events(
         self,
         api_client_with_auth: SupabaseApiTestClient,
         django_assert_num_queries: DjangoAssertNumQueries,
+        snapshot: SnapshotAssertion,
     ) -> None:
         collectivite, communes, logged_in_profile = (
             self._create_collectivite_perimetre_profile()
         )
-        core_factories.ProcedureFactory(
+        now = timezone.now()
+
+        procedure = core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
             with_perimetre=communes,
-            with_event=True,
-            with_event__category=core_models.EventCategory.APPROUVE,
-            with_event__date_evenement=timezone.now(),
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            created_at=timezone.now(),
+            last_updated_at=timezone.now(),
         )
+        core_factories.EventFactory(
+            id=uuid.UUID("fb48c069-33c6-4ed2-9db3-000000000000"),
+            procedure=procedure,
+            type="Délibération d'approbation",
+            event_type__name="Délibération d'approbation",
+            event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now - timedelta(days=1),
+        )
+        core_factories.EventFactory(
+            id=uuid.UUID("fb48c069-33c6-4ed2-9db3-111111111111"),
+            procedure=procedure,
+            type="Prescription",
+            event_type__name="Prescription",
+            event_type__impact=core_enums.ProcedureStatusChoices.EN_COURS,
+            date_evenement=now - timedelta(days=2),
+        )
+        # Last event but without impact
+        core_factories.EventFactory(
+            id=uuid.UUID("fb48c069-33c6-4ed2-9db3-222222222222"),
+            procedure=procedure,
+            type="Porter à connaissance",
+            event_type__name="Porter à connaissance",  # no impact
+            date_evenement=now - timedelta(hours=1),
+        )
+
         with (
             api_client_with_auth(logged_in_profile) as api_client,
             django_assert_num_queries(BASE_QUERIES),
         ):
             response = api_client.get(f"{self.url}")
         assert response.status_code == 200
-        assert (
-            response.json()["results"][0]["approval_date"]
-            == "2026-10-06T02:00:00+02:00"
-        )
+        result = response.json()["results"][0]
+        assert result["approvalDate"] == "2026-10-05T02:00:00+02:00"
+        assert result["prescriptionDate"] == "2026-10-04T02:00:00+02:00"
+        assert result["lastImpactfulEvent"] == snapshot(name="lastImpactfulEvent")
+        assert result["lastEvent"] == snapshot(name="lastEvent")
 
     def test_serializer_with_communes_is_opposable(
         self,
