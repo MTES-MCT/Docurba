@@ -1309,14 +1309,14 @@ class TestProcedureTypeDocument:
         vaut_PLH: bool,
         expected_doc_type: core_enums.TypeDocument,
     ) -> None:
-        commune_a = CommuneFactory()
-        commune_b = CommuneFactory()
+        commune_a = CommuneFactory(code_insee="30133")
+        commune_b = CommuneFactory(code_insee="30134")
         collectivite = CollectiviteFactory(
             with_members=True,
             with_members__list=[
                 commune_a,
                 commune_b,
-                CommuneFactory(),
+                CommuneFactory(code_insee="30135"),
             ],
         )
         procedure = ProcedureFactory(

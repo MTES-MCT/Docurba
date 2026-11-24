@@ -126,8 +126,8 @@ class TestApiPerimetresAndCommunes:
         with_filter: bool,  # noqa: FBT001
         expected_lines: int,
     ) -> None:
-        commune_a = CommuneFactory(departement__code_insee="13")
-        commune_b = CommuneFactory(departement__code_insee="84")
+        commune_a = CommuneFactory(code_insee="13100")
+        commune_b = CommuneFactory(code_insee="84001")
         ProcedureFactory(
             **self._default_procedure_factory_attrs(perimetre=[commune_a])
             | {"for_snapshot": False},
@@ -627,9 +627,9 @@ class TestAPICommunes:
         self, client: Client, procedure_status: core_models.EventCategory
     ) -> None:
         perimetre = [
-            CommuneFactory(),
-            CommuneFactory(type=core_enums.CommuneType.COMD),
-            CommuneFactory(type=core_enums.CommuneType.COMA),
+            CommuneFactory(code_insee="30113"),
+            CommuneFactory(type=core_enums.CommuneType.COMD, code_insee="30112"),
+            CommuneFactory(type=core_enums.CommuneType.COMA, code_insee="30334"),
         ]
         ProcedureFactory(
             **self._default_procedure_factory_params(
