@@ -283,37 +283,47 @@ class ProcedureNameSerializer(serializers.ModelSerializer):
 
 
 class ProcedureSerializer(serializers.ModelSerializer):
-    id = serializers.CharField()
-    parentId = serializers.UUIDField(source="parente_id")
-    collectivite_porteuse = CollectiviteSerializer()
-    docType = serializers.ChoiceField(choices=TypeDocument, source="dynamic_doc_type")
+    # Read only fields
+    id = serializers.CharField(read_only=True)
+    collectivite_porteuse = CollectiviteSerializer(read_only=True)
+    topics = TopicSerializer(read_only=True, many=True)
+    perimetre = CommuneSerializer(read_only=True, many=True)
+    name = serializers.CharField(read_only=True, source="computed_name")
+    approval_date = serializers.DateTimeField(read_only=True, source="date_approbation")
+    projectId = serializers.CharField(read_only=True, source="project_id")
+    # Both
+    parentId = serializers.UUIDField(
+        source="parente_id", required=False, allow_null=True
+    )
+    docType = serializers.ChoiceField(
+        choices=TypeDocument,
+        source="doc_type",
+        required=False,
+        allow_blank=True,
+    )
     startedBeforeHuwartLaw = serializers.BooleanField(
         source="started_before_huwart_law", default=False
     )
-    topics = TopicSerializer(many=True)
-    perimetre = CommuneSerializer(many=True)
-    name = serializers.CharField(source="computed_name")
-    approval_date = serializers.DateTimeField(source="date_approbation")
+    number = serializers.CharField(required=False, allow_blank=True, source="numero")
 
     class Meta:
         model = Procedure
         read_only_fields = [
             "id",
-            "project_id",
+            "collectivite_porteuse",
+            "topics",
+            "perimetre",
+            "name",
+            "approval_date",
+            "projectId",
+            "status",  # Nuxt one
         ]
         fields = [
             *read_only_fields,
-            "collectivite_porteuse",
-            "project_id",
-            "perimetre",
+            "parentId",
             "docType",
             "startedBeforeHuwartLaw",
             "type",
-            "numero",
-            "name",
-            "status",
-            "topics",
-            "approval_date",
-            "parentId",
+            "number",
         ]
         depth = 4

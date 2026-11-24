@@ -161,40 +161,36 @@ class UserPassword(generics.GenericAPIView):
         )
 
 
-class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = (
-        core_models.Procedure.objects.with_events()
-        .with_collectivite_porteuse_communes_adherentes_count()
-        .with_perimetre_without_deleguees_count()
-        .select_related(
-            "collectivite_porteuse",
-            "collectivite_porteuse__commune",
-            "parente",
-            "parente__collectivite_porteuse",
-            "parente__collectivite_porteuse__commune",
-        )
-        .prefetch_related(
-            "topics",
-            models.Prefetch(
-                "perimetre",
-                core_models.Commune.objects.select_related(
-                    "departement",
-                    "departement__region",
-                    "intercommunalite",
-                )
-                .with_opposable()
-                .order_by("code_insee"),
-            ),
-        )
-        .order_by("pk")
-    )
+class ProcedureViewSet(viewsets.ModelViewSet):
     authentication_classes = [SupabaseAuthentication]  # noqa: RUF012
     permission_classes = [IsAuthenticated]  # noqa: RUF012
     serializer_class = core_serializers.ProcedureSerializer
     filterset_class = custom_filters.ProcedureFilter
 
     def get_queryset(self):  # noqa: ANN201
-        queryset = super().get_queryset()
+        queryset = (
+            core_models.Procedure.objects.with_events()
+            .with_collectivite_porteuse_communes_adherentes_count()
+            .with_perimetre_without_deleguees_count()
+            .select_related(
+                "collectivite_porteuse",
+                "collectivite_porteuse__commune",
+            )
+            .prefetch_related(
+                "topics",
+                models.Prefetch(
+                    "perimetre",
+                    core_models.Commune.objects.select_related(
+                        "departement",
+                        "departement__region",
+                        "intercommunalite",
+                    )
+                    .with_opposable()
+                    .order_by("code_insee"),
+                ),
+            )
+            .order_by("pk")
+        )
         if self.action == "synchronize_status":
             queryset = core_models.Procedure.objects.prefetch_related(
                 models.Prefetch(
@@ -260,6 +256,15 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
             core_models.CommuneProcedure.objects.bulk_update(
                 perimetre_lines_to_update, ["opposable"], batch_size=1000
             )
+
+    def create(self) -> Response:
+        return NotImplementedError
+
+    def update(self) -> Response:
+        return NotImplementedError
+
+    def destroy(self) -> Response:
+        return NotImplementedError
 
 
 class ProcedureComputeName(PublicAPIView, generics.GenericAPIView):
