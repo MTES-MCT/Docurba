@@ -52,7 +52,7 @@ class TestProcessDenormalizedProcedureFields:
         output = capsys.readouterr()
 
         # No procedure to update
-        expected_csv = "procedure_id,dynamic_doc_type,doc_type\n"
+        expected_csv = "procedure_id;dynamic_doc_type;doc_type;dynamic_departements;departements;dynamic_current_perimetre;current_perimetre\n"
         assert expected_csv == output.out
         assert caplog.messages[-1] == "0 inconsistent procedures"
 
@@ -72,15 +72,19 @@ class TestProcessDenormalizedProcedureFields:
 
         expected_csv = {
             "procedure_id": "fb48c069-33c6-4ed2-9db3-054e99ea7981",
-            "doc_type": "",
             "dynamic_doc_type": "PLUiM",
+            "doc_type": "",
+            "dynamic_departements": "['30']",
+            "departements": "",
+            "dynamic_current_perimetre": "[{'name': 'Ners', 'inseeCode': '30188'}, {'name': 'Nîmes', 'inseeCode': '30189'}]",
+            "current_perimetre": "",
         }
 
         # Check by default.
         call_command("process_denormalized_procedure_fields")
         output = capsys.readouterr()
 
-        reader = csv.DictReader(StringIO(output.out), delimiter=",")
+        reader = csv.DictReader(StringIO(output.out), delimiter=";")
         first_line = next(reader)
         assert reader.line_num == 2
         assert first_line == expected_csv
@@ -94,7 +98,7 @@ class TestProcessDenormalizedProcedureFields:
         call_command("process_denormalized_procedure_fields", mode="update")
         output = capsys.readouterr()
 
-        reader = csv.DictReader(StringIO(output.out), delimiter=",")
+        reader = csv.DictReader(StringIO(output.out), delimiter=";")
         first_line = next(reader)
         assert reader.line_num == 2
         assert first_line == expected_csv
@@ -167,7 +171,7 @@ class TestProcessDenormalizedProcedureFields:
             },
         )
 
-        call_command("process_denormalized_procedure_fields")
+        call_command("process_denormalized_procedure_fields", yesterday_only=True)
         assert caplog.messages[-1] == "0 inconsistent procedures"
         procedure.delete()
 
@@ -179,7 +183,7 @@ class TestProcessDenormalizedProcedureFields:
                 "last_updated_at": yesterday_dt - timedelta(days=1),
             },
         )
-        call_command("process_denormalized_procedure_fields")
+        call_command("process_denormalized_procedure_fields", yesterday_only=True)
         assert caplog.messages[-1] == "0 inconsistent procedures"
         procedure.delete()
 
@@ -191,7 +195,7 @@ class TestProcessDenormalizedProcedureFields:
                 "last_updated_at": now,
             },
         )
-        call_command("process_denormalized_procedure_fields")
+        call_command("process_denormalized_procedure_fields", yesterday_only=True)
         assert caplog.messages[-1] == "1 inconsistent procedures"
         procedure.delete()
 
@@ -203,7 +207,7 @@ class TestProcessDenormalizedProcedureFields:
                 "last_updated_at": yesterday_dt,
             },
         )
-        call_command("process_denormalized_procedure_fields")
+        call_command("process_denormalized_procedure_fields", yesterday_only=True)
         assert caplog.messages[-1] == "1 inconsistent procedures"
         procedure.delete()
 
@@ -214,7 +218,7 @@ class TestProcessDenormalizedProcedureFields:
                 "created_at": now,
             },
         )
-        call_command("process_denormalized_procedure_fields")
+        call_command("process_denormalized_procedure_fields", yesterday_only=True)
         assert caplog.messages[-1] == "0 inconsistent procedures"
         procedure.delete()
 
@@ -226,6 +230,6 @@ class TestProcessDenormalizedProcedureFields:
                 "last_updated_at": now,
             },
         )
-        call_command("process_denormalized_procedure_fields")
+        call_command("process_denormalized_procedure_fields", yesterday_only=True)
         assert caplog.messages[-1] == "0 inconsistent procedures"
         procedure.delete()

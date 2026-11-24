@@ -754,6 +754,7 @@ class TestProcedure:
         procedure.perimetre.through.objects.create(
             collectivite_code=12,
             collectivite_type="COM",
+            commune_id="12_COM",
             procedure=procedure,
         )
 
@@ -838,6 +839,26 @@ class TestProcedure:
         )
         assert procedure.computed_name == expected_name
 
+        # With a "sectoriel" PLU.
+        expected_name = (
+            "Élaboration PLUiS Syndicat mixte d'équipement de la commune de Beaucaire"
+        )
+        communes = CommuneFactory.create_batch(3)
+        collectivite_porteuse = CollectiviteFactory(
+            nom="Syndicat mixte d'équipement de la commune de Beaucaire",
+            with_members=True,
+            with_members__list=communes,
+        )
+        procedure = ProcedureFactory(
+            name="",
+            collectivite_porteuse=collectivite_porteuse,
+            with_perimetre=communes[:2],
+            base_doc_type=core_enums.TypeDocument.PLU,
+        )
+        procedure = core_models.Procedure.objects.get(pk=procedure.pk)
+        assert procedure.computed_name == expected_name
+
+    @pytest.mark.django_db
     def test_zone_name(self, django_assert_num_queries: DjangoAssertNumQueries) -> None:
         collectivite_porteuse = CollectiviteFactory(
             nom="CC de la Terre d'Argence", type=core_enums.TypeCollectivite.CC
@@ -917,13 +938,121 @@ class TestProcedure:
         ):
             assert procedure.zone_name == "Argilliers"
 
+    @pytest.mark.django_db
+    def test_numero_principal_procedure(self) -> None:
+        procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.ABROGATION, numero=4, project=None
+        )
+        assert procedure.numero == "1"
+        assert procedure.is_principale is True
+        # Don't override the number when updating the object.
+        procedure.numero = "2"
+        procedure.save()
+        assert procedure.numero == "2"
+
+    @pytest.mark.django_db
+    def test_numero_secondary_procedure(self) -> None:
+        procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.MISE_A_JOUR, numero="4", project=None
+        )
+        assert procedure.numero == "4"
+        assert procedure.is_principale is False
+
+    @pytest.mark.django_db
+    def test_numero_prinipal_procedure__revision(self) -> None:
+        procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.REVISION, numero="4", project=None
+        )
+        assert procedure.numero == "4"
+        assert procedure.is_principale is True
+
+    @pytest.mark.django_db
+    def test_default_status(self) -> None:
+        principal_procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.ELABORATION
+        )
+        secondary_procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.MISE_A_JOUR,
+            parente=principal_procedure,
+        )
+        assert principal_procedure.status == core_enums.ProcedureStatusChoices.EN_COURS
+        assert secondary_procedure.status is None
+
+        # An explicit status overrides the default value.
+        principal_procedure = ProcedureFactory(
+            type=core_enums.ProcedureType.ELABORATION,
+            status=core_enums.ProcedureStatusChoices.ABANDON,
+        )
+        assert principal_procedure.status == core_enums.ProcedureStatusChoices.ABANDON
+
+        # Updating the status also works.
+        principal_procedure.status = core_enums.ProcedureStatusChoices.OPPOSABLE
+        principal_procedure.save()
+        principal_procedure.refresh_from_db()
+        assert principal_procedure.status == core_enums.ProcedureStatusChoices.OPPOSABLE
+
+    @pytest.mark.django_db
+    def test_get_collectivite_porteuse(self) -> None:
+        collectivite_without_jurisdiction = CollectiviteFactory(
+            type=core_enums.TypeCollectivite.CC,
+            competence_plan=False,
+            competence_schema=False,
+        )
+        collectivite_with_jurisdiction = CollectiviteFactory(
+            type=core_enums.TypeCollectivite.CC,
+            competence_plan=True,
+            competence_schema=True,
+        )
+        intermunicipality = CollectiviteFactory(
+            type=core_enums.TypeCollectivite.CC,
+            competence_plan=True,
+            competence_schema=True,
+        )
+        commune_with_jurisdiction = CommuneFactory(
+            type=core_enums.TypeCollectivite.COM,
+            competence_plan=True,
+            competence_schema=True,
+            intercommunalite=intermunicipality,
+        )
+        commune_without_jurisdiction = CommuneFactory(
+            type=core_enums.TypeCollectivite.COM,
+            competence_plan=False,
+            competence_schema=False,
+            intercommunalite=intermunicipality,
+        )
+        for doc_type in [core_enums.TypeDocument.PLU, core_enums.TypeDocument.SCOT]:
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=collectivite_without_jurisdiction, doc_type=doc_type
+                )
+                == collectivite_without_jurisdiction
+            )
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=collectivite_with_jurisdiction, doc_type=doc_type
+                )
+                == collectivite_with_jurisdiction
+            )
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=commune_with_jurisdiction, doc_type=doc_type
+                )
+                == commune_with_jurisdiction
+            )
+            assert (
+                core_models.Procedure.get_collectivite_porteuse(
+                    collectivite=commune_without_jurisdiction, doc_type=doc_type
+                )
+                == intermunicipality
+            )
+
 
 @pytest.mark.django_db
 class TestProcedureDenormalizedFields:
-    def test_has_inconsistent_denormalized_fields__doc_type(self) -> None:
+    def test_has_inconsistent_denormalized_fields(self) -> None:
         communes = [
-            CommuneFactory(code_insee="30188"),
-            CommuneFactory(code_insee="30189"),
+            CommuneFactory(nom="Ners", code_insee="30188"),
+            CommuneFactory(nom="Nîmes", code_insee="30189"),
         ]
         collectivite_porteuse = CollectiviteFactory(with_members=communes)
         procedure = ProcedureFactory.build(
@@ -939,6 +1068,11 @@ class TestProcedureDenormalizedFields:
             doc_type=core_enums.TypeDocument.PLUI,
             cached_perimetre=communes,
             collectivite_porteuse=collectivite_porteuse,
+            current_perimetre=[
+                {"name": "Ners", "inseeCode": "30188"},
+                {"name": "Nîmes", "inseeCode": "30189"},
+            ],
+            departements=["30"],
         )
         assert procedure.has_inconsistent_denormalized_fields() is False
 
@@ -986,6 +1120,23 @@ class TestProcedureDenormalizedFields:
         procedure.save()
         assert procedure.has_inconsistent_denormalized_fields() is False
         assert procedure.doc_type == core_enums.TypeDocument.PLUIM
+
+    def test_update_on_save__current_perimetre_and_departements(self) -> None:
+        communes = [
+            CommuneFactory(nom="Aix-en-Provence", code_insee="13001"),
+            CommuneFactory(nom="Allauch", code_insee="13002"),
+            CommuneFactory(nom="Apt", code_insee="84003"),
+        ]
+        expected_current_perimetre = [
+            {"name": "Aix-en-Provence", "inseeCode": "13001"},
+            {"name": "Allauch", "inseeCode": "13002"},
+            {"name": "Apt", "inseeCode": "84003"},
+        ]
+        expected_departements = ["13", "84"]
+        procedure = ProcedureFactory(with_perimetre=communes)
+        procedure = core_models.Procedure.objects.get(pk=procedure.pk)
+        assert procedure.current_perimetre == expected_current_perimetre
+        assert procedure.departements == expected_departements
 
 
 class TestProcedureDates:
@@ -2451,10 +2602,10 @@ class TestCommune:
     def test_collectivite_porteuse_selon_situation_plans(
         self, plan_opposable: bool, plan_en_cours: bool, collectivite_attendue: str
     ) -> None:
-        commune = CommuneFactory(code_insee_unique="13001")
+        commune = CommuneFactory(code_insee="13001")
 
         if plan_en_cours:
-            collectivite = CollectiviteFactory(code_insee_unique="200003333")
+            collectivite = CollectiviteFactory(siren="200003333")
             procedure = ProcedureFactory(
                 base_doc_type=core_enums.BaseDocumentType.PLU,
                 collectivite_porteuse=collectivite,
@@ -2465,7 +2616,7 @@ class TestCommune:
             )
 
         if plan_opposable:
-            collectivite = CollectiviteFactory(code_insee_unique="200004444")
+            collectivite = CollectiviteFactory(siren="200004444")
             procedure = ProcedureFactory(
                 base_doc_type=core_enums.BaseDocumentType.PLU,
                 collectivite_porteuse=collectivite,
@@ -2476,7 +2627,11 @@ class TestCommune:
             )
 
         commune = core_models.Commune.objects.with_procedures_principales().first()
-        assert commune.collectivite_porteuse.code_insee_unique == collectivite_attendue
+        siren_or_insee = (
+            commune.collectivite_porteuse.siren
+            or commune.collectivite_porteuse.code_insee
+        )
+        assert siren_or_insee == collectivite_attendue
 
 
 class TestCommuneOpposabilite:
@@ -2845,3 +3000,73 @@ class TestEventType:
 
         plu1 = EventTypeFactory(document_type=core_models.EventType.DocumentType.PLU)
         assert plu1.order == 1
+
+
+@pytest.mark.django_db
+class TestCommuneProcedureDenormalizedFields:
+    def test_has_inconsistent_denormalized_fields(self) -> None:
+        commune = CommuneFactory(
+            nom="Nîmes", code_insee="30189", type=core_enums.CommuneType.COM
+        )
+        procedure = ProcedureFactory()
+        commune_procedure = core_models.CommuneProcedure(
+            procedure=procedure,
+            commune=commune,
+            collectivite_type="COM",
+            collectivite_code="30189",
+            departement="30",
+        )
+        assert commune_procedure.has_inconsistent_denormalized_fields() is False
+
+        # wrong departement
+        commune_procedure = core_models.CommuneProcedure(
+            procedure=procedure,
+            commune=commune,
+            collectivite_type="COM",
+            collectivite_code="30189",
+            departement="50",
+        )
+        assert commune_procedure.has_inconsistent_denormalized_fields() is True
+
+        # wrong code insee
+        commune_procedure = core_models.CommuneProcedure(
+            procedure=procedure,
+            commune=commune,
+            collectivite_type="COM",
+            collectivite_code="60000",
+            departement="30",
+        )
+        assert commune_procedure.has_inconsistent_denormalized_fields() is True
+
+        # wrong type
+        commune_procedure = core_models.CommuneProcedure(
+            procedure=procedure,
+            commune=commune,
+            collectivite_type="COMD",
+            collectivite_code="30189",
+            departement="30",
+        )
+        assert commune_procedure.has_inconsistent_denormalized_fields() is True
+
+    def test_update_denormalized_fields(self) -> None:
+        commune = CommuneFactory(
+            nom="Nîmes", code_insee="30189", type=core_enums.CommuneType.COM
+        )
+        procedure = ProcedureFactory()
+        commune_procedure = core_models.CommuneProcedure(
+            procedure=procedure,
+            commune=commune,
+            collectivite_type="COM",
+            collectivite_code="30189",
+            departement="50",
+        )
+        assert commune_procedure.has_inconsistent_denormalized_fields() is True
+        commune_procedure.update_denormalized_fields(save=False)
+        assert commune_procedure.has_inconsistent_denormalized_fields() is False
+
+        commune_procedure.save()
+        commune_procedure.departement = "50"
+        assert commune_procedure.has_inconsistent_denormalized_fields() is True
+        commune_procedure.update_denormalized_fields(save=True)
+        commune_procedure.refresh_from_db()
+        assert commune_procedure.departement == "30"
