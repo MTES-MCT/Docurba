@@ -576,6 +576,36 @@ class TestProcedureName:
         assert response.status_code == 200
         assert response.json()["name"] == "Elaboration PLU Beaucaire"
 
+    def test_principal_procedure_name__comd(
+        self,
+        api_client: APIClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = core_factories.CommuneFactory(for_snapshot=True)
+        core_factories.CommuneFactory(
+            code_insee="30032",
+            type=core_enums.CommuneType.COMD,
+            nom="Beaucaire COMD",
+        )
+
+        query_params = {
+            "type": core_enums.ProcedureType.ELABORATION,
+            "docType": core_enums.TypeDocument.PLU,
+            "perimetreCodes": [
+                commune.code_insee,
+            ],  # procedure creation is on active communes only.
+            "collectiviteCode": commune.code_insee,
+        }
+        with (
+            django_assert_num_queries(self.base_queries),
+        ):
+            response = api_client.get(
+                f"{self.url}?{urlencode(query_params, doseq=True)}"
+            )
+        assert response.status_code == 200
+        # Ignore the COMD
+        assert response.json()["name"] == "Elaboration PLU Beaucaire"
+
     def test_principal_procedure_name__multiple_towns__plui(
         self,
         api_client: APIClient,
