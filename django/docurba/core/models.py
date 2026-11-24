@@ -1257,10 +1257,15 @@ class Event(models.Model):
     description = models.TextField(blank=True, null=True)  # noqa: DJ001
 
     created_at = models.DateTimeField(
-        blank=True, null=True, db_default=TransactionNow(), verbose_name="créé le"
+        db_default=TransactionNow(),
+        verbose_name="créé le",
+        auto_now_add=True,
     )
     updated_at = models.DateTimeField(
-        blank=True, null=True, db_default=TransactionNow(), verbose_name="modifié le"
+        null=True,
+        db_default=TransactionNow(),
+        verbose_name="modifié le",
+        auto_now=True,
     )
     attachements = models.JSONField(
         blank=True, null=True, verbose_name="pièces-jointes"
