@@ -475,6 +475,12 @@ export default {
     }
   },
   async mounted () {
+    this.$tally('je6JAa', {
+      max: 3,
+      signupDelay: 30,
+      width: 650,
+      hideTitle: false
+    })
     // Communes as municipalities, not geographic towns.
     const collectivites = await this.$collectiviteApi.list({
       departement: this.$route.params.departement,

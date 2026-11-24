@@ -167,6 +167,14 @@ export default {
       return this.$route.query.vue || null
     }
   },
+  async mounted () {
+    this.$tally('je6JAa', {
+      max: 3,
+      signupDelay: 30,
+      width: 650,
+      hideTitle: false
+    })
+  },
   watch: {
     favoriteView: {
       handler (value) {
