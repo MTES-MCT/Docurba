@@ -9,11 +9,11 @@ from django.db import models
 from django.utils import timezone
 from rest_framework import generics, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sendgrid_backend.mail import HTTPError
 
 from docurba.api.auth import SupabaseAuthentication
+from docurba.api.permissions import IsVerified
 from docurba.core import models as core_models
 from docurba.users import models as users_models
 from docurba.utils.api.views import PublicAPIView
@@ -163,13 +163,21 @@ class UserPassword(generics.GenericAPIView):
 
 class ProcedureViewSet(viewsets.ModelViewSet):
     authentication_classes = [SupabaseAuthentication]  # noqa: RUF012
-    permission_classes = [IsAuthenticated]  # noqa: RUF012
+    permission_classes = [IsVerified]  # noqa: RUF012
     serializer_class = core_serializers.ProcedureSerializer
     filterset_class = custom_filters.ProcedureFilter
 
     def get_queryset(self):  # noqa: ANN201
+        departements = [self.request.user.profile.departement.code_insee]
+        # This will change in the future.
+        if self.request.user.profile.departements:
+            departements.append(*self.request.user.profile.departements)
+        departements = list(set(departements))
+        base_queryset = core_models.Procedure.objects.filter(
+            perimetre__departement__in=departements
+        )
         queryset = (
-            core_models.Procedure.objects.defer(None)
+            base_queryset.defer(None)
             .with_events()
             .with_collectivite_porteuse_communes_adherentes_count()
             .with_perimetre_without_deleguees_count()
@@ -196,7 +204,7 @@ class ProcedureViewSet(viewsets.ModelViewSet):
             .order_by("pk")
         )
         if self.action == "synchronize_status":
-            queryset = core_models.Procedure.objects.prefetch_related(
+            queryset = base_queryset.prefetch_related(
                 models.Prefetch(
                     "event_set",
                     queryset=core_models.Event.objects.filter_impactful(),

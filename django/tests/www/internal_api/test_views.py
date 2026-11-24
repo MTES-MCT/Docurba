@@ -651,7 +651,7 @@ class TestUserpassword:
         django_assert_num_queries: DjangoAssertNumQueries,
         mailoutbox: list | None,
     ) -> None:
-        logged_in_profile = ProfileFactory(user__encrypted_password="")
+        logged_in_profile = ProfileFactory(user__encrypted_password="", verified=True)
         with (
             api_client_with_auth(logged_in_profile) as api_client,
             django_assert_num_queries(2),
@@ -681,7 +681,7 @@ class TestUserpassword:
         mailoutbox: list | None,
     ) -> None:
         logged_in_profile = ProfileFactory(
-            user__encrypted_password="", must_update_password=True
+            user__encrypted_password="", must_update_password=True, verified=True
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -708,7 +708,7 @@ class TestUserpassword:
         api_client_with_auth: APIClient,
         mailoutbox: list | None,
     ) -> None:
-        logged_in_profile = ProfileFactory(user__encrypted_password="")
+        logged_in_profile = ProfileFactory(user__encrypted_password="", verified=True)
         with api_client_with_auth(logged_in_profile) as api_client:
             response = api_client.post(self.url, data={"password": ""})
         assert response.status_code == 400
@@ -724,7 +724,7 @@ class TestUserpassword:
         mailoutbox: list | None,
         caplog: list | None,
     ) -> None:
-        logged_in_profile = ProfileFactory(user__encrypted_password="")
+        logged_in_profile = ProfileFactory(user__encrypted_password="", verified=True)
         with (
             mock.patch(
                 "docurba.utils.emails.SendgridEmailMessage.send",

@@ -9,13 +9,14 @@ from django.urls import reverse
 from django.utils import timezone
 from freezegun import freeze_time
 from pytest_django import DjangoAssertNumQueries
+from rest_framework.test import APIClient
 from syrupy.assertion import SnapshotAssertion
 
 from docurba.core import enums as core_enums
 from docurba.core import models as core_models
 from docurba.users import models as users_models
 from docurba.utils.date import end_of_day
-from tests.conftest import APIClient, SupabaseApiTestClient
+from tests.conftest import SupabaseApiTestClient
 from tests.core import factories as core_factories
 from tests.users.factories import ProfileFactory
 
@@ -54,7 +55,7 @@ class TestProcedureList:
         communes = core_models.Commune.objects.filter(
             code_insee__in=perimetre_insee_codes
         )
-        logged_in_profile = ProfileFactory(collectivite=collectivite)
+        logged_in_profile = ProfileFactory(collectivite=collectivite, verified=True)
         return (
             collectivite,
             sorted(communes, key=lambda c: c.code_insee),
@@ -998,7 +999,7 @@ class TestProcedureSynchronizeStatus:
         )
 
         with (
-            api_client_with_auth(ProfileFactory()) as api_client,
+            api_client_with_auth(ProfileFactory(verified=True)) as api_client,
             django_assert_num_queries(6),
         ):
             response = api_client.post(self._url(event.procedure))
@@ -1018,7 +1019,7 @@ class TestProcedureSynchronizeStatus:
         )
 
         with (
-            api_client_with_auth(ProfileFactory()) as api_client,
+            api_client_with_auth(ProfileFactory(verified=True)) as api_client,
             django_assert_num_queries(6),
         ):
             response = api_client.post(self._url(procedure))
@@ -1040,7 +1041,7 @@ class TestProcedureSynchronizeStatus:
         )
 
         with (
-            api_client_with_auth(ProfileFactory()) as api_client,
+            api_client_with_auth(ProfileFactory(verified=True)) as api_client,
             django_assert_num_queries(6),
         ):
             response = api_client.post(self._url(event.procedure))
@@ -1058,7 +1059,7 @@ class TestProcedureSynchronizeStatus:
             event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=end_of_day(timezone.localdate()),
         )
-        profile = ProfileFactory()
+        profile = ProfileFactory(verified=True)
 
         with api_client_with_auth(profile) as api_client:
             response = api_client.post(self._url(event.procedure))
@@ -1084,7 +1085,7 @@ class TestProcedureSynchronizeStatus:
 
         timezone.activate(ZoneInfo("Pacific/Tahiti"))  # UTC-10
         with (
-            api_client_with_auth(ProfileFactory()) as api_client,
+            api_client_with_auth(ProfileFactory(verified=True)) as api_client,
             django_assert_num_queries(6),
         ):
             response = api_client.post(self._url(event.procedure))
