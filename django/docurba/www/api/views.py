@@ -193,20 +193,42 @@ class CommunesView(PublicAPIView, generics.GenericAPIView):
                 "com_code_region": commune.departement.region.code_insee,
                 "com_nom_region": commune.departement.region.nom,
                 "com_nouvelle": commune.is_nouvelle_annotation,
-                "collectivite_porteuse": commune.collectivite_porteuse.code_insee
-                or commune.collectivite_porteuse.siren,
-                "cp_type": commune.collectivite_porteuse.type,
-                "cp_code_region": commune.collectivite_porteuse.departement.region.code_insee,
-                "cp_lib_region": commune.collectivite_porteuse.departement.region.nom,
-                "cp_code_departement": commune.collectivite_porteuse.departement.code_insee,
-                "cp_nom_departement": commune.collectivite_porteuse.departement.nom,
-                "cp_nom": commune.collectivite_porteuse.nom,
-                "cp_siren": commune.collectivite_porteuse.siren,
-                "cp_code_insee": commune.collectivite_porteuse.code_insee,
+                "collectivite_porteuse": commune.collectivite_porteuse_code_insee
+                or commune.collectivite_porteuse_siren,
+                "cp_type": getattr(commune.collectivite_porteuse, "type", None),
+                "cp_code_region": (
+                    commune.collectivite_porteuse.departement.region.code_insee
+                    if commune.collectivite_porteuse
+                    else None
+                ),
+                "cp_lib_region": (
+                    commune.collectivite_porteuse.departement.region.nom
+                    if commune.collectivite_porteuse
+                    else None
+                ),
+                "cp_code_departement": (
+                    commune.collectivite_porteuse.departement.code_insee
+                    if commune.collectivite_porteuse
+                    else None
+                ),
+                "cp_nom_departement": (
+                    commune.collectivite_porteuse.departement.nom
+                    if commune.collectivite_porteuse
+                    else None
+                ),
+                "cp_nom": (
+                    commune.collectivite_porteuse.nom
+                    if commune.collectivite_porteuse
+                    else None
+                ),
+                "cp_siren": commune.collectivite_porteuse_siren,
+                "cp_code_insee": commune.collectivite_porteuse_code_insee,
                 "plan_code_etat_simplifie": commune.code_etat_simplifie,
                 "plan_libelle_code_etat_simplifie": commune.libelle_code_etat_simplifie,
-                "plan_code_etat_complet": commune.code_etat_complet,
-                "plan_libelle_code_etat_complet": commune.libelle_code_etat_complet,
+                "plan_code_etat_complet": getattr(commune, "code_etat_complet", None),
+                "plan_libelle_code_etat_complet": getattr(
+                    commune, "libelle_code_etat_complet", None
+                ),
             }
 
             champs_intercommunalite = {}

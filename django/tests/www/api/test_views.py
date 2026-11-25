@@ -366,8 +366,8 @@ class TestAPIPerimetres:
 class TestAPICommunes:
     def _default_procedure_factory_params(
         self,
-        perimetre: list | None = None,
-        collectivite_porteuse: list | None = None,
+        perimetre: list[core_models.Commune] | None = None,
+        collectivite_porteuse: core_models.Collectivite | None = None,
         procedure_status: core_models.EventCategory | None = None,
     ) -> dict[str, Any]:
         if perimetre is None:
@@ -508,9 +508,36 @@ class TestAPICommunes:
     ) -> None:
         for _ in range(2):
             ProcedureFactory(**self._default_procedure_factory_params())
-            with django_assert_num_queries(3):
-                response = client.get(reverse("api:communes"))
+        with django_assert_num_queries(3):
+            response = client.get(reverse("api:communes"))
         assert response.status_code == 200
+
+    def test_siren_set_but_collectivite_porteuse_not_found(
+        self, client: Client
+    ) -> None:
+        expected_commune = CommuneFactory()
+
+        params = {
+            "base_doc_type": core_enums.BaseDocumentType.PLU,
+            "collectivite_porteuse_id": "123456789",
+            "with_perimetre": [expected_commune],
+            "with_event": True,
+        }
+
+        ProcedureFactory(**params)
+        response = client.get(reverse("api:communes"))
+        assert response.status_code == 200
+        results = csv_to_json_like(response.content)
+        assert results[0]["collectivite_porteuse"] == "123456789"
+        assert results[0]["cp_siren"] == "123456789"
+        assert results[0]["cp_type"] == ""
+        assert results[0]["cp_code_region"] == ""
+        assert results[0]["cp_lib_region"] == ""
+        assert results[0]["cp_code_departement"] == ""
+        assert results[0]["cp_nom_departement"] == ""
+        assert results[0]["cp_nom"] == ""
+        assert results[0]["plan_code_etat_complet"] == ""
+        assert results[0]["plan_libelle_code_etat_complet"] == ""
 
     def test_is_nouvelle(
         self,

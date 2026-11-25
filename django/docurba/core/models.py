@@ -1695,6 +1695,38 @@ class Commune(Collectivite):
             return self.plan_opposable.collectivite_porteuse
         return self
 
+    @property
+    def collectivite_porteuse_code_insee(self) -> str:
+        # The ID is is a SIREN or an insee code today
+        # but this will change in the future when we will replace
+        # the Collectivite.id by an UUID and when we will transfer
+        # procedures from dead to alive organizations.
+        if self.collectivite_porteuse:
+            return self.collectivite_porteuse.code_insee
+        collectivite_porteuse_id = None
+        if self.plan_opposable:
+            collectivite_porteuse_id = self.plan_opposable.collectivite_porteuse_id
+        if self.plan_en_cours:
+            collectivite_porteuse_id = self.plan_en_cours.collectivite_porteuse_id
+
+        return collectivite_porteuse_id if len(collectivite_porteuse_id) == 5 else ""  # noqa: PLR2004
+
+    @property
+    def collectivite_porteuse_siren(self) -> str:
+        # The ID is is a SIREN or an insee code today
+        # but this will change in the future when we will replace
+        # the Collectivite.id by an UUID and when we will transfer
+        # procedures from dead to alive organizations.
+        if self.collectivite_porteuse:
+            return self.collectivite_porteuse.siren
+        collectivite_porteuse_id = None
+        if self.plan_opposable:
+            collectivite_porteuse_id = self.plan_opposable.collectivite_porteuse_id
+        if self.plan_en_cours:
+            collectivite_porteuse_id = self.plan_en_cours.collectivite_porteuse_id
+
+        return collectivite_porteuse_id if len(collectivite_porteuse_id) == 9 else ""  # noqa: PLR2004
+
     def is_opposable(self, procedure: Procedure) -> bool:
         return procedure in (self.plan_opposable, self.schema_opposable)
 
