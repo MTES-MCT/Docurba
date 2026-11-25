@@ -154,7 +154,7 @@ class Command(BaseCommand):
                         "old_type": "",
                         "new_type": cp.collectivite_type,
                         "old_commune_id": "",
-                        "new_commune_id": cp.commune_id,
+                        "new_commune_id": cp.collectivite_code,
                         "procedure_link": cp.procedure.get_absolute_url(),
                     }
                 )
