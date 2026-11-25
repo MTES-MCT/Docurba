@@ -2987,6 +2987,70 @@ class TestCommune:
         commune = core_models.Commune.objects.with_procedures_principales().first()
         assert commune.collectivite_porteuse.code_insee_unique == collectivite_attendue
 
+    @pytest.mark.django_db
+    def test_collectivite_porteuse_code_insee(self) -> None:
+        commune = CommuneFactory(code_insee="13001")
+        procedure = ProcedureFactory(
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            collectivite_porteuse_id="12345",
+            with_perimetre=[commune],
+        )
+        procedure.event_set.create(
+            type="Délibération d'approbation", date_evenement=timezone.now()
+        )
+        commune = core_models.Commune.objects.with_procedures_principales().first()
+        assert commune.collectivite_porteuse_code_insee == "12345"
+        assert commune.collectivite_porteuse_siren == ""
+
+        procedure.collectivite_porteuse = commune
+        procedure.save()
+        commune = core_models.Commune.objects.with_procedures_principales().first()
+        assert commune.collectivite_porteuse_code_insee == "13001"
+        assert commune.collectivite_porteuse_siren == ""
+
+        # If an ongoing procedure exist, it should come first.
+        procedure = ProcedureFactory(
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            collectivite_porteuse_id="54321",
+            with_perimetre=[commune],
+        )
+        procedure.event_set.create(type="Prescription", date_evenement=timezone.now())
+        commune = core_models.Commune.objects.with_procedures_principales().first()
+        assert commune.collectivite_porteuse_code_insee == "54321"
+        assert commune.collectivite_porteuse_siren == ""
+
+    @pytest.mark.django_db
+    def test_collectivite_porteuse_siren(self) -> None:
+        commune = CommuneFactory(code_insee="13001")
+        procedure = ProcedureFactory(
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            collectivite_porteuse_id="123456789",
+            with_perimetre=[commune],
+        )
+        procedure.event_set.create(
+            type="Délibération d'approbation", date_evenement=timezone.now()
+        )
+        commune = core_models.Commune.objects.with_procedures_principales().first()
+        assert commune.collectivite_porteuse_code_insee == ""
+        assert commune.collectivite_porteuse_siren == "123456789"
+
+        procedure.collectivite_porteuse = commune
+        procedure.save()
+        commune = core_models.Commune.objects.with_procedures_principales().first()
+        assert commune.collectivite_porteuse_code_insee == "13001"
+        assert commune.collectivite_porteuse_siren == ""
+
+        # If an ongoing procedure exist, it should come first.
+        procedure = ProcedureFactory(
+            base_doc_type=core_enums.BaseDocumentType.PLU,
+            collectivite_porteuse_id="987654321",
+            with_perimetre=[commune],
+        )
+        procedure.event_set.create(type="Prescription", date_evenement=timezone.now())
+        commune = core_models.Commune.objects.with_procedures_principales().first()
+        assert commune.collectivite_porteuse_code_insee == ""
+        assert commune.collectivite_porteuse_siren == "987654321"
+
 
 class TestCommuneOpposabilite:
     @pytest.mark.django_db
