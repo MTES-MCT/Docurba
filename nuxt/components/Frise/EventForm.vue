@@ -222,15 +222,13 @@ export default {
 
         if (this.eventId) {
           await this.$djangoApi.patch(`/api-internes/evenements/${this.eventId}/`, upsertEvent)
-          await this.$procedure.updateStatus(this.procedure)
           await this.saveAttachements()
         } else {
           const payload = {
             ...upsertEvent,
             procedureId: this.procedure.id
           }
-          const savedEvents = await this.$djangoApi.post('/api-internes/evenements/', payload)
-          await this.$procedure.updateStatus(this.procedure)
+          await this.$djangoApi.post('/api-internes/evenements/', payload)
           await this.saveAttachements()
         }
         if (this.overrideHuwartField) {
@@ -260,7 +258,6 @@ export default {
     async archiveEvent () {
       this.saveAttachements()
       await this.$djangoApi.delete(`/api-internes/evenements/${this.eventId}/`)
-      await this.$procedure.updateStatus(this.procedure)
       this.$router.push({ name: 'frise-procedureId', params: { procedureId: this.procedure.id }, query: this.$route.query })
     }
   }

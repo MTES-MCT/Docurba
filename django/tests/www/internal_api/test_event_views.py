@@ -1,5 +1,6 @@
 from datetime import timedelta
 from urllib.parse import urlencode
+from zoneinfo import ZoneInfo
 
 import pytest
 from django.conf import settings
@@ -11,10 +12,17 @@ from rest_framework.test import APIClient
 from syrupy import SnapshotAssertion
 from syrupy.matchers import path_value
 
-from docurba.core.enums import EventScope, VisibilityType
+from docurba.core.enums import (
+    BaseDocumentType,
+    EventScope,
+    ProcedureStatusChoices,
+    VisibilityType,
+)
 from docurba.core.models import Event, EventType
+from docurba.utils.date import end_of_day
 from tests.conftest import SupabaseApiTestClient
 from tests.core.factories import (
+    CommuneFactory,
     EventFactory,
     EventTypeFactory,
     ProcedureFactory,
@@ -300,7 +308,7 @@ class TestEventAPI:
 
         with (
             api_client_with_auth(profile) as api_client,
-            django_assert_num_queries(5),
+            django_assert_num_queries(9),
         ):
             response = api_client.post(url, format="json", data=data)
 
@@ -403,7 +411,7 @@ class TestEventAPI:
         url = reverse("internal_api:events-detail", args=[event.pk])
         with (
             api_client_with_auth(profile) as api_client,
-            django_assert_num_queries(6),
+            django_assert_num_queries(10),
         ):
             response = api_client.put(url, format="json", data=data)
 
@@ -420,7 +428,7 @@ class TestEventAPI:
         url = reverse("internal_api:events-detail", args=[event.pk])
         with (
             api_client_with_auth(profile) as api_client,
-            django_assert_num_queries(5),
+            django_assert_num_queries(8),
         ):
             response = api_client.patch(url, format="json", data=data)
 
@@ -470,7 +478,7 @@ class TestEventAPI:
         url = reverse("internal_api:events-detail", args=[event.pk])
         with (
             api_client_with_auth(profile) as api_client,
-            django_assert_num_queries(6),
+            django_assert_num_queries(10),
         ):
             response = api_client.put(url, format="json", data=data)
 
@@ -483,7 +491,7 @@ class TestEventAPI:
         url = reverse("internal_api:events-detail", args=[event.pk])
         with (
             api_client_with_auth(profile) as api_client,
-            django_assert_num_queries(5),
+            django_assert_num_queries(9),
         ):
             response = api_client.patch(url, format="json", data=data)
 
@@ -510,7 +518,7 @@ class TestEventAPI:
         url = reverse("internal_api:events-detail", args=[deleted_event.pk])
         with (
             api_client_with_auth(profile) as api_client,
-            django_assert_num_queries(5),
+            django_assert_num_queries(9),
         ):
             response = api_client.delete(url, format="json")
 
@@ -775,3 +783,448 @@ class TestPublicEventAPI:
             response = api_client.get(url, format="json")
 
         assert response.status_code == 404
+
+
+@pytest.mark.django_db
+class TestEventAPISynchronizeProcedureStatus:
+    def test_create_event_sync_procedure_status(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        procedure = ProcedureFactory(
+            status=ProcedureStatusChoices.OPPOSABLE,
+        )
+
+        event_type = EventTypeFactory(impact=ProcedureStatusChoices.ANNULE)
+
+        data = {
+            "procedureId": procedure.id,
+            "otherName": "Event Test 1",
+            "eventTypeId": event_type.id,
+            "dateEvenement": timezone.now(),
+            "description": "Lorem ipsum dolor sit amet",
+            "visibility": "public",
+            "attachements": [],
+        }
+        url = reverse("internal_api:events-list")
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(9),
+        ):
+            response = api_client.post(url, format="json", data=data)
+
+        assert response.status_code == 201
+        procedure.refresh_from_db()
+        assert procedure.status == ProcedureStatusChoices.ANNULE
+
+    def test_update_event_sync_procedure_status(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        event = EventFactory(
+            procedure__status=ProcedureStatusChoices.OPPOSABLE,
+            event_type__impact=ProcedureStatusChoices.ANNULE,
+        )
+
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(9),
+        ):
+            response = api_client.patch(
+                url, format="json", data={"description": "test"}
+            )
+
+        assert response.status_code == 200
+        event.procedure.refresh_from_db()
+        assert event.procedure.status == ProcedureStatusChoices.ANNULE
+
+    def test_delete_event_sync_procedure_status(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        event = EventFactory(
+            procedure__status=ProcedureStatusChoices.OPPOSABLE,
+            event_type__impact=ProcedureStatusChoices.ANNULE,
+        )
+
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(8),
+        ):
+            response = api_client.delete(
+                url,
+                format="json",
+            )
+
+        assert response.status_code == 204
+        event.procedure.refresh_from_db()
+        assert event.procedure.status == ProcedureStatusChoices.EN_PROJET
+
+    def test_synchronize_ignores_future_events_after_end_of_day(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        event = EventFactory(
+            procedure__status=ProcedureStatusChoices.EN_COURS,
+            event_type__impact=ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=end_of_day(timezone.localdate()) + timedelta(seconds=1),
+        )
+
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(9),
+        ):
+            response = api_client.patch(
+                url, format="json", data={"description": "test"}
+            )
+
+        assert response.status_code == 200
+        event.procedure.refresh_from_db()
+        assert event.procedure.status == ProcedureStatusChoices.EN_PROJET
+
+    def test_synchronize_includes_future_events_before_end_of_day(
+        self, api_client_with_auth: SupabaseApiTestClient
+    ) -> None:
+        event = EventFactory(
+            procedure__status=ProcedureStatusChoices.EN_COURS,
+            event_type__impact=ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=end_of_day(timezone.localdate()),
+        )
+        profile = ProfileFactory()
+
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with api_client_with_auth(profile) as api_client:
+            response = api_client.patch(
+                url, format="json", data={"description": "test"}
+            )
+
+        assert response.status_code == 200
+        event.procedure.refresh_from_db()
+        assert event.procedure.status == ProcedureStatusChoices.OPPOSABLE
+
+    @freeze_time("2012-01-01T00:00:00Z")
+    def test_synchronize_ignores_future_events_depending_on_timezone(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        event = EventFactory(
+            procedure__status=ProcedureStatusChoices.EN_COURS,
+            event_type__impact=ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=end_of_day(
+                timezone.localdate(timezone=ZoneInfo("Europe/Paris"))
+            ),
+        )
+
+        timezone.activate(ZoneInfo("Pacific/Tahiti"))  # UTC-10
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(9),
+        ):
+            response = api_client.patch(
+                url, format="json", data={"description": "test"}
+            )
+
+        assert response.status_code == 200
+        event.procedure.refresh_from_db()
+        assert event.procedure.status == ProcedureStatusChoices.EN_PROJET
+
+
+@pytest.mark.django_db
+class TestEventAPISynchronizeCommuneProcedureOpposability:
+    def test_create_event_sync_commune_procedure_opposability(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(with_perimetre=[commune])
+
+        event_type = EventTypeFactory(impact=ProcedureStatusChoices.OPPOSABLE)
+
+        data = {
+            "procedureId": procedure.id,
+            "otherName": "Event Test 1",
+            "eventTypeId": event_type.id,
+            "dateEvenement": timezone.now(),
+            "description": "Lorem ipsum dolor sit amet",
+            "visibility": "public",
+            "attachements": [],
+        }
+        url = reverse("internal_api:events-list")
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(12),
+        ):
+            response = api_client.post(url, format="json", data=data)
+
+        assert response.status_code == 201
+        assert procedure.perimetre_through.get().opposable is True
+
+    def test_update_event_sync_commune_procedure_opposability(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(with_perimetre=[commune])
+        event = EventFactory(
+            procedure=procedure,
+            event_type__impact=ProcedureStatusChoices.OPPOSABLE,
+        )
+
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(12),
+        ):
+            response = api_client.patch(
+                url, format="json", data={"description": "test"}
+            )
+
+        assert response.status_code == 200
+        assert procedure.perimetre_through.get().opposable is True
+
+    def test_delete_event_sync_commune_procedure_opposability(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        now = timezone.now()
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(with_perimetre=[commune])
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now - timedelta(days=365),
+        )
+        event = EventFactory(
+            procedure=procedure,
+            event_type__impact=ProcedureStatusChoices.CADUC,
+            date_evenement=now,
+        )
+
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(12),
+        ):
+            response = api_client.delete(
+                url,
+                format="json",
+            )
+
+        assert response.status_code == 204
+        assert procedure.perimetre_through.get().opposable is True
+
+    def test_synchronize_resets_stale_opposable_flag(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        now = timezone.now()
+        # Historically flagged as opposable by Nuxt, but the last impactful
+        # event is no longer opposable.
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(with_perimetre=[commune])
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now - timedelta(days=365),
+        )
+        event = EventFactory(
+            procedure=procedure,
+            event_type__impact=ProcedureStatusChoices.ANNULE,
+            date_evenement=now,
+        )
+        perimetre_line = procedure.perimetre_through.get()
+        perimetre_line.opposable = True
+        perimetre_line.save(update_fields=["opposable"])
+
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(13),
+        ):
+            response = api_client.patch(
+                url, format="json", data={"description": "test"}
+            )
+        assert response.status_code == 200
+
+        assert procedure.perimetre_through.get().opposable is False
+
+    def test_synchronize_synchronizes_other_procedures_of_perimetre_communes(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        now = timezone.now()
+        # Synchronizing a procedure also updates the flags of the other
+        # procedures sharing its perimetre communes.
+        commune = CommuneFactory()
+        procedure_avant = ProcedureFactory(
+            base_doc_type=BaseDocumentType.PLU, with_perimetre=[commune]
+        )
+        EventFactory(
+            procedure=procedure_avant,
+            event_type__impact=ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now - timedelta(days=365),
+        )
+        procedure_apres = ProcedureFactory(
+            base_doc_type=BaseDocumentType.PLU, with_perimetre=[commune]
+        )
+        event = EventFactory(
+            procedure=procedure_apres,
+            event_type__impact=ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=now,
+        )
+        stale_line = procedure_avant.perimetre_through.get()
+        stale_line.opposable = True
+        stale_line.save(update_fields=["opposable"])
+
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(12),
+        ):
+            response = api_client.patch(
+                url, format="json", data={"description": "test"}
+            )
+        assert response.status_code == 200
+
+        assert procedure_apres.perimetre_through.get().opposable is True
+        assert procedure_avant.perimetre_through.get().opposable is False
+
+    def test_synchronize_leaves_communes_outside_perimetre_untouched(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(with_perimetre=[commune])
+        event = EventFactory(
+            procedure=procedure,
+            event_type__impact=ProcedureStatusChoices.OPPOSABLE,
+        )
+        autre_commune = CommuneFactory()
+        autre_procedure = ProcedureFactory(with_perimetre=[autre_commune])
+        autre_line = autre_procedure.perimetre_through.get()
+        autre_line.opposable = True
+        autre_line.save(update_fields=["opposable"])
+
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(12),
+        ):
+            response = api_client.patch(
+                url, format="json", data={"description": "test"}
+            )
+        assert response.status_code == 200
+
+        assert procedure.perimetre_through.get().opposable is True
+        # The stale flag outside the procedure perimetre is left untouched.
+        assert autre_procedure.perimetre_through.get().opposable is True
+
+    def test_synchronize_synchronizes_opposability_for_secondary_procedure(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = CommuneFactory()
+        procedure_secondaire = ProcedureFactory(
+            with_perimetre=[commune],
+            with_parente=True,
+            parente__with_perimetre=[commune],
+        )
+        event = EventFactory(
+            procedure=procedure_secondaire.parente,
+            event_type__impact=ProcedureStatusChoices.OPPOSABLE,
+        )
+
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(12),
+        ):
+            response = api_client.patch(
+                url, format="json", data={"description": "test"}
+            )
+        assert response.status_code == 200
+
+        assert procedure_secondaire.parente.perimetre_through.get().opposable is True
+        assert procedure_secondaire.perimetre_through.get().opposable is False
+
+    def test_synchronize_ignores_future_events_after_end_of_day(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(with_perimetre=[commune])
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=end_of_day(timezone.localdate()),
+        )
+        event = EventFactory(
+            procedure=procedure,
+            event_type__impact=ProcedureStatusChoices.CADUC,
+            date_evenement=end_of_day(timezone.localdate()) + timedelta(seconds=1),
+        )
+
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(13),
+        ):
+            response = api_client.patch(
+                url, format="json", data={"description": "test"}
+            )
+
+        assert response.status_code == 200
+        assert procedure.perimetre_through.get().opposable is True
+
+    @freeze_time("2012-01-01T00:00:00Z")
+    def test_synchronize_ignores_future_events_depending_on_timezone(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        commune = CommuneFactory()
+        procedure = ProcedureFactory(with_perimetre=[commune])
+        EventFactory(
+            procedure=procedure,
+            event_type__impact=ProcedureStatusChoices.OPPOSABLE,
+            date_evenement=end_of_day(
+                timezone.localdate(timezone=ZoneInfo("Pacific/Tahiti"))
+            ),
+        )
+        event = EventFactory(
+            procedure=procedure,
+            event_type__impact=ProcedureStatusChoices.CADUC,
+            date_evenement=end_of_day(
+                timezone.localdate(timezone=ZoneInfo("Europe/Paris"))
+            ),
+        )
+
+        timezone.activate(ZoneInfo("Pacific/Tahiti"))  # UTC-10
+        url = reverse("internal_api:events-detail", args=[event.pk])
+        with (
+            api_client_with_auth(ProfileFactory()) as api_client,
+            django_assert_num_queries(13),
+        ):
+            response = api_client.patch(
+                url, format="json", data={"description": "test"}
+            )
+
+        assert response.status_code == 200
+        assert procedure.perimetre_through.get().opposable is True

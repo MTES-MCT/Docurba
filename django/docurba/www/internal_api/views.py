@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from rest_framework import generics, status, viewsets
-from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sendgrid_backend.mail import HTTPError
@@ -127,14 +126,74 @@ class EventViewSet(viewsets.ModelViewSet):
     def perform_destroy(self, instance: core_models.Event) -> None:
         instance.archive(archived_by=self.request.user.profile)
         instance.save()
+        self._synchronize(instance.procedure)
 
     def perform_create(self, serializer: core_serializers.EventSerializer) -> None:
         serializer.save(
             profile=self.request.user.profile, created_by=self.request.user.profile
         )
+        self._synchronize(serializer.validated_data["procedure"])
 
     def perform_update(self, serializer: core_serializers.EventSerializer) -> None:
         serializer.save(profile=self.request.user.profile)
+        self._synchronize(serializer.instance.procedure)
+
+    def _synchronize(self, procedure: core_models.Procedure) -> None:
+        date_pivot = end_of_day(timezone.localdate())
+        self._sync_procedure_status(procedure, date_pivot)
+        self._sync_commune_procedure_opposability(procedure, date_pivot)
+
+    def _sync_procedure_status(
+        self, procedure: core_models.Procedure, date_pivot: datetime
+    ) -> None:
+        procedure.status = procedure.compute_status(date_pivot=date_pivot)
+        procedure.save(update_fields=["status"])
+
+    def _sync_commune_procedure_opposability(
+        self, procedure: core_models.Procedure, date_pivot: datetime
+    ) -> None:
+        # Update the opposable flag on every perimetre line of this
+        # procedure's communes, following the commune-level view of
+        # opposability.
+        communes = (
+            core_models.Commune.objects.filter(procedures_through__procedure=procedure)
+            .distinct()
+            .prefetch_related(
+                models.Prefetch(
+                    "procedures_through",
+                    queryset=core_models.CommuneProcedure.objects.select_related(
+                        "procedure"
+                    ).prefetch_related(
+                        models.Prefetch(
+                            "procedure__event_set",
+                            queryset=core_models.Event.objects.filter_impactful(
+                                date_pivot=date_pivot
+                            ),
+                        )
+                    ),
+                )
+            )
+        )
+
+        perimetre_lines_to_update = []
+        for commune in communes:
+            opposable_line_ids = {
+                line.id
+                for line in core_models.CommuneProcedure.get_opposables_for_commune(
+                    commune, date_pivot=date_pivot
+                )
+            }
+            for perimetre_line in commune.procedures_through.all():
+                opposable = perimetre_line.id in opposable_line_ids
+                if perimetre_line.opposable == opposable:
+                    continue
+                perimetre_line.opposable = opposable
+                perimetre_lines_to_update.append(perimetre_line)
+
+        if perimetre_lines_to_update:
+            core_models.CommuneProcedure.objects.bulk_update(
+                perimetre_lines_to_update, ["opposable"], batch_size=1000
+            )
 
 
 class UserMustUpdatePasswordView(PublicAPIView, generics.GenericAPIView):
@@ -224,74 +283,6 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]  # noqa: RUF012
     serializer_class = core_serializers.ProcedureSerializer
     filterset_class = custom_filters.ProcedureFilter
-
-    def get_queryset(self):  # noqa: ANN201
-        queryset = super().get_queryset()
-        if self.action == "synchronize_status":
-            queryset = core_models.Procedure.objects.prefetch_related(
-                models.Prefetch(
-                    "event_set",
-                    queryset=core_models.Event.objects.filter_impactful(),
-                )
-            )
-        return queryset
-
-    @action(detail=True, methods=["post"], url_path="synchronize-status")
-    def synchronize_status(
-        self, _request: Request, *_args: list, **_kwargs: dict
-    ) -> Response:
-        date_pivot = end_of_day(timezone.localdate())
-        procedure = self.get_object()
-        procedure.status = procedure.compute_status(date_pivot=date_pivot)
-        procedure.save(update_fields=["status"])
-        self._synchronize_opposability(procedure, date_pivot=date_pivot)
-        return Response({"status": procedure.status})
-
-    def _synchronize_opposability(
-        self, procedure: core_models.Procedure, date_pivot: datetime
-    ) -> None:
-        # Update the opposable flag on every perimetre line of this
-        # procedure's communes, following the commune-level view of
-        # opposability.
-        communes = (
-            core_models.Commune.objects.filter(procedures_through__procedure=procedure)
-            .distinct()
-            .prefetch_related(
-                models.Prefetch(
-                    "procedures_through",
-                    queryset=core_models.CommuneProcedure.objects.select_related(
-                        "procedure"
-                    ).prefetch_related(
-                        models.Prefetch(
-                            "procedure__event_set",
-                            queryset=core_models.Event.objects.filter_impactful(
-                                date_pivot=date_pivot
-                            ),
-                        )
-                    ),
-                )
-            )
-        )
-
-        perimetre_lines_to_update = []
-        for commune in communes:
-            opposable_line_ids = {
-                line.id
-                for line in core_models.CommuneProcedure.get_opposables_for_commune(
-                    commune, date_pivot=date_pivot
-                )
-            }
-            for perimetre_line in commune.procedures_through.all():
-                opposable = perimetre_line.id in opposable_line_ids
-                if perimetre_line.opposable == opposable:
-                    continue
-                perimetre_line.opposable = opposable
-                perimetre_lines_to_update.append(perimetre_line)
-
-        if perimetre_lines_to_update:
-            core_models.CommuneProcedure.objects.bulk_update(
-                perimetre_lines_to_update, ["opposable"], batch_size=1000
-            )
 
 
 class ProcedureComputeName(PublicAPIView, generics.GenericAPIView):
