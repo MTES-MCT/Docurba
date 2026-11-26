@@ -212,7 +212,7 @@ REST_FRAMEWORK = {
         "docurba.api.auth.SupabaseAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
+        "docurba.api.permissions.IsVerified",
     ],
     "PAGE_SIZE": 200,
 }

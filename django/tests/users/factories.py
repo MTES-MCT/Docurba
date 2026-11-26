@@ -26,6 +26,16 @@ class ProfileFactory(factory.django.DjangoModelFactory):
 
     class Params:
         for_snapshot = factory.Trait(user__for_snapshot=True)
+        with_jurisdiction_for_snapshot = factory.Trait(
+            collectivite=factory.SubFactory(
+                "tests.core.factories.CollectiviteFactory",
+                for_snapshot=True,
+                with_flat_members=True,
+                with_flat_members__for_snapshot=True,
+            ),
+            verified=True,
+            departement__for_snapshot=True,
+        )
 
     user = factory.SubFactory(
         SupabaseUserFactory, email=factory.SelfAttribute("..email")

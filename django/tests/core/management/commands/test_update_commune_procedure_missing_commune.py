@@ -12,7 +12,9 @@ class TestUpdateCommuneProcedureMissingCommune:
         self, caplog: pytest.LogCaptureFixture, capsys: pytest.LogCaptureFixture
     ) -> None:
         commune = CommuneFactory(code_insee="30189", type=core_enums.CommuneType.COM)
-        procedure = ProcedureFactory(with_perimetre=[commune], for_snapshot=True)
+        procedure = ProcedureFactory(
+            with_perimetre=True, with_perimetre__list=[commune], for_snapshot=True
+        )
         commune_procedure = core_models.CommuneProcedure.objects.get(
             procedure_id=procedure.pk
         )
@@ -46,7 +48,9 @@ class TestUpdateCommuneProcedureMissingCommune:
         # # Try to find the commune only if there is one match.
         # # It was a COMD, now it's a COM.
         commune = CommuneFactory(code_insee="30189", type=core_enums.CommuneType.COM)
-        procedure = ProcedureFactory(with_perimetre=[commune], for_snapshot=True)
+        procedure = ProcedureFactory(
+            with_perimetre=True, with_perimetre__list=[commune], for_snapshot=True
+        )
         commune_procedure = core_models.CommuneProcedure.objects.get(
             procedure_id=procedure.pk
         )
@@ -74,7 +78,9 @@ class TestUpdateCommuneProcedureMissingCommune:
         # # Try to find the commune only if there is one match.
         # # It was a COMD, now it's a COM.
         commune = CommuneFactory(code_insee="30189", type=core_enums.CommuneType.COM)
-        procedure = ProcedureFactory(with_perimetre=[commune], for_snapshot=True)
+        procedure = ProcedureFactory(
+            with_perimetre=True, with_perimetre__list=[commune], for_snapshot=True
+        )
         [commune_procedure] = core_models.CommuneProcedure.objects.bulk_create(
             [
                 core_models.CommuneProcedure(
@@ -115,7 +121,9 @@ class TestUpdateCommuneProcedureMissingCommune:
             type=core_enums.CommuneType.COMD,
             nouvelle=commune_nouvelle,
         )
-        procedure = ProcedureFactory(with_perimetre=[commune], for_snapshot=True)
+        procedure = ProcedureFactory(
+            with_perimetre=True, with_perimetre__list=[commune], for_snapshot=True
+        )
         commune_procedure = core_models.CommuneProcedure.objects.get(
             procedure_id=procedure.pk
         )
@@ -154,7 +162,9 @@ class TestUpdateCommuneProcedureMissingCommune:
             nouvelle=commune_nouvelle,
         )
         procedure = ProcedureFactory(
-            with_perimetre=[commune, commune_nouvelle], for_snapshot=True
+            with_perimetre=True,
+            with_perimetre__list=[commune, commune_nouvelle],
+            for_snapshot=True,
         )
         commune_procedure = core_models.CommuneProcedure.objects.get(
             procedure_id=procedure.pk,
@@ -201,7 +211,9 @@ class TestUpdateCommuneProcedureMissingCommune:
             type=core_enums.CommuneType.COMD,
             nouvelle=commune_nouvelle,
         )
-        procedure = ProcedureFactory(with_perimetre=[commune])
+        procedure = ProcedureFactory(
+            with_perimetre=True, with_perimetre__list=[commune]
+        )
         commune_procedure = core_models.CommuneProcedure.objects.get(
             procedure_id=procedure.pk
         )
@@ -226,7 +238,9 @@ class TestUpdateCommuneProcedureMissingCommune:
             code_insee="30197",
             type=core_enums.CommuneType.COM,
         )
-        procedure = ProcedureFactory(with_perimetre=[commune])
+        procedure = ProcedureFactory(
+            with_perimetre=True, with_perimetre__list=[commune]
+        )
         commune_procedure = core_models.CommuneProcedure.objects.get(
             procedure_id=procedure.pk
         )
@@ -249,7 +263,9 @@ class TestUpdateCommuneProcedureMissingCommune:
 
     def test_ignored_correct_pk(self, caplog: pytest.LogCaptureFixture) -> None:
         commune = CommuneFactory(code_insee="30188")
-        procedure = ProcedureFactory(with_perimetre=[commune])
+        procedure = ProcedureFactory(
+            with_perimetre=True, with_perimetre__list=[commune]
+        )
         call_command("update_commune_procedure_missing_commune", wet_run=True)
         commune_procedure = core_models.CommuneProcedure.objects.get(
             procedure_id=procedure.pk

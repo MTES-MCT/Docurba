@@ -179,7 +179,8 @@ class TestLinkEventsWithEventTypes:
         event = EventFactory(
             event_type=None,
             procedure__base_doc_type=procedure_base_doc_type,
-            procedure__with_perimetre=perimetre,
+            procedure__with_perimetre=True,
+            procedure__with_perimetre__list=perimetre,
             type=e_name,
             code=e_code,
         )

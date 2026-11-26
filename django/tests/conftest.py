@@ -77,7 +77,7 @@ def admin_session_client(django_db_blocker: DjangoDbBlocker | None) -> Client:
         try:
             user = UserModel.objects.get(email=email)
         except UserModel.DoesNotExist:
-            profile = ProfileFactory(email=email)
+            profile = ProfileFactory(email=email, verified=True)
             data = {
                 "email": email,
                 "password": "password",

@@ -282,12 +282,24 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
     def with_perimetre(
         self,
         create: bool,  # noqa: FBT001
-        extracted: list[core_models.Commune] | None,
+        extracted: bool,  # noqa: FBT001
+        **extra: dict,
     ) -> None:
         if not create or not extracted:
             return
 
-        for commune in extracted:
+        communes = extra.get("list")
+        if extra.get("matching_profile_jurisdiction"):
+            profile = extra.get("profile_jurisdiction")
+            collectivite = profile.collectivite
+            jurisdiction_insee_codes = collectivite.flat_members.filter(
+                type=core_enums.CommuneType.COM
+            ).values_list("code_insee", flat=True)
+            communes = core_models.Commune.objects.filter(
+                code_insee__in=jurisdiction_insee_codes
+            )
+
+        for commune in communes:
             CommuneProcedureFactory(
                 procedure=self,
                 commune=commune,

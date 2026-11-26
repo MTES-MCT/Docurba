@@ -9,11 +9,11 @@ from django.db import models
 from django.utils import timezone
 from rest_framework import generics, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sendgrid_backend.mail import HTTPError
 
 from docurba.api.auth import SupabaseAuthentication
+from docurba.api.permissions import IsVerified
 from docurba.core import models as core_models
 from docurba.users import models as users_models
 from docurba.utils.api.views import PublicAPIView
@@ -161,42 +161,57 @@ class UserPassword(generics.GenericAPIView):
         )
 
 
-class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = (
-        core_models.Procedure.objects.with_events()
-        .with_collectivite_porteuse_communes_adherentes_count()
-        .with_perimetre_without_deleguees_count()
-        .select_related(
-            "collectivite_porteuse",
-            "collectivite_porteuse__commune",
-            "parente",
-            "parente__collectivite_porteuse",
-            "parente__collectivite_porteuse__commune",
-        )
-        .prefetch_related(
-            "topics",
-            models.Prefetch(
-                "perimetre",
-                core_models.Commune.objects.select_related(
-                    "departement",
-                    "departement__region",
-                    "intercommunalite",
-                )
-                .with_opposable()
-                .order_by("code_insee"),
-            ),
-        )
-        .order_by("pk")
-    )
+class ProcedureViewSet(viewsets.ModelViewSet):
     authentication_classes = [SupabaseAuthentication]  # noqa: RUF012
-    permission_classes = [IsAuthenticated]  # noqa: RUF012
+    permission_classes = [IsVerified]  # noqa: RUF012
     serializer_class = core_serializers.ProcedureSerializer
     filterset_class = custom_filters.ProcedureFilter
 
     def get_queryset(self):  # noqa: ANN201
-        queryset = super().get_queryset()
+        procedures_qs = core_models.Procedure.objects
+        if not self.request.user.profile.is_admin:
+            # This will change in the future.
+            departements = [self.request.user.profile.departement.code_insee]
+            if self.request.user.profile.departements:
+                departements.extend(self.request.user.profile.departements)
+            departements = list(set(departements))
+            procedures_qs = core_models.Procedure.objects.filter(
+                models.Exists(
+                    core_models.CommuneProcedure.objects.filter(
+                        procedure=models.OuterRef("pk"),
+                        commune__departement__code_insee__in=departements,
+                    )
+                )
+            )
+        queryset = (
+            procedures_qs.defer(None)
+            .with_events()
+            .with_collectivite_porteuse_communes_adherentes_count()
+            .with_perimetre_without_deleguees_count()
+            .select_related(
+                "collectivite_porteuse",
+                "collectivite_porteuse__commune",
+            )
+            .prefetch_related(
+                models.Prefetch(
+                    "topics_through",
+                    core_models.ProcedureTopic.objects.select_related("topic"),
+                ),
+                models.Prefetch(
+                    "perimetre",
+                    core_models.Commune.objects.select_related(
+                        "departement",
+                        "departement__region",
+                        "intercommunalite",
+                    )
+                    .with_opposable()
+                    .order_by("code_insee"),
+                ),
+            )
+            .order_by("pk")
+        )
         if self.action == "synchronize_status":
-            queryset = core_models.Procedure.objects.prefetch_related(
+            queryset = procedures_qs.prefetch_related(
                 models.Prefetch(
                     "event_set",
                     queryset=core_models.Event.objects.filter_impactful(),
@@ -260,6 +275,15 @@ class ProcedureViewSet(viewsets.ReadOnlyModelViewSet):
             core_models.CommuneProcedure.objects.bulk_update(
                 perimetre_lines_to_update, ["opposable"], batch_size=1000
             )
+
+    def create(self) -> Response:
+        return NotImplementedError
+
+    def update(self) -> Response:
+        return NotImplementedError
+
+    def destroy(self) -> Response:
+        return NotImplementedError
 
 
 class ProcedureComputeName(PublicAPIView, generics.GenericAPIView):

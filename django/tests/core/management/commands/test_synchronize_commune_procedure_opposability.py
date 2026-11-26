@@ -21,7 +21,8 @@ class TestSynchronizeCommuneProcedureOpposability:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure,
@@ -45,7 +46,8 @@ class TestSynchronizeCommuneProcedureOpposability:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure,
@@ -56,7 +58,8 @@ class TestSynchronizeCommuneProcedureOpposability:
         other_commune = CommuneFactory()
         other_procedure = ProcedureFactory(
             collectivite_porteuse=other_commune,
-            with_perimetre=[other_commune],
+            with_perimetre=True,
+            with_perimetre__list=[other_commune],
         )
         EventFactory(
             procedure=other_procedure,
@@ -97,7 +100,8 @@ class TestSynchronizeCommuneProcedureOpposability:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure,
@@ -142,9 +146,11 @@ class TestSynchronizeCommuneProcedureOpposability:
         commune = CommuneFactory()
         procedure_secondaire = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
             with_parente=True,
-            parente__with_perimetre=[commune],
+            parente__with_perimetre=True,
+            parente__with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure_secondaire,
@@ -183,7 +189,8 @@ class TestSynchronizeCommuneProcedureOpposability:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure,
