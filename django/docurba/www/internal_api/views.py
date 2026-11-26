@@ -168,16 +168,23 @@ class ProcedureViewSet(viewsets.ModelViewSet):
     filterset_class = custom_filters.ProcedureFilter
 
     def get_queryset(self):  # noqa: ANN201
-        departements = [self.request.user.profile.departement.code_insee]
-        # This will change in the future.
-        if self.request.user.profile.departements:
-            departements.append(*self.request.user.profile.departements)
-        departements = list(set(departements))
-        base_queryset = core_models.Procedure.objects.filter(
-            perimetre__departement__in=departements
-        )
+        procedures_qs = core_models.Procedure.objects
+        if not self.request.user.profile.is_admin:
+            # This will change in the future.
+            departements = [self.request.user.profile.departement.code_insee]
+            if self.request.user.profile.departements:
+                departements.extend(self.request.user.profile.departements)
+            departements = list(set(departements))
+            procedures_qs = core_models.Procedure.objects.filter(
+                models.Exists(
+                    core_models.CommuneProcedure.objects.filter(
+                        procedure=models.OuterRef("pk"),
+                        commune__departement__code_insee__in=departements,
+                    )
+                )
+            )
         queryset = (
-            base_queryset.defer(None)
+            procedures_qs.defer(None)
             .with_events()
             .with_collectivite_porteuse_communes_adherentes_count()
             .with_perimetre_without_deleguees_count()
@@ -204,7 +211,7 @@ class ProcedureViewSet(viewsets.ModelViewSet):
             .order_by("pk")
         )
         if self.action == "synchronize_status":
-            queryset = base_queryset.prefetch_related(
+            queryset = procedures_qs.prefetch_related(
                 models.Prefetch(
                     "event_set",
                     queryset=core_models.Event.objects.filter_impactful(),

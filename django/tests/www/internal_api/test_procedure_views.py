@@ -14,6 +14,7 @@ from syrupy.assertion import SnapshotAssertion
 
 from docurba.core import enums as core_enums
 from docurba.core import models as core_models
+from docurba.users import enums as users_enums
 from docurba.users import models as users_models
 from docurba.utils.date import end_of_day
 from tests.conftest import SupabaseApiTestClient
@@ -24,6 +25,7 @@ BASE_QUERIES = (
     1  # session
     + 1  # profiles for authentication check
     + 1  # count for pagination
+    + 1  # filter procedures by departement for user access control
     + 1  # procedures details
     + 1  # doc_frise_events for with_events()
     + 1  # topics_through
@@ -354,6 +356,103 @@ class TestProcedureList:
             )
         assert response.status_code == 200
         assert response.json()["results"] == snapshot()
+
+    def test_view_only_procedures_from_user_jurisdiction(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        profile = ProfileFactory(with_jurisdiction_for_snapshot=True)
+        procedure = core_factories.ProcedureFactory(
+            with_perimetre=True,
+            with_perimetre__matching_profile_jurisdiction=True,
+            with_perimetre__profile_jurisdiction=profile,
+        )
+        core_factories.ProcedureFactory(
+            with_perimetre=True,
+            with_perimetre__list=[
+                core_factories.CommuneFactory(code_insee="13001")
+            ],  # other departement
+        )
+        with (
+            api_client_with_auth(profile) as api_client,
+            django_assert_num_queries(BASE_QUERIES),
+        ):
+            response = api_client.get(f"{self.url}")
+        assert response.status_code == 200
+        assert response.json()["count"] == 1
+        assert response.json()["results"][0]["id"] == str(procedure.id)
+
+    def test_view_procedures_as_admin(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        profile = ProfileFactory(
+            with_jurisdiction_for_snapshot=True, verified=True, is_admin=True
+        )
+        procedure = core_factories.ProcedureFactory(
+            id=uuid.UUID("11111111-7027-4aa5-8d19-5e1baf8d6f09"),
+            with_perimetre=True,
+            with_perimetre__matching_profile_jurisdiction=True,
+            with_perimetre__profile_jurisdiction=profile,
+        )
+        other_procedure = core_factories.ProcedureFactory(
+            id=uuid.UUID("22222222-7027-4aa5-8d19-5e1baf8d6f09"),
+            with_perimetre=True,
+            with_perimetre__list=[
+                core_factories.CommuneFactory(code_insee="13001")
+            ],  # other departement
+        )
+        with (
+            api_client_with_auth(profile) as api_client,
+            django_assert_num_queries(BASE_QUERIES - 1),
+        ):
+            response = api_client.get(f"{self.url}")
+        assert response.status_code == 200
+        assert response.json()["count"] == 2
+        assert response.json()["results"][0]["id"] == str(procedure.id)
+        assert response.json()["results"][1]["id"] == str(other_procedure.id)
+
+    def test_view_procedures_as_ppa(
+        self,
+        api_client_with_auth: SupabaseApiTestClient,
+        django_assert_num_queries: DjangoAssertNumQueries,
+    ) -> None:
+        profile = ProfileFactory(
+            with_jurisdiction_for_snapshot=True,
+            side=users_enums.ProfileSideType.PPA,
+            departements=["30", "13"],
+            departement__code_insee="30",
+        )
+        procedure = core_factories.ProcedureFactory(
+            id=uuid.UUID("11111111-7027-4aa5-8d19-5e1baf8d6f09"),
+            with_perimetre=True,
+            with_perimetre__matching_profile_jurisdiction=True,
+            with_perimetre__profile_jurisdiction=profile,
+        )
+        other_procedure = core_factories.ProcedureFactory(
+            id=uuid.UUID("22222222-7027-4aa5-8d19-5e1baf8d6f09"),
+            with_perimetre=True,
+            with_perimetre__list=[
+                core_factories.CommuneFactory(code_insee="13001")
+            ],  # other departement
+        )
+        core_factories.ProcedureFactory(
+            with_perimetre=True,
+            with_perimetre__list=[
+                core_factories.CommuneFactory(code_insee="84001")
+            ],  # other departement
+        )
+        with (
+            api_client_with_auth(profile) as api_client,
+            django_assert_num_queries(BASE_QUERIES),
+        ):
+            response = api_client.get(f"{self.url}")
+        assert response.status_code == 200
+        assert response.json()["count"] == 2
+        assert response.json()["results"][0]["id"] == str(procedure.id)
+        assert response.json()["results"][1]["id"] == str(other_procedure.id)
 
     def test_serializer_with_topics(
         self,
