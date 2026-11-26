@@ -4,7 +4,7 @@
 from django.db import models
 from rest_framework import serializers
 
-from docurba.core.enums import CommuneType, ProcedureType, TypeDocument, VisibilityType
+from docurba.core.enums import CommuneType, ProcedureType, TypeDocument
 from docurba.core.models import (
     Collectivite,
     Commune,
@@ -145,26 +145,18 @@ class EventTypeSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     dateEvenement = serializers.DateTimeField(source="date_evenement")
-    isSudocuh = serializers.SerializerMethodField()
-    isValid = serializers.BooleanField(source="is_valid", read_only=True)
-    visibility = serializers.ChoiceField(choices=VisibilityType)
+    name = serializers.CharField(source="type", read_only=True)
 
     class Meta:
         model = Event
         read_only_fields = [
             "id",
-            "isValid",
-            "isSudocuh",
-            "type",
+            "dateEvenement",
+            "name",
         ]
         fields = [
             *read_only_fields,
-            "dateEvenement",
-            "visibility",
         ]
-
-    def get_isSudocuh(self, obj) -> bool:  # noqa: ANN001, N802
-        return bool(obj.from_sudocuh)
 
 
 class ProcedureTopicSerializer(serializers.ModelSerializer):

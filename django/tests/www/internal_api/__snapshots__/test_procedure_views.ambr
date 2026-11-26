@@ -22,7 +22,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': "Révision du PLU d'Aigaliers",
@@ -68,7 +67,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-444444444444',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': "Révision du PLU d'Aigremont",
@@ -114,7 +112,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': 'Élaboration du PLU de Nantes',
@@ -168,7 +165,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': "Révision du PLU d'Aigaliers",
@@ -218,7 +214,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': 'Élaboration du PLU de Nantes',
@@ -268,7 +263,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': "Révision du PLU d'Aigaliers",
@@ -314,7 +308,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': 'Élaboration du PLU de Nantes',
@@ -364,7 +357,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': 'Seconde procédure',
@@ -410,7 +402,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-333333333333',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': 'Troisième procédure',
@@ -456,7 +447,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': 'Élaboration du PLU de Nantes',
@@ -510,7 +500,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': 'Élaboration du PLU de Nantes',
@@ -560,7 +549,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-222222222222',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': 'Seconde procédure',
@@ -606,7 +594,6 @@
       'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
       'lastEvent': dict({
         'dateEvenement': None,
-        'visibility': None,
       }),
       'lastImpactfulEvent': None,
       'name': 'Élaboration du PLU de Nantes',
@@ -670,7 +657,6 @@
         'id': '1cd65b57-7027-4aa5-8d19-5e1baf8d6f09',
         'lastEvent': dict({
           'dateEvenement': None,
-          'visibility': None,
         }),
         'lastImpactfulEvent': None,
         'name': 'Élaboration du PLU de Nantes',
@@ -756,7 +742,6 @@
     'id': '1cd65b57-7027-4aa5-8d19-222222222222',
     'lastEvent': dict({
       'dateEvenement': None,
-      'visibility': None,
     }),
     'lastImpactfulEvent': None,
     'name': 'Révision du PLU de Nantes',
@@ -822,19 +807,13 @@
   dict({
     'dateEvenement': '2026-10-06T01:00:00+02:00',
     'id': 'fb48c069-33c6-4ed2-9db3-222222222222',
-    'isSudocuh': False,
-    'isValid': True,
-    'type': 'Porter à connaissance',
-    'visibility': 'public',
+    'name': 'Porter à connaissance',
   })
 # ---
 # name: TestProcedureList.test_serializer_with_events[lastImpactfulEvent]
   dict({
     'dateEvenement': '2026-10-05T02:00:00+02:00',
     'id': 'fb48c069-33c6-4ed2-9db3-000000000000',
-    'isSudocuh': False,
-    'isValid': True,
-    'type': "Délibération d'approbation",
-    'visibility': 'public',
+    'name': "Délibération d'approbation",
   })
 # ---
