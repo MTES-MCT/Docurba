@@ -41,3 +41,5 @@ MAILERS = {
 SENDGRID_API_KEY = "black_hole"
 PIPEDRIVE_URL = "https://fake-pipedrive.fr/"
 PIPEDRIVE_TOKEN = "123456789"
+
+SYSTEM_PROFILE_IDS = ["1cd65b57-8888-4aa5-8d19-5e1baf8d6f09"]

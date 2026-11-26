@@ -5,6 +5,7 @@ from functools import cached_property
 from operator import attrgetter
 from typing import ClassVar, Self
 
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.functions import RandomUUID, TransactionNow
 from django.core.exceptions import PermissionDenied, ValidationError
@@ -224,7 +225,7 @@ for base_doc_type, types in EVENT_CATEGORY_BY_DOC_TYPE.items():
 class ProcedureQuerySet(models.QuerySet):
     def with_events(self, *, avant: datetime | None = None) -> Self:
         events_qs = (
-            Event.objects.without_archived()
+            Event.objects.exclude_archived()
             .exclude(date_evenement=None)
             .only(
                 "type",
@@ -1169,13 +1170,24 @@ class EventType(models.Model):
 
 
 class EventQuerySet(models.QuerySet):
-    def without_archived(self) -> Self:
+    def exclude_archived(self) -> Self:
+        # See Event.is_archived
         return self.filter(archived_at__isnull=True)
+
+    def filter_public(self) -> Self:
+        # See Event.is_public
+        return self.select_related("event_type").filter(
+            models.Q(visibility=core_enums.VisibilityType.PUBLIC)
+            | (
+                models.Q(from_sudocuh__isnull=False)
+                & models.Q(event_type__is_structuring=True)
+            )
+        )
 
     def filter_impactful(self, date_pivot: datetime | None = None) -> Self:
         # Same logic as Event.is_impactful for queryset context
         queryset = (
-            self.without_archived()
+            self.exclude_archived()
             .filter(
                 is_valid=True,
                 event_type__isnull=False,
@@ -1204,7 +1216,7 @@ class EventQuerySet(models.QuerySet):
         if not archived_by:
             msg = "Le champ “archived_by” doit être renseigné"
             raise ValidationError(msg)
-        return self.without_archived().update(
+        return self.exclude_archived().update(
             archived_at=timezone.now(), archived_by=archived_by
         )
 
@@ -1360,6 +1372,38 @@ class Event(models.Model):
             and self.event_type_id is not None
             and self.event_type.impact != ""
         )
+
+    @property
+    def is_sudocuh(self) -> bool:
+        return bool(self.from_sudocuh)
+
+    @property
+    def is_public(self) -> bool:
+        return bool(
+            self.visibility == core_enums.VisibilityType.PUBLIC
+            or (
+                self.is_sudocuh
+                and self.event_type_id
+                and self.event_type.is_structuring
+            )
+        )
+
+    @property
+    def name(self) -> str:
+        if not self.event_type_id:
+            return self.type
+        if self.is_sudocuh and self.event_type.sudocuh_name:
+            return self.event_type.sudocuh_name
+        return self.event_type.name
+
+    def get_attachement_path(self, attachement_id: str) -> str:
+        if self.is_sudocuh:
+            return attachement_id
+        return f"{self.project_id}/{self.id}/{attachement_id}"
+
+    @property
+    def is_system(self) -> bool:
+        return bool(str(self.profile_id) in settings.SYSTEM_PROFILE_IDS)
 
     @property
     def category(self) -> EventCategory | None:
