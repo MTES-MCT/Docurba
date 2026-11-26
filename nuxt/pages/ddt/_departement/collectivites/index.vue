@@ -476,7 +476,7 @@ export default {
   },
   async mounted () {
     this.$tally('je6JAa', {
-      max: 3,
+      max: 1,
       signupDelay: 30,
       width: 650,
       hideTitle: false
