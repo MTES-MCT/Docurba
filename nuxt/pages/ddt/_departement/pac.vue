@@ -84,7 +84,6 @@
                   <v-menu offset-y left>
                     <template #activator="{ attrs, on }">
                       <v-btn
-                        :loading="item.loadingPdf"
                         :style="{ borderRadius: '4px' }"
                         class="ml-4"
                         color="primary"
@@ -248,12 +247,8 @@ export default {
       this.shareProject = project
       this.shareDialog = true
     },
-    async downloadPdf (project) {
-      project.loadingPdf = true
-      await this.$pdf.pdfFromRef(`projet-${project.id}`, project)
-      delete project.loadingPdf
-      // force v-data-table to refresh
-      this.projects = [...this.projects]
+    downloadPdf (project) {
+      window.open(`/documents/projet-${project.id}/pdf`, '_blank')
     },
     async archive (project) {
       await this.$supabase.from('projects').update({ archived: true }).eq('id', project.id)

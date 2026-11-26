@@ -65,7 +65,6 @@
           <v-menu offset-y left>
             <template #activator="{ attrs, on }">
               <v-btn
-                :loading="loadingPdf"
                 class="ml-2"
                 color="primary"
                 :style="{ borderRadius: '4px' }"
@@ -182,7 +181,6 @@ export default {
       opening: false,
       searchedSectionPath: this.$route.query.path ?? null,
       shareDialog: false,
-      loadingPdf: false,
       renameMode: false,
       newName: ''
     }
@@ -566,10 +564,8 @@ export default {
         }
       }
     },
-    async downloadPdf () {
-      this.loadingPdf = true
-      await this.$pdf.pdfFromRef(this.gitRef, this.project)
-      this.loadingPdf = false
+    downloadPdf () {
+      window.open(`/documents/${this.gitRef}/pdf`, '_blank')
     },
     toggleRenameMode (enable) {
       this.newName = this.project.name
