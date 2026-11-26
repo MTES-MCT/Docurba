@@ -227,7 +227,8 @@ class TestProcedureCommunesCounts:
         procedure_sectorielle = ProcedureFactory(
             collectivite_porteuse=collectivite,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=communes_enfant,
+            with_perimetre=True,
+            with_perimetre__list=communes_enfant,
         )
         with django_assert_num_queries(1):
             procedure_sectorielle_with_counts = core_models.Procedure.objects.get(
@@ -252,7 +253,8 @@ class TestProcedureCommunesCounts:
         procedure_non_sectorielle = ProcedureFactory(
             collectivite_porteuse=collectivite,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=core_models.Commune.objects.all(),
+            with_perimetre=True,
+            with_perimetre__list=core_models.Commune.objects.all(),
         )
 
         with django_assert_num_queries(1):
@@ -281,7 +283,8 @@ class TestProcedureCommunesCounts:
         procedure = ProcedureFactory(
             collectivite_porteuse=collectivite,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[commune_enfant],
+            with_perimetre=True,
+            with_perimetre__list=[commune_enfant],
         )
 
         with django_assert_num_queries(1):
@@ -309,7 +312,8 @@ class TestProcedureCommunesCounts:
         procedure = ProcedureFactory(
             collectivite_porteuse=collectivite,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[commune_enfant, commune_deleguee],
+            with_perimetre=True,
+            with_perimetre__list=[commune_enfant, commune_deleguee],
         )
 
         with django_assert_num_queries(1):
@@ -476,7 +480,8 @@ class TestCollectivitePortantScot:
             scot_opposable = ProcedureFactory(
                 collectivite_porteuse=collectivite_avec_scot,
                 base_doc_type=core_enums.BaseDocumentType.SCOT,
-                with_perimetre=[commune],
+                with_perimetre=True,
+                with_perimetre__list=[commune],
             )
             scot_opposable.event_set.create(
                 type="Délibération d'approbation", date_evenement=date_string
@@ -537,7 +542,8 @@ class TestCollectivitePortantScot:
             collectivite_porteuse=collectivite,
             base_doc_type=core_enums.BaseDocumentType.SCOT,
             type="A",
-            with_perimetre=[commune_a],
+            with_perimetre=True,
+            with_perimetre__list=[commune_a],
         )
         now = timezone.now()
         scot_opposable_a.event_set.create(
@@ -549,7 +555,8 @@ class TestCollectivitePortantScot:
             collectivite_porteuse=collectivite,
             base_doc_type=core_enums.BaseDocumentType.SCOT,
             type="B",
-            with_perimetre=[commune_a],
+            with_perimetre=True,
+            with_perimetre__list=[commune_a],
         )
         scot_precedent_a.event_set.create(
             type="Délibération d'approbation",
@@ -560,7 +567,8 @@ class TestCollectivitePortantScot:
             collectivite_porteuse=collectivite,
             base_doc_type=core_enums.BaseDocumentType.SCOT,
             type="C",
-            with_perimetre=[commune_a, commune_b],
+            with_perimetre=True,
+            with_perimetre__list=[commune_a, commune_b],
         )
         scot_opposable_a_et_b.event_set.create(
             type="Délibération d'approbation",
@@ -601,7 +609,8 @@ class TestCollectivitePortantScot:
             scot_opposable = ProcedureFactory(
                 collectivite_porteuse=collectivite_avec_scot,
                 base_doc_type=core_enums.BaseDocumentType.SCOT,
-                with_perimetre=[commune],
+                with_perimetre=True,
+                with_perimetre__list=[commune],
             )
             scot_opposable.event_set.create(
                 type="Délibération d'approbation", date_evenement=now
@@ -640,7 +649,8 @@ class TestCollectivitePortantScot:
         scot_opposable = ProcedureFactory(
             collectivite_porteuse=collectivite_avec_scot,
             base_doc_type=core_enums.BaseDocumentType.SCOT,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         scot_opposable.event_set.create(
             type="Délibération d'approbation",
@@ -679,7 +689,8 @@ class TestScotInterdepartemental:
         scot_en_cours = ProcedureFactory(
             collectivite_porteuse=collectivite_avec_scot,
             base_doc_type=core_enums.BaseDocumentType.SCOT,
-            with_perimetre=[commune_a, commune_b],
+            with_perimetre=True,
+            with_perimetre__list=[commune_a, commune_b],
         )
         scot_en_cours.event_set.create(
             type="Prescription", date_evenement=timezone.now()
@@ -703,7 +714,8 @@ class TestScotInterdepartemental:
         scot_en_cours = ProcedureFactory(
             collectivite_porteuse=collectivite_avec_scot,
             base_doc_type=core_enums.BaseDocumentType.SCOT,
-            with_perimetre=[commune_a, commune_b],
+            with_perimetre=True,
+            with_perimetre__list=[commune_a, commune_b],
         )
         scot_en_cours.event_set.create(
             type="Prescription", date_evenement=timezone.now()
@@ -845,14 +857,16 @@ class TestProcedure:
 
         # Zone composed of one town.
         procedure = ProcedureFactory(
-            with_perimetre=[CommuneFactory(nom="Beaucaire")],
+            with_perimetre=True,
+            with_perimetre__list=[CommuneFactory(nom="Beaucaire")],
             collectivite_porteuse=collectivite_porteuse,
         )
         assert procedure.zone_name == "Beaucaire"
 
         # Zone composed of two towns.
         procedure = ProcedureFactory(
-            with_perimetre=[
+            with_perimetre=True,
+            with_perimetre__list=[
                 CommuneFactory(nom="Beaucaire"),
                 CommuneFactory(nom="Argilliers"),
             ],
@@ -862,7 +876,8 @@ class TestProcedure:
 
         # Zone composed of two towns but only one is active.
         procedure = ProcedureFactory(
-            with_perimetre=[
+            with_perimetre=True,
+            with_perimetre__list=[
                 CommuneFactory(nom="Beaucaire"),
                 CommuneFactory(nom="Argilliers", type=core_enums.CommuneType.COMD),
             ],
@@ -872,7 +887,8 @@ class TestProcedure:
 
         # Zone has a delegated town.
         procedure = ProcedureFactory(
-            with_perimetre=[
+            with_perimetre=True,
+            with_perimetre__list=[
                 CommuneFactory(nom="Beaucaire"),
                 CommuneFactory(nom="Nîmes"),
                 CommuneFactory(nom="Argilliers", type=core_enums.CommuneType.COMD),
@@ -888,7 +904,8 @@ class TestProcedure:
             code_insee="30013",
         )
         procedure = ProcedureFactory(
-            with_perimetre=[
+            with_perimetre=True,
+            with_perimetre__list=[
                 CommuneFactory(nom="Beaucaire", code_insee="30032"),
                 CommuneFactory(nom="Nîmes", code_insee="30189"),
                 delegated_town,
@@ -1228,7 +1245,8 @@ class TestProcedureTypeDocument:
         procedure = ProcedureFactory(
             collectivite_porteuse=commune_a,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[commune_a, commune_b],
+            with_perimetre=True,
+            with_perimetre__list=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
@@ -1247,7 +1265,8 @@ class TestProcedureTypeDocument:
             collectivite_porteuse=commune_a,
             base_doc_type=core_enums.BaseDocumentType.PLU,
             vaut_PLH=True,
-            with_perimetre=[commune_a, commune_b],
+            with_perimetre=True,
+            with_perimetre__list=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
@@ -1266,7 +1285,8 @@ class TestProcedureTypeDocument:
             collectivite_porteuse=commune_a,
             base_doc_type=core_enums.BaseDocumentType.PLU,
             vaut_PDM=True,
-            with_perimetre=[commune_a, commune_b],
+            with_perimetre=True,
+            with_perimetre__list=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
@@ -1286,7 +1306,8 @@ class TestProcedureTypeDocument:
             base_doc_type=core_enums.BaseDocumentType.PLU,
             vaut_PLH=True,
             vaut_PDM=True,
-            with_perimetre=[commune_a, commune_b],
+            with_perimetre=True,
+            with_perimetre__list=[commune_a, commune_b],
         )
 
         with django_assert_num_queries(1):
@@ -1324,7 +1345,8 @@ class TestProcedureTypeDocument:
             vaut_PDM=vaut_PDM,
             vaut_PLH=vaut_PLH,
             collectivite_porteuse=collectivite,
-            with_perimetre=[commune_a, commune_b],
+            with_perimetre=True,
+            with_perimetre__list=[commune_a, commune_b],
         )
         procedure = core_models.Procedure.objects.get(id=procedure.id)
         assert procedure.dynamic_doc_type == expected_doc_type
@@ -1356,7 +1378,8 @@ class TestProcedureTypeDocument:
             vaut_PDM=vaut_PDM,
             vaut_PLH=vaut_PLH,
             collectivite_porteuse=collectivite,
-            with_perimetre=[commune_a],
+            with_perimetre=True,
+            with_perimetre__list=[commune_a],
         )
         procedure = core_models.Procedure.objects.get(id=procedure.id)
         assert procedure.dynamic_doc_type == core_enums.TypeDocument.PLU
@@ -2378,7 +2401,8 @@ class TestEventUpdate:
             with_event=True,
             with_event__category=core_models.EventCategory.PUBLICATION_PERIMETRE,
             base_doc_type=core_enums.BaseDocumentType.CC,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         procedure = core_models.Procedure.objects.with_events().get(pk=procedure.pk)
         procedure.status = procedure.statut
@@ -2540,8 +2564,10 @@ class TestCommuneProceduresPrincipales:
             with_parente=True,
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
-            parente__with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
+            parente__with_perimetre=True,
+            parente__with_perimetre__list=[commune],
         )
         procedure_principale = procedure_secondaire.parente
 
@@ -2556,15 +2582,20 @@ class TestCommuneProceduresPrincipales:
         commune = CommuneFactory()
 
         _procedure_supprimee = ProcedureFactory(
-            soft_delete=True, collectivite_porteuse=commune, with_perimetre=[commune]
+            soft_delete=True,
+            collectivite_porteuse=commune,
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
 
         procedure_doublon = ProcedureFactory(
             with_doublon=True,
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
-            doublon_cache_de__with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
+            doublon_cache_de__with_perimetre=True,
+            doublon_cache_de__with_perimetre__list=[commune],
         )
         procedure_reelle = procedure_doublon.doublon_cache_de
 
@@ -2579,7 +2610,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure,
@@ -2594,7 +2626,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure,
@@ -2602,7 +2635,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         )
         ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
 
         assert (
@@ -2617,7 +2651,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         commune = CommuneFactory()
         procedure_before = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure_before,
@@ -2626,7 +2661,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         )
         procedure_after = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure_after,
@@ -2643,7 +2679,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         scot = ProcedureFactory(
             base_doc_type=core_enums.TypeDocument.SCOT,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=scot,
@@ -2652,7 +2689,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         plu = ProcedureFactory(
             base_doc_type=core_enums.TypeDocument.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=plu,
@@ -2672,9 +2710,11 @@ class TestCommuneProcedureGetOpposablesForCommune:
         commune = CommuneFactory()
         child_procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
             with_parente=True,
-            parente__with_perimetre=[commune],
+            parente__with_perimetre=True,
+            parente__with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=child_procedure,
@@ -2697,7 +2737,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         commune = CommuneFactory()
         deleted_procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
             soft_delete=True,
         )
         EventFactory(
@@ -2706,7 +2747,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         )
         procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure,
@@ -2724,7 +2766,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         commune = CommuneFactory()
         canceled_procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=canceled_procedure,
@@ -2738,7 +2781,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         )
         opposable_procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=opposable_procedure,
@@ -2758,7 +2802,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure,
@@ -2777,7 +2822,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure,
@@ -2796,7 +2842,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure,
@@ -2817,7 +2864,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         other_commune = CommuneFactory()
         procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure,
@@ -2826,7 +2874,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
 
         other_procedure = ProcedureFactory(
             collectivite_porteuse=other_commune,
-            with_perimetre=[other_commune],
+            with_perimetre=True,
+            with_perimetre__list=[other_commune],
         )
         EventFactory(
             procedure=other_procedure,
@@ -2845,7 +2894,8 @@ class TestCommuneProcedureGetOpposablesForCommune:
         commune = CommuneFactory()
         procedure = ProcedureFactory(
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         EventFactory(
             procedure=procedure,
@@ -2873,7 +2923,8 @@ class TestCommunePlanEnCours:
         procedure_saisie_avant = ProcedureFactory(
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         procedure_saisie_avant.event_set.create(
             type="Prescription", date_evenement=now - timedelta(days=2 * 365)
@@ -2882,14 +2933,16 @@ class TestCommunePlanEnCours:
         procedure_en_cours = ProcedureFactory(
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         procedure_en_cours.event_set.create(type="Prescription", date_evenement=now)
 
         procedure_saisie_apres = ProcedureFactory(
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         procedure_saisie_apres.event_set.create(
             type="Prescription", date_evenement=now - timedelta(days=365)
@@ -2914,7 +2967,8 @@ class TestCommunePlanEnCours:
         procedure_en_cours = ProcedureFactory(
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         procedure_en_cours.event_set.create(
             type="Prescription", date_evenement=timezone.now()
@@ -2923,7 +2977,8 @@ class TestCommunePlanEnCours:
         _procedure_pas_commencee = ProcedureFactory(
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
 
         with django_assert_num_queries(3):
@@ -2967,7 +3022,8 @@ class TestCommune:
             procedure = ProcedureFactory(
                 base_doc_type=core_enums.BaseDocumentType.PLU,
                 collectivite_porteuse=collectivite,
-                with_perimetre=[commune],
+                with_perimetre=True,
+                with_perimetre__list=[commune],
             )
             procedure.event_set.create(
                 type="Prescription", date_evenement=timezone.now()
@@ -2978,7 +3034,8 @@ class TestCommune:
             procedure = ProcedureFactory(
                 base_doc_type=core_enums.BaseDocumentType.PLU,
                 collectivite_porteuse=collectivite,
-                with_perimetre=[commune],
+                with_perimetre=True,
+                with_perimetre__list=[commune],
             )
             procedure.event_set.create(
                 type="Délibération d'approbation", date_evenement=timezone.now()
@@ -2998,7 +3055,8 @@ class TestCommuneOpposabilite:
         procedure_precedente_saisie_avant = ProcedureFactory(
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         now = timezone.now()
         procedure_precedente_saisie_avant.event_set.create(
@@ -3009,7 +3067,8 @@ class TestCommuneOpposabilite:
         procedure_opposable = ProcedureFactory(
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         procedure_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement=now
@@ -3018,7 +3077,8 @@ class TestCommuneOpposabilite:
         procedure_precedente_saisie_apres = ProcedureFactory(
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         procedure_precedente_saisie_apres.event_set.create(
             type="Délibération d'approbation", date_evenement=now - timedelta(days=365)
@@ -3048,7 +3108,8 @@ class TestCommuneOpposabilite:
         plan_opposable = ProcedureFactory(
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         now = timezone.now()
         plan_opposable.event_set.create(
@@ -3058,7 +3119,8 @@ class TestCommuneOpposabilite:
         schema_opposable = ProcedureFactory(
             base_doc_type=core_enums.BaseDocumentType.SCOT,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         schema_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement=now - timedelta(days=1)
@@ -3087,7 +3149,8 @@ class TestCommuneOpposabilite:
         procedure_opposable = ProcedureFactory(
             collectivite_porteuse=commune,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         procedure_opposable.event_set.create(
             type="Délibération d'approbation", date_evenement=timezone.now()
@@ -3112,7 +3175,8 @@ class TestCommuneOpposabilite:
         procedure_en_cours = ProcedureFactory(
             collectivite_porteuse=commune,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         procedure_en_cours.event_set.create(
             type="Délibération de prescription du conseil municipal ou communautaire",
@@ -3139,7 +3203,8 @@ class TestCommuneOpposabilite:
             collectivite_porteuse=commune,
             base_doc_type=core_enums.BaseDocumentType.PLU,
             type="Abrogation",
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         procedure_approuvee.event_set.create(
             type="Délibération d'approbation", date_evenement=timezone.now()
@@ -3165,8 +3230,10 @@ class TestCommuneOpposabilite:
             with_parente=True,
             base_doc_type=core_enums.BaseDocumentType.PLU,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
-            parente__with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
+            parente__with_perimetre=True,
+            parente__with_perimetre__list=[commune],
         )
         procedure_principale = procedure_secondaire.parente
         procedure_secondaire.event_set.create(
@@ -3191,7 +3258,10 @@ class TestCommuneOpposabilite:
         commune = CommuneFactory()
 
         procedure_supprimee = ProcedureFactory(
-            collectivite_porteuse=commune, soft_delete=True, with_perimetre=[commune]
+            collectivite_porteuse=commune,
+            soft_delete=True,
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         now = timezone.now()
         procedure_supprimee.event_set.create(
@@ -3201,8 +3271,10 @@ class TestCommuneOpposabilite:
         procedure_doublon = ProcedureFactory(
             with_doublon=True,
             collectivite_porteuse=commune,
-            with_perimetre=[commune],
-            doublon_cache_de__with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
+            doublon_cache_de__with_perimetre=True,
+            doublon_cache_de__with_perimetre__list=[commune],
         )
         procedure_reelle = procedure_doublon.doublon_cache_de
         procedure_doublon.event_set.create(
@@ -3230,7 +3302,8 @@ class TestCommuneOpposabilite:
         procedure_opposable_fevrier = ProcedureFactory(
             collectivite_porteuse=commune,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         now = timezone.now()
         procedure_opposable_fevrier.event_set.create(
@@ -3240,7 +3313,8 @@ class TestCommuneOpposabilite:
         procedure_opposable_janvier = ProcedureFactory(
             collectivite_porteuse=commune,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         procedure_opposable_janvier.event_set.create(
             type="Délibération d'approbation", date_evenement=now - timedelta(days=31)
@@ -3322,7 +3396,8 @@ class TestCommuneCodeEtat:
 
         procedure = ProcedureFactory(
             collectivite_porteuse=collectivite_porteuse,
-            with_perimetre=[CommuneFactory() for _ in range(perimetre_count)],
+            with_perimetre=True,
+            with_perimetre__list=[CommuneFactory() for _ in range(perimetre_count)],
         )
 
         procedure = core_models.Procedure.objects.get(id=procedure.id)

@@ -43,19 +43,16 @@ class TestProcedureList:
         # the system chooses the collectivite to be the `collectivite porteuse``.
         # Jurisdiction are omitted in this test to avoid `collectivite porteuse` differences.
         # They are tested separately.
-        # TODO: get collectivite from the logged in user depending on the user rights.  # noqa: FIX002
-        collectivite = core_factories.CollectiviteFactory(
-            for_snapshot=True,
-            with_flat_members=True,
-            with_flat_members__for_snapshot=True,
+        logged_in_profile = ProfileFactory(
+            with_jurisdiction_for_snapshot=True,
         )
-        perimetre_insee_codes = collectivite.flat_members.filter(
+        collectivite = logged_in_profile.collectivite
+        jurisdiction_insee_codes = collectivite.flat_members.filter(
             type=core_enums.CommuneType.COM
         ).values_list("code_insee", flat=True)
         communes = core_models.Commune.objects.filter(
-            code_insee__in=perimetre_insee_codes
+            code_insee__in=jurisdiction_insee_codes
         )
-        logged_in_profile = ProfileFactory(collectivite=collectivite, verified=True)
         return (
             collectivite,
             sorted(communes, key=lambda c: c.code_insee),
@@ -79,7 +76,8 @@ class TestProcedureList:
         expected_procedure = core_factories.ProcedureFactory(
             status=status,
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
         )
         excluded_status = random.choice(  # noqa: S311
             [
@@ -91,7 +89,8 @@ class TestProcedureList:
         core_factories.ProcedureFactory(
             status=excluded_status,
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -114,17 +113,20 @@ class TestProcedureList:
         expected_procedure_one = core_factories.ProcedureFactory(
             status=core_enums.ProcedureStatusChoices.OPPOSABLE,
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
         )
         expected_procedure_two = core_factories.ProcedureFactory(
             status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
         )
         not_expected_procedure = core_factories.ProcedureFactory(
             status=core_enums.ProcedureStatusChoices.ABANDON,
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -171,12 +173,14 @@ class TestProcedureList:
         core_factories.ProcedureFactory(
             is_principale=True,
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
         )
         core_factories.ProcedureFactory(
             is_principale=False,
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -223,7 +227,8 @@ class TestProcedureList:
             self._create_collectivite_perimetre_profile()
         )
         core_factories.ProcedureFactory(
-            with_perimetre=[communes[0]],
+            with_perimetre=True,
+            with_perimetre__list=[communes[0]],
             collectivite_porteuse=collectivite,
             numero="1",
             for_snapshot=True,
@@ -242,7 +247,8 @@ class TestProcedureList:
             name="Révision du PLU d'Aigaliers",
             status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite_with_code_insee,
-            with_perimetre=[collectivite_with_code_insee],
+            with_perimetre=True,
+            with_perimetre__list=[collectivite_with_code_insee],
             numero="1",
             project=core_factories.ProjectFactory(
                 id=uuid.UUID("1cd65b57-7027-4aa5-8d19-333333333333")
@@ -257,7 +263,8 @@ class TestProcedureList:
             name="Révision du PLU d'Aigremont",
             status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=aigremont,
-            with_perimetre=[aigremont],
+            with_perimetre=True,
+            with_perimetre__list=[aigremont],
             numero="1",
             project=core_factories.ProjectFactory(
                 id=uuid.UUID("1cd65b57-7027-4aa5-8d19-555555555555")
@@ -306,7 +313,8 @@ class TestProcedureList:
             self._create_collectivite_perimetre_profile()
         )
         procedure = core_factories.ProcedureFactory(
-            with_perimetre=[communes[0]],
+            with_perimetre=True,
+            with_perimetre__list=[communes[0]],
             collectivite_porteuse=collectivite,
             numero="1",
             for_snapshot=True,
@@ -319,7 +327,8 @@ class TestProcedureList:
             name="Seconde procédure",
             status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite,
-            with_perimetre=[communes[1]],
+            with_perimetre=True,
+            with_perimetre__list=[communes[1]],
             numero="1",
             project=procedure.project,
             base_doc_type=core_enums.BaseDocumentType.PLU,
@@ -331,7 +340,8 @@ class TestProcedureList:
             name="Troisième procédure",
             status=core_enums.ProcedureStatusChoices.EN_COURS,
             collectivite_porteuse=collectivite,
-            with_perimetre=[communes[2]],
+            with_perimetre=True,
+            with_perimetre__list=[communes[2]],
             numero="1",
             project=procedure.project,
             base_doc_type=core_enums.BaseDocumentType.PLU,
@@ -356,7 +366,8 @@ class TestProcedureList:
         expected_topic = core_models.Topic.objects.get(name="zan")
         core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
             with_topics=True,
             with_topics__list=[expected_topic],
         )
@@ -381,7 +392,8 @@ class TestProcedureList:
         expected_topic = core_models.Topic.objects.get(name="other")
         procedure = core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
         )
         core_models.ProcedureTopic.objects.create(
             procedure_id=procedure.id,
@@ -409,19 +421,22 @@ class TestProcedureList:
         core_factories.ProcedureFactory(
             name="",
             collectivite_porteuse=collectivite,
-            with_perimetre=communes[:1],
+            with_perimetre=True,
+            with_perimetre__list=communes[:1],
             id=uuid.UUID("11111111-7027-4aa5-8d19-222222222222"),
             for_snapshot=True,
         )
         core_factories.ProcedureFactory(
             name="",
             id=uuid.UUID("22222222-7027-4aa5-8d19-222222222222"),
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
         )
         core_factories.ProcedureFactory(
             name="",
             id=uuid.UUID("33333333-7027-4aa5-8d19-333333333333"),
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
         )
         with (
             api_client_with_auth(logged_in_profile) as api_client,
@@ -446,7 +461,8 @@ class TestProcedureList:
         # doc_type matches dynamic_doc_type
         procedure = core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
             base_doc_type=core_enums.BaseDocumentType.PLU,
             vaut_PDM=True,
         )
@@ -462,7 +478,8 @@ class TestProcedureList:
         # doc_type is PLU but area is composed of many towns
         core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
             base_doc_type=core_enums.BaseDocumentType.PLU,
         )
         with (
@@ -485,7 +502,8 @@ class TestProcedureList:
         )
         procedure = core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
             numero="1",
             for_snapshot=True,
             status=core_enums.ProcedureStatusChoices.EN_COURS,
@@ -519,7 +537,8 @@ class TestProcedureList:
         principal_procedure = core_factories.ProcedureFactory(
             pk=uuid.UUID("1cd65b57-7027-4aa5-8d19-111111111111"),
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
             numero="1",
             for_snapshot=True,
             status=core_enums.ProcedureStatusChoices.EN_COURS,
@@ -529,7 +548,8 @@ class TestProcedureList:
             parente=principal_procedure,
             name="Révision du PLU de Nantes",
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
             numero="1",
             project=principal_procedure.project,
             base_doc_type=core_enums.BaseDocumentType.PLU,
@@ -561,7 +581,8 @@ class TestProcedureList:
 
         procedure = core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
             base_doc_type=core_enums.BaseDocumentType.PLU,
             created_at=timezone.now(),
             last_updated_at=timezone.now(),
@@ -613,7 +634,8 @@ class TestProcedureList:
         )
         procedure = core_factories.ProcedureFactory(
             collectivite_porteuse=collectivite,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
         )
         perimetre_through = procedure.perimetre_through.order_by(
             "commune__code_insee"
@@ -819,7 +841,8 @@ class TestProcedureName:
         principal_procedure = core_factories.ProcedureFactory(
             for_snapshot=True,
             collectivite_porteuse=collectivite_porteuse,
-            with_perimetre=communes,
+            with_perimetre=True,
+            with_perimetre__list=communes,
         )
 
         query_params = {
@@ -993,14 +1016,19 @@ class TestProcedureSynchronizeStatus:
         api_client_with_auth: SupabaseApiTestClient,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
+        profile = ProfileFactory(with_jurisdiction_for_snapshot=True)
         event = core_factories.EventFactory(
             procedure__status=core_enums.ProcedureStatusChoices.OPPOSABLE,
             event_type__impact=core_enums.ProcedureStatusChoices.ANNULE,
+            procedure__for_snapshot=True,
+            procedure__with_perimetre=True,
+            procedure__with_perimetre__matching_profile_jurisdiction=True,
+            procedure__with_perimetre__profile_jurisdiction=profile,
         )
 
         with (
-            api_client_with_auth(ProfileFactory(verified=True)) as api_client,
-            django_assert_num_queries(6),
+            api_client_with_auth(profile) as api_client,
+            django_assert_num_queries(9),
         ):
             response = api_client.post(self._url(event.procedure))
 
@@ -1014,13 +1042,17 @@ class TestProcedureSynchronizeStatus:
         api_client_with_auth: SupabaseApiTestClient,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
+        profile = ProfileFactory(with_jurisdiction_for_snapshot=True)
         procedure = core_factories.ProcedureFactory(
-            status=core_enums.ProcedureStatusChoices.EN_PROJET
+            status=core_enums.ProcedureStatusChoices.EN_PROJET,
+            with_perimetre=True,
+            with_perimetre__matching_profile_jurisdiction=True,
+            with_perimetre__profile_jurisdiction=profile,
         )
 
         with (
-            api_client_with_auth(ProfileFactory(verified=True)) as api_client,
-            django_assert_num_queries(6),
+            api_client_with_auth(profile) as api_client,
+            django_assert_num_queries(9),
         ):
             response = api_client.post(self._url(procedure))
 
@@ -1034,15 +1066,19 @@ class TestProcedureSynchronizeStatus:
         api_client_with_auth: SupabaseApiTestClient,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
+        profile = ProfileFactory(with_jurisdiction_for_snapshot=True)
         event = core_factories.EventFactory(
             procedure__status=core_enums.ProcedureStatusChoices.EN_COURS,
             event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=end_of_day(timezone.localdate()) + timedelta(seconds=1),
+            procedure__with_perimetre=True,
+            procedure__with_perimetre__matching_profile_jurisdiction=True,
+            procedure__with_perimetre__profile_jurisdiction=profile,
         )
 
         with (
-            api_client_with_auth(ProfileFactory(verified=True)) as api_client,
-            django_assert_num_queries(6),
+            api_client_with_auth(profile) as api_client,
+            django_assert_num_queries(9),
         ):
             response = api_client.post(self._url(event.procedure))
 
@@ -1054,12 +1090,15 @@ class TestProcedureSynchronizeStatus:
     def test_synchronize_status_includes_future_events_before_end_of_day(
         self, api_client_with_auth: SupabaseApiTestClient
     ) -> None:
+        profile = ProfileFactory(with_jurisdiction_for_snapshot=True)
         event = core_factories.EventFactory(
             procedure__status=core_enums.ProcedureStatusChoices.EN_COURS,
             event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=end_of_day(timezone.localdate()),
+            procedure__with_perimetre=True,
+            procedure__with_perimetre__matching_profile_jurisdiction=True,
+            procedure__with_perimetre__profile_jurisdiction=profile,
         )
-        profile = ProfileFactory(verified=True)
 
         with api_client_with_auth(profile) as api_client:
             response = api_client.post(self._url(event.procedure))
@@ -1075,18 +1114,22 @@ class TestProcedureSynchronizeStatus:
         api_client_with_auth: SupabaseApiTestClient,
         django_assert_num_queries: DjangoAssertNumQueries,
     ) -> None:
+        profile = ProfileFactory(with_jurisdiction_for_snapshot=True)
         event = core_factories.EventFactory(
             procedure__status=core_enums.ProcedureStatusChoices.EN_COURS,
             event_type__impact=core_enums.ProcedureStatusChoices.OPPOSABLE,
             date_evenement=end_of_day(
                 timezone.localdate(timezone=ZoneInfo("Europe/Paris"))
             ),
+            procedure__with_perimetre=True,
+            procedure__with_perimetre__matching_profile_jurisdiction=True,
+            procedure__with_perimetre__profile_jurisdiction=profile,
         )
 
         timezone.activate(ZoneInfo("Pacific/Tahiti"))  # UTC-10
         with (
-            api_client_with_auth(ProfileFactory(verified=True)) as api_client,
-            django_assert_num_queries(6),
+            api_client_with_auth(profile) as api_client,
+            django_assert_num_queries(9),
         ):
             response = api_client.post(self._url(event.procedure))
 

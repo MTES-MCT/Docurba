@@ -59,7 +59,8 @@ class TestApiPerimetresAndCommunes:
     ) -> dict[str, Any]:
         return {
             "for_snapshot": True,
-            "with_perimetre": perimetre,
+            "with_perimetre": True,
+            "with_perimetre__list": perimetre,
             "base_doc_type": core_enums.BaseDocumentType.PLU,
             "with_event": True,
             "with_event__category": core_models.EventCategory.APPROUVE,
@@ -171,7 +172,8 @@ class TestAPIPerimetres:
         params = {
             "base_doc_type": core_enums.BaseDocumentType.PLU,
             "collectivite_porteuse": collectivite_porteuse,
-            "with_perimetre": perimetre,
+            "with_perimetre": True,
+            "with_perimetre__list": perimetre,
             "with_event": True,
         }
         if procedure_status:
@@ -220,7 +222,8 @@ class TestAPIPerimetres:
                     pk=procedures_uids[i * nb_communes + ii],
                     collectivite_porteuse=commune,
                     base_doc_type=core_enums.BaseDocumentType.PLU,
-                    with_perimetre=[commune],
+                    with_perimetre=True,
+                    with_perimetre__list=[commune],
                 )
 
         with django_assert_num_queries(3):
@@ -262,13 +265,15 @@ class TestAPIPerimetres:
         principal_procedure = ProcedureFactory(
             collectivite_porteuse=commune,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
         )
         # Procédure secondaire : belongs to a parent procedure.
         ProcedureFactory(
             collectivite_porteuse=commune,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
             parente=principal_procedure,
         )
         # Archived are also ignored.
@@ -276,13 +281,15 @@ class TestAPIPerimetres:
         ProcedureFactory(
             collectivite_porteuse=commune,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
             soft_delete=True,
         )
         ProcedureFactory(
             collectivite_porteuse=commune,
             base_doc_type=core_enums.BaseDocumentType.PLU,
-            with_perimetre=[commune],
+            with_perimetre=True,
+            with_perimetre__list=[commune],
             doublon_cache_de=principal_procedure,
         )
         response = client.get(reverse("api:perimetres"))
@@ -379,7 +386,8 @@ class TestAPICommunes:
         params = {
             "base_doc_type": core_enums.BaseDocumentType.PLU,
             "collectivite_porteuse": collectivite_porteuse,
-            "with_perimetre": perimetre,
+            "with_perimetre": True,
+            "with_perimetre__list": perimetre,
             "with_event": True,
         }
         if procedure_status:
@@ -1441,7 +1449,8 @@ class TestAPIScots:
         params = {
             "base_doc_type": core_enums.BaseDocumentType.SCOT,
             "collectivite_porteuse": collectivite,
-            "with_perimetre": perimetre,
+            "with_perimetre": True,
+            "with_perimetre__list": perimetre,
             "with_event": True,
         }
         if procedure_status:
@@ -1751,14 +1760,16 @@ class TestAPIScots:
             base_doc_type=core_enums.BaseDocumentType.SCOT,
             with_event=True,
             with_event__category=core_models.EventCategory.APPROUVE,
-            with_perimetre=[commune_a],
+            with_perimetre=True,
+            with_perimetre__list=[commune_a],
         )
         ProcedureFactory(
             collectivite_porteuse=collectivite_porteuse_b,
             base_doc_type=core_enums.BaseDocumentType.SCOT,
             with_event=True,
             with_event__category=core_models.EventCategory.APPROUVE,
-            with_perimetre=[commune_b],
+            with_perimetre=True,
+            with_perimetre__list=[commune_b],
         )
 
         filtre = {}
