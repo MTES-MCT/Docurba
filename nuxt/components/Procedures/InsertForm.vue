@@ -535,7 +535,14 @@ export default {
         })
         await this.$supabase.from('core_proceduretopic').insert(topicsToInsert).select()
 
-        const fomattedPerimetre = detailedPerimetre.map(e => ({ collectivite_code: e.code, collectivite_type: e.type, procedure_id: insertedProcedure[0].id, opposable: false, departement: e.departementCode }))
+        const fomattedPerimetre = detailedPerimetre.map(e => ({
+          collectivite_code: e.code,
+          collectivite_type: e.type,
+          old_collectivite_type: '',
+          procedure_id: insertedProcedure[0].id,
+          opposable: false,
+          departement: e.departementCode
+        }))
         await this.$supabase.from('procedures_perimetres').insert(fomattedPerimetre)
 
         const sender = {
