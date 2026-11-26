@@ -231,8 +231,6 @@ class ProcedureQuerySet(models.QuerySet):
                 "date_evenement",
                 "is_valid",
                 "procedure_id",
-                "visibility",
-                "from_sudocuh",
             )
         )
         return self.annotate(
