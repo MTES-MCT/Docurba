@@ -12,7 +12,7 @@
     </v-row>
     <v-row align="center">
       <v-col cols="auto">
-        <v-btn :loading="loadingPdf" color="primary" outlined @click="downloadPdf">
+        <v-btn color="primary" outlined @click="downloadPdf">
           Télécharger en PDF
         </v-btn>
       </v-col>
@@ -71,7 +71,6 @@ export default {
       project: {},
       collectivite: null,
       sections: [],
-      loadingPdf: false,
       searchedSectionPath: '',
       opening: false,
       gitRef: this.$route.params.githubRef,
@@ -128,10 +127,8 @@ export default {
     this.loading = false
   },
   methods: {
-    async downloadPdf () {
-      this.loadingPdf = true
-      await this.$pdf.pdfFromRef(this.gitRef, this.project)
-      this.loadingPdf = false
+    downloadPdf () {
+      window.open(`/documents/${this.gitRef}/pdf`, '_blank')
     },
     filterSectionsForProject (sections) {
       const paths = this.project.PAC
