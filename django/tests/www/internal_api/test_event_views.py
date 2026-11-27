@@ -216,7 +216,6 @@ class TestEventAPI:
         EventFactory(
             id="00000000-0000-0000-1111-000000000000",
             procedure=procedure,
-            type="",
             event_type=EventTypeFactory(
                 id="00000000-0000-0000-1111-000000000000",
                 name="test",
@@ -294,7 +293,7 @@ class TestEventAPI:
         )
         data = {
             "procedureId": procedure.id,
-            "otherName": "",
+            "otherName": event_type.name,
             "eventTypeId": event_type.id,
             "dateEvenement": timezone.now(),
             "description": "Lorem ipsum dolor sit amet",
@@ -339,7 +338,6 @@ class TestEventAPI:
             id="00000000-0000-0000-1111-000000000000",
             procedure__id="00000000-0000-0000-1111-000000000000",
             procedure__project__id="00000000-0000-0000-1111-000000000000",
-            type="",
             event_type=EventTypeFactory(
                 id="00000000-0000-0000-1111-000000000000",
                 name="test",
@@ -393,13 +391,12 @@ class TestEventAPI:
             id="00000000-0000-0000-2222-000000000000",
             procedure__id="00000000-0000-0000-2222-000000000000",
             procedure__project__id="00000000-0000-0000-2222-000000000000",
-            type="Event Test 1",
             date_evenement=now,
             visibility=VisibilityType.PUBLIC,
         )
         data = {
             "eventTypeId": event_type.id,
-            "otherName": "",
+            "otherName": event_type.name,
             "dateEvenement": now - timedelta(days=30),
             "description": "Lorem ipsum dolor sit amet - updated",
             "visibility": "private",
@@ -463,14 +460,13 @@ class TestEventAPI:
         event = EventFactory(
             id="00000000-0000-0000-2222-000000000000",
             procedure__id="00000000-0000-0000-2222-000000000000",
-            type="Event Test 1",
             date_evenement=now,
             visibility=VisibilityType.PUBLIC,
         )
         data = {
             "procedureId": procedure.id,
             "eventTypeId": event_type.id,
-            "otherName": "",
+            "otherName": event_type.name,
             "dateEvenement": now - timedelta(days=30),
             "description": "Lorem ipsum dolor sit amet - updated",
             "visibility": "private",
@@ -508,12 +504,10 @@ class TestEventAPI:
         deleted_event = EventFactory(
             id="00000000-0000-0000-1111-000000000000",
             procedure=procedure,
-            type="Event Test 1",
         )
         remaining_event = EventFactory(
             id="00000000-0000-0000-2222-000000000000",
             procedure=procedure,
-            type="Event Test 2",
         )
         url = reverse("internal_api:events-detail", args=[deleted_event.pk])
         with (
@@ -800,7 +794,7 @@ class TestEventAPISynchronizeProcedureStatus:
 
         data = {
             "procedureId": procedure.id,
-            "otherName": "Event Test 1",
+            "otherName": event_type.name,
             "eventTypeId": event_type.id,
             "dateEvenement": timezone.now(),
             "description": "Lorem ipsum dolor sit amet",
@@ -952,7 +946,7 @@ class TestEventAPISynchronizeCommuneProcedureOpposability:
 
         data = {
             "procedureId": procedure.id,
-            "otherName": "Event Test 1",
+            "otherName": event_type.name,
             "eventTypeId": event_type.id,
             "dateEvenement": timezone.now(),
             "description": "Lorem ipsum dolor sit amet",

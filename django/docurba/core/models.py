@@ -1354,6 +1354,13 @@ class Event(models.Model):
         if any(archive_fields) and not all(archive_fields):
             message = "Le champ “archived_by” doit être renseigné uniquement si le champ “archived_at” est renseigné"
             raise ValidationError(message)
+        if (
+            self.type != self.name
+        ):  # TODO: change this when alter type to other_name (other_name.is_null != event_type.is_null)  # noqa: FIX002
+            message = (
+                "Le champ “type” doit correspondre au nom du type d'évènement associé"
+            )
+            raise ValidationError(message)
 
     def archive(self, archived_by: users_models.Profile) -> None:
         self.archived_by = archived_by

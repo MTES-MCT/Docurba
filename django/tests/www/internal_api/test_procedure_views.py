@@ -511,7 +511,7 @@ class TestProcedureList:
         assert response.status_code == 200
         assert (
             response.json()["results"][0]["approval_date"]
-            == "2026-10-06T02:00:00+02:00"
+            == timezone.localtime().isoformat()
         )
 
     def test_serializer_with_communes_is_opposable(

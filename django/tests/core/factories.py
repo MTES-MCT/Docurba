@@ -305,7 +305,7 @@ class ProcedureFactory(factory.django.DjangoModelFactory):
                 extra.pop("category")
             ][0]
 
-        EventFactory(procedure=self, type=event_type, **extra)
+        EventFactory(procedure=self, type=event_type, event_type=None, **extra)
 
     @factory.post_generation
     def with_topics(self, create: bool, extracted: bool, **extra: dict) -> None:  # noqa: FBT001
@@ -348,7 +348,9 @@ class EventFactory(factory.django.DjangoModelFactory):
 
     procedure = factory.SubFactory(ProcedureFactory)
     date_evenement = factory.fuzzy.FuzzyDateTime(dt.datetime(1970, 1, 1, tzinfo=dt.UTC))
-    type = "Prescription"
+    type = factory.LazyAttribute(
+        lambda o: o.event_type.name if o.event_type else "Autre"
+    )
     from_sudocuh = None
     archived_at = None
     archived_by = None
