@@ -16,7 +16,10 @@ while true; do
   # UTC
   current_time=$(date +%H:%M)
   if [[ "$current_time" == "00:05" ]]; then
-    django-admin process_denormalized_procedure_fields
+    django-admin process_denormalized_procedure_fields --yesterday-only
+  fi
+  if [[ "$current_time" == "00:10" ]]; then
+    django-admin process_denormalized_commune_procedure_fields --yesterday-only
   fi
   if [[ "$current_time" == "00:23" ]]; then
     django-admin link_events_with_event_types
