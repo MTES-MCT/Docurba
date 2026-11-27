@@ -132,6 +132,12 @@ class EventTypeFilter(filters.FilterSet):
         fields = ("document_type",)
 
 
+class EventFilter(filters.FilterSet):
+    class Meta:
+        model = core_models.Event
+        fields = ("procedure",)
+
+
 class ProcedureFilter(filters.FilterSet):
     communes_perimetre = NoValidationMultipleFilter(
         label="communes du périmètre", method="_communes_perimetre"

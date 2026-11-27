@@ -8,8 +8,7 @@ export default ({ $djangoApi }, inject) => {
         document_type: documentType
       })).map((eventType, index) => ({
         ...eventType,
-        order: index + 1,
-        structurant: eventType.isStructuring
+        order: index + 1
       }))
     }
 

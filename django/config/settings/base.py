@@ -216,6 +216,7 @@ REST_FRAMEWORK = {
     ],
     "PAGE_SIZE": 200,
 }
+SYSTEM_PROFILE_IDS = env.list("SYSTEM_PROFILE_IDS", default=[])
 
 ##########################################
 ############ Supabase settings ############

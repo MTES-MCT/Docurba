@@ -4,14 +4,22 @@
 from django.db import models
 from rest_framework import serializers
 
-from docurba.core.enums import CommuneType, ProcedureType, TypeDocument
+from docurba.core.enums import (
+    CommuneType,
+    ProcedureType,
+    TypeDocument,
+    VisibilityType,
+)
 from docurba.core.models import (
     Collectivite,
     Commune,
+    Event,
     EventType,
     Procedure,
     Topic,
 )
+from docurba.users.enums import ProfileSideType
+from docurba.users.models import Profile
 
 
 class BaseCollectiviteSerializer(serializers.ModelSerializer):
@@ -121,13 +129,9 @@ class CommuneSerializer(serializers.ModelSerializer):
 class EventTypeSerializer(serializers.ModelSerializer):
     documentType = serializers.CharField(source="document_type")
     isStructuring = serializers.BooleanField(source="is_structuring")
-    sudocuhName = serializers.CharField(source="sudocuh_name")
     scopeList = serializers.JSONField(source="scope_list")
     scopeSugg = serializers.JSONField(source="scope_sugg")
 
-    # TODO: remove  # noqa: FIX002
-    # is_structuring AND sudocuh_name are needed by nuxt
-    # when Event will references EventType, the information will be provided directly by EventSerializer
     class Meta:
         model = EventType
         fields = [
@@ -136,10 +140,153 @@ class EventTypeSerializer(serializers.ModelSerializer):
             "name",
             "scopeList",
             "scopeSugg",
-            "isStructuring",  # TODO: remove  # noqa: FIX002
-            "sudocuhName",  # TODO: remove  # noqa: FIX002
+            "isStructuring",
         ]
         read_only_fields = fields
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(source="user_id", read_only=True)
+
+    class Meta:
+        model = Profile
+        read_only_fields = [
+            "id",
+        ]
+        fields = [
+            *read_only_fields,
+            "firstname",
+            "lastname",
+            "email",
+            "side",
+        ]
+
+
+class EventAttachementSerializer(serializers.Serializer):
+    id = serializers.CharField(required=True)
+    name = serializers.CharField(required=True)
+    type = serializers.ChoiceField(required=False, choices=["file", "link"])
+
+
+class EventAttachementMixin:
+    def to_representation(self, value: str) -> dict:
+        result = super().to_representation(value)
+        if result["attachements"]:
+            for attachement in result["attachements"]:
+                attachement["path"] = value.get_attachement_path(attachement["id"])
+        return result
+
+
+class PublicEventSerializer(EventAttachementMixin, serializers.ModelSerializer):
+    # Read only fields
+    name = serializers.CharField(read_only=True)
+    isPublic = serializers.BooleanField(source="is_public", read_only=True)
+    isSudocuh = serializers.BooleanField(source="is_sudocuh", read_only=True)
+    isValid = serializers.BooleanField(source="is_valid", read_only=True)
+    isSystem = serializers.BooleanField(source="is_system", read_only=True)
+    eventType = EventTypeSerializer(source="event_type", read_only=True)
+    procedureId = serializers.PrimaryKeyRelatedField(source="procedure", read_only=True)
+    dateEvenement = serializers.DateTimeField(source="date_evenement")
+    otherName = serializers.CharField(
+        source="type", allow_blank=True, required=False, default=""
+    )
+    attachements = EventAttachementSerializer(many=True, required=False, default=list)
+
+    class Meta:
+        model = Event
+        read_only_fields = [
+            "id",
+            "name",
+            "isPublic",
+            "isValid",
+            "isSystem",
+            "isSudocuh",
+            "eventType",
+            "procedureId",
+            "otherName",
+            "dateEvenement",
+            "attachements",
+        ]
+        fields = [*read_only_fields]
+
+
+def can_profile_edit_event(profile: Profile, event: Event) -> bool:
+    # TODO: Add corresponding permissions and move elsewhere when restructuring permissions  # noqa: FIX002
+    if event.is_sudocuh:
+        return False
+    return bool(
+        profile.user_id == event.profile_id or profile.side == ProfileSideType.ETAT
+    )
+
+
+class EventSerializer(EventAttachementMixin, serializers.ModelSerializer):
+    # Read only fields
+    name = serializers.CharField(read_only=True)
+    isPublic = serializers.BooleanField(source="is_public", read_only=True)
+    isSudocuh = serializers.BooleanField(source="is_sudocuh", read_only=True)
+    isValid = serializers.BooleanField(source="is_valid", read_only=True)
+    isSystem = serializers.BooleanField(source="is_system", read_only=True)
+    eventType = EventTypeSerializer(source="event_type", read_only=True)
+    profile = ProfileSerializer(read_only=True)
+    editable = serializers.SerializerMethodField()
+
+    def get_editable(self, event: Event) -> bool:
+        if "request" in self.context:
+            profile = self.context["request"].user.profile
+            if profile:
+                return can_profile_edit_event(profile, event)
+        return False
+
+    # Write only fields
+    eventTypeId = serializers.PrimaryKeyRelatedField(
+        queryset=EventType.objects.all(),
+        source="event_type",
+        allow_null=True,
+        write_only=True,
+    )
+
+    # Write on create - Read on update (see get_fields())
+    procedureId = serializers.PrimaryKeyRelatedField(source="procedure", read_only=True)
+
+    # Read / write fields
+    dateEvenement = serializers.DateTimeField(source="date_evenement")
+    visibility = serializers.ChoiceField(choices=VisibilityType)
+    otherName = serializers.CharField(
+        source="type", allow_blank=True, required=False, default=""
+    )
+    attachements = EventAttachementSerializer(many=True, required=False, default=list)
+
+    class Meta:
+        model = Event
+        read_only_fields = [
+            "id",
+            "name",
+            "isPublic",
+            "isValid",
+            "isSudocuh",
+            "isSystem",
+            "eventType",
+            "profile",
+            "editable",
+        ]
+        fields = [
+            *read_only_fields,
+            "procedureId",
+            "eventTypeId",
+            "otherName",
+            "dateEvenement",
+            "visibility",
+            "description",
+            "attachements",  # TODO: Use specific endpoint for attachements # noqa: FIX002
+        ]
+
+    def get_fields(self, *args, **kwargs):  # noqa: ANN002, ANN003, ANN201
+        fields = super().get_fields(*args, **kwargs)
+        action = self.context["view"].action
+        if action == "create":
+            fields["procedureId"].read_only = False
+            fields["procedureId"].queryset = Procedure.objects.all()
+        return fields
 
 
 class TopicSerializer(serializers.ModelSerializer):

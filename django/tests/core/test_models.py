@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from functools import partial
 
 import pytest
+from django.conf import settings
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models
 from django.utils import timezone
@@ -20,6 +21,7 @@ from tests.core.factories import (
     EventFactory,
     EventTypeFactory,
     ProcedureFactory,
+    ProjectFactory,
     ProjectSharingFactory,
 )
 from tests.users.factories import ProfileFactory
@@ -2295,6 +2297,84 @@ class TestEvent:
             core_models.Event(procedure=procedure, type=type_event).category == category
         )
 
+    def test_is_sudocuh(self) -> None:
+        assert EventFactory.build(from_sudocuh=12).is_sudocuh
+        assert not EventFactory.build(from_sudocuh=None).is_sudocuh
+
+    def test_name(self) -> None:
+        assert (
+            EventFactory.build(type="e_type", from_sudocuh=None, event_type=None).name
+            == "e_type"
+        )
+        assert (
+            EventFactory.build(type="e_type", from_sudocuh=12, event_type=None).name
+            == "e_type"
+        )
+        assert (
+            EventFactory.build(
+                type="e_type",
+                from_sudocuh=None,
+                event_type__name="et_name",
+                event_type__sudocuh_name="",
+            ).name
+            == "et_name"
+        )
+        assert (
+            EventFactory.build(
+                type="e_type",
+                from_sudocuh=None,
+                event_type__name="et_name",
+                event_type__sudocuh_name="et_sudocuh_name",
+            ).name
+            == "et_name"
+        )
+        assert (
+            EventFactory.build(
+                type="e_type",
+                from_sudocuh=12,
+                event_type__name="et_name",
+                event_type__sudocuh_name="",
+            ).name
+            == "et_name"
+        )
+        assert (
+            EventFactory.build(
+                type="e_type",
+                from_sudocuh=12,
+                event_type__name="et_name",
+                event_type__sudocuh_name="et_sudocuh_name",
+            ).name
+            == "et_sudocuh_name"
+        )
+
+    @pytest.mark.django_db
+    def test_attachement_path(self) -> None:
+        project = ProjectFactory(id="00000000-0000-0000-1111-000000000000")
+        e = EventFactory(
+            from_sudocuh=None,
+            procedure__project=project,
+        )
+        assert (
+            e.get_attachement_path("fabb1e16-9438-46b7-a5c9-e44a2a45b1db")
+            == f"00000000-0000-0000-1111-000000000000/{e.id}/fabb1e16-9438-46b7-a5c9-e44a2a45b1db"
+        )
+
+        e = EventFactory(
+            from_sudocuh=13,
+            procedure__project=project,
+        )
+        assert (
+            e.get_attachement_path("fabb1e16-9438-46b7-a5c9-e44a2a45b1db")
+            == "fabb1e16-9438-46b7-a5c9-e44a2a45b1db"
+        )
+
+    def test_is_system(self) -> None:
+        assert EventFactory.build(
+            profile=ProfileFactory.build(user__id=settings.SYSTEM_PROFILE_IDS[0])
+        ).is_system
+        assert not EventFactory.build(profile=None).is_system
+        assert not EventFactory.build(profile=ProfileFactory.build()).is_system
+
     def test_date_null(self) -> None:
         procedure = core_models.Procedure()
         assert core_models.Event(procedure=procedure).date_evenement is None
@@ -2427,14 +2507,74 @@ class TestEventManagers:
 
 @pytest.mark.django_db
 class TestEventQueryset:
-    def test_queryset_without_archived(self) -> None:
+    def test_queryset_filter_public(self) -> None:
+        expected_events = [
+            EventFactory(
+                visibility=core_enums.VisibilityType.PUBLIC,
+                from_sudocuh=None,
+                event_type__is_structuring=False,
+            ),
+            EventFactory(
+                visibility=core_enums.VisibilityType.PUBLIC,
+                from_sudocuh=12,
+                event_type=None,
+            ),
+            EventFactory(
+                visibility=core_enums.VisibilityType.PUBLIC,
+                from_sudocuh=13,
+                event_type__is_structuring=False,
+            ),
+            EventFactory(
+                visibility=core_enums.VisibilityType.PUBLIC,
+                from_sudocuh=14,
+                event_type__is_structuring=True,
+            ),
+            EventFactory(
+                visibility=core_enums.VisibilityType.PRIVATE,
+                from_sudocuh=17,
+                event_type__is_structuring=True,
+            ),
+        ]
+
+        excluded_events = [
+            EventFactory(
+                visibility=core_enums.VisibilityType.PRIVATE,
+                from_sudocuh=None,
+                event_type__is_structuring=False,
+            ),
+            EventFactory(
+                visibility=core_enums.VisibilityType.PRIVATE,
+                from_sudocuh=15,
+                event_type=None,
+            ),
+            EventFactory(
+                visibility=core_enums.VisibilityType.PRIVATE,
+                from_sudocuh=16,
+                event_type__is_structuring=False,
+            ),
+        ]
+
+        queryset = core_models.Event.objects.all()
+        assert queryset.count() == 8
+
+        ids = core_models.Event.objects.filter_public().values_list("pk", flat=True)
+        assert len(ids) == 5
+        for event in expected_events:
+            assert event.pk in ids
+            assert event.is_public
+
+        for event in excluded_events:
+            assert event.pk not in ids
+            assert not event.is_public
+
+    def test_queryset_exclude_archived(self) -> None:
         event_not_archived = EventFactory()
         EventFactory(archived=True)
 
         queryset = core_models.Event.objects.all()
         assert queryset.count() == 2
 
-        queryset = core_models.Event.objects.without_archived()
+        queryset = core_models.Event.objects.exclude_archived()
         assert queryset.count() == 1
         event = queryset.first()
         assert event.id == event_not_archived.id

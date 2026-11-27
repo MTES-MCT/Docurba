@@ -1040,6 +1040,7 @@ class TestAPICommunes:
             ][0],
             date_evenement=now,
             procedure=procedure,
+            event_type=None,
         )
         response = client.get(reverse("api:communes"))
         results = list(DictReader(response.content.decode().splitlines()))
@@ -1087,6 +1088,7 @@ class TestAPICommunes:
             type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.base_doc_type][
                 event_type
             ][0],
+            event_type=None,
             date_evenement=now,
             procedure=procedure,
         )
@@ -1122,6 +1124,7 @@ class TestAPICommunes:
             type=core_models.EVENT_TYPE_BY_EVENT_CATEGORY[procedure.base_doc_type][
                 event_type
             ][0],
+            event_type=None,
             date_evenement=now,
             procedure=procedure,
         )

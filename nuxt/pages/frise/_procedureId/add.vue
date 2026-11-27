@@ -15,7 +15,7 @@
         </h1>
       </v-col>
     </v-row>
-    <FriseEventForm v-if="procedure" :procedure="procedure" :type-du="$route.query.typeDu" />
+    <FriseEventForm v-if="procedure" :procedure="procedure" />
   </v-container>
 </template>
 

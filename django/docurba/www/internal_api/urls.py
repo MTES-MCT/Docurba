@@ -8,6 +8,10 @@ app_name = "internal_api"
 router = routers.DefaultRouter()
 router.register(r"collectivites", views.CollectiviteViewSet, basename="collectivites")
 router.register(r"communes", views.CommuneViewSet, basename="communes")
+router.register(r"evenements", views.EventViewSet, basename="events")
+router.register(
+    r"evenements-public", views.PublicEventViewSet, basename="events_public"
+)
 router.register(r"types-evenement", views.EventTypeViewSet, basename="event_types")
 router.register(r"procedures", views.ProcedureViewSet, basename="procedures")
 

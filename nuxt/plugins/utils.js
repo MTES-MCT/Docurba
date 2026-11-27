@@ -4,8 +4,8 @@ export default ({ app }, inject) => {
   const utils = {
     formatProcedureName (procedure, collectivite) {
       if (procedure.name) {
-        if (procedure.name_complement
-          && !procedure.name.endsWith(procedure.name_complement) // do not display twice the name_complement when the name already includes it (old procedures)
+        if (procedure.name_complement &&
+          !procedure.name.endsWith(procedure.name_complement) // do not display twice the name_complement when the name already includes it (old procedures)
         ) {
           return procedure.name + ' - ' + procedure.name_complement
         }
@@ -41,14 +41,19 @@ export default ({ app }, inject) => {
 
       return name
     },
+    CREATOR_DOCURBA: { avatar: 'D', label: 'Docurba', color: 'primary', poste: 'Système' },
+    CREATOR_SUDOCUH: { avatar: 'S', label: 'Sudocuh', color: '#3A3A3A', poste: 'Historique' },
     formatEventProfileToCreator (event) {
-      if (event.profiles) {
-        return this.formatProfileToCreator(event.profiles)
-      } else if (event.from_sudocuh) {
-        return { avatar: 'S', label: 'Sudocuh', color: '#3A3A3A', poste: 'Historique' }
-      } else {
-        return { avatar: 'D', label: 'Docurba', color: 'primary', poste: 'Système' }
+      if (event.isSystem) {
+        return this.CREATOR_DOCURBA
       }
+      if (event.profile) {
+        return this.formatProfileToCreator(event.profile)
+      }
+      if (event.isSudocuh) {
+        return this.CREATOR_SUDOCUH
+      }
+      return this.CREATOR_DOCURBA
     },
     formatProfileToCreator (profile) {
       let creator = null

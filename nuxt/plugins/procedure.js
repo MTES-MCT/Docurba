@@ -36,11 +36,6 @@ import { displayDate } from '@/plugins/utils'
 
 export default ({ $dayjs, $djangoApi, $supabase, $territorialAuthorityApi }, inject) => {
   inject('procedure', {
-    async updateStatus (procedure) {
-      // The status and the perimetre opposability are computed on the
-      // Django side and persisted there.
-      await $djangoApi.post(`/api-internes/procedures/${procedure.id}/synchronize-status/`)
-    },
     enrichProcedureWithEvents (procedure) {
       const events = procedure?.doc_frise_events
 

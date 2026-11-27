@@ -18,9 +18,6 @@ while true; do
   if [[ "$current_time" == "00:05" ]]; then
     django-admin process_denormalized_procedure_fields
   fi
-  if [[ "$current_time" == "00:23" ]]; then
-    django-admin link_events_with_event_types
-  fi
   if [[ "$current_time" == "00:43" ]]; then
     echo "☕ Il est ${current_time} ! C'est l'heure de la sauvegarde !"
     /usr/bin/bash scripts/backup_database.sh "${DATABASE_URL}"
